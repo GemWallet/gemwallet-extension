@@ -1,6 +1,29 @@
-# Getting Started with Create React App
+# Gem Wallet Extension
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+
+## Getting Started
+
+First, run husky:
+
+```bash
+npm run prepare
+# or
+yarn prepare
+```
+
+Then, give the proper rights to the githooks:
+
+```bash
+chmod +x .husky/*
+```
+
+Then, run the development server:
+
+```bash
+npm run dev
+
+
 
 ## Available Scripts
 
@@ -44,3 +67,4 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
 To learn React, check out the [React documentation](https://reactjs.org/).
+```
