@@ -12,13 +12,14 @@
     "48": "logo192.png",
     "128": "logo192.png"
   },
-  "permissions": [
-    "activeTab"
-  ],
+  "permissions": ["activeTab"],
   "content_scripts": [
     {
-        "matches": ["http://*/*", "https://*/*"],
-        "js": ["./static/js/content.js"]
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["./static/js/content.js"]
     }
- ]
+  ],
+  "background": {
+    "service_worker": "./static/js/background.js"
+  }
 }
