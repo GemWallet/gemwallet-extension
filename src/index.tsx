@@ -1,12 +1,24 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
+import Paper from '@mui/material/Paper';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import './index.css';
+
+const theme = createTheme({
+  palette: {
+    mode: 'dark'
+  }
+});
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <ThemeProvider theme={theme}>
+      <Paper style={{ height: '100vh', width: '100vw' }}>
+        <App />
+      </Paper>
+    </ThemeProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );
