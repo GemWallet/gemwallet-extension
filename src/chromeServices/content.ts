@@ -3,17 +3,6 @@ import { Target } from './content.types';
 const DATA_ATTRIBUTE = 'data-meta-pay';
 
 /**
- * Execute the function if the document is fully ready
- */
-const ready = (fn: () => void) => {
-  if (document.readyState === 'complete' || document.readyState === 'interactive') {
-    fn();
-  } else {
-    document.addEventListener('DOMContentLoaded', fn);
-  }
-};
-
-/**
  * Find parent of an element depending on a callback condition
  */
 const findParent = (target: Target, test: (target: Target) => boolean): Target => {
@@ -25,7 +14,10 @@ const findParent = (target: Target, test: (target: Target) => boolean): Target =
   }
 };
 
-ready(() => {
+/**
+ * Execute the function if the document is fully ready
+ */
+setTimeout(() => {
   function handleClick(e: MouseEvent) {
     // If no data attribute found, we remove the event listener
     if (!document.querySelector(`[${DATA_ATTRIBUTE}]`)) {
@@ -56,4 +48,4 @@ ready(() => {
 
   // We add an event to clicks on the page
   document.addEventListener('click', handleClick);
-});
+}, 0);
