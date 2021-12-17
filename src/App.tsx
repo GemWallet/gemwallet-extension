@@ -35,6 +35,13 @@ function App() {
       destination,
       asset
     });
+
+    // Disable the scroll inside the react root container
+    document.querySelector('#root')?.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    });
   }, []);
 
   const { amount, destination, asset } = params;
