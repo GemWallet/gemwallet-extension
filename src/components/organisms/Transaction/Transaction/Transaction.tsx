@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import Lottie from 'lottie-react';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
@@ -8,15 +7,7 @@ import alert from '../../../../assets/alert.json';
 import check from '../../../../assets/check.json';
 import type { PropType, LogoStyle } from './Transaction.types';
 
-export function Transaction({ transaction, handleTransaction }: PropType) {
-  // TODO: This effect is a mock of a success from the ledger
-  useEffect(() => {
-    setTimeout(() => {
-      handleTransaction('success');
-    }, 3000);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
+export function Transaction({ transaction }: PropType) {
   let animation: any = loading;
   let title: string = 'Transaction in progress';
   let subtitle: React.ReactNode = (

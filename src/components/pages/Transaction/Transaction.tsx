@@ -8,12 +8,16 @@ import Tooltip from '@mui/material/Tooltip';
 import ErrorIcon from '@mui/icons-material/Error';
 import { PageWithNavbar } from '../../templates/PageWithNavbar';
 import { Transaction as TransactionOrganism } from '../../organisms/Transaction/Transaction';
+import { useLedger } from '../../../contexts/LedgerContext';
+
+const DEFAULT_FEES = 'Loading ...';
 
 export function Transaction() {
   const [params, setParams] = useState({
     chain: '',
     transaction: '',
-    amount: 0,
+    amount: '0',
+    fees: DEFAULT_FEES,
     destination: '',
     asset: ''
   });
@@ -26,13 +30,14 @@ export function Transaction() {
    * - rejected: transaction has been rejected
    */
   const [transaction, setTransaction] = useState('waiting');
+  const { client, estimateNetworkFees, sendTransaction } = useLedger();
 
   useEffect(() => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const chain = urlParams.get('chain') || '';
     const transaction = urlParams.get('transaction') || '';
-    const amount = Number(urlParams.get('amount')) || 0;
+    const amount = urlParams.get('amount') || '0';
     const destination = urlParams.get('destination') || '';
     let asset = urlParams.get('asset') || '';
     if (chain === 'xrp') {
@@ -42,32 +47,54 @@ export function Transaction() {
       chain,
       transaction,
       amount,
+      fees: DEFAULT_FEES,
       destination,
       asset
     });
   }, []);
 
+  useEffect(() => {
+    if (client) {
+      const { chain, transaction, amount, destination, asset } = params;
+      estimateNetworkFees(amount).then((fees: string) => {
+        setParams({
+          chain,
+          transaction,
+          amount,
+          fees: fees || DEFAULT_FEES,
+          destination,
+          asset
+        });
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [client]);
+
   const handleConfirm = () => {
     setTransaction('pending');
+    const { amount, destination } = params;
+    sendTransaction({ amount, destination })
+      .then((result) => {
+        setTransaction(result);
+      })
+      .catch(() => {
+        setTransaction('rejected');
+      });
   };
 
   const handleReject = () => {
     setTransaction('rejected');
   };
 
-  const handleTransaction = (transactionState: string) => {
-    setTransaction(transactionState);
-  };
-
   if (transaction !== 'waiting') {
     return (
       <PageWithNavbar title="">
-        <TransactionOrganism transaction={transaction} handleTransaction={handleTransaction} />
+        <TransactionOrganism transaction={transaction} />
       </PageWithNavbar>
     );
   }
 
-  const { amount, destination, asset } = params;
+  const { amount, fees, destination, asset } = params;
   return (
     <PageWithNavbar title="Confirm Transaction">
       <Paper elevation={24} style={{ padding: '10px' }}>
@@ -90,14 +117,14 @@ export function Transaction() {
           Network fees:
         </Typography>
         <Typography variant="body2" gutterBottom align="right">
-          0.00000001 {asset}
+          {fees === DEFAULT_FEES ? DEFAULT_FEES : `${fees} ${asset}`}
         </Typography>
       </Paper>
       <Container style={{ display: 'flex', justifyContent: 'space-evenly' }}>
         <Button variant="contained" color="secondary" onClick={handleReject}>
           Reject
         </Button>
-        <Button variant="contained" onClick={handleConfirm}>
+        <Button variant="contained" onClick={handleConfirm} disabled={!client}>
           Confirm
         </Button>
       </Container>

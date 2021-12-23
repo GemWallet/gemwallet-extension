@@ -1,7 +1,10 @@
 import Chip from '@mui/material/Chip';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
+import { useLedger } from '../../../contexts/LedgerContext';
 
 export function NetworkIndicator() {
+  const { client } = useLedger();
+
   return (
     <Chip
       label="Dev net"
@@ -9,7 +12,7 @@ export function NetworkIndicator() {
       icon={
         <FiberManualRecordIcon
           style={{
-            color: 'green'
+            color: client ? 'green' : 'red'
           }}
         />
       }
