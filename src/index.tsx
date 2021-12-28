@@ -4,6 +4,7 @@ import Paper from '@mui/material/Paper';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import App from './App';
 import { LedgerProvider } from './contexts/LedgerContext';
+import { BrowserProvider } from './contexts/BrowserContext';
 import reportWebVitals from './reportWebVitals';
 import './index.css';
 
@@ -17,9 +18,11 @@ ReactDOM.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
       <Paper style={{ height: '100vh', width: '100vw' }}>
-        <LedgerProvider>
-          <App />
-        </LedgerProvider>
+        <BrowserProvider>
+          <LedgerProvider>
+            <App />
+          </LedgerProvider>
+        </BrowserProvider>
       </Paper>
     </ThemeProvider>
   </React.StrictMode>,

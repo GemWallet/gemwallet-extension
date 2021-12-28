@@ -2,12 +2,14 @@ import Lottie from 'lottie-react';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+import { useBrowser } from '../../../../contexts/BrowserContext';
 import loading from '../../../../assets/loading.json';
 import alert from '../../../../assets/alert.json';
 import check from '../../../../assets/check.json';
 import type { PropType, LogoStyle } from './Transaction.types';
 
 export function Transaction({ transaction }: PropType) {
+  const { window, closeExtension } = useBrowser();
   let animation: any = loading;
   let title: string = 'Transaction in progress';
   let subtitle: React.ReactNode = (
@@ -19,11 +21,15 @@ export function Transaction({ transaction }: PropType) {
   );
   let buttonText: string = 'Processing';
   let styleAnimation: LogoStyle = { width: '150px', height: '150px' };
+  let handleClick = () => {};
   if (transaction === 'success') {
     animation = check;
     title = 'Transaction accepted';
     buttonText = 'Close';
     styleAnimation = { width: '100px', height: '100px', marginTop: '30px' };
+    if (window?.id) {
+      handleClick = () => closeExtension({ windowId: Number(window.id) });
+    }
   }
   if (transaction === 'rejected') {
     animation = alert;
@@ -37,6 +43,9 @@ export function Transaction({ transaction }: PropType) {
     );
     buttonText = 'Close';
     styleAnimation = { width: '70px', height: '70px', marginTop: '30px' };
+    if (window?.id) {
+      handleClick = () => closeExtension({ windowId: Number(window.id) });
+    }
   }
   return (
     <Container
@@ -64,6 +73,7 @@ export function Transaction({ transaction }: PropType) {
         variant="contained"
         disabled={transaction === 'pending'}
         color={transaction === 'rejected' ? 'secondary' : 'primary'}
+        onClick={handleClick}
       >
         {buttonText}
       </Button>
