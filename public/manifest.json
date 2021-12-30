@@ -1,24 +1,25 @@
 {
-  "name": "Gem Wallet",
-  "description": "Gem Wallet brings Ripple to your web browser - gemwallet.app",
+  "name": "GemWallet",
+  "description": "GemWallet brings Ripple to your web browser - gemwallet.app",
   "version": "1.0.0",
   "manifest_version": 3,
   "action": {
     "default_popup": "index.html",
-    "default_title": "Gem Wallet"
+    "default_title": "GemWallet"
   },
   "icons": {
     "16": "logo192.png",
     "48": "logo192.png",
     "128": "logo192.png"
   },
-  "permissions": [
-    "activeTab"
-  ],
+  "permissions": ["activeTab"],
   "content_scripts": [
     {
-        "matches": ["http://*/*", "https://*/*"],
-        "js": ["./static/js/content.js"]
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["./static/js/content.js"]
     }
- ]
+  ],
+  "background": {
+    "service_worker": "./static/js/background.js"
+  }
 }

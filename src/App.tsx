@@ -1,26 +1,17 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { useEffect } from 'react';
+import { Transaction } from './components/pages/Transaction';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  useEffect(() => {
+    // Disable the scroll inside the react root container
+    document.querySelector('#root')?.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    });
+  }, []);
+
+  return <Transaction />;
 }
 
 export default App;
