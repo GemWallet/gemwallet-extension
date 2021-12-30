@@ -7,7 +7,7 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import ErrorIcon from '@mui/icons-material/Error';
 import { PageWithNavbar } from '../../templates/PageWithNavbar';
-import { Transaction as TransactionOrganism } from '../../organisms/Transaction/Transaction';
+import { Transaction as TransactionOrganism } from '../../organisms/Transaction';
 import { useLedger } from '../../../contexts/LedgerContext';
 
 const DEFAULT_FEES = 'Loading ...';

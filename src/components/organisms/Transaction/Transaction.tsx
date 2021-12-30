@@ -2,10 +2,10 @@ import Lottie from 'lottie-react';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import { useBrowser } from '../../../../contexts/BrowserContext';
-import loading from '../../../../assets/loading.json';
-import alert from '../../../../assets/alert.json';
-import check from '../../../../assets/check.json';
+import { useBrowser } from '../../../contexts/BrowserContext';
+import loading from '../../../assets/loading.json';
+import alert from '../../../assets/alert.json';
+import check from '../../../assets/check.json';
 import type { PropType, LogoStyle } from './Transaction.types';
 
 export function Transaction({ transaction }: PropType) {
