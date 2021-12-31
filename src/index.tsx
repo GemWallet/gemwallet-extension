@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { BrowserRouter } from 'react-router-dom';
 import Paper from '@mui/material/Paper';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import App from './App';
@@ -18,11 +19,13 @@ ReactDOM.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
       <Paper style={{ height: '100vh', width: '100vw' }}>
-        <BrowserProvider>
-          <LedgerProvider>
-            <App />
-          </LedgerProvider>
-        </BrowserProvider>
+        <BrowserRouter>
+          <BrowserProvider>
+            <LedgerProvider>
+              <App />
+            </LedgerProvider>
+          </BrowserProvider>
+        </BrowserRouter>
       </Paper>
     </ThemeProvider>
   </React.StrictMode>,

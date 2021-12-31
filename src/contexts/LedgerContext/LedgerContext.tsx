@@ -1,23 +1,30 @@
 import { ReactNode, useContext, useState, useEffect, createContext } from 'react';
 import * as xrpl from 'xrpl';
+import { STORAGE_SEED } from '../../constants/localStorage';
 
-type payloadType = {
+type TransactionPayloadType = {
   amount: string;
   destination: string;
 };
 
 type contextType = {
-  sendTransaction: (payload: payloadType) => Promise<string>;
+  createWallet: () => void;
+  importSeed: (seed: string) => void;
+  sendTransaction: (payload: TransactionPayloadType) => Promise<string>;
   estimateNetworkFees: (amount: string) => Promise<string>;
+  wallet?: xrpl.Wallet;
   client?: xrpl.Client;
 };
 
 const LedgerContext = createContext<contextType>({
+  createWallet: () => {},
+  importSeed: () => {},
   sendTransaction: () => new Promise(() => {}),
   estimateNetworkFees: () =>
     new Promise((resolve) => {
       resolve('0');
     }),
+  wallet: undefined,
   client: undefined
 });
 
@@ -25,9 +32,12 @@ function LedgerProvider({ children }: { children: ReactNode }): JSX.Element {
   const [client, setClient] = useState<any>();
   const [wallet, setWallet] = useState<any>();
 
-  const getWallet = () => {
-    const wallet = xrpl.Wallet.fromSeed('ss1c9EtVNmr1yrfG95fRHcbQqqZri');
-    setWallet(wallet);
+  const signIn = () => {
+    const seed = localStorage.getItem(STORAGE_SEED);
+    if (seed) {
+      const wallet = xrpl.Wallet.fromSeed(seed);
+      setWallet(wallet);
+    }
   };
 
   const connectToNetwork = async () => {
@@ -37,11 +47,27 @@ function LedgerProvider({ children }: { children: ReactNode }): JSX.Element {
   };
 
   useEffect(() => {
-    // Get Credentials
-    getWallet();
+    // Try to sign in if a seed has been stored
+    signIn();
     // Connect to testnet network
     connectToNetwork();
   }, []);
+
+  const createWallet = () => {
+    const wallet = xrpl.Wallet.generate();
+    setWallet(wallet);
+    if (wallet.seed) {
+      localStorage.setItem(STORAGE_SEED, wallet.seed);
+    }
+  };
+
+  const importSeed = (seed: string) => {
+    const wallet = xrpl.Wallet.fromSeed(seed);
+    setWallet(wallet);
+    if (wallet.seed) {
+      localStorage.setItem(STORAGE_SEED, wallet.seed);
+    }
+  };
 
   const estimateNetworkFees = async (amount: string) => {
     if (!client) {
@@ -59,7 +85,7 @@ function LedgerProvider({ children }: { children: ReactNode }): JSX.Element {
     }
   };
 
-  const sendTransaction = async ({ amount, destination }: payloadType) => {
+  const sendTransaction = async ({ amount, destination }: TransactionPayloadType) => {
     if (!client) {
       throw new Error('You need to be connected to a ledger to make a transaction');
     } else if (!wallet) {
@@ -85,8 +111,11 @@ function LedgerProvider({ children }: { children: ReactNode }): JSX.Element {
   };
 
   const value: contextType = {
+    createWallet,
+    importSeed,
     sendTransaction,
     estimateNetworkFees,
+    wallet,
     client
   };
 

@@ -1,5 +1,8 @@
 import { useEffect } from 'react';
+import { Routes, Route, Link } from 'react-router-dom';
+import { PrivateRoute } from './components/atoms/PrivateRoute';
 import { Login } from './components/pages/Login';
+import { Transaction } from './components/pages/Transaction';
 
 function App() {
   useEffect(() => {
@@ -11,7 +14,19 @@ function App() {
     });
   }, []);
 
-  return <Login />;
+  return (
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route
+        path="/transaction"
+        element={
+          <PrivateRoute>
+            <Transaction />
+          </PrivateRoute>
+        }
+      />
+    </Routes>
+  );
 }
 
 export default App;
