@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Transaction } from './components/pages/Transaction';
+import { Login } from './components/pages/Login';
 
 function App() {
   useEffect(() => {
@@ -11,7 +11,7 @@ function App() {
     });
   }, []);
 
-  return <Transaction />;
+  return <Login />;
 }
 
 export default App;
