@@ -8,7 +8,7 @@ type TransactionPayloadType = {
 };
 
 type contextType = {
-  createWallet: () => void;
+  createWallet: () => string | undefined;
   importSeed: (seed: string) => void;
   sendTransaction: (payload: TransactionPayloadType) => Promise<string>;
   estimateNetworkFees: (amount: string) => Promise<string>;
@@ -17,7 +17,7 @@ type contextType = {
 };
 
 const LedgerContext = createContext<contextType>({
-  createWallet: () => {},
+  createWallet: () => undefined,
   importSeed: () => {},
   sendTransaction: () => new Promise(() => {}),
   estimateNetworkFees: () =>
@@ -59,6 +59,7 @@ function LedgerProvider({ children }: { children: ReactNode }): JSX.Element {
     if (wallet.seed) {
       localStorage.setItem(STORAGE_SEED, wallet.seed);
     }
+    return wallet.seed;
   };
 
   const importSeed = (seed: string) => {

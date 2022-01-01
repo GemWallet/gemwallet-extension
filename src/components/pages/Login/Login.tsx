@@ -1,9 +1,12 @@
+import { useNavigate } from 'react-router-dom';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import { Logo } from '../../atoms/Logo';
 
 export function Login() {
+  const navigate = useNavigate();
+
   return (
     <Container
       component="main"
@@ -25,7 +28,11 @@ export function Login() {
         </Typography>
       </Container>
       <Container style={{ display: 'flex', flexDirection: 'column' }}>
-        <Button variant="contained" style={{ marginBottom: '10px' }} onClick={() => {}}>
+        <Button
+          variant="contained"
+          style={{ marginBottom: '10px' }}
+          onClick={() => navigate('/create-new-wallet')}
+        >
           Create a new wallet
         </Button>
         <Button variant="contained" color="secondary" onClick={() => {}}>

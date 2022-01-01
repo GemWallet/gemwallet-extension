@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
-import { Routes, Route, Link } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { PrivateRoute } from './components/atoms/PrivateRoute';
+import { CreateWallet } from './components/pages/CreateWallet';
 import { Login } from './components/pages/Login';
 import { Transaction } from './components/pages/Transaction';
 
@@ -17,6 +18,7 @@ function App() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
+      <Route path="/create-new-wallet" element={<CreateWallet />} />
       <Route
         path="/transaction"
         element={
