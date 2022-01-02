@@ -9,6 +9,7 @@ export function CreateWallet() {
   const [seed, setSeed] = useState('Loading...');
   const [activeStep, setActiveStep] = useState(0);
   const [seedError, setSeedError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
   const { createWallet } = useLedger();
 
   useEffect(() => {
@@ -27,6 +28,49 @@ export function CreateWallet() {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
 
+  if (activeStep === 2) {
+    const handleNext = () => {
+      const passwordValue = (document.getElementById('password') as HTMLInputElement).value;
+      const confirmPasswordValue = (document.getElementById('confirm-password') as HTMLInputElement)
+        .value;
+      if (passwordValue.length < 8 || confirmPasswordValue.length < 8) {
+        setPasswordError('Password must be at least 8 characters long');
+      } else if (passwordValue !== confirmPasswordValue) {
+        setPasswordError('Passwords must match');
+      } else {
+        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      }
+    };
+    return (
+      <PageWithStepper activeStep={activeStep} handleBack={handleBack} handleNext={handleNext}>
+        <Typography variant="h4" component="h1" style={{ marginTop: '30px' }}>
+          Create a password
+        </Typography>
+        <Typography variant="subtitle1" component="h2" style={{ marginTop: '30px' }}>
+          You will use this password to unlock your wallet
+        </Typography>
+        <TextField
+          fullWidth
+          id="password"
+          name="password"
+          label="Password"
+          error={!!passwordError}
+          type="password"
+        />
+        <TextField
+          fullWidth
+          id="confirm-password"
+          name="confirm-password"
+          label="Confirm Password"
+          error={!!passwordError}
+          helperText={passwordError}
+          type="password"
+          style={{ marginTop: '20px' }}
+        />
+      </PageWithStepper>
+    );
+  }
+
   if (activeStep === 1) {
     const handleNext = () => {
       if ((document.getElementById('seed') as HTMLInputElement).value === seed) {
@@ -43,16 +87,14 @@ export function CreateWallet() {
         <Typography variant="subtitle1" component="h2" style={{ marginTop: '30px' }}>
           Enter your seed to confirm that you have properly stored it.
         </Typography>
-        <form id="seed-form">
-          <TextField
-            fullWidth
-            id="seed"
-            name="seed"
-            label="Seed"
-            error={!!seedError}
-            helperText={seedError}
-          />
-        </form>
+        <TextField
+          fullWidth
+          id="seed"
+          name="seed"
+          label="Seed"
+          error={!!seedError}
+          helperText={seedError}
+        />
       </PageWithStepper>
     );
   }
