@@ -1,8 +1,9 @@
 import { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { PrivateRoute } from './components/atoms/PrivateRoute';
-import { CreateWallet } from './components/pages/CreateWallet';
 import { Login } from './components/pages/Login';
+import { CreateWallet } from './components/pages/CreateWallet';
+import { Home } from './components/pages/Home';
 import { Transaction } from './components/pages/Transaction';
 
 function App() {
@@ -19,6 +20,15 @@ function App() {
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/create-new-wallet" element={<CreateWallet />} />
+      <Route
+        path="/home"
+        element={
+          <PrivateRoute>
+            <Home />
+          </PrivateRoute>
+        }
+      />
+      /
       <Route
         path="/transaction"
         element={
