@@ -32,20 +32,15 @@ export function CreateWallet() {
   };
 
   if (activeStep === 3) {
-    const handleNext = () => {
-      const passwordValue = (document.getElementById('password') as HTMLInputElement).value;
-      const confirmPasswordValue = (document.getElementById('confirm-password') as HTMLInputElement)
-        .value;
-      if (passwordValue.length < 8 || confirmPasswordValue.length < 8) {
-        setPasswordError('Password must be at least 8 characters long');
-      } else if (passwordValue !== confirmPasswordValue) {
-        setPasswordError('Passwords must match');
-      } else {
-        setActiveStep((prevActiveStep) => prevActiveStep + 1);
-      }
-    };
+    const handleNext = () => {};
     return (
-      <PageWithStepper activeStep={activeStep} handleBack={handleBack} handleNext={handleNext}>
+      <PageWithStepper
+        steps={4}
+        activeStep={activeStep}
+        handleBack={handleBack}
+        handleNext={handleNext}
+        buttonText="Finish"
+      >
         <Typography variant="h4" component="h1" style={{ marginTop: '30px' }}>
           Woo, you're in!
         </Typography>
@@ -57,6 +52,7 @@ export function CreateWallet() {
           startIcon={<TwitterIcon />}
           endIcon={<NavigateNextIcon />}
           style={{ width: '100%', marginTop: '25px' }}
+          color="info"
         >
           Follow us on Twitter
         </Button>
@@ -78,7 +74,13 @@ export function CreateWallet() {
       }
     };
     return (
-      <PageWithStepper activeStep={activeStep} handleBack={handleBack} handleNext={handleNext}>
+      <PageWithStepper
+        steps={4}
+        activeStep={activeStep}
+        buttonText="Next"
+        handleBack={handleBack}
+        handleNext={handleNext}
+      >
         <Typography variant="h4" component="h1" style={{ marginTop: '30px' }}>
           Create a password
         </Typography>
@@ -88,14 +90,17 @@ export function CreateWallet() {
         <TextField
           fullWidth
           id="password"
+          key="password"
           name="password"
           label="Password"
           error={!!passwordError}
           type="password"
+          style={{ marginTop: '20px' }}
         />
         <TextField
           fullWidth
           id="confirm-password"
+          key="confirm-password"
           name="confirm-password"
           label="Confirm Password"
           error={!!passwordError}
@@ -116,7 +121,13 @@ export function CreateWallet() {
       }
     };
     return (
-      <PageWithStepper activeStep={activeStep} handleBack={handleBack} handleNext={handleNext}>
+      <PageWithStepper
+        steps={4}
+        activeStep={activeStep}
+        buttonText="Confirm"
+        handleBack={handleBack}
+        handleNext={handleNext}
+      >
         <Typography variant="h4" component="h1" style={{ marginTop: '30px' }}>
           Confirm You Secret Seed
         </Typography>
@@ -126,17 +137,25 @@ export function CreateWallet() {
         <TextField
           fullWidth
           id="seed"
+          key="seed"
           name="seed"
           label="Seed"
           error={!!seedError}
           helperText={seedError}
+          style={{ marginTop: '20px' }}
         />
       </PageWithStepper>
     );
   }
 
   return (
-    <PageWithStepper activeStep={activeStep} handleBack={handleBack} handleNext={handleNext}>
+    <PageWithStepper
+      steps={4}
+      activeStep={activeStep}
+      buttonText="Next"
+      handleBack={handleBack}
+      handleNext={handleNext}
+    >
       <Typography variant="h4" component="h1" style={{ marginTop: '30px' }}>
         Secret Seed
       </Typography>

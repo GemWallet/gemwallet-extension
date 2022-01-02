@@ -5,18 +5,27 @@ import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import { MouseEventHandler } from 'react';
 
 type PropType = {
+  steps: number;
   activeStep: number;
+  buttonText: string;
   handleBack: MouseEventHandler;
   handleNext: MouseEventHandler;
   children: JSX.Element | JSX.Element[];
 };
 
-export function PageWithStepper({ activeStep, handleBack, handleNext, children }: PropType) {
+export function PageWithStepper({
+  steps,
+  activeStep,
+  buttonText,
+  handleBack,
+  handleNext,
+  children
+}: PropType) {
   return (
     <>
       <MobileStepper
         variant="dots"
-        steps={4}
+        steps={steps}
         position="top"
         activeStep={activeStep}
         nextButton={<div style={{ width: '68.89px' }}></div>}
@@ -41,7 +50,7 @@ export function PageWithStepper({ activeStep, handleBack, handleNext, children }
         <Container style={{ textAlign: 'center', marginTop: '30%' }}>{children}</Container>
         <Container style={{ display: 'flex', flexDirection: 'column' }}>
           <Button variant="contained" style={{ marginBottom: '10px' }} onClick={handleNext}>
-            Next
+            {buttonText}
           </Button>
         </Container>
       </Container>
