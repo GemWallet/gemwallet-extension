@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
@@ -7,16 +8,18 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import { useLedger } from '../../../contexts/LedgerContext';
 import { TextCopy } from '../../molecules/TextCopy';
 import { PageWithStepper } from '../../templates/PageWithStepper';
+import { saveWallet } from '../../../utils';
 
 export function CreateWallet() {
   const [seed, setSeed] = useState('Loading...');
   const [activeStep, setActiveStep] = useState(0);
   const [seedError, setSeedError] = useState('');
   const [passwordError, setPasswordError] = useState('');
-  const { createWallet } = useLedger();
+  const { generateWallet } = useLedger();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const seed = createWallet();
+    const seed = generateWallet();
     if (seed) {
       setSeed(seed);
     }
@@ -32,7 +35,9 @@ export function CreateWallet() {
   };
 
   if (activeStep === 3) {
-    const handleNext = () => {};
+    const handleNext = () => {
+      navigate('/home');
+    };
     return (
       <PageWithStepper
         steps={4}
@@ -70,6 +75,7 @@ export function CreateWallet() {
       } else if (passwordValue !== confirmPasswordValue) {
         setPasswordError('Passwords must match');
       } else {
+        saveWallet(seed, passwordValue);
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
       }
     };

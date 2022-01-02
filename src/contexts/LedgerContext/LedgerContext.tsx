@@ -1,5 +1,6 @@
 import { ReactNode, useContext, useState, useEffect, createContext } from 'react';
 import * as xrpl from 'xrpl';
+import { loadData } from '../../utils';
 import { STORAGE_SEED } from '../../constants/localStorage';
 
 type TransactionPayloadType = {
@@ -8,7 +9,7 @@ type TransactionPayloadType = {
 };
 
 type contextType = {
-  createWallet: () => string | undefined;
+  generateWallet: () => string | undefined;
   importSeed: (seed: string) => void;
   sendTransaction: (payload: TransactionPayloadType) => Promise<string>;
   estimateNetworkFees: (amount: string) => Promise<string>;
@@ -17,7 +18,7 @@ type contextType = {
 };
 
 const LedgerContext = createContext<contextType>({
-  createWallet: () => undefined,
+  generateWallet: () => undefined,
   importSeed: () => {},
   sendTransaction: () => new Promise(() => {}),
   estimateNetworkFees: () =>
@@ -33,7 +34,7 @@ function LedgerProvider({ children }: { children: ReactNode }): JSX.Element {
   const [wallet, setWallet] = useState<any>();
 
   const signIn = () => {
-    const seed = localStorage.getItem(STORAGE_SEED);
+    const seed = loadData(STORAGE_SEED);
     if (seed) {
       const wallet = xrpl.Wallet.fromSeed(seed);
       setWallet(wallet);
@@ -53,12 +54,9 @@ function LedgerProvider({ children }: { children: ReactNode }): JSX.Element {
     connectToNetwork();
   }, []);
 
-  const createWallet = () => {
+  const generateWallet = () => {
     const wallet = xrpl.Wallet.generate();
     setWallet(wallet);
-    if (wallet.seed) {
-      localStorage.setItem(STORAGE_SEED, wallet.seed);
-    }
     return wallet.seed;
   };
 
@@ -112,7 +110,7 @@ function LedgerProvider({ children }: { children: ReactNode }): JSX.Element {
   };
 
   const value: contextType = {
-    createWallet,
+    generateWallet,
     importSeed,
     sendTransaction,
     estimateNetworkFees,
