@@ -1,15 +1,15 @@
+import { useEffect } from 'react';
 import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
 import MobileStepper from '@mui/material/MobileStepper';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
-import { MouseEventHandler } from 'react';
 
 type PropType = {
   steps: number;
   activeStep: number;
   buttonText: string;
-  handleBack: MouseEventHandler;
-  handleNext: MouseEventHandler;
+  handleBack: () => void;
+  handleNext: () => void;
   children: JSX.Element | JSX.Element[];
 };
 
@@ -21,6 +21,22 @@ export function PageWithStepper({
   handleNext,
   children
 }: PropType) {
+  /*
+   * Handle Next step button by pressing 'Enter'
+   */
+  useEffect(() => {
+    const upHandler = ({ key }: { key: string }) => {
+      if (key === 'Enter') {
+        handleNext();
+      }
+    };
+    window.addEventListener('keyup', upHandler);
+    return () => {
+      window.removeEventListener('keyup', upHandler);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeStep]);
+
   return (
     <>
       <MobileStepper
@@ -30,7 +46,7 @@ export function PageWithStepper({
         activeStep={activeStep}
         nextButton={<div style={{ width: '68.89px' }}></div>}
         backButton={
-          <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
+          <Button size="small" onClick={() => handleBack()} disabled={activeStep === 0}>
             {<KeyboardArrowLeft />}
             Back
           </Button>
@@ -49,7 +65,7 @@ export function PageWithStepper({
       >
         <Container style={{ textAlign: 'center', marginTop: '30%' }}>{children}</Container>
         <Container style={{ display: 'flex', flexDirection: 'column' }}>
-          <Button variant="contained" style={{ marginBottom: '10px' }} onClick={handleNext}>
+          <Button variant="contained" style={{ marginBottom: '10px' }} onClick={() => handleNext()}>
             {buttonText}
           </Button>
         </Container>
