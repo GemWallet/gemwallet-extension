@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import { Logo } from '../../atoms/Logo';
 
-export function Login() {
+export function Welcome() {
   const navigate = useNavigate();
 
   return (
