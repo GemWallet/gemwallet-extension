@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField/TextField';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import TwitterIcon from '@mui/icons-material/Twitter';
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import { useLedger } from '../../../contexts/LedgerContext';
 import { TextCopy } from '../../molecules/TextCopy';
 import { PageWithStepper } from '../../templates/PageWithStepper';
@@ -27,6 +30,39 @@ export function CreateWallet() {
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
+
+  if (activeStep === 3) {
+    const handleNext = () => {
+      const passwordValue = (document.getElementById('password') as HTMLInputElement).value;
+      const confirmPasswordValue = (document.getElementById('confirm-password') as HTMLInputElement)
+        .value;
+      if (passwordValue.length < 8 || confirmPasswordValue.length < 8) {
+        setPasswordError('Password must be at least 8 characters long');
+      } else if (passwordValue !== confirmPasswordValue) {
+        setPasswordError('Passwords must match');
+      } else {
+        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      }
+    };
+    return (
+      <PageWithStepper activeStep={activeStep} handleBack={handleBack} handleNext={handleNext}>
+        <Typography variant="h4" component="h1" style={{ marginTop: '30px' }}>
+          Woo, you're in!
+        </Typography>
+        <Typography variant="subtitle1" component="h2" style={{ marginTop: '30px' }}>
+          Follow along with product updates or reach out if you have any questions.
+        </Typography>
+        <Button
+          variant="contained"
+          startIcon={<TwitterIcon />}
+          endIcon={<NavigateNextIcon />}
+          style={{ width: '100%', marginTop: '25px' }}
+        >
+          Follow us on Twitter
+        </Button>
+      </PageWithStepper>
+    );
+  }
 
   if (activeStep === 2) {
     const handleNext = () => {

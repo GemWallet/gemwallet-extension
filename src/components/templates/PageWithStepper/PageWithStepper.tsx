@@ -16,7 +16,7 @@ export function PageWithStepper({ activeStep, handleBack, handleNext, children }
     <>
       <MobileStepper
         variant="dots"
-        steps={6}
+        steps={4}
         position="top"
         activeStep={activeStep}
         nextButton={<div style={{ width: '68.89px' }}></div>}
