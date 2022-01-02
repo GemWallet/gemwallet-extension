@@ -1,6 +1,6 @@
 import { ReactNode, useContext, useState, useEffect, createContext } from 'react';
 import * as xrpl from 'xrpl';
-import { loadData } from '../../utils';
+import { loadSeed } from '../../utils';
 import { STORAGE_SEED } from '../../constants/localStorage';
 
 type TransactionPayloadType = {
@@ -33,8 +33,8 @@ function LedgerProvider({ children }: { children: ReactNode }): JSX.Element {
   const [client, setClient] = useState<any>();
   const [wallet, setWallet] = useState<any>();
 
-  const signIn = () => {
-    const seed = loadData(STORAGE_SEED);
+  const signIn = (password: string) => {
+    const seed = loadSeed(password);
     if (seed) {
       const wallet = xrpl.Wallet.fromSeed(seed);
       setWallet(wallet);
@@ -48,8 +48,6 @@ function LedgerProvider({ children }: { children: ReactNode }): JSX.Element {
   };
 
   useEffect(() => {
-    // Try to sign in if a seed has been stored
-    signIn();
     // Connect to testnet network
     connectToNetwork();
   }, []);

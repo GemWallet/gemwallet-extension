@@ -8,7 +8,7 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import { useLedger } from '../../../contexts/LedgerContext';
 import { TextCopy } from '../../molecules/TextCopy';
 import { PageWithStepper } from '../../templates/PageWithStepper';
-import { saveWallet } from '../../../utils';
+import { saveSeed } from '../../../utils';
 
 export function CreateWallet() {
   const [seed, setSeed] = useState('Loading...');
@@ -75,7 +75,7 @@ export function CreateWallet() {
       } else if (passwordValue !== confirmPasswordValue) {
         setPasswordError('Passwords must match');
       } else {
-        saveWallet(seed, passwordValue);
+        saveSeed(seed, passwordValue);
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
       }
     };
