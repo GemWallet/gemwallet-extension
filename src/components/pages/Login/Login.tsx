@@ -70,7 +70,14 @@ export function Login() {
           Internet cryptocurrency payments made easy
         </Typography>
       </Container>
-      <Container style={{ display: 'flex', flexDirection: 'column' }}>
+      <Container
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          height: '135px'
+        }}
+      >
         <TextField
           fullWidth
           id="password"
@@ -81,7 +88,7 @@ export function Login() {
           type="password"
           style={{ marginBottom: '20px' }}
         />
-        <Button variant="contained" style={{ marginBottom: '10px' }} onClick={handleUnlock}>
+        <Button variant="contained" onClick={handleUnlock}>
           Unlock
         </Button>
       </Container>
