@@ -15,6 +15,8 @@
     "@types/node": "^12.0.0",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
+    "copy-to-clipboard": "^3.3.1",
+    "crypto-js": "^4.1.1",
     "eslint-config-prettier": "^8.3.0",
     "husky": "^7.0.4",
     "lint-staged": "^12.0.2",
@@ -22,13 +24,15 @@
     "prettier": "^2.4.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-router-dom": "6",
     "react-scripts": "4.0.3",
     "typescript": "^4.1.2",
     "web-vitals": "^1.0.1",
     "xrpl": "^2.1.0"
   },
   "devDependencies": {
-    "@types/chrome": "^0.0.163"
+    "@types/chrome": "^0.0.163",
+    "@types/crypto-js": "^4.1.0"
   },
   "scripts": {
     "start": "react-scripts start",

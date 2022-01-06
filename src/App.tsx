@@ -1,4 +1,10 @@
 import { useEffect } from 'react';
+import { Routes, Route } from 'react-router-dom';
+import { PrivateRoute } from './components/atoms/PrivateRoute';
+import { Login } from './components/pages/Login';
+import { Welcome } from './components/pages/Welcome';
+import { CreateWallet } from './components/pages/CreateWallet';
+import { Home } from './components/pages/Home';
 import { Transaction } from './components/pages/Transaction';
 
 function App() {
@@ -11,7 +17,30 @@ function App() {
     });
   }, []);
 
-  return <Transaction />;
+  return (
+    <Routes>
+      <Route path="*" element={<Login />} />
+      <Route path="/welcome" element={<Welcome />} />
+      <Route path="/create-new-wallet" element={<CreateWallet />} />
+      <Route
+        path="/home"
+        element={
+          <PrivateRoute>
+            <Home />
+          </PrivateRoute>
+        }
+      />
+      /
+      <Route
+        path="/transaction"
+        element={
+          <PrivateRoute>
+            <Transaction />
+          </PrivateRoute>
+        }
+      />
+    </Routes>
+  );
 }
 
 export default App;
