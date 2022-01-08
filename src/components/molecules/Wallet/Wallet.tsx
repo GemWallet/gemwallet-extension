@@ -10,16 +10,19 @@ import { PropType } from './Wallet.types';
 
 export function Wallet({ address = '' }: PropType) {
   const [balance, setBalance] = useState('Loading');
+  const [hasBalance, setHasBalance] = useState(true);
   const [isShared, setIsShared] = useState(false);
   const { client } = useLedger();
 
   useEffect(() => {
     async function fetchBalance() {
-      const balance = await client?.getXrpBalance(address);
-      if (balance) {
-        setBalance(balance);
-      } else {
-        setBalance('There are no funds on your wallet');
+      try {
+        const balance = await client?.getXrpBalance(address);
+        if (balance) {
+          setBalance(balance);
+        }
+      } catch {
+        setHasBalance(false);
       }
     }
 
@@ -54,9 +57,16 @@ export function Wallet({ address = '' }: PropType) {
       <Typography variant="body1">Balance</Typography>
       <Paper
         elevation={5}
-        style={{ display: 'flex', justifyContent: 'end', padding: '10px', marginTop: '10px' }}
+        style={{
+          display: 'flex',
+          justifyContent: hasBalance ? 'end' : 'center',
+          padding: '10px',
+          marginTop: '10px'
+        }}
       >
-        <Typography variant="body1">{balance} XRP</Typography>
+        <Typography variant="body1">
+          {hasBalance ? `${balance} XRP` : 'There are no funds on your wallet'}
+        </Typography>
       </Paper>
     </Paper>
   );
