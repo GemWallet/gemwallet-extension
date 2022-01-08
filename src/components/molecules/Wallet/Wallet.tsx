@@ -9,7 +9,7 @@ import { useLedger } from '../../../contexts/LedgerContext';
 import { PropType } from './Wallet.types';
 
 export function Wallet({ address = '' }: PropType) {
-  const [balance, setBalance] = useState('Loading');
+  const [balance, setBalance] = useState('Loading...');
   const [hasBalance, setHasBalance] = useState(true);
   const [isShared, setIsShared] = useState(false);
   const { client } = useLedger();
