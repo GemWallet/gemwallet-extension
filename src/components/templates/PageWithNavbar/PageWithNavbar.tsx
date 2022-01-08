@@ -17,9 +17,11 @@ export function PageWithNavbar({ children, title }: PropType) {
           margin: '20px auto'
         }}
       >
-        <Typography variant="h4" component="h1" style={{ fontSize: '1.75rem' }} gutterBottom>
-          {title}
-        </Typography>
+        {title && (
+          <Typography variant="h4" component="h1" style={{ fontSize: '1.75rem' }} gutterBottom>
+            {title}
+          </Typography>
+        )}
         {children}
       </Container>
     </>
