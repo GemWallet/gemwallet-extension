@@ -4,6 +4,7 @@ import { PrivateRoute } from './components/atoms/PrivateRoute';
 import { Login } from './components/pages/Login';
 import { Welcome } from './components/pages/Welcome';
 import { CreateWallet } from './components/pages/CreateWallet';
+import { ImportSeed } from './components/pages/ImportSeed';
 import { Home } from './components/pages/Home';
 import { Transaction } from './components/pages/Transaction';
 
@@ -21,6 +22,7 @@ function App() {
     <Routes>
       <Route path="*" element={<Login />} />
       <Route path="/welcome" element={<Welcome />} />
+      <Route path="/import-seed" element={<ImportSeed />} />
       <Route path="/create-new-wallet" element={<CreateWallet />} />
       <Route
         path="/home"
