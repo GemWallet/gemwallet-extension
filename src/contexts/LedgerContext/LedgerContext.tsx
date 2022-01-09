@@ -1,7 +1,6 @@
 import { ReactNode, useContext, useState, useEffect, createContext } from 'react';
 import * as xrpl from 'xrpl';
 import { loadSeed } from '../../utils';
-import { STORAGE_SEED } from '../../constants/localStorage';
 
 type TransactionPayloadType = {
   amount: string;
@@ -67,7 +66,6 @@ function LedgerProvider({ children }: { children: ReactNode }): JSX.Element {
       const wallet = xrpl.Wallet.fromSeed(seed);
       setWallet(wallet);
       if (wallet.seed) {
-        localStorage.setItem(STORAGE_SEED, wallet.seed);
         return true;
       }
       return false;

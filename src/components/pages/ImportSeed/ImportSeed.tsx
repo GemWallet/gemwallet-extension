@@ -7,11 +7,15 @@ import TwitterIcon from '@mui/icons-material/Twitter';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import { useLedger } from '../../../contexts/LedgerContext';
 import { PageWithStepper } from '../../templates/PageWithStepper';
+import { saveSeed } from '../../../utils';
+
+const STEPS = 3;
 
 export function ImportSeed() {
   const [activeStep, setActiveStep] = useState(0);
+  const [passwordError, setPasswordError] = useState('');
   const [seedError, setSeedError] = useState('');
-  const { importSeed } = useLedger();
+  const { importSeed, wallet } = useLedger();
   const navigate = useNavigate();
 
   const handleBack = () => {
@@ -28,13 +32,13 @@ export function ImportSeed() {
     }
   };
 
-  if (activeStep === 1) {
+  if (activeStep === 2) {
     const handleNext = () => {
       navigate('/home');
     };
     return (
       <PageWithStepper
-        steps={2}
+        steps={STEPS}
         activeStep={activeStep}
         handleBack={handleBack}
         handleNext={handleNext}
@@ -59,9 +63,62 @@ export function ImportSeed() {
     );
   }
 
+  if (activeStep === 1) {
+    const handleNext = () => {
+      const passwordValue = (document.getElementById('password') as HTMLInputElement).value;
+      const confirmPasswordValue = (document.getElementById('confirm-password') as HTMLInputElement)
+        .value;
+      if (passwordValue.length < 8 || confirmPasswordValue.length < 8) {
+        setPasswordError('Password must be at least 8 characters long');
+      } else if (passwordValue !== confirmPasswordValue) {
+        setPasswordError('Passwords must match');
+      } else if (wallet?.seed) {
+        saveSeed(wallet?.seed, passwordValue);
+        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      }
+    };
+    return (
+      <PageWithStepper
+        steps={STEPS}
+        activeStep={activeStep}
+        buttonText="Next"
+        handleBack={handleBack}
+        handleNext={handleNext}
+      >
+        <Typography variant="h4" component="h1" style={{ marginTop: '30px' }}>
+          Create a password
+        </Typography>
+        <Typography variant="subtitle1" component="h2" style={{ marginTop: '30px' }}>
+          You will use this password to unlock your wallet
+        </Typography>
+        <TextField
+          fullWidth
+          id="password"
+          key="password"
+          name="password"
+          label="Password"
+          error={!!passwordError}
+          type="password"
+          style={{ marginTop: '20px' }}
+        />
+        <TextField
+          fullWidth
+          id="confirm-password"
+          key="confirm-password"
+          name="confirm-password"
+          label="Confirm Password"
+          error={!!passwordError}
+          helperText={passwordError}
+          type="password"
+          style={{ marginTop: '20px' }}
+        />
+      </PageWithStepper>
+    );
+  }
+
   return (
     <PageWithStepper
-      steps={2}
+      steps={STEPS}
       activeStep={activeStep}
       buttonText="Next"
       handleBack={handleBack}
