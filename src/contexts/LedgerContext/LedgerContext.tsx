@@ -11,7 +11,7 @@ type TransactionPayloadType = {
 type contextType = {
   signIn: (password: string) => boolean;
   generateWallet: () => string | undefined;
-  importSeed: (seed: string) => void;
+  importSeed: (seed: string) => boolean;
   sendTransaction: (payload: TransactionPayloadType) => Promise<string>;
   estimateNetworkFees: (amount: string) => Promise<string>;
   wallet?: xrpl.Wallet;
@@ -21,7 +21,7 @@ type contextType = {
 const LedgerContext = createContext<contextType>({
   signIn: () => false,
   generateWallet: () => undefined,
-  importSeed: () => {},
+  importSeed: () => false,
   sendTransaction: () => new Promise(() => {}),
   estimateNetworkFees: () =>
     new Promise((resolve) => {
@@ -63,10 +63,16 @@ function LedgerProvider({ children }: { children: ReactNode }): JSX.Element {
   };
 
   const importSeed = (seed: string) => {
-    const wallet = xrpl.Wallet.fromSeed(seed);
-    setWallet(wallet);
-    if (wallet.seed) {
-      localStorage.setItem(STORAGE_SEED, wallet.seed);
+    try {
+      const wallet = xrpl.Wallet.fromSeed(seed);
+      setWallet(wallet);
+      if (wallet.seed) {
+        localStorage.setItem(STORAGE_SEED, wallet.seed);
+        return true;
+      }
+      return false;
+    } catch {
+      return false;
     }
   };
 

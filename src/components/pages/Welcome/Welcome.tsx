@@ -35,7 +35,7 @@ export function Welcome() {
         >
           Create a new wallet
         </Button>
-        <Button variant="contained" color="secondary" onClick={() => {}}>
+        <Button variant="contained" color="secondary" onClick={() => navigate('/import-seed')}>
           Import a seed phrase
         </Button>
       </Container>

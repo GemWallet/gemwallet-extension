@@ -135,7 +135,7 @@ export function CreateWallet() {
         handleNext={handleNext}
       >
         <Typography variant="h4" component="h1" style={{ marginTop: '30px' }}>
-          Confirm You Secret Seed
+          Confirm Your Secret Seed
         </Typography>
         <Typography variant="subtitle1" component="h2" style={{ marginTop: '30px' }}>
           Enter your seed to confirm that you have properly stored it.
