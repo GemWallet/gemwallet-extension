@@ -1,0 +1,56 @@
+{
+  "name": "@gemwallet/extension",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@craco/craco": "^6.4.0",
+    "@emotion/react": "^11.7.0",
+    "@emotion/styled": "^11.6.0",
+    "@mui/icons-material": "^5.2.4",
+    "@mui/material": "^5.2.3",
+    "@testing-library/jest-dom": "^5.11.4",
+    "@testing-library/react": "^11.1.0",
+    "@testing-library/user-event": "^12.1.10",
+    "@types/jest": "^26.0.15",
+    "@types/node": "^12.0.0",
+    "@types/react": "^17.0.0",
+    "@types/react-dom": "^17.0.0",
+    "copy-to-clipboard": "^3.3.1",
+    "crypto-js": "^4.1.1",
+    "lottie-react": "^2.1.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-router-dom": "6",
+    "react-scripts": "4.0.3",
+    "typescript": "^4.1.2",
+    "web-vitals": "^1.0.1",
+    "xrpl": "^2.1.0"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.163",
+    "@types/crypto-js": "^4.1.0",
+    "@gemwallet/eslint-config": "*"
+  },
+  "peerDependencies": {
+    "eslint": "^7.11.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "INLINE_RUNTIME_CHUNK=false GENERATE_SOURCEMAP=false craco build",
+    "test": "react-scripts test",
+    "type-check": "tsc --project tsconfig.json --pretty --noEmit",
+    "eject": "react-scripts eject"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
