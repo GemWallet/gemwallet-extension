@@ -1,0 +1,22 @@
+{
+  "name": "@gemwallet/prettier-config",
+  "version": "1.0.0",
+  "description": "GemWallet prettier configuration",
+  "private": true,
+  "main": "index.js",
+  "dependencies": {
+    "prettier": "^2.4.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FlorianBouron/gemwallet-extension.git"
+  },
+  "author": "",
+  "bugs": {
+    "url": "https://github.com/FlorianBouron/gemwallet-extension/issues"
+  },
+  "homepage": "https://github.com/FlorianBouron/gemwallet-extension#readme"
+}

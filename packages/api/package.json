@@ -1,0 +1,19 @@
+{
+  "name": "@gemwallet/api",
+  "version": "1.0.0",
+  "description": "GemWallet javascript API",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FlorianBouron/gemwallet-extension.git"
+  },
+  "author": "",
+  "bugs": {
+    "url": "https://github.com/FlorianBouron/gemwallet-extension/issues"
+  },
+  "homepage": "https://github.com/FlorianBouron/gemwallet-extension#readme"
+}

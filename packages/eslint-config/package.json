@@ -1,0 +1,26 @@
+{
+  "name": "@gemwallet/eslint-config",
+  "version": "1.0.0",
+  "description": "GemWallet eslint configuration",
+  "private": true,
+  "main": "index.js",
+  "dependencies": {
+    "eslint": "7.32.0",
+    "eslint-config-react-app": "^6.0.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-jest": "^24.1.0",
+    "eslint-plugin-testing-library": "3.10.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FlorianBouron/gemwallet-extension.git"
+  },
+  "author": "",
+  "bugs": {
+    "url": "https://github.com/FlorianBouron/gemwallet-extension/issues"
+  },
+  "homepage": "https://github.com/FlorianBouron/gemwallet-extension#readme"
+}
