@@ -2,6 +2,7 @@
   "name": "@gemwallet/prettier-config",
   "version": "1.0.0",
   "description": "GemWallet prettier configuration",
+  "private": true,
   "main": "index.js",
   "dependencies": {
     "prettier": "^2.4.1"

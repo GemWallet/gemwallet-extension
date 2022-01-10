@@ -1,7 +1,8 @@
 {
   "name": "gemwallet-extension",
   "version": "1.0.0",
-  "description": "",
+  "description": "Monorepo related to the GemWallet extension",
+  "private": true,
   "main": "index.js",
   "scripts": {
     "build": "npm run build --workspace=@gemwallet/extension",

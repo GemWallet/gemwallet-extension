@@ -2,6 +2,7 @@
   "name": "@gemwallet/eslint-config",
   "version": "1.0.0",
   "description": "GemWallet eslint configuration",
+  "private": true,
   "main": "index.js",
   "dependencies": {
     "eslint": "7.32.0",

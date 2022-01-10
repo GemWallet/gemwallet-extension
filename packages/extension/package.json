@@ -1,6 +1,7 @@
 {
   "name": "@gemwallet/extension",
   "version": "0.1.0",
+  "description": "GemWallet browser extension",
   "private": true,
   "dependencies": {
     "@craco/craco": "^6.4.0",
