@@ -5,8 +5,9 @@
   "private": true,
   "main": "src/index.ts",
   "scripts": {
-    "build": "webpack",
+    "build": "webpack --config webpack.prod.js",
     "clean": "rm -rf build",
+    "start": "webpack serve --config webpack.dev.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -20,9 +21,11 @@
   "homepage": "https://github.com/FlorianBouron/gemwallet-extension#readme",
   "devDependencies": {
     "clean-webpack-plugin": "^4.0.0",
+    "html-webpack-plugin": "^5.5.0",
     "ts-loader": "^9.2.6",
     "typescript": "^4.5.4",
     "webpack": "^5.66.0",
-    "webpack-cli": "^4.9.1"
+    "webpack-cli": "^4.9.1",
+    "webpack-dev-server": "^4.7.3"
   }
 }
