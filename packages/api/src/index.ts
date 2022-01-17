@@ -1,3 +1,3 @@
-import render = require('./render');
+import isConnected from './isConnected';
 
-render();
+export { isConnected };
