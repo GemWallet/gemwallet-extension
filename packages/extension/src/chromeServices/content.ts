@@ -18,6 +18,29 @@ const findParent = (target: Target, test: (target: Target) => boolean): Target =
  * Execute the function if the document is fully ready
  */
 setTimeout(() => {
+  window.addEventListener(
+    'message',
+    (event) => {
+      const {
+        data: { app, type, payload }
+      } = event;
+      // We make sure that the message comes from gem-wallet
+      if (app === 'gem-wallet') {
+        if (type === 'is-extension-installed') {
+          const message = {
+            app: 'gem-wallet',
+            type: 'extension-installed',
+            payload: {
+              isConnected: true
+            }
+          };
+          window.postMessage(message);
+        }
+      }
+    },
+    false
+  );
+
   function handleClick(e: MouseEvent) {
     // If no data attribute found, we remove the event listener
     if (!document.querySelector(`[${DATA_ATTRIBUTE}]`)) {
