@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/FlorianBouron/gemwallet-extension#readme",
   "devDependencies": {
+    "@gemwallet/constants": "*",
     "clean-webpack-plugin": "^4.0.0",
     "html-webpack-plugin": "^5.5.0",
     "ts-loader": "^9.2.6",

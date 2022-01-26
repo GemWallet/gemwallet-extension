@@ -1,74 +1,51 @@
-import { Target } from './content.types';
-
-const DATA_ATTRIBUTE = 'data-meta-pay';
-
-/**
- * Find parent of an element depending on a callback condition
- */
-const findParent = (target: Target, test: (target: Target) => boolean): Target => {
-  if (!target) return null;
-  if (test(target)) {
-    return target;
-  } else {
-    return findParent(target.parentNode, test);
-  }
-};
+import {
+  GEM_WALLET,
+  MSG_REQUEST,
+  MSG_RESPONSE,
+  REQUEST_NETWORK
+} from '@gemwallet/constants/src/message';
+import { NetworkResponse } from '@gemwallet/constants/src/message.types';
 
 /**
  * Execute the function if the document is fully ready
  */
 setTimeout(() => {
+  // Redirect Messages To Background script
   window.addEventListener(
     'message',
     (event) => {
+      const messagedId = event?.data?.messageId || 0;
+      if (event.source !== window && event.data.app === GEM_WALLET) return;
+      if (!event.data.source || event.data.source !== MSG_REQUEST) return;
+
+      let res: NetworkResponse = {
+        error: 'Unable to send message to extension',
+        network: null
+      };
+
       const {
-        data: { app, type, payload }
+        data: { app, type }
       } = event;
-      // We make sure that the message comes from gem-wallet
-      if (app === 'gem-wallet') {
-        if (type === 'is-extension-installed') {
-          const message = {
-            app: 'gem-wallet',
-            type: 'extension-installed',
-            payload: {
-              isConnected: true
+      // Check if it's an allowed event type to be forwarded
+      if (type === REQUEST_NETWORK) {
+        chrome.runtime.sendMessage(
+          {
+            app,
+            type
+          },
+          (network) => {
+            if (network) {
+              res = { error: '', network };
             }
-          };
-          window.postMessage(message);
-        }
+            // Send the response back to GemWallet API
+            window.postMessage(
+              { source: MSG_RESPONSE, messagedId, ...res },
+              window.location.origin
+            );
+          }
+        );
       }
     },
     false
   );
-
-  function handleClick(e: MouseEvent) {
-    // If no data attribute found, we remove the event listener
-    if (!document.querySelector(`[${DATA_ATTRIBUTE}]`)) {
-      document.body.removeEventListener('click', handleClick);
-      return;
-    }
-
-    const linkTag = findParent(e.target, (element) => {
-      return element.tagName === 'A';
-    });
-
-    if (linkTag && linkTag.hasAttribute(DATA_ATTRIBUTE) && linkTag.hasAttribute('href')) {
-      const url = new URL(linkTag.getAttribute('href'));
-      // Makes sure that we are connected to a proper ledger
-      if (!/meta\.re$/.test(url.origin)) {
-        return;
-      }
-
-      e.preventDefault();
-
-      chrome.runtime.sendMessage({
-        app: 'gem-wallet',
-        type: 'transaction-emit',
-        parameters: url.search
-      });
-    }
-  }
-
-  // We add an event to clicks on the page
-  document.addEventListener('click', handleClick);
 }, 0);
