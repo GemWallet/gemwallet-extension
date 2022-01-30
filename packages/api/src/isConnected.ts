@@ -1,3 +1,7 @@
+import { GEM_WALLET, REQUEST_CONNECTION } from '@gemwallet/constants/src/message';
+import { MessageListenerEvent, IsConnectedResponse } from '@gemwallet/constants/src/message.types';
+import { sendMessageToContentScript } from './helpers/extensionMessaging';
+
 declare global {
   interface Window {
     gemWallet?: boolean;
@@ -5,31 +9,25 @@ declare global {
   }
 }
 
-const isConnected = () => {
+const isConnected = async () => {
   if (window.gemWallet) {
     return true;
   } else {
-    const message = {
-      app: 'gem-wallet',
-      type: 'is-extension-installed'
-    };
-    window.postMessage(message);
+    let response: IsConnectedResponse = { isConnected: false };
+    try {
+      const message: MessageListenerEvent = {
+        app: GEM_WALLET,
+        type: REQUEST_CONNECTION
+      };
+      response = await sendMessageToContentScript(message);
+      if (response.isConnected) {
+        window.gemWallet = true;
+      }
+    } catch (e) {
+      console.error(e);
+    }
 
-    window.addEventListener(
-      'message',
-      (event) => {
-        const {
-          data: { app, type, payload }
-        } = event;
-        // We make sure that the message comes from gem-wallet
-        if (app === 'gem-wallet') {
-          if (type === 'extension-installed' && payload?.isConnected) {
-            window.gemWallet = true;
-          }
-        }
-      },
-      false
-    );
+    return response.isConnected;
   }
 };
 

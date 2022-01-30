@@ -1,5 +1,9 @@
 import { MSG_REQUEST, MSG_RESPONSE } from '@gemwallet/constants/src/message';
-import { MessageListenerEvent, NetworkResponse } from '@gemwallet/constants/src/message.types';
+import {
+  MessageListenerEvent,
+  NetworkResponse,
+  IsConnectedResponse
+} from '@gemwallet/constants/src/message.types';
 
 declare global {
   interface Window {
@@ -8,7 +12,7 @@ declare global {
   }
 }
 
-export const sendMessageToContentScript = (msg: MessageListenerEvent): Promise<NetworkResponse> => {
+export const sendMessageToContentScript = (msg: MessageListenerEvent): Promise<any> => {
   /* 
     In the case of multiple calls coming in sequentially, we use this MESSAGE_ID to make sure we're responding to
     the appropriate message sender. Otherwise, we can run into race conditions where we simply resolve all 
@@ -26,7 +30,7 @@ export const sendMessageToContentScript = (msg: MessageListenerEvent): Promise<N
   );
 
   return new Promise((resolve, reject) => {
-    if (!window.gemWallet) {
+    if (!window.gemWallet && msg.type !== 'REQUEST_CONNECTION') {
       reject(
         new Error(
           'Please check if Gem Wallet is connected \n Gem Wallet needs to be installed: https://gemwallet.app'
@@ -34,7 +38,10 @@ export const sendMessageToContentScript = (msg: MessageListenerEvent): Promise<N
       );
     }
 
-    const messageListener = (event: { source: any; data: NetworkResponse }) => {
+    const messageListener = (event: {
+      source: any;
+      data: NetworkResponse | IsConnectedResponse;
+    }) => {
       // We only accept messages from ourselves
       if (event.source !== window) return;
       // Only respond to messages tagged as being from our content script
