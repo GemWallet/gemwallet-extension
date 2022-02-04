@@ -9,6 +9,20 @@ import { useLedger } from '../../../contexts/LedgerContext';
 import { loadData } from '../../../utils';
 import { STORAGE_SEED } from '../../../constants/localStorage';
 
+/*
+ * Check if one of the parameter should redirect to a proper action
+ * For example: if contains transaction=payment we proceed a transaction
+ */
+const redirectAction = (url: string) => {
+  const addParams = (url: string) => {
+    return `${url}${window.location.search}`;
+  };
+  if (window.location.search.includes('transaction=payment')) {
+    return addParams('/transaction');
+  }
+  return addParams(url);
+};
+
 export function Login() {
   const [passwordError, setPasswordError] = useState('');
   const navigate = useNavigate();
@@ -17,10 +31,10 @@ export function Login() {
   useEffect(() => {
     // Check if we are still logged-in
     if (wallet) {
-      navigate('/home');
+      navigate(redirectAction('/home'));
       // We check if a wallet is saved
     } else if (!loadData(STORAGE_SEED)) {
-      navigate('/welcome');
+      navigate(redirectAction('/welcome'));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wallet]);
@@ -44,7 +58,7 @@ export function Login() {
   const handleUnlock = () => {
     const isSignIn = signIn((document.getElementById('password') as HTMLInputElement).value);
     if (isSignIn) {
-      navigate('/home');
+      navigate(redirectAction('/home'));
     } else {
       setPasswordError('Incorrect password');
     }
