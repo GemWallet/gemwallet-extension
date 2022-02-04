@@ -19,7 +19,7 @@ export function Transaction() {
     amount: '0',
     fees: DEFAULT_FEES,
     destination: '',
-    asset: ''
+    token: ''
   });
 
   /**
@@ -39,9 +39,9 @@ export function Transaction() {
     const transaction = urlParams.get('transaction') || '';
     const amount = urlParams.get('amount') || '0';
     const destination = urlParams.get('destination') || '';
-    let asset = urlParams.get('asset') || '';
-    if (chain === 'xrp') {
-      asset = 'XRP';
+    let token = urlParams.get('token') || '';
+    if (chain === 'xrp' && token === '') {
+      token = 'XRP';
     }
     setParams({
       chain,
@@ -49,13 +49,13 @@ export function Transaction() {
       amount,
       fees: DEFAULT_FEES,
       destination,
-      asset
+      token
     });
   }, []);
 
   useEffect(() => {
     if (client) {
-      const { chain, transaction, amount, destination, asset } = params;
+      const { chain, transaction, amount, destination, token } = params;
       estimateNetworkFees(amount).then((fees: string) => {
         setParams({
           chain,
@@ -63,7 +63,7 @@ export function Transaction() {
           amount,
           fees: fees || DEFAULT_FEES,
           destination,
-          asset
+          token
         });
       });
     }
@@ -94,7 +94,7 @@ export function Transaction() {
     );
   }
 
-  const { amount, fees, destination, asset } = params;
+  const { amount, fees, destination, token } = params;
   return (
     <PageWithNavbar title="Confirm Transaction">
       <Paper elevation={24} style={{ padding: '10px' }}>
@@ -104,7 +104,7 @@ export function Transaction() {
       <Paper elevation={24} style={{ padding: '10px' }}>
         <Typography variant="body1">Amount:</Typography>
         <Typography variant="h4" component="h1" gutterBottom align="right">
-          {amount} {asset}
+          {amount} {token}
         </Typography>
       </Paper>
       <Paper elevation={24} style={{ padding: '10px' }}>
@@ -117,7 +117,7 @@ export function Transaction() {
           Network fees:
         </Typography>
         <Typography variant="body2" gutterBottom align="right">
-          {fees === DEFAULT_FEES ? DEFAULT_FEES : `${fees} ${asset}`}
+          {fees === DEFAULT_FEES ? DEFAULT_FEES : `${fees} ${token}`}
         </Typography>
       </Paper>
       <Container style={{ display: 'flex', justifyContent: 'space-evenly' }}>
