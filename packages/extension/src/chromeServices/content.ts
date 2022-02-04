@@ -3,9 +3,10 @@ import {
   MSG_REQUEST,
   MSG_RESPONSE,
   REQUEST_NETWORK,
-  REQUEST_CONNECTION
+  REQUEST_CONNECTION,
+  REQUEST_TRANSACTION
 } from '@gemwallet/constants/src/message';
-import { NetworkResponse } from '@gemwallet/constants/src/message.types';
+import { NetworkResponse, TransactionResponse } from '@gemwallet/constants/src/message.types';
 
 /**
  * Execute the function if the document is fully ready
@@ -36,7 +37,33 @@ setTimeout(() => {
           },
           (network) => {
             if (network) {
-              res = { error: '', network };
+              res = { network, error: '' };
+            }
+            // Send the response back to GemWallet API
+            window.postMessage(
+              { source: MSG_RESPONSE, messagedId, ...res },
+              window.location.origin
+            );
+          }
+        );
+      } else if (type === REQUEST_TRANSACTION) {
+        let res: TransactionResponse = {
+          error: 'Unable to send message to extension',
+          status: 'waiting'
+        };
+        const {
+          data: { payload }
+        } = event;
+
+        chrome.runtime.sendMessage(
+          {
+            app,
+            type,
+            payload
+          },
+          (status) => {
+            if (status) {
+              res = { status, error: '' };
             }
             // Send the response back to GemWallet API
             window.postMessage(

@@ -1,6 +1,8 @@
+import { TransactionStatus } from './transaction.types';
+
 type MessageApp = 'gem-wallet';
 
-type MessageTypes = 'REQUEST_NETWORK' | 'REQUEST_CONNECTION';
+type MessageTypes = 'REQUEST_NETWORK' | 'REQUEST_CONNECTION' | 'REQUEST_TRANSACTION';
 
 export type MessageListenerEvent = {
   app: MessageApp;
@@ -24,4 +26,9 @@ export type NetworkResponse = MessagingResponse & {
 
 export type IsConnectedResponse = MessagingResponse & {
   isConnected: boolean;
+};
+
+export type TransactionResponse = MessagingResponse & {
+  status: TransactionStatus;
+  error: string;
 };
