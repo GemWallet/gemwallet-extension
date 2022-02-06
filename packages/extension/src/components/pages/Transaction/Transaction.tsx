@@ -55,16 +55,12 @@ export function Transaction() {
 
   useEffect(() => {
     if (client) {
-      const { chain, transaction, amount, destination, token } = params;
+      const { amount } = params;
       estimateNetworkFees(amount).then((fees: string) => {
-        setParams({
-          chain,
-          transaction,
-          amount,
-          fees: fees || DEFAULT_FEES,
-          destination,
-          token
-        });
+        setParams((prevParams) => ({
+          ...prevParams,
+          fees: fees || DEFAULT_FEES
+        }));
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
