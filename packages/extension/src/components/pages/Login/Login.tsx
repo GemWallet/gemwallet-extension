@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
@@ -9,32 +9,23 @@ import { useLedger } from '../../../contexts/LedgerContext';
 import { loadData } from '../../../utils';
 import { STORAGE_SEED } from '../../../constants/localStorage';
 
-/*
- * Check if one of the parameter should redirect to a proper action
- * For example: if contains transaction=payment we proceed a transaction
- */
-const redirectAction = (url: string) => {
-  const addParams = (url: string) => {
-    return `${url}${window.location.search}`;
-  };
-  if (window.location.search.includes('transaction=payment')) {
-    return addParams('/transaction');
-  }
-  return addParams(url);
-};
-
 export function Login() {
   const [passwordError, setPasswordError] = useState('');
   const navigate = useNavigate();
+  const { search } = useLocation();
   const { signIn, wallet } = useLedger();
 
   useEffect(() => {
     // Check if we are still logged-in
     if (wallet) {
-      navigate(redirectAction('/home'));
+      if (search.includes('transaction=payment')) {
+        navigate(`/transaction${search}`);
+      } else {
+        navigate(`/home${search}`);
+      }
       // We check if a wallet is saved
     } else if (!loadData(STORAGE_SEED)) {
-      navigate(redirectAction('/welcome'));
+      navigate(`/welcome${search}`);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wallet]);
@@ -58,7 +49,11 @@ export function Login() {
   const handleUnlock = () => {
     const isSignIn = signIn((document.getElementById('password') as HTMLInputElement).value);
     if (isSignIn) {
-      navigate(redirectAction('/home'));
+      if (search.includes('transaction=payment')) {
+        navigate(`/transaction${search}`);
+      } else {
+        navigate(`/home${search}`);
+      }
     } else {
       setPasswordError('Incorrect password');
     }

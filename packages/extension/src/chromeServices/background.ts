@@ -52,7 +52,6 @@ chrome.runtime.onMessage.addListener(
           const lastFocused: any = await getLastFocusedWindow();
           const top = lastFocused.top;
           const left = lastFocused.left + (lastFocused.width - NOTIFICATION_WIDTH);
-          console.log('PAYLOAD: ', payload);
           chrome.windows.create(
             {
               url: `../../index.html${serializeToQueryString(payload)}`,
