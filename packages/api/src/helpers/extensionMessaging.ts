@@ -12,6 +12,9 @@ declare global {
   }
 }
 
+/*
+ * Send message from current window to content script, for example API to content script
+ */
 export const sendMessageToContentScript = (msg: MessageListenerEvent): Promise<any> => {
   /* 
     In the case of multiple calls coming in sequentially, we use this MESSAGE_ID to make sure we're responding to

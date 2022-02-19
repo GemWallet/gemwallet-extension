@@ -9,6 +9,9 @@ import ErrorIcon from '@mui/icons-material/Error';
 import { PageWithNavbar } from '../../templates/PageWithNavbar';
 import { Transaction as TransactionOrganism } from '../../organisms/Transaction';
 import { useLedger } from '../../../contexts/LedgerContext';
+import { GEM_WALLET, REQUEST_TRANSACTION_STATUS } from '@gemwallet/constants/src/message';
+import { MessageListenerEvent } from '@gemwallet/constants/src/message.types';
+import { TransactionStatus } from '@gemwallet/constants/src/transaction.types';
 
 const DEFAULT_FEES = 'Loading ...';
 
@@ -19,7 +22,8 @@ export function Transaction() {
     amount: '0',
     fees: DEFAULT_FEES,
     destination: '',
-    token: ''
+    token: '',
+    id: 0
   });
 
   /**
@@ -39,6 +43,7 @@ export function Transaction() {
     const transaction = urlParams.get('transaction') || '';
     const amount = urlParams.get('amount') || '0';
     const destination = urlParams.get('destination') || '';
+    const id = Number(urlParams.get('id')) || 0;
     let token = urlParams.get('token') || '';
     if (chain === 'xrp' && token === '') {
       token = 'XRP';
@@ -49,7 +54,8 @@ export function Transaction() {
       amount,
       fees: DEFAULT_FEES,
       destination,
-      token
+      token,
+      id
     });
   }, []);
 
@@ -66,20 +72,37 @@ export function Transaction() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [client]);
 
+  const createMessage = (status: TransactionStatus): MessageListenerEvent => {
+    const { id } = params;
+    return {
+      app: GEM_WALLET,
+      type: REQUEST_TRANSACTION_STATUS,
+      payload: {
+        status,
+        id
+      }
+    };
+  };
+
   const handleConfirm = () => {
     setTransaction('pending');
     const { amount, destination } = params;
     sendTransaction({ amount, destination })
       .then((result) => {
         setTransaction(result);
+        const message = createMessage(result);
+        chrome.runtime.sendMessage(message);
       })
       .catch(() => {
-        setTransaction('rejected');
+        handleReject();
       });
   };
 
   const handleReject = () => {
-    setTransaction('rejected');
+    const status = 'rejected';
+    setTransaction(status);
+    const message = createMessage(status);
+    chrome.runtime.sendMessage(message);
   };
 
   if (transaction !== 'waiting') {

@@ -4,9 +4,14 @@ import {
   MSG_RESPONSE,
   REQUEST_NETWORK,
   REQUEST_CONNECTION,
-  REQUEST_TRANSACTION
+  REQUEST_TRANSACTION,
+  REQUEST_TRANSACTION_STATUS
 } from '@gemwallet/constants/src/message';
-import { NetworkResponse, TransactionResponse } from '@gemwallet/constants/src/message.types';
+import {
+  NetworkResponse,
+  TransactionResponse,
+  MessageListenerEvent
+} from '@gemwallet/constants/src/message.types';
 
 /**
  * Execute the function if the document is fully ready
@@ -61,15 +66,23 @@ setTimeout(() => {
             type,
             payload
           },
-          (status) => {
-            if (status) {
-              res = { status, error: '' };
-            }
-            // Send the response back to GemWallet API
-            window.postMessage(
-              { source: MSG_RESPONSE, messagedId, ...res },
-              window.location.origin
-            );
+          () => {
+            chrome.runtime.onMessage.addListener((message: MessageListenerEvent, sender) => {
+              const { app, type, payload } = message;
+              // We make sure that the message comes from gem-wallet
+              if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
+                if (type === REQUEST_TRANSACTION_STATUS) {
+                  if (payload) {
+                    const { status, error } = payload;
+                    res = { status, error };
+                  }
+                  window.postMessage(
+                    { source: MSG_RESPONSE, messagedId, ...res },
+                    window.location.origin
+                  );
+                }
+              }
+            });
           }
         );
       } else if (type === REQUEST_CONNECTION) {

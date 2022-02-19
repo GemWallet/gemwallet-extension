@@ -1,3 +1,4 @@
+import { TransactionStatus } from '@gemwallet/constants/src/transaction.types';
 import { ReactNode, useContext, useState, useEffect, createContext } from 'react';
 import * as xrpl from 'xrpl';
 import { loadSeed } from '../../utils';
@@ -11,7 +12,7 @@ type contextType = {
   signIn: (password: string) => boolean;
   generateWallet: () => string | undefined;
   importSeed: (seed: string) => boolean;
-  sendTransaction: (payload: TransactionPayloadType) => Promise<string>;
+  sendTransaction: (payload: TransactionPayloadType) => Promise<TransactionStatus>;
   estimateNetworkFees: (amount: string) => Promise<string>;
   wallet?: xrpl.Wallet;
   client?: xrpl.Client;
