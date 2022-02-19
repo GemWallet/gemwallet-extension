@@ -33,14 +33,14 @@ export function Transaction() {
    * - success: transaction has been successful
    * - rejected: transaction has been rejected
    */
-  const [transaction, setTransaction] = useState('waiting');
+  const [transaction, setTransaction] = useState<TransactionStatus>('waiting');
   const { client, estimateNetworkFees, sendTransaction } = useLedger();
 
   useEffect(() => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const chain = urlParams.get('chain') || '';
-    const transaction = urlParams.get('transaction') || '';
+    const transaction = (urlParams.get('transaction') as TransactionStatus) || 'waiting';
     const amount = urlParams.get('amount') || '0';
     const destination = urlParams.get('destination') || '';
     const id = Number(urlParams.get('id')) || 0;

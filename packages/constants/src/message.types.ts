@@ -1,3 +1,4 @@
+import { Network } from './network.types';
 import { TransactionStatus } from './transaction.types';
 
 type MessageApp = 'gem-wallet';
@@ -24,7 +25,7 @@ type MessagingResponse = {
 };
 
 export type NetworkResponse = MessagingResponse & {
-  network: null | 'TEST' | 'MAIN';
+  network: Network;
   error: string;
 };
 

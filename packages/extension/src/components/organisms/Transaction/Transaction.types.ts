@@ -1,5 +1,7 @@
+import { TransactionStatus } from '@gemwallet/constants/src/transaction.types';
+
 export type PropType = {
-  transaction: string;
+  transaction: TransactionStatus;
 };
 
 export type LogoStyle = {

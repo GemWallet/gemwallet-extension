@@ -1,18 +1,10 @@
 import { GEM_WALLET, REQUEST_TRANSACTION } from '@gemwallet/constants/src/message';
 import { MessageListenerEvent, TransactionResponse } from '@gemwallet/constants/src/message.types';
 import { sendMessageToContentScript } from './helpers/extensionMessaging';
+import { Params } from './transactionRequest.types';
 
-const transactionRequest = async () => {
+const transactionRequest = async (payload: Params) => {
   let response: TransactionResponse = { status: 'waiting', error: '' };
-  const payload = {
-    chain: 'xrp',
-    network: 'test',
-    transaction: 'payment',
-    amount: '50',
-    destination: 'rNvFCZXpDtGeQ3bVas95wGLN6N2stGmA9o',
-    token: 'xrp',
-    apiVersion: 1
-  };
 
   try {
     const message: MessageListenerEvent = {
