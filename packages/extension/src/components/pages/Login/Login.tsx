@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
@@ -12,15 +12,20 @@ import { STORAGE_SEED } from '../../../constants/localStorage';
 export function Login() {
   const [passwordError, setPasswordError] = useState('');
   const navigate = useNavigate();
+  const { search } = useLocation();
   const { signIn, wallet } = useLedger();
 
   useEffect(() => {
     // Check if we are still logged-in
     if (wallet) {
-      navigate('/home');
+      if (search.includes('transaction=payment')) {
+        navigate(`/transaction${search}`);
+      } else {
+        navigate(`/home${search}`);
+      }
       // We check if a wallet is saved
     } else if (!loadData(STORAGE_SEED)) {
-      navigate('/welcome');
+      navigate(`/welcome${search}`);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wallet]);
@@ -44,7 +49,11 @@ export function Login() {
   const handleUnlock = () => {
     const isSignIn = signIn((document.getElementById('password') as HTMLInputElement).value);
     if (isSignIn) {
-      navigate('/home');
+      if (search.includes('transaction=payment')) {
+        navigate(`/transaction${search}`);
+      } else {
+        navigate(`/home${search}`);
+      }
     } else {
       setPasswordError('Incorrect password');
     }

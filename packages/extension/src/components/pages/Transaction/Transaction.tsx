@@ -9,6 +9,9 @@ import ErrorIcon from '@mui/icons-material/Error';
 import { PageWithNavbar } from '../../templates/PageWithNavbar';
 import { Transaction as TransactionOrganism } from '../../organisms/Transaction';
 import { useLedger } from '../../../contexts/LedgerContext';
+import { GEM_WALLET, REQUEST_TRANSACTION_STATUS } from '@gemwallet/constants/src/message';
+import { MessageListenerEvent } from '@gemwallet/constants/src/message.types';
+import { TransactionStatus } from '@gemwallet/constants/src/transaction.types';
 
 const DEFAULT_FEES = 'Loading ...';
 
@@ -19,7 +22,8 @@ export function Transaction() {
     amount: '0',
     fees: DEFAULT_FEES,
     destination: '',
-    asset: ''
+    token: '',
+    id: 0
   });
 
   /**
@@ -29,19 +33,20 @@ export function Transaction() {
    * - success: transaction has been successful
    * - rejected: transaction has been rejected
    */
-  const [transaction, setTransaction] = useState('waiting');
+  const [transaction, setTransaction] = useState<TransactionStatus>('waiting');
   const { client, estimateNetworkFees, sendTransaction } = useLedger();
 
   useEffect(() => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const chain = urlParams.get('chain') || '';
-    const transaction = urlParams.get('transaction') || '';
+    const transaction = (urlParams.get('transaction') as TransactionStatus) || 'waiting';
     const amount = urlParams.get('amount') || '0';
     const destination = urlParams.get('destination') || '';
-    let asset = urlParams.get('asset') || '';
-    if (chain === 'xrp') {
-      asset = 'XRP';
+    const id = Number(urlParams.get('id')) || 0;
+    let token = urlParams.get('token') || '';
+    if (chain === 'xrp' && token === '') {
+      token = 'XRP';
     }
     setParams({
       chain,
@@ -49,26 +54,35 @@ export function Transaction() {
       amount,
       fees: DEFAULT_FEES,
       destination,
-      asset
+      token,
+      id
     });
   }, []);
 
   useEffect(() => {
     if (client) {
-      const { chain, transaction, amount, destination, asset } = params;
+      const { amount } = params;
       estimateNetworkFees(amount).then((fees: string) => {
-        setParams({
-          chain,
-          transaction,
-          amount,
-          fees: fees || DEFAULT_FEES,
-          destination,
-          asset
-        });
+        setParams((prevParams) => ({
+          ...prevParams,
+          fees: fees || DEFAULT_FEES
+        }));
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [client]);
+
+  const createMessage = (status: TransactionStatus): MessageListenerEvent => {
+    const { id } = params;
+    return {
+      app: GEM_WALLET,
+      type: REQUEST_TRANSACTION_STATUS,
+      payload: {
+        status,
+        id
+      }
+    };
+  };
 
   const handleConfirm = () => {
     setTransaction('pending');
@@ -76,14 +90,19 @@ export function Transaction() {
     sendTransaction({ amount, destination })
       .then((result) => {
         setTransaction(result);
+        const message = createMessage(result);
+        chrome.runtime.sendMessage(message);
       })
       .catch(() => {
-        setTransaction('rejected');
+        handleReject();
       });
   };
 
   const handleReject = () => {
-    setTransaction('rejected');
+    const status = 'rejected';
+    setTransaction(status);
+    const message = createMessage(status);
+    chrome.runtime.sendMessage(message);
   };
 
   if (transaction !== 'waiting') {
@@ -94,7 +113,7 @@ export function Transaction() {
     );
   }
 
-  const { amount, fees, destination, asset } = params;
+  const { amount, fees, destination, token } = params;
   return (
     <PageWithNavbar title="Confirm Transaction">
       <Paper elevation={24} style={{ padding: '10px' }}>
@@ -104,7 +123,7 @@ export function Transaction() {
       <Paper elevation={24} style={{ padding: '10px' }}>
         <Typography variant="body1">Amount:</Typography>
         <Typography variant="h4" component="h1" gutterBottom align="right">
-          {amount} {asset}
+          {amount} {token}
         </Typography>
       </Paper>
       <Paper elevation={24} style={{ padding: '10px' }}>
@@ -117,7 +136,7 @@ export function Transaction() {
           Network fees:
         </Typography>
         <Typography variant="body2" gutterBottom align="right">
-          {fees === DEFAULT_FEES ? DEFAULT_FEES : `${fees} ${asset}`}
+          {fees === DEFAULT_FEES ? DEFAULT_FEES : `${fees} ${token}`}
         </Typography>
       </Paper>
       <Container style={{ display: 'flex', justifyContent: 'space-evenly' }}>

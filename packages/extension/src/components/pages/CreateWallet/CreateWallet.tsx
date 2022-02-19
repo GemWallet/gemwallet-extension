@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
@@ -17,6 +17,7 @@ export function CreateWallet() {
   const [passwordError, setPasswordError] = useState('');
   const { generateWallet } = useLedger();
   const navigate = useNavigate();
+  const { search } = useLocation();
 
   useEffect(() => {
     const seed = generateWallet();
@@ -36,7 +37,11 @@ export function CreateWallet() {
 
   if (activeStep === 3) {
     const handleNext = () => {
-      navigate('/home');
+      if (search.includes('transaction=payment')) {
+        navigate(`/transaction${search}`);
+      } else {
+        navigate(`/home${search}`);
+      }
     };
     return (
       <PageWithStepper

@@ -5,11 +5,13 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "build": "npm run build --workspace=@gemwallet/extension",
+    "build": "yarn workspace @gemwallet/extension build",
+    "build:api": "yarn workspace @gemwallet/api build",
     "lint": "eslint --cache --quiet --fix",
     "prepare": "husky install",
     "prettier": "prettier --write **/*.{js,ts,tsx}",
-    "start": "npm run start --workspace=@gemwallet/extension",
+    "start": "yarn workspace @gemwallet/extension start",
+    "start:api": "yarn workspace @gemwallet/api start",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

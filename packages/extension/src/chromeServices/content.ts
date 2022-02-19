@@ -1,51 +1,102 @@
-import { Target } from './content.types';
-
-const DATA_ATTRIBUTE = 'data-meta-pay';
-
-/**
- * Find parent of an element depending on a callback condition
- */
-const findParent = (target: Target, test: (target: Target) => boolean): Target => {
-  if (!target) return null;
-  if (test(target)) {
-    return target;
-  } else {
-    return findParent(target.parentNode, test);
-  }
-};
+import {
+  GEM_WALLET,
+  MSG_REQUEST,
+  MSG_RESPONSE,
+  REQUEST_NETWORK,
+  REQUEST_CONNECTION,
+  REQUEST_TRANSACTION,
+  REQUEST_TRANSACTION_STATUS
+} from '@gemwallet/constants/src/message';
+import {
+  NetworkResponse,
+  TransactionResponse,
+  MessageListenerEvent
+} from '@gemwallet/constants/src/message.types';
 
 /**
  * Execute the function if the document is fully ready
  */
 setTimeout(() => {
-  function handleClick(e: MouseEvent) {
-    // If no data attribute found, we remove the event listener
-    if (!document.querySelector(`[${DATA_ATTRIBUTE}]`)) {
-      document.body.removeEventListener('click', handleClick);
-      return;
-    }
+  // Redirect Messages To Background script
+  window.addEventListener(
+    'message',
+    (event) => {
+      const messagedId = event?.data?.messageId || 0;
+      if (event.source !== window && event.data.app === GEM_WALLET) return;
+      if (!event.data.source || event.data.source !== MSG_REQUEST) return;
 
-    const linkTag = findParent(e.target, (element) => {
-      return element.tagName === 'A';
-    });
+      const {
+        data: { app, type }
+      } = event;
+      // Check if it's an allowed event type to be forwarded
+      if (type === REQUEST_NETWORK) {
+        let res: NetworkResponse = {
+          error: 'Unable to send message to extension',
+          network: null
+        };
 
-    if (linkTag && linkTag.hasAttribute(DATA_ATTRIBUTE) && linkTag.hasAttribute('href')) {
-      const url = new URL(linkTag.getAttribute('href'));
-      // Makes sure that we are connected to a proper ledger
-      if (!/meta\.re$/.test(url.origin)) {
-        return;
+        chrome.runtime.sendMessage(
+          {
+            app,
+            type
+          },
+          (network) => {
+            if (network) {
+              res = { network, error: '' };
+            }
+            // Send the response back to GemWallet API
+            window.postMessage(
+              { source: MSG_RESPONSE, messagedId, ...res },
+              window.location.origin
+            );
+          }
+        );
+      } else if (type === REQUEST_TRANSACTION) {
+        let res: TransactionResponse = {
+          error: 'Unable to send message to extension',
+          status: 'waiting'
+        };
+        const {
+          data: { payload }
+        } = event;
+
+        chrome.runtime.sendMessage(
+          {
+            app,
+            type,
+            payload
+          },
+          () => {
+            const messageListener = (
+              message: MessageListenerEvent,
+              sender: chrome.runtime.MessageSender
+            ) => {
+              const { app, type, payload } = message;
+              // We make sure that the message comes from gem-wallet
+              if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
+                if (type === REQUEST_TRANSACTION_STATUS) {
+                  if (payload) {
+                    const { status, error } = payload;
+                    res = { status, error };
+                  }
+                  window.postMessage(
+                    { source: MSG_RESPONSE, messagedId, ...res },
+                    window.location.origin
+                  );
+                }
+              }
+              chrome.runtime.onMessage.removeListener(messageListener);
+            };
+            chrome.runtime.onMessage.addListener(messageListener);
+          }
+        );
+      } else if (type === REQUEST_CONNECTION) {
+        window.postMessage(
+          { source: MSG_RESPONSE, messagedId, isConnected: true },
+          window.location.origin
+        );
       }
-
-      e.preventDefault();
-
-      chrome.runtime.sendMessage({
-        app: 'gem-wallet',
-        type: 'transaction-emit',
-        parameters: url.search
-      });
-    }
-  }
-
-  // We add an event to clicks on the page
-  document.addEventListener('click', handleClick);
+    },
+    false
+  );
 }, 0);

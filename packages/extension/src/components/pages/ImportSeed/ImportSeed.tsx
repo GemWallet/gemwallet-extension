@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
@@ -17,6 +17,7 @@ export function ImportSeed() {
   const [seedError, setSeedError] = useState('');
   const { importSeed, wallet } = useLedger();
   const navigate = useNavigate();
+  const { search } = useLocation();
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
@@ -34,7 +35,11 @@ export function ImportSeed() {
 
   if (activeStep === 2) {
     const handleNext = () => {
-      navigate('/home');
+      if (search.includes('transaction=payment')) {
+        navigate(`/transaction${search}`);
+      } else {
+        navigate(`/home${search}`);
+      }
     };
     return (
       <PageWithStepper
