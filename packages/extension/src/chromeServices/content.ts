@@ -67,7 +67,10 @@ setTimeout(() => {
             payload
           },
           () => {
-            chrome.runtime.onMessage.addListener((message: MessageListenerEvent, sender) => {
+            const messageListener = (
+              message: MessageListenerEvent,
+              sender: chrome.runtime.MessageSender
+            ) => {
               const { app, type, payload } = message;
               // We make sure that the message comes from gem-wallet
               if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
@@ -82,7 +85,9 @@ setTimeout(() => {
                   );
                 }
               }
-            });
+              chrome.runtime.onMessage.removeListener(messageListener);
+            };
+            chrome.runtime.onMessage.addListener(messageListener);
           }
         );
       } else if (type === REQUEST_CONNECTION) {
