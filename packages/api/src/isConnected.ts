@@ -9,25 +9,40 @@ declare global {
   }
 }
 
-const isConnected = async () => {
+const isConnected = () => {
   if (window.gemWallet) {
-    return true;
+    return new Promise((resolve) => resolve(true));
   } else {
-    let response: IsConnectedResponse = { isConnected: false };
-    try {
-      const message: MessageListenerEvent = {
-        app: GEM_WALLET,
-        type: REQUEST_CONNECTION
-      };
-      response = await sendMessageToContentScript(message);
-      if (response.isConnected) {
+    // If no answer from the extension after 1 second, then return false
+    let timeoutId: NodeJS.Timeout;
+    const abortConnection = new Promise((resolve) => {
+      timeoutId = setTimeout(() => {
+        resolve(false);
+      }, 1000);
+    });
+
+    // Trying to connect to the extension
+    const connectionToExtension = new Promise(async (resolve, reject) => {
+      let response: IsConnectedResponse = { isConnected: false };
+      try {
+        const message: MessageListenerEvent = {
+          app: GEM_WALLET,
+          type: REQUEST_CONNECTION
+        };
+        response = await sendMessageToContentScript(message);
+        resolve(response.isConnected);
+      } catch (e) {
+        reject(e);
+      }
+    });
+
+    return Promise.race([abortConnection, connectionToExtension]).then((res) => {
+      clearTimeout(timeoutId);
+      if (res === true) {
         window.gemWallet = true;
       }
-    } catch (e) {
-      console.error(e);
-    }
-
-    return response.isConnected;
+      return res;
+    });
   }
 };
 
