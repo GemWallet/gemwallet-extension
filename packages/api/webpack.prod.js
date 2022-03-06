@@ -1,6 +1,13 @@
+const path = require('path');
 const webpackCommon = require('./webpack.common');
 
 module.exports = {
   ...webpackCommon,
-  mode: 'production'
+  mode: 'production',
+  output: {
+    filename: 'gemwallet-api.js',
+    library: 'gemwallet-api',
+    libraryTarget: 'umd',
+    path: path.resolve(__dirname, '../..', 'dist')
+  }
 };
