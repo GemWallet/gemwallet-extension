@@ -9,9 +9,9 @@ import ErrorIcon from '@mui/icons-material/Error';
 import { PageWithNavbar } from '../../templates/PageWithNavbar';
 import { Transaction as TransactionOrganism } from '../../organisms/Transaction';
 import { useLedger } from '../../../contexts/LedgerContext';
-import { GEM_WALLET, REQUEST_TRANSACTION_STATUS } from '@gemwallet/constants/src/message';
-import { MessageListenerEvent } from '@gemwallet/constants/src/message.types';
-import { TransactionStatus } from '@gemwallet/constants/src/transaction.types';
+import { GEM_WALLET, REQUEST_TRANSACTION_STATUS } from '@gemwallet/api/src/constants/message';
+import { MessageListenerEvent } from '@gemwallet/api/src/constants/message.types';
+import { TransactionStatus } from '@gemwallet/api/src/constants/transaction.types';
 
 const DEFAULT_FEES = 'Loading ...';
 

@@ -3,8 +3,8 @@ import {
   REQUEST_NETWORK,
   REQUEST_TRANSACTION,
   REQUEST_TRANSACTION_STATUS
-} from '@gemwallet/constants/src/message';
-import { MessageListenerEvent } from '@gemwallet/constants/src/message.types';
+} from '@gemwallet/api/src/constants/message';
+import { MessageListenerEvent } from '@gemwallet/api/src/constants/message.types';
 import { CurrentWindow } from './background.types';
 
 const NOTIFICATION_HEIGHT = 620;

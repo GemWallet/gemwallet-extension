@@ -6,12 +6,12 @@ import {
   REQUEST_CONNECTION,
   REQUEST_TRANSACTION,
   REQUEST_TRANSACTION_STATUS
-} from '@gemwallet/constants/src/message';
+} from '@gemwallet/api/src/constants/message';
 import {
   NetworkResponse,
   TransactionResponse,
   MessageListenerEvent
-} from '@gemwallet/constants/src/message.types';
+} from '@gemwallet/api/src/constants/message.types';
 
 /**
  * Execute the function if the document is fully ready

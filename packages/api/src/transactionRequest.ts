@@ -1,5 +1,5 @@
-import { GEM_WALLET, REQUEST_TRANSACTION } from '@gemwallet/constants/src/message';
-import { MessageListenerEvent, TransactionResponse } from '@gemwallet/constants/src/message.types';
+import { GEM_WALLET, REQUEST_TRANSACTION } from './constants/message';
+import { MessageListenerEvent, TransactionResponse } from './constants/message.types';
 import { sendMessageToContentScript } from './helpers/extensionMessaging';
 import { Params } from './transactionRequest.types';
 
