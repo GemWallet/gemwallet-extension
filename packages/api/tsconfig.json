@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
-    "outDir": "build/",
+    "outDir": "dist",
     "noImplicitAny": true,
     "target": "es5",
     "module": "commonjs",
+    "declaration": true,
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": false,
     "moduleResolution": "node",
@@ -12,5 +13,5 @@
     "resolveJsonModule": true
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "**/__tests__/*"]
 }
