@@ -1,9 +1,9 @@
-import { MSG_REQUEST, MSG_RESPONSE } from '@gemwallet/constants/src/message';
+import { MSG_REQUEST, MSG_RESPONSE } from '../constants/message';
 import {
   MessageListenerEvent,
   NetworkResponse,
   IsConnectedResponse
-} from '@gemwallet/constants/src/message.types';
+} from '../constants/message.types';
 
 declare global {
   interface Window {

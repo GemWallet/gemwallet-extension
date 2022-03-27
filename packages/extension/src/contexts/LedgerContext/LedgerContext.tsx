@@ -1,4 +1,4 @@
-import { TransactionStatus } from '@gemwallet/constants/src/transaction.types';
+import { TransactionStatus } from '@gemwallet/api/src/constants/transaction.types';
 import { ReactNode, useContext, useState, useEffect, createContext } from 'react';
 import * as xrpl from 'xrpl';
 import { loadSeed } from '../../utils';

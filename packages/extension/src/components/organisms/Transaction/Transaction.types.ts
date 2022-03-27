@@ -1,4 +1,4 @@
-import { TransactionStatus } from '@gemwallet/constants/src/transaction.types';
+import { TransactionStatus } from '@gemwallet/api/src/constants/transaction.types';
 
 export type PropType = {
   transaction: TransactionStatus;

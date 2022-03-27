@@ -3,27 +3,27 @@
   "version": "1.0.0",
   "description": "Monorepo related to the GemWallet extension",
   "private": true,
-  "main": "index.js",
   "scripts": {
     "build": "yarn workspace @gemwallet/extension build",
-    "build:api": "yarn workspace @gemwallet/api build",
+    "build:api:cdn": "yarn workspace @gemwallet/api build",
+    "build:api:npm": "yarn workspace @gemwallet/api build:npm",
     "lint": "eslint --cache --quiet --fix",
     "prepare": "husky install",
     "prettier": "prettier --write **/*.{js,ts,tsx}",
+    "release:api:npm": "cd packages/api/dist && npm publish --access=public",
     "start": "yarn workspace @gemwallet/extension start",
     "start:api": "yarn workspace @gemwallet/api start",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/FlorianBouron/gemwallet-extension.git"
+    "url": "git+https://github.com/GemWallet/gemwallet-extension.git"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "GemWallet",
   "bugs": {
-    "url": "https://github.com/FlorianBouron/gemwallet-extension/issues"
+    "url": "https://github.com/GemWallet/gemwallet-extension/issues"
   },
-  "homepage": "https://github.com/FlorianBouron/gemwallet-extension#readme",
+  "homepage": "https://github.com/GemWallet/gemwallet-extension#readme",
   "workspaces": [
     "packages/*"
   ],

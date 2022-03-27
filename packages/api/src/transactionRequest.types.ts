@@ -1,4 +1,4 @@
-import { Network } from '@gemwallet/constants/src/network.types';
+import { Network } from './constants/network.types';
 
 export type Params = {
   chain: 'xrp';

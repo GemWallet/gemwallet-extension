@@ -28,7 +28,7 @@
     "xrpl": "^2.1.0"
   },
   "devDependencies": {
-    "@gemwallet/constants": "*",
+    "@gemwallet/api": "1.0.2",
     "@gemwallet/eslint-config": "*",
     "@types/chrome": "^0.0.163",
     "@types/crypto-js": "^4.1.0"
