@@ -36,7 +36,7 @@ export const sendMessageToContentScript = (msg: MessageListenerEvent): Promise<a
     if (!window.gemWallet && msg.type !== 'REQUEST_CONNECTION') {
       reject(
         new Error(
-          'Please check if Gem Wallet is connected \n Gem Wallet needs to be installed: https://gemwallet.app'
+          'Please check if GemWallet is connected \n GemWallet needs to be installed: https://gemwallet.app'
         )
       );
     }
