@@ -9,13 +9,6 @@
     "@emotion/styled": "^11.6.0",
     "@mui/icons-material": "^5.2.4",
     "@mui/material": "^5.2.3",
-    "@testing-library/jest-dom": "^5.11.4",
-    "@testing-library/react": "^11.1.0",
-    "@testing-library/user-event": "^12.1.10",
-    "@types/jest": "^26.0.15",
-    "@types/node": "^12.0.0",
-    "@types/react": "^17.0.0",
-    "@types/react-dom": "^17.0.0",
     "copy-to-clipboard": "^3.3.1",
     "crypto-js": "^4.1.1",
     "lottie-react": "^2.1.0",
@@ -30,8 +23,15 @@
   "devDependencies": {
     "@gemwallet/api": "1.0.2",
     "@gemwallet/eslint-config": "*",
+    "@testing-library/jest-dom": "^5.16.4",
+    "@testing-library/react": "12.1.5",
+    "@testing-library/user-event": "^14.1.0",
     "@types/chrome": "^0.0.163",
-    "@types/crypto-js": "^4.1.0"
+    "@types/crypto-js": "^4.1.0",
+    "@types/jest": "^26.0.15",
+    "@types/node": "^12.0.0",
+    "@types/react": "^17.0.0",
+    "@types/react-dom": "^17.0.0"
   },
   "peerDependencies": {
     "eslint": "^7.11.0"
@@ -39,7 +39,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "INLINE_RUNTIME_CHUNK=false GENERATE_SOURCEMAP=false craco build",
-    "test": "react-scripts test",
+    "test": "react-scripts test --all --coverage",
     "type-check": "tsc --project tsconfig.json --pretty --noEmit",
     "eject": "react-scripts eject"
   },
