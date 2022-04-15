@@ -10,7 +10,7 @@
 
 GemWallet is a web extension that allows you to make online payments with one click on the XRPL. It also provides an API that bridges web browsers to the blockchain, allowing developers to easily build web3 applications integrated with XRP.
 
-Our vision is really oriented toward payments, micro-payments, and donations.
+Our vision is really oriented toward payments, micro-payments, donations, and payment streaming.
 
 ![](demo.gif)
 
