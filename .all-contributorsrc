@@ -1,0 +1,26 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "FlorianBouron",
+      "name": "Florian",
+      "avatar_url": "https://avatars.githubusercontent.com/u/7243879?v=4",
+      "profile": "https://www.linkedin.com/in/florianbouron/",
+      "contributions": [
+        "code",
+        "doc",
+        "maintenance"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "gemwallet-extension",
+  "projectOwner": "GemWallet",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "skipCi": true
+}
