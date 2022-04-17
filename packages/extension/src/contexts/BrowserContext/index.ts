@@ -1,1 +1,1 @@
-export { BrowserProvider, useBrowser } from './BrowserContext';
+export * from './BrowserContext';

@@ -1,3 +1,4 @@
+import { FC } from 'react';
 import Lottie from 'lottie-react';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
@@ -8,7 +9,7 @@ import alert from '../../../assets/alert.json';
 import check from '../../../assets/check.json';
 import type { PropType, LogoStyle } from './Transaction.types';
 
-export function Transaction({ transaction }: PropType) {
+export const Transaction: FC<PropType> = ({ transaction }) => {
   const { window, closeExtension } = useBrowser();
   let animation: any = loading;
   let title: string = 'Transaction in progress';
@@ -71,7 +72,7 @@ export function Transaction({ transaction }: PropType) {
       <Button
         fullWidth
         variant="contained"
-        disabled={transaction === 'pending'}
+        disabled={transaction === 'pending' || transaction === 'waiting'}
         color={transaction === 'rejected' ? 'secondary' : 'primary'}
         onClick={handleClick}
       >
@@ -79,4 +80,4 @@ export function Transaction({ transaction }: PropType) {
       </Button>
     </Container>
   );
-}
+};
