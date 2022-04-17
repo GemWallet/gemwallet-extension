@@ -15,6 +15,15 @@
         "doc",
         "maintenance"
       ]
+    },
+    {
+      "login": "wojake",
+      "name": "Wo Jake",
+      "avatar_url": "https://avatars.githubusercontent.com/u/87929946?v=4",
+      "profile": "https://github.com/wojake",
+      "contributions": [
+        "security"
+      ]
     }
   ],
   "contributorsPerLine": 7,
