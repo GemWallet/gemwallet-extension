@@ -1,6 +1,6 @@
 # 💎 GemWallet Extension
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 ## GemWallet: Crypto payments made easy
@@ -95,6 +95,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   <tr>
     <td align="center"><a href="https://www.linkedin.com/in/florianbouron/"><img src="https://avatars.githubusercontent.com/u/7243879?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Florian</b></sub></a><br /><a href="https://github.com/GemWallet/gemwallet-extension/commits?author=FlorianBouron" title="Code">💻</a> <a href="https://github.com/GemWallet/gemwallet-extension/commits?author=FlorianBouron" title="Documentation">📖</a> <a href="#maintenance-FlorianBouron" title="Maintenance">🚧</a></td>
     <td align="center"><a href="https://github.com/wojake"><img src="https://avatars.githubusercontent.com/u/87929946?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Wo Jake</b></sub></a><br /><a href="#security-wojake" title="Security">🛡️</a></td>
+    <td align="center"><a href="http://www.wietse.com"><img src="https://avatars.githubusercontent.com/u/4756161?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Wietse Wind</b></sub></a><br /><a href="#security-WietseWind" title="Security">🛡️</a> <a href="#example-WietseWind" title="Examples">💡</a></td>
   </tr>
 </table>
 
