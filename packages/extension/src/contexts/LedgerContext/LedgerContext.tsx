@@ -137,4 +137,4 @@ function useLedger(): contextType {
   return context;
 }
 
-export { LedgerProvider, useLedger };
+export { LedgerProvider, LedgerContext, useLedger };
