@@ -11,6 +11,8 @@ import { PageWithStepper } from '../../templates/PageWithStepper';
 import { saveSeed } from '../../../utils';
 import { TWITTER_LINK } from '../../../constants/links';
 
+const STEPS = 4;
+
 export function CreateWallet() {
   const [seed, setSeed] = useState('Loading...');
   const [activeStep, setActiveStep] = useState(0);
@@ -46,7 +48,7 @@ export function CreateWallet() {
     };
     return (
       <PageWithStepper
-        steps={4}
+        steps={STEPS}
         activeStep={activeStep}
         handleBack={handleBack}
         handleNext={handleNext}
@@ -90,7 +92,7 @@ export function CreateWallet() {
     };
     return (
       <PageWithStepper
-        steps={4}
+        steps={STEPS}
         activeStep={activeStep}
         buttonText="Next"
         handleBack={handleBack}
@@ -137,7 +139,7 @@ export function CreateWallet() {
     };
     return (
       <PageWithStepper
-        steps={4}
+        steps={STEPS}
         activeStep={activeStep}
         buttonText="Confirm"
         handleBack={handleBack}
@@ -165,7 +167,7 @@ export function CreateWallet() {
 
   return (
     <PageWithStepper
-      steps={4}
+      steps={STEPS}
       activeStep={activeStep}
       buttonText="Next"
       handleBack={handleBack}
