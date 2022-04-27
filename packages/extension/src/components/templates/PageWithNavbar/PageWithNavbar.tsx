@@ -1,9 +1,10 @@
+import { FC } from 'react';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import { Navbar } from '../../organisms/Navbar';
 import type { PropType } from './PageWithNavbar.types';
 
-export function PageWithNavbar({ children, title }: PropType) {
+export const PageWithNavbar: FC<PropType> = ({ children, title }) => {
   return (
     <>
       <Navbar />
@@ -26,4 +27,4 @@ export function PageWithNavbar({ children, title }: PropType) {
       </Container>
     </>
   );
-}
+};
