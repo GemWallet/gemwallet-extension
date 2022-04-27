@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { FC, useState } from 'react';
 import copyToClipboard from 'copy-to-clipboard';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
@@ -8,7 +8,7 @@ import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import ContentPasteGoIcon from '@mui/icons-material/ContentPasteGo';
 import { PropType } from './TextCopy.types';
 
-export function TextCopy({ text, style, styleTypography }: PropType) {
+export const TextCopy: FC<PropType> = ({ text, style, styleTypography }) => {
   const [isCopied, setIsCopied] = useState(false);
 
   const handleCopy = () => {
@@ -38,4 +38,4 @@ export function TextCopy({ text, style, styleTypography }: PropType) {
       </Tooltip>
     </Paper>
   );
-}
+};

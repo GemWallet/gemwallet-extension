@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, FC } from 'react';
 import copyToClipboard from 'copy-to-clipboard';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
@@ -8,7 +8,7 @@ import ShareIcon from '@mui/icons-material/Share';
 import { useLedger } from '../../../contexts/LedgerContext';
 import { PropType } from './Wallet.types';
 
-export function Wallet({ address = '' }: PropType) {
+export const Wallet: FC<PropType> = ({ address }) => {
   const [balance, setBalance] = useState('Loading...');
   const [hasBalance, setHasBalance] = useState(true);
   const [isShared, setIsShared] = useState(false);
@@ -70,4 +70,4 @@ export function Wallet({ address = '' }: PropType) {
       </Paper>
     </Paper>
   );
-}
+};

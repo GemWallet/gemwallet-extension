@@ -50,4 +50,4 @@ function useBrowser(): contextType {
   return context;
 }
 
-export { BrowserProvider, useBrowser };
+export { BrowserProvider, BrowserContext, useBrowser };

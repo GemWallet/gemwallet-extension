@@ -5,4 +5,4 @@ the GemWallet extension. Client applications will be able to install this packag
 from npm or via CDN.
 It also contains constants that may need to be imported into other repositories in the GemWallet project.
 
-For instructions on how to integrate with GemWallet API, visit: https://gemwallet.app/docs/intro
+For instructions on how to integrate with GemWallet API, visit: https://gemwallet.app/docs/user-guide/introduction

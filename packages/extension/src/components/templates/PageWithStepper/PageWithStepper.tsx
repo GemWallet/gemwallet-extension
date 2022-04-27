@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { FC, useEffect } from 'react';
 import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
 import MobileStepper from '@mui/material/MobileStepper';
@@ -10,17 +10,16 @@ type PropType = {
   buttonText: string;
   handleBack: () => void;
   handleNext: () => void;
-  children: JSX.Element | JSX.Element[];
 };
 
-export function PageWithStepper({
+export const PageWithStepper: FC<PropType> = ({
   steps,
   activeStep,
   buttonText,
   handleBack,
   handleNext,
   children
-}: PropType) {
+}) => {
   /*
    * Handle Next step button by pressing 'Enter'
    */
@@ -72,4 +71,4 @@ export function PageWithStepper({
       </Container>
     </>
   );
-}
+};

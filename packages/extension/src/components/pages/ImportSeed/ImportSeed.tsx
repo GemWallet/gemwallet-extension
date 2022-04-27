@@ -8,6 +8,7 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import { useLedger } from '../../../contexts/LedgerContext';
 import { PageWithStepper } from '../../templates/PageWithStepper';
 import { saveSeed } from '../../../utils';
+import { TWITTER_LINK } from '../../../constants/links';
 
 const STEPS = 3;
 
@@ -61,6 +62,9 @@ export function ImportSeed() {
           endIcon={<NavigateNextIcon />}
           style={{ width: '100%', marginTop: '25px' }}
           color="info"
+          onClick={() => {
+            window.open(TWITTER_LINK, '_blank');
+          }}
         >
           Follow us on Twitter
         </Button>

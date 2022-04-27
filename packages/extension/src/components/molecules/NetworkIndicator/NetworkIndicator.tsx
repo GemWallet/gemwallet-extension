@@ -7,7 +7,7 @@ export function NetworkIndicator() {
 
   return (
     <Chip
-      label="Dev net"
+      label="Testnet"
       size="small"
       icon={
         <FiberManualRecordIcon
