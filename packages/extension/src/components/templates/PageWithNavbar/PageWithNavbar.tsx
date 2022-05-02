@@ -1,13 +1,17 @@
 import { FC } from 'react';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-import { Navbar } from '../../organisms/Navbar';
+import { Navbar, Drawer } from '../../organisms';
+import { DrawerProvider } from '../../../contexts/DrawerContext';
 import type { PropType } from './PageWithNavbar.types';
 
 export const PageWithNavbar: FC<PropType> = ({ children, title }) => {
   return (
     <>
-      <Navbar />
+      <DrawerProvider>
+        <Navbar />
+        <Drawer />
+      </DrawerProvider>
       <Container
         component="main"
         style={{

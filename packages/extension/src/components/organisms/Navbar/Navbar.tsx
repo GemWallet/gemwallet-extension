@@ -7,6 +7,7 @@ import Typography from '@mui/material/Typography';
 import MenuIcon from '@mui/icons-material/Menu';
 import { Logo } from '../../atoms/Logo';
 import { NetworkIndicator } from '../../molecules/NetworkIndicator';
+import { useDrawer } from '../../../contexts/DrawerContext';
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   alignItems: 'flex-start',
@@ -19,6 +20,12 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
 }));
 
 export function Navbar() {
+  const { openDrawer } = useDrawer();
+
+  const handleMenu = () => {
+    openDrawer(true);
+  };
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
@@ -53,7 +60,13 @@ export function Navbar() {
               alignItems: 'end'
             }}
           >
-            <IconButton size="large" edge="end" color="inherit" aria-label="open drawer">
+            <IconButton
+              size="large"
+              edge="end"
+              color="inherit"
+              aria-label="open drawer"
+              onClick={handleMenu}
+            >
               <MenuIcon />
             </IconButton>
             <NetworkIndicator />
