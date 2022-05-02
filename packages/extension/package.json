@@ -18,7 +18,7 @@
     "react-scripts": "4.0.3",
     "typescript": "^4.1.2",
     "web-vitals": "^1.0.1",
-    "xrpl": "^2.1.0"
+    "xrpl": "^2.2.1"
   },
   "devDependencies": {
     "@gemwallet/api": "1.0.2",
