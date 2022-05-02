@@ -13,6 +13,7 @@ import {
   Typography
 } from '@mui/material';
 import { useDrawer } from '../../../contexts/DrawerContext';
+import { useLedger } from '../../../contexts/LedgerContext';
 
 const items = [
   {
@@ -31,9 +32,14 @@ const items = [
 
 export const Drawer = () => {
   const { isOpen, openDrawer } = useDrawer();
+  const { signOut } = useLedger();
 
   const handleClose = () => {
     openDrawer(false);
+  };
+
+  const handleLock = () => {
+    signOut();
   };
 
   return (
@@ -72,7 +78,7 @@ export const Drawer = () => {
             margin: '1.5rem'
           }}
         >
-          <Button variant="contained" fullWidth size="large">
+          <Button variant="contained" fullWidth size="large" onClick={handleLock}>
             Lock
           </Button>
         </div>
