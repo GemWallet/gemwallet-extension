@@ -1,6 +1,6 @@
 {
   "name": "GemWallet",
-  "description": "GemWallet brings Ripple to your web browser - gemwallet.app",
+  "description": "GemWallet brings XRPL to your web browser - gemwallet.app",
   "version": "1.0.0",
   "manifest_version": 3,
   "action": {
