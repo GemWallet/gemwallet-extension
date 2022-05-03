@@ -1,36 +1,14 @@
+import { useState } from 'react';
 import MUIDrawer from '@mui/material/Drawer';
-import CloseIcon from '@mui/icons-material/Close';
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import {
-  Box,
-  Button,
-  Divider,
-  IconButton,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Typography
-} from '@mui/material';
+import { Box } from '@mui/material';
 import { useDrawer } from '../../../contexts/DrawerContext';
 import { useLedger } from '../../../contexts/LedgerContext';
-
-const items = [
-  {
-    name: 'Help'
-  },
-  {
-    name: 'Leave A Feedback'
-  },
-  {
-    name: 'Reset Secret Phrase'
-  },
-  {
-    name: 'About'
-  }
-];
+import { AboutPage } from './AboutPage';
+import { DrawerContent } from './DrawerContent';
+import { ResetSecretPhrasePage } from './ResetSecretPhrasePage';
 
 export const Drawer = () => {
+  const [activeStep, setActiveStep] = useState(0);
   const { isOpen, openDrawer } = useDrawer();
   const { signOut } = useLedger();
 
@@ -42,46 +20,35 @@ export const Drawer = () => {
     signOut();
   };
 
+  let contentDrawer = () => {
+    return (
+      <DrawerContent
+        handleResetSecretPhrase={() => setActiveStep(2)}
+        handleAbout={() => setActiveStep(1)}
+        handleClose={handleClose}
+        handleLock={handleLock}
+      />
+    );
+  };
+
+  // About page
+  if (activeStep === 1) {
+    contentDrawer = () => {
+      return <AboutPage handleBack={() => setActiveStep(0)} />;
+    };
+  }
+
+  // Reset Secret Phrase page
+  if (activeStep === 2) {
+    contentDrawer = () => {
+      return <ResetSecretPhrasePage handleBack={() => setActiveStep(0)} />;
+    };
+  }
+
   return (
     <MUIDrawer anchor="right" open={isOpen} onClose={handleClose}>
       <Box style={{ width: '100vw' }} role="presentation">
-        <div
-          style={{
-            padding: '0.75rem 1rem',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center'
-          }}
-        >
-          <Typography variant="h6">Settings</Typography>
-          <IconButton aria-label="close" onClick={handleClose}>
-            <CloseIcon />
-          </IconButton>
-        </div>
-        <Divider />
-        <List>
-          {items.map(({ name }) => (
-            <ListItem button key={name}>
-              <ListItemText primary={name} />
-              <ListItemIcon>
-                <NavigateNextIcon />
-              </ListItemIcon>
-            </ListItem>
-          ))}
-        </List>
-        <div
-          style={{
-            position: 'fixed',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            margin: '1.5rem'
-          }}
-        >
-          <Button variant="contained" fullWidth size="large" onClick={handleLock}>
-            Lock
-          </Button>
-        </div>
+        {contentDrawer()}
       </Box>
     </MUIDrawer>
   );
