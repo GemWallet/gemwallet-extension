@@ -7,7 +7,7 @@ import TwitterIcon from '@mui/icons-material/Twitter';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import { useLedger } from '../../../contexts/LedgerContext';
 import { PageWithStepper } from '../../templates/PageWithStepper';
-import { saveSeed } from '../../../utils';
+import { saveSeed, openExternalLink } from '../../../utils';
 import { TWITTER_LINK } from '../../../constants/links';
 
 const STEPS = 3;
@@ -63,7 +63,7 @@ export function ImportSeed() {
           style={{ width: '100%', marginTop: '25px' }}
           color="info"
           onClick={() => {
-            window.open(TWITTER_LINK, '_blank');
+            openExternalLink(TWITTER_LINK);
           }}
         >
           Follow us on Twitter

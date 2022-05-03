@@ -8,7 +8,7 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import { useLedger } from '../../../contexts/LedgerContext';
 import { TextCopy } from '../../molecules/TextCopy';
 import { PageWithStepper } from '../../templates/PageWithStepper';
-import { saveSeed } from '../../../utils';
+import { saveSeed, openExternalLink } from '../../../utils';
 import { TWITTER_LINK } from '../../../constants/links';
 
 const STEPS = 4;
@@ -67,7 +67,7 @@ export function CreateWallet() {
           style={{ width: '100%', marginTop: '25px' }}
           color="info"
           onClick={() => {
-            window.open(TWITTER_LINK, '_blank');
+            openExternalLink(TWITTER_LINK);
           }}
         >
           Follow us on Twitter

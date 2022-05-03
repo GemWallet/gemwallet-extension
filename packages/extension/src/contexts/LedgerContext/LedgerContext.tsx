@@ -10,6 +10,7 @@ type TransactionPayloadType = {
 
 type contextType = {
   signIn: (password: string) => boolean;
+  signOut: () => void;
   generateWallet: () => string | undefined;
   importSeed: (seed: string) => boolean;
   sendTransaction: (payload: TransactionPayloadType) => Promise<TransactionStatus>;
@@ -20,6 +21,7 @@ type contextType = {
 
 const LedgerContext = createContext<contextType>({
   signIn: () => false,
+  signOut: () => {},
   generateWallet: () => undefined,
   importSeed: () => false,
   sendTransaction: () => new Promise(() => {}),
@@ -33,7 +35,7 @@ const LedgerContext = createContext<contextType>({
 
 function LedgerProvider({ children }: { children: ReactNode }): JSX.Element {
   const [client, setClient] = useState<any>();
-  const [wallet, setWallet] = useState<any>();
+  const [wallet, setWallet] = useState<xrpl.Wallet | undefined>(undefined);
 
   const connectToNetwork = async () => {
     const client = new xrpl.Client('wss://s.altnet.rippletest.net:51233');
@@ -54,6 +56,10 @@ function LedgerProvider({ children }: { children: ReactNode }): JSX.Element {
       return true;
     }
     return false;
+  };
+
+  const signOut = () => {
+    setWallet(undefined);
   };
 
   const generateWallet = () => {
@@ -118,6 +124,7 @@ function LedgerProvider({ children }: { children: ReactNode }): JSX.Element {
 
   const value: contextType = {
     signIn,
+    signOut,
     generateWallet,
     importSeed,
     sendTransaction,
