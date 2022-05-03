@@ -1,6 +1,9 @@
 # 💎 GemWallet Extension
+
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+
 [![All Contributors](https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square)](#contributors-)
+
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 ## GemWallet: Crypto payments made easy
@@ -16,6 +19,12 @@ GemWallet is a web extension that allows you to make online payments with one cl
 Our vision is really oriented toward payments, micro-payments, donations, and payment streaming.
 
 ![](demo.gif)
+
+## Join the Discord of the community
+
+Wanna help? You can raise an issue or send a pull request.
+
+We also have a [Discord channel](https://discord.gg/CnkP9KGHBe), feel free to join it
 
 ## Getting Started
 
