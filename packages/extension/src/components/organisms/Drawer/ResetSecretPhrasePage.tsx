@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { Button, Typography } from '@mui/material';
 import WarningIcon from '@mui/icons-material/Warning';
-import { PageWithReturn } from '../../templates/PageWithReturn';
+import { PageWithReturn } from '../../templates';
 import { removeSeed } from '../../../utils';
 import { useLedger } from '../../../contexts/LedgerContext';
 

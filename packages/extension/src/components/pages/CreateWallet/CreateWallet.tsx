@@ -7,7 +7,7 @@ import TwitterIcon from '@mui/icons-material/Twitter';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import { useLedger } from '../../../contexts/LedgerContext';
 import { TextCopy } from '../../molecules/TextCopy';
-import { PageWithStepper } from '../../templates/PageWithStepper';
+import { PageWithStepper } from '../../templates';
 import { saveSeed, openExternalLink } from '../../../utils';
 import { TWITTER_LINK } from '../../../constants/links';
 
