@@ -12,7 +12,6 @@ type MessageTypes =
 export type MessageListenerEvent = {
   app: MessageApp;
   type: MessageTypes;
-  payload?: { [key: string]: any };
 };
 
 export type EventListenerEvent = {

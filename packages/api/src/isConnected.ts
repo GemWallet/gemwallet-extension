@@ -5,7 +5,6 @@ import { sendMessageToContentScript } from './helpers/extensionMessaging';
 declare global {
   interface Window {
     gemWallet?: boolean;
-    gemWalletApi?: { [key: string]: any };
   }
 }
 
