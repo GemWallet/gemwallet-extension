@@ -7,6 +7,7 @@ import { CreateWallet } from './components/pages/CreateWallet';
 import { ImportSeed } from './components/pages/ImportSeed';
 import { Home } from './components/pages/Home';
 import { Transaction } from './components/pages/Transaction';
+import { ErrorBoundary } from './components/templates';
 
 function App() {
   useEffect(() => {
@@ -19,29 +20,31 @@ function App() {
   }, []);
 
   return (
-    <Routes>
-      <Route path="*" element={<Login />} />
-      <Route path="/welcome" element={<Welcome />} />
-      <Route path="/import-seed" element={<ImportSeed />} />
-      <Route path="/create-new-wallet" element={<CreateWallet />} />
-      <Route
-        path="/home"
-        element={
-          <PrivateRoute>
-            <Home />
-          </PrivateRoute>
-        }
-      />
-      /
-      <Route
-        path="/transaction"
-        element={
-          <PrivateRoute>
-            <Transaction />
-          </PrivateRoute>
-        }
-      />
-    </Routes>
+    <ErrorBoundary>
+      <Routes>
+        <Route path="*" element={<Login />} />
+        <Route path="/welcome" element={<Welcome />} />
+        <Route path="/import-seed" element={<ImportSeed />} />
+        <Route path="/create-new-wallet" element={<CreateWallet />} />
+        <Route
+          path="/home"
+          element={
+            <PrivateRoute>
+              <Home />
+            </PrivateRoute>
+          }
+        />
+        /
+        <Route
+          path="/transaction"
+          element={
+            <PrivateRoute>
+              <Transaction />
+            </PrivateRoute>
+          }
+        />
+      </Routes>
+    </ErrorBoundary>
   );
 }
 

@@ -1,4 +1,4 @@
-import { PageWithNavbar } from '../../templates/PageWithNavbar';
+import { PageWithNavbar } from '../../templates';
 import { Wallet } from '../../molecules/Wallet';
 import { useLedger } from '../../../contexts/LedgerContext';
 

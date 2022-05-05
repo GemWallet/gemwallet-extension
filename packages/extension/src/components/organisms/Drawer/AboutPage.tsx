@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import LinkIcon from '@mui/icons-material/Link';
 import { List, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
-import { PageWithReturn } from '../../templates/PageWithReturn';
+import { PageWithReturn } from '../../templates';
 import { openExternalLink } from '../../../utils';
 import {
   ANNOUNCEMENT_LINK,
