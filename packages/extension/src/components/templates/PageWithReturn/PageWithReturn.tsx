@@ -31,7 +31,7 @@ export const PageWithReturn: FC<PropType> = ({ title, handleBack, children }) =>
       <Container
         component="main"
         style={{
-          height: '100vh',
+          height: 'calc(100vh - 50px)',
           padding: '1rem 0.5rem'
         }}
       >
