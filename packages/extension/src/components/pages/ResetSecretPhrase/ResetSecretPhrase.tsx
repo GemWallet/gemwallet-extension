@@ -9,7 +9,7 @@ type PropType = {
   handleBack: () => void;
 };
 
-export const ResetSecretPhrasePage: FC<PropType> = ({ handleBack }) => {
+export const ResetSecretPhrase: FC<PropType> = ({ handleBack }) => {
   const { signOut } = useLedger();
 
   const handleRemoveSeed = () => {
