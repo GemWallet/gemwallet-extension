@@ -10,7 +10,7 @@
     "build:npm": "tsc && node releaseNpm.js",
     "clean": "rm -rf build",
     "start": "webpack serve --config webpack.dev.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"No test specified\""
   },
   "repository": {
     "type": "git",

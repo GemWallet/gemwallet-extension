@@ -8,9 +8,11 @@ import { Logo } from '../../atoms/Logo';
 import { useLedger } from '../../../contexts/LedgerContext';
 import { loadData } from '../../../utils';
 import { STORAGE_SEED } from '../../../constants/localStorage';
+import { ResetPassword } from '../ResetPassword';
 
 export function Login() {
   const [passwordError, setPasswordError] = useState('');
+  const [activeStep, setActiveStep] = useState(0);
   const navigate = useNavigate();
   const { search } = useLocation();
   const { signIn, wallet } = useLedger();
@@ -59,6 +61,13 @@ export function Login() {
     }
   };
 
+  const handleReset = () => {
+    setActiveStep(1);
+  };
+
+  if (activeStep === 1) {
+    return <ResetPassword handleBack={() => setActiveStep(0)} />;
+  }
   return (
     <Container
       component="main"
@@ -100,6 +109,15 @@ export function Login() {
         <Button variant="contained" onClick={handleUnlock}>
           Unlock
         </Button>
+        <Typography
+          variant="caption"
+          display="block"
+          align="center"
+          style={{ marginTop: '10px', cursor: 'pointer' }}
+          onClick={handleReset}
+        >
+          Reset Password
+        </Typography>
       </Container>
     </Container>
   );

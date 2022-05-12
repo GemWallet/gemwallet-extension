@@ -37,7 +37,7 @@ export const DrawerContent: FC<PropType> = ({
       onClick: () => openExternalLink(FEEDBACK_LINK)
     },
     {
-      name: 'Reset Secret Phrase',
+      name: 'Reset Password',
       onClick: handleResetSecretPhrase
     },
     {

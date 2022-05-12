@@ -7,6 +7,7 @@ import IconButton from '@mui/material/IconButton';
 import ShareIcon from '@mui/icons-material/Share';
 import { useLedger } from '../../../contexts/LedgerContext';
 import { PropType } from './Wallet.types';
+import { formatToken } from '../../../utils';
 
 export const Wallet: FC<PropType> = ({ address }) => {
   const [balance, setBalance] = useState('Loading...');
@@ -65,7 +66,7 @@ export const Wallet: FC<PropType> = ({ address }) => {
         }}
       >
         <Typography variant="body1">
-          {hasBalance ? `${balance} XRP` : 'There are no funds on your wallet'}
+          {hasBalance ? formatToken(Number(balance), 'XRP') : 'There are no funds on your wallet'}
         </Typography>
       </Paper>
     </Paper>

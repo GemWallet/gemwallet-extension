@@ -160,6 +160,7 @@ export function CreateWallet() {
           error={!!seedError}
           helperText={seedError}
           style={{ marginTop: '20px' }}
+          autoComplete="off"
         />
       </PageWithStepper>
     );
