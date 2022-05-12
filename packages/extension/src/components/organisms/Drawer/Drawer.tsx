@@ -5,7 +5,7 @@ import { useDrawer } from '../../../contexts/DrawerContext';
 import { useLedger } from '../../../contexts/LedgerContext';
 import { AboutPage } from './AboutPage';
 import { DrawerContent } from './DrawerContent';
-import { ResetSecretPhrase } from '../../pages/ResetSecretPhrase';
+import { ResetPassword } from '../../pages/ResetPassword';
 
 export const Drawer = () => {
   const [activeStep, setActiveStep] = useState(0);
@@ -38,10 +38,10 @@ export const Drawer = () => {
     };
   }
 
-  // Reset Secret Phrase page
+  // Reset Password page
   if (activeStep === 2) {
     contentDrawer = () => {
-      return <ResetSecretPhrase handleBack={() => setActiveStep(0)} />;
+      return <ResetPassword handleBack={() => setActiveStep(0)} />;
     };
   }
 

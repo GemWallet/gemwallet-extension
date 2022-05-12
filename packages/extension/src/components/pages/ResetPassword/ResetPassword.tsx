@@ -9,7 +9,7 @@ type PropType = {
   handleBack: () => void;
 };
 
-export const ResetSecretPhrase: FC<PropType> = ({ handleBack }) => {
+export const ResetPassword: FC<PropType> = ({ handleBack }) => {
   const { signOut } = useLedger();
 
   const handleRemoveSeed = () => {
@@ -17,7 +17,7 @@ export const ResetSecretPhrase: FC<PropType> = ({ handleBack }) => {
   };
 
   return (
-    <PageWithReturn title="Reset Secret Phrase" handleBack={handleBack}>
+    <PageWithReturn title="Reset Password" handleBack={handleBack}>
       <div
         style={{
           height: '100%',
@@ -32,12 +32,12 @@ export const ResetSecretPhrase: FC<PropType> = ({ handleBack }) => {
           <WarningIcon color="warning" fontSize="large" />
         </div>
         <Typography variant="h5" align="center">
-          Resetting your secret recovery phrase
+          Resetting your password will remove your secret seeds
         </Typography>
       </div>
       <Typography align="center" style={{ marginTop: '0.25rem' }}>
         This will remove all existing wallets and replace them with new ones. Make sure you have
-        your existing private keys backed up.
+        your existing private secret seeds backed up.
       </Typography>
       <div
         style={{

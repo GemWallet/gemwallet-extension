@@ -8,7 +8,7 @@ import { Logo } from '../../atoms/Logo';
 import { useLedger } from '../../../contexts/LedgerContext';
 import { loadData } from '../../../utils';
 import { STORAGE_SEED } from '../../../constants/localStorage';
-import { ResetSecretPhrase } from '../ResetSecretPhrase';
+import { ResetPassword } from '../ResetPassword';
 
 export function Login() {
   const [passwordError, setPasswordError] = useState('');
@@ -66,7 +66,7 @@ export function Login() {
   };
 
   if (activeStep === 1) {
-    return <ResetSecretPhrase handleBack={() => setActiveStep(0)} />;
+    return <ResetPassword handleBack={() => setActiveStep(0)} />;
   }
   return (
     <Container
@@ -116,7 +116,7 @@ export function Login() {
           style={{ marginTop: '10px', cursor: 'pointer' }}
           onClick={handleReset}
         >
-          Reset Secret Phrase
+          Reset Password
         </Typography>
       </Container>
     </Container>
