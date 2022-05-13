@@ -12,6 +12,7 @@ import { useLedger } from '../../../contexts/LedgerContext';
 import { GEM_WALLET, REQUEST_TRANSACTION_STATUS } from '@gemwallet/api/src/constants/message';
 import { MessageListenerEvent } from '@gemwallet/api/src/constants/message.types';
 import { TransactionStatus } from '@gemwallet/api/src/constants/transaction.types';
+import { TileLoader } from '../../atoms';
 import { formatToken } from '../../../utils';
 
 const DEFAULT_FEES = 'Loading ...';
@@ -137,7 +138,7 @@ export function Transaction() {
           Network fees:
         </Typography>
         <Typography variant="body2" gutterBottom align="right">
-          {fees === DEFAULT_FEES ? DEFAULT_FEES : formatToken(Number(fees), token)}
+          {fees === DEFAULT_FEES ? <TileLoader secondLineOnly /> : formatToken(Number(fees), token)}
         </Typography>
       </Paper>
       <Container style={{ display: 'flex', justifyContent: 'space-evenly' }}>

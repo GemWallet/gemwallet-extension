@@ -8,10 +8,13 @@ import ShareIcon from '@mui/icons-material/Share';
 import { useLedger } from '../../../contexts/LedgerContext';
 import { PropType } from './Wallet.types';
 import { formatToken } from '../../../utils';
+import { TileLoader } from '../../atoms';
+
+const LOADING_STATE = 'Loading...';
+const ERROR_STATE = 'Error';
 
 export const Wallet: FC<PropType> = ({ address }) => {
-  const [balance, setBalance] = useState('Loading...');
-  const [hasBalance, setHasBalance] = useState(true);
+  const [balance, setBalance] = useState(LOADING_STATE);
   const [isShared, setIsShared] = useState(false);
   const { client } = useLedger();
 
@@ -23,7 +26,7 @@ export const Wallet: FC<PropType> = ({ address }) => {
           setBalance(balance);
         }
       } catch {
-        setHasBalance(false);
+        setBalance(ERROR_STATE);
       }
     }
 
@@ -52,21 +55,31 @@ export const Wallet: FC<PropType> = ({ address }) => {
           </IconButton>
         </Tooltip>
       </div>
-      <Typography variant="body2" style={{ margin: '10px 0' }}>
-        {address}
-      </Typography>
+      {address === LOADING_STATE ? (
+        <TileLoader firstLineOnly fwidth={280} />
+      ) : (
+        <Typography variant="body2" style={{ margin: '10px 0' }}>
+          {address}
+        </Typography>
+      )}
       <Typography variant="body1">Balance</Typography>
       <Paper
         elevation={5}
         style={{
           display: 'flex',
-          justifyContent: hasBalance ? 'end' : 'center',
+          justifyContent: balance !== ERROR_STATE ? 'end' : 'center',
           padding: '10px',
           marginTop: '10px'
         }}
       >
         <Typography variant="body1">
-          {hasBalance ? formatToken(Number(balance), 'XRP') : 'There are no funds on your wallet'}
+          {balance === LOADING_STATE ? (
+            <TileLoader secondLineOnly swidth={100} />
+          ) : balance !== ERROR_STATE ? (
+            formatToken(Number(balance), 'XRP')
+          ) : (
+            'There are no funds on your wallet'
+          )}
         </Typography>
       </Paper>
     </Paper>
