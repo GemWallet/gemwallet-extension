@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, FC } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
@@ -13,7 +13,7 @@ import { TWITTER_LINK } from '../../../constants/links';
 
 const STEPS = 4;
 
-export function CreateWallet() {
+export const CreateWallet: FC = () => {
   const [seed, setSeed] = useState('Loading...');
   const [activeStep, setActiveStep] = useState(0);
   const [seedError, setSeedError] = useState('');
@@ -184,4 +184,4 @@ export function CreateWallet() {
       <TextCopy text={seed} />
     </PageWithStepper>
   );
-}
+};

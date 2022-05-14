@@ -1,8 +1,9 @@
+import { FC } from 'react';
 import { PageWithNavbar } from '../../templates';
 import { Wallet } from '../../molecules/Wallet';
 import { useLedger } from '../../../contexts/LedgerContext';
 
-export function Home() {
+export const Home: FC = () => {
   const { wallet } = useLedger();
 
   return (
@@ -10,4 +11,4 @@ export function Home() {
       <Wallet address={wallet?.address || 'Loading...'} />
     </PageWithNavbar>
   );
-}
+};

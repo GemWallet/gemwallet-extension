@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
@@ -17,7 +17,7 @@ import { formatToken } from '../../../utils';
 
 const DEFAULT_FEES = 'Loading ...';
 
-export function Transaction() {
+export const Transaction: FC = () => {
   const [params, setParams] = useState({
     chain: '',
     transaction: '',
@@ -151,4 +151,4 @@ export function Transaction() {
       </Container>
     </PageWithNavbar>
   );
-}
+};

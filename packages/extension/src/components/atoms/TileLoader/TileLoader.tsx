@@ -1,7 +1,7 @@
 import { CSSProperties, FC } from 'react';
 import ContentLoader from 'react-content-loader';
 
-interface PropType {
+export interface TileLoaderProps {
   width?: number;
   height?: number;
   style?: CSSProperties;
@@ -11,7 +11,7 @@ interface PropType {
   swidth?: number;
 }
 
-export const TileLoader: FC<PropType> = ({
+export const TileLoader: FC<TileLoaderProps> = ({
   width = 305,
   height = 50,
   style,

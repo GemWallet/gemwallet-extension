@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { FC, useState } from 'react';
 import MUIDrawer from '@mui/material/Drawer';
 import { Box } from '@mui/material';
 import { useDrawer } from '../../../contexts/DrawerContext';
@@ -7,7 +7,7 @@ import { AboutPage } from './AboutPage';
 import { DrawerContent } from './DrawerContent';
 import { ResetPassword } from '../../pages/ResetPassword';
 
-export const Drawer = () => {
+export const Drawer: FC = () => {
   const [activeStep, setActiveStep] = useState(0);
   const { isOpen, openDrawer } = useDrawer();
   const { signOut } = useLedger();

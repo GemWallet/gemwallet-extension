@@ -1,3 +1,4 @@
+import { FC } from 'react';
 import { styled } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -19,7 +20,7 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   }
 }));
 
-export function Navbar() {
+export const Navbar: FC = () => {
   const { openDrawer } = useDrawer();
 
   const handleMenu = () => {
@@ -75,4 +76,4 @@ export function Navbar() {
       </AppBar>
     </Box>
   );
-}
+};

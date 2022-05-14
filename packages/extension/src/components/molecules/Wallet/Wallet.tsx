@@ -6,14 +6,17 @@ import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import ShareIcon from '@mui/icons-material/Share';
 import { useLedger } from '../../../contexts/LedgerContext';
-import { PropType } from './Wallet.types';
 import { formatToken } from '../../../utils';
 import { TileLoader } from '../../atoms';
 
 const LOADING_STATE = 'Loading...';
 const ERROR_STATE = 'Error';
 
-export const Wallet: FC<PropType> = ({ address }) => {
+export interface WalletProps {
+  address: string;
+}
+
+export const Wallet: FC<WalletProps> = ({ address }) => {
   const [balance, setBalance] = useState(LOADING_STATE);
   const [isShared, setIsShared] = useState(false);
   const { client } = useLedger();

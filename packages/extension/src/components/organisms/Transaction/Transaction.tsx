@@ -7,9 +7,9 @@ import { useBrowser } from '../../../contexts/BrowserContext';
 import loading from '../../../assets/loading.json';
 import alert from '../../../assets/alert.json';
 import check from '../../../assets/check.json';
-import type { PropType, LogoStyle } from './Transaction.types';
+import { TransactionProps, LogoStyle } from './Transaction.types';
 
-export const Transaction: FC<PropType> = ({ transaction }) => {
+export const Transaction: FC<TransactionProps> = ({ transaction }) => {
   const { window, closeExtension } = useBrowser();
   let animation: any = loading;
   let title: string = 'Transaction in progress';

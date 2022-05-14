@@ -14,14 +14,14 @@ import {
 import { openExternalLink } from '../../../utils';
 import { FAQ_LINK, FEEDBACK_LINK } from '../../../constants/links';
 
-type PropType = {
+interface DrawerContentProps {
   handleResetSecretPhrase: () => void;
   handleAbout: () => void;
   handleClose: () => void;
   handleLock: () => void;
-};
+}
 
-export const DrawerContent: FC<PropType> = ({
+export const DrawerContent: FC<DrawerContentProps> = ({
   handleResetSecretPhrase,
   handleAbout,
   handleClose,

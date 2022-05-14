@@ -4,15 +4,15 @@ import Button from '@mui/material/Button';
 import MobileStepper from '@mui/material/MobileStepper';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 
-type PropType = {
+export interface PageWithStepperProps {
   steps: number;
   activeStep: number;
   buttonText: string;
   handleBack: () => void;
   handleNext: () => void;
-};
+}
 
-export const PageWithStepper: FC<PropType> = ({
+export const PageWithStepper: FC<PageWithStepperProps> = ({
   steps,
   activeStep,
   buttonText,
