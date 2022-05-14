@@ -1,10 +1,11 @@
+import { FC } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import { Logo } from '../../atoms/Logo';
 
-export function Welcome() {
+export const Welcome: FC = () => {
   const navigate = useNavigate();
   const { search } = useLocation();
 
@@ -46,4 +47,4 @@ export function Welcome() {
       </Container>
     </Container>
   );
-}
+};

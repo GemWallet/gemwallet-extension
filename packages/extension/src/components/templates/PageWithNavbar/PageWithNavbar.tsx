@@ -3,9 +3,12 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import { Navbar, Drawer } from '../../organisms';
 import { DrawerProvider } from '../../../contexts/DrawerContext';
-import type { PropType } from './PageWithNavbar.types';
 
-export const PageWithNavbar: FC<PropType> = ({ children, title }) => {
+export interface PageWithNavbarProps {
+  title?: string;
+}
+
+export const PageWithNavbar: FC<PageWithNavbarProps> = ({ children, title }) => {
   return (
     <>
       <DrawerProvider>

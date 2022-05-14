@@ -1,8 +1,9 @@
+import { FC } from 'react';
 import Chip from '@mui/material/Chip';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import { useLedger } from '../../../contexts/LedgerContext';
 
-export function NetworkIndicator() {
+export const NetworkIndicator: FC = () => {
   const { client } = useLedger();
 
   return (
@@ -19,4 +20,4 @@ export function NetworkIndicator() {
       onClick={() => {}}
     />
   );
-}
+};

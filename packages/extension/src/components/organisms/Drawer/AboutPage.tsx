@@ -40,11 +40,11 @@ const aboutLinks = [
   }
 ];
 
-type PropType = {
+interface AboutPageProps {
   handleBack: () => void;
-};
+}
 
-export const AboutPage: FC<PropType> = ({ handleBack }) => {
+export const AboutPage: FC<AboutPageProps> = ({ handleBack }) => {
   return (
     <PageWithReturn title="About" handleBack={handleBack}>
       <div

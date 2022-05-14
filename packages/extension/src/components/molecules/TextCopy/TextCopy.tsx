@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { CSSProperties, FC, useState } from 'react';
 import copyToClipboard from 'copy-to-clipboard';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
@@ -6,9 +6,14 @@ import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import ContentPasteGoIcon from '@mui/icons-material/ContentPasteGo';
-import { PropType } from './TextCopy.types';
 
-export const TextCopy: FC<PropType> = ({ text, style, styleTypography }) => {
+export interface TextCopyProps {
+  text: string;
+  style?: CSSProperties;
+  styleTypography?: CSSProperties;
+}
+
+export const TextCopy: FC<TextCopyProps> = ({ text, style, styleTypography }) => {
   const [isCopied, setIsCopied] = useState(false);
 
   const handleCopy = () => {

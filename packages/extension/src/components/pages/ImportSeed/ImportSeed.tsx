@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { FC, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
@@ -12,7 +12,7 @@ import { TWITTER_LINK } from '../../../constants/links';
 
 const STEPS = 3;
 
-export function ImportSeed() {
+export const ImportSeed: FC = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [passwordError, setPasswordError] = useState('');
   const [seedError, setSeedError] = useState('');
@@ -152,4 +152,4 @@ export function ImportSeed() {
       />
     </PageWithStepper>
   );
-}
+};

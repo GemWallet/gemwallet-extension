@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { FC, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { PrivateRoute } from './components/atoms/PrivateRoute';
 import { Login } from './components/pages/Login';
@@ -9,7 +9,7 @@ import { Home } from './components/pages/Home';
 import { Transaction } from './components/pages/Transaction';
 import { ErrorBoundary } from './components/templates';
 
-function App() {
+const App: FC = () => {
   useEffect(() => {
     // Disable the scroll inside the react root container
     document.querySelector('#root')?.addEventListener('wheel', (e) => {
@@ -46,6 +46,6 @@ function App() {
       </Routes>
     </ErrorBoundary>
   );
-}
+};
 
 export default App;

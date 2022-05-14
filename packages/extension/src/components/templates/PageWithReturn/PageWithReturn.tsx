@@ -2,12 +2,12 @@ import { FC } from 'react';
 import { Container, Divider, IconButton, Typography } from '@mui/material';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 
-type PropType = {
+export interface PageWithReturnProps {
   title: string;
   handleBack: () => void;
-};
+}
 
-export const PageWithReturn: FC<PropType> = ({ title, handleBack, children }) => {
+export const PageWithReturn: FC<PageWithReturnProps> = ({ title, handleBack, children }) => {
   return (
     <>
       <div

@@ -1,21 +1,21 @@
-import { ReactNode, useContext, useState, useEffect, createContext } from 'react';
+import { useContext, useState, useEffect, createContext, FC } from 'react';
 
-export type CloseProps = {
+export interface CloseProps {
   windowId: number;
   callback?: Function;
-};
+}
 
-type contextType = {
+interface ContextType {
   window?: chrome.windows.Window;
   closeExtension: ({ windowId, callback }: CloseProps) => void;
-};
+}
 
-const BrowserContext = createContext<contextType>({
+const BrowserContext = createContext<ContextType>({
   window: undefined,
   closeExtension: () => {}
 });
 
-function BrowserProvider({ children }: { children: ReactNode }): JSX.Element {
+const BrowserProvider: FC = ({ children }) => {
   const [window, setWindow] = useState<any>();
 
   const getCurrentWindow = async () => {
@@ -34,20 +34,20 @@ function BrowserProvider({ children }: { children: ReactNode }): JSX.Element {
     }
   };
 
-  const value: contextType = {
+  const value: ContextType = {
     window,
     closeExtension
   };
 
   return <BrowserContext.Provider value={value}>{children}</BrowserContext.Provider>;
-}
+};
 
-function useBrowser(): contextType {
+const useBrowser = (): ContextType => {
   const context = useContext(BrowserContext);
   if (context === undefined) {
     throw new Error('useBrowser must be used within a BrowserProvider');
   }
   return context;
-}
+};
 
 export { BrowserProvider, BrowserContext, useBrowser };

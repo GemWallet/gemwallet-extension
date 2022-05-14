@@ -5,11 +5,11 @@ import { PageWithReturn } from '../../templates';
 import { removeSeed } from '../../../utils';
 import { useLedger } from '../../../contexts/LedgerContext';
 
-type PropType = {
+export interface ResetPasswordProps {
   handleBack: () => void;
-};
+}
 
-export const ResetPassword: FC<PropType> = ({ handleBack }) => {
+export const ResetPassword: FC<ResetPasswordProps> = ({ handleBack }) => {
   const { signOut } = useLedger();
 
   const handleRemoveSeed = () => {

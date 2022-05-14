@@ -1,7 +1,12 @@
+import { FC, ReactElement } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useLedger } from '../../../contexts/LedgerContext';
 
-export function PrivateRoute({ children }: { children: JSX.Element }): JSX.Element {
+export interface PrivateRouteProps {
+  children: ReactElement;
+}
+
+export const PrivateRoute: FC<PrivateRouteProps> = ({ children }) => {
   const { wallet } = useLedger();
   const location = useLocation();
   const { search } = location;
@@ -15,4 +20,4 @@ export function PrivateRoute({ children }: { children: JSX.Element }): JSX.Eleme
   }
 
   return children;
-}
+};

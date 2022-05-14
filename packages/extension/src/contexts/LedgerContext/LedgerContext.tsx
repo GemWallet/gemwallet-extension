@@ -1,14 +1,14 @@
 import { TransactionStatus } from '@gemwallet/api/src/constants/transaction.types';
-import { ReactNode, useContext, useState, useEffect, createContext } from 'react';
+import { useContext, useState, useEffect, createContext, FC } from 'react';
 import * as xrpl from 'xrpl';
 import { loadSeed } from '../../utils';
 
-type TransactionPayloadType = {
+interface TransactionPayloadType {
   amount: string;
   destination: string;
-};
+}
 
-type contextType = {
+interface ContextType {
   signIn: (password: string) => boolean;
   signOut: () => void;
   generateWallet: () => string | undefined;
@@ -17,9 +17,9 @@ type contextType = {
   estimateNetworkFees: (amount: string) => Promise<string>;
   wallet?: xrpl.Wallet;
   client?: xrpl.Client;
-};
+}
 
-const LedgerContext = createContext<contextType>({
+const LedgerContext = createContext<ContextType>({
   signIn: () => false,
   signOut: () => {},
   generateWallet: () => undefined,
@@ -33,7 +33,7 @@ const LedgerContext = createContext<contextType>({
   client: undefined
 });
 
-function LedgerProvider({ children }: { children: ReactNode }): JSX.Element {
+const LedgerProvider: FC = ({ children }) => {
   const [client, setClient] = useState<any>();
   const [wallet, setWallet] = useState<xrpl.Wallet | undefined>(undefined);
 
@@ -122,7 +122,7 @@ function LedgerProvider({ children }: { children: ReactNode }): JSX.Element {
     }
   };
 
-  const value: contextType = {
+  const value: ContextType = {
     signIn,
     signOut,
     generateWallet,
@@ -134,14 +134,14 @@ function LedgerProvider({ children }: { children: ReactNode }): JSX.Element {
   };
 
   return <LedgerContext.Provider value={value}>{children}</LedgerContext.Provider>;
-}
+};
 
-function useLedger(): contextType {
+const useLedger = (): ContextType => {
   const context = useContext(LedgerContext);
   if (context === undefined) {
     throw new Error('useLedger must be used within a LedgerProvider');
   }
   return context;
-}
+};
 
 export { LedgerProvider, LedgerContext, useLedger };

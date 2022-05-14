@@ -2,7 +2,7 @@ import { Component, ReactNode, ErrorInfo } from 'react';
 import { Container, Typography, Button } from '@mui/material';
 import { WarningIcon } from './WarningIcon';
 
-interface Props {
+export interface ErrorBoundaryProps {
   children: ReactNode;
 }
 
@@ -10,8 +10,8 @@ interface State {
   hasError: boolean;
 }
 
-export class ErrorBoundary extends Component<Props, State> {
-  constructor(props: Props) {
+export class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
+  constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false };
   }

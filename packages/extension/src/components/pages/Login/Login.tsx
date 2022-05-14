@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, FC } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
@@ -10,7 +10,7 @@ import { loadData } from '../../../utils';
 import { STORAGE_SEED } from '../../../constants/localStorage';
 import { ResetPassword } from '../ResetPassword';
 
-export function Login() {
+export const Login: FC = () => {
   const [passwordError, setPasswordError] = useState('');
   const [activeStep, setActiveStep] = useState(0);
   const navigate = useNavigate();
@@ -121,4 +121,4 @@ export function Login() {
       </Container>
     </Container>
   );
-}
+};
