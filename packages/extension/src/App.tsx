@@ -1,33 +1,39 @@
-import { FC, useEffect } from 'react';
+import { FC } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { PrivateRoute } from './components/atoms/PrivateRoute';
-import { Login } from './components/pages/Login';
-import { Welcome } from './components/pages/Welcome';
-import { CreateWallet } from './components/pages/CreateWallet';
-import { ImportSeed } from './components/pages/ImportSeed';
-import { Home } from './components/pages/Home';
-import { Transaction } from './components/pages/Transaction';
+import {
+  About,
+  CreateWallet,
+  Home,
+  ImportSeed,
+  Login,
+  ResetPassword,
+  Settings,
+  Transaction,
+  Welcome
+} from './components/pages';
 import { ErrorBoundary } from './components/templates';
+import {
+  ABOUT_PATH,
+  CREATE_NEW_WALLET_PATH,
+  HOME_PATH,
+  IMPORT_SEED_PATH,
+  RESET_PASSWORD_PATH,
+  SETTINGS_PATH,
+  TRANSACTION_PATH,
+  WELCOME_PATH
+} from './constants/routes';
 
 const App: FC = () => {
-  useEffect(() => {
-    // Disable the scroll inside the react root container
-    document.querySelector('#root')?.addEventListener('wheel', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      return false;
-    });
-  }, []);
-
   return (
     <ErrorBoundary>
       <Routes>
         <Route path="*" element={<Login />} />
-        <Route path="/welcome" element={<Welcome />} />
-        <Route path="/import-seed" element={<ImportSeed />} />
-        <Route path="/create-new-wallet" element={<CreateWallet />} />
+        <Route path={WELCOME_PATH} element={<Welcome />} />
+        <Route path={IMPORT_SEED_PATH} element={<ImportSeed />} />
+        <Route path={CREATE_NEW_WALLET_PATH} element={<CreateWallet />} />
         <Route
-          path="/home"
+          path={HOME_PATH}
           element={
             <PrivateRoute>
               <Home />
@@ -36,13 +42,30 @@ const App: FC = () => {
         />
         /
         <Route
-          path="/transaction"
+          path={TRANSACTION_PATH}
           element={
             <PrivateRoute>
               <Transaction />
             </PrivateRoute>
           }
         />
+        <Route
+          path={SETTINGS_PATH}
+          element={
+            <PrivateRoute>
+              <Settings />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path={ABOUT_PATH}
+          element={
+            <PrivateRoute>
+              <About />
+            </PrivateRoute>
+          }
+        />
+        <Route path={RESET_PASSWORD_PATH} element={<ResetPassword />} />
       </Routes>
     </ErrorBoundary>
   );

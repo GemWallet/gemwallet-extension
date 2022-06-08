@@ -1,16 +1,20 @@
-import { FC } from 'react';
+import { FC, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button, Typography } from '@mui/material';
 import WarningIcon from '@mui/icons-material/Warning';
 import { PageWithReturn } from '../../templates';
 import { removeSeed } from '../../../utils';
 import { useLedger } from '../../../contexts/LedgerContext';
+import { SETTINGS_PATH } from '../../../constants/routes';
 
-export interface ResetPasswordProps {
-  handleBack: () => void;
-}
-
-export const ResetPassword: FC<ResetPasswordProps> = ({ handleBack }) => {
+export const ResetPassword: FC = () => {
+  const navigate = useNavigate();
   const { signOut } = useLedger();
+
+  const handleBack = useCallback(() => {
+    navigate(SETTINGS_PATH);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleRemoveSeed = () => {
     removeSeed().then(() => signOut());

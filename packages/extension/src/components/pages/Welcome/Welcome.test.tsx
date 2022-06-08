@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { BrowserRouter, MemoryRouter } from 'react-router-dom';
 import { Welcome } from '.';
 import App from '../../../App';
+import { WELCOME_PATH } from '../../../constants/routes';
 
 describe('Welcome Page', () => {
   test('Should render the proper elements', () => {
@@ -26,7 +27,7 @@ describe('Welcome Page', () => {
 
   test('Should go to new wallet page', async () => {
     render(
-      <MemoryRouter initialEntries={['/welcome']}>
+      <MemoryRouter initialEntries={[WELCOME_PATH]}>
         <App />
       </MemoryRouter>
     );
@@ -44,7 +45,7 @@ describe('Welcome Page', () => {
 
   test('Should go to import wallet page', async () => {
     render(
-      <MemoryRouter initialEntries={['/welcome']}>
+      <MemoryRouter initialEntries={[WELCOME_PATH]}>
         <App />
       </MemoryRouter>
     );

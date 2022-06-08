@@ -10,6 +10,7 @@ import { TextCopy } from '../../molecules/TextCopy';
 import { PageWithStepper } from '../../templates';
 import { saveSeed, openExternalLink } from '../../../utils';
 import { TWITTER_LINK } from '../../../constants/links';
+import { HOME_PATH, TRANSACTION_PATH } from '../../../constants/routes';
 
 const STEPS = 4;
 
@@ -41,9 +42,9 @@ export const CreateWallet: FC = () => {
   if (activeStep === 3) {
     const handleNext = () => {
       if (search.includes('transaction=payment')) {
-        navigate(`/transaction${search}`);
+        navigate(`${TRANSACTION_PATH}${search}`);
       } else {
-        navigate(`/home${search}`);
+        navigate(`${HOME_PATH}${search}`);
       }
     };
     return (

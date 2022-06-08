@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { CreateWallet } from '.';
 import App from '../../../App';
 import { LedgerContext } from '../../../contexts/LedgerContext';
+import { CREATE_NEW_WALLET_PATH } from '../../../constants/routes';
 
 describe('CreateWallet Page', () => {
   describe('Step 0 - Welcome Screen', () => {
@@ -199,7 +200,7 @@ describe('CreateWallet Page', () => {
       const renderedElements = render(
         <MemoryRouter
           initialEntries={[
-            '/create-new-wallet?chain=xrp&network=test&transaction=payment&amount=50&destination=rNhjf7Re4B9LvWiJwpGg1A1B1fWy4xh2Le&token=xrp&apiVersion=1'
+            `${CREATE_NEW_WALLET_PATH}?chain=xrp&network=test&transaction=payment&amount=50&destination=rNhjf7Re4B9LvWiJwpGg1A1B1fWy4xh2Le&token=xrp&apiVersion=1`
           ]}
         >
           <LedgerContext.Provider value={defaultValue}>
@@ -255,7 +256,7 @@ describe('CreateWallet Page', () => {
       };
 
       const renderedElements = render(
-        <MemoryRouter initialEntries={['/create-new-wallet']}>
+        <MemoryRouter initialEntries={[CREATE_NEW_WALLET_PATH]}>
           <LedgerContext.Provider value={defaultValue}>
             <App />
           </LedgerContext.Provider>

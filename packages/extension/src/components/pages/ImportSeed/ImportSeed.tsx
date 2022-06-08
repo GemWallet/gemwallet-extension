@@ -9,6 +9,7 @@ import { useLedger } from '../../../contexts/LedgerContext';
 import { PageWithStepper } from '../../templates';
 import { saveSeed, openExternalLink } from '../../../utils';
 import { TWITTER_LINK } from '../../../constants/links';
+import { HOME_PATH, TRANSACTION_PATH } from '../../../constants/routes';
 
 const STEPS = 3;
 
@@ -37,9 +38,9 @@ export const ImportSeed: FC = () => {
   if (activeStep === 2) {
     const handleNext = () => {
       if (search.includes('transaction=payment')) {
-        navigate(`/transaction${search}`);
+        navigate(`${TRANSACTION_PATH}${search}`);
       } else {
-        navigate(`/home${search}`);
+        navigate(`${HOME_PATH}${search}`);
       }
     };
     return (

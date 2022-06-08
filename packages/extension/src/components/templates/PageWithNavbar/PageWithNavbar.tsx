@@ -1,8 +1,11 @@
 import { FC } from 'react';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-import { Navbar, Drawer } from '../../organisms';
-import { DrawerProvider } from '../../../contexts/DrawerContext';
+import { Navbar, NavMenu } from '../../organisms';
+import { HEADER_HEIGHT, NAV_MENU_HEIGHT } from '../../../constants/size';
+
+const MARGIN_TOP_CONTAINER = 20;
+const CONTAINER_HEIGHT_TAKEN = HEADER_HEIGHT + NAV_MENU_HEIGHT + MARGIN_TOP_CONTAINER;
 
 export interface PageWithNavbarProps {
   title?: string;
@@ -11,18 +14,16 @@ export interface PageWithNavbarProps {
 export const PageWithNavbar: FC<PageWithNavbarProps> = ({ children, title }) => {
   return (
     <>
-      <DrawerProvider>
-        <Navbar />
-        <Drawer />
-      </DrawerProvider>
+      <Navbar />
       <Container
         component="main"
         style={{
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          height: 'calc(100vh - 94px - 40px)',
-          margin: '20px auto'
+          height: `calc(100vh - ${CONTAINER_HEIGHT_TAKEN}px)`,
+          margin: `${MARGIN_TOP_CONTAINER}px auto 0 auto`,
+          overflowY: 'auto'
         }}
       >
         {title && (
@@ -32,6 +33,7 @@ export const PageWithNavbar: FC<PageWithNavbarProps> = ({ children, title }) => 
         )}
         {children}
       </Container>
+      <NavMenu />
     </>
   );
 };

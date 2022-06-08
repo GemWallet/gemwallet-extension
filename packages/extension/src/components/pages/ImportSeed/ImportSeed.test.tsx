@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { ImportSeed } from '.';
 import App from '../../../App';
 import { LedgerContext } from '../../../contexts/LedgerContext';
+import { IMPORT_SEED_PATH } from '../../../constants/routes';
 
 const valueLedgerContext = {
   signIn: jest.fn(),
@@ -154,7 +155,7 @@ describe('ImportSeed Page', () => {
       const renderedElements = render(
         <MemoryRouter
           initialEntries={[
-            '/import-seed?chain=xrp&network=test&transaction=payment&amount=50&destination=rNhjf7Re4B9LvWiJwpGg1A1B1fWy4xh2Le&token=xrp&apiVersion=1'
+            `${IMPORT_SEED_PATH}?chain=xrp&network=test&transaction=payment&amount=50&destination=rNhjf7Re4B9LvWiJwpGg1A1B1fWy4xh2Le&token=xrp&apiVersion=1`
           ]}
         >
           <LedgerContext.Provider value={valueLedgerContext}>
@@ -190,7 +191,7 @@ describe('ImportSeed Page', () => {
 
     test('Should navigate to home page', async () => {
       const renderedElements = render(
-        <MemoryRouter initialEntries={['/import-seed']}>
+        <MemoryRouter initialEntries={[IMPORT_SEED_PATH]}>
           <LedgerContext.Provider value={valueLedgerContext}>
             <App />
           </LedgerContext.Provider>

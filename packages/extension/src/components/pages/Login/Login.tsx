@@ -8,11 +8,15 @@ import { Logo } from '../../atoms/Logo';
 import { useLedger } from '../../../contexts/LedgerContext';
 import { loadData } from '../../../utils';
 import { STORAGE_SEED } from '../../../constants/localStorage';
-import { ResetPassword } from '../ResetPassword';
+import {
+  HOME_PATH,
+  RESET_PASSWORD_PATH,
+  TRANSACTION_PATH,
+  WELCOME_PATH
+} from '../../../constants/routes';
 
 export const Login: FC = () => {
   const [passwordError, setPasswordError] = useState('');
-  const [activeStep, setActiveStep] = useState(0);
   const navigate = useNavigate();
   const { search } = useLocation();
   const { signIn, wallet } = useLedger();
@@ -21,13 +25,13 @@ export const Login: FC = () => {
     // Check if we are still logged-in
     if (wallet) {
       if (search.includes('transaction=payment')) {
-        navigate(`/transaction${search}`);
+        navigate(`${TRANSACTION_PATH}${search}`);
       } else {
-        navigate(`/home${search}`);
+        navigate(`${HOME_PATH}${search}`);
       }
       // We check if a wallet is saved
     } else if (!loadData(STORAGE_SEED)) {
-      navigate(`/welcome${search}`);
+      navigate(`${WELCOME_PATH}${search}`);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wallet]);
@@ -52,9 +56,9 @@ export const Login: FC = () => {
     const isSignIn = signIn((document.getElementById('password') as HTMLInputElement).value);
     if (isSignIn) {
       if (search.includes('transaction=payment')) {
-        navigate(`/transaction${search}`);
+        navigate(`${TRANSACTION_PATH}${search}`);
       } else {
-        navigate(`/home${search}`);
+        navigate(`${HOME_PATH}${search}`);
       }
     } else {
       setPasswordError('Incorrect password');
@@ -62,12 +66,9 @@ export const Login: FC = () => {
   };
 
   const handleReset = () => {
-    setActiveStep(1);
+    navigate(RESET_PASSWORD_PATH);
   };
 
-  if (activeStep === 1) {
-    return <ResetPassword handleBack={() => setActiveStep(0)} />;
-  }
   return (
     <Container
       component="main"
