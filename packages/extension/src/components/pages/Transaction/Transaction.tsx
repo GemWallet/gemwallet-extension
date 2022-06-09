@@ -6,7 +6,7 @@ import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import ErrorIcon from '@mui/icons-material/Error';
-import { PageWithNavbar } from '../../templates';
+import { PageWithHeader } from '../../templates';
 import { Transaction as TransactionOrganism } from '../../organisms/Transaction';
 import { useLedger } from '../../../contexts/LedgerContext';
 import { GEM_WALLET, REQUEST_TRANSACTION_STATUS } from '@gemwallet/api/src/constants/message';
@@ -109,15 +109,15 @@ export const Transaction: FC = () => {
 
   if (transaction !== 'waiting') {
     return (
-      <PageWithNavbar title="">
+      <PageWithHeader title="">
         <TransactionOrganism transaction={transaction} />
-      </PageWithNavbar>
+      </PageWithHeader>
     );
   }
 
   const { amount, fees, destination, token } = params;
   return (
-    <PageWithNavbar title="Confirm Transaction">
+    <PageWithHeader title="Confirm Transaction">
       <Paper elevation={24} style={{ padding: '10px' }}>
         <Typography variant="body1">Destination:</Typography>
         <Typography variant="body2">{destination}</Typography>
@@ -149,6 +149,6 @@ export const Transaction: FC = () => {
           Confirm
         </Button>
       </Container>
-    </PageWithNavbar>
+    </PageWithHeader>
   );
 };

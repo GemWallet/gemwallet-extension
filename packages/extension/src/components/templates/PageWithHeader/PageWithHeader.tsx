@@ -1,20 +1,20 @@
 import { FC } from 'react';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-import { Navbar, NavMenu } from '../../organisms';
+import { Header, NavMenu } from '../../organisms';
 import { HEADER_HEIGHT, NAV_MENU_HEIGHT } from '../../../constants/size';
 
 const MARGIN_TOP_CONTAINER = 20;
 const CONTAINER_HEIGHT_TAKEN = HEADER_HEIGHT + NAV_MENU_HEIGHT + MARGIN_TOP_CONTAINER;
 
-export interface PageWithNavbarProps {
+export interface PageWithHeaderProps {
   title?: string;
 }
 
-export const PageWithNavbar: FC<PageWithNavbarProps> = ({ children, title }) => {
+export const PageWithHeader: FC<PageWithHeaderProps> = ({ children, title }) => {
   return (
     <>
-      <Navbar />
+      <Header />
       <Container
         component="main"
         style={{

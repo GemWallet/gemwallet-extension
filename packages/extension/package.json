@@ -5,6 +5,7 @@
   "private": true,
   "dependencies": {
     "@craco/craco": "^6.4.0",
+    "@emeraldpay/hashicon-react": "^0.5.2",
     "@emotion/react": "^11.7.0",
     "@emotion/styled": "^11.6.0",
     "@mui/icons-material": "^5.2.4",
