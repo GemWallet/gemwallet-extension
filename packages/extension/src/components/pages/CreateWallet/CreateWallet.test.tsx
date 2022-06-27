@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { CreateWallet } from '.';
 import App from '../../../App';
 import { LedgerContext } from '../../../contexts/LedgerContext';
-import { CREATE_NEW_WALLET_PATH } from '../../../constants/routes';
+import { CREATE_NEW_WALLET_PATH } from '../../../constants';
 
 describe('CreateWallet Page', () => {
   describe('Step 0 - Welcome Screen', () => {

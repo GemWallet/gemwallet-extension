@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { Button, Typography } from '@mui/material';
 import WarningIcon from '@mui/icons-material/Warning';
 import { PageWithReturn } from '../../templates';
-import { removeSeed } from '../../../utils';
+import { removeWallets } from '../../../utils';
 import { useLedger } from '../../../contexts/LedgerContext';
-import { SETTINGS_PATH } from '../../../constants/routes';
+import { SETTINGS_PATH } from '../../../constants';
 
 export const ResetPassword: FC = () => {
   const navigate = useNavigate();
@@ -13,12 +13,11 @@ export const ResetPassword: FC = () => {
 
   const handleBack = useCallback(() => {
     navigate(SETTINGS_PATH);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [navigate]);
 
-  const handleRemoveSeed = () => {
-    removeSeed().then(() => signOut());
-  };
+  const handleRemoveWallets = useCallback(() => {
+    removeWallets().then(() => signOut());
+  }, [signOut]);
 
   return (
     <PageWithReturn title="Reset Password" handleBack={handleBack}>
@@ -57,7 +56,7 @@ export const ResetPassword: FC = () => {
         <Button variant="contained" size="large" onClick={handleBack}>
           Cancel
         </Button>
-        <Button variant="contained" size="large" onClick={handleRemoveSeed}>
+        <Button variant="contained" size="large" onClick={handleRemoveWallets}>
           Continue
         </Button>
       </div>

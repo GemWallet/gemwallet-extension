@@ -22,7 +22,7 @@ import {
   SETTINGS_PATH,
   TRANSACTION_PATH,
   WELCOME_PATH
-} from './constants/routes';
+} from './constants';
 
 const App: FC = () => {
   return (

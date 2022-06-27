@@ -10,10 +10,10 @@ import {
   DOCUMENTATION_LINK,
   FEEDBACK_LINK,
   GEMWALLET_LINK,
-  GITHUB_LINK
-} from '../../../constants/links';
+  GITHUB_LINK,
+  SETTINGS_PATH
+} from '../../../constants';
 import { Logo } from '../../atoms/Logo';
-import { SETTINGS_PATH } from '../../../constants/routes';
 
 const aboutLinks = [
   {
@@ -47,8 +47,7 @@ export const About: FC = () => {
 
   const handleBack = useCallback(() => {
     navigate(SETTINGS_PATH);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [navigate]);
 
   return (
     <PageWithReturn title="About" handleBack={handleBack}>

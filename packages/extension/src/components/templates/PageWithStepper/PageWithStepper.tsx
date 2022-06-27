@@ -33,8 +33,7 @@ export const PageWithStepper: FC<PageWithStepperProps> = ({
     return () => {
       window.removeEventListener('keyup', upHandler);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeStep]);
+  }, [activeStep, handleNext]);
 
   return (
     <>

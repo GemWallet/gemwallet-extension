@@ -4,7 +4,7 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import { Logo } from '../../atoms/Logo';
-import { CREATE_NEW_WALLET_PATH, IMPORT_SEED_PATH } from '../../../constants/routes';
+import { CREATE_NEW_WALLET_PATH, IMPORT_SEED_PATH } from '../../../constants';
 
 export const Welcome: FC = () => {
   const navigate = useNavigate();

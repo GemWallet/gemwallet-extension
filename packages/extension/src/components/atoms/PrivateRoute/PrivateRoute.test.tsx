@@ -1,6 +1,6 @@
 import { BrowserRouter } from 'react-router-dom';
 import { render, screen } from '@testing-library/react';
-import * as xrpl from 'xrpl';
+import { Wallet } from 'xrpl';
 import { PrivateRoute } from '.';
 import { LedgerContext } from '../../../contexts/LedgerContext';
 
@@ -13,7 +13,7 @@ describe('PrivateRoute Atom', () => {
     estimateNetworkFees: jest.fn()
   };
   test('Should redirect as wallet is found', () => {
-    const wallet: xrpl.Wallet = {
+    const wallet: Wallet = {
       publicKey: '',
       privateKey: '',
       classicAddress: '',

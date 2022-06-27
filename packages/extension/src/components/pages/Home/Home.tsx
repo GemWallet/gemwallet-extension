@@ -4,11 +4,11 @@ import { Wallet } from '../../molecules/Wallet';
 import { useLedger } from '../../../contexts/LedgerContext';
 
 export const Home: FC = () => {
-  const { wallet } = useLedger();
+  const { wallets, selectedWallet } = useLedger();
 
   return (
     <PageWithHeader>
-      <Wallet address={wallet?.address || 'Loading...'} />
+      <Wallet address={wallets?.[selectedWallet]?.publicAddress || 'Loading...'} />
     </PageWithHeader>
   );
 };

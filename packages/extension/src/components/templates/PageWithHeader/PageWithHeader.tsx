@@ -2,7 +2,8 @@ import { FC } from 'react';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import { Header, NavMenu } from '../../organisms';
-import { HEADER_HEIGHT, NAV_MENU_HEIGHT } from '../../../constants/size';
+import { HEADER_HEIGHT, NAV_MENU_HEIGHT } from '../../../constants';
+import { useLedger } from '../../../contexts/LedgerContext';
 
 const MARGIN_TOP_CONTAINER = 20;
 const CONTAINER_HEIGHT_TAKEN = HEADER_HEIGHT + NAV_MENU_HEIGHT + MARGIN_TOP_CONTAINER;
@@ -12,9 +13,14 @@ export interface PageWithHeaderProps {
 }
 
 export const PageWithHeader: FC<PageWithHeaderProps> = ({ children, title }) => {
+  const { wallets, selectedWallet } = useLedger();
+
+  if (!wallets?.[selectedWallet]) {
+    return null;
+  }
   return (
     <>
-      <Header />
+      <Header wallet={wallets[selectedWallet]} />
       <Container
         component="main"
         style={{

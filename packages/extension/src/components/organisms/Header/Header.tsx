@@ -7,6 +7,8 @@ import DoneIcon from '@mui/icons-material/Done';
 import { NetworkIndicator } from '../../molecules/NetworkIndicator';
 import { WalletIcon } from '../../atoms';
 import { truncateAddress } from '../../../utils';
+import { HEADER_HEIGHT_WITHOUT_PADDING, SECONDARY_GRAY } from '../../../constants';
+import { WalletLedger } from '../../../types';
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   display: 'block',
@@ -14,7 +16,7 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   paddingBottom: theme.spacing(2),
   // Override media queries injected by theme.mixins.toolbar
   '@media all': {
-    height: 70
+    height: HEADER_HEIGHT_WITHOUT_PADDING
   }
 }));
 
@@ -24,7 +26,11 @@ const resetTimeout = (timeoutReference: NodeJS.Timeout | null) => {
   }
 };
 
-export const Header: FC = () => {
+export interface HeaderProps {
+  wallet: WalletLedger;
+}
+
+export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const [isCopied, setIsCopied] = useState(false);
 
@@ -32,7 +38,6 @@ export const Header: FC = () => {
     return () => resetTimeout(timerRef.current);
   }, []);
 
-  const publicAddress = 'rJxoHDLrT1soHXLJ6uwMs5opms1kuiUEdN';
   const truncatedAddress = useMemo(() => truncateAddress(publicAddress), [publicAddress]);
 
   const handleShare = useCallback(() => {
@@ -40,7 +45,7 @@ export const Header: FC = () => {
     copyToClipboard(publicAddress);
     setIsCopied(true);
     timerRef.current = setTimeout(() => setIsCopied(false), 2000);
-  }, []);
+  }, [publicAddress]);
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -57,8 +62,11 @@ export const Header: FC = () => {
             <WalletIcon publicAddress={publicAddress} />
             <NetworkIndicator />
           </div>
+          <Typography variant="body2" style={{ marginTop: '10px' }}>
+            {name}
+          </Typography>
           <div style={{ display: 'flex', alignItems: 'center' }}>
-            <Typography variant="body2" style={{ margin: '10px 0' }}>
+            <Typography variant="body2" style={{ margin: '3px 0', color: SECONDARY_GRAY }}>
               {truncatedAddress}
             </Typography>
             <Tooltip title="Copy your public address">
@@ -72,7 +80,7 @@ export const Header: FC = () => {
                 {isCopied ? (
                   <DoneIcon sx={{ fontSize: '0.9rem' }} color="success" />
                 ) : (
-                  <ContentCopyIcon sx={{ fontSize: '0.9rem' }} />
+                  <ContentCopyIcon sx={{ fontSize: '0.9rem' }} htmlColor={SECONDARY_GRAY} />
                 )}
               </IconButton>
             </Tooltip>

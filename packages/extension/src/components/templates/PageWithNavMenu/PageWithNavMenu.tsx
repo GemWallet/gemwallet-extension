@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { NavMenu } from '../../organisms';
-import { NAV_MENU_HEIGHT } from '../../../constants/size';
+import { NAV_MENU_HEIGHT } from '../../../constants';
 
 export const PageWithNavMenu: FC = ({ children }) => {
   return (

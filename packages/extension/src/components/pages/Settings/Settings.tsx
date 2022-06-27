@@ -13,9 +13,13 @@ import {
 import { useLedger } from '../../../contexts/LedgerContext';
 import { PageWithNavMenu } from '../../templates';
 import { openExternalLink } from '../../../utils';
-import { FAQ_LINK, FEEDBACK_LINK } from '../../../constants/links';
-import { NAV_MENU_HEIGHT } from '../../../constants/size';
-import { ABOUT_PATH, RESET_PASSWORD_PATH } from '../../../constants/routes';
+import {
+  ABOUT_PATH,
+  FAQ_LINK,
+  FEEDBACK_LINK,
+  NAV_MENU_HEIGHT,
+  RESET_PASSWORD_PATH
+} from '../../../constants';
 
 const TITLE_HEIGHT = 56;
 const CONTAINER_HEIGHT_TAKEN = TITLE_HEIGHT + NAV_MENU_HEIGHT;
@@ -48,8 +52,7 @@ export const Settings: FC = () => {
         onClick: () => navigate(ABOUT_PATH)
       }
     ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [navigate]
   );
 
   return (

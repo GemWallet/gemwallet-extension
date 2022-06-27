@@ -1,5 +1,6 @@
-import { useState, useEffect, FC } from 'react';
+import { useState, useEffect, FC, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { Wallet } from 'xrpl';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
@@ -8,14 +9,14 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import { useLedger } from '../../../contexts/LedgerContext';
 import { TextCopy } from '../../molecules/TextCopy';
 import { PageWithStepper } from '../../templates';
-import { saveSeed, openExternalLink } from '../../../utils';
-import { TWITTER_LINK } from '../../../constants/links';
-import { HOME_PATH, TRANSACTION_PATH } from '../../../constants/routes';
+import { saveWallet, openExternalLink } from '../../../utils';
+import { HOME_PATH, TRANSACTION_PATH, TWITTER_LINK } from '../../../constants';
 
 const STEPS = 4;
 
 export const CreateWallet: FC = () => {
-  const [seed, setSeed] = useState('Loading...');
+  const [wallet, setWallet] = useState<Wallet | undefined>();
+  // TODO: Instead of using "activeStep" do use react router (cleaner)
   const [activeStep, setActiveStep] = useState(0);
   const [seedError, setSeedError] = useState('');
   const [passwordError, setPasswordError] = useState('');
@@ -24,20 +25,20 @@ export const CreateWallet: FC = () => {
   const { search } = useLocation();
 
   useEffect(() => {
-    const seed = generateWallet();
-    if (seed) {
-      setSeed(seed);
+    const wallet = generateWallet();
+    // TODO: Handle the Wallet not properly generated
+    if (wallet) {
+      setWallet(wallet);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [generateWallet]);
+
+  const handleBack = useCallback(() => {
+    setActiveStep((prevActiveStep) => prevActiveStep - 1);
   }, []);
 
-  const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  };
-
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
-  };
+  }, []);
 
   if (activeStep === 3) {
     const handleNext = () => {
@@ -87,8 +88,15 @@ export const CreateWallet: FC = () => {
       } else if (passwordValue !== confirmPasswordValue) {
         setPasswordError('Passwords must match');
       } else {
-        saveSeed(seed, passwordValue);
-        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        //TODO: Be sure that the wallet is present
+        if (wallet && wallet.seed) {
+          const _wallet = {
+            publicAddress: wallet.address,
+            seed: wallet.seed
+          };
+          saveWallet(_wallet, passwordValue);
+          setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        }
       }
     };
     return (
@@ -132,7 +140,7 @@ export const CreateWallet: FC = () => {
 
   if (activeStep === 1) {
     const handleNext = () => {
-      if ((document.getElementById('seed') as HTMLInputElement).value === seed) {
+      if ((document.getElementById('seed') as HTMLInputElement).value === wallet?.seed) {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
       } else {
         setSeedError('Seed incorrect');
@@ -173,6 +181,7 @@ export const CreateWallet: FC = () => {
       activeStep={activeStep}
       buttonText="Next"
       handleBack={handleBack}
+      // TODO: Cannot handle next if the wallet is not properly generated
       handleNext={handleNext}
     >
       <Typography variant="h4" component="h1" style={{ marginTop: '30px' }}>
@@ -182,7 +191,10 @@ export const CreateWallet: FC = () => {
         This is the only way you will be able to recover your account. Please store it somewhere
         safe!
       </Typography>
-      <TextCopy text={seed} />
+      {
+        // TODO: Make sure that the wallet exist before proposing to copy (loading)
+      }
+      <TextCopy text={wallet?.seed || ''} />
     </PageWithStepper>
   );
 };

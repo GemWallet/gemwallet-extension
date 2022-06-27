@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { BrowserRouter, MemoryRouter } from 'react-router-dom';
 import { Welcome } from '.';
 import App from '../../../App';
-import { WELCOME_PATH } from '../../../constants/routes';
+import { WELCOME_PATH } from '../../../constants';
 
 describe('Welcome Page', () => {
   test('Should render the proper elements', () => {

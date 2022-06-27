@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { ImportSeed } from '.';
 import App from '../../../App';
 import { LedgerContext } from '../../../contexts/LedgerContext';
-import { IMPORT_SEED_PATH } from '../../../constants/routes';
+import { IMPORT_SEED_PATH } from '../../../constants';
 
 const valueLedgerContext = {
   signIn: jest.fn(),
