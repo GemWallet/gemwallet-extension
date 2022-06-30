@@ -6,7 +6,7 @@ import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import ErrorIcon from '@mui/icons-material/Error';
-import { PageWithHeader } from '../../templates';
+import { PageWithTitle } from '../../templates';
 import { Transaction as TransactionOrganism } from '../../organisms/Transaction';
 import { useLedger } from '../../../contexts/LedgerContext';
 import { GEM_WALLET, REQUEST_TRANSACTION_STATUS } from '@gemwallet/api/src/constants/message';
@@ -71,8 +71,7 @@ export const Transaction: FC = () => {
         }));
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [client]);
+  }, [client, estimateNetworkFees, params]);
 
   const createMessage = (status: TransactionStatus): MessageListenerEvent => {
     const { id } = params;
@@ -109,15 +108,15 @@ export const Transaction: FC = () => {
 
   if (transaction !== 'waiting') {
     return (
-      <PageWithHeader title="">
+      <PageWithTitle title="">
         <TransactionOrganism transaction={transaction} />
-      </PageWithHeader>
+      </PageWithTitle>
     );
   }
 
   const { amount, fees, destination, token } = params;
   return (
-    <PageWithHeader title="Confirm Transaction">
+    <PageWithTitle title="Confirm Transaction">
       <Paper elevation={24} style={{ padding: '10px' }}>
         <Typography variant="body1">Destination:</Typography>
         <Typography variant="body2">{destination}</Typography>
@@ -149,6 +148,6 @@ export const Transaction: FC = () => {
           Confirm
         </Button>
       </Container>
-    </PageWithHeader>
+    </PageWithTitle>
   );
 };
