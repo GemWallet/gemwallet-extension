@@ -2,9 +2,9 @@ import { FC, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { BottomNavigation, BottomNavigationAction } from '@mui/material';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
-import HistoryIcon from '@mui/icons-material/History';
+// import HistoryIcon from '@mui/icons-material/History';
 import SettingsIcon from '@mui/icons-material/Settings';
-import { HISTORY_PATH, HOME_PATH, SETTINGS_PATH } from '../../../constants/routes';
+import { HOME_PATH, SETTINGS_PATH } from '../../../constants/routes';
 
 const navigation = [
   {
@@ -12,11 +12,12 @@ const navigation = [
     pathname: HOME_PATH,
     icon: <AccountBalanceWalletIcon />
   },
-  {
-    label: 'History',
-    pathname: HISTORY_PATH,
-    icon: <HistoryIcon />
-  },
+  // TODO: History will be added in a separate ticket
+  // {
+  //   label: 'History',
+  //   pathname: HISTORY_PATH,
+  //   icon: <HistoryIcon />
+  // },
   {
     label: 'Settings',
     pathname: SETTINGS_PATH,
