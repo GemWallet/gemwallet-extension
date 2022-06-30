@@ -40,7 +40,6 @@ const App: FC = () => {
             </PrivateRoute>
           }
         />
-        /
         <Route
           path={TRANSACTION_PATH}
           element={
