@@ -1,4 +1,4 @@
-import { useState, useEffect, FC } from 'react';
+import { useState, useEffect, FC, useCallback } from 'react';
 import copyToClipboard from 'copy-to-clipboard';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
@@ -36,11 +36,11 @@ export const Wallet: FC<WalletProps> = ({ address }) => {
     fetchBalance();
   }, [address, client]);
 
-  const handleShare = () => {
+  const handleShare = useCallback(() => {
     copyToClipboard(address);
     setIsShared(true);
     setTimeout(() => setIsShared(false), 5000);
-  };
+  }, [address]);
 
   return (
     <Paper elevation={24} style={{ padding: '10px' }}>

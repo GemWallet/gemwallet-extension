@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect, createContext, FC } from 'react';
+import { useContext, useState, useEffect, createContext, FC, useCallback } from 'react';
 
 export interface CloseProps {
   windowId: number;
@@ -18,21 +18,21 @@ const BrowserContext = createContext<ContextType>({
 const BrowserProvider: FC = ({ children }) => {
   const [window, setWindow] = useState<any>();
 
-  const getCurrentWindow = async () => {
+  const getCurrentWindow = useCallback(async () => {
     if (chrome?.windows) {
       await chrome.windows.getCurrent((_window) => setWindow(_window));
     }
-  };
+  }, []);
 
   useEffect(() => {
     getCurrentWindow();
-  }, []);
+  }, [getCurrentWindow]);
 
-  const closeExtension = ({ windowId, callback }: CloseProps) => {
+  const closeExtension = useCallback(({ windowId, callback }: CloseProps) => {
     if (chrome?.windows) {
       chrome.windows.remove(windowId, callback);
     }
-  };
+  }, []);
 
   const value: ContextType = {
     window,

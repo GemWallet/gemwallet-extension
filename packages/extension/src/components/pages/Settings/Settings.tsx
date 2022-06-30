@@ -1,4 +1,4 @@
-import { FC, useMemo } from 'react';
+import { FC, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import {
@@ -28,10 +28,9 @@ export const Settings: FC = () => {
   const navigate = useNavigate();
   const { signOut } = useLedger();
 
-  // TODO: UseCallback - check all the files to add the useCallback :)
-  const handleLock = () => {
+  const handleLock = useCallback(() => {
     signOut();
-  };
+  }, [signOut]);
 
   const items = useMemo(
     () => [

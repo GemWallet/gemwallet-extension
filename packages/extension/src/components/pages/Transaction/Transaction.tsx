@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
@@ -73,19 +73,29 @@ export const Transaction: FC = () => {
     }
   }, [client, estimateNetworkFees, params]);
 
-  const createMessage = (status: TransactionStatus): MessageListenerEvent => {
-    const { id } = params;
-    return {
-      app: GEM_WALLET,
-      type: REQUEST_TRANSACTION_STATUS,
-      payload: {
-        status,
-        id
-      }
-    };
-  };
+  const createMessage = useCallback(
+    (status: TransactionStatus): MessageListenerEvent => {
+      const { id } = params;
+      return {
+        app: GEM_WALLET,
+        type: REQUEST_TRANSACTION_STATUS,
+        payload: {
+          status,
+          id
+        }
+      };
+    },
+    [params]
+  );
 
-  const handleConfirm = () => {
+  const handleReject = useCallback(() => {
+    const status = 'rejected';
+    setTransaction(status);
+    const message = createMessage(status);
+    chrome.runtime.sendMessage(message);
+  }, [createMessage]);
+
+  const handleConfirm = useCallback(() => {
     setTransaction('pending');
     const { amount, destination } = params;
     sendTransaction({ amount, destination })
@@ -97,14 +107,7 @@ export const Transaction: FC = () => {
       .catch(() => {
         handleReject();
       });
-  };
-
-  const handleReject = () => {
-    const status = 'rejected';
-    setTransaction(status);
-    const message = createMessage(status);
-    chrome.runtime.sendMessage(message);
-  };
+  }, [createMessage, handleReject, params, sendTransaction]);
 
   if (transaction !== 'waiting') {
     return (
