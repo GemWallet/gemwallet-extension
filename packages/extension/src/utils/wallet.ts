@@ -1,8 +1,10 @@
 import { STORAGE_WALLETS } from '../constants/localStorage';
 import { decrypt, encrypt, loadData, saveData, removeData } from '.';
-import { PartiallyOptional, Wallet } from '../types';
+import { Wallet } from '../types';
 
-type WalletToSave = PartiallyOptional<Wallet, 'name'>;
+interface WalletToSave extends Omit<Wallet, 'name'> {
+  name?: string;
+}
 
 export const saveWallet = (wallet: WalletToSave, password: string) => {
   const wallets = JSON.parse(loadData(STORAGE_WALLETS) || '[]');
