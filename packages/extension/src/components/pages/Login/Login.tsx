@@ -1,4 +1,4 @@
-import { useState, useEffect, FC } from 'react';
+import { useState, useEffect, FC, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
@@ -7,30 +7,46 @@ import Button from '@mui/material/Button';
 import { Logo } from '../../atoms/Logo';
 import { useLedger } from '../../../contexts/LedgerContext';
 import { loadData } from '../../../utils';
-import { STORAGE_SEED } from '../../../constants/localStorage';
-import { ResetPassword } from '../ResetPassword';
+import {
+  HOME_PATH,
+  RESET_PASSWORD_PATH,
+  STORAGE_WALLETS,
+  TRANSACTION_PATH,
+  WELCOME_PATH
+} from '../../../constants';
 
 export const Login: FC = () => {
   const [passwordError, setPasswordError] = useState('');
-  const [activeStep, setActiveStep] = useState(0);
   const navigate = useNavigate();
   const { search } = useLocation();
-  const { signIn, wallet } = useLedger();
+  const { signIn, wallets, selectedWallet } = useLedger();
 
   useEffect(() => {
     // Check if we are still logged-in
-    if (wallet) {
+    if (wallets?.[selectedWallet]) {
       if (search.includes('transaction=payment')) {
-        navigate(`/transaction${search}`);
+        navigate(`${TRANSACTION_PATH}${search}`);
       } else {
-        navigate(`/home${search}`);
+        navigate(`${HOME_PATH}${search}`);
       }
       // We check if a wallet is saved
-    } else if (!loadData(STORAGE_SEED)) {
-      navigate(`/welcome${search}`);
+    } else if (!loadData(STORAGE_WALLETS)) {
+      navigate(`${WELCOME_PATH}${search}`);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [wallet]);
+  }, [navigate, search, selectedWallet, wallets]);
+
+  const handleUnlock = useCallback(() => {
+    const isSignIn = signIn((document.getElementById('password') as HTMLInputElement).value);
+    if (isSignIn) {
+      if (search.includes('transaction=payment')) {
+        navigate(`${TRANSACTION_PATH}${search}`);
+      } else {
+        navigate(`${HOME_PATH}${search}`);
+      }
+    } else {
+      setPasswordError('Incorrect password');
+    }
+  }, [navigate, search, signIn]);
 
   /*
    * Handle Login step button by pressing 'Enter'
@@ -45,29 +61,12 @@ export const Login: FC = () => {
     return () => {
       window.removeEventListener('keyup', upHandler);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [handleUnlock]);
 
-  const handleUnlock = () => {
-    const isSignIn = signIn((document.getElementById('password') as HTMLInputElement).value);
-    if (isSignIn) {
-      if (search.includes('transaction=payment')) {
-        navigate(`/transaction${search}`);
-      } else {
-        navigate(`/home${search}`);
-      }
-    } else {
-      setPasswordError('Incorrect password');
-    }
-  };
+  const handleReset = useCallback(() => {
+    navigate(RESET_PASSWORD_PATH);
+  }, [navigate]);
 
-  const handleReset = () => {
-    setActiveStep(1);
-  };
-
-  if (activeStep === 1) {
-    return <ResetPassword handleBack={() => setActiveStep(0)} />;
-  }
   return (
     <Container
       component="main"

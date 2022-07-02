@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
@@ -6,7 +6,7 @@ import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import ErrorIcon from '@mui/icons-material/Error';
-import { PageWithNavbar } from '../../templates';
+import { PageWithTitle } from '../../templates';
 import { Transaction as TransactionOrganism } from '../../organisms/Transaction';
 import { useLedger } from '../../../contexts/LedgerContext';
 import { GEM_WALLET, REQUEST_TRANSACTION_STATUS } from '@gemwallet/api/src/constants/message';
@@ -71,22 +71,31 @@ export const Transaction: FC = () => {
         }));
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [client]);
+  }, [client, estimateNetworkFees, params]);
 
-  const createMessage = (status: TransactionStatus): MessageListenerEvent => {
-    const { id } = params;
-    return {
-      app: GEM_WALLET,
-      type: REQUEST_TRANSACTION_STATUS,
-      payload: {
-        status,
-        id
-      }
-    };
-  };
+  const createMessage = useCallback(
+    (status: TransactionStatus): MessageListenerEvent => {
+      const { id } = params;
+      return {
+        app: GEM_WALLET,
+        type: REQUEST_TRANSACTION_STATUS,
+        payload: {
+          status,
+          id
+        }
+      };
+    },
+    [params]
+  );
 
-  const handleConfirm = () => {
+  const handleReject = useCallback(() => {
+    const status = 'rejected';
+    setTransaction(status);
+    const message = createMessage(status);
+    chrome.runtime.sendMessage(message);
+  }, [createMessage]);
+
+  const handleConfirm = useCallback(() => {
     setTransaction('pending');
     const { amount, destination } = params;
     sendTransaction({ amount, destination })
@@ -98,26 +107,19 @@ export const Transaction: FC = () => {
       .catch(() => {
         handleReject();
       });
-  };
-
-  const handleReject = () => {
-    const status = 'rejected';
-    setTransaction(status);
-    const message = createMessage(status);
-    chrome.runtime.sendMessage(message);
-  };
+  }, [createMessage, handleReject, params, sendTransaction]);
 
   if (transaction !== 'waiting') {
     return (
-      <PageWithNavbar title="">
+      <PageWithTitle title="">
         <TransactionOrganism transaction={transaction} />
-      </PageWithNavbar>
+      </PageWithTitle>
     );
   }
 
   const { amount, fees, destination, token } = params;
   return (
-    <PageWithNavbar title="Confirm Transaction">
+    <PageWithTitle title="Confirm Transaction">
       <Paper elevation={24} style={{ padding: '10px' }}>
         <Typography variant="body1">Destination:</Typography>
         <Typography variant="body2">{destination}</Typography>
@@ -149,6 +151,6 @@ export const Transaction: FC = () => {
           Confirm
         </Button>
       </Container>
-    </PageWithNavbar>
+    </PageWithTitle>
   );
 };

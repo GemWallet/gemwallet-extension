@@ -1,14 +1,14 @@
 import { FC } from 'react';
-import { PageWithNavbar } from '../../templates';
+import { PageWithHeader } from '../../templates';
 import { Wallet } from '../../molecules/Wallet';
 import { useLedger } from '../../../contexts/LedgerContext';
 
 export const Home: FC = () => {
-  const { wallet } = useLedger();
+  const { wallets, selectedWallet } = useLedger();
 
   return (
-    <PageWithNavbar>
-      <Wallet address={wallet?.address || 'Loading...'} />
-    </PageWithNavbar>
+    <PageWithHeader>
+      <Wallet address={wallets?.[selectedWallet]?.publicAddress || 'Loading...'} />
+    </PageWithHeader>
   );
 };

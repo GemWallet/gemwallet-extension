@@ -12,6 +12,25 @@ import './index.css';
 const theme = createTheme({
   palette: {
     mode: 'dark'
+  },
+  components: {
+    MuiBottomNavigation: {
+      styleOverrides: {
+        root: {
+          backgroundColor: 'transparent',
+          borderTop: 'solid 1px #bcbcbc'
+        }
+      }
+    },
+    MuiBottomNavigationAction: {
+      styleOverrides: {
+        root: {
+          '&.Mui-selected': {
+            color: '#ffffff'
+          }
+        }
+      }
+    }
   }
 });
 

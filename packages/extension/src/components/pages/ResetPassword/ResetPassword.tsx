@@ -1,20 +1,23 @@
-import { FC } from 'react';
+import { FC, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button, Typography } from '@mui/material';
 import WarningIcon from '@mui/icons-material/Warning';
 import { PageWithReturn } from '../../templates';
-import { removeSeed } from '../../../utils';
+import { removeWallets } from '../../../utils';
 import { useLedger } from '../../../contexts/LedgerContext';
+import { SETTINGS_PATH } from '../../../constants';
 
-export interface ResetPasswordProps {
-  handleBack: () => void;
-}
-
-export const ResetPassword: FC<ResetPasswordProps> = ({ handleBack }) => {
+export const ResetPassword: FC = () => {
+  const navigate = useNavigate();
   const { signOut } = useLedger();
 
-  const handleRemoveSeed = () => {
-    removeSeed().then(() => signOut());
-  };
+  const handleBack = useCallback(() => {
+    navigate(SETTINGS_PATH);
+  }, [navigate]);
+
+  const handleRemoveWallets = useCallback(() => {
+    removeWallets().then(() => signOut());
+  }, [signOut]);
 
   return (
     <PageWithReturn title="Reset Password" handleBack={handleBack}>
@@ -53,7 +56,7 @@ export const ResetPassword: FC<ResetPasswordProps> = ({ handleBack }) => {
         <Button variant="contained" size="large" onClick={handleBack}>
           Cancel
         </Button>
-        <Button variant="contained" size="large" onClick={handleRemoveSeed}>
+        <Button variant="contained" size="large" onClick={handleRemoveWallets}>
           Continue
         </Button>
       </div>

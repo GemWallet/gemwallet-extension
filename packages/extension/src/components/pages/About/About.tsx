@@ -1,4 +1,5 @@
-import { FC } from 'react';
+import { FC, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import LinkIcon from '@mui/icons-material/Link';
 import { List, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
 import { PageWithReturn } from '../../templates';
@@ -9,8 +10,9 @@ import {
   DOCUMENTATION_LINK,
   FEEDBACK_LINK,
   GEMWALLET_LINK,
-  GITHUB_LINK
-} from '../../../constants/links';
+  GITHUB_LINK,
+  SETTINGS_PATH
+} from '../../../constants';
 import { Logo } from '../../atoms/Logo';
 
 const aboutLinks = [
@@ -40,11 +42,13 @@ const aboutLinks = [
   }
 ];
 
-interface AboutPageProps {
-  handleBack: () => void;
-}
+export const About: FC = () => {
+  const navigate = useNavigate();
 
-export const AboutPage: FC<AboutPageProps> = ({ handleBack }) => {
+  const handleBack = useCallback(() => {
+    navigate(SETTINGS_PATH);
+  }, [navigate]);
+
   return (
     <PageWithReturn title="About" handleBack={handleBack}>
       <div

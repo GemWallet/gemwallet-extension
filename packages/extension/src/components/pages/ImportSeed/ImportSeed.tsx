@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, useCallback, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
@@ -7,24 +7,25 @@ import TwitterIcon from '@mui/icons-material/Twitter';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import { useLedger } from '../../../contexts/LedgerContext';
 import { PageWithStepper } from '../../templates';
-import { saveSeed, openExternalLink } from '../../../utils';
-import { TWITTER_LINK } from '../../../constants/links';
+import { saveWallet, openExternalLink } from '../../../utils';
+import { HOME_PATH, TRANSACTION_PATH, TWITTER_LINK } from '../../../constants';
 
 const STEPS = 3;
 
 export const ImportSeed: FC = () => {
+  // TODO: Instead of using "activeStep" do use react router (cleaner)
   const [activeStep, setActiveStep] = useState(0);
   const [passwordError, setPasswordError] = useState('');
   const [seedError, setSeedError] = useState('');
-  const { importSeed, wallet } = useLedger();
+  const { importSeed, wallets, selectedWallet } = useLedger();
   const navigate = useNavigate();
   const { search } = useLocation();
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  };
+  }, []);
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     const seedValue = (document.getElementById('seed') as HTMLInputElement).value;
     const isValidSeed = importSeed(seedValue);
     if (isValidSeed) {
@@ -32,14 +33,14 @@ export const ImportSeed: FC = () => {
     } else {
       setSeedError('Your seed is invalid');
     }
-  };
+  }, [importSeed]);
 
   if (activeStep === 2) {
     const handleNext = () => {
       if (search.includes('transaction=payment')) {
-        navigate(`/transaction${search}`);
+        navigate(`${TRANSACTION_PATH}${search}`);
       } else {
-        navigate(`/home${search}`);
+        navigate(`${HOME_PATH}${search}`);
       }
     };
     return (
@@ -81,8 +82,13 @@ export const ImportSeed: FC = () => {
         setPasswordError('Password must be at least 8 characters long');
       } else if (passwordValue !== confirmPasswordValue) {
         setPasswordError('Passwords must match');
-      } else if (wallet?.seed) {
-        saveSeed(wallet?.seed, passwordValue);
+        //TODO: Be sure that the wallet is present
+      } else if (wallets?.[selectedWallet]?.wallet.seed) {
+        const _wallet = {
+          publicAddress: wallets[selectedWallet].publicAddress,
+          seed: wallets[selectedWallet].wallet.seed as string
+        };
+        saveWallet(_wallet, passwordValue);
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
       }
     };
