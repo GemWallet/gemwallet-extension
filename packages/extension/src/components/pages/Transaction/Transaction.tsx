@@ -28,6 +28,8 @@ export const Transaction: FC = () => {
     id: 0
   });
 
+  const { amount, fees, destination, token } = params;
+
   /**
    * transaction can have 4 stages:
    * - waiting: waiting for a user interaction
@@ -64,14 +66,14 @@ export const Transaction: FC = () => {
   useEffect(() => {
     if (client) {
       const { amount } = params;
-      estimateNetworkFees(amount).then((fees: string) => {
+      estimateNetworkFees({ amount, destination }).then((fees: string) => {
         setParams((prevParams) => ({
           ...prevParams,
           fees: fees || DEFAULT_FEES
         }));
       });
     }
-  }, [client, estimateNetworkFees, params]);
+  }, [client, destination, estimateNetworkFees, params]);
 
   const createMessage = useCallback(
     (status: TransactionStatus): MessageListenerEvent => {
@@ -117,7 +119,6 @@ export const Transaction: FC = () => {
     );
   }
 
-  const { amount, fees, destination, token } = params;
   return (
     <PageWithTitle title="Confirm Transaction">
       <Paper elevation={24} style={{ padding: '10px' }}>

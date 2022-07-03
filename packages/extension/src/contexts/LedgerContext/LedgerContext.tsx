@@ -1,7 +1,7 @@
 import { TransactionStatus } from '@gemwallet/api/src/constants/transaction.types';
 import { useContext, useState, useEffect, createContext, FC, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Wallet, Client, xrpToDrops, dropsToXrp } from 'xrpl';
+import { Wallet, Client, xrpToDrops, dropsToXrp, TransactionMetadata, Payment } from 'xrpl';
 import { HOME_PATH } from '../../constants';
 import { WalletLedger } from '../../types';
 import { loadWallets } from '../../utils';
@@ -17,7 +17,7 @@ interface ContextType {
   generateWallet: () => Wallet | undefined;
   importSeed: (seed: string) => boolean;
   sendTransaction: (payload: TransactionPayloadType) => Promise<TransactionStatus>;
-  estimateNetworkFees: (amount: string) => Promise<string>;
+  estimateNetworkFees: (payload: TransactionPayloadType) => Promise<string>;
   wallets: WalletLedger[];
   selectedWallet: number;
   client?: Client;
@@ -40,7 +40,7 @@ const LedgerContext = createContext<ContextType>({
 
 const LedgerProvider: FC = ({ children }) => {
   const navigate = useNavigate();
-  const [client, setClient] = useState<any>();
+  const [client, setClient] = useState<Client | undefined>();
   const [wallets, setWallets] = useState<WalletLedger[]>([]);
   // TODO: Use setSelectedWallet when multi-wallet creation and choosing feature will be done
   /* The default selectedWallet will be selected by a value in local storage
@@ -120,19 +120,24 @@ const LedgerProvider: FC = ({ children }) => {
   }, []);
 
   const estimateNetworkFees = useCallback(
-    async (amount: string) => {
+    async ({ amount, destination }: TransactionPayloadType) => {
       if (!client) {
         throw new Error('You need to be connected to a ledger to make a transaction');
       } else if (!wallets?.[selectedWallet]) {
         throw new Error('You need to have a wallet connected to make a transaction');
       } else {
         // Prepare the transaction
-        const prepared = await client.autofill({
+        const prepared: Payment = await client.autofill({
           TransactionType: 'Payment',
           Account: wallets[selectedWallet].publicAddress,
-          Amount: xrpToDrops(amount)
+          Amount: xrpToDrops(amount),
+          Destination: destination
         });
-        return dropsToXrp(prepared.Fee);
+        if (!prepared.Fee) {
+          throw new Error("Couldn't calculate the fees, something went wrong");
+        } else {
+          return dropsToXrp(prepared.Fee);
+        }
       }
     },
     [client, selectedWallet, wallets]
@@ -146,7 +151,7 @@ const LedgerProvider: FC = ({ children }) => {
         throw new Error('You need to have a wallet connected to make a transaction');
       } else {
         // Prepare the transaction
-        const prepared = await client.autofill({
+        const prepared: Payment = await client.autofill({
           TransactionType: 'Payment',
           Account: wallets[selectedWallet].publicAddress,
           Amount: xrpToDrops(amount),
@@ -156,7 +161,7 @@ const LedgerProvider: FC = ({ children }) => {
         const signed = wallets[selectedWallet].wallet.sign(prepared);
         // Submit the signed blob
         const tx = await client.submitAndWait(signed.tx_blob);
-        if (tx.result.meta.TransactionResult === 'tesSUCCESS') {
+        if ((tx.result.meta! as TransactionMetadata).TransactionResult === 'tesSUCCESS') {
           return 'success';
         } else {
           return 'rejected';
