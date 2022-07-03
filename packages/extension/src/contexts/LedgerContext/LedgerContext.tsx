@@ -6,7 +6,7 @@ import { HOME_PATH } from '../../constants';
 import { WalletLedger } from '../../types';
 import { loadWallets } from '../../utils';
 
-interface TransactionPayloadType {
+interface PaymentPayloadType {
   amount: string;
   destination: string;
 }
@@ -16,8 +16,8 @@ interface ContextType {
   signOut: () => void;
   generateWallet: () => Wallet | undefined;
   importSeed: (seed: string) => boolean;
-  sendTransaction: (payload: TransactionPayloadType) => Promise<TransactionStatus>;
-  estimateNetworkFees: (payload: TransactionPayloadType) => Promise<string>;
+  sendPayment: (payload: PaymentPayloadType) => Promise<TransactionStatus>;
+  estimateNetworkFees: (payload: PaymentPayloadType) => Promise<string>;
   wallets: WalletLedger[];
   selectedWallet: number;
   client?: Client;
@@ -28,7 +28,7 @@ const LedgerContext = createContext<ContextType>({
   signOut: () => {},
   generateWallet: () => undefined,
   importSeed: () => false,
-  sendTransaction: () => new Promise(() => {}),
+  sendPayment: () => new Promise(() => {}),
   estimateNetworkFees: () =>
     new Promise((resolve) => {
       resolve('0');
@@ -120,7 +120,7 @@ const LedgerProvider: FC = ({ children }) => {
   }, []);
 
   const estimateNetworkFees = useCallback(
-    async ({ amount, destination }: TransactionPayloadType) => {
+    async ({ amount, destination }: PaymentPayloadType) => {
       if (!client) {
         throw new Error('You need to be connected to a ledger to make a transaction');
       } else if (!wallets?.[selectedWallet]) {
@@ -143,8 +143,8 @@ const LedgerProvider: FC = ({ children }) => {
     [client, selectedWallet, wallets]
   );
 
-  const sendTransaction = useCallback(
-    async ({ amount, destination }: TransactionPayloadType) => {
+  const sendPayment = useCallback(
+    async ({ amount, destination }: PaymentPayloadType) => {
       if (!client) {
         throw new Error('You need to be connected to a ledger to make a transaction');
       } else if (!wallets?.[selectedWallet]) {
@@ -176,7 +176,7 @@ const LedgerProvider: FC = ({ children }) => {
     signOut,
     generateWallet,
     importSeed,
-    sendTransaction,
+    sendPayment,
     estimateNetworkFees,
     wallets,
     selectedWallet,

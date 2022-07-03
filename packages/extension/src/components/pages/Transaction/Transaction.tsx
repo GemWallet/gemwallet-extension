@@ -38,7 +38,7 @@ export const Transaction: FC = () => {
    * - rejected: transaction has been rejected
    */
   const [transaction, setTransaction] = useState<TransactionStatus>('waiting');
-  const { client, estimateNetworkFees, sendTransaction } = useLedger();
+  const { client, estimateNetworkFees, sendPayment } = useLedger();
 
   useEffect(() => {
     const queryString = window.location.search;
@@ -100,7 +100,7 @@ export const Transaction: FC = () => {
   const handleConfirm = useCallback(() => {
     setTransaction('pending');
     const { amount, destination } = params;
-    sendTransaction({ amount, destination })
+    sendPayment({ amount, destination })
       .then((result) => {
         setTransaction(result);
         const message = createMessage(result);
@@ -109,7 +109,7 @@ export const Transaction: FC = () => {
       .catch(() => {
         handleReject();
       });
-  }, [createMessage, handleReject, params, sendTransaction]);
+  }, [createMessage, handleReject, params, sendPayment]);
 
   if (transaction !== 'waiting') {
     return (
