@@ -1,10 +1,6 @@
-import { useState, useEffect, FC, useCallback } from 'react';
-import copyToClipboard from 'copy-to-clipboard';
+import { useState, useEffect, FC } from 'react';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
-import Tooltip from '@mui/material/Tooltip';
-import IconButton from '@mui/material/IconButton';
-import ShareIcon from '@mui/icons-material/Share';
 import { useLedger } from '../../../contexts/LedgerContext';
 import { formatToken } from '../../../utils';
 import { TileLoader } from '../../atoms';
@@ -18,7 +14,6 @@ export interface WalletProps {
 
 export const Wallet: FC<WalletProps> = ({ address }) => {
   const [balance, setBalance] = useState(LOADING_STATE);
-  const [isShared, setIsShared] = useState(false);
   const { client } = useLedger();
 
   useEffect(() => {
@@ -36,35 +31,8 @@ export const Wallet: FC<WalletProps> = ({ address }) => {
     fetchBalance();
   }, [address, client]);
 
-  const handleShare = useCallback(() => {
-    copyToClipboard(address);
-    setIsShared(true);
-    setTimeout(() => setIsShared(false), 5000);
-  }, [address]);
-
   return (
     <Paper elevation={24} style={{ padding: '10px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Typography variant="h5">Wallet</Typography>
-        <Tooltip title="Share your public address">
-          <IconButton
-            size="small"
-            edge="end"
-            color="inherit"
-            aria-label="Copy"
-            onClick={handleShare}
-          >
-            {isShared ? <ShareIcon color="success" /> : <ShareIcon />}
-          </IconButton>
-        </Tooltip>
-      </div>
-      {address === LOADING_STATE ? (
-        <TileLoader firstLineOnly fwidth={280} />
-      ) : (
-        <Typography variant="body2" style={{ margin: '10px 0' }}>
-          {address}
-        </Typography>
-      )}
       <Typography variant="body1">Balance</Typography>
       <Paper
         elevation={5}
