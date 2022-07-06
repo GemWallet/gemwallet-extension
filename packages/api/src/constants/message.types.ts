@@ -1,5 +1,4 @@
 import { Network } from './network.types';
-import { TransactionStatus } from './transaction.types';
 
 type MessageApp = 'gem-wallet';
 
@@ -33,7 +32,16 @@ export type IsConnectedResponse = MessagingResponse & {
   isConnected: boolean;
 };
 
-export type TransactionResponse = MessagingResponse & {
-  status: TransactionStatus;
+export interface TransactionResponseHash {
+  hash: string;
+  error: never;
+}
+
+export interface TransactionResponseError {
+  hash: never;
   error: string;
-};
+}
+
+export type TransactionResponse =
+  | (MessagingResponse & TransactionResponseHash)
+  | (MessagingResponse & TransactionResponseError);

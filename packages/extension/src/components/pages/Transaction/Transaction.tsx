@@ -10,7 +10,11 @@ import { PageWithTitle } from '../../templates';
 import { Transaction as TransactionOrganism } from '../../organisms/Transaction';
 import { useLedger } from '../../../contexts/LedgerContext';
 import { GEM_WALLET, REQUEST_TRANSACTION_STATUS } from '@gemwallet/api/src/constants/message';
-import { MessageListenerEvent } from '@gemwallet/api/src/constants/message.types';
+import {
+  MessageListenerEvent,
+  TransactionResponseError,
+  TransactionResponseHash
+} from '@gemwallet/api/src/constants/message.types';
 import { TransactionStatus } from '@gemwallet/api/src/constants/transaction.types';
 import { TileLoader } from '../../atoms';
 import { formatToken } from '../../../utils';
@@ -76,14 +80,22 @@ export const Transaction: FC = () => {
   }, [client, destination, estimateNetworkFees, params]);
 
   const createMessage = useCallback(
-    (status: TransactionStatus): MessageListenerEvent => {
+    (transactionHash: string | null): MessageListenerEvent => {
       const { id } = params;
+      let transactionResponse: TransactionResponseError | TransactionResponseHash = {
+        error: 'Transaction has been rejected'
+      } as TransactionResponseError;
+      if (transactionHash !== null) {
+        transactionResponse = {
+          hash: transactionHash
+        } as TransactionResponseHash;
+      }
       return {
         app: GEM_WALLET,
         type: REQUEST_TRANSACTION_STATUS,
         payload: {
-          status,
-          id
+          id,
+          ...transactionResponse
         }
       };
     },
@@ -93,7 +105,7 @@ export const Transaction: FC = () => {
   const handleReject = useCallback(() => {
     const status = 'rejected';
     setTransaction(status);
-    const message = createMessage(status);
+    const message = createMessage(null);
     chrome.runtime.sendMessage(message);
   }, [createMessage]);
 
@@ -101,11 +113,12 @@ export const Transaction: FC = () => {
     setTransaction('pending');
     const { amount, destination } = params;
     sendPayment({ amount, destination })
-      .then((result) => {
-        setTransaction(result);
-        const message = createMessage(result);
+      .then((transactionHash) => {
+        setTransaction('success');
+        const message = createMessage(transactionHash);
         chrome.runtime.sendMessage(message);
       })
+      //TODO: Catch this error and handle it
       .catch(() => {
         handleReject();
       });

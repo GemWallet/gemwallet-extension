@@ -1,4 +1,3 @@
-import { TransactionStatus } from '@gemwallet/api/src/constants/transaction.types';
 import { useContext, useState, useEffect, createContext, FC, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Wallet, Client, xrpToDrops, dropsToXrp, TransactionMetadata, Payment } from 'xrpl';
@@ -16,7 +15,8 @@ interface ContextType {
   signOut: () => void;
   generateWallet: () => Wallet | undefined;
   importSeed: (seed: string) => boolean;
-  sendPayment: (payload: PaymentPayloadType) => Promise<TransactionStatus>;
+  // Return transaction hash in case of success
+  sendPayment: (payload: PaymentPayloadType) => Promise<string>;
   estimateNetworkFees: (payload: PaymentPayloadType) => Promise<string>;
   wallets: WalletLedger[];
   selectedWallet: number;
@@ -160,11 +160,15 @@ const LedgerProvider: FC = ({ children }) => {
         // Sign the transaction
         const signed = wallets[selectedWallet].wallet.sign(prepared);
         // Submit the signed blob
-        const tx = await client.submitAndWait(signed.tx_blob);
-        if ((tx.result.meta! as TransactionMetadata).TransactionResult === 'tesSUCCESS') {
-          return 'success';
-        } else {
-          return 'rejected';
+        try {
+          const tx = await client.submitAndWait(signed.tx_blob);
+          if ((tx.result.meta! as TransactionMetadata).TransactionResult === 'tesSUCCESS') {
+            return tx.result.hash;
+          } else {
+            throw new Error("Something went wrong, we couldn't submit properly the transaction");
+          }
+        } catch (e) {
+          throw e;
         }
       }
     },

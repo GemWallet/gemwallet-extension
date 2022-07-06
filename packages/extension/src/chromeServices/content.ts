@@ -10,6 +10,8 @@ import {
 import {
   NetworkResponse,
   TransactionResponse,
+  TransactionResponseError,
+  TransactionResponseHash,
   MessageListenerEvent
 } from '@gemwallet/api/src/constants/message.types';
 
@@ -52,10 +54,6 @@ setTimeout(() => {
           }
         );
       } else if (type === REQUEST_TRANSACTION) {
-        let res: TransactionResponse = {
-          error: 'Unable to send message to extension',
-          status: 'waiting'
-        };
         const {
           data: { payload }
         } = event;
@@ -75,12 +73,19 @@ setTimeout(() => {
               // We make sure that the message comes from gem-wallet
               if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
                 if (type === REQUEST_TRANSACTION_STATUS) {
+                  let res = {
+                    error: 'Unable to send message to extension'
+                  } as TransactionResponseError | TransactionResponseHash;
                   if (payload) {
-                    const { status, error } = payload;
-                    res = { status, error };
+                    const { hash, error } = payload;
+                    if (hash) {
+                      res = { hash } as TransactionResponseHash;
+                    } else if (error) {
+                      res = { error } as TransactionResponseError;
+                    }
                   }
                   window.postMessage(
-                    { source: MSG_RESPONSE, messagedId, ...res },
+                    { source: MSG_RESPONSE, messagedId, ...res } as TransactionResponse,
                     window.location.origin
                   );
                 }

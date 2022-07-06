@@ -82,8 +82,8 @@ chrome.runtime.onMessage.addListener((message: MessageListenerEvent, sender, sen
         app,
         type: REQUEST_TRANSACTION_STATUS,
         payload: {
-          status: payload!.status,
-          error: ''
+          hash: payload!.hash,
+          error: payload!.error
         }
       });
     }

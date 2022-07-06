@@ -4,25 +4,23 @@ import { sendMessageToContentScript } from './helpers/extensionMessaging';
 import { Params } from './transactionRequest.types';
 
 const transactionRequest = async (payload: Params) => {
-  let response: TransactionResponse = { status: 'waiting', error: '' };
-
   try {
     const message: MessageListenerEvent = {
       app: GEM_WALLET,
       type: REQUEST_TRANSACTION,
       payload
     };
-    response = await sendMessageToContentScript(message);
-  } catch (e) {
-    console.error(e);
-  }
+    const response: TransactionResponse = await sendMessageToContentScript(message);
 
-  const { status, error } = response;
+    const { hash, error } = response;
 
-  if (error) {
+    if (error) {
+      throw new Error(error);
+    }
+    return hash;
+  } catch (error) {
     throw error;
   }
-  return status;
 };
 
 export = transactionRequest;
