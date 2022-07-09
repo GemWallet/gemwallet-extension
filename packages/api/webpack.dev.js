@@ -18,8 +18,8 @@ module.exports = {
     // new HtmlWebpackPlugin({})
     new HtmlWebpackPlugin({
       title: 'GemWallet API',
-      favicon: path.join(__dirname, './src/templates/logo192.png'),
-      template: path.resolve(__dirname, './src/templates/index.html')
+      favicon: path.join(__dirname, './templates/logo192.png'),
+      template: path.resolve(__dirname, './templates/index.html')
     }),
     // Only update what has changed on hot reload
     new webpack.HotModuleReplacementPlugin()

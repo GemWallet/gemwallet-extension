@@ -1,6 +1,6 @@
-import { GEM_WALLET, REQUEST_TRANSACTION } from './constants/message';
-import { MessageListenerEvent, TransactionResponse } from './constants/message.types';
-import { sendMessageToContentScript } from './helpers/extensionMessaging';
+import { GEM_WALLET, REQUEST_TRANSACTION } from '../constants/message';
+import { MessageListenerEvent, TransactionResponse } from '../constants/message.types';
+import { sendMessageToContentScript } from '../helpers/extensionMessaging';
 import { Payment } from './transactionRequest.types';
 
 export const transactionRequest = async (payment: Payment) => {

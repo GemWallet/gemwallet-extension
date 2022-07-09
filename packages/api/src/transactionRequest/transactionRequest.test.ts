@@ -1,5 +1,5 @@
 import { transactionRequest } from './transactionRequest';
-import { MessageListenerEvent } from './constants/message.types';
+import { MessageListenerEvent } from '../constants/message.types';
 
 const hash = '7CB690AE100B8294C13A2E925B7524B68FA14146382A68820BAEC6907D5267D7';
 

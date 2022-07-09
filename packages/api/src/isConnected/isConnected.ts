@@ -1,6 +1,6 @@
-import { GEM_WALLET, REQUEST_CONNECTION } from './constants/message';
-import { MessageListenerEvent, IsConnectedResponse } from './constants/message.types';
-import { sendMessageToContentScript } from './helpers/extensionMessaging';
+import { GEM_WALLET, REQUEST_CONNECTION } from '../constants/message';
+import { MessageListenerEvent, IsConnectedResponse } from '../constants/message.types';
+import { sendMessageToContentScript } from '../helpers/extensionMessaging';
 
 declare global {
   interface Window {

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GemWallet API</title>
+  </head>
+
+  <body>
+    <div id="wrapper">
+      <button onclick="handlePayment()">Pay</button>
+      <div id="address"></div>
+    </div>
+  </body>
+</html>
+
+<script>
+  function handlePayment() {
+    gemWalletApi.isConnected().then((isConnected) => {
+      if (isConnected) {
+        const transaction = {
+          amount: '0.0020',
+          destination: 'rNvFCZXpDtGeQ3bVas95wGLN6N2stGmA9o'
+        };
+        gemWalletApi.transactionRequest(transaction).then((res) => {
+          const transactionContainer = document.getElementById('address');
+          transactionContainer.insertAdjacentText('afterbegin', `Transaction sent with ID: ${res}`);
+        });
+      }
+    });
+  }
+</script>
