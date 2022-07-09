@@ -62,7 +62,7 @@ chrome.runtime.onMessage.addListener((message: MessageListenerEvent, sender, sen
             payload!.id = sender.tab!.id!;
             chrome.windows.create(
               {
-                url: `../../index.html${serializeToQueryString(payload)}`,
+                url: `../../index.html${serializeToQueryString(payload)}&transaction=payment`,
                 type: 'popup',
                 width: NOTIFICATION_WIDTH,
                 height: NOTIFICATION_HEIGHT,

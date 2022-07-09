@@ -1,14 +1,14 @@
 import { GEM_WALLET, REQUEST_TRANSACTION } from './constants/message';
 import { MessageListenerEvent, TransactionResponse } from './constants/message.types';
 import { sendMessageToContentScript } from './helpers/extensionMessaging';
-import { Params } from './transactionRequest.types';
+import { Payment } from './transactionRequest.types';
 
-const transactionRequest = async (payload: Params) => {
+export const transactionRequest = async (payment: Payment) => {
   try {
     const message: MessageListenerEvent = {
       app: GEM_WALLET,
       type: REQUEST_TRANSACTION,
-      payload
+      payload: payment
     };
     const response: TransactionResponse = await sendMessageToContentScript(message);
 
@@ -22,5 +22,3 @@ const transactionRequest = async (payload: Params) => {
     throw error;
   }
 };
-
-export = transactionRequest;

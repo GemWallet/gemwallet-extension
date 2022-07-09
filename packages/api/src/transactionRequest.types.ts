@@ -1,11 +1,6 @@
-import { Network } from './constants/network.types';
-
-export type Params = {
-  chain: 'xrp';
-  network: Network;
-  transaction: 'payment';
+export interface Payment {
+  // 	The amount of currency to deliver (in drops)
   amount: string;
+  // The unique address of the account receiving the payment
   destination: string;
-  token: string;
-  apiVersion: number;
-};
+}

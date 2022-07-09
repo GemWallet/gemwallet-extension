@@ -20,19 +20,17 @@ import { TileLoader } from '../../atoms';
 import { formatToken } from '../../../utils';
 
 const DEFAULT_FEES = 'Loading ...';
+const TOKEN = 'XRP';
 
 export const Transaction: FC = () => {
   const [params, setParams] = useState({
-    chain: '',
-    transaction: '',
     amount: '0',
     fees: DEFAULT_FEES,
     destination: '',
-    token: '',
     id: 0
   });
 
-  const { amount, fees, destination, token } = params;
+  const { amount, fees, destination } = params;
 
   /**
    * transaction can have 4 stages:
@@ -47,22 +45,14 @@ export const Transaction: FC = () => {
   useEffect(() => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
-    const chain = urlParams.get('chain') || '';
-    const transaction = (urlParams.get('transaction') as TransactionStatus) || 'waiting';
     const amount = urlParams.get('amount') || '0';
     const destination = urlParams.get('destination') || '';
     const id = Number(urlParams.get('id')) || 0;
-    let token = urlParams.get('token') || '';
-    if (chain === 'xrp' && token === '') {
-      token = 'XRP';
-    }
+
     setParams({
-      chain,
-      transaction,
       amount,
       fees: DEFAULT_FEES,
       destination,
-      token,
       id
     });
   }, []);
@@ -73,7 +63,7 @@ export const Transaction: FC = () => {
       estimateNetworkFees({ amount, destination }).then((fees: string) => {
         setParams((prevParams) => ({
           ...prevParams,
-          fees: fees || DEFAULT_FEES
+          fees
         }));
       });
     }
@@ -103,8 +93,7 @@ export const Transaction: FC = () => {
   );
 
   const handleReject = useCallback(() => {
-    const status = 'rejected';
-    setTransaction(status);
+    setTransaction('rejected');
     const message = createMessage(null);
     chrome.runtime.sendMessage(message);
   }, [createMessage]);
@@ -141,7 +130,7 @@ export const Transaction: FC = () => {
       <Paper elevation={24} style={{ padding: '10px' }}>
         <Typography variant="body1">Amount:</Typography>
         <Typography variant="h4" component="h1" gutterBottom align="right">
-          {formatToken(Number(amount), token)}
+          {formatToken(Number(amount), TOKEN)}
         </Typography>
       </Paper>
       <Paper elevation={24} style={{ padding: '10px' }}>
@@ -154,7 +143,7 @@ export const Transaction: FC = () => {
           Network fees:
         </Typography>
         <Typography variant="body2" gutterBottom align="right">
-          {fees === DEFAULT_FEES ? <TileLoader secondLineOnly /> : formatToken(Number(fees), token)}
+          {fees === DEFAULT_FEES ? <TileLoader secondLineOnly /> : formatToken(Number(fees), TOKEN)}
         </Typography>
       </Paper>
       <Container style={{ display: 'flex', justifyContent: 'space-evenly' }}>

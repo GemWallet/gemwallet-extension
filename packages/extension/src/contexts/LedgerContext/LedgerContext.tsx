@@ -1,14 +1,10 @@
 import { useContext, useState, useEffect, createContext, FC, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Wallet, Client, xrpToDrops, dropsToXrp, TransactionMetadata, Payment } from 'xrpl';
+import { Payment as PaymentPayload } from '@gemwallet/api/src';
 import { HOME_PATH } from '../../constants';
 import { WalletLedger } from '../../types';
 import { loadWallets } from '../../utils';
-
-interface PaymentPayloadType {
-  amount: string;
-  destination: string;
-}
 
 interface ContextType {
   signIn: (password: string) => boolean;
@@ -16,8 +12,8 @@ interface ContextType {
   generateWallet: () => Wallet | undefined;
   importSeed: (seed: string) => boolean;
   // Return transaction hash in case of success
-  sendPayment: (payload: PaymentPayloadType) => Promise<string>;
-  estimateNetworkFees: (payload: PaymentPayloadType) => Promise<string>;
+  sendPayment: (payload: PaymentPayload) => Promise<string>;
+  estimateNetworkFees: (payload: PaymentPayload) => Promise<string>;
   wallets: WalletLedger[];
   selectedWallet: number;
   client?: Client;
@@ -120,7 +116,7 @@ const LedgerProvider: FC = ({ children }) => {
   }, []);
 
   const estimateNetworkFees = useCallback(
-    async ({ amount, destination }: PaymentPayloadType) => {
+    async ({ amount, destination }: PaymentPayload) => {
       if (!client) {
         throw new Error('You need to be connected to a ledger to make a transaction');
       } else if (!wallets?.[selectedWallet]) {
@@ -144,7 +140,7 @@ const LedgerProvider: FC = ({ children }) => {
   );
 
   const sendPayment = useCallback(
-    async ({ amount, destination }: PaymentPayloadType) => {
+    async ({ amount, destination }: PaymentPayload) => {
       if (!client) {
         throw new Error('You need to be connected to a ledger to make a transaction');
       } else if (!wallets?.[selectedWallet]) {

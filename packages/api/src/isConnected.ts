@@ -9,7 +9,7 @@ declare global {
   }
 }
 
-const isConnected = () => {
+export const isConnected = () => {
   if (window.gemWallet) {
     return new Promise((resolve) => resolve(true));
   } else {
@@ -45,5 +45,3 @@ const isConnected = () => {
     });
   }
 };
-
-export = isConnected;
