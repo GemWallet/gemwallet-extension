@@ -1,6 +1,5 @@
-import { GEM_WALLET, REQUEST_NETWORK } from '../constants/message';
-import { MessageListenerEvent, NetworkResponse } from '../constants/message.types';
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
+import { GEM_WALLET, REQUEST_NETWORK, MessageListenerEvent, NetworkResponse } from '../types';
 
 export const getNetwork = async () => {
   let response: NetworkResponse = { network: null, error: '' };

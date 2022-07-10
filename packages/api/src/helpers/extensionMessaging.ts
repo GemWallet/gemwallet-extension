@@ -1,9 +1,10 @@
-import { MSG_REQUEST, MSG_RESPONSE } from '../constants/message';
 import {
+  MSG_REQUEST,
+  MSG_RESPONSE,
   MessageListenerEvent,
   NetworkResponse,
   IsConnectedResponse
-} from '../constants/message.types';
+} from '../types';
 
 declare global {
   interface Window {

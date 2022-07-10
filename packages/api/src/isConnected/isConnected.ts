@@ -1,5 +1,9 @@
-import { GEM_WALLET, REQUEST_CONNECTION } from '../constants/message';
-import { MessageListenerEvent, IsConnectedResponse } from '../constants/message.types';
+import {
+  GEM_WALLET,
+  REQUEST_CONNECTION,
+  MessageListenerEvent,
+  IsConnectedResponse
+} from '../types';
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
 
 declare global {

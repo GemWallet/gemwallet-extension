@@ -9,13 +9,13 @@ import ErrorIcon from '@mui/icons-material/Error';
 import { PageWithTitle } from '../../templates';
 import { Transaction as TransactionOrganism } from '../../organisms/Transaction';
 import { useLedger } from '../../../contexts/LedgerContext';
-import { GEM_WALLET, REQUEST_TRANSACTION_STATUS } from '@gemwallet/api/src/constants/message';
+import { GEM_WALLET, RECEIVE_PAYMENT_HASH } from '@gemwallet/api/src/types/message';
 import {
   MessageListenerEvent,
-  TransactionResponseError,
-  TransactionResponseHash
-} from '@gemwallet/api/src/constants/message.types';
-import { TransactionStatus } from '@gemwallet/api/src/constants/transaction.types';
+  PaymentResponseError,
+  PaymentResponseHash
+} from '@gemwallet/api/src';
+import { TransactionStatus } from '@gemwallet/api/src/types/transaction.types';
 import { TileLoader } from '../../atoms';
 import { formatToken } from '../../../utils';
 
@@ -72,17 +72,17 @@ export const Transaction: FC = () => {
   const createMessage = useCallback(
     (transactionHash: string | null): MessageListenerEvent => {
       const { id } = params;
-      let transactionResponse: TransactionResponseError | TransactionResponseHash = {
+      let transactionResponse: PaymentResponseError | PaymentResponseHash = {
         error: 'Transaction has been rejected'
-      } as TransactionResponseError;
+      } as PaymentResponseError;
       if (transactionHash !== null) {
         transactionResponse = {
           hash: transactionHash
-        } as TransactionResponseHash;
+        } as PaymentResponseHash;
       }
       return {
         app: GEM_WALLET,
-        type: REQUEST_TRANSACTION_STATUS,
+        type: RECEIVE_PAYMENT_HASH,
         payload: {
           id,
           ...transactionResponse

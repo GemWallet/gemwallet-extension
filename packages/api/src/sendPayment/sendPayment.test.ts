@@ -1,22 +1,18 @@
-import { transactionRequest } from './transactionRequest';
-import { MessageListenerEvent } from '../constants/message.types';
+import { sendPayment } from './sendPayment';
+import { MessageListenerEvent } from '../types/message.types';
+import { Payment } from './sendPayment.types';
 
 const hash = '7CB690AE100B8294C13A2E925B7524B68FA14146382A68820BAEC6907D5267D7';
 
 const errorMessageFromContentScript = 'sendMessageToContentScriptError';
 const errorThrownFromContentScript = 'errorThrownFromContentScript';
 
-const payload = {
-  chain: 'xrp',
-  network: 'TEST',
-  transaction: 'payment',
+const payload: Payment = {
   amount: '10',
-  destination: 'rNvFCZXpDtGeQ3bVas95wGLN6N2stGmA9o',
-  token: 'XRP',
-  apiVersion: 1
+  destination: 'rNvFCZXpDtGeQ3bVas95wGLN6N2stGmA9o'
 };
 
-jest.mock('./helpers/extensionMessaging', () => ({
+jest.mock('../helpers/extensionMessaging', () => ({
   sendMessageToContentScript: async (message: MessageListenerEvent) => {
     // Mock returning an error if payload destination = error
     if (message.payload!.destination === 'error') {
@@ -30,10 +26,10 @@ jest.mock('./helpers/extensionMessaging', () => ({
   }
 }));
 
-describe('transactionRequest api', () => {
+describe('sendPayment api', () => {
   test('should return a transaction hash as sendMessageToContentScript is returning a hash', async () => {
     let response;
-    await transactionRequest(payload as any).then((res) => {
+    await sendPayment(payload).then((res) => {
       response = res;
     });
     expect(response).toEqual(hash);
@@ -42,7 +38,7 @@ describe('transactionRequest api', () => {
   test('should return an error if sendMessageToContentScript is returning an error', async () => {
     let error;
     payload.destination = 'error';
-    await transactionRequest(payload as any)
+    await sendPayment(payload)
       .then()
       .catch((e) => {
         error = e.message;
@@ -53,7 +49,7 @@ describe('transactionRequest api', () => {
   test('should return an error if sendMessageToContentScript failed', async () => {
     let error;
     payload.destination = 'errorThrow';
-    await transactionRequest(payload as any)
+    await sendPayment(payload)
       .then()
       .catch((e) => {
         error = e.message;

@@ -1,10 +1,10 @@
 import {
   GEM_WALLET,
   REQUEST_NETWORK,
-  REQUEST_TRANSACTION,
-  REQUEST_TRANSACTION_STATUS
-} from '@gemwallet/api/src/constants/message';
-import { MessageListenerEvent } from '@gemwallet/api/src/constants/message.types';
+  SEND_PAYMENT,
+  RECEIVE_PAYMENT_HASH
+} from '@gemwallet/api/src/types/message';
+import { MessageListenerEvent } from '@gemwallet/api/src/types/message.types';
 import { CurrentWindow } from './background.types';
 
 const NOTIFICATION_HEIGHT = 620;
@@ -45,7 +45,7 @@ chrome.runtime.onMessage.addListener((message: MessageListenerEvent, sender, sen
   if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
     if (type === REQUEST_NETWORK) {
       sendResponse('TEST');
-    } else if (type === REQUEST_TRANSACTION) {
+    } else if (type === SEND_PAYMENT) {
       chrome.windows.getAll().then((openedWindows) => {
         // We check if the popup is currently open
         if (
@@ -76,11 +76,11 @@ chrome.runtime.onMessage.addListener((message: MessageListenerEvent, sender, sen
           });
         }
       });
-    } else if (type === REQUEST_TRANSACTION_STATUS) {
+    } else if (type === RECEIVE_PAYMENT_HASH) {
       const { payload } = message;
       chrome.tabs.sendMessage(payload!.id, {
         app,
-        type: REQUEST_TRANSACTION_STATUS,
+        type: RECEIVE_PAYMENT_HASH,
         payload: {
           hash: payload!.hash,
           error: payload!.error

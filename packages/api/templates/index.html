@@ -19,13 +19,13 @@
   function handlePayment() {
     gemWalletApi.isConnected().then((isConnected) => {
       if (isConnected) {
-        const transaction = {
+        const payment = {
           amount: '0.0020',
           destination: 'rNvFCZXpDtGeQ3bVas95wGLN6N2stGmA9o'
         };
-        gemWalletApi.transactionRequest(transaction).then((res) => {
-          const transactionContainer = document.getElementById('address');
-          transactionContainer.insertAdjacentText('afterbegin', `Transaction sent with ID: ${res}`);
+        gemWalletApi.sendPayment(payment).then((trHash) => {
+          const addressContainer = document.getElementById('address');
+          addressContainer.insertAdjacentText('afterbegin', `Transaction sent with ID: ${trHash}`);
         });
       }
     });
