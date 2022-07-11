@@ -10,12 +10,8 @@ import { PageWithTitle } from '../../templates';
 import { Transaction as TransactionOrganism } from '../../organisms/Transaction';
 import { useLedger } from '../../../contexts/LedgerContext';
 import { GEM_WALLET, RECEIVE_PAYMENT_HASH } from '@gemwallet/api/src/types/message';
-import {
-  MessageListenerEvent,
-  PaymentResponseError,
-  PaymentResponseHash,
-  TransactionStatus
-} from '@gemwallet/api';
+import { MessageListenerEvent, PaymentResponseError, PaymentResponseHash } from '@gemwallet/api';
+import { TransactionStatus } from '../../../types';
 import { TileLoader } from '../../atoms';
 import { formatToken } from '../../../utils';
 
@@ -32,14 +28,7 @@ export const Transaction: FC = () => {
 
   const { amount, fees, destination } = params;
 
-  /**
-   * transaction can have 4 stages:
-   * - waiting: waiting for a user interaction
-   * - pending: transaction is pending to be a success or rejected (in progress)
-   * - success: transaction has been successful
-   * - rejected: transaction has been rejected
-   */
-  const [transaction, setTransaction] = useState<TransactionStatus>('waiting');
+  const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
   const { client, estimateNetworkFees, sendPayment } = useLedger();
 
   useEffect(() => {
@@ -93,17 +82,17 @@ export const Transaction: FC = () => {
   );
 
   const handleReject = useCallback(() => {
-    setTransaction('rejected');
+    setTransaction(TransactionStatus.Rejected);
     const message = createMessage(null);
     chrome.runtime.sendMessage(message);
   }, [createMessage]);
 
   const handleConfirm = useCallback(() => {
-    setTransaction('pending');
+    setTransaction(TransactionStatus.Pending);
     const { amount, destination } = params;
     sendPayment({ amount, destination })
       .then((transactionHash) => {
-        setTransaction('success');
+        setTransaction(TransactionStatus.Success);
         const message = createMessage(transactionHash);
         chrome.runtime.sendMessage(message);
       })
@@ -113,7 +102,7 @@ export const Transaction: FC = () => {
       });
   }, [createMessage, handleReject, params, sendPayment]);
 
-  if (transaction !== 'waiting') {
+  if (transaction !== TransactionStatus.Waiting) {
     return (
       <PageWithTitle title="">
         <TransactionOrganism transaction={transaction} />
