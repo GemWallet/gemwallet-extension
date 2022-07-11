@@ -4,7 +4,7 @@ import {
   SEND_PAYMENT,
   RECEIVE_PAYMENT_HASH
 } from '@gemwallet/api/src/types/message';
-import { MessageListenerEvent } from '@gemwallet/api/src/types/message.types';
+import { MessageListenerEvent } from '@gemwallet/api';
 import { CurrentWindow } from './background.types';
 
 const NOTIFICATION_HEIGHT = 620;

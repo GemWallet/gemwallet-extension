@@ -3,8 +3,8 @@
   "version": "1.0.2",
   "description": "GemWallet API Utility functions to interact with GemWallet extension",
   "private": true,
-  "main": "index.js",
-  "types": "index.d.ts",
+  "main": "src/index.js",
+  "module": "src/index.js",
   "scripts": {
     "build": "webpack --config webpack.prod.js",
     "build:npm": "tsc && node releaseNpm.js",

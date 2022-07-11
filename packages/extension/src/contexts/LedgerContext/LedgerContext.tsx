@@ -1,7 +1,7 @@
 import { useContext, useState, useEffect, createContext, FC, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Wallet, Client, xrpToDrops, dropsToXrp, TransactionMetadata, Payment } from 'xrpl';
-import { Payment as PaymentPayload } from '@gemwallet/api/src';
+import { Payment as PaymentPayload } from '@gemwallet/api';
 import { HOME_PATH } from '../../constants';
 import { WalletLedger } from '../../types';
 import { loadWallets } from '../../utils';

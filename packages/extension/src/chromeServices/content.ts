@@ -13,7 +13,7 @@ import {
   PaymentResponseError,
   PaymentResponseHash,
   MessageListenerEvent
-} from '@gemwallet/api/src';
+} from '@gemwallet/api';
 
 /**
  * Execute the function if the document is fully ready

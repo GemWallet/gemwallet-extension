@@ -13,9 +13,9 @@ import { GEM_WALLET, RECEIVE_PAYMENT_HASH } from '@gemwallet/api/src/types/messa
 import {
   MessageListenerEvent,
   PaymentResponseError,
-  PaymentResponseHash
-} from '@gemwallet/api/src';
-import { TransactionStatus } from '@gemwallet/api/src/types/transaction.types';
+  PaymentResponseHash,
+  TransactionStatus
+} from '@gemwallet/api';
 import { TileLoader } from '../../atoms';
 import { formatToken } from '../../../utils';
 
