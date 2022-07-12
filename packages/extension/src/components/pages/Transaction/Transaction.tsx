@@ -9,54 +9,39 @@ import ErrorIcon from '@mui/icons-material/Error';
 import { PageWithTitle } from '../../templates';
 import { Transaction as TransactionOrganism } from '../../organisms/Transaction';
 import { useLedger } from '../../../contexts/LedgerContext';
-import { GEM_WALLET, REQUEST_TRANSACTION_STATUS } from '@gemwallet/api/src/constants/message';
-import { MessageListenerEvent } from '@gemwallet/api/src/constants/message.types';
-import { TransactionStatus } from '@gemwallet/api/src/constants/transaction.types';
+import { GEM_WALLET, RECEIVE_PAYMENT_HASH } from '@gemwallet/api/src/types/message';
+import { MessageListenerEvent, PaymentResponseError, PaymentResponseHash } from '@gemwallet/api';
+import { TransactionStatus } from '../../../types';
 import { TileLoader } from '../../atoms';
 import { formatToken } from '../../../utils';
 
 const DEFAULT_FEES = 'Loading ...';
+const TOKEN = 'XRP';
 
 export const Transaction: FC = () => {
   const [params, setParams] = useState({
-    chain: '',
-    transaction: '',
     amount: '0',
     fees: DEFAULT_FEES,
     destination: '',
-    token: '',
     id: 0
   });
 
-  /**
-   * transaction can have 4 stages:
-   * - waiting: waiting for a user interaction
-   * - pending: transaction is pending to be a success or rejected (in progress)
-   * - success: transaction has been successful
-   * - rejected: transaction has been rejected
-   */
-  const [transaction, setTransaction] = useState<TransactionStatus>('waiting');
-  const { client, estimateNetworkFees, sendTransaction } = useLedger();
+  const { amount, fees, destination } = params;
+
+  const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
+  const { client, estimateNetworkFees, sendPayment } = useLedger();
 
   useEffect(() => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
-    const chain = urlParams.get('chain') || '';
-    const transaction = (urlParams.get('transaction') as TransactionStatus) || 'waiting';
     const amount = urlParams.get('amount') || '0';
     const destination = urlParams.get('destination') || '';
     const id = Number(urlParams.get('id')) || 0;
-    let token = urlParams.get('token') || '';
-    if (chain === 'xrp' && token === '') {
-      token = 'XRP';
-    }
+
     setParams({
-      chain,
-      transaction,
       amount,
       fees: DEFAULT_FEES,
       destination,
-      token,
       id
     });
   }, []);
@@ -64,24 +49,32 @@ export const Transaction: FC = () => {
   useEffect(() => {
     if (client) {
       const { amount } = params;
-      estimateNetworkFees(amount).then((fees: string) => {
+      estimateNetworkFees({ amount, destination }).then((fees: string) => {
         setParams((prevParams) => ({
           ...prevParams,
-          fees: fees || DEFAULT_FEES
+          fees
         }));
       });
     }
-  }, [client, estimateNetworkFees, params]);
+  }, [client, destination, estimateNetworkFees, params]);
 
   const createMessage = useCallback(
-    (status: TransactionStatus): MessageListenerEvent => {
+    (transactionHash: string | null): MessageListenerEvent => {
       const { id } = params;
+      let transactionResponse: PaymentResponseError | PaymentResponseHash = {
+        error: 'Transaction has been rejected'
+      } as PaymentResponseError;
+      if (transactionHash !== null) {
+        transactionResponse = {
+          hash: transactionHash
+        } as PaymentResponseHash;
+      }
       return {
         app: GEM_WALLET,
-        type: REQUEST_TRANSACTION_STATUS,
+        type: RECEIVE_PAYMENT_HASH,
         payload: {
-          status,
-          id
+          id,
+          ...transactionResponse
         }
       };
     },
@@ -89,27 +82,27 @@ export const Transaction: FC = () => {
   );
 
   const handleReject = useCallback(() => {
-    const status = 'rejected';
-    setTransaction(status);
-    const message = createMessage(status);
+    setTransaction(TransactionStatus.Rejected);
+    const message = createMessage(null);
     chrome.runtime.sendMessage(message);
   }, [createMessage]);
 
   const handleConfirm = useCallback(() => {
-    setTransaction('pending');
+    setTransaction(TransactionStatus.Pending);
     const { amount, destination } = params;
-    sendTransaction({ amount, destination })
-      .then((result) => {
-        setTransaction(result);
-        const message = createMessage(result);
+    sendPayment({ amount, destination })
+      .then((transactionHash) => {
+        setTransaction(TransactionStatus.Success);
+        const message = createMessage(transactionHash);
         chrome.runtime.sendMessage(message);
       })
+      //TODO: Catch this error and handle it
       .catch(() => {
         handleReject();
       });
-  }, [createMessage, handleReject, params, sendTransaction]);
+  }, [createMessage, handleReject, params, sendPayment]);
 
-  if (transaction !== 'waiting') {
+  if (transaction !== TransactionStatus.Waiting) {
     return (
       <PageWithTitle title="">
         <TransactionOrganism transaction={transaction} />
@@ -117,7 +110,6 @@ export const Transaction: FC = () => {
     );
   }
 
-  const { amount, fees, destination, token } = params;
   return (
     <PageWithTitle title="Confirm Transaction">
       <Paper elevation={24} style={{ padding: '10px' }}>
@@ -127,7 +119,7 @@ export const Transaction: FC = () => {
       <Paper elevation={24} style={{ padding: '10px' }}>
         <Typography variant="body1">Amount:</Typography>
         <Typography variant="h4" component="h1" gutterBottom align="right">
-          {formatToken(Number(amount), token)}
+          {formatToken(Number(amount), TOKEN)}
         </Typography>
       </Paper>
       <Paper elevation={24} style={{ padding: '10px' }}>
@@ -140,7 +132,7 @@ export const Transaction: FC = () => {
           Network fees:
         </Typography>
         <Typography variant="body2" gutterBottom align="right">
-          {fees === DEFAULT_FEES ? <TileLoader secondLineOnly /> : formatToken(Number(fees), token)}
+          {fees === DEFAULT_FEES ? <TileLoader secondLineOnly /> : formatToken(Number(fees), TOKEN)}
         </Typography>
       </Paper>
       <Container style={{ display: 'flex', justifyContent: 'space-evenly' }}>

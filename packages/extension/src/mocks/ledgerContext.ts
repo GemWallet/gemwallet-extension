@@ -15,7 +15,7 @@ export const valueLedgerContext = {
   signOut: jest.fn(),
   generateWallet: () => mockWallet,
   importSeed: () => true,
-  sendTransaction: jest.fn(),
+  sendPayment: jest.fn(),
   estimateNetworkFees: jest.fn(),
   selectedWallet: 0,
   wallets: [mockWalletLedger]

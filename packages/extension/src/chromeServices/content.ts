@@ -4,14 +4,16 @@ import {
   MSG_RESPONSE,
   REQUEST_NETWORK,
   REQUEST_CONNECTION,
-  REQUEST_TRANSACTION,
-  REQUEST_TRANSACTION_STATUS
-} from '@gemwallet/api/src/constants/message';
+  SEND_PAYMENT,
+  RECEIVE_PAYMENT_HASH
+} from '@gemwallet/api/src/types/message';
 import {
   NetworkResponse,
-  TransactionResponse,
+  PaymentResponse,
+  PaymentResponseError,
+  PaymentResponseHash,
   MessageListenerEvent
-} from '@gemwallet/api/src/constants/message.types';
+} from '@gemwallet/api';
 
 /**
  * Execute the function if the document is fully ready
@@ -51,11 +53,7 @@ setTimeout(() => {
             );
           }
         );
-      } else if (type === REQUEST_TRANSACTION) {
-        let res: TransactionResponse = {
-          error: 'Unable to send message to extension',
-          status: 'waiting'
-        };
+      } else if (type === SEND_PAYMENT) {
         const {
           data: { payload }
         } = event;
@@ -74,13 +72,20 @@ setTimeout(() => {
               const { app, type, payload } = message;
               // We make sure that the message comes from gem-wallet
               if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
-                if (type === REQUEST_TRANSACTION_STATUS) {
+                if (type === RECEIVE_PAYMENT_HASH) {
+                  let res = {
+                    error: 'Unable to send message to extension'
+                  } as PaymentResponseError | PaymentResponseHash;
                   if (payload) {
-                    const { status, error } = payload;
-                    res = { status, error };
+                    const { hash, error } = payload;
+                    if (hash) {
+                      res = { hash } as PaymentResponseHash;
+                    } else if (error) {
+                      res = { error } as PaymentResponseError;
+                    }
                   }
                   window.postMessage(
-                    { source: MSG_RESPONSE, messagedId, ...res },
+                    { source: MSG_RESPONSE, messagedId, ...res } as PaymentResponse,
                     window.location.origin
                   );
                 }

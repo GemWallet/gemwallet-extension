@@ -8,6 +8,7 @@ import loading from '../../../assets/loading.json';
 import alert from '../../../assets/alert.json';
 import check from '../../../assets/check.json';
 import { TransactionProps, LogoStyle } from './Transaction.types';
+import { TransactionStatus } from '../../../types';
 
 export const Transaction: FC<TransactionProps> = ({ transaction }) => {
   const { window, closeExtension } = useBrowser();
@@ -23,7 +24,7 @@ export const Transaction: FC<TransactionProps> = ({ transaction }) => {
   let buttonText: string = 'Processing';
   let styleAnimation: LogoStyle = { width: '150px', height: '150px' };
   let handleClick = () => {};
-  if (transaction === 'success') {
+  if (transaction === TransactionStatus.Success) {
     animation = check;
     title = 'Transaction accepted';
     buttonText = 'Close';
@@ -32,7 +33,7 @@ export const Transaction: FC<TransactionProps> = ({ transaction }) => {
       handleClick = () => closeExtension({ windowId: Number(window.id) });
     }
   }
-  if (transaction === 'rejected') {
+  if (transaction === TransactionStatus.Rejected) {
     animation = alert;
     title = 'Transaction rejected';
     subtitle = (
@@ -60,7 +61,11 @@ export const Transaction: FC<TransactionProps> = ({ transaction }) => {
         height: '100%'
       }}
     >
-      <Lottie animationData={animation} loop={transaction === 'pending'} style={styleAnimation} />
+      <Lottie
+        animationData={animation}
+        loop={transaction === TransactionStatus.Pending}
+        style={styleAnimation}
+      />
       <div style={{ marginBottom: '80px' }}>
         <Typography variant="h5" component="h1" align="center">
           {title}
@@ -72,8 +77,10 @@ export const Transaction: FC<TransactionProps> = ({ transaction }) => {
       <Button
         fullWidth
         variant="contained"
-        disabled={transaction === 'pending' || transaction === 'waiting'}
-        color={transaction === 'rejected' ? 'secondary' : 'primary'}
+        disabled={
+          transaction === TransactionStatus.Pending || transaction === TransactionStatus.Waiting
+        }
+        color={transaction === TransactionStatus.Rejected ? 'secondary' : 'primary'}
         onClick={handleClick}
       >
         {buttonText}
