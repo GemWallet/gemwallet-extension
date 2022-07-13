@@ -1,12 +1,12 @@
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
-import { GEM_WALLET, REQUEST_NETWORK, MessageListenerEvent, NetworkResponse } from '../types';
+import { Message, GEM_WALLET, MessageListenerEvent, NetworkResponse, Network } from '../types';
 
 export const getNetwork = async () => {
-  let response: NetworkResponse = { network: null, error: '' };
+  let response: NetworkResponse = { network: Network.Test, error: '' };
   try {
     const message: MessageListenerEvent = {
       app: GEM_WALLET,
-      type: REQUEST_NETWORK
+      type: Message.RequestNetwork
     };
     response = await sendMessageToContentScript(message);
   } catch (e) {

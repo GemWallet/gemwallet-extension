@@ -1,9 +1,4 @@
-import {
-  GEM_WALLET,
-  REQUEST_NETWORK,
-  SEND_PAYMENT,
-  RECEIVE_PAYMENT_HASH
-} from '@gemwallet/api/src/types/message';
+import { GEM_WALLET, Message, Network } from '@gemwallet/api/src/types';
 import { MessageListenerEvent } from '@gemwallet/api';
 import { CurrentWindow } from './background.types';
 
@@ -43,9 +38,9 @@ chrome.runtime.onMessage.addListener((message: MessageListenerEvent, sender, sen
   const { app, type } = message;
   // We make sure that the message comes from gem-wallet
   if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
-    if (type === REQUEST_NETWORK) {
-      sendResponse('TEST');
-    } else if (type === SEND_PAYMENT) {
+    if (type === Message.RequestNetwork) {
+      sendResponse(Network.Test);
+    } else if (type === Message.SendPayment) {
       chrome.windows.getAll().then((openedWindows) => {
         // We check if the popup is currently open
         if (
@@ -76,11 +71,11 @@ chrome.runtime.onMessage.addListener((message: MessageListenerEvent, sender, sen
           });
         }
       });
-    } else if (type === RECEIVE_PAYMENT_HASH) {
+    } else if (type === Message.ReceivePaymentHash) {
       const { payload } = message;
       chrome.tabs.sendMessage(payload!.id, {
         app,
-        type: RECEIVE_PAYMENT_HASH,
+        type: Message.ReceivePaymentHash,
         payload: {
           hash: payload!.hash,
           error: payload!.error

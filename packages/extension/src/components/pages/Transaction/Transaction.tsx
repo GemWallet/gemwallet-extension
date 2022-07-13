@@ -9,7 +9,7 @@ import ErrorIcon from '@mui/icons-material/Error';
 import { PageWithTitle } from '../../templates';
 import { Transaction as TransactionOrganism } from '../../organisms/Transaction';
 import { useLedger } from '../../../contexts/LedgerContext';
-import { GEM_WALLET, RECEIVE_PAYMENT_HASH } from '@gemwallet/api/src/types/message';
+import { GEM_WALLET, Message } from '@gemwallet/api/src/types';
 import { MessageListenerEvent, PaymentResponseError, PaymentResponseHash } from '@gemwallet/api';
 import { TransactionStatus } from '../../../types';
 import { TileLoader } from '../../atoms';
@@ -71,7 +71,7 @@ export const Transaction: FC = () => {
       }
       return {
         app: GEM_WALLET,
-        type: RECEIVE_PAYMENT_HASH,
+        type: Message.ReceivePaymentHash,
         payload: {
           id,
           ...transactionResponse

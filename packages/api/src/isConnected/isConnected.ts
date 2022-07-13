@@ -1,9 +1,4 @@
-import {
-  GEM_WALLET,
-  REQUEST_CONNECTION,
-  MessageListenerEvent,
-  IsConnectedResponse
-} from '../types';
+import { GEM_WALLET, Message, MessageListenerEvent, IsConnectedResponse } from '../types';
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
 
 declare global {
@@ -31,7 +26,7 @@ export const isConnected = () => {
       try {
         const message: MessageListenerEvent = {
           app: GEM_WALLET,
-          type: REQUEST_CONNECTION
+          type: Message.RequestConnection
         };
         response = await sendMessageToContentScript(message);
         resolve(response.isConnected);

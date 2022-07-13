@@ -1,16 +1,19 @@
 import { Network } from './network.types';
 
-type MessageApp = 'gem-wallet';
+export enum Message {
+  RequestNetwork = 'REQUEST_NETWORK',
+  RequestConnection = 'REQUEST_CONNECTION',
+  ReceivePaymentHash = 'RECEIVE_PAYMENT_HASH',
+  SendPayment = 'SEND_PAYMENT',
+  MsgRequest = 'GEM_WALLET_MSG_REQUEST',
+  MsgResponse = 'GEM_WALLET_MSG_RESPONSE'
+}
 
-type MessageTypes =
-  | 'REQUEST_NETWORK'
-  | 'REQUEST_CONNECTION'
-  | 'SEND_PAYMENT'
-  | 'RECEIVE_PAYMENT_HASH';
+export const GEM_WALLET = 'gem-wallet';
 
 export type MessageListenerEvent = {
-  app: MessageApp;
-  type: MessageTypes;
+  app: 'gem-wallet';
+  type: Message;
   payload?: { [key: string]: any };
 };
 
@@ -19,7 +22,7 @@ export type EventListenerEvent = {
 };
 
 export type MessagingResponse = {
-  source?: 'GEM_WALLET_MSG_RESPONSE';
+  source?: Message.MsgResponse;
   messagedId?: number;
 };
 

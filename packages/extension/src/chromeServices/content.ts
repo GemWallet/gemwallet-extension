@@ -1,12 +1,4 @@
-import {
-  GEM_WALLET,
-  MSG_REQUEST,
-  MSG_RESPONSE,
-  REQUEST_NETWORK,
-  REQUEST_CONNECTION,
-  SEND_PAYMENT,
-  RECEIVE_PAYMENT_HASH
-} from '@gemwallet/api/src/types/message';
+import { GEM_WALLET, Message, Network } from '@gemwallet/api/src/types';
 import {
   NetworkResponse,
   PaymentResponse,
@@ -25,16 +17,16 @@ setTimeout(() => {
     (event) => {
       const messagedId = event?.data?.messageId || 0;
       if (event.source !== window && event.data.app === GEM_WALLET) return;
-      if (!event.data.source || event.data.source !== MSG_REQUEST) return;
+      if (!event.data.source || event.data.source !== Message.MsgRequest) return;
 
       const {
         data: { app, type }
       } = event;
       // Check if it's an allowed event type to be forwarded
-      if (type === REQUEST_NETWORK) {
+      if (type === Message.RequestNetwork) {
         let res: NetworkResponse = {
           error: 'Unable to send message to extension',
-          network: null
+          network: Network.Test
         };
 
         chrome.runtime.sendMessage(
@@ -48,12 +40,12 @@ setTimeout(() => {
             }
             // Send the response back to GemWallet API
             window.postMessage(
-              { source: MSG_RESPONSE, messagedId, ...res },
+              { source: Message.MsgResponse, messagedId, ...res },
               window.location.origin
             );
           }
         );
-      } else if (type === SEND_PAYMENT) {
+      } else if (type === Message.SendPayment) {
         const {
           data: { payload }
         } = event;
@@ -72,7 +64,7 @@ setTimeout(() => {
               const { app, type, payload } = message;
               // We make sure that the message comes from gem-wallet
               if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
-                if (type === RECEIVE_PAYMENT_HASH) {
+                if (type === Message.ReceivePaymentHash) {
                   let res = {
                     error: 'Unable to send message to extension'
                   } as PaymentResponseError | PaymentResponseHash;
@@ -85,7 +77,7 @@ setTimeout(() => {
                     }
                   }
                   window.postMessage(
-                    { source: MSG_RESPONSE, messagedId, ...res } as PaymentResponse,
+                    { source: Message.MsgResponse, messagedId, ...res } as PaymentResponse,
                     window.location.origin
                   );
                 }
@@ -95,9 +87,9 @@ setTimeout(() => {
             chrome.runtime.onMessage.addListener(messageListener);
           }
         );
-      } else if (type === REQUEST_CONNECTION) {
+      } else if (type === Message.RequestConnection) {
         window.postMessage(
-          { source: MSG_RESPONSE, messagedId, isConnected: true },
+          { source: Message.MsgResponse, messagedId, isConnected: true },
           window.location.origin
         );
       }
