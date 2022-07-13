@@ -59,7 +59,7 @@ const LedgerProvider: FC = ({ children }) => {
 
   const signIn = useCallback((password: string) => {
     const wallets = loadWallets(password);
-    if (wallets) {
+    if (wallets.length) {
       const _wallets = wallets.map(({ name, publicAddress, seed }) => {
         return {
           name,

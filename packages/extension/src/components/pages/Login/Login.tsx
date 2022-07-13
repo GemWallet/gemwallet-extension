@@ -63,6 +63,10 @@ export const Login: FC = () => {
     };
   }, [handleUnlock]);
 
+  const handleTextFieldChange = useCallback(() => {
+    setPasswordError('');
+  }, []);
+
   const handleReset = useCallback(() => {
     navigate(RESET_PASSWORD_PATH);
   }, [navigate]);
@@ -101,6 +105,7 @@ export const Login: FC = () => {
           name="password"
           label="Password"
           error={!!passwordError}
+          onChange={handleTextFieldChange}
           helperText={passwordError}
           type="password"
           style={{ marginBottom: '20px' }}
