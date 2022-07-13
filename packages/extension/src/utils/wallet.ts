@@ -21,10 +21,13 @@ export const loadWallets = (password: string): Wallet[] => {
   const data = loadData(STORAGE_WALLETS);
   if (data) {
     const wallets = JSON.parse(data);
-    return wallets.map((wallet: string) => {
+    return wallets.reduce((acc: Wallet[], wallet: string) => {
       const decryptedWallet = decrypt(wallet, password);
-      return JSON.parse(decryptedWallet);
-    });
+      if (decryptedWallet !== '') {
+        acc.push(JSON.parse(decryptedWallet));
+      }
+      return acc;
+    }, []);
   }
   return [];
 };

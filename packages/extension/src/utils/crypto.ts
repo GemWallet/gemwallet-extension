@@ -6,5 +6,9 @@ export const encrypt = (message: string, key: string) => {
 
 export const decrypt = (cipherText: string, key: string) => {
   const bytes = CryptoJS.AES.decrypt(cipherText, key);
-  return bytes.toString(CryptoJS.enc.Utf8);
+  try {
+    return bytes.toString(CryptoJS.enc.Utf8);
+  } catch (error) {
+    return '';
+  }
 };
