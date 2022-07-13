@@ -1,4 +1,4 @@
-import { GEM_WALLET, Message } from '@gemwallet/api/src/types';
+import { GEM_WALLET, Message, Network } from '@gemwallet/api/src/types';
 import {
   NetworkResponse,
   PaymentResponse,
@@ -26,7 +26,7 @@ setTimeout(() => {
       if (type === Message.RequestNetwork) {
         let res: NetworkResponse = {
           error: 'Unable to send message to extension',
-          network: null
+          network: Network.Test
         };
 
         chrome.runtime.sendMessage(
