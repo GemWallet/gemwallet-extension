@@ -1,4 +1,4 @@
-import { GEM_WALLET, Message, Network } from '@gemwallet/api/src/types';
+import { GEM_WALLET, Message, Network } from '@gemwallet/api/src';
 import {
   NetworkResponse,
   PaymentResponse,
