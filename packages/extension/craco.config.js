@@ -17,13 +17,10 @@ module.exports = {
           configFile: 'tsconfig.json'
         }
       });
-      return {
-        ...webpackConfig,
+
+      const chromeServices = {
         entry: {
-          main: [
-            env === 'development' && require.resolve('react-dev-utils/webpackHotDevClient'),
-            paths.appIndexJs
-          ].filter(Boolean),
+          main: [paths.appIndexJs].filter(Boolean),
           content: './src/chromeServices/content.ts',
           background: './src/chromeServices/background.ts'
         },
@@ -35,6 +32,16 @@ module.exports = {
           ...webpackConfig.optimization,
           runtimeChunk: false
         }
+      };
+
+      if (env === 'production') {
+        return {
+          ...webpackConfig,
+          ...chromeServices
+        };
+      }
+      return {
+        ...webpackConfig
       };
     }
   }
