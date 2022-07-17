@@ -1,5 +1,9 @@
 export const saveData = (key: string, value: string) => {
-  localStorage.setItem(key, value);
+  try {
+    localStorage.setItem(key, value);
+  } catch (e) {
+    throw e;
+  }
 };
 
 export const loadData = (key: string) => {

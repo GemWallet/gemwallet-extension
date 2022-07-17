@@ -11,8 +11,7 @@ let _currentWindowPopup: CurrentWindow = undefined;
  * from where the extension was called
  */
 const getLastFocusedWindow = (): Promise<chrome.windows.Window> => {
-  return new Promise((resolve, reject) => {
-    // TODO: Makes sure to handle properly the reject
+  return new Promise((resolve) => {
     chrome.windows.getLastFocused((windowObject) => {
       return resolve(windowObject);
     });

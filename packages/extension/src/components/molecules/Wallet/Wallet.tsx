@@ -23,7 +23,7 @@ export const Wallet: FC<WalletProps> = ({ address }) => {
         if (balance) {
           setBalance(balance);
         }
-      } catch {
+      } catch (e) {
         setBalance(ERROR_STATE);
       }
     }

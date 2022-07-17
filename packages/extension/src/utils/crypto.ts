@@ -9,6 +9,6 @@ export const decrypt = (cipherText: string, key: string) => {
   try {
     return bytes.toString(CryptoJS.enc.Utf8);
   } catch (error) {
-    return '';
+    return undefined;
   }
 };

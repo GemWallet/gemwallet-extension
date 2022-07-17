@@ -14,6 +14,7 @@ import { MessageListenerEvent, PaymentResponseError, PaymentResponseHash } from 
 import { TransactionStatus } from '../../../types';
 import { TileLoader } from '../../atoms';
 import { formatToken } from '../../../utils';
+import { ERROR_RED } from '../../../constants';
 
 const DEFAULT_FEES = 'Loading ...';
 const TOKEN = 'XRP';
@@ -25,6 +26,7 @@ export const Transaction: FC = () => {
     destination: '',
     id: 0
   });
+  const [errorFees, setErrorFees] = useState('');
 
   const { amount, fees, destination } = params;
 
@@ -49,12 +51,16 @@ export const Transaction: FC = () => {
   useEffect(() => {
     if (client) {
       const { amount } = params;
-      estimateNetworkFees({ amount, destination }).then((fees: string) => {
-        setParams((prevParams) => ({
-          ...prevParams,
-          fees
-        }));
-      });
+      estimateNetworkFees({ amount, destination })
+        .then((fees: string) => {
+          setParams((prevParams) => ({
+            ...prevParams,
+            fees
+          }));
+        })
+        .catch((e) => {
+          setErrorFees(e.message);
+        });
     }
   }, [client, destination, estimateNetworkFees, params]);
 
@@ -96,7 +102,6 @@ export const Transaction: FC = () => {
         const message = createMessage(transactionHash);
         chrome.runtime.sendMessage(message);
       })
-      //TODO: Catch this error and handle it
       .catch(() => {
         handleReject();
       });
@@ -132,7 +137,15 @@ export const Transaction: FC = () => {
           Network fees:
         </Typography>
         <Typography variant="body2" gutterBottom align="right">
-          {fees === DEFAULT_FEES ? <TileLoader secondLineOnly /> : formatToken(Number(fees), TOKEN)}
+          {errorFees ? (
+            <Typography variant="caption" style={{ color: ERROR_RED }}>
+              {errorFees}
+            </Typography>
+          ) : fees === DEFAULT_FEES ? (
+            <TileLoader secondLineOnly />
+          ) : (
+            formatToken(Number(fees), TOKEN)
+          )}
         </Typography>
       </Paper>
       <Container style={{ display: 'flex', justifyContent: 'space-evenly' }}>

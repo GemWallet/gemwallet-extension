@@ -8,9 +8,9 @@ import TwitterIcon from '@mui/icons-material/Twitter';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import { useLedger } from '../../../contexts/LedgerContext';
 import { TextCopy } from '../../molecules/TextCopy';
-import { PageWithStepper } from '../../templates';
+import { PageWithSpinner, PageWithStepper } from '../../templates';
 import { saveWallet, openExternalLink } from '../../../utils';
-import { HOME_PATH, TRANSACTION_PATH, TWITTER_LINK } from '../../../constants';
+import { ERROR_RED, HOME_PATH, TRANSACTION_PATH, TWITTER_LINK } from '../../../constants';
 
 const STEPS = 4;
 
@@ -19,6 +19,7 @@ export const CreateWallet: FC = () => {
   // TODO: Instead of using "activeStep" do use react router (cleaner)
   const [activeStep, setActiveStep] = useState(0);
   const [seedError, setSeedError] = useState('');
+  const [saveWalletError, setSaveWalletError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const { generateWallet } = useLedger();
   const navigate = useNavigate();
@@ -26,10 +27,7 @@ export const CreateWallet: FC = () => {
 
   useEffect(() => {
     const wallet = generateWallet();
-    // TODO: Handle the Wallet not properly generated
-    if (wallet) {
-      setWallet(wallet);
-    }
+    setWallet(wallet);
   }, [generateWallet]);
 
   const handleBack = useCallback(() => {
@@ -83,19 +81,22 @@ export const CreateWallet: FC = () => {
       const passwordValue = (document.getElementById('password') as HTMLInputElement).value;
       const confirmPasswordValue = (document.getElementById('confirm-password') as HTMLInputElement)
         .value;
-      if (passwordValue.length < 8 || confirmPasswordValue.length < 8) {
+      if (passwordValue.length < 8) {
         setPasswordError('Password must be at least 8 characters long');
       } else if (passwordValue !== confirmPasswordValue) {
         setPasswordError('Passwords must match');
       } else {
-        //TODO: Be sure that the wallet is present
-        if (wallet && wallet.seed) {
-          const _wallet = {
-            publicAddress: wallet.address,
-            seed: wallet.seed
-          };
+        const _wallet = {
+          publicAddress: wallet!.address,
+          seed: wallet!.seed!
+        };
+        try {
           saveWallet(_wallet, passwordValue);
           setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        } catch (e) {
+          setSaveWalletError(
+            'Something went wrong while trying to save your wallet, please try again'
+          );
         }
       }
     };
@@ -134,13 +135,18 @@ export const CreateWallet: FC = () => {
           type="password"
           style={{ marginTop: '20px' }}
         />
+        {saveWalletError ? (
+          <Typography variant="body2" style={{ marginTop: '15px', color: ERROR_RED }}>
+            {saveWalletError}
+          </Typography>
+        ) : null}
       </PageWithStepper>
     );
   }
 
   if (activeStep === 1) {
     const handleNext = () => {
-      if ((document.getElementById('seed') as HTMLInputElement).value === wallet?.seed) {
+      if ((document.getElementById('seed') as HTMLInputElement).value === wallet!.seed) {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
       } else {
         setSeedError('Seed incorrect');
@@ -175,13 +181,20 @@ export const CreateWallet: FC = () => {
     );
   }
 
+  if (!wallet) {
+    return <PageWithSpinner />;
+  }
+
+  if (!wallet!.seed) {
+    throw new Error("Seed wasn't generated properly within the Create Wallet");
+  }
+
   return (
     <PageWithStepper
       steps={STEPS}
       activeStep={activeStep}
       buttonText="Next"
       handleBack={handleBack}
-      // TODO: Cannot handle next if the wallet is not properly generated
       handleNext={handleNext}
     >
       <Typography variant="h4" component="h1" style={{ marginTop: '30px' }}>
@@ -191,10 +204,7 @@ export const CreateWallet: FC = () => {
         This is the only way you will be able to recover your account. Please store it somewhere
         safe!
       </Typography>
-      {
-        // TODO: Make sure that the wallet exist before proposing to copy (loading)
-      }
-      <TextCopy text={wallet?.seed || ''} />
+      <TextCopy text={wallet!.seed!} />
     </PageWithStepper>
   );
 };

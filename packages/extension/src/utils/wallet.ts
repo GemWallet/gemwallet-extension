@@ -14,7 +14,11 @@ export const saveWallet = (wallet: WalletToSave, password: string) => {
   const encryptedWallet = encrypt(JSON.stringify(wallet), password);
   wallets.push(encryptedWallet);
   const stringifiedWallets = JSON.stringify(wallets);
-  saveData(STORAGE_WALLETS, stringifiedWallets);
+  try {
+    saveData(STORAGE_WALLETS, stringifiedWallets);
+  } catch (e) {
+    throw e;
+  }
 };
 
 export const loadWallets = (password: string): Wallet[] => {
@@ -23,7 +27,7 @@ export const loadWallets = (password: string): Wallet[] => {
     const wallets = JSON.parse(data);
     return wallets.reduce((acc: Wallet[], wallet: string) => {
       const decryptedWallet = decrypt(wallet, password);
-      if (decryptedWallet !== '') {
+      if (decryptedWallet !== undefined) {
         acc.push(JSON.parse(decryptedWallet));
       }
       return acc;
@@ -33,8 +37,7 @@ export const loadWallets = (password: string): Wallet[] => {
 };
 
 export const removeWallets = () => {
-  // TODO: Handle ERROR in case the promise fails
-  return Promise.resolve().then(function () {
-    return removeData(STORAGE_WALLETS);
+  return Promise.resolve().then(() => {
+    removeData(STORAGE_WALLETS);
   });
 };
