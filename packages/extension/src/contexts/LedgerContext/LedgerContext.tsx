@@ -2,15 +2,15 @@ import { useContext, useState, useEffect, createContext, FC, useCallback } from 
 import { useNavigate } from 'react-router-dom';
 import { Wallet, Client, xrpToDrops, dropsToXrp, TransactionMetadata, Payment } from 'xrpl';
 import { Payment as PaymentPayload } from '@gemwallet/api';
-import { HOME_PATH } from '../../constants';
+import { HOME_PATH, TESTNET_RIPPLE } from '../../constants';
 import { WalletLedger } from '../../types';
 import { loadWallets } from '../../utils';
 
 interface ContextType {
   signIn: (password: string) => boolean;
   signOut: () => void;
-  generateWallet: () => Wallet | undefined;
-  importSeed: (seed: string) => boolean;
+  generateWallet: (walletName?: string) => Wallet;
+  importSeed: (seed: string, walletName?: string) => boolean;
   // Return transaction hash in case of success
   sendPayment: (payload: PaymentPayload) => Promise<string>;
   estimateNetworkFees: (payload: PaymentPayload) => Promise<string>;
@@ -22,7 +22,7 @@ interface ContextType {
 const LedgerContext = createContext<ContextType>({
   signIn: () => false,
   signOut: () => {},
-  generateWallet: () => undefined,
+  generateWallet: () => Wallet.generate(),
   importSeed: () => false,
   sendPayment: () => new Promise(() => {}),
   estimateNetworkFees: () =>
@@ -46,8 +46,7 @@ const LedgerProvider: FC = ({ children }) => {
   const [selectedWallet, setSelectedWallet] = useState<number>(0);
 
   const connectToNetwork = async () => {
-    // TODO: Put the websocket to constants and have some logic to switch from testnet to devnet to mainnet.
-    const client = new Client('wss://s.altnet.rippletest.net:51233');
+    const client = new Client(TESTNET_RIPPLE);
     await client.connect();
     setClient(client);
   };
@@ -78,14 +77,12 @@ const LedgerProvider: FC = ({ children }) => {
     navigate(HOME_PATH);
   }, [navigate]);
 
-  // TODO: Name of the wallet should be asked to the user and passed here instead of generated
-  const generateWallet = useCallback(() => {
-    // TODO: Handle the failure of the generation
+  const generateWallet = useCallback((walletName?: string) => {
     const wallet = Wallet.generate();
     setWallets((wallets) => [
       ...wallets,
       {
-        name: `Wallet ${wallets.length + 1}`,
+        name: walletName || `Wallet ${wallets.length + 1}`,
         publicAddress: wallet.address,
         wallet
       }
@@ -93,14 +90,13 @@ const LedgerProvider: FC = ({ children }) => {
     return wallet;
   }, []);
 
-  // TODO: Name of the wallet should be asked to the user and passed here instead of generated
-  const importSeed = useCallback((seed: string) => {
+  const importSeed = useCallback((seed: string, walletName?: string) => {
     try {
       const wallet = Wallet.fromSeed(seed);
       setWallets((wallets) => [
         ...wallets,
         {
-          name: `Wallet ${wallets.length + 1}`,
+          name: walletName || `Wallet ${wallets.length + 1}`,
           publicAddress: wallet.address,
           wallet
         }
@@ -109,7 +105,6 @@ const LedgerProvider: FC = ({ children }) => {
         return true;
       }
       return false;
-      // TODO: Properly handle that exception
     } catch {
       return false;
     }

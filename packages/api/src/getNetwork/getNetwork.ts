@@ -10,13 +10,13 @@ export const getNetwork = async () => {
     };
     response = await sendMessageToContentScript(message);
   } catch (e) {
-    console.error(e);
+    throw e;
   }
 
   const { network, error } = response;
 
   if (error) {
-    throw error;
+    throw new Error(error);
   }
   return network;
 };

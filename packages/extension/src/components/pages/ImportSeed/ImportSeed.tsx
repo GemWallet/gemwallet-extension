@@ -8,7 +8,7 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import { useLedger } from '../../../contexts/LedgerContext';
 import { PageWithStepper } from '../../templates';
 import { saveWallet, openExternalLink } from '../../../utils';
-import { HOME_PATH, TRANSACTION_PATH, TWITTER_LINK } from '../../../constants';
+import { ERROR_RED, HOME_PATH, TRANSACTION_PATH, TWITTER_LINK } from '../../../constants';
 
 const STEPS = 3;
 
@@ -17,6 +17,7 @@ export const ImportSeed: FC = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [passwordError, setPasswordError] = useState('');
   const [seedError, setSeedError] = useState('');
+  const [saveWalletError, setSaveWalletError] = useState('');
   const { importSeed, wallets, selectedWallet } = useLedger();
   const navigate = useNavigate();
   const { search } = useLocation();
@@ -78,18 +79,23 @@ export const ImportSeed: FC = () => {
       const passwordValue = (document.getElementById('password') as HTMLInputElement).value;
       const confirmPasswordValue = (document.getElementById('confirm-password') as HTMLInputElement)
         .value;
-      if (passwordValue.length < 8 || confirmPasswordValue.length < 8) {
+      if (passwordValue.length < 8) {
         setPasswordError('Password must be at least 8 characters long');
       } else if (passwordValue !== confirmPasswordValue) {
         setPasswordError('Passwords must match');
-        //TODO: Be sure that the wallet is present
-      } else if (wallets?.[selectedWallet]?.wallet.seed) {
+      } else if (wallets[selectedWallet].wallet.seed) {
         const _wallet = {
           publicAddress: wallets[selectedWallet].publicAddress,
           seed: wallets[selectedWallet].wallet.seed as string
         };
-        saveWallet(_wallet, passwordValue);
-        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        try {
+          saveWallet(_wallet, passwordValue);
+          setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        } catch (e) {
+          setSaveWalletError(
+            'Something went wrong while trying to save your wallet, please try again'
+          );
+        }
       }
     };
     return (
@@ -127,6 +133,11 @@ export const ImportSeed: FC = () => {
           type="password"
           style={{ marginTop: '20px' }}
         />
+        {saveWalletError ? (
+          <Typography variant="body2" style={{ marginTop: '15px', color: ERROR_RED }}>
+            {saveWalletError}
+          </Typography>
+        ) : null}
       </PageWithStepper>
     );
   }
