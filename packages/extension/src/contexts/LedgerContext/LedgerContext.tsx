@@ -155,8 +155,16 @@ const LedgerProvider: FC = ({ children }) => {
           const tx = await client.submitAndWait(signed.tx_blob);
           if ((tx.result.meta! as TransactionMetadata).TransactionResult === 'tesSUCCESS') {
             return tx.result.hash;
+          } else if (
+            (tx.result.meta! as TransactionMetadata).TransactionResult === 'tecUNFUNDED_PAYMENT'
+          ) {
+            throw new Error('Insufficient funds');
           } else {
-            throw new Error("Something went wrong, we couldn't submit properly the transaction");
+            throw new Error(
+              `Something went wrong, we couldn't submit properly the transaction - ${
+                (tx.result.meta! as TransactionMetadata).TransactionResult
+              }`
+            );
           }
         } catch (e) {
           throw e;

@@ -27,6 +27,7 @@ export const Transaction: FC = () => {
     id: 0
   });
   const [errorFees, setErrorFees] = useState('');
+  const [errorRequestRejection, setErrorRequestRejection] = useState<string>('');
 
   const { amount, fees, destination } = params;
 
@@ -102,7 +103,8 @@ export const Transaction: FC = () => {
         const message = createMessage(transactionHash);
         chrome.runtime.sendMessage(message);
       })
-      .catch(() => {
+      .catch((e) => {
+        setErrorRequestRejection(e.message);
         handleReject();
       });
   }, [createMessage, handleReject, params, sendPayment]);
@@ -110,7 +112,7 @@ export const Transaction: FC = () => {
   if (transaction !== TransactionStatus.Waiting) {
     return (
       <PageWithTitle title="">
-        <TransactionOrganism transaction={transaction} />
+        <TransactionOrganism transaction={transaction} failureReason={errorRequestRejection} />
       </PageWithTitle>
     );
   }

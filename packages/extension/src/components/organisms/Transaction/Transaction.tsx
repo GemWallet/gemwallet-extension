@@ -10,7 +10,7 @@ import check from '../../../assets/check.json';
 import { TransactionProps, LogoStyle } from './Transaction.types';
 import { TransactionStatus } from '../../../types';
 
-export const Transaction: FC<TransactionProps> = ({ transaction }) => {
+export const Transaction: FC<TransactionProps> = ({ transaction, failureReason }) => {
   const { window, closeExtension } = useBrowser();
   let animation: any = loading;
   let title: string = 'Transaction in progress';
@@ -40,7 +40,7 @@ export const Transaction: FC<TransactionProps> = ({ transaction }) => {
       <>
         Your transaction failed, please try again
         <br />
-        Something went wrong
+        {failureReason ? failureReason : 'Something went wrong'}
       </>
     );
     buttonText = 'Close';
