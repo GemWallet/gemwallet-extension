@@ -25,7 +25,7 @@ describe('PrivateRoute Atom', () => {
     render(
       <MemoryRouter
         initialEntries={[
-          `${TRANSACTION_PATH}?chain=xrp&network=test&transaction=payment&amount=50&destination=rNhjf7Re4B9LvWiJwpGg1A1B1fWy4xh2Le&token=xrp&apiVersion=1`
+          `${TRANSACTION_PATH}?transaction=payment&amount=50&destination=rNhjf7Re4B9LvWiJwpGg1A1B1fWy4xh2Le`
         ]}
       >
         <LedgerContext.Provider value={{ ...valueLedgerContext, wallets: [] }}>
