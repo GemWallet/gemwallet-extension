@@ -2,7 +2,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
 import { ImportSeed } from './ImportSeed';
-import { LedgerContext } from '../../../contexts/LedgerContext';
+import { LedgerContext } from '../../../contexts';
 import { valueLedgerContext, WALLET_SEED } from '../../../mocks';
 
 describe('ImportSeed Page', () => {

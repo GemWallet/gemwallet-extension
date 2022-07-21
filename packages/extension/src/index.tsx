@@ -4,8 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import Paper from '@mui/material/Paper';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import App from './App';
-import { LedgerProvider } from './contexts/LedgerContext';
-import { BrowserProvider } from './contexts/BrowserContext';
+import { BrowserProvider, LedgerProvider, ServerProvider } from './contexts';
 import reportWebVitals from './reportWebVitals';
 import './index.css';
 
@@ -41,7 +40,9 @@ ReactDOM.render(
         <BrowserRouter>
           <BrowserProvider>
             <LedgerProvider>
-              <App />
+              <ServerProvider>
+                <App />
+              </ServerProvider>
             </LedgerProvider>
           </BrowserProvider>
         </BrowserRouter>

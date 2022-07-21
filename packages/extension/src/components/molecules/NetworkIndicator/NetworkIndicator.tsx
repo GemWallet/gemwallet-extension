@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import Chip from '@mui/material/Chip';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
-import { useLedger } from '../../../contexts/LedgerContext';
+import { useLedger } from '../../../contexts';
 
 export const NetworkIndicator: FC = () => {
   const { client } = useLedger();

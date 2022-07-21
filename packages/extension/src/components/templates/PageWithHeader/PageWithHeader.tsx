@@ -3,7 +3,7 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import { Header, NavMenu } from '../../organisms';
 import { HEADER_HEIGHT, NAV_MENU_HEIGHT } from '../../../constants';
-import { useLedger } from '../../../contexts/LedgerContext';
+import { useLedger } from '../../../contexts';
 
 const MARGIN_TOP_CONTAINER = 20;
 const CONTAINER_HEIGHT_TAKEN = HEADER_HEIGHT + NAV_MENU_HEIGHT + MARGIN_TOP_CONTAINER;

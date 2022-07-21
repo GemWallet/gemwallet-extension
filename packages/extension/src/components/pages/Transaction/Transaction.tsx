@@ -8,7 +8,7 @@ import Tooltip from '@mui/material/Tooltip';
 import ErrorIcon from '@mui/icons-material/Error';
 import { PageWithTitle } from '../../templates';
 import { Transaction as TransactionOrganism } from '../../organisms/Transaction';
-import { useLedger } from '../../../contexts/LedgerContext';
+import { useLedger } from '../../../contexts';
 import { GEM_WALLET, Message } from '@gemwallet/api/src';
 import { MessageListenerEvent, PaymentResponseError, PaymentResponseHash } from '@gemwallet/api';
 import { TransactionStatus } from '../../../types';

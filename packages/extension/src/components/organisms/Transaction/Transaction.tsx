@@ -3,7 +3,7 @@ import Lottie from 'lottie-react';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import { useBrowser } from '../../../contexts/BrowserContext';
+import { useBrowser } from '../../../contexts';
 import loading from '../../../assets/loading.json';
 import alert from '../../../assets/alert.json';
 import check from '../../../assets/check.json';
