@@ -1,6 +1,6 @@
 import { useState, useEffect, FC, useCallback } from 'react';
 import { Wallet } from 'xrpl';
-import { useLedger } from '../../../contexts/LedgerContext';
+import { useLedger } from '../../../contexts';
 import { PageWithSpinner } from '../../templates';
 import { SecretSeed } from './SecretSeed';
 import { ConfirmSeed } from './ConfirmSeed';

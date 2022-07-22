@@ -1,7 +1,7 @@
 import { BrowserRouter, MemoryRouter } from 'react-router-dom';
 import { render, screen } from '@testing-library/react';
 import { PrivateRoute } from './PrivateRoute';
-import { LedgerContext } from '../../../contexts/LedgerContext';
+import { LedgerContext } from '../../../contexts';
 import App from '../../../App';
 import { TRANSACTION_PATH } from '../../../constants';
 import { valueLedgerContext } from '../../../mocks';

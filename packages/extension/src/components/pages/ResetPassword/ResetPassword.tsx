@@ -4,7 +4,7 @@ import { Button, Typography } from '@mui/material';
 import WarningIcon from '@mui/icons-material/Warning';
 import { PageWithReturn } from '../../templates';
 import { removeWallets } from '../../../utils';
-import { useLedger } from '../../../contexts/LedgerContext';
+import { useLedger } from '../../../contexts';
 import { SETTINGS_PATH } from '../../../constants';
 
 export const ResetPassword: FC = () => {

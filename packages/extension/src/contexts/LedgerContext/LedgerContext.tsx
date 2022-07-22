@@ -14,6 +14,7 @@ interface ContextType {
   // Return transaction hash in case of success
   sendPayment: (payload: PaymentPayload) => Promise<string>;
   estimateNetworkFees: (payload: PaymentPayload) => Promise<string>;
+  getCurrentWallet: () => WalletLedger | undefined;
   wallets: WalletLedger[];
   selectedWallet: number;
   client?: Client;
@@ -29,6 +30,7 @@ const LedgerContext = createContext<ContextType>({
     new Promise((resolve) => {
       resolve('0');
     }),
+  getCurrentWallet: () => undefined,
   wallets: [],
   selectedWallet: 0,
   client: undefined
@@ -155,8 +157,16 @@ const LedgerProvider: FC = ({ children }) => {
           const tx = await client.submitAndWait(signed.tx_blob);
           if ((tx.result.meta! as TransactionMetadata).TransactionResult === 'tesSUCCESS') {
             return tx.result.hash;
+          } else if (
+            (tx.result.meta! as TransactionMetadata).TransactionResult === 'tecUNFUNDED_PAYMENT'
+          ) {
+            throw new Error('Insufficient funds');
           } else {
-            throw new Error("Something went wrong, we couldn't submit properly the transaction");
+            throw new Error(
+              `Something went wrong, we couldn't submit properly the transaction - ${
+                (tx.result.meta! as TransactionMetadata).TransactionResult
+              }`
+            );
           }
         } catch (e) {
           throw e;
@@ -166,6 +176,10 @@ const LedgerProvider: FC = ({ children }) => {
     [client, selectedWallet, wallets]
   );
 
+  const getCurrentWallet = useCallback(() => {
+    return wallets[selectedWallet];
+  }, [selectedWallet, wallets]);
+
   const value: ContextType = {
     signIn,
     signOut,
@@ -173,6 +187,7 @@ const LedgerProvider: FC = ({ children }) => {
     importSeed,
     sendPayment,
     estimateNetworkFees,
+    getCurrentWallet,
     wallets,
     selectedWallet,
     client

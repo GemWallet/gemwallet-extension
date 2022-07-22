@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { Logo } from '../../atoms/Logo';
-import { useLedger } from '../../../contexts/LedgerContext';
+import { useLedger } from '../../../contexts';
 import { loadData } from '../../../utils';
 import {
   HOME_PATH,

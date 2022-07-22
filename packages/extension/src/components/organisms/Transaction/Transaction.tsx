@@ -3,14 +3,14 @@ import Lottie from 'lottie-react';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import { useBrowser } from '../../../contexts/BrowserContext';
+import { useBrowser } from '../../../contexts';
 import loading from '../../../assets/loading.json';
 import alert from '../../../assets/alert.json';
 import check from '../../../assets/check.json';
 import { TransactionProps, LogoStyle } from './Transaction.types';
 import { TransactionStatus } from '../../../types';
 
-export const Transaction: FC<TransactionProps> = ({ transaction }) => {
+export const Transaction: FC<TransactionProps> = ({ transaction, failureReason }) => {
   const { window, closeExtension } = useBrowser();
   let animation: any = loading;
   let title: string = 'Transaction in progress';
@@ -40,7 +40,7 @@ export const Transaction: FC<TransactionProps> = ({ transaction }) => {
       <>
         Your transaction failed, please try again
         <br />
-        Something went wrong
+        {failureReason ? failureReason : 'Something went wrong'}
       </>
     );
     buttonText = 'Close';

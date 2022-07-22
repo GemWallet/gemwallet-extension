@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { Transaction } from '.';
-import { BrowserContext } from '../../../contexts/BrowserContext';
+import { BrowserContext } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
 
 describe('Transaction Organism', () => {

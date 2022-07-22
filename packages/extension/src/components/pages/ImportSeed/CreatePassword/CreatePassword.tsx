@@ -1,7 +1,7 @@
 import { Dispatch, FC, SetStateAction, useCallback, useState } from 'react';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
-import { useLedger } from '../../../../contexts/LedgerContext';
+import { useLedger } from '../../../../contexts';
 import { PageWithStepper } from '../../../templates';
 import { saveWallet } from '../../../../utils';
 import { ERROR_RED } from '../../../../constants';

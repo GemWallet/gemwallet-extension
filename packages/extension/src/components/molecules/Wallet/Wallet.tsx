@@ -1,7 +1,7 @@
 import { useState, useEffect, FC } from 'react';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
-import { useLedger } from '../../../contexts/LedgerContext';
+import { useLedger, useServer } from '../../../contexts';
 import { formatToken } from '../../../utils';
 import { TileLoader } from '../../atoms';
 
@@ -15,6 +15,9 @@ export interface WalletProps {
 export const Wallet: FC<WalletProps> = ({ address }) => {
   const [balance, setBalance] = useState(LOADING_STATE);
   const { client } = useLedger();
+  const { serverInfo } = useServer();
+
+  const reserve = serverInfo?.info.validated_ledger?.reserve_base_xrp;
 
   useEffect(() => {
     async function fetchBalance() {
@@ -44,10 +47,10 @@ export const Wallet: FC<WalletProps> = ({ address }) => {
         }}
       >
         <Typography variant="body1">
-          {balance === LOADING_STATE ? (
+          {balance === LOADING_STATE || !reserve ? (
             <TileLoader secondLineOnly swidth={100} />
           ) : balance !== ERROR_STATE ? (
-            formatToken(Number(balance), 'XRP')
+            formatToken(Number(balance) - reserve, 'XRP')
           ) : (
             'There are no funds on your wallet'
           )}

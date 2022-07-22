@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useState } from 'react';
+import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
@@ -6,9 +6,9 @@ import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import ErrorIcon from '@mui/icons-material/Error';
-import { PageWithTitle } from '../../templates';
+import { PageWithSpinner, PageWithTitle } from '../../templates';
 import { Transaction as TransactionOrganism } from '../../organisms/Transaction';
-import { useLedger } from '../../../contexts/LedgerContext';
+import { useLedger, useServer } from '../../../contexts';
 import { GEM_WALLET, Message } from '@gemwallet/api/src';
 import { MessageListenerEvent, PaymentResponseError, PaymentResponseHash } from '@gemwallet/api';
 import { TransactionStatus } from '../../../types';
@@ -19,54 +19,80 @@ import { ERROR_RED } from '../../../constants';
 const DEFAULT_FEES = 'Loading ...';
 const TOKEN = 'XRP';
 
+interface Params {
+  amount: string | null;
+  destination: string | null;
+  id: number;
+}
+
 export const Transaction: FC = () => {
-  const [params, setParams] = useState({
-    amount: '0',
-    fees: DEFAULT_FEES,
-    destination: '',
+  const [params, setParams] = useState<Params>({
+    amount: null,
+    destination: null,
     id: 0
   });
+  const [fees, setFees] = useState<string>(DEFAULT_FEES);
   const [errorFees, setErrorFees] = useState('');
-
-  const { amount, fees, destination } = params;
+  const [errorRequestRejection, setErrorRequestRejection] = useState<string>('');
+  const [difference, setDifference] = useState<number | undefined>();
+  const [isParamsMissing, setIsParamsMissing] = useState(false);
 
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
-  const { client, estimateNetworkFees, sendPayment } = useLedger();
+  const { client, estimateNetworkFees, sendPayment, getCurrentWallet } = useLedger();
+  const { serverInfo } = useServer();
 
   useEffect(() => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
-    const amount = urlParams.get('amount') || '0';
-    const destination = urlParams.get('destination') || '';
+    const amount = urlParams.get('amount');
+    const destination = urlParams.get('destination');
     const id = Number(urlParams.get('id')) || 0;
+
+    if (amount === null || destination === null) {
+      setIsParamsMissing(true);
+    }
 
     setParams({
       amount,
-      fees: DEFAULT_FEES,
       destination,
       id
     });
   }, []);
 
   useEffect(() => {
-    if (client) {
-      const { amount } = params;
-      estimateNetworkFees({ amount, destination })
-        .then((fees: string) => {
-          setParams((prevParams) => ({
-            ...prevParams,
-            fees
-          }));
+    if (client && params.amount && params.destination) {
+      estimateNetworkFees({ amount: params.amount, destination: params.destination })
+        .then((fees) => {
+          setFees(fees);
         })
         .catch((e) => {
           setErrorFees(e.message);
         });
     }
-  }, [client, destination, estimateNetworkFees, params]);
+  }, [client, estimateNetworkFees, params.amount, params.destination]);
+
+  useEffect(() => {
+    async function calculateDifference() {
+      const currentWallet = getCurrentWallet();
+      if (currentWallet && params.amount) {
+        const currentBalance = await client?.getXrpBalance(currentWallet!.publicAddress);
+        const difference =
+          Number(currentBalance) -
+          Number(serverInfo?.info.validated_ledger?.reserve_base_xrp) -
+          Number(params.amount);
+        setDifference(difference);
+      }
+    }
+    calculateDifference();
+  }, [
+    params.amount,
+    client,
+    getCurrentWallet,
+    serverInfo?.info.validated_ledger?.reserve_base_xrp
+  ]);
 
   const createMessage = useCallback(
     (transactionHash: string | null): MessageListenerEvent => {
-      const { id } = params;
       let transactionResponse: PaymentResponseError | PaymentResponseHash = {
         error: 'Transaction has been rejected'
       } as PaymentResponseError;
@@ -79,12 +105,12 @@ export const Transaction: FC = () => {
         app: GEM_WALLET,
         type: Message.ReceivePaymentHash,
         payload: {
-          id,
+          id: params.id,
           ...transactionResponse
         }
       };
     },
-    [params]
+    [params.id]
   );
 
   const handleReject = useCallback(() => {
@@ -95,28 +121,60 @@ export const Transaction: FC = () => {
 
   const handleConfirm = useCallback(() => {
     setTransaction(TransactionStatus.Pending);
-    const { amount, destination } = params;
-    sendPayment({ amount, destination })
+    // Amount and Destination will be present because if not,
+    // we won't be able to go to the confirm transaction state
+    sendPayment({ amount: params.amount as string, destination: params.destination as string })
       .then((transactionHash) => {
         setTransaction(TransactionStatus.Success);
         const message = createMessage(transactionHash);
         chrome.runtime.sendMessage(message);
       })
-      .catch(() => {
+      .catch((e) => {
+        setErrorRequestRejection(e.message);
         handleReject();
       });
-  }, [createMessage, handleReject, params, sendPayment]);
+  }, [createMessage, handleReject, params.amount, params.destination, sendPayment]);
 
-  if (transaction !== TransactionStatus.Waiting) {
+  const hasEnoughFunds = useMemo(() => {
+    return Number(difference) > 0;
+  }, [difference]);
+
+  if (isParamsMissing) {
+    //TODO Log this within Sentry
     return (
       <PageWithTitle title="">
-        <TransactionOrganism transaction={transaction} />
+        <TransactionOrganism
+          transaction={TransactionStatus.Rejected}
+          failureReason="You need to provide an amount and a destination to make the transaction"
+        />
       </PageWithTitle>
     );
   }
 
+  if (!difference) {
+    return <PageWithSpinner />;
+  }
+
+  if (transaction !== TransactionStatus.Waiting) {
+    return (
+      <PageWithTitle title="">
+        <TransactionOrganism transaction={transaction} failureReason={errorRequestRejection} />
+      </PageWithTitle>
+    );
+  }
+
+  const { amount, destination } = params;
+
   return (
     <PageWithTitle title="Confirm Transaction">
+      {!hasEnoughFunds ? (
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <ErrorIcon style={{ color: ERROR_RED }} />
+          <Typography variant="body1" style={{ marginLeft: '10px', color: ERROR_RED }}>
+            Insufficient funds.
+          </Typography>
+        </div>
+      ) : null}
       <Paper elevation={24} style={{ padding: '10px' }}>
         <Typography variant="body1">Destination:</Typography>
         <Typography variant="body2">{destination}</Typography>
@@ -152,7 +210,7 @@ export const Transaction: FC = () => {
         <Button variant="contained" color="secondary" onClick={handleReject}>
           Reject
         </Button>
-        <Button variant="contained" onClick={handleConfirm} disabled={!client}>
+        <Button variant="contained" onClick={handleConfirm} disabled={!hasEnoughFunds}>
           Confirm
         </Button>
       </Container>
