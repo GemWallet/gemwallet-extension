@@ -58,6 +58,13 @@ const LedgerProvider: FC = ({ children }) => {
     connectToNetwork();
   }, []);
 
+  useEffect(() => {
+    // Disconnect the websocket
+    return () => {
+      client?.disconnect();
+    };
+  }, [client]);
+
   const signIn = useCallback((password: string) => {
     const wallets = loadWallets(password);
     if (wallets.length) {
