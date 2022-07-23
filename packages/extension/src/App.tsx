@@ -1,5 +1,6 @@
 import { FC } from 'react';
 import { Routes, Route } from 'react-router-dom';
+import * as Sentry from '@sentry/react';
 import { PrivateRoute } from './components/atoms/PrivateRoute';
 import {
   About,
@@ -24,10 +25,12 @@ import {
   WELCOME_PATH
 } from './constants';
 
+const SentryRoutes = Sentry.withSentryReactRouterV6Routing(Routes);
+
 const App: FC = () => {
   return (
     <ErrorBoundary>
-      <Routes>
+      <SentryRoutes>
         <Route path="*" element={<Login />} />
         <Route path={WELCOME_PATH} element={<Welcome />} />
         <Route path={IMPORT_SEED_PATH} element={<ImportSeed />} />
@@ -65,7 +68,7 @@ const App: FC = () => {
           }
         />
         <Route path={RESET_PASSWORD_PATH} element={<ResetPassword />} />
-      </Routes>
+      </SentryRoutes>
     </ErrorBoundary>
   );
 };
