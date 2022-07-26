@@ -1,4 +1,5 @@
 import { useState, useEffect, FC } from 'react';
+import * as Sentry from '@sentry/react';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import { useLedger, useServer } from '../../../contexts';
@@ -27,6 +28,7 @@ export const Wallet: FC<WalletProps> = ({ address }) => {
           setBalance(balance);
         }
       } catch (e) {
+        Sentry.captureException(e);
         setBalance(ERROR_STATE);
       }
     }

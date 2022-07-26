@@ -1,5 +1,6 @@
 import { useContext, useState, useEffect, createContext, FC, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import * as Sentry from '@sentry/react';
 import { Wallet, Client, xrpToDrops, dropsToXrp, TransactionMetadata, Payment } from 'xrpl';
 import { Payment as PaymentPayload } from '@gemwallet/api';
 import { HOME_PATH, TESTNET_RIPPLE } from '../../constants';
@@ -114,7 +115,8 @@ const LedgerProvider: FC = ({ children }) => {
         return true;
       }
       return false;
-    } catch {
+    } catch (e) {
+      Sentry.captureException(e);
       return false;
     }
   }, []);
@@ -176,6 +178,7 @@ const LedgerProvider: FC = ({ children }) => {
             );
           }
         } catch (e) {
+          Sentry.captureException(e);
           throw e;
         }
       }
@@ -206,7 +209,9 @@ const LedgerProvider: FC = ({ children }) => {
 const useLedger = (): ContextType => {
   const context = useContext(LedgerContext);
   if (context === undefined) {
-    throw new Error('useLedger must be used within a LedgerProvider');
+    const error = new Error('useLedger must be used within a LedgerProvider');
+    Sentry.captureException(error);
+    throw error;
   }
   return context;
 };

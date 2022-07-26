@@ -1,4 +1,5 @@
 import { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import * as Sentry from '@sentry/react';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
@@ -66,6 +67,7 @@ export const Transaction: FC = () => {
           setFees(fees);
         })
         .catch((e) => {
+          Sentry.captureException(e);
           setErrorFees(e.message);
         });
     }
@@ -90,6 +92,12 @@ export const Transaction: FC = () => {
     getCurrentWallet,
     serverInfo?.info.validated_ledger?.reserve_base_xrp
   ]);
+
+  useEffect(() => {
+    if (isParamsMissing) {
+      Sentry.captureMessage('Params are missing');
+    }
+  }, [isParamsMissing]);
 
   const createMessage = useCallback(
     (transactionHash: string | null): MessageListenerEvent => {
@@ -130,6 +138,7 @@ export const Transaction: FC = () => {
         chrome.runtime.sendMessage(message);
       })
       .catch((e) => {
+        Sentry.captureException(e);
         setErrorRequestRejection(e.message);
         handleReject();
       });
@@ -140,7 +149,6 @@ export const Transaction: FC = () => {
   }, [difference]);
 
   if (isParamsMissing) {
-    //TODO Log this within Sentry
     return (
       <PageWithTitle title="">
         <TransactionOrganism

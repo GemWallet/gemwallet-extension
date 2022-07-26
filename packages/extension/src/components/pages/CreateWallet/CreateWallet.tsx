@@ -1,4 +1,5 @@
 import { useState, useEffect, FC, useCallback } from 'react';
+import * as Sentry from '@sentry/react';
 import { Wallet } from 'xrpl';
 import { useLedger } from '../../../contexts';
 import { PageWithSpinner } from '../../templates';
@@ -26,7 +27,9 @@ export const CreateWallet: FC = () => {
   }
 
   if (!wallet!.seed) {
-    throw new Error("Seed wasn't generated properly within the Create Wallet");
+    const error = new Error("Seed wasn't generated properly within the Create Wallet");
+    Sentry.captureException(error);
+    throw error;
   }
 
   if (activeStep === 3) {
