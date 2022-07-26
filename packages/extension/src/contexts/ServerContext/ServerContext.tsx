@@ -1,4 +1,5 @@
 import { useContext, useState, useEffect, createContext, FC } from 'react';
+import * as Sentry from '@sentry/react';
 import { ServerInfoResponse } from 'xrpl';
 import { useLedger } from '../LedgerContext';
 
@@ -26,6 +27,7 @@ const ServerProvider: FC = ({ children }) => {
         setServerInfo(result);
       })
       .catch((e) => {
+        Sentry.captureException(e);
         throw e;
       });
   }, [client]);
@@ -40,7 +42,9 @@ const ServerProvider: FC = ({ children }) => {
 const useServer = (): ContextType => {
   const context = useContext(ServerContext);
   if (context === undefined) {
-    throw new Error('useServer must be used within a ServerProvider');
+    const error = new Error('useServer must be used within a ServerProvider');
+    Sentry.captureException(error);
+    throw error;
   }
   return context;
 };

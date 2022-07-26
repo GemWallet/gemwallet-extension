@@ -1,4 +1,5 @@
 import { Dispatch, FC, SetStateAction, useCallback, useState } from 'react';
+import * as Sentry from '@sentry/react';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import { useLedger } from '../../../../contexts';
@@ -39,6 +40,7 @@ export const CreatePassword: FC<CreatePasswordProps> = ({
         saveWallet(_wallet, passwordValue);
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
       } catch (e) {
+        Sentry.captureException(e);
         setSaveWalletError(
           'Something went wrong while trying to save your wallet, please try again'
         );
