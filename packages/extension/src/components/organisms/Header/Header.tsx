@@ -4,7 +4,7 @@ import { styled } from '@mui/material/styles';
 import { AppBar, Box, IconButton, Toolbar, Tooltip, Typography } from '@mui/material';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import DoneIcon from '@mui/icons-material/Done';
-import { NetworkIndicator } from '../../molecules/NetworkIndicator';
+import { NetworkIndicator } from '../../molecules';
 import { WalletIcon } from '../../atoms';
 import { truncateAddress } from '../../../utils';
 import { HEADER_HEIGHT_WITHOUT_PADDING, SECONDARY_GRAY } from '../../../constants';
