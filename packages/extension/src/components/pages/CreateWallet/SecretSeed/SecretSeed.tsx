@@ -1,7 +1,7 @@
 import { Dispatch, FC, SetStateAction, useCallback } from 'react';
 import { Wallet } from 'xrpl';
 import Typography from '@mui/material/Typography';
-import { TextCopy } from '../../../molecules/TextCopy';
+import { TextCopy } from '../../../molecules';
 import { PageWithStepper } from '../../../templates';
 import { STEPS } from '../constants';
 

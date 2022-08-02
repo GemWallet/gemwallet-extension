@@ -15,10 +15,9 @@ import { MessageListenerEvent, PaymentResponseError, PaymentResponseHash } from 
 import { TransactionStatus } from '../../../types';
 import { TileLoader } from '../../atoms';
 import { formatToken } from '../../../utils';
-import { ERROR_RED } from '../../../constants';
+import { ERROR_RED, Tokens } from '../../../constants';
 
 const DEFAULT_FEES = 'Loading ...';
-const TOKEN = 'XRP';
 
 interface Params {
   amount: string | null;
@@ -190,7 +189,7 @@ export const Transaction: FC = () => {
       <Paper elevation={24} style={{ padding: '10px' }}>
         <Typography variant="body1">Amount:</Typography>
         <Typography variant="h4" component="h1" gutterBottom align="right">
-          {formatToken(Number(amount), TOKEN)}
+          {formatToken(Number(amount), Tokens.XRP)}
         </Typography>
       </Paper>
       <Paper elevation={24} style={{ padding: '10px' }}>
@@ -210,7 +209,7 @@ export const Transaction: FC = () => {
           ) : fees === DEFAULT_FEES ? (
             <TileLoader secondLineOnly />
           ) : (
-            formatToken(Number(fees), TOKEN)
+            formatToken(Number(fees), Tokens.XRP)
           )}
         </Typography>
       </Paper>
