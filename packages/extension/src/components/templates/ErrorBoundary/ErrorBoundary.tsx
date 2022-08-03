@@ -1,4 +1,6 @@
-import { Component, ReactNode, ErrorInfo } from 'react';
+import { Component, ErrorInfo, ReactNode } from 'react';
+import * as Sentry from '@sentry/browser';
+import { Extras } from '@sentry/types';
 import { Container, Typography, Button } from '@mui/material';
 import { WarningIcon } from './WarningIcon';
 
@@ -22,8 +24,11 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    // You can also log the error to an error reporting service
-    console.log(error, errorInfo);
+    Sentry.withScope((scope) => {
+      const extra = errorInfo as unknown as Extras;
+      scope.setExtras(extra);
+      Sentry.captureException(error);
+    });
   }
 
   render() {

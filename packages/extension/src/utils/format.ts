@@ -7,5 +7,5 @@ export const formatToken = (value: number, currency: string) => {
     currencyDisplay: 'narrowSymbol',
     minimumFractionDigits
   }).format(value);
-  return formattedToken.replace('XRP', currency.toUpperCase());
+  return `${formattedToken.replace(/\s?XRP\s?/, '')} ${currency.toUpperCase()}`;
 };

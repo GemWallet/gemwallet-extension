@@ -1,17 +1,11 @@
-import {
-  GEM_WALLET,
-  MSG_REQUEST,
-  MSG_RESPONSE,
-  REQUEST_NETWORK,
-  REQUEST_CONNECTION,
-  REQUEST_TRANSACTION,
-  REQUEST_TRANSACTION_STATUS
-} from '@gemwallet/api/src/constants/message';
+import { GEM_WALLET, Message, Network } from '@gemwallet/api/src';
 import {
   NetworkResponse,
-  TransactionResponse,
+  PaymentResponse,
+  PaymentResponseError,
+  PaymentResponseHash,
   MessageListenerEvent
-} from '@gemwallet/api/src/constants/message.types';
+} from '@gemwallet/api';
 
 /**
  * Execute the function if the document is fully ready
@@ -23,16 +17,16 @@ setTimeout(() => {
     (event) => {
       const messagedId = event?.data?.messageId || 0;
       if (event.source !== window && event.data.app === GEM_WALLET) return;
-      if (!event.data.source || event.data.source !== MSG_REQUEST) return;
+      if (!event.data.source || event.data.source !== Message.MsgRequest) return;
 
       const {
         data: { app, type }
       } = event;
       // Check if it's an allowed event type to be forwarded
-      if (type === REQUEST_NETWORK) {
+      if (type === Message.RequestNetwork) {
         let res: NetworkResponse = {
           error: 'Unable to send message to extension',
-          network: null
+          network: Network.Test
         };
 
         chrome.runtime.sendMessage(
@@ -46,16 +40,12 @@ setTimeout(() => {
             }
             // Send the response back to GemWallet API
             window.postMessage(
-              { source: MSG_RESPONSE, messagedId, ...res },
+              { source: Message.MsgResponse, messagedId, ...res },
               window.location.origin
             );
           }
         );
-      } else if (type === REQUEST_TRANSACTION) {
-        let res: TransactionResponse = {
-          error: 'Unable to send message to extension',
-          status: 'waiting'
-        };
+      } else if (type === Message.SendPayment) {
         const {
           data: { payload }
         } = event;
@@ -74,13 +64,20 @@ setTimeout(() => {
               const { app, type, payload } = message;
               // We make sure that the message comes from gem-wallet
               if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
-                if (type === REQUEST_TRANSACTION_STATUS) {
+                if (type === Message.ReceivePaymentHash) {
+                  let res = {
+                    error: 'Unable to send message to extension'
+                  } as PaymentResponseError | PaymentResponseHash;
                   if (payload) {
-                    const { status, error } = payload;
-                    res = { status, error };
+                    const { hash, error } = payload;
+                    if (hash) {
+                      res = { hash } as PaymentResponseHash;
+                    } else if (error) {
+                      res = { error } as PaymentResponseError;
+                    }
                   }
                   window.postMessage(
-                    { source: MSG_RESPONSE, messagedId, ...res },
+                    { source: Message.MsgResponse, messagedId, ...res } as PaymentResponse,
                     window.location.origin
                   );
                 }
@@ -90,9 +87,9 @@ setTimeout(() => {
             chrome.runtime.onMessage.addListener(messageListener);
           }
         );
-      } else if (type === REQUEST_CONNECTION) {
+      } else if (type === Message.RequestConnection) {
         window.postMessage(
-          { source: MSG_RESPONSE, messagedId, isConnected: true },
+          { source: Message.MsgResponse, messagedId, isConnected: true },
           window.location.origin
         );
       }

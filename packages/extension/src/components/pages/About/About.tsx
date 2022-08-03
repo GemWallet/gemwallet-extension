@@ -65,8 +65,9 @@ export const About: FC = () => {
         </Typography>
       </div>
       <Typography style={{ marginTop: '0.25rem' }}>
-        GemWallet is a web extension that allows you to make online payments with one click on the
-        XRPL. Our vision is oriented toward payments, micro-payments and payment streaming.
+        GemWallet is a non-custodial wallet extension that allows you to make online payments with
+        one click on the XRPL. Our vision is oriented toward payments, micro-payments and payment
+        streaming.
       </Typography>
       <div style={{ marginTop: '1rem' }}>
         <Typography variant="subtitle2">Links</Typography>

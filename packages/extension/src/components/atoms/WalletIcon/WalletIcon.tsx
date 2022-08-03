@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { Hashicon } from '@emeraldpay/hashicon-react';
-import { useLedger } from '../../../contexts/LedgerContext';
+import { useLedger } from '../../../contexts';
 
 export interface WalletIconProps {
   publicAddress: string;

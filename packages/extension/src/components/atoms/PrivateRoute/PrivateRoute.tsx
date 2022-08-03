@@ -1,6 +1,6 @@
 import { FC, ReactElement } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { useLedger } from '../../../contexts/LedgerContext';
+import { useLedger } from '../../../contexts';
 
 export interface PrivateRouteProps {
   children: ReactElement;

@@ -1,4 +1,5 @@
 import { useContext, useState, useEffect, createContext, FC, useCallback } from 'react';
+import * as Sentry from '@sentry/react';
 
 export interface CloseProps {
   windowId: number;
@@ -45,7 +46,9 @@ const BrowserProvider: FC = ({ children }) => {
 const useBrowser = (): ContextType => {
   const context = useContext(BrowserContext);
   if (context === undefined) {
-    throw new Error('useBrowser must be used within a BrowserProvider');
+    const error = new Error('useBrowser must be used within a BrowserProvider');
+    Sentry.captureException(error);
+    throw error;
   }
   return context;
 };

@@ -1,10 +1,5 @@
-import {
-  GEM_WALLET,
-  REQUEST_NETWORK,
-  REQUEST_TRANSACTION,
-  REQUEST_TRANSACTION_STATUS
-} from '@gemwallet/api/src/constants/message';
-import { MessageListenerEvent } from '@gemwallet/api/src/constants/message.types';
+import { GEM_WALLET, Message, Network } from '@gemwallet/api/src';
+import { MessageListenerEvent } from '@gemwallet/api';
 import { CurrentWindow } from './background.types';
 
 const NOTIFICATION_HEIGHT = 620;
@@ -16,8 +11,7 @@ let _currentWindowPopup: CurrentWindow = undefined;
  * from where the extension was called
  */
 const getLastFocusedWindow = (): Promise<chrome.windows.Window> => {
-  return new Promise((resolve, reject) => {
-    // TODO: Makes sure to handle properly the reject
+  return new Promise((resolve) => {
     chrome.windows.getLastFocused((windowObject) => {
       return resolve(windowObject);
     });
@@ -43,9 +37,9 @@ chrome.runtime.onMessage.addListener((message: MessageListenerEvent, sender, sen
   const { app, type } = message;
   // We make sure that the message comes from gem-wallet
   if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
-    if (type === REQUEST_NETWORK) {
-      sendResponse('TEST');
-    } else if (type === REQUEST_TRANSACTION) {
+    if (type === Message.RequestNetwork) {
+      sendResponse(Network.Test);
+    } else if (type === Message.SendPayment) {
       chrome.windows.getAll().then((openedWindows) => {
         // We check if the popup is currently open
         if (
@@ -62,7 +56,7 @@ chrome.runtime.onMessage.addListener((message: MessageListenerEvent, sender, sen
             payload!.id = sender.tab!.id!;
             chrome.windows.create(
               {
-                url: `../../index.html${serializeToQueryString(payload)}`,
+                url: `../../index.html${serializeToQueryString(payload)}&transaction=payment`,
                 type: 'popup',
                 width: NOTIFICATION_WIDTH,
                 height: NOTIFICATION_HEIGHT,
@@ -76,14 +70,14 @@ chrome.runtime.onMessage.addListener((message: MessageListenerEvent, sender, sen
           });
         }
       });
-    } else if (type === REQUEST_TRANSACTION_STATUS) {
+    } else if (type === Message.ReceivePaymentHash) {
       const { payload } = message;
       chrome.tabs.sendMessage(payload!.id, {
         app,
-        type: REQUEST_TRANSACTION_STATUS,
+        type: Message.ReceivePaymentHash,
         payload: {
-          status: payload!.status,
-          error: ''
+          hash: payload!.hash,
+          error: payload!.error
         }
       });
     }

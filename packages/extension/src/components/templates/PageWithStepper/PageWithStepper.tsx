@@ -1,4 +1,5 @@
 import { FC, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
 import MobileStepper from '@mui/material/MobileStepper';
@@ -20,6 +21,8 @@ export const PageWithStepper: FC<PageWithStepperProps> = ({
   handleNext,
   children
 }) => {
+  const navigate = useNavigate();
+
   /*
    * Handle Next step button by pressing 'Enter'
    */
@@ -35,6 +38,14 @@ export const PageWithStepper: FC<PageWithStepperProps> = ({
     };
   }, [activeStep, handleNext]);
 
+  const handleBackButton = () => {
+    if (activeStep === 0) {
+      navigate(-1);
+    } else {
+      handleBack();
+    }
+  };
+
   return (
     <>
       <MobileStepper
@@ -44,7 +55,7 @@ export const PageWithStepper: FC<PageWithStepperProps> = ({
         activeStep={activeStep}
         nextButton={<div style={{ width: '68.89px' }}></div>}
         backButton={
-          <Button size="small" onClick={() => handleBack()} disabled={activeStep === 0}>
+          <Button size="small" onClick={handleBackButton}>
             {<KeyboardArrowLeft />}
             Back
           </Button>

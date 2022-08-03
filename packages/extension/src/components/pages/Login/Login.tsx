@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { Logo } from '../../atoms/Logo';
-import { useLedger } from '../../../contexts/LedgerContext';
+import { useLedger } from '../../../contexts';
 import { loadData } from '../../../utils';
 import {
   HOME_PATH,
@@ -63,6 +63,10 @@ export const Login: FC = () => {
     };
   }, [handleUnlock]);
 
+  const handleTextFieldChange = useCallback(() => {
+    setPasswordError('');
+  }, []);
+
   const handleReset = useCallback(() => {
     navigate(RESET_PASSWORD_PATH);
   }, [navigate]);
@@ -101,6 +105,7 @@ export const Login: FC = () => {
           name="password"
           label="Password"
           error={!!passwordError}
+          onChange={handleTextFieldChange}
           helperText={passwordError}
           type="password"
           style={{ marginBottom: '20px' }}

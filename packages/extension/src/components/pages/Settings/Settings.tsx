@@ -10,7 +10,7 @@ import {
   ListItemText,
   Typography
 } from '@mui/material';
-import { useLedger } from '../../../contexts/LedgerContext';
+import { useLedger } from '../../../contexts';
 import { PageWithNavMenu } from '../../templates';
 import { openExternalLink } from '../../../utils';
 import {

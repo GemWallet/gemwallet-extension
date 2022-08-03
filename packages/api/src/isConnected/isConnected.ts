@@ -1,6 +1,5 @@
-import { GEM_WALLET, REQUEST_CONNECTION } from './constants/message';
-import { MessageListenerEvent, IsConnectedResponse } from './constants/message.types';
-import { sendMessageToContentScript } from './helpers/extensionMessaging';
+import { GEM_WALLET, Message, MessageListenerEvent, IsConnectedResponse } from '../types';
+import { sendMessageToContentScript } from '../helpers/extensionMessaging';
 
 declare global {
   interface Window {
@@ -9,7 +8,7 @@ declare global {
   }
 }
 
-const isConnected = () => {
+export const isConnected = () => {
   if (window.gemWallet) {
     return new Promise((resolve) => resolve(true));
   } else {
@@ -27,7 +26,7 @@ const isConnected = () => {
       try {
         const message: MessageListenerEvent = {
           app: GEM_WALLET,
-          type: REQUEST_CONNECTION
+          type: Message.RequestConnection
         };
         response = await sendMessageToContentScript(message);
         resolve(response.isConnected);
@@ -45,5 +44,3 @@ const isConnected = () => {
     });
   }
 };
-
-export = isConnected;

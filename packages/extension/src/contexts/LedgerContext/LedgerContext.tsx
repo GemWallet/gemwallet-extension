@@ -1,23 +1,21 @@
-import { TransactionStatus } from '@gemwallet/api/src/constants/transaction.types';
 import { useContext, useState, useEffect, createContext, FC, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Wallet, Client, xrpToDrops, dropsToXrp } from 'xrpl';
-import { HOME_PATH } from '../../constants';
+import * as Sentry from '@sentry/react';
+import { Wallet, Client, xrpToDrops, dropsToXrp, TransactionMetadata, Payment } from 'xrpl';
+import { Payment as PaymentPayload } from '@gemwallet/api';
+import { HOME_PATH, TESTNET_RIPPLE } from '../../constants';
 import { WalletLedger } from '../../types';
 import { loadWallets } from '../../utils';
-
-interface TransactionPayloadType {
-  amount: string;
-  destination: string;
-}
 
 interface ContextType {
   signIn: (password: string) => boolean;
   signOut: () => void;
-  generateWallet: () => Wallet | undefined;
-  importSeed: (seed: string) => boolean;
-  sendTransaction: (payload: TransactionPayloadType) => Promise<TransactionStatus>;
-  estimateNetworkFees: (amount: string) => Promise<string>;
+  generateWallet: (walletName?: string) => Wallet;
+  importSeed: (seed: string, walletName?: string) => boolean;
+  // Return transaction hash in case of success
+  sendPayment: (payload: PaymentPayload) => Promise<string>;
+  estimateNetworkFees: (payload: PaymentPayload) => Promise<string>;
+  getCurrentWallet: () => WalletLedger | undefined;
   wallets: WalletLedger[];
   selectedWallet: number;
   client?: Client;
@@ -26,13 +24,14 @@ interface ContextType {
 const LedgerContext = createContext<ContextType>({
   signIn: () => false,
   signOut: () => {},
-  generateWallet: () => undefined,
+  generateWallet: () => Wallet.generate(),
   importSeed: () => false,
-  sendTransaction: () => new Promise(() => {}),
+  sendPayment: () => new Promise(() => {}),
   estimateNetworkFees: () =>
     new Promise((resolve) => {
       resolve('0');
     }),
+  getCurrentWallet: () => undefined,
   wallets: [],
   selectedWallet: 0,
   client: undefined
@@ -40,7 +39,7 @@ const LedgerContext = createContext<ContextType>({
 
 const LedgerProvider: FC = ({ children }) => {
   const navigate = useNavigate();
-  const [client, setClient] = useState<any>();
+  const [client, setClient] = useState<Client | undefined>();
   const [wallets, setWallets] = useState<WalletLedger[]>([]);
   // TODO: Use setSelectedWallet when multi-wallet creation and choosing feature will be done
   /* The default selectedWallet will be selected by a value in local storage
@@ -50,8 +49,7 @@ const LedgerProvider: FC = ({ children }) => {
   const [selectedWallet, setSelectedWallet] = useState<number>(0);
 
   const connectToNetwork = async () => {
-    // TODO: Put the websocket to constants and have some logic to switch from testnet to devnet to mainnet.
-    const client = new Client('wss://s.altnet.rippletest.net:51233');
+    const client = new Client(TESTNET_RIPPLE);
     await client.connect();
     setClient(client);
   };
@@ -61,9 +59,16 @@ const LedgerProvider: FC = ({ children }) => {
     connectToNetwork();
   }, []);
 
+  useEffect(() => {
+    // Disconnect the websocket
+    return () => {
+      client?.disconnect();
+    };
+  }, [client]);
+
   const signIn = useCallback((password: string) => {
     const wallets = loadWallets(password);
-    if (wallets) {
+    if (wallets.length) {
       const _wallets = wallets.map(({ name, publicAddress, seed }) => {
         return {
           name,
@@ -82,14 +87,12 @@ const LedgerProvider: FC = ({ children }) => {
     navigate(HOME_PATH);
   }, [navigate]);
 
-  // TODO: Name of the wallet should be asked to the user and passed here instead of generated
-  const generateWallet = useCallback(() => {
-    // TODO: Handle the failure of the generation
+  const generateWallet = useCallback((walletName?: string) => {
     const wallet = Wallet.generate();
     setWallets((wallets) => [
       ...wallets,
       {
-        name: `Wallet ${wallets.length + 1}`,
+        name: walletName || `Wallet ${wallets.length + 1}`,
         publicAddress: wallet.address,
         wallet
       }
@@ -97,14 +100,13 @@ const LedgerProvider: FC = ({ children }) => {
     return wallet;
   }, []);
 
-  // TODO: Name of the wallet should be asked to the user and passed here instead of generated
-  const importSeed = useCallback((seed: string) => {
+  const importSeed = useCallback((seed: string, walletName?: string) => {
     try {
       const wallet = Wallet.fromSeed(seed);
       setWallets((wallets) => [
         ...wallets,
         {
-          name: `Wallet ${wallets.length + 1}`,
+          name: walletName || `Wallet ${wallets.length + 1}`,
           publicAddress: wallet.address,
           wallet
         }
@@ -113,40 +115,45 @@ const LedgerProvider: FC = ({ children }) => {
         return true;
       }
       return false;
-      // TODO: Properly handle that exception
-    } catch {
+    } catch (e) {
+      Sentry.captureException(e);
       return false;
     }
   }, []);
 
   const estimateNetworkFees = useCallback(
-    async (amount: string) => {
+    async ({ amount, destination }: PaymentPayload) => {
       if (!client) {
         throw new Error('You need to be connected to a ledger to make a transaction');
       } else if (!wallets?.[selectedWallet]) {
         throw new Error('You need to have a wallet connected to make a transaction');
       } else {
         // Prepare the transaction
-        const prepared = await client.autofill({
+        const prepared: Payment = await client.autofill({
           TransactionType: 'Payment',
           Account: wallets[selectedWallet].publicAddress,
-          Amount: xrpToDrops(amount)
+          Amount: xrpToDrops(amount),
+          Destination: destination
         });
-        return dropsToXrp(prepared.Fee);
+        if (!prepared.Fee) {
+          throw new Error("Couldn't calculate the fees, something went wrong");
+        } else {
+          return dropsToXrp(prepared.Fee);
+        }
       }
     },
     [client, selectedWallet, wallets]
   );
 
-  const sendTransaction = useCallback(
-    async ({ amount, destination }: TransactionPayloadType) => {
+  const sendPayment = useCallback(
+    async ({ amount, destination }: PaymentPayload) => {
       if (!client) {
         throw new Error('You need to be connected to a ledger to make a transaction');
       } else if (!wallets?.[selectedWallet]) {
         throw new Error('You need to have a wallet connected to make a transaction');
       } else {
         // Prepare the transaction
-        const prepared = await client.autofill({
+        const prepared: Payment = await client.autofill({
           TransactionType: 'Payment',
           Account: wallets[selectedWallet].publicAddress,
           Amount: xrpToDrops(amount),
@@ -155,24 +162,42 @@ const LedgerProvider: FC = ({ children }) => {
         // Sign the transaction
         const signed = wallets[selectedWallet].wallet.sign(prepared);
         // Submit the signed blob
-        const tx = await client.submitAndWait(signed.tx_blob);
-        if (tx.result.meta.TransactionResult === 'tesSUCCESS') {
-          return 'success';
-        } else {
-          return 'rejected';
+        try {
+          const tx = await client.submitAndWait(signed.tx_blob);
+          if ((tx.result.meta! as TransactionMetadata).TransactionResult === 'tesSUCCESS') {
+            return tx.result.hash;
+          } else if (
+            (tx.result.meta! as TransactionMetadata).TransactionResult === 'tecUNFUNDED_PAYMENT'
+          ) {
+            throw new Error('Insufficient funds');
+          } else {
+            throw new Error(
+              `Something went wrong, we couldn't submit properly the transaction - ${
+                (tx.result.meta! as TransactionMetadata).TransactionResult
+              }`
+            );
+          }
+        } catch (e) {
+          Sentry.captureException(e);
+          throw e;
         }
       }
     },
     [client, selectedWallet, wallets]
   );
 
+  const getCurrentWallet = useCallback(() => {
+    return wallets[selectedWallet];
+  }, [selectedWallet, wallets]);
+
   const value: ContextType = {
     signIn,
     signOut,
     generateWallet,
     importSeed,
-    sendTransaction,
+    sendPayment,
     estimateNetworkFees,
+    getCurrentWallet,
     wallets,
     selectedWallet,
     client
@@ -184,7 +209,9 @@ const LedgerProvider: FC = ({ children }) => {
 const useLedger = (): ContextType => {
   const context = useContext(LedgerContext);
   if (context === undefined) {
-    throw new Error('useLedger must be used within a LedgerProvider');
+    const error = new Error('useLedger must be used within a LedgerProvider');
+    Sentry.captureException(error);
+    throw error;
   }
   return context;
 };
