@@ -10,6 +10,7 @@ import {
   Login,
   ResetPassword,
   Settings,
+  SharePublicKey,
   Transaction,
   Welcome
 } from './components/pages';
@@ -21,6 +22,7 @@ import {
   IMPORT_SEED_PATH,
   RESET_PASSWORD_PATH,
   SETTINGS_PATH,
+  SHARE_PUBLIC_KEY_PATH,
   TRANSACTION_PATH,
   WELCOME_PATH
 } from './constants';
@@ -56,6 +58,14 @@ const App: FC = () => {
           element={
             <PrivateRoute>
               <Settings />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path={SHARE_PUBLIC_KEY_PATH}
+          element={
+            <PrivateRoute>
+              <SharePublicKey />
             </PrivateRoute>
           }
         />

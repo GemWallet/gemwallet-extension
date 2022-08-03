@@ -10,15 +10,25 @@ import { loadData } from '../../../utils';
 import {
   HOME_PATH,
   RESET_PASSWORD_PATH,
+  SHARE_PUBLIC_KEY_PATH,
   STORAGE_WALLETS,
   TRANSACTION_PATH,
   WELCOME_PATH
 } from '../../../constants';
 
+interface State {
+  from: {
+    hash: string;
+    key: string;
+    pathname: string;
+    search: string;
+  };
+}
+
 export const Login: FC = () => {
   const [passwordError, setPasswordError] = useState('');
   const navigate = useNavigate();
-  const { search } = useLocation();
+  const { search, state } = useLocation();
   const { signIn, wallets, selectedWallet } = useLedger();
 
   useEffect(() => {
@@ -26,6 +36,8 @@ export const Login: FC = () => {
     if (wallets?.[selectedWallet]) {
       if (search.includes('transaction=payment')) {
         navigate(`${TRANSACTION_PATH}${search}`);
+      } else if ((state as State).from?.pathname === SHARE_PUBLIC_KEY_PATH) {
+        navigate(SHARE_PUBLIC_KEY_PATH);
       } else {
         navigate(`${HOME_PATH}${search}`);
       }
@@ -33,20 +45,22 @@ export const Login: FC = () => {
     } else if (!loadData(STORAGE_WALLETS)) {
       navigate(`${WELCOME_PATH}${search}`);
     }
-  }, [navigate, search, selectedWallet, wallets]);
+  }, [navigate, state, search, selectedWallet, wallets]);
 
   const handleUnlock = useCallback(() => {
     const isSignIn = signIn((document.getElementById('password') as HTMLInputElement).value);
     if (isSignIn) {
       if (search.includes('transaction=payment')) {
         navigate(`${TRANSACTION_PATH}${search}`);
+      } else if ((state as State).from?.pathname === SHARE_PUBLIC_KEY_PATH) {
+        navigate(SHARE_PUBLIC_KEY_PATH);
       } else {
         navigate(`${HOME_PATH}${search}`);
       }
     } else {
       setPasswordError('Incorrect password');
     }
-  }, [navigate, search, signIn]);
+  }, [navigate, state, search, signIn]);
 
   /*
    * Handle Login step button by pressing 'Enter'
