@@ -38,7 +38,7 @@ export const Transaction: FC<TransactionProps> = ({ transaction, failureReason }
     title = 'Transaction rejected';
     subtitle = (
       <>
-        Your transaction failed, please try again
+        Your transaction failed, please try again.
         <br />
         {failureReason ? failureReason : 'Something went wrong'}
       </>

@@ -153,33 +153,51 @@ const LedgerProvider: FC = ({ children }) => {
         throw new Error('You need to have a wallet connected to make a transaction');
       } else {
         // Prepare the transaction
-        const prepared: Payment = await client.autofill({
-          TransactionType: 'Payment',
-          Account: wallets[selectedWallet].publicAddress,
-          Amount: xrpToDrops(amount),
-          Destination: destination
-        });
-        // Sign the transaction
-        const signed = wallets[selectedWallet].wallet.sign(prepared);
-        // Submit the signed blob
         try {
-          const tx = await client.submitAndWait(signed.tx_blob);
-          if ((tx.result.meta! as TransactionMetadata).TransactionResult === 'tesSUCCESS') {
-            return tx.result.hash;
-          } else if (
-            (tx.result.meta! as TransactionMetadata).TransactionResult === 'tecUNFUNDED_PAYMENT'
-          ) {
-            throw new Error('Insufficient funds');
-          } else {
-            throw new Error(
-              `Something went wrong, we couldn't submit properly the transaction - ${
-                (tx.result.meta! as TransactionMetadata).TransactionResult
-              }`
-            );
+          const prepared: Payment = await client.autofill({
+            TransactionType: 'Payment',
+            Account: wallets[selectedWallet].publicAddress,
+            Amount: xrpToDrops(amount),
+            Destination: destination
+          });
+          // Sign the transaction
+          const signed = wallets[selectedWallet].wallet.sign(prepared);
+          // Submit the signed blob
+          try {
+            const tx = await client.submitAndWait(signed.tx_blob);
+            if ((tx.result.meta! as TransactionMetadata).TransactionResult === 'tesSUCCESS') {
+              return tx.result.hash;
+            } else if (
+              (tx.result.meta! as TransactionMetadata).TransactionResult === 'tecUNFUNDED_PAYMENT'
+            ) {
+              throw new Error('Insufficient funds');
+            } else if (
+              (tx.result.meta! as TransactionMetadata).TransactionResult === 'tecNO_DST_INSUF_XRP'
+            ) {
+              throw new Error(
+                'The account you are trying to make this transaction to does not exist, and the transaction is not sending enough XRP to create it.'
+              );
+            } else {
+              throw new Error(
+                `Something went wrong, we couldn't submit properly the transaction - ${
+                  (tx.result.meta! as TransactionMetadata).TransactionResult
+                }`
+              );
+            }
+          } catch (e) {
+            Sentry.captureException(e);
+            throw e;
           }
         } catch (e) {
-          Sentry.captureException(e);
-          throw e;
+          if (
+            (e as Error).message === 'checksum_invalid' ||
+            (e as Error).message.includes('version_invalid')
+          ) {
+            throw new Error('The destination address is incorrect');
+          } else {
+            Sentry.captureException(e);
+            throw e;
+          }
         }
       }
     },
