@@ -1,4 +1,10 @@
-import { GEM_WALLET, Message, Network } from '@gemwallet/api/src';
+import {
+  EventListenerEvent,
+  GEM_WALLET,
+  Message,
+  Network,
+  PublicKeyResponse
+} from '@gemwallet/api/src';
 import {
   NetworkResponse,
   PaymentResponse,
@@ -21,7 +27,7 @@ setTimeout(() => {
 
       const {
         data: { app, type }
-      } = event;
+      } = event as EventListenerEvent;
       // Check if it's an allowed event type to be forwarded
       if (type === Message.RequestNetwork) {
         let res: NetworkResponse = {
@@ -45,10 +51,44 @@ setTimeout(() => {
             );
           }
         );
+      } else if (type === Message.RequestPublicKey) {
+        const {
+          data: { payload }
+        } = event as EventListenerEvent;
+        chrome.runtime.sendMessage(
+          {
+            app,
+            type,
+            payload
+          },
+          () => {
+            const messageListener = (
+              message: MessageListenerEvent,
+              sender: chrome.runtime.MessageSender
+            ) => {
+              const { app, type, payload } = message;
+              // We make sure that the message comes from gem-wallet
+              if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
+                if (type === Message.ReceivePublicKey) {
+                  window.postMessage(
+                    {
+                      source: Message.MsgResponse,
+                      messagedId,
+                      publicKey: payload?.publicKey
+                    } as PublicKeyResponse,
+                    window.location.origin
+                  );
+                }
+              }
+              chrome.runtime.onMessage.removeListener(messageListener);
+            };
+            chrome.runtime.onMessage.addListener(messageListener);
+          }
+        );
       } else if (type === Message.SendPayment) {
         const {
           data: { payload }
-        } = event;
+        } = event as EventListenerEvent;
 
         chrome.runtime.sendMessage(
           {

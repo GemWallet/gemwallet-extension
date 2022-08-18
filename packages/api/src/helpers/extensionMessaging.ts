@@ -1,4 +1,10 @@
-import { Message, MessageListenerEvent, NetworkResponse, IsConnectedResponse } from '../types';
+import {
+  Message,
+  MessageListenerEvent,
+  NetworkResponse,
+  IsConnectedResponse,
+  PublicKeyResponse
+} from '../types';
 
 declare global {
   interface Window {
@@ -38,7 +44,7 @@ export const sendMessageToContentScript = (msg: MessageListenerEvent): Promise<a
 
     const messageListener = (event: {
       source: any;
-      data: NetworkResponse | IsConnectedResponse;
+      data: NetworkResponse | PublicKeyResponse | IsConnectedResponse;
     }) => {
       // We only accept messages from ourselves
       if (event.source !== window) return;

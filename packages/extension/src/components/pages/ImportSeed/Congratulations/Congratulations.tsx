@@ -21,6 +21,7 @@ export const Congratulations: FC<CongratulationsProps> = ({ activeStep, handleBa
   const handleNext = useCallback(() => {
     if (search.includes('transaction=payment')) {
       navigate(`${TRANSACTION_PATH}${search}`);
+      // Handle as well the publicKeyMethod
     } else {
       navigate(`${HOME_PATH}${search}`);
     }

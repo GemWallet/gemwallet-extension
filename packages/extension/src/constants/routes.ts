@@ -1,3 +1,4 @@
+export const MAIN_FILE = '/index.html';
 export const ABOUT_PATH = '/about';
 export const CREATE_NEW_WALLET_PATH = '/create-new-wallet';
 export const HISTORY_PATH = '/history';

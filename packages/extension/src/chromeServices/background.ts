@@ -1,3 +1,4 @@
+import { MAIN_FILE } from './../constants/routes';
 import { GEM_WALLET, Message, Network } from '@gemwallet/api/src';
 import { MessageListenerEvent } from '@gemwallet/api';
 import { CurrentWindow } from './background.types';
@@ -39,6 +40,42 @@ chrome.runtime.onMessage.addListener((message: MessageListenerEvent, sender, sen
   if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
     if (type === Message.RequestNetwork) {
       sendResponse(Network.Test);
+    } else if (type === Message.RequestPublicKey) {
+      chrome.windows.getAll().then((openedWindows) => {
+        // We check if the popup is currently open
+        if (
+          _currentWindowPopup &&
+          openedWindows.find((window) => window.id === _currentWindowPopup?.id)
+        ) {
+          // TODO: Why popup are created more than one time? - Maybe to be removed?
+          chrome.windows.update(_currentWindowPopup.id as number, { focused: true });
+        } else {
+          getLastFocusedWindow().then((lastFocused: chrome.windows.Window) => {
+            const top = lastFocused.top;
+            let left = undefined;
+            if (lastFocused.left && lastFocused.width) {
+              left = lastFocused.left + (lastFocused.width - NOTIFICATION_WIDTH);
+            }
+            const payload = {
+              ...message.payload,
+              id: sender.tab?.id
+            };
+            chrome.windows.create(
+              {
+                url: `../..${MAIN_FILE}${serializeToQueryString(payload)}&share=pbk`,
+                type: 'popup',
+                width: NOTIFICATION_WIDTH,
+                height: NOTIFICATION_HEIGHT,
+                left,
+                top
+              },
+              (_window) => {
+                _currentWindowPopup = _window;
+              }
+            );
+          });
+        }
+      });
     } else if (type === Message.SendPayment) {
       chrome.windows.getAll().then((openedWindows) => {
         // We check if the popup is currently open
@@ -52,11 +89,14 @@ chrome.runtime.onMessage.addListener((message: MessageListenerEvent, sender, sen
           const { payload } = message;
           getLastFocusedWindow().then((lastFocused: any) => {
             const top = lastFocused.top;
-            const left = lastFocused.left + (lastFocused.width - NOTIFICATION_WIDTH);
+            let left = undefined;
+            if (lastFocused.left && lastFocused.width) {
+              left = lastFocused.left + (lastFocused.width - NOTIFICATION_WIDTH);
+            }
             payload!.id = sender.tab!.id!;
             chrome.windows.create(
               {
-                url: `../../index.html${serializeToQueryString(payload)}&transaction=payment`,
+                url: `../..${MAIN_FILE}${serializeToQueryString(payload)}&transaction=payment`,
                 type: 'popup',
                 width: NOTIFICATION_WIDTH,
                 height: NOTIFICATION_HEIGHT,
@@ -78,6 +118,15 @@ chrome.runtime.onMessage.addListener((message: MessageListenerEvent, sender, sen
         payload: {
           hash: payload!.hash,
           error: payload!.error
+        }
+      });
+    } else if (type === Message.ReceivePublicKey) {
+      const { payload } = message;
+      chrome.tabs.sendMessage(payload!.id, {
+        app,
+        type: Message.ReceivePublicKey,
+        payload: {
+          publicKey: payload!.publicKey
         }
       });
     }

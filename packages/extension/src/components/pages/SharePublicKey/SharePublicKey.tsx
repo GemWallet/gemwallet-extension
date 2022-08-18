@@ -1,4 +1,4 @@
-import { FC, useCallback } from 'react';
+import { FC, useCallback, useMemo } from 'react';
 import {
   Container,
   Typography,
@@ -12,13 +12,62 @@ import {
 import CheckIcon from '@mui/icons-material/Check';
 import { PageWithTitle } from '../../templates';
 import { SECONDARY_GRAY } from '../../../constants';
+import { saveTrustedApp } from '../../../utils';
+import { GEM_WALLET, Message } from '@gemwallet/api/src';
+import { useBrowser, useLedger } from '../../../contexts';
 
 export const SharePublicKey: FC = () => {
-  const website = { url: 'http://localhost:3000/', title: 'My great Store' };
+  const { getCurrentWallet } = useLedger();
+  const { window: extensionWindow, closeExtension } = useBrowser();
 
-  const handleReject = useCallback(() => {}, []);
+  const payload = useMemo(() => {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    return {
+      id: Number(urlParams.get('id')) || 0,
+      url: urlParams.get('url'),
+      title: urlParams.get('title'),
+      favicon: urlParams.get('favicon') || undefined
+    };
+  }, []);
 
-  const handleConfirm = useCallback(() => {}, []);
+  const { id, url, title, favicon } = payload;
+
+  const handleReject = useCallback(() => {
+    chrome.runtime
+      .sendMessage({
+        app: GEM_WALLET,
+        type: Message.ReceivePublicKey,
+        payload: {
+          id,
+          publicKey: null
+        }
+      })
+      .then(() => {
+        if (extensionWindow?.id) {
+          closeExtension({ windowId: Number(extensionWindow.id) });
+        }
+      });
+  }, [closeExtension, extensionWindow?.id, id]);
+
+  const handleShare = useCallback(() => {
+    saveTrustedApp({ url: String(url) });
+    const currentWallet = getCurrentWallet();
+    chrome.runtime
+      .sendMessage({
+        app: GEM_WALLET,
+        type: Message.ReceivePublicKey,
+        payload: {
+          id,
+          publicKey: currentWallet?.publicAddress
+        }
+      })
+      .then(() => {
+        if (extensionWindow?.id) {
+          closeExtension({ windowId: Number(extensionWindow.id) });
+        }
+      });
+  }, [closeExtension, extensionWindow?.id, getCurrentWallet, id, url]);
 
   return (
     <PageWithTitle title="Share public key">
@@ -26,9 +75,9 @@ export const SharePublicKey: FC = () => {
         elevation={24}
         style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '10px' }}
       >
-        <Avatar src={`${new URL(website.url).origin}/favicon.ico`} variant="rounded" />
-        <Typography variant="h6">{website.title}</Typography>
-        <Typography style={{ color: SECONDARY_GRAY }}>{website.url}</Typography>
+        <Avatar src={favicon} variant="rounded" />
+        <Typography variant="h6">{title}</Typography>
+        <Typography style={{ color: SECONDARY_GRAY }}>{url}</Typography>
       </Paper>
 
       <Paper elevation={24} style={{ padding: '10px' }}>
@@ -49,7 +98,7 @@ export const SharePublicKey: FC = () => {
         <Button variant="contained" color="secondary" onClick={handleReject}>
           Reject
         </Button>
-        <Button variant="contained" onClick={handleConfirm}>
+        <Button variant="contained" onClick={handleShare}>
           Share
         </Button>
       </Container>
