@@ -7,4 +7,5 @@ export * from './ResetPassword';
 export * from './Settings';
 export * from './SharePublicKey';
 export * from './Transaction';
+export * from './TrustedApps';
 export * from './Welcome';

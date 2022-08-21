@@ -8,4 +8,5 @@ export const RESET_PASSWORD_PATH = '/reset-password';
 export const SETTINGS_PATH = '/settings';
 export const SHARE_PUBLIC_KEY_PATH = '/share-public-key';
 export const TRANSACTION_PATH = '/transaction';
+export const TRUSTED_APPS_PATH = '/trusted-apps';
 export const WELCOME_PATH = '/welcome';
