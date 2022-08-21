@@ -3,7 +3,7 @@ import {
   MessageListenerEvent,
   NetworkResponse,
   IsConnectedResponse,
-  PublicKeyResponse
+  PublicAddressResponse
 } from '../types';
 
 declare global {
@@ -44,7 +44,7 @@ export const sendMessageToContentScript = (msg: MessageListenerEvent): Promise<a
 
     const messageListener = (event: {
       source: any;
-      data: NetworkResponse | PublicKeyResponse | IsConnectedResponse;
+      data: NetworkResponse | PublicAddressResponse | IsConnectedResponse;
     }) => {
       // We only accept messages from ourselves
       if (event.source !== window) return;

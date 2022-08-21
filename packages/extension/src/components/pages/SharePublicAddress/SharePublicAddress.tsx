@@ -16,7 +16,7 @@ import { saveTrustedApp } from '../../../utils';
 import { GEM_WALLET, Message } from '@gemwallet/api/src';
 import { useBrowser, useLedger } from '../../../contexts';
 
-export const SharePublicKey: FC = () => {
+export const SharePublicAddress: FC = () => {
   const { getCurrentWallet } = useLedger();
   const { window: extensionWindow, closeExtension } = useBrowser();
 
@@ -37,10 +37,10 @@ export const SharePublicKey: FC = () => {
     chrome.runtime
       .sendMessage({
         app: GEM_WALLET,
-        type: Message.ReceivePublicKey,
+        type: Message.ReceivePublicAddress,
         payload: {
           id,
-          publicKey: null
+          publicAddress: null
         }
       })
       .then(() => {
@@ -56,10 +56,10 @@ export const SharePublicKey: FC = () => {
     chrome.runtime
       .sendMessage({
         app: GEM_WALLET,
-        type: Message.ReceivePublicKey,
+        type: Message.ReceivePublicAddress,
         payload: {
           id,
-          publicKey: currentWallet?.publicAddress
+          publicAddress: currentWallet?.publicAddress
         }
       })
       .then(() => {

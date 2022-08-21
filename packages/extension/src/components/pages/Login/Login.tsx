@@ -10,7 +10,7 @@ import { loadData } from '../../../utils';
 import {
   HOME_PATH,
   RESET_PASSWORD_PATH,
-  SHARE_PUBLIC_KEY_PATH,
+  SHARE_PUBLIC_ADDRESS_PATH,
   STORAGE_WALLETS,
   TRANSACTION_PATH,
   WELCOME_PATH
@@ -28,7 +28,7 @@ export const Login: FC = () => {
       if (search.includes('transaction=payment')) {
         navigate(`${TRANSACTION_PATH}${search}`);
       } else if (search.includes('share=pbk')) {
-        navigate(`${SHARE_PUBLIC_KEY_PATH}${search}`);
+        navigate(`${SHARE_PUBLIC_ADDRESS_PATH}${search}`);
       } else {
         navigate(`${HOME_PATH}${search}`);
       }
@@ -44,7 +44,7 @@ export const Login: FC = () => {
       if (search.includes('transaction=payment')) {
         navigate(`${TRANSACTION_PATH}${search}`);
       } else if (search.includes('share=pbk')) {
-        navigate(`${SHARE_PUBLIC_KEY_PATH}${search}`);
+        navigate(`${SHARE_PUBLIC_ADDRESS_PATH}${search}`);
       } else {
         navigate(`${HOME_PATH}${search}`);
       }

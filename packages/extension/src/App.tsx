@@ -10,7 +10,7 @@ import {
   Login,
   ResetPassword,
   Settings,
-  SharePublicKey,
+  SharePublicAddress,
   Transaction,
   TrustedApps,
   Welcome
@@ -23,7 +23,7 @@ import {
   IMPORT_SEED_PATH,
   RESET_PASSWORD_PATH,
   SETTINGS_PATH,
-  SHARE_PUBLIC_KEY_PATH,
+  SHARE_PUBLIC_ADDRESS_PATH,
   TRANSACTION_PATH,
   TRUSTED_APPS_PATH,
   WELCOME_PATH
@@ -64,10 +64,10 @@ const App: FC = () => {
           }
         />
         <Route
-          path={SHARE_PUBLIC_KEY_PATH}
+          path={SHARE_PUBLIC_ADDRESS_PATH}
           element={
             <PrivateRoute>
-              <SharePublicKey />
+              <SharePublicAddress />
             </PrivateRoute>
           }
         />

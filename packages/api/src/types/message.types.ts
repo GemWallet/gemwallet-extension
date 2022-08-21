@@ -2,10 +2,10 @@ import { Network } from './network.types';
 
 export enum Message {
   RequestNetwork = 'REQUEST_NETWORK',
-  RequestPublicKey = 'REQUEST_PUBLIC_KEY',
+  RequestPublicAddress = 'REQUEST_PUBLIC_ADDRESS',
   RequestConnection = 'REQUEST_CONNECTION',
   ReceivePaymentHash = 'RECEIVE_PAYMENT_HASH',
-  ReceivePublicKey = 'RECEIVE_PUBLIC_KEY',
+  ReceivePublicAddress = 'RECEIVE_PUBLIC_ADDRESS',
   SendPayment = 'SEND_PAYMENT',
   MsgRequest = 'GEM_WALLET_MSG_REQUEST',
   MsgResponse = 'GEM_WALLET_MSG_RESPONSE'
@@ -33,8 +33,8 @@ export type NetworkResponse = MessagingResponse & {
   error: string;
 };
 
-export type PublicKeyResponse = MessagingResponse & {
-  publicKey: string;
+export type PublicAddressResponse = MessagingResponse & {
+  publicAddress: string;
 };
 
 export type IsConnectedResponse = MessagingResponse & {

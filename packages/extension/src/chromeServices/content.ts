@@ -3,7 +3,7 @@ import {
   GEM_WALLET,
   Message,
   Network,
-  PublicKeyResponse
+  PublicAddressResponse
 } from '@gemwallet/api/src';
 import {
   NetworkResponse,
@@ -51,7 +51,7 @@ setTimeout(() => {
             );
           }
         );
-      } else if (type === Message.RequestPublicKey) {
+      } else if (type === Message.RequestPublicAddress) {
         const {
           data: { payload }
         } = event as EventListenerEvent;
@@ -69,13 +69,13 @@ setTimeout(() => {
               const { app, type, payload } = message;
               // We make sure that the message comes from gem-wallet
               if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
-                if (type === Message.ReceivePublicKey) {
+                if (type === Message.ReceivePublicAddress) {
                   window.postMessage(
                     {
                       source: Message.MsgResponse,
                       messagedId,
-                      publicKey: payload?.publicKey
-                    } as PublicKeyResponse,
+                      publicAddress: payload?.publicAddress
+                    } as PublicAddressResponse,
                     window.location.origin
                   );
                 }

@@ -5,7 +5,7 @@ export * from './ImportSeed';
 export * from './Login';
 export * from './ResetPassword';
 export * from './Settings';
-export * from './SharePublicKey';
+export * from './SharePublicAddress';
 export * from './Transaction';
 export * from './TrustedApps';
 export * from './Welcome';

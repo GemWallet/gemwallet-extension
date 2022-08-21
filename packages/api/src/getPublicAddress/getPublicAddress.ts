@@ -1,9 +1,9 @@
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
 import { Message, GEM_WALLET, MessageListenerEvent } from '../types';
 
-export const getPublicKey = async () => {
-  /* string: public key
-   * null: user refused to pass the key
+export const getPublicAddress = async () => {
+  /* string: public address
+   * null: user refused to pass the public address
    * undefined: something went wrong
    */
   let response: string | undefined | null = '';
@@ -18,14 +18,15 @@ export const getPublicKey = async () => {
     }
     const message: MessageListenerEvent = {
       app: GEM_WALLET,
-      type: Message.RequestPublicKey,
+      type: Message.RequestPublicAddress,
       payload: {
         url: window.location.origin,
         title: document.title,
         favicon
       }
     };
-    response = await sendMessageToContentScript(message);
+    const { publicAddress } = await sendMessageToContentScript(message);
+    response = publicAddress;
   } catch (e) {
     throw e;
   }
