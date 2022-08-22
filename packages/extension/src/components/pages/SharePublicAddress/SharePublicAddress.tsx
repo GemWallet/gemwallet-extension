@@ -10,15 +10,19 @@ import {
   Avatar
 } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
-import { PageWithTitle } from '../../templates';
+import { PageWithSpinner, PageWithTitle } from '../../templates';
 import { SECONDARY_GRAY } from '../../../constants';
-import { saveTrustedApp } from '../../../utils';
+import { saveTrustedApp, loadTrustedApps } from '../../../utils';
 import { GEM_WALLET, Message } from '@gemwallet/api/src';
 import { useBrowser, useLedger } from '../../../contexts';
 
 export const SharePublicAddress: FC = () => {
   const { getCurrentWallet } = useLedger();
   const { window: extensionWindow, closeExtension } = useBrowser();
+
+  const trustedApps = useMemo(() => {
+    return loadTrustedApps();
+  }, []);
 
   const payload = useMemo(() => {
     const queryString = window.location.search;
@@ -69,11 +73,21 @@ export const SharePublicAddress: FC = () => {
       });
   }, [closeExtension, extensionWindow?.id, getCurrentWallet, id, url]);
 
+  if (trustedApps.length) {
+    handleShare();
+    return <PageWithSpinner />;
+  }
+
   return (
     <PageWithTitle title="Share public key">
       <Paper
         elevation={24}
-        style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '10px' }}
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          padding: '10px'
+        }}
       >
         <Avatar src={favicon} variant="rounded" />
         <Typography variant="h6">{title}</Typography>

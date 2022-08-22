@@ -1,7 +1,7 @@
 import { STORAGE_TRUSTED_APPS } from '../constants/localStorage';
 import { loadData, saveData } from '.';
 
-interface TrustedApp {
+export interface TrustedApp {
   url: string;
 }
 
