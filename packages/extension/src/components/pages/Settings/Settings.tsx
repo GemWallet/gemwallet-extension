@@ -18,7 +18,8 @@ import {
   FAQ_LINK,
   FEEDBACK_LINK,
   NAV_MENU_HEIGHT,
-  RESET_PASSWORD_PATH
+  RESET_PASSWORD_PATH,
+  TRUSTED_APPS_PATH
 } from '../../../constants';
 
 const TITLE_HEIGHT = 56;
@@ -34,6 +35,10 @@ export const Settings: FC = () => {
 
   const items = useMemo(
     () => [
+      {
+        name: 'Trusted Apps',
+        onClick: () => navigate(TRUSTED_APPS_PATH)
+      },
       {
         name: 'Help',
         onClick: () => openExternalLink(FAQ_LINK)

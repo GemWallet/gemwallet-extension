@@ -6,7 +6,12 @@ import TwitterIcon from '@mui/icons-material/Twitter';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import { PageWithStepper } from '../../../templates';
 import { openExternalLink } from '../../../../utils';
-import { HOME_PATH, TRANSACTION_PATH, TWITTER_LINK } from '../../../../constants';
+import {
+  HOME_PATH,
+  PARAMETER_TRANSACTION_PAYMENT,
+  TRANSACTION_PATH,
+  TWITTER_LINK
+} from '../../../../constants';
 import { STEPS } from '../constants';
 
 interface CongratulationsProps {
@@ -19,7 +24,7 @@ export const Congratulations: FC<CongratulationsProps> = ({ activeStep, handleBa
   const { search } = useLocation();
 
   const handleNext = useCallback(() => {
-    if (search.includes('transaction=payment')) {
+    if (search.includes(PARAMETER_TRANSACTION_PAYMENT)) {
       navigate(`${TRANSACTION_PATH}${search}`);
     } else {
       navigate(`${HOME_PATH}${search}`);

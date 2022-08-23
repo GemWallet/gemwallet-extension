@@ -9,7 +9,10 @@ import { useLedger } from '../../../contexts';
 import { loadData } from '../../../utils';
 import {
   HOME_PATH,
+  PARAMETER_PUBLIC_ADDRESS,
+  PARAMETER_TRANSACTION_PAYMENT,
   RESET_PASSWORD_PATH,
+  SHARE_PUBLIC_ADDRESS_PATH,
   STORAGE_WALLETS,
   TRANSACTION_PATH,
   WELCOME_PATH
@@ -24,8 +27,10 @@ export const Login: FC = () => {
   useEffect(() => {
     // Check if we are still logged-in
     if (wallets?.[selectedWallet]) {
-      if (search.includes('transaction=payment')) {
+      if (search.includes(PARAMETER_TRANSACTION_PAYMENT)) {
         navigate(`${TRANSACTION_PATH}${search}`);
+      } else if (search.includes(PARAMETER_PUBLIC_ADDRESS)) {
+        navigate(`${SHARE_PUBLIC_ADDRESS_PATH}${search}`);
       } else {
         navigate(`${HOME_PATH}${search}`);
       }
@@ -38,15 +43,17 @@ export const Login: FC = () => {
   const handleUnlock = useCallback(() => {
     const isSignIn = signIn((document.getElementById('password') as HTMLInputElement).value);
     if (isSignIn) {
-      if (search.includes('transaction=payment')) {
+      if (search.includes(PARAMETER_TRANSACTION_PAYMENT)) {
         navigate(`${TRANSACTION_PATH}${search}`);
+      } else if (search.includes(PARAMETER_PUBLIC_ADDRESS)) {
+        navigate(`${SHARE_PUBLIC_ADDRESS_PATH}${search}`);
       } else {
         navigate(`${HOME_PATH}${search}`);
       }
     } else {
       setPasswordError('Incorrect password');
     }
-  }, [navigate, search, signIn]);
+  }, [signIn, search, navigate]);
 
   /*
    * Handle Login step button by pressing 'Enter'

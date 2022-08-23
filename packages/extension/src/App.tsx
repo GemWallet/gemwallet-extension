@@ -10,7 +10,9 @@ import {
   Login,
   ResetPassword,
   Settings,
+  SharePublicAddress,
   Transaction,
+  TrustedApps,
   Welcome
 } from './components/pages';
 import { ErrorBoundary } from './components/templates';
@@ -21,7 +23,9 @@ import {
   IMPORT_SEED_PATH,
   RESET_PASSWORD_PATH,
   SETTINGS_PATH,
+  SHARE_PUBLIC_ADDRESS_PATH,
   TRANSACTION_PATH,
+  TRUSTED_APPS_PATH,
   WELCOME_PATH
 } from './constants';
 
@@ -60,6 +64,14 @@ const App: FC = () => {
           }
         />
         <Route
+          path={SHARE_PUBLIC_ADDRESS_PATH}
+          element={
+            <PrivateRoute>
+              <SharePublicAddress />
+            </PrivateRoute>
+          }
+        />
+        <Route
           path={ABOUT_PATH}
           element={
             <PrivateRoute>
@@ -68,6 +80,14 @@ const App: FC = () => {
           }
         />
         <Route path={RESET_PASSWORD_PATH} element={<ResetPassword />} />
+        <Route
+          path={TRUSTED_APPS_PATH}
+          element={
+            <PrivateRoute>
+              <TrustedApps />
+            </PrivateRoute>
+          }
+        />
       </SentryRoutes>
     </ErrorBoundary>
   );

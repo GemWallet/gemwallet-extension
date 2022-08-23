@@ -1,36 +1,18 @@
 import { FC, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { BottomNavigation, BottomNavigationAction } from '@mui/material';
-import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
-// import HistoryIcon from '@mui/icons-material/History';
-import SettingsIcon from '@mui/icons-material/Settings';
-import { HOME_PATH, SETTINGS_PATH } from '../../../constants/routes';
+import { navigation } from '../../../constants';
 
-const navigation = [
-  {
-    label: 'Wallets',
-    pathname: HOME_PATH,
-    icon: <AccountBalanceWalletIcon />
-  },
-  // TODO: History will be added in a separate ticket
-  // {
-  //   label: 'History',
-  //   pathname: HISTORY_PATH,
-  //   icon: <HistoryIcon />
-  // },
-  {
-    label: 'Settings',
-    pathname: SETTINGS_PATH,
-    icon: <SettingsIcon />
-  }
-];
+export interface NavMenuProps {
+  indexDefaultNav?: number;
+}
 
-export const NavMenu: FC = () => {
+export const NavMenu: FC<NavMenuProps> = ({ indexDefaultNav }) => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const value = useMemo(
-    () => navigation.findIndex((link) => link.pathname === pathname),
-    [pathname]
+    () => indexDefaultNav || navigation.findIndex((link) => link.pathname === pathname),
+    [indexDefaultNav, pathname]
   );
 
   return (

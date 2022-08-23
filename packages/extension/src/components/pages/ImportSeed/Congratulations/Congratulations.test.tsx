@@ -3,7 +3,12 @@ import { BrowserRouter, MemoryRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
 import { Congratulations } from './Congratulations';
 import { mockWallet } from '../../../../mocks';
-import { HOME_PATH, IMPORT_SEED_PATH, TRANSACTION_PATH } from '../../../../constants';
+import {
+  HOME_PATH,
+  IMPORT_SEED_PATH,
+  PARAMETER_TRANSACTION_PAYMENT,
+  TRANSACTION_PATH
+} from '../../../../constants';
 
 const defaultProps = {
   activeStep: 2,
@@ -31,7 +36,7 @@ describe('ImportSeed - Congratulations Page', () => {
   });
 
   test('Should navigate to transaction page', async () => {
-    const search = `?transaction=payment&amount=50&destination=rNhjf7Re4B9LvWiJwpGg1A1B1fWy4xh2Le`;
+    const search = `?${PARAMETER_TRANSACTION_PAYMENT}&amount=50&destination=rNhjf7Re4B9LvWiJwpGg1A1B1fWy4xh2Le`;
     render(
       <MemoryRouter initialEntries={[`${IMPORT_SEED_PATH}${search}`]}>
         <Congratulations {...defaultProps} />

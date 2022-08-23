@@ -2,7 +2,11 @@ import { FC } from 'react';
 import { NavMenu } from '../../organisms';
 import { NAV_MENU_HEIGHT } from '../../../constants';
 
-export const PageWithNavMenu: FC = ({ children }) => {
+export interface PageWithNavMenuProps {
+  indexDefaultNav?: number;
+}
+
+export const PageWithNavMenu: FC<PageWithNavMenuProps> = ({ children, indexDefaultNav }) => {
   return (
     <>
       <div
@@ -13,7 +17,7 @@ export const PageWithNavMenu: FC = ({ children }) => {
       >
         {children}
       </div>
-      <NavMenu />
+      <NavMenu indexDefaultNav={indexDefaultNav} />
     </>
   );
 };
