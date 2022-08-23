@@ -6,13 +6,15 @@ import { loadTrustedApps, removeTrustedApp } from '../../../utils';
 import { navigation, NAV_MENU_HEIGHT, SETTINGS_PATH } from '../../../constants';
 import { KeyboardArrowLeft } from '@mui/icons-material';
 import { TrustedApp } from '../../molecules/TrustedApp';
+import { useLedger } from '../../../contexts';
 
 const TITLE_HEIGHT = 56;
 const CONTAINER_HEIGHT_TAKEN = TITLE_HEIGHT + NAV_MENU_HEIGHT;
 
 export const TrustedApps: FC = () => {
   const navigate = useNavigate();
-  const [trustedApps, setTrustedApps] = useState(loadTrustedApps());
+  const { selectedWallet } = useLedger();
+  const [trustedApps, setTrustedApps] = useState(loadTrustedApps(selectedWallet));
 
   const indexDefaultNav = useMemo(
     () => navigation.findIndex((link) => link.pathname === SETTINGS_PATH),
@@ -20,7 +22,7 @@ export const TrustedApps: FC = () => {
   );
 
   const onRevokeClick = (url: string) => {
-    const newTrustedApps = removeTrustedApp({ url });
+    const newTrustedApps = removeTrustedApp({ url }, selectedWallet);
     setTrustedApps(newTrustedApps);
   };
 

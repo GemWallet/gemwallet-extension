@@ -17,12 +17,12 @@ import { GEM_WALLET, Message } from '@gemwallet/api/src';
 import { useBrowser, useLedger } from '../../../contexts';
 
 export const SharePublicAddress: FC = () => {
-  const { getCurrentWallet } = useLedger();
+  const { getCurrentWallet, selectedWallet } = useLedger();
   const { window: extensionWindow, closeExtension } = useBrowser();
 
   const trustedApps = useMemo(() => {
-    return loadTrustedApps();
-  }, []);
+    return loadTrustedApps(selectedWallet);
+  }, [selectedWallet]);
 
   const payload = useMemo(() => {
     const queryString = window.location.search;
@@ -55,7 +55,7 @@ export const SharePublicAddress: FC = () => {
   }, [closeExtension, extensionWindow?.id, id]);
 
   const handleShare = useCallback(() => {
-    saveTrustedApp({ url: String(url) });
+    saveTrustedApp({ url: String(url) }, selectedWallet);
     const currentWallet = getCurrentWallet();
     chrome.runtime
       .sendMessage({
@@ -71,7 +71,7 @@ export const SharePublicAddress: FC = () => {
           closeExtension({ windowId: Number(extensionWindow.id) });
         }
       });
-  }, [closeExtension, extensionWindow?.id, getCurrentWallet, id, url]);
+  }, [closeExtension, extensionWindow?.id, getCurrentWallet, id, selectedWallet, url]);
 
   if (trustedApps.length) {
     handleShare();
