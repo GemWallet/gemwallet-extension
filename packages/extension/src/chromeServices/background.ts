@@ -1,4 +1,5 @@
 import { MAIN_FILE } from './../constants/routes';
+import { PARAMETER_PUBLIC_ADDRESS, PARAMETER_TRANSACTION_PAYMENT } from './../constants/parameters';
 import { GEM_WALLET, Message, Network } from '@gemwallet/api/src';
 import { MessageListenerEvent } from '@gemwallet/api';
 import { CurrentWindow } from './background.types';
@@ -62,7 +63,9 @@ chrome.runtime.onMessage.addListener((message: MessageListenerEvent, sender, sen
             };
             chrome.windows.create(
               {
-                url: `../..${MAIN_FILE}${serializeToQueryString(payload)}&share=pbk`,
+                url: `../..${MAIN_FILE}${serializeToQueryString(
+                  payload
+                )}&${PARAMETER_PUBLIC_ADDRESS}`,
                 type: 'popup',
                 width: NOTIFICATION_WIDTH,
                 height: NOTIFICATION_HEIGHT,
@@ -96,7 +99,9 @@ chrome.runtime.onMessage.addListener((message: MessageListenerEvent, sender, sen
             payload!.id = sender.tab!.id!;
             chrome.windows.create(
               {
-                url: `../..${MAIN_FILE}${serializeToQueryString(payload)}&transaction=payment`,
+                url: `../..${MAIN_FILE}${serializeToQueryString(
+                  payload
+                )}&${PARAMETER_TRANSACTION_PAYMENT}`,
                 type: 'popup',
                 width: NOTIFICATION_WIDTH,
                 height: NOTIFICATION_HEIGHT,

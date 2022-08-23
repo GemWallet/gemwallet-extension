@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { PrivateRoute } from './PrivateRoute';
 import { LedgerContext } from '../../../contexts';
 import App from '../../../App';
-import { TRANSACTION_PATH } from '../../../constants';
+import { PARAMETER_TRANSACTION_PAYMENT, TRANSACTION_PATH } from '../../../constants';
 import { valueLedgerContext } from '../../../mocks';
 
 describe('PrivateRoute Atom', () => {
@@ -25,7 +25,7 @@ describe('PrivateRoute Atom', () => {
     render(
       <MemoryRouter
         initialEntries={[
-          `${TRANSACTION_PATH}?transaction=payment&amount=50&destination=rNhjf7Re4B9LvWiJwpGg1A1B1fWy4xh2Le`
+          `${TRANSACTION_PATH}?${PARAMETER_TRANSACTION_PAYMENT}&amount=50&destination=rNhjf7Re4B9LvWiJwpGg1A1B1fWy4xh2Le`
         ]}
       >
         <LedgerContext.Provider value={{ ...valueLedgerContext, wallets: [] }}>
