@@ -10,8 +10,10 @@ import { loadData } from '../../../utils';
 import {
   HOME_PATH,
   PARAMETER_PUBLIC_ADDRESS,
+  PARAMETER_SIGN_MESSAGE,
   PARAMETER_TRANSACTION_PAYMENT,
   RESET_PASSWORD_PATH,
+  SIGN_MESSAGE_PATH,
   SHARE_PUBLIC_ADDRESS_PATH,
   STORAGE_WALLETS,
   TRANSACTION_PATH,
@@ -31,6 +33,8 @@ export const Login: FC = () => {
         navigate(`${TRANSACTION_PATH}${search}`);
       } else if (search.includes(PARAMETER_PUBLIC_ADDRESS)) {
         navigate(`${SHARE_PUBLIC_ADDRESS_PATH}${search}`);
+      } else if (search.includes(PARAMETER_SIGN_MESSAGE)) {
+        navigate(`${SIGN_MESSAGE_PATH}${search}`);
       } else {
         navigate(`${HOME_PATH}${search}`);
       }
@@ -47,6 +51,8 @@ export const Login: FC = () => {
         navigate(`${TRANSACTION_PATH}${search}`);
       } else if (search.includes(PARAMETER_PUBLIC_ADDRESS)) {
         navigate(`${SHARE_PUBLIC_ADDRESS_PATH}${search}`);
+      } else if (search.includes(PARAMETER_SIGN_MESSAGE)) {
+        navigate(`${SIGN_MESSAGE_PATH}${search}`);
       } else {
         navigate(`${HOME_PATH}${search}`);
       }

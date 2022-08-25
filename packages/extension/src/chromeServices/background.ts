@@ -1,5 +1,9 @@
 import { MAIN_FILE } from './../constants/routes';
-import { PARAMETER_PUBLIC_ADDRESS, PARAMETER_TRANSACTION_PAYMENT } from './../constants/parameters';
+import {
+  PARAMETER_PUBLIC_ADDRESS,
+  PARAMETER_SIGN_MESSAGE,
+  PARAMETER_TRANSACTION_PAYMENT
+} from './../constants/parameters';
 import { GEM_WALLET, Message, Network } from '@gemwallet/api/src';
 import { MessageListenerEvent } from '@gemwallet/api';
 import { CurrentWindow } from './background.types';
@@ -115,6 +119,44 @@ chrome.runtime.onMessage.addListener((message: MessageListenerEvent, sender, sen
           });
         }
       });
+    } else if (type === Message.RequestSignMessage) {
+      chrome.windows.getAll().then((openedWindows) => {
+        // We check if the popup is currently open
+        if (
+          _currentWindowPopup &&
+          openedWindows.find((window) => window.id === _currentWindowPopup?.id)
+        ) {
+          // TODO: Why popup are created more than one time? - Maybe to be removed?
+          chrome.windows.update(_currentWindowPopup.id as number, { focused: true });
+        } else {
+          getLastFocusedWindow().then((lastFocused: chrome.windows.Window) => {
+            const top = lastFocused.top;
+            let left = undefined;
+            if (lastFocused.left && lastFocused.width) {
+              left = lastFocused.left + (lastFocused.width - NOTIFICATION_WIDTH);
+            }
+            const payload = {
+              ...message.payload,
+              id: sender.tab?.id
+            };
+            chrome.windows.create(
+              {
+                url: `../..${MAIN_FILE}${serializeToQueryString(
+                  payload
+                )}&${PARAMETER_SIGN_MESSAGE}`,
+                type: 'popup',
+                width: NOTIFICATION_WIDTH,
+                height: NOTIFICATION_HEIGHT,
+                left,
+                top
+              },
+              (_window) => {
+                _currentWindowPopup = _window;
+              }
+            );
+          });
+        }
+      });
     } else if (type === Message.ReceivePaymentHash) {
       const { payload } = message;
       chrome.tabs.sendMessage(payload!.id, {
@@ -132,6 +174,15 @@ chrome.runtime.onMessage.addListener((message: MessageListenerEvent, sender, sen
         type: Message.ReceivePublicAddress,
         payload: {
           publicAddress: payload!.publicAddress
+        }
+      });
+    } else if (type === Message.ReceiveSignMessage) {
+      const { payload } = message;
+      chrome.tabs.sendMessage(payload!.id, {
+        app,
+        type: Message.ReceiveSignMessage,
+        payload: {
+          signedMessage: payload!.signedMessage
         }
       });
     }

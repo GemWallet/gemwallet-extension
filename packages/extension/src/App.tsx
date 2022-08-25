@@ -11,6 +11,7 @@ import {
   ResetPassword,
   Settings,
   SharePublicAddress,
+  SignMessage,
   Transaction,
   TrustedApps,
   Welcome
@@ -24,6 +25,7 @@ import {
   RESET_PASSWORD_PATH,
   SETTINGS_PATH,
   SHARE_PUBLIC_ADDRESS_PATH,
+  SIGN_MESSAGE_PATH,
   TRANSACTION_PATH,
   TRUSTED_APPS_PATH,
   WELCOME_PATH
@@ -60,6 +62,14 @@ const App: FC = () => {
           element={
             <PrivateRoute>
               <Settings />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path={SIGN_MESSAGE_PATH}
+          element={
+            <PrivateRoute>
+              <SignMessage />
             </PrivateRoute>
           }
         />

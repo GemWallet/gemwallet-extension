@@ -152,7 +152,7 @@ export const Transaction: FC = () => {
       <PageWithTitle title="">
         <TransactionOrganism
           transaction={TransactionStatus.Rejected}
-          failureReason="You need to provide an amount and a destination to make the transaction"
+          failureReason="An amount and a destination have not been provided to the extension"
         />
       </PageWithTitle>
     );
