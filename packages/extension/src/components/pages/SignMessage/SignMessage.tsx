@@ -2,8 +2,7 @@ import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import * as Sentry from '@sentry/react';
 import { Container, Typography, Button, Paper, Avatar, Divider } from '@mui/material';
 import { GEM_WALLET, Message } from '@gemwallet/api/src';
-import { PageWithTitle } from '../../templates';
-import { Transaction as TransactionOrganism } from '../../organisms/Transaction';
+import { PageWithTitle, AsyncTransaction } from '../../templates';
 import { SECONDARY_GRAY } from '../../../constants';
 import { useBrowser, useLedger } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
@@ -80,12 +79,17 @@ export const SignMessage: FC = () => {
 
   if (isParamsMissing) {
     return (
-      <PageWithTitle title="">
-        <TransactionOrganism
-          transaction={TransactionStatus.Rejected}
-          failureReason="A message has not be provided to the extension"
-        />
-      </PageWithTitle>
+      <AsyncTransaction
+        title="Signature failed"
+        subtitle={
+          <>
+            A message has not be provided to the extension
+            <br />
+            Please contact the developer of the website
+          </>
+        }
+        transaction={TransactionStatus.Rejected}
+      />
     );
   }
 
