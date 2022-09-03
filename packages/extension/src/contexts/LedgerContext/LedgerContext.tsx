@@ -2,6 +2,7 @@ import { useContext, useState, useEffect, createContext, FC, useCallback } from 
 import { useNavigate } from 'react-router-dom';
 import * as Sentry from '@sentry/react';
 import { Wallet, Client, xrpToDrops, dropsToXrp, TransactionMetadata, Payment } from 'xrpl';
+import { sign } from 'ripple-keypairs';
 import { Payment as PaymentPayload } from '@gemwallet/api';
 import { HOME_PATH, TESTNET_RIPPLE } from '../../constants';
 import { WalletLedger } from '../../types';
@@ -14,6 +15,7 @@ interface ContextType {
   importSeed: (seed: string, walletName?: string) => boolean;
   // Return transaction hash in case of success
   sendPayment: (payload: PaymentPayload) => Promise<string>;
+  signMessage: (message: string) => string | undefined;
   estimateNetworkFees: (payload: PaymentPayload) => Promise<string>;
   getCurrentWallet: () => WalletLedger | undefined;
   wallets: WalletLedger[];
@@ -27,6 +29,7 @@ const LedgerContext = createContext<ContextType>({
   generateWallet: () => Wallet.generate(),
   importSeed: () => false,
   sendPayment: () => new Promise(() => {}),
+  signMessage: () => undefined,
   estimateNetworkFees: () =>
     new Promise((resolve) => {
       resolve('0');
@@ -204,6 +207,25 @@ const LedgerProvider: FC = ({ children }) => {
     [client, selectedWallet, wallets]
   );
 
+  const signMessage = useCallback(
+    (message: string) => {
+      try {
+        if (!client) {
+          throw new Error('You need to be connected to a ledger to sign a message');
+        } else if (!wallets?.[selectedWallet]) {
+          throw new Error('You need to have a wallet connected to sign a message');
+        } else {
+          const messageHex = Buffer.from(message, 'utf8').toString('hex');
+          return sign(messageHex, wallets[selectedWallet].wallet.privateKey);
+        }
+      } catch (e) {
+        Sentry.captureException(e);
+        throw e;
+      }
+    },
+    [client, selectedWallet, wallets]
+  );
+
   const getCurrentWallet = useCallback(() => {
     return wallets[selectedWallet];
   }, [selectedWallet, wallets]);
@@ -214,6 +236,7 @@ const LedgerProvider: FC = ({ children }) => {
     generateWallet,
     importSeed,
     sendPayment,
+    signMessage,
     estimateNetworkFees,
     getCurrentWallet,
     wallets,

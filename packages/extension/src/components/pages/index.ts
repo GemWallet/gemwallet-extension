@@ -6,6 +6,7 @@ export * from './Login';
 export * from './ResetPassword';
 export * from './Settings';
 export * from './SharePublicAddress';
+export * from './SignMessage';
 export * from './Transaction';
 export * from './TrustedApps';
 export * from './Welcome';

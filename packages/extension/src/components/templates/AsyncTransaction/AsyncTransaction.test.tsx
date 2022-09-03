@@ -1,35 +1,59 @@
 import { fireEvent, render, screen } from '@testing-library/react';
-import { Transaction } from '.';
+import { AsyncTransaction } from '.';
 import { BrowserContext } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
 
-describe('Transaction Organism', () => {
+describe('AsyncTransaction Template', () => {
   describe('Renders the proper elements', () => {
     test('Should render the proper elements for "waiting"', () => {
-      render(<Transaction transaction={TransactionStatus.Waiting} />);
+      render(
+        <AsyncTransaction
+          title="Signature in progress"
+          subtitle="Please wait..."
+          transaction={TransactionStatus.Waiting}
+        />
+      );
       const buttonElement = screen.getByRole('button', { name: 'Processing' });
       expect(buttonElement).toBeDisabled();
       expect(buttonElement).toBeVisible();
     });
 
     test('Should render the proper elements for "pending"', () => {
-      render(<Transaction transaction={TransactionStatus.Pending} />);
+      render(
+        <AsyncTransaction
+          title="Signature in progress"
+          subtitle="Please wait..."
+          transaction={TransactionStatus.Pending}
+        />
+      );
       const buttonElement = screen.getByRole('button', { name: 'Processing' });
       expect(buttonElement).toBeDisabled();
       expect(buttonElement).toBeVisible();
     });
 
     test('Should render the proper elements for "success"', () => {
-      render(<Transaction transaction={TransactionStatus.Success} />);
-      const headingElement = screen.getByRole('heading', { name: 'Transaction accepted' });
+      render(
+        <AsyncTransaction
+          title="Signature success"
+          subtitle="Well done."
+          transaction={TransactionStatus.Success}
+        />
+      );
+      const headingElement = screen.getByRole('heading', { name: 'Signature success' });
       const buttonElement = screen.getByRole('button', { name: 'Close' });
       expect(headingElement).toBeVisible();
       expect(buttonElement).toBeVisible();
     });
 
     test('Should render the proper elements for "rejected"', () => {
-      render(<Transaction transaction={TransactionStatus.Rejected} />);
-      const headingElement = screen.getByRole('heading', { name: 'Transaction rejected' });
+      render(
+        <AsyncTransaction
+          title="Signature rejected"
+          subtitle="User rejected the signature."
+          transaction={TransactionStatus.Rejected}
+        />
+      );
+      const headingElement = screen.getByRole('heading', { name: 'Signature rejected' });
       const buttonElement = screen.getByRole('button', { name: 'Close' });
       expect(headingElement).toBeVisible();
       expect(buttonElement).toBeVisible();
@@ -47,7 +71,11 @@ describe('Transaction Organism', () => {
       const mockedCloseExtension = jest.fn();
       render(
         <BrowserContext.Provider value={{ closeExtension: mockedCloseExtension, window }}>
-          <Transaction transaction={TransactionStatus.Waiting} />
+          <AsyncTransaction
+            title="Signature in progress"
+            subtitle="Please wait..."
+            transaction={TransactionStatus.Waiting}
+          />
         </BrowserContext.Provider>
       );
       const buttonElement = screen.getByRole('button', { name: 'Processing' });
@@ -59,7 +87,11 @@ describe('Transaction Organism', () => {
       const mockedCloseExtension = jest.fn();
       render(
         <BrowserContext.Provider value={{ closeExtension: mockedCloseExtension, window }}>
-          <Transaction transaction={TransactionStatus.Pending} />
+          <AsyncTransaction
+            title="Signature in progress"
+            subtitle="Please wait..."
+            transaction={TransactionStatus.Pending}
+          />
         </BrowserContext.Provider>
       );
       const buttonElement = screen.getByRole('button', { name: 'Processing' });
@@ -71,7 +103,11 @@ describe('Transaction Organism', () => {
       const mockedCloseExtension = jest.fn();
       render(
         <BrowserContext.Provider value={{ closeExtension: mockedCloseExtension, window }}>
-          <Transaction transaction={TransactionStatus.Success} />
+          <AsyncTransaction
+            title="Signature success"
+            subtitle="Well done."
+            transaction={TransactionStatus.Success}
+          />
         </BrowserContext.Provider>
       );
       const buttonElement = screen.getByRole('button', { name: 'Close' });
@@ -83,7 +119,11 @@ describe('Transaction Organism', () => {
       const mockedCloseExtension = jest.fn();
       render(
         <BrowserContext.Provider value={{ closeExtension: mockedCloseExtension, window }}>
-          <Transaction transaction={TransactionStatus.Rejected} />
+          <AsyncTransaction
+            title="Signature rejected"
+            subtitle="User rejected the signature."
+            transaction={TransactionStatus.Rejected}
+          />
         </BrowserContext.Provider>
       );
       const buttonElement = screen.getByRole('button', { name: 'Close' });

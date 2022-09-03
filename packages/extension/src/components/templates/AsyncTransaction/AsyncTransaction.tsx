@@ -7,58 +7,55 @@ import { useBrowser } from '../../../contexts';
 import loading from '../../../assets/loading.json';
 import alert from '../../../assets/alert.json';
 import check from '../../../assets/check.json';
-import { TransactionProps, LogoStyle } from './Transaction.types';
 import { TransactionStatus } from '../../../types';
 
-export const Transaction: FC<TransactionProps> = ({ transaction, failureReason }) => {
+export interface AsyncTransactionProps {
+  title: string;
+  subtitle: React.ReactNode;
+  transaction: TransactionStatus;
+}
+
+type LogoStyle = {
+  width: string;
+  height: string;
+  marginTop?: string;
+};
+
+export const AsyncTransaction: FC<AsyncTransactionProps> = ({ title, subtitle, transaction }) => {
   const { window, closeExtension } = useBrowser();
   let animation: any = loading;
-  let title: string = 'Transaction in progress';
-  let subtitle: React.ReactNode = (
-    <>
-      We are processing your transaction
-      <br />
-      Please wait
-    </>
-  );
+
   let buttonText: string = 'Processing';
   let styleAnimation: LogoStyle = { width: '150px', height: '150px' };
   let handleClick = () => {};
   if (transaction === TransactionStatus.Success) {
     animation = check;
-    title = 'Transaction accepted';
     buttonText = 'Close';
     styleAnimation = { width: '100px', height: '100px', marginTop: '30px' };
     if (window?.id) {
       handleClick = () => closeExtension({ windowId: Number(window.id) });
     }
   }
+
   if (transaction === TransactionStatus.Rejected) {
     animation = alert;
-    title = 'Transaction rejected';
-    subtitle = (
-      <>
-        Your transaction failed, please try again.
-        <br />
-        {failureReason ? failureReason : 'Something went wrong'}
-      </>
-    );
     buttonText = 'Close';
     styleAnimation = { width: '70px', height: '70px', marginTop: '30px' };
     if (window?.id) {
       handleClick = () => closeExtension({ windowId: Number(window.id) });
     }
   }
+
   return (
     <Container
       component="main"
-      fixed
       style={{
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
         alignItems: 'center',
-        height: '100%'
+        height: '100vh',
+        padding: '20px 16px'
       }}
     >
       <Lottie

@@ -7,8 +7,7 @@ import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import ErrorIcon from '@mui/icons-material/Error';
-import { PageWithSpinner, PageWithTitle } from '../../templates';
-import { Transaction as TransactionOrganism } from '../../organisms/Transaction';
+import { AsyncTransaction, PageWithSpinner, PageWithTitle } from '../../templates';
 import { useLedger, useServer } from '../../../contexts';
 import { GEM_WALLET, Message } from '@gemwallet/api/src';
 import { MessageListenerEvent, PaymentResponseError, PaymentResponseHash } from '@gemwallet/api';
@@ -149,12 +148,17 @@ export const Transaction: FC = () => {
 
   if (isParamsMissing) {
     return (
-      <PageWithTitle title="">
-        <TransactionOrganism
-          transaction={TransactionStatus.Rejected}
-          failureReason="You need to provide an amount and a destination to make the transaction"
-        />
-      </PageWithTitle>
+      <AsyncTransaction
+        title="Transaction rejected"
+        subtitle={
+          <>
+            Your transaction failed, please try again.
+            <br />
+            An amount and a destination have not been provided to the extension
+          </>
+        }
+        transaction={TransactionStatus.Rejected}
+      />
     );
   }
 
@@ -162,11 +166,51 @@ export const Transaction: FC = () => {
     return <PageWithSpinner />;
   }
 
-  if (transaction !== TransactionStatus.Waiting) {
+  if (transaction === TransactionStatus.Success) {
     return (
-      <PageWithTitle title="">
-        <TransactionOrganism transaction={transaction} failureReason={errorRequestRejection} />
-      </PageWithTitle>
+      <AsyncTransaction
+        title="Transaction accepted"
+        subtitle={
+          <>
+            We are processing your transaction
+            <br />
+            Please wait
+          </>
+        }
+        transaction={TransactionStatus.Success}
+      />
+    );
+  }
+
+  if (transaction === TransactionStatus.Rejected) {
+    return (
+      <AsyncTransaction
+        title="Transaction rejected"
+        subtitle={
+          <>
+            Your transaction failed, please try again.
+            <br />
+            {errorRequestRejection ? errorRequestRejection : 'Something went wrong'}
+          </>
+        }
+        transaction={TransactionStatus.Rejected}
+      />
+    );
+  }
+
+  if (transaction === TransactionStatus.Pending) {
+    return (
+      <AsyncTransaction
+        title="Transaction in progress"
+        subtitle={
+          <>
+            We are processing your transaction
+            <br />
+            Please wait
+          </>
+        }
+        transaction={TransactionStatus.Pending}
+      />
     );
   }
 
