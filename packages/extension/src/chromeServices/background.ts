@@ -45,7 +45,7 @@ chrome.runtime.onMessage.addListener((message: MessageListenerEvent, sender, sen
   if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
     if (type === Message.RequestNetwork) {
       sendResponse(Network.Test);
-    } else if (type === Message.RequestPublicAddress) {
+    } else if (type === Message.RequestAddress) {
       chrome.windows.getAll().then((openedWindows) => {
         // We check if the popup is currently open
         if (
@@ -167,11 +167,11 @@ chrome.runtime.onMessage.addListener((message: MessageListenerEvent, sender, sen
           error: payload!.error
         }
       });
-    } else if (type === Message.ReceivePublicAddress) {
+    } else if (type === Message.ReceiveAddress) {
       const { payload } = message;
       chrome.tabs.sendMessage(payload!.id, {
         app,
-        type: Message.ReceivePublicAddress,
+        type: Message.ReceiveAddress,
         payload: {
           publicAddress: payload!.publicAddress
         }

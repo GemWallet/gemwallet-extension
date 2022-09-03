@@ -2,11 +2,11 @@ import { Network } from './network.types';
 
 export enum Message {
   RequestNetwork = 'REQUEST_NETWORK',
-  RequestPublicAddress = 'REQUEST_PUBLIC_ADDRESS',
+  RequestAddress = 'REQUEST_ADDRESS',
   RequestConnection = 'REQUEST_CONNECTION',
   RequestSignMessage = 'REQUEST_SIGN_MESSAGE',
   ReceivePaymentHash = 'RECEIVE_PAYMENT_HASH',
-  ReceivePublicAddress = 'RECEIVE_PUBLIC_ADDRESS',
+  ReceiveAddress = 'RECEIVE_ADDRESS',
   ReceiveSignMessage = 'RECEIVE_SIGN_MESSAGE',
   SendPayment = 'SEND_PAYMENT',
   MsgRequest = 'GEM_WALLET_MSG_REQUEST',

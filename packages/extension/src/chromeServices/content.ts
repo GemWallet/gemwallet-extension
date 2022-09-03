@@ -52,7 +52,7 @@ setTimeout(() => {
             );
           }
         );
-      } else if (type === Message.RequestPublicAddress) {
+      } else if (type === Message.RequestAddress) {
         const {
           data: { payload }
         } = event as EventListenerEvent;
@@ -70,7 +70,7 @@ setTimeout(() => {
               const { app, type, payload } = message;
               // We make sure that the message comes from gem-wallet
               if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
-                if (type === Message.ReceivePublicAddress) {
+                if (type === Message.ReceiveAddress) {
                   window.postMessage(
                     {
                       source: Message.MsgResponse,

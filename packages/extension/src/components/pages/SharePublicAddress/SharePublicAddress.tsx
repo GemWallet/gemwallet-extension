@@ -41,7 +41,7 @@ export const SharePublicAddress: FC = () => {
     chrome.runtime
       .sendMessage({
         app: GEM_WALLET,
-        type: Message.ReceivePublicAddress,
+        type: Message.ReceiveAddress,
         payload: {
           id,
           publicAddress: null
@@ -60,7 +60,7 @@ export const SharePublicAddress: FC = () => {
     chrome.runtime
       .sendMessage({
         app: GEM_WALLET,
-        type: Message.ReceivePublicAddress,
+        type: Message.ReceiveAddress,
         payload: {
           id,
           publicAddress: currentWallet?.publicAddress

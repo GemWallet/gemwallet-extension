@@ -1,8 +1,8 @@
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
 import { Message, GEM_WALLET, MessageListenerEvent } from '../types';
 
-export const getPublicAddress = async () => {
-  /* string: public address
+export const getAddress = async () => {
+  /* string: classic address
    * null: user refused to pass the public address
    * undefined: something went wrong
    */
@@ -18,7 +18,7 @@ export const getPublicAddress = async () => {
     }
     const message: MessageListenerEvent = {
       app: GEM_WALLET,
-      type: Message.RequestPublicAddress,
+      type: Message.RequestAddress,
       payload: {
         url: window.location.origin,
         title: document.title,
