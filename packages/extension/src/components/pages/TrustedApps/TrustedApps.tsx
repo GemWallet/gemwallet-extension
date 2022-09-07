@@ -22,7 +22,7 @@ export const TrustedApps: FC = () => {
   );
 
   const onRevokeClick = (url: string) => {
-    const newTrustedApps = removeTrustedApp({ url }, selectedWallet);
+    const newTrustedApps = removeTrustedApp(url, selectedWallet);
     setTrustedApps(newTrustedApps);
   };
 

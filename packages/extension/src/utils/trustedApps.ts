@@ -1,25 +1,52 @@
 import { STORAGE_TRUSTED_APPS } from '../constants/localStorage';
-import { loadData, saveData } from '.';
+import { loadData, removeData, saveData } from '.';
 
+export enum Permission {
+  Address = 'address',
+  PublicKey = 'public-key'
+}
 export interface TrustedApp {
+  // The URL acts as a unique key
   url: string;
+  // Permissions are the permissions allowed for the URL
+  permissions: Permission[];
 }
 
 export const saveTrustedApp = (trustedApp: TrustedApp, walletIndex: number): void => {
   const trustedApps: TrustedApp[][] = JSON.parse(loadData(STORAGE_TRUSTED_APPS) || '[[]]');
 
   if (!trustedApps[walletIndex]) {
-    throw new Error("Couldn't find the wallet within saveTrustedApp");
+    throw new Error("Couldn't find the wallet while saving the trusted app");
   }
 
-  if (trustedApps[walletIndex].findIndex((tApp) => tApp.url === trustedApp.url) === -1) {
-    trustedApps[walletIndex].push(trustedApp);
-    const stringifiedTrustedApps = JSON.stringify(trustedApps);
-    try {
-      saveData(STORAGE_TRUSTED_APPS, stringifiedTrustedApps);
-    } catch (e) {
-      throw e;
-    }
+  const previousTrustedAppIndex = trustedApps[walletIndex].findIndex(
+    (tApp) => tApp.url === trustedApp.url
+  );
+
+  const previousTrustedApp = trustedApps[walletIndex][previousTrustedAppIndex] || {
+    url: trustedApp.url,
+    permissions: []
+  };
+
+  const newTrustedApp = {
+    url: trustedApp.url,
+    permissions: [...new Set([...previousTrustedApp.permissions, ...trustedApp.permissions])]
+  };
+
+  // We update the trustedApp if it already exist
+  if (previousTrustedAppIndex !== -1) {
+    trustedApps[walletIndex][previousTrustedAppIndex] = newTrustedApp;
+    // Else we just push the newTrustedApp
+  } else {
+    trustedApps[walletIndex].push(newTrustedApp);
+  }
+
+  const stringifiedNewTrustedApps = JSON.stringify(trustedApps);
+
+  try {
+    saveData(STORAGE_TRUSTED_APPS, stringifiedNewTrustedApps);
+  } catch (e) {
+    throw e;
   }
 };
 
@@ -31,17 +58,26 @@ export const loadTrustedApps = (walletIndex: number): TrustedApp[] => {
   return [];
 };
 
-export const removeTrustedApp = (trustedApp: TrustedApp, walletIndex: number): TrustedApp[] => {
+export const removeTrustedApp = (url: string, walletIndex: number): TrustedApp[] => {
   let trustedApps: TrustedApp[][] = JSON.parse(loadData(STORAGE_TRUSTED_APPS) || '[[]]');
+
   if (!trustedApps[walletIndex]) {
-    throw new Error("Couldn't find the wallet within saveTrustedApp");
+    throw new Error("Couldn't find the wallet while removing the trusted app");
   }
-  trustedApps[walletIndex] = trustedApps[walletIndex].filter((app) => app.url !== trustedApp.url);
-  const stringifiedTrustedApps = JSON.stringify(trustedApps);
-  try {
-    saveData(STORAGE_TRUSTED_APPS, stringifiedTrustedApps);
-  } catch (e) {
-    throw e;
+
+  trustedApps[walletIndex] = trustedApps[walletIndex].filter((app) => app.url !== url);
+
+  // If there are no other trusted app we completely remove all the data
+  if (trustedApps[walletIndex].length === 0) {
+    removeData(STORAGE_TRUSTED_APPS);
+  } else {
+    const stringifiedTrustedApps = JSON.stringify(trustedApps);
+    try {
+      saveData(STORAGE_TRUSTED_APPS, stringifiedTrustedApps);
+    } catch (e) {
+      throw e;
+    }
   }
+
   return trustedApps[walletIndex];
 };

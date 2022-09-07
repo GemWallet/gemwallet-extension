@@ -12,7 +12,7 @@ import {
 import CheckIcon from '@mui/icons-material/Check';
 import { PageWithSpinner, PageWithTitle } from '../../templates';
 import { SECONDARY_GRAY } from '../../../constants';
-import { saveTrustedApp, loadTrustedApps } from '../../../utils';
+import { saveTrustedApp, loadTrustedApps, Permission } from '../../../utils';
 import { GEM_WALLET, Message } from '@gemwallet/api/src';
 import { useBrowser, useLedger } from '../../../contexts';
 
@@ -37,6 +37,10 @@ export const SharePublicAddress: FC = () => {
 
   const { id, url, title, favicon } = payload;
 
+  const trustedApp = useMemo(() => {
+    return trustedApps.filter((trustedApp) => trustedApp.url === url)[0];
+  }, [trustedApps, url]);
+
   const handleReject = useCallback(() => {
     chrome.runtime
       .sendMessage({
@@ -55,7 +59,7 @@ export const SharePublicAddress: FC = () => {
   }, [closeExtension, extensionWindow?.id, id]);
 
   const handleShare = useCallback(() => {
-    saveTrustedApp({ url: String(url) }, selectedWallet);
+    saveTrustedApp({ url: String(url), permissions: [Permission.Address] }, selectedWallet);
     const currentWallet = getCurrentWallet();
     chrome.runtime
       .sendMessage({
@@ -73,7 +77,10 @@ export const SharePublicAddress: FC = () => {
       });
   }, [closeExtension, extensionWindow?.id, getCurrentWallet, id, selectedWallet, url]);
 
-  if (trustedApps.length) {
+  if (
+    trustedApp &&
+    trustedApp.permissions.some((permission) => permission === Permission.Address)
+  ) {
     handleShare();
     return <PageWithSpinner />;
   }
