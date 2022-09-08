@@ -69,7 +69,7 @@ export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => 
             <Typography variant="body2" style={{ margin: '3px 0', color: SECONDARY_GRAY }}>
               {truncatedAddress}
             </Typography>
-            <Tooltip title="Copy your public address">
+            <Tooltip title="Copy your address">
               <IconButton
                 size="small"
                 edge="end"

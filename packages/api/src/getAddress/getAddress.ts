@@ -3,7 +3,7 @@ import { Message, GEM_WALLET, MessageListenerEvent } from '../types';
 
 export const getAddress = async () => {
   /* string: classic address
-   * null: user refused to pass the public address
+   * null: user refused to pass the address
    * undefined: something went wrong
    */
   let response: string | undefined | null = '';

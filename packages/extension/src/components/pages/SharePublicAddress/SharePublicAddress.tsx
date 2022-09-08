@@ -86,7 +86,7 @@ export const SharePublicAddress: FC = () => {
   }
 
   return (
-    <PageWithTitle title="Share public address">
+    <PageWithTitle title="Share your address">
       <Paper
         elevation={24}
         style={{
@@ -106,7 +106,7 @@ export const SharePublicAddress: FC = () => {
         <List>
           <ListItem>
             <CheckIcon color="success" />
-            <ListItemText style={{ marginLeft: '10px' }} primary="View your public address" />
+            <ListItemText style={{ marginLeft: '10px' }} primary="View your address" />
           </ListItem>
         </List>
       </Paper>
