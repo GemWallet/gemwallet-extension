@@ -1,7 +1,7 @@
 import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import * as Sentry from '@sentry/react';
 import { Container, Typography, Button, Paper, Avatar, Divider } from '@mui/material';
-import { GEM_WALLET, Message } from '@gemwallet/api/src';
+import { GEM_WALLET, Message } from '@gemwallet/constants';
 import { PageWithTitle, AsyncTransaction } from '../../templates';
 import { SECONDARY_GRAY } from '../../../constants';
 import { useBrowser, useLedger } from '../../../contexts';

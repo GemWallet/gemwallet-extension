@@ -17,5 +17,5 @@ The `getAddress` method returns the classic address.
 The following values can be returned
 
 - string: classic address
-- null: user refused to pass the address
+- null: user refused the authorization
 - undefined: something went wrong

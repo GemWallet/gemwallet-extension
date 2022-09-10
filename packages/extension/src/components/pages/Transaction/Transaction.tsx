@@ -7,10 +7,15 @@ import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import ErrorIcon from '@mui/icons-material/Error';
+import {
+  GEM_WALLET,
+  Message,
+  MessageListenerEvent,
+  PaymentResponseError,
+  PaymentResponseHash
+} from '@gemwallet/constants';
 import { AsyncTransaction, PageWithSpinner, PageWithTitle } from '../../templates';
 import { useLedger, useServer } from '../../../contexts';
-import { GEM_WALLET, Message } from '@gemwallet/api/src';
-import { MessageListenerEvent, PaymentResponseError, PaymentResponseHash } from '@gemwallet/api';
 import { TransactionStatus } from '../../../types';
 import { TileLoader } from '../../atoms';
 import { formatToken } from '../../../utils';

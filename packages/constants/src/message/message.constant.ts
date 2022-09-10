@@ -1,0 +1,14 @@
+export enum Message {
+  RequestAddress = 'REQUEST_ADDRESS',
+  RequestConnection = 'REQUEST_CONNECTION',
+  RequestNetwork = 'REQUEST_NETWORK',
+  RequestPublicKey = 'REQUEST_PUBLIC_KEY',
+  RequestSignMessage = 'REQUEST_SIGN_MESSAGE',
+  ReceivePaymentHash = 'RECEIVE_PAYMENT_HASH',
+  ReceiveAddress = 'RECEIVE_ADDRESS',
+  ReceivePublicKey = 'RECEIVE_PUBLIC_KEY',
+  ReceiveSignMessage = 'RECEIVE_SIGN_MESSAGE',
+  SendPayment = 'SEND_PAYMENT',
+  MsgRequest = 'GEM_WALLET_MSG_REQUEST',
+  MsgResponse = 'GEM_WALLET_MSG_RESPONSE'
+}

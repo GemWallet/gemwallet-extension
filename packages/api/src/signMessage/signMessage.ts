@@ -1,5 +1,5 @@
+import { GEM_WALLET, Message, MessageListenerEvent } from '@gemwallet/constants';
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
-import { Message, GEM_WALLET, MessageListenerEvent } from '../types';
 
 export const signMessage = async (message: string) => {
   /* string: signed message

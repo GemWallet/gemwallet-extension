@@ -9,7 +9,7 @@ import { useLedger } from '../../../contexts';
 import { loadData } from '../../../utils';
 import {
   HOME_PATH,
-  PARAMETER_PUBLIC_ADDRESS,
+  PARAMETER_ADDRESS,
   PARAMETER_SIGN_MESSAGE,
   PARAMETER_TRANSACTION_PAYMENT,
   RESET_PASSWORD_PATH,
@@ -17,7 +17,9 @@ import {
   SHARE_PUBLIC_ADDRESS_PATH,
   STORAGE_WALLETS,
   TRANSACTION_PATH,
-  WELCOME_PATH
+  WELCOME_PATH,
+  PARAMETER_PUBLIC_KEY,
+  SHARE_PUBLIC_KEY_PATH
 } from '../../../constants';
 
 export const Login: FC = () => {
@@ -31,8 +33,10 @@ export const Login: FC = () => {
     if (wallets?.[selectedWallet]) {
       if (search.includes(PARAMETER_TRANSACTION_PAYMENT)) {
         navigate(`${TRANSACTION_PATH}${search}`);
-      } else if (search.includes(PARAMETER_PUBLIC_ADDRESS)) {
+      } else if (search.includes(PARAMETER_ADDRESS)) {
         navigate(`${SHARE_PUBLIC_ADDRESS_PATH}${search}`);
+      } else if (search.includes(PARAMETER_PUBLIC_KEY)) {
+        navigate(`${SHARE_PUBLIC_KEY_PATH}${search}`);
       } else if (search.includes(PARAMETER_SIGN_MESSAGE)) {
         navigate(`${SIGN_MESSAGE_PATH}${search}`);
       } else {
@@ -49,8 +53,10 @@ export const Login: FC = () => {
     if (isSignIn) {
       if (search.includes(PARAMETER_TRANSACTION_PAYMENT)) {
         navigate(`${TRANSACTION_PATH}${search}`);
-      } else if (search.includes(PARAMETER_PUBLIC_ADDRESS)) {
+      } else if (search.includes(PARAMETER_ADDRESS)) {
         navigate(`${SHARE_PUBLIC_ADDRESS_PATH}${search}`);
+      } else if (search.includes(PARAMETER_PUBLIC_KEY)) {
+        navigate(`${SHARE_PUBLIC_KEY_PATH}${search}`);
       } else if (search.includes(PARAMETER_SIGN_MESSAGE)) {
         navigate(`${SIGN_MESSAGE_PATH}${search}`);
       } else {

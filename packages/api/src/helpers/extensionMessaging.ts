@@ -1,10 +1,10 @@
 import {
+  IsConnectedResponse,
   Message,
   MessageListenerEvent,
   NetworkResponse,
-  IsConnectedResponse,
   PublicAddressResponse
-} from '../types';
+} from '@gemwallet/constants';
 
 declare global {
   interface Window {

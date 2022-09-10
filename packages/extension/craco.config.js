@@ -3,13 +3,14 @@ const fs = require('fs');
 
 const extensionDirectory = fs.realpathSync(process.cwd());
 const apiDirectory = path.resolve(extensionDirectory, '../api');
+const constantsDirectory = path.resolve(extensionDirectory, '../constants');
 
 module.exports = {
   webpack: {
     configure: (webpackConfig, { env, paths }) => {
       webpackConfig.module.rules.push({
         test: /\.tsx?$/,
-        include: [apiDirectory],
+        include: [apiDirectory, constantsDirectory],
         loader: 'ts-loader',
         exclude: /node_modules/,
         options: {

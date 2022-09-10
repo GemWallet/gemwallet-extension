@@ -81,3 +81,8 @@ export const removeTrustedApp = (url: string, walletIndex: number): TrustedApp[]
 
   return trustedApps[walletIndex];
 };
+
+// Checks if the trustedApp includes all the permissions
+export const checkPermissions = (trustedApp: TrustedApp, permissions: Permission[]): boolean => {
+  return permissions.every((permission) => trustedApp.permissions.includes(permission));
+};
