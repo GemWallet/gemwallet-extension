@@ -26,7 +26,7 @@
     "xrpl": "^2.2.1"
   },
   "devDependencies": {
-    "@gemwallet/api": "1.0.2",
+    "@gemwallet/constants": "*",
     "@gemwallet/eslint-config": "*",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "12.1.5",

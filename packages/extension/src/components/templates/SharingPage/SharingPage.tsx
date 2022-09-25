@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo } from 'react';
+import { FC, useMemo } from 'react';
 import {
   Container,
   Typography,
@@ -12,13 +12,25 @@ import {
 import CheckIcon from '@mui/icons-material/Check';
 import { PageWithSpinner, PageWithTitle } from '../../templates';
 import { SECONDARY_GRAY } from '../../../constants';
-import { saveTrustedApp, loadTrustedApps } from '../../../utils';
-import { GEM_WALLET, Message } from '@gemwallet/api/src';
-import { useBrowser, useLedger } from '../../../contexts';
+import { loadTrustedApps, Permission, checkPermissions } from '../../../utils';
+import { useLedger } from '../../../contexts';
 
-export const SharePublicAddress: FC = () => {
-  const { getCurrentWallet, selectedWallet } = useLedger();
-  const { window: extensionWindow, closeExtension } = useBrowser();
+export interface SharingPageProps {
+  title: string;
+  permissions: Permission[];
+  permissionDetails: string[];
+  handleShare: () => void;
+  handleReject: () => void;
+}
+
+export const SharingPage: FC<SharingPageProps> = ({
+  title: titlePage,
+  permissions,
+  permissionDetails,
+  handleShare,
+  handleReject
+}) => {
+  const { selectedWallet } = useLedger();
 
   const trustedApps = useMemo(() => {
     return loadTrustedApps(selectedWallet);
@@ -35,51 +47,19 @@ export const SharePublicAddress: FC = () => {
     };
   }, []);
 
-  const { id, url, title, favicon } = payload;
+  const { url, title, favicon } = payload;
 
-  const handleReject = useCallback(() => {
-    chrome.runtime
-      .sendMessage({
-        app: GEM_WALLET,
-        type: Message.ReceivePublicAddress,
-        payload: {
-          id,
-          publicAddress: null
-        }
-      })
-      .then(() => {
-        if (extensionWindow?.id) {
-          closeExtension({ windowId: Number(extensionWindow.id) });
-        }
-      });
-  }, [closeExtension, extensionWindow?.id, id]);
+  const trustedApp = useMemo(() => {
+    return trustedApps.filter((trustedApp) => trustedApp.url === url)[0];
+  }, [trustedApps, url]);
 
-  const handleShare = useCallback(() => {
-    saveTrustedApp({ url: String(url) }, selectedWallet);
-    const currentWallet = getCurrentWallet();
-    chrome.runtime
-      .sendMessage({
-        app: GEM_WALLET,
-        type: Message.ReceivePublicAddress,
-        payload: {
-          id,
-          publicAddress: currentWallet?.publicAddress
-        }
-      })
-      .then(() => {
-        if (extensionWindow?.id) {
-          closeExtension({ windowId: Number(extensionWindow.id) });
-        }
-      });
-  }, [closeExtension, extensionWindow?.id, getCurrentWallet, id, selectedWallet, url]);
-
-  if (trustedApps.length) {
+  if (trustedApp && checkPermissions(trustedApp, permissions)) {
     handleShare();
     return <PageWithSpinner />;
   }
 
   return (
-    <PageWithTitle title="Share public address">
+    <PageWithTitle title={titlePage}>
       <Paper
         elevation={24}
         style={{
@@ -97,10 +77,14 @@ export const SharePublicAddress: FC = () => {
       <Paper elevation={24} style={{ padding: '10px' }}>
         <Typography variant="body1">This app would like to:</Typography>
         <List>
-          <ListItem>
-            <CheckIcon color="success" />
-            <ListItemText style={{ marginLeft: '10px' }} primary="View your public address" />
-          </ListItem>
+          {permissionDetails.map((permDetail) => {
+            return (
+              <ListItem style={{ padding: '0 16px' }} key={permDetail}>
+                <CheckIcon color="success" />
+                <ListItemText style={{ marginLeft: '10px' }} primary={permDetail} />
+              </ListItem>
+            );
+          })}
         </List>
       </Paper>
 

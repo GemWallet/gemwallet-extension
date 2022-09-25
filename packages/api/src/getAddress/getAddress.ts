@@ -1,12 +1,12 @@
+import { GEM_WALLET, Message, MessageListenerEvent } from '@gemwallet/constants';
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
-import { Message, GEM_WALLET, MessageListenerEvent } from '../types';
 
-export const getPublicAddress = async () => {
-  /* string: public address
-   * null: user refused to pass the public address
+export const getAddress = async () => {
+  /* string: classic address
+   * null: user refused the authorization
    * undefined: something went wrong
    */
-  let response: string | undefined | null = '';
+  let response: string | undefined | null = undefined;
   try {
     let favicon = document.querySelector("link[rel*='icon']")?.getAttribute('href');
     if (favicon) {
@@ -18,7 +18,7 @@ export const getPublicAddress = async () => {
     }
     const message: MessageListenerEvent = {
       app: GEM_WALLET,
-      type: Message.RequestPublicAddress,
+      type: Message.RequestAddress,
       payload: {
         url: window.location.origin,
         title: document.title,

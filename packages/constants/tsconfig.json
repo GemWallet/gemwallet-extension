@@ -1,16 +1,17 @@
 {
   "compilerOptions": {
     "outDir": "dist",
-    "noImplicitAny": true,
     "target": "es5",
-    "module": "commonjs",
-    "declaration": true,
     "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": false,
+    "allowJs": true,
+    "baseUrl": ".",
     "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "module": "commonjs",
     "esModuleInterop": true,
-    "strict": true,
-    "resolveJsonModule": true
+    "composite": true,
+    "declaration": true,
+    "noImplicitAny": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "**/__tests__/*"]

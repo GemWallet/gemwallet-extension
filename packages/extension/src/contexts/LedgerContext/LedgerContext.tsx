@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import * as Sentry from '@sentry/react';
 import { Wallet, Client, xrpToDrops, dropsToXrp, TransactionMetadata, Payment } from 'xrpl';
 import { sign } from 'ripple-keypairs';
-import { Payment as PaymentPayload } from '@gemwallet/api';
+import { Payment as PaymentPayload } from '@gemwallet/constants';
 import { HOME_PATH, TESTNET_RIPPLE } from '../../constants';
 import { WalletLedger } from '../../types';
 import { loadWallets } from '../../utils';

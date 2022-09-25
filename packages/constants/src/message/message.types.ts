@@ -1,22 +1,9 @@
-import { Network } from './network.types';
-
-export enum Message {
-  RequestNetwork = 'REQUEST_NETWORK',
-  RequestPublicAddress = 'REQUEST_PUBLIC_ADDRESS',
-  RequestConnection = 'REQUEST_CONNECTION',
-  RequestSignMessage = 'REQUEST_SIGN_MESSAGE',
-  ReceivePaymentHash = 'RECEIVE_PAYMENT_HASH',
-  ReceivePublicAddress = 'RECEIVE_PUBLIC_ADDRESS',
-  ReceiveSignMessage = 'RECEIVE_SIGN_MESSAGE',
-  SendPayment = 'SEND_PAYMENT',
-  MsgRequest = 'GEM_WALLET_MSG_REQUEST',
-  MsgResponse = 'GEM_WALLET_MSG_RESPONSE'
-}
-
-export const GEM_WALLET = 'gem-wallet';
+import { GEM_WALLET } from '../global/global.constant';
+import { Message } from '../message/message.constant';
+import { Network } from '../network/network.constant';
 
 export type MessageListenerEvent = {
-  app: 'gem-wallet';
+  app: typeof GEM_WALLET;
   type: Message;
   payload?: { [key: string]: any };
 };
@@ -24,6 +11,10 @@ export type MessageListenerEvent = {
 export type EventListenerEvent = {
   data: MessageListenerEvent;
 };
+
+/*
+ * Responses
+ */
 
 export type MessagingResponse = {
   source?: Message.MsgResponse;
@@ -39,6 +30,11 @@ export type PublicAddressResponse = MessagingResponse & {
   publicAddress: string;
 };
 
+export type PublicKeyResponse = MessagingResponse & {
+  address: string;
+  publicKey: string;
+};
+
 export type SignedMessageResponse = MessagingResponse & {
   signedMessage: string | null;
 };
@@ -46,3 +42,17 @@ export type SignedMessageResponse = MessagingResponse & {
 export type IsConnectedResponse = MessagingResponse & {
   isConnected: boolean;
 };
+
+export interface PaymentResponseHash {
+  hash: string;
+  error: never;
+}
+
+export interface PaymentResponseError {
+  hash: never;
+  error: string;
+}
+
+export type PaymentResponse =
+  | (MessagingResponse & PaymentResponseHash)
+  | (MessagingResponse & PaymentResponseError);

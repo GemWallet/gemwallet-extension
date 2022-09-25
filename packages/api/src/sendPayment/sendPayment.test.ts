@@ -1,6 +1,5 @@
+import { MessageListenerEvent, Payment } from '@gemwallet/constants';
 import { sendPayment } from './sendPayment';
-import { MessageListenerEvent } from '../types/message.types';
-import { Payment } from './sendPayment.types';
 
 const hash = '7CB690AE100B8294C13A2E925B7524B68FA14146382A68820BAEC6907D5267D7';
 

@@ -2,17 +2,16 @@ import {
   EventListenerEvent,
   GEM_WALLET,
   Message,
+  MessageListenerEvent,
   Network,
-  PublicAddressResponse,
-  SignedMessageResponse
-} from '@gemwallet/api/src';
-import {
   NetworkResponse,
   PaymentResponse,
   PaymentResponseError,
   PaymentResponseHash,
-  MessageListenerEvent
-} from '@gemwallet/api';
+  PublicAddressResponse,
+  PublicKeyResponse,
+  SignedMessageResponse
+} from '@gemwallet/constants';
 
 /**
  * Execute the function if the document is fully ready
@@ -52,7 +51,7 @@ setTimeout(() => {
             );
           }
         );
-      } else if (type === Message.RequestPublicAddress) {
+      } else if (type === Message.RequestAddress) {
         const {
           data: { payload }
         } = event as EventListenerEvent;
@@ -70,13 +69,48 @@ setTimeout(() => {
               const { app, type, payload } = message;
               // We make sure that the message comes from gem-wallet
               if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
-                if (type === Message.ReceivePublicAddress) {
+                if (type === Message.ReceiveAddress) {
                   window.postMessage(
                     {
                       source: Message.MsgResponse,
                       messagedId,
                       publicAddress: payload?.publicAddress
                     } as PublicAddressResponse,
+                    window.location.origin
+                  );
+                }
+              }
+              chrome.runtime.onMessage.removeListener(messageListener);
+            };
+            chrome.runtime.onMessage.addListener(messageListener);
+          }
+        );
+      } else if (type === Message.RequestPublicKey) {
+        const {
+          data: { payload }
+        } = event as EventListenerEvent;
+        chrome.runtime.sendMessage(
+          {
+            app,
+            type,
+            payload
+          },
+          () => {
+            const messageListener = (
+              message: MessageListenerEvent,
+              sender: chrome.runtime.MessageSender
+            ) => {
+              const { app, type, payload } = message;
+              // We make sure that the message comes from gem-wallet
+              if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
+                if (type === Message.ReceivePublicKey) {
+                  window.postMessage(
+                    {
+                      source: Message.MsgResponse,
+                      messagedId,
+                      address: payload?.address,
+                      publicKey: payload?.publicKey
+                    } as PublicKeyResponse,
                     window.location.origin
                   );
                 }
