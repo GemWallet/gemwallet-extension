@@ -23,7 +23,6 @@ export type MessagingResponse = {
 
 export type NetworkResponse = MessagingResponse & {
   network: Network;
-  error: string;
 };
 
 export type PublicAddressResponse = MessagingResponse & {

@@ -3,7 +3,6 @@ import {
   GEM_WALLET,
   Message,
   MessageListenerEvent,
-  Network,
   NetworkResponse,
   PaymentResponse,
   PaymentResponseError,
@@ -30,25 +29,19 @@ setTimeout(() => {
       } = event as EventListenerEvent;
       // Check if it's an allowed event type to be forwarded
       if (type === Message.RequestNetwork) {
-        let res: NetworkResponse = {
-          error: 'Unable to send message to extension',
-          network: Network.Test
-        };
-
         chrome.runtime.sendMessage(
           {
             app,
             type
           },
           (network) => {
-            if (network) {
-              res = { network, error: '' };
-            }
             // Send the response back to GemWallet API
-            window.postMessage(
-              { source: Message.MsgResponse, messagedId, ...res },
-              window.location.origin
-            );
+            const response: NetworkResponse = {
+              source: Message.MsgResponse,
+              messagedId,
+              network
+            };
+            window.postMessage(response, window.location.origin);
           }
         );
       } else if (type === Message.RequestAddress) {
