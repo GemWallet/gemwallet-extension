@@ -1,4 +1,4 @@
-import { GEM_WALLET, GetPublicKeyMessage, Message } from '@gemwallet/constants';
+import { GEM_WALLET, Message, RequestPublicKeyMessage } from '@gemwallet/constants';
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
 
 export const getPublicKey = async () => {
@@ -16,7 +16,7 @@ export const getPublicKey = async () => {
         favicon = window.location.origin + favicon;
       }
     }
-    const message: GetPublicKeyMessage = {
+    const message: RequestPublicKeyMessage = {
       app: GEM_WALLET,
       type: Message.RequestPublicKey,
       payload: {

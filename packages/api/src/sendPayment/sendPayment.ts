@@ -3,7 +3,7 @@ import {
   Message,
   PaymentResponse,
   Payment,
-  SendPaymentMessage
+  RequestPaymentMessage
 } from '@gemwallet/constants';
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
 
@@ -14,7 +14,7 @@ export const sendPayment = async (payment: Payment) => {
    */
   let response: string | null | undefined = undefined;
   try {
-    const message: SendPaymentMessage = {
+    const message: RequestPaymentMessage = {
       app: GEM_WALLET,
       type: Message.SendPayment,
       payload: payment

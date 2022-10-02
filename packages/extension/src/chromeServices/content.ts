@@ -9,10 +9,10 @@ import {
   PublicAddressResponse,
   PublicKeyEventListener,
   PublicKeyResponse,
-  ReceiveAddressMessage,
-  ReceivePaymentHashMessage,
-  ReceivePublicKeyMessage,
-  ReceiveSignMessageMessage,
+  ReceiveAddressContentMessage,
+  ReceivePaymentHashContentMessage,
+  ReceivePublicKeyContentMessage,
+  ReceiveSignMessageContentMessage,
   SignedMessageResponse,
   SignMessageListener
 } from '@gemwallet/constants';
@@ -61,7 +61,7 @@ setTimeout(() => {
           },
           () => {
             const messageListener = (
-              message: ReceiveAddressMessage,
+              message: ReceiveAddressContentMessage,
               sender: chrome.runtime.MessageSender
             ) => {
               const { app, type, payload } = message;
@@ -95,7 +95,7 @@ setTimeout(() => {
           },
           () => {
             const messageListener = (
-              message: ReceivePublicKeyMessage,
+              message: ReceivePublicKeyContentMessage,
               sender: chrome.runtime.MessageSender
             ) => {
               const { app, type, payload } = message;
@@ -131,7 +131,7 @@ setTimeout(() => {
           },
           () => {
             const messageListener = (
-              message: ReceivePaymentHashMessage,
+              message: ReceivePaymentHashContentMessage,
               sender: chrome.runtime.MessageSender
             ) => {
               const { app, type, payload } = message;
@@ -162,7 +162,7 @@ setTimeout(() => {
           },
           () => {
             const messageListener = (
-              message: ReceiveSignMessageMessage,
+              message: ReceiveSignMessageContentMessage,
               sender: chrome.runtime.MessageSender
             ) => {
               const { app, type, payload } = message;

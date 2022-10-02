@@ -7,7 +7,7 @@ import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import ErrorIcon from '@mui/icons-material/Error';
-import { GEM_WALLET, Message, ReceivePaymentHashMessage } from '@gemwallet/constants';
+import { GEM_WALLET, Message, ReceivePaymentHashBackgroundMessage } from '@gemwallet/constants';
 import { AsyncTransaction, PageWithSpinner, PageWithTitle } from '../../templates';
 import { useLedger, useServer } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
@@ -97,7 +97,7 @@ export const Transaction: FC = () => {
   }, [isParamsMissing]);
 
   const createMessage = useCallback(
-    (transactionHash: string | null): ReceivePaymentHashMessage => {
+    (transactionHash: string | null): ReceivePaymentHashBackgroundMessage => {
       return {
         app: GEM_WALLET,
         type: Message.ReceivePaymentHash,

@@ -1,4 +1,9 @@
-import { GEM_WALLET, IsConnectedMessage, IsConnectedResponse, Message } from '@gemwallet/constants';
+import {
+  GEM_WALLET,
+  IsConnectedResponse,
+  Message,
+  RequestIsConnectedMessage
+} from '@gemwallet/constants';
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
 
 declare global {
@@ -24,7 +29,7 @@ export const isConnected = () => {
     const connectionToExtension = new Promise(async (resolve, reject) => {
       let response: IsConnectedResponse = { isConnected: false };
       try {
-        const message: IsConnectedMessage = {
+        const message: RequestIsConnectedMessage = {
           app: GEM_WALLET,
           type: Message.RequestConnection
         };
