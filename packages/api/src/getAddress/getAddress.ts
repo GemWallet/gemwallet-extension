@@ -1,4 +1,4 @@
-import { GEM_WALLET, Message, MessageListenerEvent } from '@gemwallet/constants';
+import { GEM_WALLET, GetAddressMessage, Message } from '@gemwallet/constants';
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
 
 export const getAddress = async () => {
@@ -16,7 +16,7 @@ export const getAddress = async () => {
         favicon = window.location.origin + favicon;
       }
     }
-    const message: MessageListenerEvent = {
+    const message: GetAddressMessage = {
       app: GEM_WALLET,
       type: Message.RequestAddress,
       payload: {

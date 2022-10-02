@@ -1,15 +1,20 @@
 import {
-  EventListenerEvent,
+  AddressEventListener,
+  EventListener,
   GEM_WALLET,
   Message,
-  MessageListenerEvent,
   NetworkResponse,
+  PaymentEventListener,
   PaymentResponse,
-  PaymentResponseError,
-  PaymentResponseHash,
   PublicAddressResponse,
+  PublicKeyEventListener,
   PublicKeyResponse,
-  SignedMessageResponse
+  ReceiveAddressMessage,
+  ReceivePaymentHashMessage,
+  ReceivePublicKeyMessage,
+  ReceiveSignMessageMessage,
+  SignedMessageResponse,
+  SignMessageListener
 } from '@gemwallet/constants';
 
 /**
@@ -19,14 +24,14 @@ setTimeout(() => {
   // Redirect Messages To Background script
   window.addEventListener(
     'message',
-    (event) => {
-      const messagedId = event?.data?.messageId || 0;
+    (event: EventListener) => {
+      const messagedId = event.data.messageId;
       if (event.source !== window && event.data.app === GEM_WALLET) return;
       if (!event.data.source || event.data.source !== Message.MsgRequest) return;
 
       const {
         data: { app, type }
-      } = event as EventListenerEvent;
+      } = event;
       // Check if it's an allowed event type to be forwarded
       if (type === Message.RequestNetwork) {
         chrome.runtime.sendMessage(
@@ -47,7 +52,7 @@ setTimeout(() => {
       } else if (type === Message.RequestAddress) {
         const {
           data: { payload }
-        } = event as EventListenerEvent;
+        } = event as AddressEventListener;
         chrome.runtime.sendMessage(
           {
             app,
@@ -56,7 +61,7 @@ setTimeout(() => {
           },
           () => {
             const messageListener = (
-              message: MessageListenerEvent,
+              message: ReceiveAddressMessage,
               sender: chrome.runtime.MessageSender
             ) => {
               const { app, type, payload } = message;
@@ -81,7 +86,7 @@ setTimeout(() => {
       } else if (type === Message.RequestPublicKey) {
         const {
           data: { payload }
-        } = event as EventListenerEvent;
+        } = event as PublicKeyEventListener;
         chrome.runtime.sendMessage(
           {
             app,
@@ -90,7 +95,7 @@ setTimeout(() => {
           },
           () => {
             const messageListener = (
-              message: MessageListenerEvent,
+              message: ReceivePublicKeyMessage,
               sender: chrome.runtime.MessageSender
             ) => {
               const { app, type, payload } = message;
@@ -116,7 +121,7 @@ setTimeout(() => {
       } else if (type === Message.SendPayment) {
         const {
           data: { payload }
-        } = event as EventListenerEvent;
+        } = event as PaymentEventListener;
 
         chrome.runtime.sendMessage(
           {
@@ -126,26 +131,16 @@ setTimeout(() => {
           },
           () => {
             const messageListener = (
-              message: MessageListenerEvent,
+              message: ReceivePaymentHashMessage,
               sender: chrome.runtime.MessageSender
             ) => {
               const { app, type, payload } = message;
               // We make sure that the message comes from gem-wallet
               if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
                 if (type === Message.ReceivePaymentHash) {
-                  let res = {
-                    error: 'Unable to send message to extension'
-                  } as PaymentResponseError | PaymentResponseHash;
-                  if (payload) {
-                    const { hash, error } = payload;
-                    if (hash) {
-                      res = { hash } as PaymentResponseHash;
-                    } else if (error) {
-                      res = { error } as PaymentResponseError;
-                    }
-                  }
+                  const { hash } = payload;
                   window.postMessage(
-                    { source: Message.MsgResponse, messagedId, ...res } as PaymentResponse,
+                    { source: Message.MsgResponse, messagedId, hash } as PaymentResponse,
                     window.location.origin
                   );
                 }
@@ -158,7 +153,7 @@ setTimeout(() => {
       } else if (type === Message.RequestSignMessage) {
         const {
           data: { payload }
-        } = event as EventListenerEvent;
+        } = event as SignMessageListener;
         chrome.runtime.sendMessage(
           {
             app,
@@ -167,7 +162,7 @@ setTimeout(() => {
           },
           () => {
             const messageListener = (
-              message: MessageListenerEvent,
+              message: ReceiveSignMessageMessage,
               sender: chrome.runtime.MessageSender
             ) => {
               const { app, type, payload } = message;

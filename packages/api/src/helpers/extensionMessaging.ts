@@ -1,7 +1,7 @@
 import {
+  APIMessages,
   IsConnectedResponse,
   Message,
-  MessageListenerEvent,
   NetworkResponse,
   PublicAddressResponse
 } from '@gemwallet/constants';
@@ -16,7 +16,7 @@ declare global {
 /*
  * Send message from current window to content script, for example API to content script
  */
-export const sendMessageToContentScript = (msg: MessageListenerEvent): Promise<any> => {
+export const sendMessageToContentScript = (msg: APIMessages): Promise<any> => {
   /* 
     In the case of multiple calls coming in sequentially, we use this MESSAGE_ID to make sure we're responding to
     the appropriate message sender. Otherwise, we can run into race conditions where we simply resolve all 

@@ -1,3 +1,4 @@
+import { EventListenerMessage, GEM_WALLET, Message, Network } from '@gemwallet/constants';
 import { MAIN_FILE } from './../constants/routes';
 import {
   PARAMETER_ADDRESS,
@@ -5,7 +6,6 @@ import {
   PARAMETER_SIGN_MESSAGE,
   PARAMETER_TRANSACTION_PAYMENT
 } from './../constants/parameters';
-import { GEM_WALLET, Message, MessageListenerEvent, Network } from '@gemwallet/constants';
 import { CurrentWindow } from './background.types';
 
 const NOTIFICATION_HEIGHT = 620;
@@ -39,7 +39,7 @@ const serializeToQueryString = (payload?: { [key: string]: any }) => {
 /*
  * Keep only one listener for easier debugging
  */
-chrome.runtime.onMessage.addListener((message: MessageListenerEvent, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((message: EventListenerMessage, sender, sendResponse) => {
   const { app, type } = message;
   // We make sure that the message comes from gem-wallet
   if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
@@ -55,7 +55,7 @@ chrome.runtime.onMessage.addListener((message: MessageListenerEvent, sender, sen
           // TODO: Why popup are created more than one time? - Maybe to be removed?
           chrome.windows.update(_currentWindowPopup.id as number, { focused: true });
         } else {
-          getLastFocusedWindow().then((lastFocused: chrome.windows.Window) => {
+          getLastFocusedWindow().then((lastFocused) => {
             const top = lastFocused.top;
             let left = undefined;
             if (lastFocused.left && lastFocused.width) {
@@ -91,7 +91,7 @@ chrome.runtime.onMessage.addListener((message: MessageListenerEvent, sender, sen
           // TODO: Why popup are created more than one time? - Maybe to be removed?
           chrome.windows.update(_currentWindowPopup.id as number, { focused: true });
         } else {
-          getLastFocusedWindow().then((lastFocused: chrome.windows.Window) => {
+          getLastFocusedWindow().then((lastFocused) => {
             const top = lastFocused.top;
             let left = undefined;
             if (lastFocused.left && lastFocused.width) {
@@ -128,18 +128,18 @@ chrome.runtime.onMessage.addListener((message: MessageListenerEvent, sender, sen
           chrome.windows.update(_currentWindowPopup.id as number, { focused: true });
         } else {
           const { payload } = message;
-          getLastFocusedWindow().then((lastFocused: any) => {
+          getLastFocusedWindow().then((lastFocused) => {
             const top = lastFocused.top;
             let left = undefined;
             if (lastFocused.left && lastFocused.width) {
               left = lastFocused.left + (lastFocused.width - NOTIFICATION_WIDTH);
             }
-            payload!.id = sender.tab!.id!;
             chrome.windows.create(
               {
-                url: `../..${MAIN_FILE}${serializeToQueryString(
-                  payload
-                )}&${PARAMETER_TRANSACTION_PAYMENT}`,
+                url: `../..${MAIN_FILE}${serializeToQueryString({
+                  ...payload,
+                  id: sender.tab?.id
+                })}&${PARAMETER_TRANSACTION_PAYMENT}`,
                 type: 'popup',
                 width: NOTIFICATION_WIDTH,
                 height: NOTIFICATION_HEIGHT,
@@ -163,7 +163,7 @@ chrome.runtime.onMessage.addListener((message: MessageListenerEvent, sender, sen
           // TODO: Why popup are created more than one time? - Maybe to be removed?
           chrome.windows.update(_currentWindowPopup.id as number, { focused: true });
         } else {
-          getLastFocusedWindow().then((lastFocused: chrome.windows.Window) => {
+          getLastFocusedWindow().then((lastFocused) => {
             const top = lastFocused.top;
             let left = undefined;
             if (lastFocused.left && lastFocused.width) {
@@ -193,40 +193,43 @@ chrome.runtime.onMessage.addListener((message: MessageListenerEvent, sender, sen
       });
     } else if (type === Message.ReceivePaymentHash) {
       const { payload } = message;
-      chrome.tabs.sendMessage(payload!.id, {
+      // TODO: Remove The exclamation point
+      chrome.tabs.sendMessage(payload.id!, {
         app,
         type: Message.ReceivePaymentHash,
         payload: {
-          hash: payload!.hash,
-          error: payload!.error
+          hash: payload.hash
         }
       });
     } else if (type === Message.ReceiveAddress) {
       const { payload } = message;
-      chrome.tabs.sendMessage(payload!.id, {
+      // TODO: Remove The exclamation point
+      chrome.tabs.sendMessage(payload.id!, {
         app,
         type: Message.ReceiveAddress,
         payload: {
-          publicAddress: payload!.publicAddress
+          publicAddress: payload.publicAddress
         }
       });
     } else if (type === Message.ReceivePublicKey) {
       const { payload } = message;
-      chrome.tabs.sendMessage(payload!.id, {
+      // TODO: Remove The exclamation point
+      chrome.tabs.sendMessage(payload.id!, {
         app,
         type: Message.ReceivePublicKey,
         payload: {
-          address: payload!.address,
-          publicKey: payload!.publicKey
+          address: payload.address,
+          publicKey: payload.publicKey
         }
       });
     } else if (type === Message.ReceiveSignMessage) {
       const { payload } = message;
-      chrome.tabs.sendMessage(payload!.id, {
+      // TODO: Remove The exclamation point
+      chrome.tabs.sendMessage(payload.id!, {
         app,
         type: Message.ReceiveSignMessage,
         payload: {
-          signedMessage: payload!.signedMessage
+          signedMessage: payload.signedMessage
         }
       });
     }

@@ -7,13 +7,7 @@ import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import ErrorIcon from '@mui/icons-material/Error';
-import {
-  GEM_WALLET,
-  Message,
-  MessageListenerEvent,
-  PaymentResponseError,
-  PaymentResponseHash
-} from '@gemwallet/constants';
+import { GEM_WALLET, Message, ReceivePaymentHashMessage } from '@gemwallet/constants';
 import { AsyncTransaction, PageWithSpinner, PageWithTitle } from '../../templates';
 import { useLedger, useServer } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
@@ -103,21 +97,13 @@ export const Transaction: FC = () => {
   }, [isParamsMissing]);
 
   const createMessage = useCallback(
-    (transactionHash: string | null): MessageListenerEvent => {
-      let transactionResponse: PaymentResponseError | PaymentResponseHash = {
-        error: 'Transaction has been rejected'
-      } as PaymentResponseError;
-      if (transactionHash !== null) {
-        transactionResponse = {
-          hash: transactionHash
-        } as PaymentResponseHash;
-      }
+    (transactionHash: string | null): ReceivePaymentHashMessage => {
       return {
         app: GEM_WALLET,
         type: Message.ReceivePaymentHash,
         payload: {
           id: params.id,
-          ...transactionResponse
+          hash: transactionHash
         }
       };
     },
