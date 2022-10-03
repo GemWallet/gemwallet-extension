@@ -1,5 +1,6 @@
 import { GEM_WALLET, Message, RequestAddressMessage } from '@gemwallet/constants';
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
+import { getFavicon } from '../helpers/getFavicon';
 
 export const getAddress = async () => {
   /* string: classic address
@@ -8,14 +9,7 @@ export const getAddress = async () => {
    */
   let response: string | undefined | null = undefined;
   try {
-    let favicon = document.querySelector("link[rel*='icon']")?.getAttribute('href');
-    if (favicon) {
-      try {
-        new URL(favicon);
-      } catch (e) {
-        favicon = window.location.origin + favicon;
-      }
-    }
+    const favicon = getFavicon();
     const message: RequestAddressMessage = {
       app: GEM_WALLET,
       type: Message.RequestAddress,
