@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import * as Sentry from '@sentry/react';
 import { Wallet, Client, xrpToDrops, dropsToXrp, TransactionMetadata, Payment } from 'xrpl';
 import { sign } from 'ripple-keypairs';
-import { Payment as PaymentPayload } from '@gemwallet/constants';
+import { PaymentRequestPayload } from '@gemwallet/constants';
 import { HOME_PATH, TESTNET_RIPPLE } from '../../constants';
 import { WalletLedger } from '../../types';
 import { loadWallets } from '../../utils';
@@ -14,9 +14,9 @@ interface ContextType {
   generateWallet: (walletName?: string) => Wallet;
   importSeed: (seed: string, walletName?: string) => boolean;
   // Return transaction hash in case of success
-  sendPayment: (payload: PaymentPayload) => Promise<string>;
+  sendPayment: (payload: PaymentRequestPayload) => Promise<string>;
   signMessage: (message: string) => string | undefined;
-  estimateNetworkFees: (payload: PaymentPayload) => Promise<string>;
+  estimateNetworkFees: (payload: PaymentRequestPayload) => Promise<string>;
   getCurrentWallet: () => WalletLedger | undefined;
   wallets: WalletLedger[];
   selectedWallet: number;
@@ -125,7 +125,7 @@ const LedgerProvider: FC = ({ children }) => {
   }, []);
 
   const estimateNetworkFees = useCallback(
-    async ({ amount, destination }: PaymentPayload) => {
+    async ({ amount, destination }: PaymentRequestPayload) => {
       if (!client) {
         throw new Error('You need to be connected to a ledger to make a transaction');
       } else if (!wallets?.[selectedWallet]) {
@@ -149,7 +149,7 @@ const LedgerProvider: FC = ({ children }) => {
   );
 
   const sendPayment = useCallback(
-    async ({ amount, destination }: PaymentPayload) => {
+    async ({ amount, destination }: PaymentRequestPayload) => {
       if (!client) {
         throw new Error('You need to be connected to a ledger to make a transaction');
       } else if (!wallets?.[selectedWallet]) {

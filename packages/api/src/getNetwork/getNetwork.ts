@@ -1,28 +1,21 @@
-import {
-  GEM_WALLET,
-  Message,
-  MessageListenerEvent,
-  Network,
-  NetworkResponse
-} from '@gemwallet/constants';
+import { GEM_WALLET, Message, NetworkResponse, RequestNetworkMessage } from '@gemwallet/constants';
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
 
 export const getNetwork = async () => {
-  let response: NetworkResponse = { network: Network.Test, error: '' };
+  /* string: network
+   * undefined: something went wrong
+   */
+  let response: NetworkResponse | undefined = undefined;
   try {
-    const message: MessageListenerEvent = {
+    const message: RequestNetworkMessage = {
       app: GEM_WALLET,
       type: Message.RequestNetwork
     };
-    response = await sendMessageToContentScript(message);
+    const { network } = await sendMessageToContentScript(message);
+    response = network;
   } catch (e) {
     throw e;
   }
 
-  const { network, error } = response;
-
-  if (error) {
-    throw new Error(error);
-  }
-  return network;
+  return response;
 };

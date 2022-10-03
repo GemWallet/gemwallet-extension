@@ -1,5 +1,5 @@
 import { FC, useCallback, useMemo } from 'react';
-import { GEM_WALLET, Message } from '@gemwallet/constants';
+import { GEM_WALLET, Message, ReceivePublicKeyBackgroundMessage } from '@gemwallet/constants';
 import { SharingPage } from '../../templates';
 import { saveTrustedApp, Permission } from '../../../utils';
 import { useBrowser, useLedger } from '../../../contexts';
@@ -25,7 +25,7 @@ export const SharePublicKey: FC = () => {
 
   const handleReject = useCallback(() => {
     chrome.runtime
-      .sendMessage({
+      .sendMessage<ReceivePublicKeyBackgroundMessage>({
         app: GEM_WALLET,
         type: Message.ReceivePublicKey,
         payload: {
@@ -45,7 +45,7 @@ export const SharePublicKey: FC = () => {
     saveTrustedApp({ url: String(url), permissions }, selectedWallet);
     const currentWallet = getCurrentWallet();
     chrome.runtime
-      .sendMessage({
+      .sendMessage<ReceivePublicKeyBackgroundMessage>({
         app: GEM_WALLET,
         type: Message.ReceivePublicKey,
         payload: {

@@ -1,5 +1,6 @@
-import { GEM_WALLET, Message, MessageListenerEvent } from '@gemwallet/constants';
+import { GEM_WALLET, Message, RequestPublicKeyMessage } from '@gemwallet/constants';
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
+import { getFavicon } from '../helpers/getFavicon';
 
 export const getPublicKey = async () => {
   /* {publicKey: string, address: string}
@@ -8,15 +9,8 @@ export const getPublicKey = async () => {
    */
   let response: { publicKey: string; address: string } | undefined | null = undefined;
   try {
-    let favicon = document.querySelector("link[rel*='icon']")?.getAttribute('href');
-    if (favicon) {
-      try {
-        new URL(favicon);
-      } catch (e) {
-        favicon = window.location.origin + favicon;
-      }
-    }
-    const message: MessageListenerEvent = {
+    const favicon = getFavicon();
+    const message: RequestPublicKeyMessage = {
       app: GEM_WALLET,
       type: Message.RequestPublicKey,
       payload: {
