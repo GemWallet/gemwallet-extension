@@ -1,4 +1,13 @@
-import { BackgroundMessage, GEM_WALLET, Message, Network } from '@gemwallet/constants';
+import {
+  BackgroundMessage,
+  GEM_WALLET,
+  Message,
+  Network,
+  ReceiveAddressContentMessage,
+  ReceivePaymentHashContentMessage,
+  ReceivePublicKeyContentMessage,
+  ReceiveSignMessageContentMessage
+} from '@gemwallet/constants';
 import { MAIN_FILE } from './../constants/routes';
 import {
   PARAMETER_ADDRESS,
@@ -192,7 +201,7 @@ chrome.runtime.onMessage.addListener((message: BackgroundMessage, sender, sendRe
       });
     } else if (type === Message.ReceivePaymentHash) {
       const { payload } = message;
-      chrome.tabs.sendMessage(payload.id, {
+      chrome.tabs.sendMessage<ReceivePaymentHashContentMessage>(payload.id, {
         app,
         type: Message.ReceivePaymentHash,
         payload: {
@@ -201,7 +210,7 @@ chrome.runtime.onMessage.addListener((message: BackgroundMessage, sender, sendRe
       });
     } else if (type === Message.ReceiveAddress) {
       const { payload } = message;
-      chrome.tabs.sendMessage(payload.id, {
+      chrome.tabs.sendMessage<ReceiveAddressContentMessage>(payload.id, {
         app,
         type: Message.ReceiveAddress,
         payload: {
@@ -210,7 +219,7 @@ chrome.runtime.onMessage.addListener((message: BackgroundMessage, sender, sendRe
       });
     } else if (type === Message.ReceivePublicKey) {
       const { payload } = message;
-      chrome.tabs.sendMessage(payload.id, {
+      chrome.tabs.sendMessage<ReceivePublicKeyContentMessage>(payload.id, {
         app,
         type: Message.ReceivePublicKey,
         payload: {
@@ -220,7 +229,7 @@ chrome.runtime.onMessage.addListener((message: BackgroundMessage, sender, sendRe
       });
     } else if (type === Message.ReceiveSignMessage) {
       const { payload } = message;
-      chrome.tabs.sendMessage(payload.id, {
+      chrome.tabs.sendMessage<ReceiveSignMessageContentMessage>(payload.id, {
         app,
         type: Message.ReceiveSignMessage,
         payload: {

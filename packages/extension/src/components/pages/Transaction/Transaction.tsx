@@ -113,7 +113,7 @@ export const Transaction: FC = () => {
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);
     const message = createMessage(null);
-    chrome.runtime.sendMessage(message);
+    chrome.runtime.sendMessage<ReceivePaymentHashBackgroundMessage>(message);
   }, [createMessage]);
 
   const handleConfirm = useCallback(() => {
@@ -124,7 +124,7 @@ export const Transaction: FC = () => {
       .then((transactionHash) => {
         setTransaction(TransactionStatus.Success);
         const message = createMessage(transactionHash);
-        chrome.runtime.sendMessage(message);
+        chrome.runtime.sendMessage<ReceivePaymentHashBackgroundMessage>(message);
       })
       .catch((e) => {
         Sentry.captureException(e);

@@ -13,6 +13,11 @@ import {
   ReceivePaymentHashContentMessage,
   ReceivePublicKeyContentMessage,
   ReceiveSignMessageContentMessage,
+  RequestAddressMessage,
+  RequestNetworkMessage,
+  RequestPaymentMessage,
+  RequestPublicKeyMessage,
+  RequestSignMessageMessage,
   SignedMessageResponse,
   SignMessageListener
 } from '@gemwallet/constants';
@@ -34,7 +39,7 @@ setTimeout(() => {
       } = event;
       // Check if it's an allowed event type to be forwarded
       if (type === Message.RequestNetwork) {
-        chrome.runtime.sendMessage(
+        chrome.runtime.sendMessage<RequestNetworkMessage>(
           {
             app,
             type
@@ -53,7 +58,7 @@ setTimeout(() => {
         const {
           data: { payload }
         } = event as AddressEventListener;
-        chrome.runtime.sendMessage(
+        chrome.runtime.sendMessage<RequestAddressMessage>(
           {
             app,
             type,
@@ -87,7 +92,7 @@ setTimeout(() => {
         const {
           data: { payload }
         } = event as PublicKeyEventListener;
-        chrome.runtime.sendMessage(
+        chrome.runtime.sendMessage<RequestPublicKeyMessage>(
           {
             app,
             type,
@@ -122,8 +127,7 @@ setTimeout(() => {
         const {
           data: { payload }
         } = event as PaymentEventListener;
-
-        chrome.runtime.sendMessage(
+        chrome.runtime.sendMessage<RequestPaymentMessage>(
           {
             app,
             type,
@@ -154,7 +158,7 @@ setTimeout(() => {
         const {
           data: { payload }
         } = event as SignMessageListener;
-        chrome.runtime.sendMessage(
+        chrome.runtime.sendMessage<RequestSignMessageMessage>(
           {
             app,
             type,
