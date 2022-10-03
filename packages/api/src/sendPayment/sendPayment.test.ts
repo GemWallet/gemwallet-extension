@@ -1,11 +1,11 @@
-import { Payment, RequestPaymentMessage } from '@gemwallet/constants';
+import { PaymentRequestPayload, RequestPaymentMessage } from '@gemwallet/constants';
 import { sendPayment } from './sendPayment';
 
 const hash = '7CB690AE100B8294C13A2E925B7524B68FA14146382A68820BAEC6907D5267D7';
 
 const errorThrownFromContentScript = 'errorThrownFromContentScript';
 
-const payload: Payment = {
+const payload: PaymentRequestPayload = {
   amount: '10',
   destination: 'rNvFCZXpDtGeQ3bVas95wGLN6N2stGmA9o'
 };

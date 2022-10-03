@@ -1,9 +1,20 @@
-import { Payment } from '../payment/payment.types';
 import { GEM_WALLET } from '../global/global.constant';
 import { Message } from '../message/message.constant';
-import { Network } from '../network/network.constant';
+import {
+  AddressResponsePayload,
+  IsConnectedResponsePayload,
+  NetworkResponsePayload,
+  PaymentHashResponsePayload,
+  PaymentRequestPayload,
+  PublicKeyResponsePayload,
+  SignedMessageResponsePayload,
+  SignMessageRequestPayload,
+  WebsiteRequestPayload
+} from '../payload/payload.types';
 
-// Messages
+/*
+ * Requests
+ */
 export interface RequestNetworkMessage {
   app: typeof GEM_WALLET;
   type: Message.RequestNetwork;
@@ -12,69 +23,62 @@ export interface RequestNetworkMessage {
 export interface RequestAddressMessage {
   app: typeof GEM_WALLET;
   type: Message.RequestAddress;
-  payload: {
-    url: string;
-    title: string;
-    favicon: string | null | undefined;
-  };
+  payload: WebsiteRequestPayload;
 }
 
 export interface RequestPublicKeyMessage {
   app: typeof GEM_WALLET;
   type: Message.RequestPublicKey;
-  payload: {
-    url: string;
-    title: string;
-    favicon: string | null | undefined;
-  };
+  payload: WebsiteRequestPayload;
 }
 
 export interface RequestPaymentMessage {
   app: typeof GEM_WALLET;
   type: Message.SendPayment;
-  payload: Payment;
+  payload: PaymentRequestPayload;
 }
 
 export interface RequestSignMessageMessage {
   app: typeof GEM_WALLET;
   type: Message.RequestSignMessage;
-  payload: {
-    url: string;
-    title: string;
-    favicon: string | null | undefined;
-    message: string;
-  };
+  payload: SignMessageRequestPayload;
 }
 
+/*
+ * Responses
+ */
+export type MessagingResponse = {
+  source?: Message.MsgResponse;
+  messagedId?: number;
+};
+export type NetworkResponse = MessagingResponse & NetworkResponsePayload;
+export type PublicAddressResponse = MessagingResponse & AddressResponsePayload;
+export type PublicKeyResponse = MessagingResponse & PublicKeyResponsePayload;
+export type SignedMessageResponse = MessagingResponse & SignedMessageResponsePayload;
+export type IsConnectedResponse = MessagingResponse & IsConnectedResponsePayload;
+export type PaymentResponse = MessagingResponse & PaymentHashResponsePayload;
+
+// Content Script Messages
 export interface ReceivePaymentHashContentMessage {
   app: typeof GEM_WALLET;
   type: Message.ReceivePaymentHash;
-  payload: {
-    hash: string | null;
-  };
+  payload: PaymentHashResponsePayload;
 }
 
 export interface ReceiveAddressContentMessage {
   app: typeof GEM_WALLET;
   type: Message.ReceiveAddress;
-  payload: {
-    publicAddress: string;
-  };
+  payload: AddressResponsePayload;
 }
 export interface ReceivePublicKeyContentMessage {
   app: typeof GEM_WALLET;
   type: Message.ReceivePublicKey;
-  payload: {
-    address: string | undefined | null;
-    publicKey: string | undefined | null;
-  };
+  payload: PublicKeyResponsePayload;
 }
 export interface ReceiveSignMessageContentMessage {
   app: typeof GEM_WALLET;
   type: Message.ReceiveSignMessage;
-  payload: {
-    signedMessage: string;
-  };
+  payload: SignedMessageResponsePayload;
 }
 
 // Background Script Messages
@@ -108,40 +112,6 @@ export type BackgroundMessage =
   | ReceiveAddressBackgroundMessage
   | ReceivePublicKeyBackgroundMessage
   | ReceiveSignMessageBackgroundMessage;
-
-//TODO: Are responses similar then massages above?
-/*
- * Responses
- */
-export type MessagingResponse = {
-  source?: Message.MsgResponse;
-  messagedId?: number;
-};
-
-export type NetworkResponse = MessagingResponse & {
-  network: Network;
-};
-
-export type PublicAddressResponse = MessagingResponse & {
-  publicAddress: string;
-};
-
-export type PublicKeyResponse = MessagingResponse & {
-  address: string;
-  publicKey: string;
-};
-
-export type SignedMessageResponse = MessagingResponse & {
-  signedMessage: string | null;
-};
-
-export type IsConnectedResponse = MessagingResponse & {
-  isConnected: boolean;
-};
-
-export type PaymentResponse = MessagingResponse & {
-  hash: string | null;
-};
 
 // API Messages
 export interface RequestIsConnectedMessage {

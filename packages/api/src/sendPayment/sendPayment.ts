@@ -2,12 +2,12 @@ import {
   GEM_WALLET,
   Message,
   PaymentResponse,
-  Payment,
+  PaymentRequestPayload,
   RequestPaymentMessage
 } from '@gemwallet/constants';
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
 
-export const sendPayment = async (payment: Payment) => {
+export const sendPayment = async (payment: PaymentRequestPayload) => {
   /* string: hash of the transaction
    * null: user refused the payment
    * undefined: something went wrong

@@ -72,7 +72,7 @@ setTimeout(() => {
                     {
                       source: Message.MsgResponse,
                       messagedId,
-                      publicAddress: payload?.publicAddress
+                      publicAddress: payload.publicAddress
                     } as PublicAddressResponse,
                     window.location.origin
                   );
@@ -106,8 +106,8 @@ setTimeout(() => {
                     {
                       source: Message.MsgResponse,
                       messagedId,
-                      address: payload?.address,
-                      publicKey: payload?.publicKey
+                      address: payload.address,
+                      publicKey: payload.publicKey
                     } as PublicKeyResponse,
                     window.location.origin
                   );
@@ -173,7 +173,7 @@ setTimeout(() => {
                     {
                       source: Message.MsgResponse,
                       messagedId,
-                      signedMessage: payload?.signedMessage
+                      signedMessage: payload.signedMessage
                     } as SignedMessageResponse,
                     window.location.origin
                   );
