@@ -4,7 +4,7 @@ import * as Sentry from '@sentry/react';
 import { Wallet, Client, xrpToDrops, dropsToXrp, TransactionMetadata, Payment } from 'xrpl';
 import { sign } from 'ripple-keypairs';
 import { PaymentRequestPayload } from '@gemwallet/constants';
-import { HOME_PATH, TESTNET_RIPPLE } from '../../constants';
+import { HOME_PATH, NETWORK } from '../../constants';
 import { WalletLedger } from '../../types';
 import { loadWallets } from '../../utils';
 
@@ -52,7 +52,7 @@ const LedgerProvider: FC = ({ children }) => {
   const [selectedWallet, setSelectedWallet] = useState<number>(0);
 
   const connectToNetwork = async () => {
-    const client = new Client(TESTNET_RIPPLE);
+    const client = new Client(NETWORK.TESTNET);
     await client.connect();
     setClient(client);
   };
