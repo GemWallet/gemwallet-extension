@@ -12,7 +12,7 @@ import { BrowserTracing } from '@sentry/tracing';
 import Paper from '@mui/material/Paper';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import App from './App';
-import { BrowserProvider, LedgerProvider, ServerProvider } from './contexts';
+import { BrowserProvider, LedgerProvider, NetworkProvider, ServerProvider } from './contexts';
 import reportWebVitals from './reportWebVitals';
 import './index.css';
 
@@ -69,11 +69,13 @@ ReactDOM.render(
       <Paper style={{ height: '100vh', width: '100vw' }}>
         <BrowserRouter>
           <BrowserProvider>
-            <LedgerProvider>
-              <ServerProvider>
-                <App />
-              </ServerProvider>
-            </LedgerProvider>
+            <NetworkProvider>
+              <LedgerProvider>
+                <ServerProvider>
+                  <App />
+                </ServerProvider>
+              </LedgerProvider>
+            </NetworkProvider>
           </BrowserProvider>
         </BrowserRouter>
       </Paper>

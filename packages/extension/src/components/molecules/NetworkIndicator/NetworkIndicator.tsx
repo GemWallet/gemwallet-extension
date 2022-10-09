@@ -18,14 +18,9 @@ import {
   Check as CheckIcon
 } from '@mui/icons-material';
 import { TransitionProps } from '@mui/material/transitions';
-import { useLedger } from '../../../contexts';
+import { useNetwork } from '../../../contexts';
 import { NETWORK, SECONDARY_GRAY } from '../../../constants';
-
-const NETWORKS = [
-  { name: 'Mainnet', server: NETWORK.MAINNET },
-  { name: 'Testnet', server: NETWORK.TESTNET },
-  { name: 'Devnet', server: NETWORK.DEVNET }
-];
+import { Network } from '../../../types';
 
 const Transition = forwardRef(function Transition(
   props: TransitionProps & {
@@ -39,11 +34,18 @@ const Transition = forwardRef(function Transition(
 interface NetworkDisplayProps {
   name: string;
   server: string;
+  description: string;
   isSelected?: boolean;
   onClick: () => void;
 }
 
-const NetworkDisplay: FC<NetworkDisplayProps> = ({ name, server, isSelected = false, onClick }) => {
+const NetworkDisplay: FC<NetworkDisplayProps> = ({
+  name,
+  server,
+  description,
+  isSelected = false,
+  onClick
+}) => {
   return (
     <Card
       style={{
@@ -57,8 +59,11 @@ const NetworkDisplay: FC<NetworkDisplayProps> = ({ name, server, isSelected = fa
         >
           <Box>
             <Typography gutterBottom>{name}</Typography>
-            <Typography variant="body2" color={SECONDARY_GRAY}>
+            <Typography variant="subtitle2" color={SECONDARY_GRAY}>
               {server}
+            </Typography>
+            <Typography style={{ marginTop: '10px' }} variant="body2" color={SECONDARY_GRAY}>
+              {description}
             </Typography>
           </Box>
           {isSelected ? <CheckIcon /> : null}
@@ -69,8 +74,8 @@ const NetworkDisplay: FC<NetworkDisplayProps> = ({ name, server, isSelected = fa
 };
 
 export const NetworkIndicator: FC = () => {
-  const { client } = useLedger();
-  const [explanationOpen, setExplanationOpen] = useState(true);
+  const { client, network, switchNetwork } = useNetwork();
+  const [explanationOpen, setExplanationOpen] = useState(false);
 
   const handleOpen = useCallback(() => {
     setExplanationOpen(true);
@@ -80,14 +85,18 @@ export const NetworkIndicator: FC = () => {
     setExplanationOpen(false);
   }, []);
 
-  const handleClickOnNetwork = useCallback((name: string) => {
-    console.log('Select network: ', name);
-  }, []);
+  const handleClickOnNetwork = useCallback(
+    async (network: Network) => {
+      await switchNetwork(network);
+      handleClose();
+    },
+    [handleClose, switchNetwork]
+  );
 
   return (
     <>
       <Chip
-        label="Testnet"
+        label={network}
         size="small"
         icon={
           <FiberManualRecordIcon
@@ -114,16 +123,20 @@ export const NetworkIndicator: FC = () => {
             </Typography>
           </Toolbar>
         </AppBar>
-        <div style={{ margin: '20px' }}>
-          {NETWORKS.map(({ name, server }) => (
-            <NetworkDisplay
-              key={name}
-              name={name}
-              server={server}
-              isSelected={name === 'Testnet'}
-              onClick={() => handleClickOnNetwork(name)}
-            />
-          ))}
+        <div style={{ overflowY: 'scroll', height: '544px', margin: '20px 20px 0 20px' }}>
+          {Object.keys(NETWORK).map((_network) => {
+            const { name, server, description } = NETWORK[_network as Network];
+            return (
+              <NetworkDisplay
+                key={_network}
+                name={name}
+                server={server}
+                description={description}
+                isSelected={name === network}
+                onClick={() => handleClickOnNetwork(_network as Network)}
+              />
+            );
+          })}
         </div>
       </Dialog>
     </>

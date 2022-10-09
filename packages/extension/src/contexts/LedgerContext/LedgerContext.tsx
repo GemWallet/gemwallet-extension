@@ -1,12 +1,13 @@
-import { useContext, useState, useEffect, createContext, FC, useCallback } from 'react';
+import { useContext, useState, createContext, FC, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as Sentry from '@sentry/react';
-import { Wallet, Client, xrpToDrops, dropsToXrp, TransactionMetadata, Payment } from 'xrpl';
+import { Wallet, xrpToDrops, dropsToXrp, TransactionMetadata, Payment } from 'xrpl';
 import { sign } from 'ripple-keypairs';
 import { PaymentRequestPayload } from '@gemwallet/constants';
-import { HOME_PATH, NETWORK } from '../../constants';
+import { HOME_PATH } from '../../constants';
 import { WalletLedger } from '../../types';
 import { loadWallets } from '../../utils';
+import { useNetwork } from '../NetworkContext';
 
 interface ContextType {
   signIn: (password: string) => boolean;
@@ -20,7 +21,6 @@ interface ContextType {
   getCurrentWallet: () => WalletLedger | undefined;
   wallets: WalletLedger[];
   selectedWallet: number;
-  client?: Client;
 }
 
 const LedgerContext = createContext<ContextType>({
@@ -36,13 +36,12 @@ const LedgerContext = createContext<ContextType>({
     }),
   getCurrentWallet: () => undefined,
   wallets: [],
-  selectedWallet: 0,
-  client: undefined
+  selectedWallet: 0
 });
 
 const LedgerProvider: FC = ({ children }) => {
   const navigate = useNavigate();
-  const [client, setClient] = useState<Client | undefined>();
+  const { client } = useNetwork();
   const [wallets, setWallets] = useState<WalletLedger[]>([]);
   // TODO: Use setSelectedWallet when multi-wallet creation and choosing feature will be done
   /* The default selectedWallet will be selected by a value in local storage
@@ -50,24 +49,6 @@ const LedgerProvider: FC = ({ children }) => {
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [selectedWallet, setSelectedWallet] = useState<number>(0);
-
-  const connectToNetwork = async () => {
-    const client = new Client(NETWORK.TESTNET);
-    await client.connect();
-    setClient(client);
-  };
-
-  useEffect(() => {
-    // Connect to testnet network
-    connectToNetwork();
-  }, []);
-
-  useEffect(() => {
-    // Disconnect the websocket
-    return () => {
-      client?.disconnect();
-    };
-  }, [client]);
 
   const signIn = useCallback((password: string) => {
     const wallets = loadWallets(password);
@@ -240,8 +221,7 @@ const LedgerProvider: FC = ({ children }) => {
     estimateNetworkFees,
     getCurrentWallet,
     wallets,
-    selectedWallet,
-    client
+    selectedWallet
   };
 
   return <LedgerContext.Provider value={value}>{children}</LedgerContext.Provider>;
