@@ -2,12 +2,12 @@ import { FC, useCallback, useMemo } from 'react';
 import { GEM_WALLET, Message, ReceiveAddressBackgroundMessage } from '@gemwallet/constants';
 import { SharingPage } from '../../templates';
 import { saveTrustedApp, Permission } from '../../../utils';
-import { useBrowser, useLedger } from '../../../contexts';
+import { useBrowser, useWallet } from '../../../contexts';
 
 const permissions = [Permission.Address];
 
 export const ShareAddress: FC = () => {
-  const { getCurrentWallet, selectedWallet } = useLedger();
+  const { getCurrentWallet, selectedWallet } = useWallet();
   const { window: extensionWindow, closeExtension } = useBrowser();
 
   const payload = useMemo(() => {

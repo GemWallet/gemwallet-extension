@@ -5,7 +5,7 @@ import { TextCopy } from '../../../molecules';
 import { PageWithStepper } from '../../../templates';
 import { STEPS } from '../constants';
 
-interface SecretSeedProps {
+export interface SecretSeedProps {
   activeStep: number;
   handleBack: () => void;
   setActiveStep: Dispatch<SetStateAction<number>>;

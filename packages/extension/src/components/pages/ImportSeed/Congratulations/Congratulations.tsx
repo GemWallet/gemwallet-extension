@@ -14,7 +14,7 @@ import {
 } from '../../../../constants';
 import { STEPS } from '../constants';
 
-interface CongratulationsProps {
+export interface CongratulationsProps {
   activeStep: number;
   handleBack: () => void;
 }

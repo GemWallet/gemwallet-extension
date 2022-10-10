@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter, MemoryRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
-import { Congratulations } from './Congratulations';
-import { mockWallet } from '../../../../mocks';
+import { Congratulations, CongratulationsProps } from './Congratulations';
+import { generateWalletContext } from '../../../../mocks';
 import {
   HOME_PATH,
   IMPORT_SEED_PATH,
@@ -10,15 +10,17 @@ import {
   TRANSACTION_PATH
 } from '../../../../constants';
 
-const defaultProps = {
+const defaultProps: CongratulationsProps = {
   activeStep: 2,
-  handleBack: jest.fn(),
-  setActiveStep: jest.fn(),
-  wallet: mockWallet
+  handleBack: jest.fn()
 };
 
-const mockedUsedNavigate = jest.fn();
+const mockWalletContext = generateWalletContext();
+jest.mock('../../../../contexts', () => ({
+  useWallet: () => mockWalletContext
+}));
 
+const mockedUsedNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
   ...(jest.requireActual('react-router-dom') as any),
   useNavigate: () => mockedUsedNavigate

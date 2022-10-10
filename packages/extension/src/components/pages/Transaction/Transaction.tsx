@@ -9,7 +9,7 @@ import Tooltip from '@mui/material/Tooltip';
 import ErrorIcon from '@mui/icons-material/Error';
 import { GEM_WALLET, Message, ReceivePaymentHashBackgroundMessage } from '@gemwallet/constants';
 import { AsyncTransaction, PageWithSpinner, PageWithTitle } from '../../templates';
-import { useLedger, useNetwork, useServer } from '../../../contexts';
+import { useLedger, useNetwork, useServer, useWallet } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
 import { TileLoader } from '../../atoms';
 import { formatToken } from '../../../utils';
@@ -36,7 +36,8 @@ export const Transaction: FC = () => {
   const [isParamsMissing, setIsParamsMissing] = useState(false);
 
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
-  const { estimateNetworkFees, sendPayment, getCurrentWallet } = useLedger();
+  const { estimateNetworkFees, sendPayment } = useLedger();
+  const { getCurrentWallet } = useWallet();
   const { client } = useNetwork();
   const { serverInfo } = useServer();
 

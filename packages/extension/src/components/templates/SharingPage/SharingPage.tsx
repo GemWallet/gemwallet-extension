@@ -13,7 +13,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import { PageWithSpinner, PageWithTitle } from '../../templates';
 import { SECONDARY_GRAY } from '../../../constants';
 import { loadTrustedApps, Permission, checkPermissions } from '../../../utils';
-import { useLedger } from '../../../contexts';
+import { useWallet } from '../../../contexts';
 
 export interface SharingPageProps {
   title: string;
@@ -30,7 +30,7 @@ export const SharingPage: FC<SharingPageProps> = ({
   handleShare,
   handleReject
 }) => {
-  const { selectedWallet } = useLedger();
+  const { selectedWallet } = useWallet();
 
   const trustedApps = useMemo(() => {
     return loadTrustedApps(selectedWallet);

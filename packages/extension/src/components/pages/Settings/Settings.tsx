@@ -10,7 +10,7 @@ import {
   ListItemText,
   Typography
 } from '@mui/material';
-import { useLedger } from '../../../contexts';
+import { useWallet } from '../../../contexts';
 import { PageWithNavMenu } from '../../templates';
 import { openExternalLink } from '../../../utils';
 import {
@@ -27,7 +27,7 @@ const CONTAINER_HEIGHT_TAKEN = TITLE_HEIGHT + NAV_MENU_HEIGHT;
 
 export const Settings: FC = () => {
   const navigate = useNavigate();
-  const { signOut } = useLedger();
+  const { signOut } = useWallet();
 
   const handleLock = useCallback(() => {
     signOut();

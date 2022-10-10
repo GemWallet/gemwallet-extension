@@ -1,7 +1,7 @@
 import { useState, useEffect, FC, useCallback } from 'react';
 import * as Sentry from '@sentry/react';
 import { Wallet } from 'xrpl';
-import { useLedger } from '../../../contexts';
+import { useWallet } from '../../../contexts';
 import { PageWithSpinner } from '../../templates';
 import { SecretSeed } from './SecretSeed';
 import { ConfirmSeed } from './ConfirmSeed';
@@ -11,7 +11,7 @@ import { Congratulations } from '../ImportSeed/Congratulations';
 export const CreateWallet: FC = () => {
   const [wallet, setWallet] = useState<Wallet | undefined>();
   const [activeStep, setActiveStep] = useState(0);
-  const { generateWallet } = useLedger();
+  const { generateWallet } = useWallet();
 
   useEffect(() => {
     const wallet = generateWallet();

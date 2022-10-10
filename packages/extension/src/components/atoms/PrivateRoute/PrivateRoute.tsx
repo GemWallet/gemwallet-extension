@@ -1,13 +1,13 @@
 import { FC, ReactElement } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { useLedger } from '../../../contexts';
+import { useWallet } from '../../../contexts';
 
 export interface PrivateRouteProps {
   children: ReactElement;
 }
 
 export const PrivateRoute: FC<PrivateRouteProps> = ({ children }) => {
-  const { wallets, selectedWallet } = useLedger();
+  const { wallets, selectedWallet } = useWallet();
   const location = useLocation();
   const { search } = location;
 

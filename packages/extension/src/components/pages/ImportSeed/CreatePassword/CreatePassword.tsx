@@ -2,13 +2,13 @@ import { Dispatch, FC, SetStateAction, useCallback, useState } from 'react';
 import * as Sentry from '@sentry/react';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
-import { useLedger } from '../../../../contexts';
+import { useWallet } from '../../../../contexts';
 import { PageWithStepper } from '../../../templates';
 import { saveWallet } from '../../../../utils';
 import { ERROR_RED } from '../../../../constants';
 import { STEPS } from '../constants';
 
-interface CreatePasswordProps {
+export interface CreatePasswordProps {
   activeStep: number;
   handleBack: () => void;
   setActiveStep: Dispatch<SetStateAction<number>>;
@@ -21,7 +21,7 @@ export const CreatePassword: FC<CreatePasswordProps> = ({
 }) => {
   const [passwordError, setPasswordError] = useState('');
   const [saveWalletError, setSaveWalletError] = useState('');
-  const { wallets, selectedWallet } = useLedger();
+  const { wallets, selectedWallet } = useWallet();
 
   const handleNext = useCallback(() => {
     const passwordValue = (document.getElementById('password') as HTMLInputElement).value;

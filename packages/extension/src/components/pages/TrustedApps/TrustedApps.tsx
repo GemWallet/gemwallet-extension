@@ -6,14 +6,14 @@ import { loadTrustedApps, removeTrustedApp } from '../../../utils';
 import { navigation, NAV_MENU_HEIGHT, SETTINGS_PATH } from '../../../constants';
 import { KeyboardArrowLeft } from '@mui/icons-material';
 import { TrustedApp } from '../../molecules/TrustedApp';
-import { useLedger } from '../../../contexts';
+import { useWallet } from '../../../contexts';
 
 const TITLE_HEIGHT = 56;
 const CONTAINER_HEIGHT_TAKEN = TITLE_HEIGHT + NAV_MENU_HEIGHT;
 
 export const TrustedApps: FC = () => {
   const navigate = useNavigate();
-  const { selectedWallet } = useLedger();
+  const { selectedWallet } = useWallet();
   const [trustedApps, setTrustedApps] = useState(loadTrustedApps(selectedWallet));
 
   const indexDefaultNav = useMemo(

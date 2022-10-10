@@ -5,7 +5,7 @@ import TextField from '@mui/material/TextField';
 import { PageWithStepper } from '../../../templates';
 import { STEPS } from '../constants';
 
-interface ConfirmSeedProps {
+export interface ConfirmSeedProps {
   activeStep: number;
   handleBack: () => void;
   setActiveStep: Dispatch<SetStateAction<number>>;
