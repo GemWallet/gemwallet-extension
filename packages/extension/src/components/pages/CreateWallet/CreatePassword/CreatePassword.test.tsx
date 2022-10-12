@@ -1,35 +1,30 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
-import { CreatePassword } from './CreatePassword';
-import { mockWallet } from '../../../../mocks';
+import { CreatePassword, CreatePasswordProps } from './CreatePassword';
+import { generateWalletContext } from '../../../../mocks';
 
+const mockWalletContext = generateWalletContext();
 const mockedSetActiveStep = jest.fn();
-
-const defaultProps = {
+const defaultProps: CreatePasswordProps = {
   activeStep: 0,
   handleBack: jest.fn(),
   setActiveStep: mockedSetActiveStep,
-  wallet: mockWallet
+  wallet: mockWalletContext.generateWallet()
 };
+
+jest.mock('react-router-dom', () => ({
+  useNavigate: () => jest.fn()
+}));
 
 describe('CreateWallet - CreatePassword', () => {
   test('Should render the proper elements', async () => {
-    render(
-      <BrowserRouter>
-        <CreatePassword {...defaultProps} />
-      </BrowserRouter>
-    );
+    render(<CreatePassword {...defaultProps} />);
 
     expect(screen.getByRole('heading', { name: 'Create a password' })).toBeVisible();
   });
 
   test('Should render an error if password is less than 8 characters', async () => {
-    const renderedElements = render(
-      <BrowserRouter>
-        <CreatePassword {...defaultProps} />
-      </BrowserRouter>
-    );
+    const renderedElements = render(<CreatePassword {...defaultProps} />);
 
     const user = userEvent.setup();
     const nextButton = screen.getByRole('button', { name: 'Next' });
@@ -49,11 +44,7 @@ describe('CreateWallet - CreatePassword', () => {
   });
 
   test('Should render an error if passwords do not match', async () => {
-    const renderedElements = render(
-      <BrowserRouter>
-        <CreatePassword {...defaultProps} />
-      </BrowserRouter>
-    );
+    const renderedElements = render(<CreatePassword {...defaultProps} />);
 
     const nextButton = screen.getByRole('button', { name: 'Next' });
     const user = userEvent.setup();

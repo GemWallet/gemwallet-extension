@@ -1,7 +1,7 @@
 import { useContext, useState, useEffect, createContext, FC } from 'react';
 import * as Sentry from '@sentry/react';
 import { ServerInfoResponse } from 'xrpl';
-import { useLedger } from '../LedgerContext';
+import { useNetwork } from '../NetworkContext';
 
 type ServerInfo = ServerInfoResponse['result'];
 
@@ -14,7 +14,7 @@ const ServerContext = createContext<ContextType>({
 });
 
 const ServerProvider: FC = ({ children }) => {
-  const { client } = useLedger();
+  const { client } = useNetwork();
 
   const [serverInfo, setServerInfo] = useState<ServerInfo | undefined>();
 

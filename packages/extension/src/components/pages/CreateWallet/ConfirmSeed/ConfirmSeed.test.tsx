@@ -1,34 +1,29 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
-import { ConfirmSeed } from './ConfirmSeed';
-import { WALLET_SEED, mockWallet } from '../../../../mocks';
+import { ConfirmSeed, ConfirmSeedProps } from './ConfirmSeed';
+import { generateWalletContext, WALLET_SEED } from '../../../../mocks';
 
 const mockedSetActiveStep = jest.fn();
-
-const defaultProps = {
+const mockWalletContext = generateWalletContext();
+const defaultProps: ConfirmSeedProps = {
   activeStep: 2,
   handleBack: jest.fn(),
   setActiveStep: mockedSetActiveStep,
-  wallet: mockWallet
+  wallet: mockWalletContext.generateWallet()
 };
 
+jest.mock('react-router-dom', () => ({
+  useNavigate: () => jest.fn()
+}));
+
 describe('CreateWallet - ConfirmSeed', () => {
-  test('Should render the proper elements', async () => {
-    render(
-      <BrowserRouter>
-        <ConfirmSeed {...defaultProps} />
-      </BrowserRouter>
-    );
+  test('Should render the proper elements', () => {
+    render(<ConfirmSeed {...defaultProps} />);
     expect(screen.getByRole('heading', { name: 'Confirm Your Secret Seed' })).toBeVisible();
   });
 
   test('Should render an error if seed is not confirmed', async () => {
-    const renderedElements = render(
-      <BrowserRouter>
-        <ConfirmSeed {...defaultProps} />
-      </BrowserRouter>
-    );
+    const renderedElements = render(<ConfirmSeed {...defaultProps} />);
     const user = userEvent.setup();
 
     const confirmButton = screen.getByRole('button', { name: 'Confirm' });

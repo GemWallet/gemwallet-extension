@@ -8,7 +8,7 @@ import { saveWallet } from '../../../../utils';
 import { ERROR_RED } from '../../../../constants';
 import { STEPS } from '../constants';
 
-interface CreatePasswordProps {
+export interface CreatePasswordProps {
   activeStep: number;
   handleBack: () => void;
   setActiveStep: Dispatch<SetStateAction<number>>;

@@ -2,7 +2,7 @@ import { useState, useEffect, FC, forwardRef, useCallback } from 'react';
 import * as Sentry from '@sentry/react';
 import { AppBar, Dialog, IconButton, Link, Slide, Toolbar, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { useLedger, useServer } from '../../../contexts';
+import { useNetwork, useServer } from '../../../contexts';
 import { TokenLoader } from '../../atoms';
 import { InformationMessage } from '../InformationMessage';
 import { TokenDisplay } from '../TokenDisplay';
@@ -28,7 +28,7 @@ const Transition = forwardRef(function Transition(
 export const Wallet: FC<WalletProps> = ({ address }) => {
   const [balance, setBalance] = useState(LOADING_STATE);
   const [explanationOpen, setExplanationOpen] = useState(false);
-  const { client } = useLedger();
+  const { client } = useNetwork();
   const { serverInfo } = useServer();
 
   const reserve = serverInfo?.info.validated_ledger?.reserve_base_xrp;

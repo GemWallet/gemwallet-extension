@@ -1,23 +1,144 @@
-import { FC } from 'react';
-import Chip from '@mui/material/Chip';
-import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
-import { useLedger } from '../../../contexts';
+import { FC, forwardRef, useCallback, useState } from 'react';
+import {
+  AppBar,
+  Box,
+  Card,
+  CardActionArea,
+  CardContent,
+  Chip,
+  Dialog,
+  IconButton,
+  Slide,
+  Toolbar,
+  Typography
+} from '@mui/material';
+import {
+  Close as CloseIcon,
+  FiberManualRecord as FiberManualRecordIcon,
+  Check as CheckIcon
+} from '@mui/icons-material';
+import { TransitionProps } from '@mui/material/transitions';
+import { useNetwork } from '../../../contexts';
+import { NETWORK, SECONDARY_GRAY } from '../../../constants';
+import { Network } from '../../../types';
+
+const Transition = forwardRef(function Transition(
+  props: TransitionProps & {
+    children: React.ReactElement;
+  },
+  ref: React.Ref<unknown>
+) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+
+interface NetworkDisplayProps {
+  name: string;
+  server: string;
+  description: string;
+  isSelected?: boolean;
+  onClick: () => void;
+}
+
+const NetworkDisplay: FC<NetworkDisplayProps> = ({
+  name,
+  server,
+  description,
+  isSelected = false,
+  onClick
+}) => {
+  return (
+    <Card
+      style={{
+        marginBottom: '20px'
+      }}
+      onClick={onClick}
+    >
+      <CardActionArea>
+        <CardContent
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+        >
+          <Box>
+            <Typography gutterBottom>{name}</Typography>
+            <Typography variant="subtitle2" color={SECONDARY_GRAY}>
+              {server}
+            </Typography>
+            <Typography style={{ marginTop: '10px' }} variant="body2" color={SECONDARY_GRAY}>
+              {description}
+            </Typography>
+          </Box>
+          {isSelected ? <CheckIcon /> : null}
+        </CardContent>
+      </CardActionArea>
+    </Card>
+  );
+};
 
 export const NetworkIndicator: FC = () => {
-  const { client } = useLedger();
+  const { client, network, switchNetwork } = useNetwork();
+  const [explanationOpen, setExplanationOpen] = useState(false);
+
+  const handleOpen = useCallback(() => {
+    setExplanationOpen(true);
+  }, []);
+
+  const handleClose = useCallback(() => {
+    setExplanationOpen(false);
+  }, []);
+
+  const handleClickOnNetwork = useCallback(
+    async (network: Network) => {
+      await switchNetwork(network);
+      handleClose();
+    },
+    [handleClose, switchNetwork]
+  );
 
   return (
-    <Chip
-      label="Testnet"
-      size="small"
-      icon={
-        <FiberManualRecordIcon
-          style={{
-            color: client ? 'green' : 'red'
-          }}
-        />
-      }
-      onClick={() => {}}
-    />
+    <>
+      <Chip
+        label={network}
+        size="small"
+        icon={
+          <FiberManualRecordIcon
+            style={{
+              color: client ? 'green' : 'red'
+            }}
+          />
+        }
+        onClick={handleOpen}
+      />
+      <Dialog
+        fullScreen
+        open={explanationOpen}
+        onClose={handleClose}
+        TransitionComponent={Transition}
+      >
+        <AppBar sx={{ position: 'relative' }}>
+          <Toolbar>
+            <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
+              <CloseIcon />
+            </IconButton>
+            <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+              Change Network
+            </Typography>
+          </Toolbar>
+        </AppBar>
+        <div style={{ overflowY: 'scroll', height: '544px', margin: '20px 20px 0 20px' }}>
+          {Object.keys(NETWORK).map((_network) => {
+            const { name, server, description } = NETWORK[_network as Network];
+            return (
+              <NetworkDisplay
+                key={_network}
+                name={name}
+                server={server}
+                description={description}
+                isSelected={name === network}
+                onClick={() => handleClickOnNetwork(_network as Network)}
+              />
+            );
+          })}
+        </div>
+      </Dialog>
+    </>
   );
 };

@@ -1,22 +1,22 @@
 import { render, screen } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
-import { SecretSeed } from './SecretSeed';
-import { mockWallet } from '../../../../mocks';
+import { SecretSeed, SecretSeedProps } from './SecretSeed';
+import { generateWalletContext } from '../../../../mocks';
 
-const defaultProps = {
+const mockWalletContext = generateWalletContext();
+const defaultProps: SecretSeedProps = {
   activeStep: 0,
   handleBack: jest.fn(),
   setActiveStep: jest.fn(),
-  wallet: mockWallet
+  wallet: mockWalletContext.generateWallet()
 };
+
+jest.mock('react-router-dom', () => ({
+  useNavigate: () => jest.fn()
+}));
 
 describe('CreateWallet - SecretSeed', () => {
   test('Should render the proper elements', () => {
-    render(
-      <BrowserRouter>
-        <SecretSeed {...defaultProps} />
-      </BrowserRouter>
-    );
+    render(<SecretSeed {...defaultProps} />);
     const titleElement = screen.getByRole('heading', { name: 'Secret Seed' });
     const subTitleElement = screen.getByRole('heading', {
       name: 'This is the only way you will be able to recover your account. Please store it somewhere safe!'

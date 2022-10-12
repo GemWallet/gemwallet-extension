@@ -1,7 +1,7 @@
 import { Dispatch, FC, SetStateAction, useCallback, useState } from 'react';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
-import { useLedger } from '../../../../contexts';
+import { useWallet } from '../../../../contexts';
 import { PageWithStepper } from '../../../templates';
 import { STEPS } from '../constants';
 
@@ -13,7 +13,7 @@ interface SecretSeedProps {
 
 export const SecretSeed: FC<SecretSeedProps> = ({ activeStep, handleBack, setActiveStep }) => {
   const [seedError, setSeedError] = useState('');
-  const { importSeed } = useLedger();
+  const { importSeed } = useWallet();
 
   const handleNext = useCallback(() => {
     const seedValue = (document.getElementById('seed') as HTMLInputElement).value;

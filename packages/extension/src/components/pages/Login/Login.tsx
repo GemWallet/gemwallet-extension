@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { Logo } from '../../atoms/Logo';
-import { useLedger } from '../../../contexts';
+import { useWallet } from '../../../contexts';
 import { loadData } from '../../../utils';
 import {
   HOME_PATH,
@@ -26,7 +26,7 @@ export const Login: FC = () => {
   const [passwordError, setPasswordError] = useState('');
   const navigate = useNavigate();
   const { search } = useLocation();
-  const { signIn, wallets, selectedWallet } = useLedger();
+  const { signIn, wallets, selectedWallet } = useWallet();
 
   useEffect(() => {
     // Check if we are still logged-in
