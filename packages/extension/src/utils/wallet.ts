@@ -7,15 +7,24 @@ interface WalletToSave extends Omit<Wallet, 'name'> {
 }
 
 export const saveWallet = (wallet: WalletToSave, password: string) => {
-  const wallets = JSON.parse(loadData(STORAGE_WALLETS) || '[]');
+  const data = loadData(STORAGE_WALLETS);
+  let wallets: Wallet[] = [];
+  if (data) {
+    const decryptedData = decrypt(data, password);
+    if (decryptedData !== undefined) {
+      wallets = JSON.parse(decryptedData);
+    }
+  }
+
   if (!wallet.name) {
     wallet.name = `Wallet ${wallets.length + 1}`;
   }
-  const encryptedWallet = encrypt(JSON.stringify(wallet), password);
-  wallets.push(encryptedWallet);
-  const stringifiedWallets = JSON.stringify(wallets);
+
+  wallets.push(wallet as Wallet);
+  const encryptedWallets = encrypt(JSON.stringify(wallets), password);
+
   try {
-    saveData(STORAGE_WALLETS, stringifiedWallets);
+    saveData(STORAGE_WALLETS, encryptedWallets);
   } catch (e) {
     throw e;
   }
@@ -24,14 +33,10 @@ export const saveWallet = (wallet: WalletToSave, password: string) => {
 export const loadWallets = (password: string): Wallet[] => {
   const data = loadData(STORAGE_WALLETS);
   if (data) {
-    const wallets = JSON.parse(data);
-    return wallets.reduce((acc: Wallet[], wallet: string) => {
-      const decryptedWallet = decrypt(wallet, password);
-      if (decryptedWallet !== undefined) {
-        acc.push(JSON.parse(decryptedWallet));
-      }
-      return acc;
-    }, []);
+    const decryptedData = decrypt(data, password);
+    if (decryptedData !== undefined) {
+      return JSON.parse(decryptedData);
+    }
   }
   return [];
 };
