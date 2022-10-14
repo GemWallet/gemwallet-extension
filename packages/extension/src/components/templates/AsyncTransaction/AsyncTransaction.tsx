@@ -23,7 +23,7 @@ type LogoStyle = {
 
 export const AsyncTransaction: FC<AsyncTransactionProps> = ({ title, subtitle, transaction }) => {
   const { window, closeExtension } = useBrowser();
-  let animation: any = loading;
+  let animation: object = loading;
 
   let buttonText: string = 'Processing';
   let styleAnimation: LogoStyle = { width: '150px', height: '150px' };

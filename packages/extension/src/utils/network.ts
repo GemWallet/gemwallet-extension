@@ -1,5 +1,5 @@
 import { STORAGE_NETWORK } from '../constants/localStorage';
-import { loadData, saveData } from '.';
+import { loadData, removeData, saveData } from '.';
 import { NETWORK } from '../constants';
 import { Network } from '../types';
 
@@ -17,4 +17,10 @@ export const loadNetwork = () => {
     return NETWORK[data as Network];
   }
   return NETWORK[Network.MAINNET];
+};
+
+export const removeNetwork = () => {
+  return Promise.resolve().then(() => {
+    removeData(STORAGE_NETWORK);
+  });
 };

@@ -2,17 +2,19 @@ import { useContext, useState, useEffect, createContext, FC, useCallback } from 
 import * as Sentry from '@sentry/react';
 import { Client } from 'xrpl';
 import { Network } from '../../types';
-import { loadNetwork, saveNetwork } from '../../utils';
+import { loadNetwork, removeNetwork, saveNetwork } from '../../utils';
 import { NETWORK } from '../../constants';
 
 interface ContextType {
   switchNetwork: (network: Network) => void;
+  resetNetwork: () => void;
   client?: Client;
   network?: Network;
 }
 
 const NetworkContext = createContext<ContextType>({
   switchNetwork: () => {},
+  resetNetwork: () => {},
   client: undefined,
   network: undefined
 });
@@ -53,8 +55,15 @@ const NetworkProvider: FC = ({ children }) => {
     [client]
   );
 
+  const resetNetwork = useCallback(async () => {
+    await removeNetwork();
+    const network = await loadNetwork();
+    setNetwork(network.name);
+  }, []);
+
   const value: ContextType = {
     switchNetwork,
+    resetNetwork,
     client,
     network
   };

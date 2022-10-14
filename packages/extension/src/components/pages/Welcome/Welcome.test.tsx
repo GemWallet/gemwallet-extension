@@ -8,7 +8,7 @@ import { CREATE_NEW_WALLET_PATH, IMPORT_SEED_PATH, WELCOME_PATH } from '../../..
 const mockedUsedNavigate = jest.fn();
 
 jest.mock('react-router-dom', () => ({
-  ...(jest.requireActual('react-router-dom') as any),
+  ...(jest.requireActual('react-router-dom') as object),
   useNavigate: () => mockedUsedNavigate
 }));
 
