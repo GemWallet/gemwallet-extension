@@ -1,5 +1,5 @@
-import { FC } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { FC, useEffect } from 'react';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import * as Sentry from '@sentry/react';
 import { PrivateRoute } from './components/atoms/PrivateRoute';
 import {
@@ -23,6 +23,7 @@ import {
   CREATE_NEW_WALLET_PATH,
   HOME_PATH,
   IMPORT_SEED_PATH,
+  PARAMETER_NETWORK,
   RESET_PASSWORD_PATH,
   SETTINGS_PATH,
   SHARE_PUBLIC_ADDRESS_PATH,
@@ -32,10 +33,43 @@ import {
   TRUSTED_APPS_PATH,
   WELCOME_PATH
 } from './constants';
+import { useBrowser } from './contexts';
+import {
+  GEM_WALLET,
+  Message,
+  Network,
+  ReceiveNetworkBackgroundMessage
+} from '@gemwallet/constants';
 
 const SentryRoutes = Sentry.withSentryReactRouterV6Routing(Routes);
 
 const App: FC = () => {
+  const { window: extensionWindow, closeExtension } = useBrowser();
+  const { search } = useLocation();
+
+  useEffect(() => {
+    // Action which doesn't require to be authenticated
+    if (search.includes(PARAMETER_NETWORK)) {
+      const queryString = window.location.search;
+      const urlParams = new URLSearchParams(queryString);
+
+      chrome.runtime
+        .sendMessage<ReceiveNetworkBackgroundMessage>({
+          app: GEM_WALLET,
+          type: Message.ReceiveNetwork,
+          payload: {
+            id: Number(urlParams.get('id')) || 0,
+            network: (localStorage.getItem('network') as Network | null) || Network.MAINNET
+          }
+        })
+        .then(() => {
+          if (extensionWindow?.id) {
+            closeExtension({ windowId: Number(extensionWindow.id) });
+          }
+        });
+    }
+  }, [closeExtension, extensionWindow, search]);
+
   return (
     <ErrorBoundary>
       <SentryRoutes>
