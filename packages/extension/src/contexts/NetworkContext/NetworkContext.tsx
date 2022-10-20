@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect, createContext, FC, useCallback } from 'react';
+import { useContext, useState, useEffect, createContext, FC, useCallback, useRef } from 'react';
 import * as Sentry from '@sentry/react';
 import { NETWORK, Network } from '@gemwallet/constants';
 import { Client } from 'xrpl';
@@ -19,40 +19,32 @@ const NetworkContext = createContext<ContextType>({
 });
 
 const NetworkProvider: FC = ({ children }) => {
-  const [client, setClient] = useState<Client | undefined>();
+  const clientRef = useRef<Client | undefined>();
   const [network, setNetwork] = useState<Network>();
 
-  const connectToNetwork = async () => {
-    const network = await loadNetwork();
-    const client = new Client(network.server);
-    await client.connect();
-    setClient(client);
-    setNetwork(network.name);
-  };
-
   useEffect(() => {
-    // Connect to testnet network
+    const connectToNetwork = async () => {
+      const network = await loadNetwork();
+      clientRef.current = new Client(network.server);
+      await clientRef.current.connect();
+      setNetwork(network.name);
+    };
+
     connectToNetwork();
+
+    return () => {
+      clientRef.current?.disconnect();
+    };
   }, []);
 
-  useEffect(() => {
-    // Disconnect the websocket
-    return () => {
-      client?.disconnect();
-    };
-  }, [client]);
-
-  const switchNetwork = useCallback(
-    async (network: Network) => {
-      await client?.disconnect();
-      const newClient = new Client(NETWORK[network].server);
-      await newClient.connect();
-      setClient(newClient);
-      setNetwork(network);
-      saveNetwork(network);
-    },
-    [client]
-  );
+  const switchNetwork = useCallback(async (network: Network) => {
+    console.log('client - before: ', clientRef.current);
+    await clientRef.current?.disconnect();
+    clientRef.current = new Client(NETWORK[network].server);
+    await clientRef.current.connect();
+    setNetwork(network);
+    saveNetwork(network);
+  }, []);
 
   const resetNetwork = useCallback(async () => {
     await removeNetwork();
@@ -63,7 +55,7 @@ const NetworkProvider: FC = ({ children }) => {
   const value: ContextType = {
     switchNetwork,
     resetNetwork,
-    client,
+    client: clientRef.current,
     network
   };
 
