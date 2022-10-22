@@ -1,10 +1,14 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Header } from '.';
-import { mockWalletLedger } from '../../../mocks';
+import { generateWalletContext } from '../../../mocks';
+import { WalletLedger } from '../../../types';
 
 jest.mock('../../atoms', () => ({ WalletIcon: () => 'Mocked Wallet Icon' }));
 window.prompt = jest.fn();
+
+const mockWalletContext = generateWalletContext();
+const mockWalletLedger = mockWalletContext.getCurrentWallet() as WalletLedger;
 
 describe('Header Organism', () => {
   test('Should change the copy icons after clicking the copy button', async () => {

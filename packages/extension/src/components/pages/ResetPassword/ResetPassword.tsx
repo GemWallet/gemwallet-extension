@@ -4,20 +4,23 @@ import { Button, Typography } from '@mui/material';
 import WarningIcon from '@mui/icons-material/Warning';
 import { PageWithReturn } from '../../templates';
 import { removeWallets } from '../../../utils';
-import { useLedger } from '../../../contexts/LedgerContext';
+import { useNetwork, useWallet } from '../../../contexts';
 import { SETTINGS_PATH } from '../../../constants';
 
 export const ResetPassword: FC = () => {
   const navigate = useNavigate();
-  const { signOut } = useLedger();
+  const { signOut } = useWallet();
+  const { resetNetwork } = useNetwork();
 
   const handleBack = useCallback(() => {
     navigate(SETTINGS_PATH);
   }, [navigate]);
 
-  const handleRemoveWallets = useCallback(() => {
-    removeWallets().then(() => signOut());
-  }, [signOut]);
+  const handleRemoveWallets = useCallback(async () => {
+    await removeWallets();
+    await resetNetwork();
+    signOut();
+  }, [resetNetwork, signOut]);
 
   return (
     <PageWithReturn title="Reset Password" handleBack={handleBack}>

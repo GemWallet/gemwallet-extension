@@ -1,9 +1,10 @@
-import { MSG_REQUEST, MSG_RESPONSE } from '../constants/message';
 import {
-  MessageListenerEvent,
+  APIMessages,
+  IsConnectedResponse,
+  Message,
   NetworkResponse,
-  IsConnectedResponse
-} from '../constants/message.types';
+  PublicAddressResponse
+} from '@gemwallet/constants';
 
 declare global {
   interface Window {
@@ -15,7 +16,7 @@ declare global {
 /*
  * Send message from current window to content script, for example API to content script
  */
-export const sendMessageToContentScript = (msg: MessageListenerEvent): Promise<any> => {
+export const sendMessageToContentScript = (msg: APIMessages): Promise<any> => {
   /* 
     In the case of multiple calls coming in sequentially, we use this MESSAGE_ID to make sure we're responding to
     the appropriate message sender. Otherwise, we can run into race conditions where we simply resolve all 
@@ -25,7 +26,7 @@ export const sendMessageToContentScript = (msg: MessageListenerEvent): Promise<a
 
   window.postMessage(
     {
-      source: MSG_REQUEST,
+      source: Message.MsgRequest,
       messageId: MESSAGE_ID,
       ...msg
     },
@@ -33,7 +34,7 @@ export const sendMessageToContentScript = (msg: MessageListenerEvent): Promise<a
   );
 
   return new Promise((resolve, reject) => {
-    if (!window.gemWallet && msg.type !== 'REQUEST_CONNECTION') {
+    if (!window.gemWallet && msg.type !== Message.RequestConnection) {
       reject(
         new Error(
           'Please check if GemWallet is connected \n GemWallet needs to be installed: https://gemwallet.app'
@@ -43,12 +44,12 @@ export const sendMessageToContentScript = (msg: MessageListenerEvent): Promise<a
 
     const messageListener = (event: {
       source: any;
-      data: NetworkResponse | IsConnectedResponse;
+      data: NetworkResponse | PublicAddressResponse | IsConnectedResponse;
     }) => {
       // We only accept messages from ourselves
       if (event.source !== window) return;
       // Only respond to messages tagged as being from our content script
-      if (event?.data?.source !== MSG_RESPONSE) return;
+      if (event?.data?.source !== Message.MsgResponse) return;
       // Only respond to messages that this instance of sendMessageToContentScript sent
       if (event?.data?.messagedId !== MESSAGE_ID) return;
 

@@ -1,5 +1,6 @@
-import isConnected from './isConnected';
-import getNetwork from './getNetwork';
-import transactionRequest from './transactionRequest';
-
-export { isConnected, getNetwork, transactionRequest };
+export * from './getAddress';
+export * from './getNetwork';
+export * from './getPublicKey';
+export * from './isConnected';
+export * from './sendPayment';
+export * from './signMessage';

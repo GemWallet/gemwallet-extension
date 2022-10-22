@@ -5,27 +5,40 @@ import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { Logo } from '../../atoms/Logo';
-import { useLedger } from '../../../contexts/LedgerContext';
+import { useWallet } from '../../../contexts';
 import { loadData } from '../../../utils';
 import {
   HOME_PATH,
+  PARAMETER_ADDRESS,
+  PARAMETER_SIGN_MESSAGE,
+  PARAMETER_TRANSACTION_PAYMENT,
   RESET_PASSWORD_PATH,
+  SIGN_MESSAGE_PATH,
+  SHARE_PUBLIC_ADDRESS_PATH,
   STORAGE_WALLETS,
   TRANSACTION_PATH,
-  WELCOME_PATH
+  WELCOME_PATH,
+  PARAMETER_PUBLIC_KEY,
+  SHARE_PUBLIC_KEY_PATH
 } from '../../../constants';
 
 export const Login: FC = () => {
   const [passwordError, setPasswordError] = useState('');
   const navigate = useNavigate();
   const { search } = useLocation();
-  const { signIn, wallets, selectedWallet } = useLedger();
+  const { signIn, wallets, selectedWallet } = useWallet();
 
   useEffect(() => {
     // Check if we are still logged-in
     if (wallets?.[selectedWallet]) {
-      if (search.includes('transaction=payment')) {
+      if (search.includes(PARAMETER_TRANSACTION_PAYMENT)) {
         navigate(`${TRANSACTION_PATH}${search}`);
+      } else if (search.includes(PARAMETER_ADDRESS)) {
+        navigate(`${SHARE_PUBLIC_ADDRESS_PATH}${search}`);
+      } else if (search.includes(PARAMETER_PUBLIC_KEY)) {
+        navigate(`${SHARE_PUBLIC_KEY_PATH}${search}`);
+      } else if (search.includes(PARAMETER_SIGN_MESSAGE)) {
+        navigate(`${SIGN_MESSAGE_PATH}${search}`);
       } else {
         navigate(`${HOME_PATH}${search}`);
       }
@@ -38,15 +51,21 @@ export const Login: FC = () => {
   const handleUnlock = useCallback(() => {
     const isSignIn = signIn((document.getElementById('password') as HTMLInputElement).value);
     if (isSignIn) {
-      if (search.includes('transaction=payment')) {
+      if (search.includes(PARAMETER_TRANSACTION_PAYMENT)) {
         navigate(`${TRANSACTION_PATH}${search}`);
+      } else if (search.includes(PARAMETER_ADDRESS)) {
+        navigate(`${SHARE_PUBLIC_ADDRESS_PATH}${search}`);
+      } else if (search.includes(PARAMETER_PUBLIC_KEY)) {
+        navigate(`${SHARE_PUBLIC_KEY_PATH}${search}`);
+      } else if (search.includes(PARAMETER_SIGN_MESSAGE)) {
+        navigate(`${SIGN_MESSAGE_PATH}${search}`);
       } else {
         navigate(`${HOME_PATH}${search}`);
       }
     } else {
       setPasswordError('Incorrect password');
     }
-  }, [navigate, search, signIn]);
+  }, [signIn, search, navigate]);
 
   /*
    * Handle Login step button by pressing 'Enter'
@@ -62,6 +81,10 @@ export const Login: FC = () => {
       window.removeEventListener('keyup', upHandler);
     };
   }, [handleUnlock]);
+
+  const handleTextFieldChange = useCallback(() => {
+    setPasswordError('');
+  }, []);
 
   const handleReset = useCallback(() => {
     navigate(RESET_PASSWORD_PATH);
@@ -101,6 +124,7 @@ export const Login: FC = () => {
           name="password"
           label="Password"
           error={!!passwordError}
+          onChange={handleTextFieldChange}
           helperText={passwordError}
           type="password"
           style={{ marginBottom: '20px' }}

@@ -10,7 +10,7 @@ import {
   ListItemText,
   Typography
 } from '@mui/material';
-import { useLedger } from '../../../contexts/LedgerContext';
+import { useWallet } from '../../../contexts';
 import { PageWithNavMenu } from '../../templates';
 import { openExternalLink } from '../../../utils';
 import {
@@ -18,7 +18,8 @@ import {
   FAQ_LINK,
   FEEDBACK_LINK,
   NAV_MENU_HEIGHT,
-  RESET_PASSWORD_PATH
+  RESET_PASSWORD_PATH,
+  TRUSTED_APPS_PATH
 } from '../../../constants';
 
 const TITLE_HEIGHT = 56;
@@ -26,7 +27,7 @@ const CONTAINER_HEIGHT_TAKEN = TITLE_HEIGHT + NAV_MENU_HEIGHT;
 
 export const Settings: FC = () => {
   const navigate = useNavigate();
-  const { signOut } = useLedger();
+  const { signOut } = useWallet();
 
   const handleLock = useCallback(() => {
     signOut();
@@ -34,6 +35,10 @@ export const Settings: FC = () => {
 
   const items = useMemo(
     () => [
+      {
+        name: 'Trusted Apps',
+        onClick: () => navigate(TRUSTED_APPS_PATH)
+      },
       {
         name: 'Help',
         onClick: () => openExternalLink(FAQ_LINK)

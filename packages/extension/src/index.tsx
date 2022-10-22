@@ -1,11 +1,24 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter } from 'react-router-dom';
+import {
+  BrowserRouter,
+  useLocation,
+  useNavigationType,
+  createRoutesFromChildren,
+  matchRoutes
+} from 'react-router-dom';
+import * as Sentry from '@sentry/react';
+import { BrowserTracing } from '@sentry/tracing';
 import Paper from '@mui/material/Paper';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import App from './App';
-import { LedgerProvider } from './contexts/LedgerContext';
-import { BrowserProvider } from './contexts/BrowserContext';
+import {
+  BrowserProvider,
+  LedgerProvider,
+  NetworkProvider,
+  ServerProvider,
+  WalletProvider
+} from './contexts';
 import reportWebVitals from './reportWebVitals';
 import './index.css';
 
@@ -34,15 +47,43 @@ const theme = createTheme({
   }
 });
 
+Sentry.init({
+  dsn: process.env.REACT_APP_SENTRY_DSN,
+  release: 'gemwallet-extension@' + process.env.REACT_APP_VERSION,
+  environment: process.env.NODE_ENV,
+  integrations: [
+    new BrowserTracing({
+      routingInstrumentation: Sentry.reactRouterV6Instrumentation(
+        React.useEffect,
+        useLocation,
+        useNavigationType,
+        createRoutesFromChildren,
+        matchRoutes
+      )
+    })
+  ],
+
+  // We recommend adjusting this value in production, or using tracesSampler
+  // for finer control
+  sampleRate: process.env.NODE_ENV === 'development' ? 0.0 : 1.0,
+  tracesSampleRate: process.env.NODE_ENV === 'development' ? 0.0 : 1.0
+});
+
 ReactDOM.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
       <Paper style={{ height: '100vh', width: '100vw' }}>
         <BrowserRouter>
           <BrowserProvider>
-            <LedgerProvider>
-              <App />
-            </LedgerProvider>
+            <WalletProvider>
+              <NetworkProvider>
+                <LedgerProvider>
+                  <ServerProvider>
+                    <App />
+                  </ServerProvider>
+                </LedgerProvider>
+              </NetworkProvider>
+            </WalletProvider>
           </BrowserProvider>
         </BrowserRouter>
       </Paper>

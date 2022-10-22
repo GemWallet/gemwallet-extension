@@ -1,10 +1,10 @@
 import { FC } from 'react';
 import { PageWithHeader } from '../../templates';
-import { Wallet } from '../../molecules/Wallet';
-import { useLedger } from '../../../contexts/LedgerContext';
+import { Wallet } from '../../molecules';
+import { useWallet } from '../../../contexts';
 
 export const Home: FC = () => {
-  const { wallets, selectedWallet } = useLedger();
+  const { wallets, selectedWallet } = useWallet();
 
   return (
     <PageWithHeader>

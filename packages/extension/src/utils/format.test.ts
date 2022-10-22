@@ -1,28 +1,21 @@
 import { formatToken } from '.';
+import { Tokens } from '../constants';
 
 describe('Format util', () => {
   describe('formatToken', () => {
-    test('should return XRP 1,234,567', () => {
+    test('should return 1,234,567 XRP', () => {
       const value = 1234567;
-      const token = 'XRP';
-      const nonBreakingSpace = '\xa0';
-
-      expect(formatToken(value, token)).toEqual(`${token}${nonBreakingSpace}1,234,567`);
+      expect(formatToken(value, Tokens.XRP)).toEqual(`1,234,567 ${Tokens.XRP}`);
     });
 
-    test('should return XRP 1,234,567.8977', () => {
+    test('should return 1,234,567.8977 XRP', () => {
       const value = 1234567.8977;
-      const token = 'XRP';
-      const nonBreakingSpace = '\xa0';
-
-      expect(formatToken(value, token)).toEqual(`${token}${nonBreakingSpace}1,234,567.8977`);
+      expect(formatToken(value, 'xrp')).toEqual(`1,234,567.8977 ${Tokens.XRP}`);
     });
 
     test('should return 1,234,567.8977', () => {
       const value = 1234567.8977;
-      const nonBreakingSpace = '\xa0';
-
-      expect(formatToken(value, '')).toEqual(`${nonBreakingSpace}1,234,567.8977`);
+      expect(formatToken(value, '')).toEqual(`1,234,567.8977 `);
     });
   });
 });

@@ -4,7 +4,7 @@ import { styled } from '@mui/material/styles';
 import { AppBar, Box, IconButton, Toolbar, Tooltip, Typography } from '@mui/material';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import DoneIcon from '@mui/icons-material/Done';
-import { NetworkIndicator } from '../../molecules/NetworkIndicator';
+import { NetworkIndicator } from '../../molecules';
 import { WalletIcon } from '../../atoms';
 import { truncateAddress } from '../../../utils';
 import { HEADER_HEIGHT_WITHOUT_PADDING, SECONDARY_GRAY } from '../../../constants';
@@ -69,7 +69,7 @@ export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => 
             <Typography variant="body2" style={{ margin: '3px 0', color: SECONDARY_GRAY }}>
               {truncatedAddress}
             </Typography>
-            <Tooltip title="Copy your public address">
+            <Tooltip title="Copy your address">
               <IconButton
                 size="small"
                 edge="end"

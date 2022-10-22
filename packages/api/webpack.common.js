@@ -17,7 +17,7 @@ module.exports = {
   },
   output: {
     filename: 'bundle.js',
-    library: 'gemWalletApi',
+    library: 'GemWalletApi',
     libraryTarget: 'umd',
     path: path.resolve(__dirname, 'build')
   },

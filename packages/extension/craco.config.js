@@ -1,13 +1,27 @@
+const path = require('path');
+const fs = require('fs');
+
+const extensionDirectory = fs.realpathSync(process.cwd());
+const apiDirectory = path.resolve(extensionDirectory, '../api');
+const constantsDirectory = path.resolve(extensionDirectory, '../constants');
+
 module.exports = {
   webpack: {
     configure: (webpackConfig, { env, paths }) => {
-      return {
-        ...webpackConfig,
+      webpackConfig.module.rules.push({
+        test: /\.tsx?$/,
+        include: [apiDirectory, constantsDirectory],
+        loader: 'ts-loader',
+        exclude: /node_modules/,
+        options: {
+          transpileOnly: true,
+          configFile: 'tsconfig.json'
+        }
+      });
+
+      const chromeServices = {
         entry: {
-          main: [
-            env === 'development' && require.resolve('react-dev-utils/webpackHotDevClient'),
-            paths.appIndexJs
-          ].filter(Boolean),
+          main: [paths.appIndexJs].filter(Boolean),
           content: './src/chromeServices/content.ts',
           background: './src/chromeServices/background.ts'
         },
@@ -19,6 +33,16 @@ module.exports = {
           ...webpackConfig.optimization,
           runtimeChunk: false
         }
+      };
+
+      if (env === 'production') {
+        return {
+          ...webpackConfig,
+          ...chromeServices
+        };
+      }
+      return {
+        ...webpackConfig
       };
     }
   }
