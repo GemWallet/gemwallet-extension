@@ -38,7 +38,6 @@ const NetworkProvider: FC = ({ children }) => {
   }, []);
 
   const switchNetwork = useCallback(async (network: Network) => {
-    console.log('client - before: ', clientRef.current);
     await clientRef.current?.disconnect();
     clientRef.current = new Client(NETWORK[network].server);
     await clientRef.current.connect();
