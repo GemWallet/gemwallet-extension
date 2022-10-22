@@ -4,6 +4,7 @@ import {
   Message,
   Network,
   ReceiveAddressContentMessage,
+  ReceiveNetworkContentMessage,
   ReceivePaymentHashContentMessage,
   ReceivePublicKeyContentMessage,
   ReceiveSignMessageContentMessage
@@ -11,6 +12,7 @@ import {
 import { MAIN_FILE } from './../constants/routes';
 import {
   PARAMETER_ADDRESS,
+  PARAMETER_NETWORK,
   PARAMETER_PUBLIC_KEY,
   PARAMETER_SIGN_MESSAGE,
   PARAMETER_TRANSACTION_PAYMENT
@@ -52,7 +54,21 @@ chrome.runtime.onMessage.addListener((message: BackgroundMessage, sender, sendRe
   // We make sure that the message comes from gem-wallet
   if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
     if (type === Message.RequestNetwork) {
-      sendResponse(Network.Test);
+      const payload = {
+        id: sender.tab?.id
+      };
+      chrome.windows.create(
+        {
+          url: `../..${MAIN_FILE}${serializeToQueryString(payload)}&${PARAMETER_NETWORK}`,
+          type: 'popup',
+          width: 1,
+          height: 1
+        },
+        (_window) => {
+          _currentWindowPopup = _window;
+        }
+      );
+      sendResponse(Network.TESTNET);
     } else if (type === Message.RequestAddress) {
       chrome.windows.getAll().then((openedWindows) => {
         // We check if the popup is currently open
@@ -215,6 +231,15 @@ chrome.runtime.onMessage.addListener((message: BackgroundMessage, sender, sendRe
         type: Message.ReceiveAddress,
         payload: {
           publicAddress: payload.publicAddress
+        }
+      });
+    } else if (type === Message.ReceiveNetwork) {
+      const { payload } = message;
+      chrome.tabs.sendMessage<ReceiveNetworkContentMessage>(payload.id, {
+        app,
+        type: Message.ReceiveNetwork,
+        payload: {
+          network: payload.network
         }
       });
     } else if (type === Message.ReceivePublicKey) {

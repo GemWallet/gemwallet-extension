@@ -18,9 +18,9 @@ import {
   Check as CheckIcon
 } from '@mui/icons-material';
 import { TransitionProps } from '@mui/material/transitions';
+import { NETWORK, Network } from '@gemwallet/constants';
 import { useNetwork } from '../../../contexts';
-import { NETWORK, SECONDARY_GRAY } from '../../../constants';
-import { Network } from '../../../types';
+import { SECONDARY_GRAY } from '../../../constants';
 
 const Transition = forwardRef(function Transition(
   props: TransitionProps & {

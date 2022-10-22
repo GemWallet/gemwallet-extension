@@ -6,6 +6,7 @@ export enum Message {
   RequestSignMessage = 'REQUEST_SIGN_MESSAGE',
   ReceivePaymentHash = 'RECEIVE_PAYMENT_HASH',
   ReceiveAddress = 'RECEIVE_ADDRESS',
+  ReceiveNetwork = 'RECEIVE_NETWORK',
   ReceivePublicKey = 'RECEIVE_PUBLIC_KEY',
   ReceiveSignMessage = 'RECEIVE_SIGN_MESSAGE',
   SendPayment = 'SEND_PAYMENT',

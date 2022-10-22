@@ -64,11 +64,15 @@ export interface ReceivePaymentHashContentMessage {
   type: Message.ReceivePaymentHash;
   payload: PaymentHashResponsePayload;
 }
-
 export interface ReceiveAddressContentMessage {
   app: typeof GEM_WALLET;
   type: Message.ReceiveAddress;
   payload: AddressResponsePayload;
+}
+export interface ReceiveNetworkContentMessage {
+  app: typeof GEM_WALLET;
+  type: Message.ReceiveNetwork;
+  payload: NetworkResponsePayload;
 }
 export interface ReceivePublicKeyContentMessage {
   app: typeof GEM_WALLET;
@@ -94,6 +98,9 @@ export type ReceivePaymentHashBackgroundMessage = ReceivePaymentHashContentMessa
 export type ReceiveAddressBackgroundMessage = ReceiveAddressContentMessage &
   BackgroundMessagePayload;
 
+export type ReceiveNetworkBackgroundMessage = ReceiveNetworkContentMessage &
+  BackgroundMessagePayload;
+
 export type ReceivePublicKeyBackgroundMessage = ReceivePublicKeyContentMessage &
   BackgroundMessagePayload;
 
@@ -110,6 +117,7 @@ export type BackgroundMessage =
   // Outputted Messages - DO contain ID within the payloads
   | ReceivePaymentHashBackgroundMessage
   | ReceiveAddressBackgroundMessage
+  | ReceiveNetworkBackgroundMessage
   | ReceivePublicKeyBackgroundMessage
   | ReceiveSignMessageBackgroundMessage;
 

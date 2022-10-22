@@ -10,6 +10,7 @@ import {
   PublicKeyEventListener,
   PublicKeyResponse,
   ReceiveAddressContentMessage,
+  ReceiveNetworkContentMessage,
   ReceivePaymentHashContentMessage,
   ReceivePublicKeyContentMessage,
   ReceiveSignMessageContentMessage,
@@ -44,14 +45,28 @@ setTimeout(() => {
             app,
             type
           },
-          (network) => {
-            // Send the response back to GemWallet API
-            const response: NetworkResponse = {
-              source: Message.MsgResponse,
-              messagedId,
-              network
+          () => {
+            const messageListener = (
+              message: ReceiveNetworkContentMessage,
+              sender: chrome.runtime.MessageSender
+            ) => {
+              const { app, type, payload } = message;
+              // We make sure that the message comes from GemWallet
+              if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
+                if (type === Message.ReceiveNetwork) {
+                  window.postMessage(
+                    {
+                      source: Message.MsgResponse,
+                      messagedId,
+                      network: payload.network
+                    } as NetworkResponse,
+                    window.location.origin
+                  );
+                }
+              }
+              chrome.runtime.onMessage.removeListener(messageListener);
             };
-            window.postMessage(response, window.location.origin);
+            chrome.runtime.onMessage.addListener(messageListener);
           }
         );
       } else if (type === Message.RequestAddress) {
@@ -70,7 +85,7 @@ setTimeout(() => {
               sender: chrome.runtime.MessageSender
             ) => {
               const { app, type, payload } = message;
-              // We make sure that the message comes from gem-wallet
+              // We make sure that the message comes from GemWallet
               if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
                 if (type === Message.ReceiveAddress) {
                   window.postMessage(
@@ -104,7 +119,7 @@ setTimeout(() => {
               sender: chrome.runtime.MessageSender
             ) => {
               const { app, type, payload } = message;
-              // We make sure that the message comes from gem-wallet
+              // We make sure that the message comes from GemWallet
               if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
                 if (type === Message.ReceivePublicKey) {
                   window.postMessage(
@@ -139,7 +154,7 @@ setTimeout(() => {
               sender: chrome.runtime.MessageSender
             ) => {
               const { app, type, payload } = message;
-              // We make sure that the message comes from gem-wallet
+              // We make sure that the message comes from GemWallet
               if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
                 if (type === Message.ReceivePaymentHash) {
                   const { hash } = payload;
@@ -170,7 +185,7 @@ setTimeout(() => {
               sender: chrome.runtime.MessageSender
             ) => {
               const { app, type, payload } = message;
-              // We make sure that the message comes from gem-wallet
+              // We make sure that the message comes from GemWallet
               if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
                 if (type === Message.ReceiveSignMessage) {
                   window.postMessage(
