@@ -33,12 +33,13 @@ export const Transaction: FC = () => {
   const [errorFees, setErrorFees] = useState('');
   const [errorRequestRejection, setErrorRequestRejection] = useState<string>('');
   const [difference, setDifference] = useState<number | undefined>();
+  const [errorDifference, setErrorDifference] = useState<string | undefined>();
   const [isParamsMissing, setIsParamsMissing] = useState(false);
 
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
   const { estimateNetworkFees, sendPayment } = useLedger();
   const { getCurrentWallet } = useWallet();
-  const { client } = useNetwork();
+  const { client, network } = useNetwork();
   const { serverInfo } = useServer();
 
   useEffect(() => {
@@ -73,18 +74,21 @@ export const Transaction: FC = () => {
   }, [client, estimateNetworkFees, params.amount, params.destination]);
 
   useEffect(() => {
-    async function calculateDifference() {
-      const currentWallet = getCurrentWallet();
-      if (currentWallet && params.amount) {
-        const currentBalance = await client?.getXrpBalance(currentWallet!.publicAddress);
-        const difference =
-          Number(currentBalance) -
-          Number(serverInfo?.info.validated_ledger?.reserve_base_xrp) -
-          Number(params.amount);
-        setDifference(difference);
-      }
+    const currentWallet = getCurrentWallet();
+    if (currentWallet && params.amount) {
+      client
+        ?.getXrpBalance(currentWallet!.publicAddress)
+        .then((currentBalance) => {
+          const difference =
+            Number(currentBalance) -
+            Number(serverInfo?.info.validated_ledger?.reserve_base_xrp) -
+            Number(params.amount);
+          setDifference(difference);
+        })
+        .catch((e) => {
+          setErrorDifference(e.message);
+        });
     }
-    calculateDifference();
   }, [
     params.amount,
     client,
@@ -147,9 +151,35 @@ export const Transaction: FC = () => {
           <>
             Your transaction failed, please try again.
             <br />
-            An amount and a destination have not been provided to the extension
+            An amount and a destination have not been provided to the extension.
           </>
         }
+        transaction={TransactionStatus.Rejected}
+      />
+    );
+  }
+
+  if (errorDifference) {
+    if (errorDifference === 'Account not found.') {
+      return (
+        <AsyncTransaction
+          title="Account not activated"
+          subtitle={
+            <>
+              {`Your account is not activated on the ${network} network.`}
+              <br />
+              {'Switch network or activate your account.'}
+            </>
+          }
+          transaction={TransactionStatus.Rejected}
+        />
+      );
+    }
+    Sentry.captureException('Transaction failed - errorDifference: ' + errorDifference);
+    return (
+      <AsyncTransaction
+        title="Error"
+        subtitle={errorDifference}
         transaction={TransactionStatus.Rejected}
       />
     );
