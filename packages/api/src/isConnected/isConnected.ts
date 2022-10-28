@@ -6,46 +6,42 @@ import {
 } from '@gemwallet/constants';
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
 
-declare global {
-  interface Window {
-    gemWallet?: boolean;
-    gemWalletApi?: { [key: string]: any };
-  }
-}
-
-export const isConnected = () => {
+export const isConnected = (): Promise<boolean> => {
   if (window.gemWallet) {
     return new Promise((resolve) => resolve(true));
   } else {
     // If no answer from the extension after 1 second, then return false
     let timeoutId: NodeJS.Timeout;
-    const abortConnection = new Promise((resolve) => {
+    const abortConnection = new Promise<boolean>((resolve) => {
       timeoutId = setTimeout(() => {
         resolve(false);
       }, 1000);
     });
 
     // Trying to connect to the extension
-    const connectionToExtension = new Promise(async (resolve, reject) => {
-      let response: IsConnectedResponse = { isConnected: false };
+    const connectionToExtension = new Promise<boolean>(async (resolve) => {
       try {
         const message: RequestIsConnectedMessage = {
           app: GEM_WALLET,
           type: Message.RequestConnection
         };
-        response = await sendMessageToContentScript(message);
-        resolve(response.isConnected);
+        const response: IsConnectedResponse = await sendMessageToContentScript(message);
+        resolve(response.isConnected || false);
       } catch (e) {
-        reject(e);
+        resolve(false);
       }
     });
 
-    return Promise.race([abortConnection, connectionToExtension]).then((res) => {
-      clearTimeout(timeoutId);
-      if (res === true) {
-        window.gemWallet = true;
-      }
-      return res;
-    });
+    return Promise.race([abortConnection, connectionToExtension])
+      .then((res) => {
+        clearTimeout(timeoutId);
+        if (res === true) {
+          window.gemWallet = true;
+        }
+        return res;
+      })
+      .catch((e) => {
+        return false;
+      });
   }
 };
