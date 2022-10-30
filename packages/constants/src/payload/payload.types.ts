@@ -41,7 +41,7 @@ export interface PublicKeyResponsePayload {
 }
 
 export interface SignedMessageResponsePayload {
-  signedMessage: string | null;
+  signedMessage: string | null | undefined;
 }
 
 export interface IsConnectedResponsePayload {
@@ -49,5 +49,5 @@ export interface IsConnectedResponsePayload {
 }
 
 export interface PaymentHashResponsePayload {
-  hash: string | null;
+  hash: string | null | undefined;
 }

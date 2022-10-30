@@ -103,7 +103,7 @@ export const Transaction: FC = () => {
   }, [isParamsMissing]);
 
   const createMessage = useCallback(
-    (transactionHash: string | null): ReceivePaymentHashBackgroundMessage => {
+    (transactionHash: string | null | undefined): ReceivePaymentHashBackgroundMessage => {
       return {
         app: GEM_WALLET,
         type: Message.ReceivePaymentHash,
@@ -135,9 +135,11 @@ export const Transaction: FC = () => {
       .catch((e) => {
         Sentry.captureException(e);
         setErrorRequestRejection(e.message);
-        handleReject();
+        setTransaction(TransactionStatus.Rejected);
+        const message = createMessage(undefined);
+        chrome.runtime.sendMessage<ReceivePaymentHashBackgroundMessage>(message);
       });
-  }, [createMessage, handleReject, params.amount, params.destination, sendPayment]);
+  }, [createMessage, params.amount, params.destination, sendPayment]);
 
   const hasEnoughFunds = useMemo(() => {
     return Number(difference) > 0;

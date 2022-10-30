@@ -49,12 +49,12 @@ export const SignMessage: FC = () => {
 
   const handleReject = useCallback(() => {
     chrome.runtime
-      .sendMessage<ReceiveAddressBackgroundMessage>({
+      .sendMessage<ReceiveSignMessageBackgroundMessage>({
         app: GEM_WALLET,
-        type: Message.ReceiveAddress,
+        type: Message.ReceiveSignMessage,
         payload: {
           id,
-          publicAddress: null
+          signedMessage: null
         }
       })
       .then(() => {
@@ -72,7 +72,7 @@ export const SignMessage: FC = () => {
         type: Message.ReceiveSignMessage,
         payload: {
           id,
-          signedMessage: signature || null
+          signedMessage: signature
         }
       })
       .then(() => {
