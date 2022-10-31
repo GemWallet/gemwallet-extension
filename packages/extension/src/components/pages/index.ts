@@ -2,6 +2,7 @@ export * from './About';
 export * from './CreateWallet';
 export * from './Home';
 export * from './ImportSeed';
+export * from './ImportWallet';
 export * from './Login';
 export * from './ResetPassword';
 export * from './Settings';

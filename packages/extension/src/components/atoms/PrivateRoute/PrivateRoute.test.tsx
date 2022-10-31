@@ -41,6 +41,6 @@ describe('PrivateRoute Atom', () => {
     );
 
     expect(getByRole('button', { name: 'Create a new wallet' })).toBeInTheDocument();
-    expect(getByRole('button', { name: 'Import a seed phrase' })).toBeInTheDocument();
+    expect(getByRole('button', { name: 'Import a wallet' })).toBeInTheDocument();
   });
 });

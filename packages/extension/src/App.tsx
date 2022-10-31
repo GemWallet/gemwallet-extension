@@ -7,6 +7,7 @@ import {
   CreateWallet,
   Home,
   ImportSeed,
+  ImportWallet,
   Login,
   ResetPassword,
   Settings,
@@ -24,6 +25,7 @@ import {
   HOME_PATH,
   IMPORT_SEED_PATH,
   PARAMETER_NETWORK,
+  IMPORT_WALLET_PATH,
   RESET_PASSWORD_PATH,
   SETTINGS_PATH,
   SHARE_PUBLIC_ADDRESS_PATH,
@@ -76,6 +78,7 @@ const App: FC = () => {
         <Route path="*" element={<Login />} />
         <Route path={WELCOME_PATH} element={<Welcome />} />
         <Route path={IMPORT_SEED_PATH} element={<ImportSeed />} />
+        <Route path={IMPORT_WALLET_PATH} element={<ImportWallet />} />
         <Route path={CREATE_NEW_WALLET_PATH} element={<CreateWallet />} />
         <Route
           path={HOME_PATH}

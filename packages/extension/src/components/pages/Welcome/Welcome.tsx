@@ -4,7 +4,7 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import { Logo } from '../../atoms/Logo';
-import { CREATE_NEW_WALLET_PATH, IMPORT_SEED_PATH } from '../../../constants';
+import { CREATE_NEW_WALLET_PATH, IMPORT_WALLET_PATH } from '../../../constants';
 
 export const Welcome: FC = () => {
   const navigate = useNavigate();
@@ -41,9 +41,9 @@ export const Welcome: FC = () => {
         <Button
           variant="contained"
           color="secondary"
-          onClick={() => navigate(`${IMPORT_SEED_PATH}${search}`)}
+          onClick={() => navigate(`${IMPORT_WALLET_PATH}${search}`)}
         >
-          Import a seed phrase
+          Import a wallet
         </Button>
       </Container>
     </Container>

@@ -24,7 +24,7 @@ describe('Welcome Page', () => {
       name: 'Internet cryptocurrency payments made easy'
     });
     const newWalletButtonElement = screen.getByRole('button', { name: 'Create a new wallet' });
-    const importWalletButtonElement = screen.getByRole('button', { name: 'Import a seed phrase' });
+    const importWalletButtonElement = screen.getByRole('button', { name: 'Import a wallet' });
 
     expect(titleElement).toBeVisible();
     expect(subTitleElement).toBeVisible();
@@ -57,7 +57,7 @@ describe('Welcome Page', () => {
         <App />
       </MemoryRouter>
     );
-    const importWalletButtonElement = screen.getByRole('button', { name: 'Import a seed phrase' });
+    const importWalletButtonElement = screen.getByRole('button', { name: 'Import a wallet' });
 
     const user = userEvent.setup();
     await user.click(importWalletButtonElement);
