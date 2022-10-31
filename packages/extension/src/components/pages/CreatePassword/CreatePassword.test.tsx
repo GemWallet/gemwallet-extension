@@ -2,10 +2,11 @@ import { render, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
 import { CreatePassword, CreatePasswordProps } from './CreatePassword';
-import { generateWalletContext } from '../../../../mocks';
+import { generateWalletContext } from '../../../mocks';
 
 const defaultProps: CreatePasswordProps = {
   activeStep: 1,
+  steps: 3,
   handleBack: jest.fn(),
   setActiveStep: jest.fn()
 };

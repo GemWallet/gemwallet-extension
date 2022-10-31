@@ -1,6 +1,7 @@
 export * from './About';
 export * from './CreateWallet';
 export * from './Home';
+export * from './ImportMnemonic';
 export * from './ImportSeed';
 export * from './ImportWallet';
 export * from './Login';

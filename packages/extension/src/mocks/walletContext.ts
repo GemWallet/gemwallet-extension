@@ -16,6 +16,7 @@ export interface GenerateWalletContextParams {
   generateWallet?: () => Wallet;
   getCurrentWallet?: () => WalletLedger | undefined;
   importSeed?: () => true;
+  importMnemonic?: () => true;
   selectedWallet?: number;
   wallets?: WalletLedger[];
 }
@@ -25,6 +26,7 @@ export const generateWalletContext = (params?: GenerateWalletContextParams): Wal
     generateWallet = () => mockWallet,
     getCurrentWallet = () => mockWalletLedger,
     importSeed = () => true,
+    importMnemonic = () => true,
     selectedWallet = 0,
     wallets = [mockWalletLedger]
   } = params || {};
@@ -35,6 +37,7 @@ export const generateWalletContext = (params?: GenerateWalletContextParams): Wal
     generateWallet,
     getCurrentWallet,
     importSeed,
+    importMnemonic,
     selectedWallet,
     wallets
   };

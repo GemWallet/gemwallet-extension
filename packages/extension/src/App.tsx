@@ -6,6 +6,7 @@ import {
   About,
   CreateWallet,
   Home,
+  ImportMnemonic,
   ImportSeed,
   ImportWallet,
   Login,
@@ -33,7 +34,8 @@ import {
   SIGN_MESSAGE_PATH,
   TRANSACTION_PATH,
   TRUSTED_APPS_PATH,
-  WELCOME_PATH
+  WELCOME_PATH,
+  IMPORT_MNEMONIC_PATH
 } from './constants';
 import { useBrowser } from './contexts';
 import {
@@ -77,6 +79,7 @@ const App: FC = () => {
       <SentryRoutes>
         <Route path="*" element={<Login />} />
         <Route path={WELCOME_PATH} element={<Welcome />} />
+        <Route path={IMPORT_MNEMONIC_PATH} element={<ImportMnemonic />} />
         <Route path={IMPORT_SEED_PATH} element={<ImportSeed />} />
         <Route path={IMPORT_WALLET_PATH} element={<ImportWallet />} />
         <Route path={CREATE_NEW_WALLET_PATH} element={<CreateWallet />} />

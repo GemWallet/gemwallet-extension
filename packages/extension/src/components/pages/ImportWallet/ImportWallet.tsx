@@ -55,7 +55,7 @@ const SECRET_TYPES = [
   },
   {
     name: 'Mnemonic',
-    description: 'Based on 12, 16 or 24 words',
+    description: 'Based on multiple words',
     link: IMPORT_MNEMONIC_PATH
   }
 ];
@@ -93,6 +93,7 @@ export const ImportWallet: FC = () => {
       </Typography>
       {SECRET_TYPES.map(({ name, description }, index) => (
         <SecretType
+          key={index}
           name={name}
           description={description}
           isSelected={selectedAccount === index}

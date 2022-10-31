@@ -4,31 +4,26 @@ import TextField from '@mui/material/TextField';
 import { useWallet } from '../../../../contexts';
 import { PageWithStepper } from '../../../templates';
 
-interface SecretSeedProps {
+interface MnemonicProps {
   activeStep: number;
   steps: number;
   handleBack: () => void;
   setActiveStep: Dispatch<SetStateAction<number>>;
 }
 
-export const SecretSeed: FC<SecretSeedProps> = ({
-  activeStep,
-  steps,
-  handleBack,
-  setActiveStep
-}) => {
-  const [seedError, setSeedError] = useState('');
-  const { importSeed } = useWallet();
+export const Mnemonic: FC<MnemonicProps> = ({ activeStep, steps, handleBack, setActiveStep }) => {
+  const [mnemonicError, setMnemonicError] = useState('');
+  const { importMnemonic } = useWallet();
 
   const handleNext = useCallback(() => {
-    const seedValue = (document.getElementById('seed') as HTMLInputElement).value;
-    const isValidSeed = importSeed(seedValue);
-    if (isValidSeed) {
+    const mnemonicValue = (document.getElementById('mnemonic') as HTMLInputElement).value;
+    const isValidMnemonic = importMnemonic(mnemonicValue);
+    if (isValidMnemonic) {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     } else {
-      setSeedError('Your seed is invalid');
+      setMnemonicError('Your mnemonic is invalid');
     }
-  }, [importSeed, setActiveStep]);
+  }, [importMnemonic, setActiveStep]);
 
   return (
     <PageWithStepper
@@ -39,19 +34,19 @@ export const SecretSeed: FC<SecretSeedProps> = ({
       handleNext={handleNext}
     >
       <Typography variant="h4" component="h1" style={{ marginTop: '30px' }}>
-        Secret Seed
+        Mnemonic
       </Typography>
       <Typography variant="subtitle1" component="h2" style={{ marginTop: '30px' }}>
         Please enter your seed in order to load your wallet to GemWallet.
       </Typography>
       <TextField
         fullWidth
-        id="seed"
-        key="seed"
-        name="seed"
-        label="Seed"
-        error={!!seedError}
-        helperText={seedError}
+        id="mnemonic"
+        key="mnemonic"
+        name="mnemonic"
+        label="Mnemonic"
+        error={!!mnemonicError}
+        helperText={mnemonicError}
         style={{ marginTop: '20px' }}
         autoComplete="off"
       />

@@ -6,7 +6,7 @@ import { PageWithSpinner } from '../../templates';
 import { SecretSeed } from './SecretSeed';
 import { ConfirmSeed } from './ConfirmSeed';
 import { CreatePassword } from './CreatePassword';
-import { Congratulations } from '../ImportSeed/Congratulations';
+import { Congratulations } from '../Congratulations';
 
 export const CreateWallet: FC = () => {
   const [wallet, setWallet] = useState<Wallet | undefined>();
@@ -33,7 +33,7 @@ export const CreateWallet: FC = () => {
   }
 
   if (activeStep === 3) {
-    return <Congratulations activeStep={activeStep} handleBack={handleBack} />;
+    return <Congratulations steps={4} activeStep={activeStep} handleBack={handleBack} />;
   }
 
   if (activeStep === 2) {
