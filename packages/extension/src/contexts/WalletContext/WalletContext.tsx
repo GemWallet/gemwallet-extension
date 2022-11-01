@@ -75,6 +75,7 @@ const WalletProvider: FC = ({ children }) => {
       {
         name: walletName || `Wallet ${wallets.length + 1}`,
         publicAddress: wallet.address,
+        seed: wallet.seed,
         wallet
       }
     ]);

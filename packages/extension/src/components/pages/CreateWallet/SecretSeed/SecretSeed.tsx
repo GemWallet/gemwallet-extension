@@ -4,6 +4,7 @@ import Typography from '@mui/material/Typography';
 import { TextCopy } from '../../../molecules';
 import { PageWithStepper } from '../../../templates';
 import { STEPS } from '../constants';
+import { useWallet } from '../../../../contexts';
 
 export interface SecretSeedProps {
   activeStep: number;
@@ -18,9 +19,12 @@ export const SecretSeed: FC<SecretSeedProps> = ({
   setActiveStep,
   wallet
 }) => {
+  const { importSeed } = useWallet();
+
   const handleNext = useCallback(() => {
+    importSeed(wallet!.seed!);
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
-  }, [setActiveStep]);
+  }, [importSeed, setActiveStep, wallet]);
 
   return (
     <PageWithStepper

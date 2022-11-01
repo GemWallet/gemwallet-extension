@@ -5,8 +5,10 @@ import { useWallet } from '../../../contexts';
 import { PageWithSpinner } from '../../templates';
 import { SecretSeed } from './SecretSeed';
 import { ConfirmSeed } from './ConfirmSeed';
-import { CreatePassword } from './CreatePassword';
+import { CreatePassword } from '../CreatePassword';
 import { Congratulations } from '../Congratulations';
+
+const STEPS = 4;
 
 export const CreateWallet: FC = () => {
   const [wallet, setWallet] = useState<Wallet | undefined>();
@@ -33,7 +35,7 @@ export const CreateWallet: FC = () => {
   }
 
   if (activeStep === 3) {
-    return <Congratulations steps={4} activeStep={activeStep} handleBack={handleBack} />;
+    return <Congratulations steps={STEPS} activeStep={activeStep} handleBack={handleBack} />;
   }
 
   if (activeStep === 2) {
@@ -42,7 +44,7 @@ export const CreateWallet: FC = () => {
         activeStep={activeStep}
         handleBack={handleBack}
         setActiveStep={setActiveStep}
-        wallet={wallet}
+        steps={STEPS}
       />
     );
   }
