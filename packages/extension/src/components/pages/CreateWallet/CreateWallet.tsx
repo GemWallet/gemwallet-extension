@@ -35,16 +35,16 @@ export const CreateWallet: FC = () => {
   }
 
   if (activeStep === 3) {
-    return <Congratulations steps={STEPS} activeStep={activeStep} handleBack={handleBack} />;
+    return <Congratulations activeStep={activeStep} steps={STEPS} handleBack={handleBack} />;
   }
 
   if (activeStep === 2) {
     return (
       <CreatePassword
         activeStep={activeStep}
+        steps={STEPS}
         handleBack={handleBack}
         setActiveStep={setActiveStep}
-        steps={STEPS}
       />
     );
   }
@@ -53,9 +53,9 @@ export const CreateWallet: FC = () => {
     return (
       <ConfirmSeed
         activeStep={activeStep}
+        steps={STEPS}
         handleBack={handleBack}
         setActiveStep={setActiveStep}
-        wallet={wallet}
       />
     );
   }
@@ -63,9 +63,9 @@ export const CreateWallet: FC = () => {
   return (
     <SecretSeed
       activeStep={activeStep}
+      steps={STEPS}
       handleBack={handleBack}
       setActiveStep={setActiveStep}
-      wallet={wallet}
     />
   );
 };

@@ -1,34 +1,31 @@
 import { Dispatch, FC, SetStateAction, useCallback } from 'react';
-import { Wallet } from 'xrpl';
 import Typography from '@mui/material/Typography';
 import { TextCopy } from '../../../molecules';
 import { PageWithStepper } from '../../../templates';
-import { STEPS } from '../constants';
 import { useWallet } from '../../../../contexts';
 
 export interface SecretSeedProps {
   activeStep: number;
+  steps: number;
   handleBack: () => void;
   setActiveStep: Dispatch<SetStateAction<number>>;
-  wallet: Wallet;
 }
 
 export const SecretSeed: FC<SecretSeedProps> = ({
   activeStep,
+  steps,
   handleBack,
-  setActiveStep,
-  wallet
+  setActiveStep
 }) => {
-  const { importSeed } = useWallet();
+  const { wallets, selectedWallet } = useWallet();
 
   const handleNext = useCallback(() => {
-    importSeed(wallet!.seed!);
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
-  }, [importSeed, setActiveStep, wallet]);
+  }, [setActiveStep]);
 
   return (
     <PageWithStepper
-      steps={STEPS}
+      steps={steps}
       activeStep={activeStep}
       buttonText="Next"
       handleBack={handleBack}
@@ -41,7 +38,7 @@ export const SecretSeed: FC<SecretSeedProps> = ({
         This is the only way you will be able to recover your account. Please store it somewhere
         safe!
       </Typography>
-      <TextCopy text={wallet!.seed!} />
+      <TextCopy text={wallets[selectedWallet].seed!} />
     </PageWithStepper>
   );
 };
