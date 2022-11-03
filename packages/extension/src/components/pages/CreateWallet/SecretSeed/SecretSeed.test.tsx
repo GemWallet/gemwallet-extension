@@ -1,17 +1,21 @@
 import { render, screen } from '@testing-library/react';
-import { SecretSeed, SecretSeedProps } from './SecretSeed';
 import { generateWalletContext } from '../../../../mocks';
+import { SecretSeed, SecretSeedProps } from './SecretSeed';
 
-const mockWalletContext = generateWalletContext();
 const defaultProps: SecretSeedProps = {
   activeStep: 0,
+  steps: 4,
   handleBack: jest.fn(),
-  setActiveStep: jest.fn(),
-  wallet: mockWalletContext.generateWallet()
+  setActiveStep: jest.fn()
 };
 
 jest.mock('react-router-dom', () => ({
   useNavigate: () => jest.fn()
+}));
+
+const mockWalletContext = generateWalletContext();
+jest.mock('../../../../contexts', () => ({
+  useWallet: () => mockWalletContext
 }));
 
 describe('CreateWallet - SecretSeed', () => {

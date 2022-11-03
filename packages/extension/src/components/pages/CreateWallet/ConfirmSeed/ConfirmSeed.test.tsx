@@ -4,16 +4,20 @@ import { ConfirmSeed, ConfirmSeedProps } from './ConfirmSeed';
 import { generateWalletContext, WALLET_SEED } from '../../../../mocks';
 
 const mockedSetActiveStep = jest.fn();
-const mockWalletContext = generateWalletContext();
 const defaultProps: ConfirmSeedProps = {
   activeStep: 2,
+  steps: 4,
   handleBack: jest.fn(),
-  setActiveStep: mockedSetActiveStep,
-  wallet: mockWalletContext.generateWallet()
+  setActiveStep: mockedSetActiveStep
 };
 
 jest.mock('react-router-dom', () => ({
   useNavigate: () => jest.fn()
+}));
+
+const mockWalletContext = generateWalletContext();
+jest.mock('../../../../contexts', () => ({
+  useWallet: () => mockWalletContext
 }));
 
 describe('CreateWallet - ConfirmSeed', () => {

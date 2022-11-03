@@ -1,19 +1,14 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
-import { CreateWallet } from './CreateWallet';
-import { generateWalletContext } from '../../../mocks';
+import { ImportMnemonic } from './ImportMnemonic';
+import { WALLET_MNEMONIC } from '../../../mocks';
 
-let mockWalletContext = generateWalletContext();
-jest.mock('../../../contexts', () => ({
-  useWallet: () => mockWalletContext
-}));
-
-describe('CreateWallet Page', () => {
+describe('ImportMnemonic Page', () => {
   test('Should go back', async () => {
-    render(
+    const renderedElements = render(
       <BrowserRouter>
-        <CreateWallet />
+        <ImportMnemonic />
       </BrowserRouter>
     );
 
@@ -21,15 +16,19 @@ describe('CreateWallet Page', () => {
     const user = userEvent.setup();
 
     // Going to Screen 1
+    const mnemonicInput = renderedElements.container.querySelector('#mnemonic');
+    fireEvent.change(mnemonicInput as Element, {
+      target: { value: WALLET_MNEMONIC }
+    });
     await user.click(nextButton);
 
     // Go back to Screen 0
     const backButton = screen.getByRole('button', { name: 'Back' });
     await user.click(backButton);
 
-    const titleElement = screen.getByRole('heading', { name: 'Secret Seed' });
+    const titleElement = screen.getByRole('heading', { name: 'Mnemonic' });
     const subTitleElement = screen.getByRole('heading', {
-      name: 'This is the only way you will be able to recover your account. Please store it somewhere safe!'
+      name: 'Please enter your mnemonic in order to load your wallet to GemWallet.'
     });
     expect(titleElement).toBeVisible();
     expect(subTitleElement).toBeVisible();

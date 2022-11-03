@@ -1,25 +1,24 @@
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
-import { SecretSeedProps } from './SecretSeed';
-import { SecretSeed } from './SecretSeed';
+import { Mnemonic, MnemonicProps } from './Mnemonic';
 
-const defaultProps: SecretSeedProps = {
+const defaultProps: MnemonicProps = {
   activeStep: 0,
-  steps: 3,
+  steps: 4,
   handleBack: jest.fn(),
   setActiveStep: jest.fn()
 };
 
-describe('ImportSeed - SecretSeed Page', () => {
+describe('Import Mnemonic - Mnemonic Page', () => {
   test('Should render the proper elements', () => {
     render(
       <BrowserRouter>
-        <SecretSeed {...defaultProps} />
+        <Mnemonic {...defaultProps} />
       </BrowserRouter>
     );
-    const titleElement = screen.getByRole('heading', { name: 'Secret Seed' });
+    const titleElement = screen.getByRole('heading', { name: 'Mnemonic' });
     const subTitleElement = screen.getByRole('heading', {
-      name: 'Please enter your seed in order to load your wallet to GemWallet.'
+      name: 'Please enter your mnemonic in order to load your wallet to GemWallet.'
     });
     expect(titleElement).toBeVisible();
     expect(subTitleElement).toBeVisible();

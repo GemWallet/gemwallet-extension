@@ -4,22 +4,22 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import { PageWithStepper } from '../../../templates';
-import { openExternalLink } from '../../../../utils';
+import { PageWithStepper } from '../../templates';
+import { openExternalLink } from '../../../utils';
 import {
   HOME_PATH,
   PARAMETER_TRANSACTION_PAYMENT,
   TRANSACTION_PATH,
   TWITTER_LINK
-} from '../../../../constants';
-import { STEPS } from '../constants';
+} from '../../../constants';
 
 export interface CongratulationsProps {
   activeStep: number;
+  steps: number;
   handleBack: () => void;
 }
 
-export const Congratulations: FC<CongratulationsProps> = ({ activeStep, handleBack }) => {
+export const Congratulations: FC<CongratulationsProps> = ({ activeStep, steps, handleBack }) => {
   const navigate = useNavigate();
   const { search } = useLocation();
 
@@ -33,7 +33,7 @@ export const Congratulations: FC<CongratulationsProps> = ({ activeStep, handleBa
 
   return (
     <PageWithStepper
-      steps={STEPS}
+      steps={steps}
       activeStep={activeStep}
       handleBack={handleBack}
       handleNext={handleNext}

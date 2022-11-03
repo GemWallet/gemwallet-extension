@@ -2,21 +2,22 @@ import { render, screen } from '@testing-library/react';
 import { BrowserRouter, MemoryRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
 import { Congratulations, CongratulationsProps } from './Congratulations';
-import { generateWalletContext } from '../../../../mocks';
+import { generateWalletContext } from '../../../mocks';
 import {
   HOME_PATH,
   IMPORT_SEED_PATH,
   PARAMETER_TRANSACTION_PAYMENT,
   TRANSACTION_PATH
-} from '../../../../constants';
+} from '../../../constants';
 
 const defaultProps: CongratulationsProps = {
   activeStep: 2,
+  steps: 3,
   handleBack: jest.fn()
 };
 
 const mockWalletContext = generateWalletContext();
-jest.mock('../../../../contexts', () => ({
+jest.mock('../../../contexts', () => ({
   useWallet: () => mockWalletContext
 }));
 
@@ -26,7 +27,7 @@ jest.mock('react-router-dom', () => ({
   useNavigate: () => mockedUsedNavigate
 }));
 
-describe('ImportSeed - Congratulations Page', () => {
+describe('Congratulations Page', () => {
   test('Should render the proper elements', async () => {
     render(
       <BrowserRouter>

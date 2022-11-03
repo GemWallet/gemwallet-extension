@@ -11,6 +11,7 @@ export interface WalletContextType {
   signOut: () => void;
   generateWallet: (walletName?: string) => Wallet;
   importSeed: (seed: string, walletName?: string) => boolean;
+  importMnemonic: (mnemonic: string, walletName?: string) => boolean;
   getCurrentWallet: () => WalletLedger | undefined;
   wallets: WalletLedger[];
   selectedWallet: number;
@@ -22,6 +23,7 @@ const WalletContext = createContext<WalletContextType>({
   generateWallet: () => Wallet.generate(),
   getCurrentWallet: () => undefined,
   importSeed: () => false,
+  importMnemonic: () => false,
   wallets: [],
   selectedWallet: 0
 });
@@ -39,11 +41,20 @@ const WalletProvider: FC = ({ children }) => {
   const signIn = useCallback((password: string) => {
     const wallets = loadWallets(password);
     if (wallets.length) {
-      const _wallets = wallets.map(({ name, publicAddress, seed }) => {
+      const _wallets = wallets.map(({ name, publicAddress, seed, mnemonic }) => {
+        if (seed) {
+          return {
+            name,
+            publicAddress,
+            seed,
+            wallet: Wallet.fromSeed(seed)
+          };
+        }
         return {
           name,
           publicAddress,
-          wallet: Wallet.fromSeed(seed)
+          mnemonic,
+          wallet: Wallet.fromMnemonic(mnemonic!)
         };
       });
       setWallets(_wallets);
@@ -64,6 +75,7 @@ const WalletProvider: FC = ({ children }) => {
       {
         name: walletName || `Wallet ${wallets.length + 1}`,
         publicAddress: wallet.address,
+        seed: wallet.seed,
         wallet
       }
     ]);
@@ -78,6 +90,7 @@ const WalletProvider: FC = ({ children }) => {
         {
           name: walletName || `Wallet ${wallets.length + 1}`,
           publicAddress: wallet.address,
+          seed,
           wallet
         }
       ]);
@@ -86,7 +99,27 @@ const WalletProvider: FC = ({ children }) => {
       }
       return false;
     } catch (e) {
-      Sentry.captureException(e);
+      return false;
+    }
+  }, []);
+
+  const importMnemonic = useCallback((mnemonic: string, walletName?: string) => {
+    try {
+      const wallet = Wallet.fromMnemonic(mnemonic);
+      setWallets((wallets) => [
+        ...wallets,
+        {
+          name: walletName || `Wallet ${wallets.length + 1}`,
+          publicAddress: wallet.address,
+          mnemonic,
+          wallet
+        }
+      ]);
+      if (wallet) {
+        return true;
+      }
+      return false;
+    } catch (e) {
       return false;
     }
   }, []);
@@ -101,6 +134,7 @@ const WalletProvider: FC = ({ children }) => {
     generateWallet,
     getCurrentWallet,
     importSeed,
+    importMnemonic,
     wallets,
     selectedWallet
   };

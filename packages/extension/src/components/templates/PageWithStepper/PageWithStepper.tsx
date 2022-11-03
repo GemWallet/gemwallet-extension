@@ -11,6 +11,7 @@ export interface PageWithStepperProps {
   buttonText: string;
   handleBack: () => void;
   handleNext: () => void;
+  disabledNext?: boolean;
 }
 
 export const PageWithStepper: FC<PageWithStepperProps> = ({
@@ -19,6 +20,7 @@ export const PageWithStepper: FC<PageWithStepperProps> = ({
   buttonText,
   handleBack,
   handleNext,
+  disabledNext = false,
   children
 }) => {
   const navigate = useNavigate();
@@ -74,7 +76,12 @@ export const PageWithStepper: FC<PageWithStepperProps> = ({
       >
         <Container style={{ textAlign: 'center', marginTop: '30%' }}>{children}</Container>
         <Container style={{ display: 'flex', flexDirection: 'column' }}>
-          <Button variant="contained" style={{ marginBottom: '10px' }} onClick={() => handleNext()}>
+          <Button
+            variant="contained"
+            style={{ marginBottom: '10px' }}
+            onClick={() => handleNext()}
+            disabled={disabledNext}
+          >
             {buttonText}
           </Button>
         </Container>

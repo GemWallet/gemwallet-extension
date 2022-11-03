@@ -1,11 +1,11 @@
 import { FC, useCallback, useState } from 'react';
-import { SecretSeed } from './SecretSeed';
+import { Mnemonic } from './Mnemonic';
 import { CreatePassword } from '../CreatePassword';
 import { Congratulations } from '../Congratulations';
 
 const STEPS = 3;
 
-export const ImportSeed: FC = () => {
+export const ImportMnemonic: FC = () => {
   const [activeStep, setActiveStep] = useState(0);
 
   const handleBack = useCallback(() => {
@@ -28,7 +28,7 @@ export const ImportSeed: FC = () => {
   }
 
   return (
-    <SecretSeed
+    <Mnemonic
       activeStep={activeStep}
       steps={STEPS}
       handleBack={handleBack}

@@ -1,28 +1,28 @@
-import { Dispatch, FC, SetStateAction, useState, useCallback } from 'react';
+import { Dispatch, FC, SetStateAction, useCallback, useState } from 'react';
 import * as Sentry from '@sentry/react';
-import { Wallet } from 'xrpl';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
-import { PageWithStepper } from '../../../templates';
-import { saveWallet } from '../../../../utils';
-import { ERROR_RED } from '../../../../constants';
-import { STEPS } from '../constants';
+import { useWallet } from '../../../contexts';
+import { PageWithStepper } from '../../templates';
+import { saveWallet } from '../../../utils';
+import { ERROR_RED } from '../../../constants';
 
 export interface CreatePasswordProps {
   activeStep: number;
+  steps: number;
   handleBack: () => void;
   setActiveStep: Dispatch<SetStateAction<number>>;
-  wallet: Wallet;
 }
 
 export const CreatePassword: FC<CreatePasswordProps> = ({
   activeStep,
+  steps,
   handleBack,
-  setActiveStep,
-  wallet
+  setActiveStep
 }) => {
-  const [saveWalletError, setSaveWalletError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [saveWalletError, setSaveWalletError] = useState('');
+  const { wallets, selectedWallet } = useWallet();
 
   const handleNext = useCallback(() => {
     const passwordValue = (document.getElementById('password') as HTMLInputElement).value;
@@ -32,10 +32,11 @@ export const CreatePassword: FC<CreatePasswordProps> = ({
       setPasswordError('Password must be at least 8 characters long');
     } else if (passwordValue !== confirmPasswordValue) {
       setPasswordError('Passwords must match');
-    } else {
+    } else if (wallets[selectedWallet]) {
       const _wallet = {
-        publicAddress: wallet!.address,
-        seed: wallet!.seed!
+        publicAddress: wallets[selectedWallet].publicAddress,
+        seed: wallets[selectedWallet].seed,
+        mnemonic: wallets[selectedWallet].mnemonic
       };
       try {
         saveWallet(_wallet, passwordValue);
@@ -47,11 +48,11 @@ export const CreatePassword: FC<CreatePasswordProps> = ({
         );
       }
     }
-  }, [setActiveStep, wallet]);
+  }, [selectedWallet, setActiveStep, wallets]);
 
   return (
     <PageWithStepper
-      steps={STEPS}
+      steps={steps}
       activeStep={activeStep}
       buttonText="Next"
       handleBack={handleBack}
