@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { BrowserRouter, MemoryRouter } from 'react-router-dom';
 import { Welcome } from './Welcome';
 import App from '../../../App';
-import { CREATE_NEW_WALLET_PATH, IMPORT_SEED_PATH, WELCOME_PATH } from '../../../constants';
+import { CREATE_NEW_WALLET_PATH, IMPORT_WALLET_PATH, WELCOME_PATH } from '../../../constants';
 
 const mockedUsedNavigate = jest.fn();
 
@@ -63,6 +63,6 @@ describe('Welcome Page', () => {
     await user.click(importWalletButtonElement);
 
     expect(mockedUsedNavigate).toHaveBeenCalledTimes(1);
-    expect(mockedUsedNavigate).toHaveBeenCalledWith(`${IMPORT_SEED_PATH}${search}`);
+    expect(mockedUsedNavigate).toHaveBeenCalledWith(`${IMPORT_WALLET_PATH}${search}`);
   });
 });

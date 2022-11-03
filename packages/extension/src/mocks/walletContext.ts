@@ -3,13 +3,17 @@ import { WalletContextType } from '../contexts';
 import { WalletLedger } from '../types';
 
 export const WALLET_SEED = 'spoVYVKVDaWYZERvh3xSgQPTu2X13';
+export const WALLET_MNEMONIC =
+  'frozen voyage arrest venture question deny print brother genuine hip tooth rigid life output bitter raccoon kidney wine urban rookie allow envelope pitch marriage';
 
 const mockWallet = Wallet.fromSeed(WALLET_SEED);
 
 const mockWalletLedger: WalletLedger = {
   name: 'Wallet 1',
   publicAddress: mockWallet.address,
-  wallet: mockWallet
+  wallet: mockWallet,
+  seed: WALLET_SEED,
+  mnemonic: WALLET_MNEMONIC
 };
 
 export interface GenerateWalletContextParams {

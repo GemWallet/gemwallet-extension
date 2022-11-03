@@ -4,7 +4,7 @@ import TextField from '@mui/material/TextField';
 import { useWallet } from '../../../../contexts';
 import { PageWithStepper } from '../../../templates';
 
-interface SecretSeedProps {
+export interface SecretSeedProps {
   activeStep: number;
   steps: number;
   handleBack: () => void;

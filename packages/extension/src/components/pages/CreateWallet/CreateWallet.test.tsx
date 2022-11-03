@@ -2,16 +2,18 @@ import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
 import { CreateWallet } from './CreateWallet';
-import { LedgerContext } from '../../../contexts';
-import { valueLedgerContext } from '../../../mocks';
+import { generateWalletContext } from '../../../mocks';
+
+let mockWalletContext = generateWalletContext();
+jest.mock('../../../contexts', () => ({
+  useWallet: () => mockWalletContext
+}));
 
 describe('CreateWallet Page', () => {
   test('Should go back', async () => {
     render(
       <BrowserRouter>
-        <LedgerContext.Provider value={valueLedgerContext}>
-          <CreateWallet />
-        </LedgerContext.Provider>
+        <CreateWallet />
       </BrowserRouter>
     );
 

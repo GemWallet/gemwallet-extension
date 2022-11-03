@@ -2,16 +2,13 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
 import { ImportSeed } from './ImportSeed';
-import { LedgerContext } from '../../../contexts';
-import { valueLedgerContext, WALLET_SEED } from '../../../mocks';
+import { WALLET_SEED } from '../../../mocks';
 
 describe('ImportSeed Page', () => {
   test('Should go back', async () => {
     const renderedElements = render(
       <BrowserRouter>
-        <LedgerContext.Provider value={valueLedgerContext}>
-          <ImportSeed />
-        </LedgerContext.Provider>
+        <ImportSeed />
       </BrowserRouter>
     );
 

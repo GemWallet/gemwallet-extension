@@ -4,7 +4,7 @@ import TextField from '@mui/material/TextField';
 import { useWallet } from '../../../../contexts';
 import { PageWithStepper } from '../../../templates';
 
-interface MnemonicProps {
+export interface MnemonicProps {
   activeStep: number;
   steps: number;
   handleBack: () => void;
@@ -37,7 +37,7 @@ export const Mnemonic: FC<MnemonicProps> = ({ activeStep, steps, handleBack, set
         Mnemonic
       </Typography>
       <Typography variant="subtitle1" component="h2" style={{ marginTop: '30px' }}>
-        Please enter your seed in order to load your wallet to GemWallet.
+        Please enter your mnemonic in order to load your wallet to GemWallet.
       </Typography>
       <TextField
         fullWidth

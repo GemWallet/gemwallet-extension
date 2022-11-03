@@ -12,11 +12,11 @@ const defaultProps: CreatePasswordProps = {
 };
 
 const mockWalletContext = generateWalletContext();
-jest.mock('../../../../contexts', () => ({
+jest.mock('../../../contexts', () => ({
   useWallet: () => mockWalletContext
 }));
 
-describe('ImportSeed - CreatePassword Page', () => {
+describe('CreatePassword Page', () => {
   test('Should render the proper elements', () => {
     const { getByRole } = render(
       <BrowserRouter>

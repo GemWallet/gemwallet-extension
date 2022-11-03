@@ -17,7 +17,7 @@ const defaultProps: CongratulationsProps = {
 };
 
 const mockWalletContext = generateWalletContext();
-jest.mock('../../../../contexts', () => ({
+jest.mock('../../../contexts', () => ({
   useWallet: () => mockWalletContext
 }));
 
@@ -27,7 +27,7 @@ jest.mock('react-router-dom', () => ({
   useNavigate: () => mockedUsedNavigate
 }));
 
-describe('ImportSeed - Congratulations Page', () => {
+describe('Congratulations Page', () => {
   test('Should render the proper elements', async () => {
     render(
       <BrowserRouter>
