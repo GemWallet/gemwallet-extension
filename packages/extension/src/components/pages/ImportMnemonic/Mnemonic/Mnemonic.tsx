@@ -1,6 +1,7 @@
 import { Dispatch, FC, SetStateAction, useCallback, useState } from 'react';
-import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
+
+import { TextField, Typography } from '@mui/material';
+
 import { useWallet } from '../../../../contexts';
 import { PageWithStepper } from '../../../templates';
 

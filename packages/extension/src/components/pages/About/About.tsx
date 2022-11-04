@@ -1,9 +1,9 @@
 import { FC, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+
 import LinkIcon from '@mui/icons-material/Link';
 import { List, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
-import { PageWithReturn } from '../../templates';
-import { openExternalLink } from '../../../utils';
+import { useNavigate } from 'react-router-dom';
+
 import {
   ANNOUNCEMENT_LINK,
   DISCORD_LINK,
@@ -13,7 +13,9 @@ import {
   GITHUB_LINK,
   SETTINGS_PATH
 } from '../../../constants';
+import { openExternalLink } from '../../../utils';
 import { Logo } from '../../atoms/Logo';
+import { PageWithReturn } from '../../templates';
 
 const aboutLinks = [
   {

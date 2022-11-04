@@ -1,12 +1,14 @@
 import { useState, useEffect, FC, useCallback } from 'react';
+
 import * as Sentry from '@sentry/react';
 import { Wallet } from 'xrpl';
+
 import { useWallet } from '../../../contexts';
 import { PageWithSpinner } from '../../templates';
-import { SecretSeed } from './SecretSeed';
-import { ConfirmSeed } from './ConfirmSeed';
-import { CreatePassword } from '../CreatePassword';
 import { Congratulations } from '../Congratulations';
+import { CreatePassword } from '../CreatePassword';
+import { ConfirmSeed } from './ConfirmSeed';
+import { SecretSeed } from './SecretSeed';
 
 const STEPS = 4;
 

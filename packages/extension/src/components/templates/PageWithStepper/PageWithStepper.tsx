@@ -1,9 +1,8 @@
 import { FC, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Container from '@mui/material/Container';
-import Button from '@mui/material/Button';
-import MobileStepper from '@mui/material/MobileStepper';
+
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
+import { Button, Container, MobileStepper } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 export interface PageWithStepperProps {
   steps: number;

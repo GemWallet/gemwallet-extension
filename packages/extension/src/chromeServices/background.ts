@@ -9,7 +9,7 @@ import {
   ReceivePublicKeyContentMessage,
   ReceiveSignMessageContentMessage
 } from '@gemwallet/constants';
-import { MAIN_FILE } from './../constants/routes';
+
 import {
   PARAMETER_ADDRESS,
   PARAMETER_NETWORK,
@@ -17,6 +17,7 @@ import {
   PARAMETER_SIGN_MESSAGE,
   PARAMETER_TRANSACTION_PAYMENT
 } from './../constants/parameters';
+import { MAIN_FILE } from './../constants/routes';
 
 const NOTIFICATION_HEIGHT = 620;
 const NOTIFICATION_WIDTH = 360;

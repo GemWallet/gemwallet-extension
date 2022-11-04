@@ -1,5 +1,7 @@
 import { FC, ReactElement } from 'react';
+
 import { Navigate, useLocation } from 'react-router-dom';
+
 import { useWallet } from '../../../contexts';
 
 export interface PrivateRouteProps {

@@ -1,14 +1,16 @@
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import copyToClipboard from 'copy-to-clipboard';
-import { styled } from '@mui/material/styles';
-import { AppBar, Box, IconButton, Toolbar, Tooltip, Typography } from '@mui/material';
+
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import DoneIcon from '@mui/icons-material/Done';
-import { NetworkIndicator } from '../../molecules';
-import { WalletIcon } from '../../atoms';
-import { truncateAddress } from '../../../utils';
+import { AppBar, Box, IconButton, Toolbar, Tooltip, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import copyToClipboard from 'copy-to-clipboard';
+
 import { HEADER_HEIGHT_WITHOUT_PADDING, SECONDARY_GRAY } from '../../../constants';
 import { WalletLedger } from '../../../types';
+import { truncateAddress } from '../../../utils';
+import { WalletIcon } from '../../atoms';
+import { NetworkIndicator } from '../../molecules';
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   display: 'block',

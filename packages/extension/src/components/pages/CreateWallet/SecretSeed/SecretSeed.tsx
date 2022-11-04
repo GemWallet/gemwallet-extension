@@ -1,8 +1,10 @@
 import { Dispatch, FC, SetStateAction, useCallback } from 'react';
-import Typography from '@mui/material/Typography';
+
+import { Typography } from '@mui/material';
+
+import { useWallet } from '../../../../contexts';
 import { TextCopy } from '../../../molecules';
 import { PageWithStepper } from '../../../templates';
-import { useWallet } from '../../../../contexts';
 
 export interface SecretSeedProps {
   activeStep: number;

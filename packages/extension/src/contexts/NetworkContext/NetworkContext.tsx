@@ -1,7 +1,10 @@
 import { useContext, useState, useEffect, createContext, FC, useCallback, useRef } from 'react';
+
 import * as Sentry from '@sentry/react';
-import { NETWORK, Network } from '@gemwallet/constants';
 import { Client } from 'xrpl';
+
+import { NETWORK, Network } from '@gemwallet/constants';
+
 import { loadNetwork, removeNetwork, saveNetwork } from '../../utils';
 
 interface ContextType {

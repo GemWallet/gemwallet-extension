@@ -1,8 +1,9 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
-import { ImportMnemonic } from './ImportMnemonic';
+import { BrowserRouter } from 'react-router-dom';
+
 import { WALLET_MNEMONIC } from '../../../mocks';
+import { ImportMnemonic } from './ImportMnemonic';
 
 describe('ImportMnemonic Page', () => {
   test('Should go back', async () => {

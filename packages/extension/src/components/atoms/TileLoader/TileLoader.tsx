@@ -1,4 +1,5 @@
 import { CSSProperties, FC } from 'react';
+
 import ContentLoader from 'react-content-loader';
 
 export interface TileLoaderProps {

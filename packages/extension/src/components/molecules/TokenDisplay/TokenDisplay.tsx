@@ -1,6 +1,8 @@
 import { CSSProperties, FC } from 'react';
-import { Paper, Typography } from '@mui/material';
+
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import { Paper, Typography } from '@mui/material';
+
 import { SECONDARY_GRAY } from '../../../constants';
 import { formatToken } from '../../../utils';
 import { Xrp } from '../../atoms';

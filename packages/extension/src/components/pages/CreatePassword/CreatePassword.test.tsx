@@ -1,8 +1,9 @@
 import { render, fireEvent } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
-import { CreatePassword, CreatePasswordProps } from './CreatePassword';
+import { BrowserRouter } from 'react-router-dom';
+
 import { generateWalletContext } from '../../../mocks';
+import { CreatePassword, CreatePasswordProps } from './CreatePassword';
 
 const defaultProps: CreatePasswordProps = {
   activeStep: 1,

@@ -1,8 +1,11 @@
 import { useContext, createContext, FC, useCallback } from 'react';
+
 import * as Sentry from '@sentry/react';
-import { xrpToDrops, dropsToXrp, TransactionMetadata, Payment } from 'xrpl';
 import { sign } from 'ripple-keypairs';
+import { xrpToDrops, dropsToXrp, TransactionMetadata, Payment } from 'xrpl';
+
 import { PaymentRequestPayload } from '@gemwallet/constants';
+
 import { useNetwork } from '../NetworkContext';
 import { useWallet } from '../WalletContext';
 

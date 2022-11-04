@@ -1,5 +1,5 @@
 import { FC, useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import {
   Button,
@@ -10,9 +10,8 @@ import {
   ListItemText,
   Typography
 } from '@mui/material';
-import { useWallet } from '../../../contexts';
-import { PageWithNavMenu } from '../../templates';
-import { openExternalLink } from '../../../utils';
+import { useNavigate } from 'react-router-dom';
+
 import {
   ABOUT_PATH,
   FAQ_LINK,
@@ -21,6 +20,9 @@ import {
   RESET_PASSWORD_PATH,
   TRUSTED_APPS_PATH
 } from '../../../constants';
+import { useWallet } from '../../../contexts';
+import { openExternalLink } from '../../../utils';
+import { PageWithNavMenu } from '../../templates';
 
 const TITLE_HEIGHT = 56;
 const CONTAINER_HEIGHT_TAKEN = TITLE_HEIGHT + NAV_MENU_HEIGHT;

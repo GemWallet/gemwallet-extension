@@ -1,7 +1,8 @@
 import { FC, useCallback, useState } from 'react';
-import { Mnemonic } from './Mnemonic';
-import { CreatePassword } from '../CreatePassword';
+
 import { Congratulations } from '../Congratulations';
+import { CreatePassword } from '../CreatePassword';
+import { Mnemonic } from './Mnemonic';
 
 const STEPS = 3;
 

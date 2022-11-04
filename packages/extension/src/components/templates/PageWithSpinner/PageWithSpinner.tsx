@@ -1,5 +1,6 @@
-import { CircularProgress, Container } from '@mui/material';
 import { FC } from 'react';
+
+import { CircularProgress, Container } from '@mui/material';
 
 export const PageWithSpinner: FC = () => {
   return (

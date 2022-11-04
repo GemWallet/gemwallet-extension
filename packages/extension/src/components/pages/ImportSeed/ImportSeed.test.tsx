@@ -1,8 +1,9 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
-import { ImportSeed } from './ImportSeed';
+import { BrowserRouter } from 'react-router-dom';
+
 import { WALLET_SEED } from '../../../mocks';
+import { ImportSeed } from './ImportSeed';
 
 describe('ImportSeed Page', () => {
   test('Should go back', async () => {

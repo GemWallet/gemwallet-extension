@@ -1,13 +1,15 @@
 import { useState, useEffect, FC, forwardRef, useCallback } from 'react';
-import * as Sentry from '@sentry/react';
-import { AppBar, Dialog, IconButton, Link, Slide, Toolbar, Typography } from '@mui/material';
+
 import CloseIcon from '@mui/icons-material/Close';
+import { AppBar, Dialog, IconButton, Link, Slide, Toolbar, Typography } from '@mui/material';
+import { TransitionProps } from '@mui/material/transitions';
+import * as Sentry from '@sentry/react';
+
+import { Tokens } from '../../../constants';
 import { useNetwork, useServer } from '../../../contexts';
 import { TokenLoader } from '../../atoms';
 import { InformationMessage } from '../InformationMessage';
 import { TokenDisplay } from '../TokenDisplay';
-import { TransitionProps } from '@mui/material/transitions';
-import { Tokens } from '../../../constants';
 
 const LOADING_STATE = 'Loading...';
 const ERROR_STATE = 'Error';

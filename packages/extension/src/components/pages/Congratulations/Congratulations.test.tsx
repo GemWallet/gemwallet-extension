@@ -1,14 +1,15 @@
 import { render, screen } from '@testing-library/react';
-import { BrowserRouter, MemoryRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
-import { Congratulations, CongratulationsProps } from './Congratulations';
-import { generateWalletContext } from '../../../mocks';
+import { BrowserRouter, MemoryRouter } from 'react-router-dom';
+
 import {
   HOME_PATH,
   IMPORT_SEED_PATH,
   PARAMETER_TRANSACTION_PAYMENT,
   TRANSACTION_PATH
 } from '../../../constants';
+import { generateWalletContext } from '../../../mocks';
+import { Congratulations, CongratulationsProps } from './Congratulations';
 
 const defaultProps: CongratulationsProps = {
   activeStep: 2,

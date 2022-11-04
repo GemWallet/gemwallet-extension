@@ -1,4 +1,5 @@
 import { CSSProperties, FC } from 'react';
+
 import { Button, Paper, Typography } from '@mui/material';
 
 export interface TrustedAppProps {

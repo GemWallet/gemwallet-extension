@@ -1,5 +1,5 @@
-import { formatToken } from '.';
 import { Tokens } from '../constants';
+import { formatToken } from './format';
 
 describe('Format util', () => {
   describe('formatToken', () => {

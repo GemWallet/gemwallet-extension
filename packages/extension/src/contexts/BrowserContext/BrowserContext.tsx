@@ -1,4 +1,5 @@
 import { useContext, useState, useEffect, createContext, FC, useCallback } from 'react';
+
 import * as Sentry from '@sentry/react';
 
 export interface CloseProps {

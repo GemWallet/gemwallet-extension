@@ -1,5 +1,5 @@
-const path = require('path');
 const fs = require('fs');
+const path = require('path');
 
 const extensionDirectory = fs.realpathSync(process.cwd());
 const apiDirectory = path.resolve(extensionDirectory, '../api');

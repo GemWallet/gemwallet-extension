@@ -1,4 +1,5 @@
 import { GEM_WALLET, Message, RequestSignMessageMessage } from '@gemwallet/constants';
+
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
 import { getFavicon } from '../helpers/getFavicon';
 

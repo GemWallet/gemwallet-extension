@@ -1,6 +1,7 @@
 import { render } from '@testing-library/react';
-import { PrivateRoute } from './PrivateRoute';
+
 import { generateWalletContext } from '../../../mocks';
+import { PrivateRoute } from './PrivateRoute';
 
 let mockWalletContext = generateWalletContext();
 jest.mock('../../../contexts', () => ({

@@ -1,5 +1,7 @@
 import { NETWORK, Network } from '@gemwallet/constants';
+
 import { STORAGE_NETWORK } from '../constants/localStorage';
+
 import { loadData, removeData, saveData } from '.';
 
 export const saveNetwork = (network: Network) => {

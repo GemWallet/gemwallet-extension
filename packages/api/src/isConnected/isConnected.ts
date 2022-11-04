@@ -4,6 +4,7 @@ import {
   Message,
   RequestIsConnectedMessage
 } from '@gemwallet/constants';
+
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
 
 export const isConnected = (): Promise<boolean> => {

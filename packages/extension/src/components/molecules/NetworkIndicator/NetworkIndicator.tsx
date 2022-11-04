@@ -1,4 +1,10 @@
 import { FC, forwardRef, useCallback, useState } from 'react';
+
+import {
+  Close as CloseIcon,
+  FiberManualRecord as FiberManualRecordIcon,
+  Check as CheckIcon
+} from '@mui/icons-material';
 import {
   AppBar,
   Box,
@@ -12,15 +18,12 @@ import {
   Toolbar,
   Typography
 } from '@mui/material';
-import {
-  Close as CloseIcon,
-  FiberManualRecord as FiberManualRecordIcon,
-  Check as CheckIcon
-} from '@mui/icons-material';
 import { TransitionProps } from '@mui/material/transitions';
+
 import { NETWORK, Network } from '@gemwallet/constants';
-import { useNetwork } from '../../../contexts';
+
 import { SECONDARY_GRAY } from '../../../constants';
+import { useNetwork } from '../../../contexts';
 
 const Transition = forwardRef(function Transition(
   props: TransitionProps & {

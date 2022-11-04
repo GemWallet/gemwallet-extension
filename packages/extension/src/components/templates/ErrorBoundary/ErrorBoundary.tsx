@@ -1,7 +1,9 @@
 import { Component, ErrorInfo, ReactNode } from 'react';
+
+import { Container, Typography, Button } from '@mui/material';
 import * as Sentry from '@sentry/browser';
 import { Extras } from '@sentry/types';
-import { Container, Typography, Button } from '@mui/material';
+
 import { WarningIcon } from './WarningIcon';
 
 export interface ErrorBoundaryProps {
