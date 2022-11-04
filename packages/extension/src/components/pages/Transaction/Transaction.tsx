@@ -1,19 +1,17 @@
 import { FC, useCallback, useEffect, useMemo, useState } from 'react';
-import * as Sentry from '@sentry/react';
-import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import Paper from '@mui/material/Paper';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
+
 import ErrorIcon from '@mui/icons-material/Error';
+import { Button, Container, IconButton, Paper, Tooltip, Typography } from '@mui/material';
+import * as Sentry from '@sentry/react';
+
 import { GEM_WALLET, Message, ReceivePaymentHashBackgroundMessage } from '@gemwallet/constants';
-import { AsyncTransaction, PageWithSpinner, PageWithTitle } from '../../templates';
+
+import { ERROR_RED, Tokens } from '../../../constants';
 import { useLedger, useNetwork, useServer, useWallet } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
-import { TileLoader } from '../../atoms';
 import { formatToken } from '../../../utils';
-import { ERROR_RED, Tokens } from '../../../constants';
+import { TileLoader } from '../../atoms';
+import { AsyncTransaction, PageWithSpinner, PageWithTitle } from '../../templates';
 
 const DEFAULT_FEES = 'Loading ...';
 

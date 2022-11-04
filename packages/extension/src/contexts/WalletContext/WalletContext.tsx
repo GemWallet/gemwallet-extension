@@ -1,7 +1,9 @@
 import { useContext, useState, createContext, FC, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+
 import * as Sentry from '@sentry/react';
+import { useNavigate } from 'react-router-dom';
 import { Wallet } from 'xrpl';
+
 import { HOME_PATH } from '../../constants';
 import { WalletLedger } from '../../types';
 import { loadWallets } from '../../utils';

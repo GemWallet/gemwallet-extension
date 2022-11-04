@@ -1,6 +1,7 @@
 import { CSSProperties, FC } from 'react';
-import { Paper, Typography } from '@mui/material';
+
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import { Paper, Typography } from '@mui/material';
 
 export interface InformationMessageProps {
   title?: string;

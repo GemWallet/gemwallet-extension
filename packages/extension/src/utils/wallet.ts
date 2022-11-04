@@ -1,6 +1,7 @@
 import { STORAGE_WALLETS } from '../constants/localStorage';
-import { decrypt, encrypt, loadData, saveData, removeData } from '.';
 import { Wallet } from '../types';
+import { decrypt, encrypt } from './crypto';
+import { loadData, saveData, removeData } from './storage';
 
 interface WalletToSave extends Omit<Wallet, 'name'> {
   name?: string;

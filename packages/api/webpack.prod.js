@@ -1,4 +1,5 @@
 const path = require('path');
+
 const webpackCommon = require('./webpack.common');
 
 module.exports = {

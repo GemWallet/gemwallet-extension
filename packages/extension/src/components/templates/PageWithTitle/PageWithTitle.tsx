@@ -1,5 +1,6 @@
-import { Container, Typography } from '@mui/material';
 import { FC } from 'react';
+
+import { Container, Typography } from '@mui/material';
 
 export interface PageWithTitleProps {
   title: string;

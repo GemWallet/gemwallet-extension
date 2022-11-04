@@ -1,4 +1,5 @@
 import { STORAGE_TRUSTED_APPS } from '../constants/localStorage';
+
 import { loadData, removeData, saveData } from '.';
 
 export enum Permission {

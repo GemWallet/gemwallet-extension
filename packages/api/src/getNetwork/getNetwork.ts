@@ -1,4 +1,5 @@
 import { GEM_WALLET, Message, NetworkResponse, RequestNetworkMessage } from '@gemwallet/constants';
+
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
 
 export const getNetwork = async () => {

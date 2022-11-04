@@ -1,14 +1,16 @@
 import { FC, useCallback, useState } from 'react';
-import { Box, Card, CardActionArea, CardContent, Typography } from '@mui/material';
+
 import { Check as CheckIcon } from '@mui/icons-material';
-import { PageWithStepper } from '../../templates';
+import { Box, Card, CardActionArea, CardContent, Typography } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+
 import {
   IMPORT_MNEMONIC_PATH,
   IMPORT_SEED_PATH,
   SECONDARY_GRAY,
   WELCOME_PATH
 } from '../../../constants';
-import { useNavigate } from 'react-router-dom';
+import { PageWithStepper } from '../../templates';
 
 interface SecretTypeProps {
   name: string;

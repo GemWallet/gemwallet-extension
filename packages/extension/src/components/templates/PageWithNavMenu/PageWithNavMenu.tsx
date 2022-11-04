@@ -1,6 +1,7 @@
 import { FC } from 'react';
-import { NavMenu } from '../../organisms';
+
 import { NAV_MENU_HEIGHT } from '../../../constants';
+import { NavMenu } from '../../organisms';
 
 export interface PageWithNavMenuProps {
   indexDefaultNav?: number;

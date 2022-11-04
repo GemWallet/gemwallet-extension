@@ -1,10 +1,10 @@
 import { FC } from 'react';
+
+import { Button, Container, Typography } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
-import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import { Logo } from '../../atoms/Logo';
+
 import { CREATE_NEW_WALLET_PATH, IMPORT_WALLET_PATH } from '../../../constants';
+import { Logo } from '../../atoms/Logo';
 
 export const Welcome: FC = () => {
   const navigate = useNavigate();

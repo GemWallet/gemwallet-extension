@@ -1,4 +1,6 @@
 import { FC, useMemo } from 'react';
+
+import CheckIcon from '@mui/icons-material/Check';
 import {
   Container,
   Typography,
@@ -9,11 +11,11 @@ import {
   ListItemText,
   Avatar
 } from '@mui/material';
-import CheckIcon from '@mui/icons-material/Check';
-import { PageWithSpinner, PageWithTitle } from '../../templates';
+
 import { SECONDARY_GRAY } from '../../../constants';
-import { loadTrustedApps, Permission, checkPermissions } from '../../../utils';
 import { useWallet } from '../../../contexts';
+import { loadTrustedApps, Permission, checkPermissions } from '../../../utils';
+import { PageWithSpinner, PageWithTitle } from '../../templates';
 
 export interface SharingPageProps {
   title: string;

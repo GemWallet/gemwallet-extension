@@ -1,6 +1,8 @@
 import { FC, useMemo } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+
 import { BottomNavigation, BottomNavigationAction } from '@mui/material';
+import { useNavigate, useLocation } from 'react-router-dom';
+
 import { navigation } from '../../../constants';
 
 export interface NavMenuProps {

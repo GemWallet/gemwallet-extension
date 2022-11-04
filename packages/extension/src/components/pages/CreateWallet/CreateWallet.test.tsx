@@ -1,8 +1,9 @@
 import { render, screen } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
-import { CreateWallet } from './CreateWallet';
+import { BrowserRouter } from 'react-router-dom';
+
 import { generateWalletContext } from '../../../mocks';
+import { CreateWallet } from './CreateWallet';
 
 let mockWalletContext = generateWalletContext();
 jest.mock('../../../contexts', () => ({

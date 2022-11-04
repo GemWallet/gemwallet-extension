@@ -1,8 +1,9 @@
 import { Dispatch, FC, SetStateAction, useState, useCallback } from 'react';
-import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
-import { PageWithStepper } from '../../../templates';
+
+import { TextField, Typography } from '@mui/material';
+
 import { useWallet } from '../../../../contexts';
+import { PageWithStepper } from '../../../templates';
 
 export interface ConfirmSeedProps {
   activeStep: number;

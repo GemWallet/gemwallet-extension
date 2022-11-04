@@ -1,4 +1,5 @@
 import { FC } from 'react';
+
 import { Paper } from '@mui/material';
 import ContentLoader from 'react-content-loader';
 

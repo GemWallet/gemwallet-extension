@@ -1,11 +1,12 @@
 import { Dispatch, FC, SetStateAction, useCallback, useState } from 'react';
+
+import { TextField, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
-import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
-import { useWallet } from '../../../contexts';
-import { PageWithStepper } from '../../templates';
-import { saveWallet } from '../../../utils';
+
 import { ERROR_RED } from '../../../constants';
+import { useWallet } from '../../../contexts';
+import { saveWallet } from '../../../utils';
+import { PageWithStepper } from '../../templates';
 
 export interface CreatePasswordProps {
   activeStep: number;

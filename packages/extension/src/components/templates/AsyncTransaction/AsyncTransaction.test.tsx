@@ -1,7 +1,8 @@
 import { fireEvent, render, screen } from '@testing-library/react';
-import { AsyncTransaction } from '.';
+
 import { BrowserContext } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
+import { AsyncTransaction } from './AsyncTransaction';
 
 describe('AsyncTransaction Template', () => {
   describe('Renders the proper elements', () => {

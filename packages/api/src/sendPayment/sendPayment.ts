@@ -5,6 +5,7 @@ import {
   PaymentRequestPayload,
   RequestPaymentMessage
 } from '@gemwallet/constants';
+
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
 
 export const sendPayment = async (payment: PaymentRequestPayload) => {

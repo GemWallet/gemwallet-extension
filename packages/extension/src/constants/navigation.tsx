@@ -1,5 +1,6 @@
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import SettingsIcon from '@mui/icons-material/Settings';
+
 import { HOME_PATH, SETTINGS_PATH } from './routes';
 
 export const navigation = [

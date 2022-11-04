@@ -1,6 +1,15 @@
 import { FC, useEffect } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+
 import * as Sentry from '@sentry/react';
+import { Routes, Route, useLocation } from 'react-router-dom';
+
+import {
+  GEM_WALLET,
+  Message,
+  Network,
+  ReceiveNetworkBackgroundMessage
+} from '@gemwallet/constants';
+
 import { PrivateRoute } from './components/atoms/PrivateRoute';
 import {
   About,
@@ -38,12 +47,6 @@ import {
   IMPORT_MNEMONIC_PATH
 } from './constants';
 import { useBrowser } from './contexts';
-import {
-  GEM_WALLET,
-  Message,
-  Network,
-  ReceiveNetworkBackgroundMessage
-} from '@gemwallet/constants';
 
 const SentryRoutes = Sentry.withSentryReactRouterV6Routing(Routes);
 

@@ -1,8 +1,10 @@
 import { FC, useCallback, useMemo } from 'react';
+
 import { GEM_WALLET, Message, ReceiveAddressBackgroundMessage } from '@gemwallet/constants';
-import { SharingPage } from '../../templates';
-import { saveTrustedApp, Permission } from '../../../utils';
+
 import { useBrowser, useWallet } from '../../../contexts';
+import { saveTrustedApp, Permission } from '../../../utils';
+import { SharingPage } from '../../templates';
 
 const permissions = [Permission.Address];
 

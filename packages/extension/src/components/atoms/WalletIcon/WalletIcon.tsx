@@ -1,5 +1,7 @@
 import { FC } from 'react';
+
 import { Hashicon } from '@emeraldpay/hashicon-react';
+
 import { useNetwork } from '../../../contexts';
 
 export interface WalletIconProps {

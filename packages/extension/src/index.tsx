@@ -1,4 +1,9 @@
 import React from 'react';
+
+import Paper from '@mui/material/Paper';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import * as Sentry from '@sentry/react';
+import { BrowserTracing } from '@sentry/tracing';
 import ReactDOM from 'react-dom';
 import {
   BrowserRouter,
@@ -7,10 +12,7 @@ import {
   createRoutesFromChildren,
   matchRoutes
 } from 'react-router-dom';
-import * as Sentry from '@sentry/react';
-import { BrowserTracing } from '@sentry/tracing';
-import Paper from '@mui/material/Paper';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+
 import App from './App';
 import {
   BrowserProvider,

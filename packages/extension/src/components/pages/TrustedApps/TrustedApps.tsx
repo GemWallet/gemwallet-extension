@@ -1,12 +1,14 @@
 import { FC, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Divider, IconButton, Typography } from '@mui/material';
-import { PageWithNavMenu } from '../../templates';
-import { loadTrustedApps, removeTrustedApp } from '../../../utils';
-import { navigation, NAV_MENU_HEIGHT, SETTINGS_PATH } from '../../../constants';
+
 import { KeyboardArrowLeft } from '@mui/icons-material';
-import { TrustedApp } from '../../molecules/TrustedApp';
+import { Divider, IconButton, Typography } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+
+import { navigation, NAV_MENU_HEIGHT, SETTINGS_PATH } from '../../../constants';
 import { useWallet } from '../../../contexts';
+import { loadTrustedApps, removeTrustedApp } from '../../../utils';
+import { TrustedApp } from '../../molecules/TrustedApp';
+import { PageWithNavMenu } from '../../templates';
 
 const TITLE_HEIGHT = 56;
 const CONTAINER_HEIGHT_TAKEN = TITLE_HEIGHT + NAV_MENU_HEIGHT;

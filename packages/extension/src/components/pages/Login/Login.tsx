@@ -1,12 +1,8 @@
 import { useState, useEffect, FC, useCallback } from 'react';
+
+import { Button, Container, TextField, Typography } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
-import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import { Logo } from '../../atoms/Logo';
-import { useWallet } from '../../../contexts';
-import { loadData } from '../../../utils';
+
 import {
   HOME_PATH,
   PARAMETER_ADDRESS,
@@ -21,6 +17,9 @@ import {
   PARAMETER_PUBLIC_KEY,
   SHARE_PUBLIC_KEY_PATH
 } from '../../../constants';
+import { useWallet } from '../../../contexts';
+import { loadData } from '../../../utils';
+import { Logo } from '../../atoms/Logo';
 
 export const Login: FC = () => {
   const [passwordError, setPasswordError] = useState('');

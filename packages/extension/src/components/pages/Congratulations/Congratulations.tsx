@@ -1,17 +1,18 @@
 import { FC, useCallback } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import TwitterIcon from '@mui/icons-material/Twitter';
+
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import { PageWithStepper } from '../../templates';
-import { openExternalLink } from '../../../utils';
+import TwitterIcon from '@mui/icons-material/Twitter';
+import { Button, Typography } from '@mui/material';
+import { useNavigate, useLocation } from 'react-router-dom';
+
 import {
   HOME_PATH,
   PARAMETER_TRANSACTION_PAYMENT,
   TRANSACTION_PATH,
   TWITTER_LINK
 } from '../../../constants';
+import { openExternalLink } from '../../../utils';
+import { PageWithStepper } from '../../templates';
 
 export interface CongratulationsProps {
   activeStep: number;

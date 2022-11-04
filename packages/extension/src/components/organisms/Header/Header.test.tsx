@@ -1,8 +1,9 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { Header } from '.';
+
 import { generateWalletContext } from '../../../mocks';
 import { WalletLedger } from '../../../types';
+import { Header } from './Header';
 
 jest.mock('../../atoms', () => ({ WalletIcon: () => 'Mocked Wallet Icon' }));
 window.prompt = jest.fn();

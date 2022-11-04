@@ -1,11 +1,13 @@
 import { FC, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button, Typography } from '@mui/material';
+
 import WarningIcon from '@mui/icons-material/Warning';
-import { PageWithReturn } from '../../templates';
-import { removeWallets } from '../../../utils';
-import { useNetwork, useWallet } from '../../../contexts';
+import { Button, Typography } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+
 import { SETTINGS_PATH } from '../../../constants';
+import { useNetwork, useWallet } from '../../../contexts';
+import { removeWallets } from '../../../utils';
+import { PageWithReturn } from '../../templates';
 
 export const ResetPassword: FC = () => {
   const navigate = useNavigate();

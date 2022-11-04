@@ -1,7 +1,8 @@
 import { FC, useCallback, useState } from 'react';
-import { SecretSeed } from './SecretSeed';
-import { CreatePassword } from '../CreatePassword';
+
 import { Congratulations } from '../Congratulations';
+import { CreatePassword } from '../CreatePassword';
+import { SecretSeed } from './SecretSeed';
 
 const STEPS = 3;
 

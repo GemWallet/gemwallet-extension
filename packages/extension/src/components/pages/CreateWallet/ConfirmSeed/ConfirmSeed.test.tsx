@@ -1,7 +1,8 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ConfirmSeed, ConfirmSeedProps } from './ConfirmSeed';
+
 import { generateWalletContext, WALLET_SEED } from '../../../../mocks';
+import { ConfirmSeed, ConfirmSeedProps } from './ConfirmSeed';
 
 const mockedSetActiveStep = jest.fn();
 const defaultProps: ConfirmSeedProps = {

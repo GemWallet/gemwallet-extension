@@ -1,7 +1,8 @@
 import { FC } from 'react';
-import { PageWithHeader } from '../../templates';
-import { Wallet } from '../../molecules';
+
 import { useWallet } from '../../../contexts';
+import { Wallet } from '../../molecules';
+import { PageWithHeader } from '../../templates';
 
 export const Home: FC = () => {
   const { wallets, selectedWallet } = useWallet();
