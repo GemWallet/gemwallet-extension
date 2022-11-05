@@ -96,7 +96,7 @@ export const Login: FC = () => {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        height: '100vh',
+        height: '100%',
         padding: '30px 16px'
       }}
     >

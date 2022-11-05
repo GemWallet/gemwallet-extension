@@ -1,6 +1,10 @@
-html, body {
-  width: 357px;
-  height: 600px;
+html,
+body {
   margin: 0;
   background-color: #282c34;
+}
+
+/* Hide scroll bars on webkit browsers */
+::-webkit-scrollbar {
+  display: none;
 }

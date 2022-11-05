@@ -24,6 +24,13 @@ export const NavMenu: FC<NavMenuProps> = ({ indexDefaultNav }) => {
         const { pathname } = navigation[newValue];
         navigate(pathname);
       }}
+      style={{
+        position: 'fixed',
+        left: 0,
+        bottom: 0,
+        width: '100%',
+        backgroundColor: '#1e1e1e'
+      }}
     >
       {navigation.map(({ label, icon }) => {
         return <BottomNavigationAction key={label} label={label} icon={icon} />;

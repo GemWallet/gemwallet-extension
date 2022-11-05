@@ -12,8 +12,9 @@ export const PageWithNavMenu: FC<PageWithNavMenuProps> = ({ children, indexDefau
     <>
       <div
         style={{
-          height: `calc(100vh - ${NAV_MENU_HEIGHT}px)`,
-          overflowY: 'auto'
+          height: `calc(100% - ${NAV_MENU_HEIGHT}px)`,
+          position: 'fixed',
+          width: '100%'
         }}
       >
         {children}

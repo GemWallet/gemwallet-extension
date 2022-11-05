@@ -74,7 +74,7 @@ Sentry.init({
 ReactDOM.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
-      <Paper style={{ height: '100vh', width: '100vw' }}>
+      <Paper style={{ height: '600px', width: '357px' }}>
         <BrowserRouter>
           <BrowserProvider>
             <WalletProvider>
