@@ -11,6 +11,7 @@
 ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)
 ![license](https://img.shields.io/badge/license-file%20LICENSE-blue)
 ![npm version](https://img.shields.io/npm/v/@gemwallet/api)
+![extension version](https://img.shields.io/github/package-json/v/GemWallet/gemwallet-extension?filename=%2Fpackages%2Fextension%2Fpackage.json)
 
 ## Introduction
 
