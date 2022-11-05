@@ -10,8 +10,7 @@ import { loadTrustedApps, removeTrustedApp } from '../../../utils';
 import { TrustedApp } from '../../molecules/TrustedApp';
 import { PageWithNavMenu } from '../../templates';
 
-const TITLE_HEIGHT = 56;
-const CONTAINER_HEIGHT_TAKEN = TITLE_HEIGHT + NAV_MENU_HEIGHT;
+const PADDING = 20;
 
 export const TrustedApps: FC = () => {
   const navigate = useNavigate();
@@ -49,7 +48,11 @@ export const TrustedApps: FC = () => {
       </div>
       <Divider />
       <div
-        style={{ height: `calc(100vh - ${CONTAINER_HEIGHT_TAKEN}px)`, padding: '20px 20px 0 20px' }}
+        style={{
+          height: `calc(100% - ${NAV_MENU_HEIGHT}px - ${PADDING}px)`,
+          padding: `${PADDING}px ${PADDING}px 0`,
+          overflowY: 'scroll'
+        }}
       >
         {trustedApps.map(({ url }) => (
           <TrustedApp

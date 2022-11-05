@@ -24,9 +24,6 @@ import { useWallet } from '../../../contexts';
 import { openExternalLink } from '../../../utils';
 import { PageWithNavMenu } from '../../templates';
 
-const TITLE_HEIGHT = 56;
-const CONTAINER_HEIGHT_TAKEN = TITLE_HEIGHT + NAV_MENU_HEIGHT;
-
 export const Settings: FC = () => {
   const navigate = useNavigate();
   const { signOut } = useWallet();
@@ -76,7 +73,7 @@ export const Settings: FC = () => {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          height: `calc(100vh - ${CONTAINER_HEIGHT_TAKEN}px)`
+          height: `calc(100% - ${NAV_MENU_HEIGHT}px)`
         }}
       >
         <List>
