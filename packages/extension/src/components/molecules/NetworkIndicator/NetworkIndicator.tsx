@@ -24,6 +24,7 @@ import { NETWORK, Network } from '@gemwallet/constants';
 
 import { SECONDARY_GRAY } from '../../../constants';
 import { useNetwork } from '../../../contexts';
+import { LoadingOverlay } from '../../templates';
 
 const Transition = forwardRef(function Transition(
   props: TransitionProps & {
@@ -79,6 +80,7 @@ const NetworkDisplay: FC<NetworkDisplayProps> = ({
 export const NetworkIndicator: FC = () => {
   const { client, network, switchNetwork } = useNetwork();
   const [explanationOpen, setExplanationOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleOpen = useCallback(() => {
     setExplanationOpen(true);
@@ -86,10 +88,12 @@ export const NetworkIndicator: FC = () => {
 
   const handleClose = useCallback(() => {
     setExplanationOpen(false);
+    setIsLoading(false);
   }, []);
 
   const handleClickOnNetwork = useCallback(
     async (network: Network) => {
+      setIsLoading(true);
       await switchNetwork(network);
       handleClose();
     },
@@ -110,38 +114,42 @@ export const NetworkIndicator: FC = () => {
         }
         onClick={handleOpen}
       />
-      <Dialog
-        fullScreen
-        open={explanationOpen}
-        onClose={handleClose}
-        TransitionComponent={Transition}
-      >
-        <AppBar sx={{ position: 'relative' }}>
-          <Toolbar>
-            <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
-              <CloseIcon />
-            </IconButton>
-            <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-              Change Network
-            </Typography>
-          </Toolbar>
-        </AppBar>
-        <div style={{ overflowY: 'scroll', height: '544px', margin: '20px 20px 0 20px' }}>
-          {Object.keys(NETWORK).map((_network) => {
-            const { name, server, description } = NETWORK[_network as Network];
-            return (
-              <NetworkDisplay
-                key={_network}
-                name={name}
-                server={server}
-                description={description}
-                isSelected={name === network}
-                onClick={() => handleClickOnNetwork(_network as Network)}
-              />
-            );
-          })}
-        </div>
-      </Dialog>
+      {isLoading ? (
+        <LoadingOverlay />
+      ) : (
+        <Dialog
+          fullScreen
+          open={explanationOpen}
+          onClose={handleClose}
+          TransitionComponent={Transition}
+        >
+          <AppBar sx={{ position: 'relative' }}>
+            <Toolbar>
+              <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
+                <CloseIcon />
+              </IconButton>
+              <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+                Change Network
+              </Typography>
+            </Toolbar>
+          </AppBar>
+          <div style={{ overflowY: 'scroll', height: '544px', margin: '20px 20px 0 20px' }}>
+            {Object.keys(NETWORK).map((_network) => {
+              const { name, server, description } = NETWORK[_network as Network];
+              return (
+                <NetworkDisplay
+                  key={_network}
+                  name={name}
+                  server={server}
+                  description={description}
+                  isSelected={name === network}
+                  onClick={() => handleClickOnNetwork(_network as Network)}
+                />
+              );
+            })}
+          </div>
+        </Dialog>
+      )}
     </>
   );
 };

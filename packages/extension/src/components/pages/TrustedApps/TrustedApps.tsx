@@ -1,4 +1,4 @@
-import { FC, useMemo, useState } from 'react';
+import { CSSProperties, FC, useMemo, useState } from 'react';
 
 import { KeyboardArrowLeft } from '@mui/icons-material';
 import { Divider, IconButton, Typography } from '@mui/material';
@@ -12,6 +12,13 @@ import { PageWithNavMenu } from '../../templates';
 
 const PADDING = 20;
 
+const noTrustedAppStyle: CSSProperties = {
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  padding: `${PADDING}px`
+};
+
 export const TrustedApps: FC = () => {
   const navigate = useNavigate();
   const { selectedWallet } = useWallet();
@@ -20,6 +27,16 @@ export const TrustedApps: FC = () => {
   const indexDefaultNav = useMemo(
     () => navigation.findIndex((link) => link.pathname === SETTINGS_PATH),
     []
+  );
+
+  const trustedAppContainerStyle: CSSProperties = useMemo(
+    () => ({
+      height: `calc(100% - ${NAV_MENU_HEIGHT}px - ${PADDING}px)`,
+      padding: `${PADDING}px ${PADDING}px 0`,
+      overflowY: 'scroll',
+      ...(trustedApps.length === 0 ? noTrustedAppStyle : {})
+    }),
+    [trustedApps.length]
   );
 
   const onRevokeClick = (url: string) => {
@@ -47,13 +64,8 @@ export const TrustedApps: FC = () => {
         <Typography variant="h6">Trusted Apps</Typography>
       </div>
       <Divider />
-      <div
-        style={{
-          height: `calc(100% - ${NAV_MENU_HEIGHT}px - ${PADDING}px)`,
-          padding: `${PADDING}px ${PADDING}px 0`,
-          overflowY: 'scroll'
-        }}
-      >
+      <div style={trustedAppContainerStyle}>
+        {trustedApps.length === 0 ? <Typography>No trusted apps</Typography> : null}
         {trustedApps.map(({ url }) => (
           <TrustedApp
             key={url}
@@ -62,11 +74,6 @@ export const TrustedApps: FC = () => {
             style={{ marginBottom: 20 }}
           />
         ))}
-        <div
-          style={{
-            margin: '1.5rem'
-          }}
-        ></div>
       </div>
     </PageWithNavMenu>
   );

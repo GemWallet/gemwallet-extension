@@ -48,8 +48,8 @@ export const Login: FC = () => {
   }, [navigate, search, selectedWallet, wallets]);
 
   const handleUnlock = useCallback(() => {
-    const isSignIn = signIn((document.getElementById('password') as HTMLInputElement).value);
-    if (isSignIn) {
+    const passwordValue = (document.getElementById('password') as HTMLInputElement).value;
+    if (passwordValue && signIn(passwordValue)) {
       if (search.includes(PARAMETER_TRANSACTION_PAYMENT)) {
         navigate(`${TRANSACTION_PATH}${search}`);
       } else if (search.includes(PARAMETER_ADDRESS)) {

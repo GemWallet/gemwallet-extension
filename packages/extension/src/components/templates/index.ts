@@ -1,5 +1,6 @@
 export * from './AsyncTransaction';
 export * from './ErrorBoundary';
+export * from './LoadingOverlay';
 export * from './PageWithHeader';
 export * from './PageWithNavMenu';
 export * from './PageWithReturn';
