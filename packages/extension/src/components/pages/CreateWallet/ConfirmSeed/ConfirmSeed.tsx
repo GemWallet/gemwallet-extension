@@ -39,7 +39,7 @@ export const ConfirmSeed: FC<ConfirmSeedProps> = ({
       handleBack={handleBack}
       handleNext={handleNext}
     >
-      <Typography variant="h4" component="h1" style={{ marginTop: '30px' }}>
+      <Typography variant="h4" component="h1" style={{ marginTop: '120px' }}>
         Confirm Your Secret Seed
       </Typography>
       <Typography variant="subtitle1" component="h2" style={{ marginTop: '30px' }}>

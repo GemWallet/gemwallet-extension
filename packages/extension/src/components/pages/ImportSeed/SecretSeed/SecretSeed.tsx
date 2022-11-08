@@ -39,7 +39,7 @@ export const SecretSeed: FC<SecretSeedProps> = ({
       handleBack={handleBack}
       handleNext={handleNext}
     >
-      <Typography variant="h4" component="h1" style={{ marginTop: '30px' }}>
+      <Typography variant="h4" component="h1" style={{ marginTop: '130px' }}>
         Secret Seed
       </Typography>
       <Typography variant="subtitle1" component="h2" style={{ marginTop: '30px' }}>

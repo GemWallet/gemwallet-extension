@@ -34,7 +34,7 @@ export const Mnemonic: FC<MnemonicProps> = ({ activeStep, steps, handleBack, set
       handleBack={handleBack}
       handleNext={handleNext}
     >
-      <Typography variant="h4" component="h1" style={{ marginTop: '30px' }}>
+      <Typography variant="h4" component="h1" style={{ marginTop: '140px' }}>
         Mnemonic
       </Typography>
       <Typography variant="subtitle1" component="h2" style={{ marginTop: '30px' }}>

@@ -3,6 +3,7 @@ import { useContext, useState, createContext, FC, useCallback } from 'react';
 import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
 import { Wallet } from 'xrpl';
+import { Account } from 'xrpl-secret-numbers';
 
 import { HOME_PATH } from '../../constants';
 import { WalletLedger } from '../../types';
@@ -14,6 +15,7 @@ export interface WalletContextType {
   generateWallet: (walletName?: string) => Wallet;
   importSeed: (seed: string, walletName?: string) => boolean;
   importMnemonic: (mnemonic: string, walletName?: string) => boolean;
+  importNumbers: (numbers: string[], walletName?: string) => boolean;
   getCurrentWallet: () => WalletLedger | undefined;
   wallets: WalletLedger[];
   selectedWallet: number;
@@ -26,6 +28,7 @@ const WalletContext = createContext<WalletContextType>({
   getCurrentWallet: () => undefined,
   importSeed: () => false,
   importMnemonic: () => false,
+  importNumbers: () => false,
   wallets: [],
   selectedWallet: 0
 });
@@ -126,6 +129,29 @@ const WalletProvider: FC = ({ children }) => {
     }
   }, []);
 
+  const importNumbers = useCallback((numbers: string[], walletName?: string) => {
+    try {
+      const account = new Account(numbers);
+      const seed = account.getFamilySeed();
+      const wallet = Wallet.fromSeed(seed);
+      setWallets((wallets) => [
+        ...wallets,
+        {
+          name: walletName || `Wallet ${wallets.length + 1}`,
+          publicAddress: wallet.address,
+          seed,
+          wallet
+        }
+      ]);
+      if (wallet) {
+        return true;
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }, []);
+
   const getCurrentWallet = useCallback(() => {
     return wallets[selectedWallet];
   }, [selectedWallet, wallets]);
@@ -137,6 +163,7 @@ const WalletProvider: FC = ({ children }) => {
     getCurrentWallet,
     importSeed,
     importMnemonic,
+    importNumbers,
     wallets,
     selectedWallet
   };

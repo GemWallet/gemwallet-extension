@@ -1993,6 +1993,13 @@
   dependencies:
     "@types/node" "*"
 
+"@types/brorand@^1.0.30":
+  version "1.0.30"
+  resolved "https://registry.yarnpkg.com/@types/brorand/-/brorand-1.0.30.tgz#36669854509d770e13037c5804cc8095fc1ca2bb"
+  integrity sha512-moU/Mp0MA5vFNGj1/A7Z5TpNC1uyS82I6KZp0Oxk9OKC2XD0S6aQGLVv9ryBYAs259Cq7h9iM1jN9zbuCrUI9w==
+  dependencies:
+    "@types/node" "*"
+
 "@types/chrome@^0.0.193":
   version "0.0.193"
   resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.193.tgz#cd0dc5033f27a243d228aebe566c3ec19ef17e36"
@@ -10837,7 +10844,7 @@ ripple-binary-codec@^1.4.2:
     decimal.js "^10.2.0"
     ripple-address-codec "^4.2.4"
 
-ripple-keypairs@^1.1.4:
+ripple-keypairs@^1.0.3, ripple-keypairs@^1.1.4:
   version "1.1.4"
   resolved "https://registry.yarnpkg.com/ripple-keypairs/-/ripple-keypairs-1.1.4.tgz#4486fca703b8a2fc4f30cfd568478f3d12c1a911"
   integrity sha512-PMMjTOxZmCSBOvHPj6bA+V/HGx7oFgDtGGI8VcZYuaFO2H87UX0X0jhfHy+LA2Xy31WYlD7GaDIDDt2QO+AMtw==
@@ -13113,6 +13120,15 @@ xmlchars@^2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/xmlchars/-/xmlchars-2.2.0.tgz#060fe1bcb7f9c76fe2a17db86a9bc3ab894210cb"
   integrity sha512-JZnDKK8B0RCDw84FNdDAIpZK+JuJw+s7Lz8nksI7SIuU3UXJJslUthsi+uWBUYOwPFwW7W7PRLRfUKpxjtjFCw==
+
+xrpl-secret-numbers@^0.3.3:
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/xrpl-secret-numbers/-/xrpl-secret-numbers-0.3.3.tgz#cb511dfbad45d3d584d887c71380befde9e704ee"
+  integrity sha512-D6VeXQVJcWQllNDZtX/h+hlnk06bP1EkVZhm14qnEwR8vE/svZJuwrYJQIREkglOJyeZ/+09CHh2iDXgI2ZclQ==
+  dependencies:
+    "@types/brorand" "^1.0.30"
+    brorand "^1.1.0"
+    ripple-keypairs "^1.0.3"
 
 xrpl@^2.4.0:
   version "2.4.0"

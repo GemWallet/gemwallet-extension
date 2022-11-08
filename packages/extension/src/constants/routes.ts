@@ -4,6 +4,7 @@ export const CREATE_NEW_WALLET_PATH = '/create-new-wallet';
 export const HISTORY_PATH = '/history';
 export const HOME_PATH = '/home';
 export const IMPORT_MNEMONIC_PATH = '/import-mnemonic';
+export const IMPORT_SECRET_NUMBERS_PATH = '/import-secret-numbers';
 export const IMPORT_SEED_PATH = '/import-seed';
 export const IMPORT_WALLET_PATH = '/import-wallet';
 export const RESET_PASSWORD_PATH = '/reset-password';

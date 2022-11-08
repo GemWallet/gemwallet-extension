@@ -40,7 +40,7 @@ export const Congratulations: FC<CongratulationsProps> = ({ activeStep, steps, h
       handleNext={handleNext}
       buttonText="Finish"
     >
-      <Typography variant="h4" component="h1" style={{ marginTop: '30px' }}>
+      <Typography variant="h4" component="h1" style={{ marginTop: '140px' }}>
         Woo, you're in!
       </Typography>
       <Typography variant="subtitle1" component="h2" style={{ marginTop: '30px' }}>
