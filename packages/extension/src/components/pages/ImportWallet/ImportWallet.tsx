@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 
 import {
   IMPORT_MNEMONIC_PATH,
+  IMPORT_SECRET_NUMBERS_PATH,
   IMPORT_SEED_PATH,
   SECONDARY_GRAY,
   WELCOME_PATH
@@ -59,6 +60,11 @@ const SECRET_TYPES = [
     name: 'Mnemonic',
     description: 'Based on multiple words',
     link: IMPORT_MNEMONIC_PATH
+  },
+  {
+    name: 'Secret numbers',
+    description: '8 rows of 6 digits',
+    link: IMPORT_SECRET_NUMBERS_PATH
   }
 ];
 
@@ -83,7 +89,7 @@ export const ImportWallet: FC = () => {
       handleNext={handleNext}
       disabledNext={selectedAccount === -1}
     >
-      <Typography variant="h4" component="h1">
+      <Typography variant="h4" component="h1" style={{ marginTop: '30px' }}>
         Import Wallet
       </Typography>
       <Typography

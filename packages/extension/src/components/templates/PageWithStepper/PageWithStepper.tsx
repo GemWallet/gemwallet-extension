@@ -70,17 +70,19 @@ export const PageWithStepper: FC<PageWithStepperProps> = ({
           flexDirection: 'column',
           justifyContent: 'space-between',
           height: '100vh',
-          padding: '30px 5px'
+          padding: '48px 0 24px 0'
         }}
       >
-        <Container style={{ textAlign: 'center', marginTop: '30%' }}>{children}</Container>
-        <Container style={{ display: 'flex', flexDirection: 'column' }}>
-          <Button
-            variant="contained"
-            style={{ marginBottom: '10px' }}
-            onClick={() => handleNext()}
-            disabled={disabledNext}
-          >
+        <Container
+          style={{
+            height: '100%',
+            textAlign: 'center'
+          }}
+        >
+          {children}
+        </Container>
+        <Container style={{ display: 'flex', flexDirection: 'column', marginTop: '24px' }}>
+          <Button variant="contained" onClick={() => handleNext()} disabled={disabledNext}>
             {buttonText}
           </Button>
         </Container>
