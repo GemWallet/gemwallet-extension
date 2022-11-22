@@ -19,7 +19,7 @@ export const SecretSeed: FC<SecretSeedProps> = ({
   handleBack,
   setActiveStep
 }) => {
-  const { wallets, selectedWallet } = useWallet();
+  const { wallets } = useWallet();
 
   const handleNext = useCallback(() => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -40,7 +40,7 @@ export const SecretSeed: FC<SecretSeedProps> = ({
         This is the only way you will be able to recover your account. Please store it somewhere
         safe!
       </Typography>
-      <TextCopy text={wallets[selectedWallet].seed!} />
+      <TextCopy text={wallets[wallets.length - 1].seed!} />
     </PageWithStepper>
   );
 };

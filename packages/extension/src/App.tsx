@@ -13,12 +13,14 @@ import {
 import { PrivateRoute } from './components/atoms/PrivateRoute';
 import {
   About,
+  AddNewWallet,
   CreateWallet,
   Home,
   ImportMnemonic,
   ImportSecretNumbers,
   ImportSeed,
   ImportWallet,
+  ListWallets,
   Login,
   ResetPassword,
   Settings,
@@ -46,7 +48,9 @@ import {
   TRUSTED_APPS_PATH,
   WELCOME_PATH,
   IMPORT_MNEMONIC_PATH,
-  IMPORT_SECRET_NUMBERS_PATH
+  IMPORT_SECRET_NUMBERS_PATH,
+  LIST_WALLETS,
+  ADD_NEW_WALLET
 } from './constants';
 import { useBrowser } from './contexts';
 
@@ -94,6 +98,22 @@ const App: FC = () => {
           element={
             <PrivateRoute>
               <Home />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path={LIST_WALLETS}
+          element={
+            <PrivateRoute>
+              <ListWallets />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path={ADD_NEW_WALLET}
+          element={
+            <PrivateRoute>
+              <AddNewWallet />
             </PrivateRoute>
           }
         />

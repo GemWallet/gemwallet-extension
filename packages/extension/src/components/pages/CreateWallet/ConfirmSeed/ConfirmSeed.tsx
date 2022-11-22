@@ -18,18 +18,19 @@ export const ConfirmSeed: FC<ConfirmSeedProps> = ({
   handleBack,
   setActiveStep
 }) => {
-  const { wallets, selectedWallet } = useWallet();
+  const { wallets } = useWallet();
   const [seedError, setSeedError] = useState('');
 
   const handleNext = useCallback(() => {
     if (
-      (document.getElementById('seed') as HTMLInputElement).value === wallets[selectedWallet].seed
+      (document.getElementById('seed') as HTMLInputElement).value ===
+      wallets[wallets.length - 1].seed
     ) {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     } else {
       setSeedError('Seed incorrect');
     }
-  }, [selectedWallet, setActiveStep, wallets]);
+  }, [setActiveStep, wallets]);
 
   return (
     <PageWithStepper

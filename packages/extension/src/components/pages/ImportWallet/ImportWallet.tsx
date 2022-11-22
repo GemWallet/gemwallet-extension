@@ -1,54 +1,16 @@
 import { FC, useCallback, useState } from 'react';
 
-import { Check as CheckIcon } from '@mui/icons-material';
-import { Box, Card, CardActionArea, CardContent, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 import {
   IMPORT_MNEMONIC_PATH,
   IMPORT_SECRET_NUMBERS_PATH,
   IMPORT_SEED_PATH,
-  SECONDARY_GRAY,
   WELCOME_PATH
 } from '../../../constants';
+import { ButtonOption } from '../../atoms';
 import { PageWithStepper } from '../../templates';
-
-interface SecretTypeProps {
-  name: string;
-  description: string;
-  isSelected: boolean;
-  onClick: () => void;
-}
-const SecretType: FC<SecretTypeProps> = ({ name, description, isSelected, onClick }) => {
-  return (
-    <Card
-      style={{
-        marginBottom: '20px'
-      }}
-      onClick={onClick}
-    >
-      <CardActionArea>
-        <CardContent
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            textAlign: 'initial',
-            border: `solid ${isSelected ? '#FFFFFF' : SECONDARY_GRAY}`
-          }}
-        >
-          <Box>
-            <Typography gutterBottom>{name}</Typography>
-            <Typography variant="subtitle2" color={SECONDARY_GRAY}>
-              {description}
-            </Typography>
-          </Box>
-          {isSelected ? <CheckIcon /> : null}
-        </CardContent>
-      </CardActionArea>
-    </Card>
-  );
-};
 
 const SECRET_TYPES = [
   {
@@ -100,7 +62,7 @@ export const ImportWallet: FC = () => {
         Please select your account secret type
       </Typography>
       {SECRET_TYPES.map(({ name, description }, index) => (
-        <SecretType
+        <ButtonOption
           key={index}
           name={name}
           description={description}

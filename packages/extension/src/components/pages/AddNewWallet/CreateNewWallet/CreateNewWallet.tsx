@@ -1,25 +1,47 @@
 import { useState, useEffect, FC, useCallback } from 'react';
 
 import * as Sentry from '@sentry/react';
+import { useNavigate } from 'react-router-dom';
 import { Wallet } from 'xrpl';
 
-import { useWallet } from '../../../contexts';
-import { PageWithSpinner } from '../../templates';
-import { Congratulations } from '../Congratulations';
-import { CreatePassword } from '../CreatePassword';
-import { ConfirmSeed } from './ConfirmSeed';
+import { LIST_WALLETS } from '../../../../constants';
+import { useWallet } from '../../../../contexts';
+import { saveWallet } from '../../../../utils';
+import { PageWithSpinner } from '../../../templates';
+import { ConfirmSeed } from '../../CreateWallet/ConfirmSeed';
+import { SecretSeed } from '../../CreateWallet/SecretSeed';
 import { STEPS } from './constants';
-import { SecretSeed } from './SecretSeed';
 
-export const CreateWallet: FC = () => {
+export interface CreateNewWalletProps {
+  password: string;
+}
+
+export const CreateNewWallet: FC<CreateNewWalletProps> = ({ password }) => {
+  const navigate = useNavigate();
+
   const [wallet, setWallet] = useState<Wallet | undefined>();
-  const [activeStep, setActiveStep] = useState(0);
+  const [activeStep, setActiveStep] = useState<number>(0);
   const { generateWallet } = useWallet();
 
   useEffect(() => {
     const wallet = generateWallet();
     setWallet(wallet);
   }, [generateWallet]);
+
+  useEffect(() => {
+    if (activeStep === 2) {
+      try {
+        const _wallet = {
+          publicAddress: wallet!.address,
+          seed: wallet!.seed
+        };
+        saveWallet(_wallet, password);
+        navigate(`${LIST_WALLETS}`);
+      } catch (e) {
+        Sentry.captureException(e);
+      }
+    }
+  }, [activeStep, navigate, password, wallet]);
 
   const handleBack = useCallback(() => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
@@ -35,19 +57,8 @@ export const CreateWallet: FC = () => {
     throw error;
   }
 
-  if (activeStep === 3) {
-    return <Congratulations activeStep={activeStep} steps={STEPS} handleBack={handleBack} />;
-  }
-
   if (activeStep === 2) {
-    return (
-      <CreatePassword
-        activeStep={activeStep}
-        steps={STEPS}
-        handleBack={handleBack}
-        setActiveStep={setActiveStep}
-      />
-    );
+    return <PageWithSpinner />;
   }
 
   if (activeStep === 1) {

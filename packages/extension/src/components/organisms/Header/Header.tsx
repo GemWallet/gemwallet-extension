@@ -5,8 +5,9 @@ import DoneIcon from '@mui/icons-material/Done';
 import { AppBar, Box, IconButton, Toolbar, Tooltip, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import copyToClipboard from 'copy-to-clipboard';
+import { useNavigate } from 'react-router-dom';
 
-import { HEADER_HEIGHT_WITHOUT_PADDING, SECONDARY_GRAY } from '../../../constants';
+import { HEADER_HEIGHT_WITHOUT_PADDING, LIST_WALLETS, SECONDARY_GRAY } from '../../../constants';
 import { WalletLedger } from '../../../types';
 import { truncateAddress } from '../../../utils';
 import { WalletIcon } from '../../atoms';
@@ -33,6 +34,8 @@ export interface HeaderProps {
 }
 
 export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => {
+  const navigate = useNavigate();
+
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const [isCopied, setIsCopied] = useState(false);
 
@@ -49,6 +52,10 @@ export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => 
     timerRef.current = setTimeout(() => setIsCopied(false), 2000);
   }, [publicAddress]);
 
+  const onWalletIconClick = useCallback(() => {
+    navigate(LIST_WALLETS);
+  }, [navigate]);
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
@@ -61,7 +68,7 @@ export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => 
               alignItems: 'center'
             }}
           >
-            <WalletIcon publicAddress={publicAddress} />
+            <WalletIcon publicAddress={publicAddress} onClick={onWalletIconClick} />
             <NetworkIndicator />
           </div>
           <Typography variant="body2" style={{ marginTop: '10px' }}>

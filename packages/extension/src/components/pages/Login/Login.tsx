@@ -126,7 +126,7 @@ export const Login: FC = () => {
           onChange={handleTextFieldChange}
           helperText={passwordError}
           type="password"
-          style={{ marginBottom: '20px' }}
+          style={{ marginBottom: !passwordError ? '33px' : '10px' }}
         />
         <Button variant="contained" onClick={handleUnlock}>
           Unlock
