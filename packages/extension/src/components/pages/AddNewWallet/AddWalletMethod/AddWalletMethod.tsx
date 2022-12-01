@@ -34,7 +34,7 @@ export const AddWalletMethod: FC<AddWalletMethodProps> = ({
           onClick={onCreateNewWallet}
         />
         <ButtonOption
-          name="Import a wallet"
+          name="Import a new wallet"
           description="Import an existing wallet"
           onClick={onImportWallet}
         />

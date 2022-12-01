@@ -36,7 +36,7 @@ export const CreateNewWallet: FC<CreateNewWalletProps> = ({ password }) => {
           seed: wallet!.seed
         };
         saveWallet(_wallet, password);
-        navigate(`${LIST_WALLETS}`);
+        navigate(LIST_WALLETS);
       } catch (e) {
         Sentry.captureException(e);
       }
