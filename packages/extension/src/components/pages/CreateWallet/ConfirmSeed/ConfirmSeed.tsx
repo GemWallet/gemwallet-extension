@@ -1,36 +1,33 @@
-import { Dispatch, FC, SetStateAction, useState, useCallback } from 'react';
+import { FC, useState, useCallback } from 'react';
 
 import { TextField, Typography } from '@mui/material';
 
-import { useWallet } from '../../../../contexts';
 import { PageWithStepper } from '../../../templates';
 
 export interface ConfirmSeedProps {
+  seed: string;
   activeStep: number;
   steps: number;
   handleBack: () => void;
-  setActiveStep: Dispatch<SetStateAction<number>>;
+  onConfirm: () => void;
 }
 
 export const ConfirmSeed: FC<ConfirmSeedProps> = ({
+  seed,
   activeStep,
   steps,
   handleBack,
-  setActiveStep
+  onConfirm
 }) => {
-  const { wallets } = useWallet();
   const [seedError, setSeedError] = useState('');
 
   const handleNext = useCallback(() => {
-    if (
-      (document.getElementById('seed') as HTMLInputElement).value ===
-      wallets[wallets.length - 1].seed
-    ) {
-      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    if ((document.getElementById('seed') as HTMLInputElement).value === seed) {
+      onConfirm();
     } else {
       setSeedError('Seed incorrect');
     }
-  }, [setActiveStep, wallets]);
+  }, [seed, onConfirm]);
 
   return (
     <PageWithStepper

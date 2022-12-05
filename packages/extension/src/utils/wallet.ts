@@ -3,7 +3,7 @@ import { Wallet } from '../types';
 import { decrypt, encrypt } from './crypto';
 import { loadData, removeData, saveData } from './storage';
 
-interface WalletToSave extends Omit<Wallet, 'name'> {
+export interface WalletToSave extends Omit<Wallet, 'name'> {
   name?: string;
 }
 

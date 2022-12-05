@@ -2,11 +2,10 @@ import { useState, useEffect, FC, useCallback } from 'react';
 
 import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
-import { Wallet } from 'xrpl';
 
 import { LIST_WALLETS } from '../../../../constants';
 import { useWallet } from '../../../../contexts';
-import { saveWallet } from '../../../../utils';
+import { WalletToSave } from '../../../../utils';
 import { PageWithSpinner } from '../../../templates';
 import { ConfirmSeed } from '../../CreateWallet/ConfirmSeed';
 import { SecretSeed } from '../../CreateWallet/SecretSeed';
@@ -19,32 +18,35 @@ export interface CreateNewWalletProps {
 export const CreateNewWallet: FC<CreateNewWalletProps> = ({ password }) => {
   const navigate = useNavigate();
 
-  const [wallet, setWallet] = useState<Wallet | undefined>();
+  const [wallet, setWallet] = useState<WalletToSave | undefined>();
   const [activeStep, setActiveStep] = useState<number>(0);
-  const { generateWallet } = useWallet();
+  const { generateWallet, importSeed } = useWallet();
 
   useEffect(() => {
     const wallet = generateWallet();
-    setWallet(wallet);
+    setWallet({
+      publicAddress: wallet.address,
+      seed: wallet.seed
+    });
   }, [generateWallet]);
 
   useEffect(() => {
     if (activeStep === 2) {
       try {
-        const _wallet = {
-          publicAddress: wallet!.address,
-          seed: wallet!.seed
-        };
-        saveWallet(_wallet, password);
+        importSeed(password, wallet!.seed!);
         navigate(LIST_WALLETS);
       } catch (e) {
-        Sentry.captureException(e);
+        Sentry.captureException('Cannot save wallet - CreateNewWallet: ' + e);
       }
     }
-  }, [activeStep, navigate, password, wallet]);
+  }, [activeStep, importSeed, navigate, password, wallet]);
 
   const handleBack = useCallback(() => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  }, []);
+
+  const handleConfirmedSeed = useCallback(() => {
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
   }, []);
 
   if (!wallet) {
@@ -64,16 +66,18 @@ export const CreateNewWallet: FC<CreateNewWalletProps> = ({ password }) => {
   if (activeStep === 1) {
     return (
       <ConfirmSeed
+        seed={wallet.seed}
         activeStep={activeStep}
         steps={STEPS}
         handleBack={handleBack}
-        setActiveStep={setActiveStep}
+        onConfirm={handleConfirmedSeed}
       />
     );
   }
 
   return (
     <SecretSeed
+      seed={wallet.seed}
       activeStep={activeStep}
       steps={STEPS}
       handleBack={handleBack}

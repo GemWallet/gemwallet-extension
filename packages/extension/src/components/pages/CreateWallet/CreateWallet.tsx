@@ -1,9 +1,9 @@
 import { useState, useEffect, FC, useCallback } from 'react';
 
 import * as Sentry from '@sentry/react';
-import { Wallet } from 'xrpl';
 
 import { useWallet } from '../../../contexts';
+import { WalletToSave } from '../../../utils';
 import { PageWithSpinner } from '../../templates';
 import { Congratulations } from '../Congratulations';
 import { CreatePassword } from '../CreatePassword';
@@ -12,17 +12,24 @@ import { STEPS } from './constants';
 import { SecretSeed } from './SecretSeed';
 
 export const CreateWallet: FC = () => {
-  const [wallet, setWallet] = useState<Wallet | undefined>();
+  const [wallet, setWallet] = useState<WalletToSave | undefined>();
   const [activeStep, setActiveStep] = useState(0);
   const { generateWallet } = useWallet();
 
   useEffect(() => {
     const wallet = generateWallet();
-    setWallet(wallet);
+    setWallet({
+      publicAddress: wallet.address,
+      seed: wallet.seed
+    });
   }, [generateWallet]);
 
   const handleBack = useCallback(() => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  }, []);
+
+  const handleConfirmedSeed = useCallback(() => {
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
   }, []);
 
   if (!wallet) {
@@ -36,12 +43,13 @@ export const CreateWallet: FC = () => {
   }
 
   if (activeStep === 3) {
-    return <Congratulations activeStep={activeStep} steps={STEPS} handleBack={handleBack} />;
+    return <Congratulations />;
   }
 
   if (activeStep === 2) {
     return (
       <CreatePassword
+        wallet={wallet}
         activeStep={activeStep}
         steps={STEPS}
         handleBack={handleBack}
@@ -53,16 +61,18 @@ export const CreateWallet: FC = () => {
   if (activeStep === 1) {
     return (
       <ConfirmSeed
+        seed={wallet.seed}
         activeStep={activeStep}
         steps={STEPS}
         handleBack={handleBack}
-        setActiveStep={setActiveStep}
+        onConfirm={handleConfirmedSeed}
       />
     );
   }
 
   return (
     <SecretSeed
+      seed={wallet.seed}
       activeStep={activeStep}
       steps={STEPS}
       handleBack={handleBack}

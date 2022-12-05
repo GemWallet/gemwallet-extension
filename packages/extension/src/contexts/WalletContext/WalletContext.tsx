@@ -3,19 +3,21 @@ import { useContext, useState, createContext, FC, useCallback } from 'react';
 import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
 import { Wallet } from 'xrpl';
-import { Account } from 'xrpl-secret-numbers';
 
 import { HOME_PATH } from '../../constants';
 import { WalletLedger } from '../../types';
-import { loadWallets } from '../../utils';
+import { loadWallets, numbersToSeed, saveWallet } from '../../utils';
 
 export interface WalletContextType {
   signIn: (password: string) => boolean;
   signOut: () => void;
   generateWallet: (walletName?: string) => Wallet;
-  importSeed: (seed: string, walletName?: string) => boolean;
-  importMnemonic: (mnemonic: string, walletName?: string) => boolean;
-  importNumbers: (numbers: string[], walletName?: string) => boolean;
+  isValidSeed: (seed: string) => boolean;
+  importSeed: (password: string, seed: string, walletName?: string) => boolean;
+  isValidMnemonic: (mnemonic: string) => boolean;
+  importMnemonic: (password: string, mnemonic: string, walletName?: string) => boolean;
+  isValidNumbers: (numbers: string[]) => boolean;
+  importNumbers: (password: string, numbers: string[], walletName?: string) => boolean;
   getCurrentWallet: () => WalletLedger | undefined;
   wallets: WalletLedger[];
   selectedWallet: number;
@@ -26,8 +28,11 @@ const WalletContext = createContext<WalletContextType>({
   signOut: () => {},
   generateWallet: () => Wallet.generate(),
   getCurrentWallet: () => undefined,
+  isValidSeed: () => false,
   importSeed: () => false,
+  isValidMnemonic: () => false,
   importMnemonic: () => false,
+  isValidNumbers: () => false,
   importNumbers: () => false,
   wallets: [],
   selectedWallet: 0
@@ -73,23 +78,30 @@ const WalletProvider: FC = ({ children }) => {
     navigate(HOME_PATH);
   }, [navigate]);
 
-  const generateWallet = useCallback((walletName?: string) => {
-    const wallet = Wallet.generate();
-    setWallets((wallets) => [
-      ...wallets,
-      {
-        name: walletName || `Wallet ${wallets.length + 1}`,
-        publicAddress: wallet.address,
-        seed: wallet.seed,
-        wallet
-      }
-    ]);
-    return wallet;
+  const generateWallet = useCallback(() => {
+    return Wallet.generate();
   }, []);
 
-  const importSeed = useCallback((seed: string, walletName?: string) => {
+  const isValidSeed = useCallback((seed: string) => {
     try {
       const wallet = Wallet.fromSeed(seed);
+      if (wallet.seed) {
+        return true;
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }, []);
+
+  const importSeed = useCallback((password: string, seed: string, walletName?: string) => {
+    try {
+      const wallet = Wallet.fromSeed(seed);
+      const _wallet = {
+        publicAddress: wallet.address,
+        seed
+      };
+      saveWallet(_wallet, password);
       setWallets((wallets) => [
         ...wallets,
         {
@@ -108,9 +120,26 @@ const WalletProvider: FC = ({ children }) => {
     }
   }, []);
 
-  const importMnemonic = useCallback((mnemonic: string, walletName?: string) => {
+  const isValidMnemonic = useCallback((mnemonic: string) => {
     try {
       const wallet = Wallet.fromMnemonic(mnemonic);
+      if (wallet) {
+        return true;
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }, []);
+
+  const importMnemonic = useCallback((password: string, mnemonic: string, walletName?: string) => {
+    try {
+      const wallet = Wallet.fromMnemonic(mnemonic);
+      const _wallet = {
+        publicAddress: wallet.address,
+        mnemonic
+      };
+      saveWallet(_wallet, password);
       setWallets((wallets) => [
         ...wallets,
         {
@@ -129,11 +158,28 @@ const WalletProvider: FC = ({ children }) => {
     }
   }, []);
 
-  const importNumbers = useCallback((numbers: string[], walletName?: string) => {
+  const isValidNumbers = useCallback((numbers: string[]) => {
     try {
-      const account = new Account(numbers);
-      const seed = account.getFamilySeed();
+      const seed = numbersToSeed(numbers);
       const wallet = Wallet.fromSeed(seed);
+      if (wallet) {
+        return true;
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }, []);
+
+  const importNumbers = useCallback((password: string, numbers: string[], walletName?: string) => {
+    try {
+      const seed = numbersToSeed(numbers);
+      const wallet = Wallet.fromSeed(seed);
+      const _wallet = {
+        publicAddress: wallet.address,
+        seed
+      };
+      saveWallet(_wallet, password);
       setWallets((wallets) => [
         ...wallets,
         {
@@ -161,8 +207,11 @@ const WalletProvider: FC = ({ children }) => {
     signOut,
     generateWallet,
     getCurrentWallet,
+    isValidSeed,
     importSeed,
+    isValidMnemonic,
     importMnemonic,
+    isValidNumbers,
     importNumbers,
     wallets,
     selectedWallet

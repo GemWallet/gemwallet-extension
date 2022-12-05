@@ -1,12 +1,10 @@
 import { FC, useCallback, useState, FocusEvent } from 'react';
 
 import { Grid, TextField, Typography } from '@mui/material';
-import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
 
 import { ERROR_RED, LIST_WALLETS } from '../../../../../constants';
 import { useWallet } from '../../../../../contexts';
-import { saveWallet } from '../../../../../utils';
 import { PageWithStepper } from '../../../../templates';
 import styles from './styles.module.css';
 
@@ -37,7 +35,7 @@ export const ImportSecretNumbers: FC<ImportSecretNumbersProps> = ({
   handleBack
 }) => {
   const navigate = useNavigate();
-  const { importNumbers, wallets } = useWallet();
+  const { importNumbers } = useWallet();
   const [numbersError, setNumbersError] = useState('');
   const [inputErrors, setInputErrors] = useState<InputErrors>({
     numbersA: '',
@@ -73,25 +71,14 @@ export const ImportSecretNumbers: FC<ImportSecretNumbersProps> = ({
     );
 
     if (numbers.find((number) => !schemaInput.test(number)) === undefined) {
-      const isValidNumbers = importNumbers(numbers);
+      const isValidNumbers = importNumbers(password, numbers);
       if (isValidNumbers) {
-        try {
-          // TODO: This saving logic shouldn't be done here,
-          // it should be by default when importMnemonic is called
-          const _wallet = {
-            publicAddress: wallets[wallets.length - 1]!.publicAddress,
-            seed: wallets[wallets.length - 1]!.seed
-          };
-          saveWallet(_wallet, password);
-          navigate(LIST_WALLETS);
-        } catch (e) {
-          Sentry.captureException(e);
-        }
+        navigate(LIST_WALLETS);
       } else {
         setNumbersError('Your secret numbers are incorrect.');
       }
     }
-  }, [importNumbers, inputErrors, navigate, password, wallets]);
+  }, [importNumbers, inputErrors, navigate, password]);
 
   return (
     <PageWithStepper

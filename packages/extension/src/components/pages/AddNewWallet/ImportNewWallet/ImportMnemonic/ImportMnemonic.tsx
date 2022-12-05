@@ -1,12 +1,10 @@
 import { FC, useCallback, useState } from 'react';
 
 import { TextField, Typography } from '@mui/material';
-import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
 
 import { LIST_WALLETS } from '../../../../../constants';
 import { useWallet } from '../../../../../contexts';
-import { saveWallet } from '../../../../../utils';
 import { PageWithStepper } from '../../../../templates';
 
 export interface ImportMnemonicProps {
@@ -17,30 +15,20 @@ export interface ImportMnemonicProps {
 
 export const ImportMnemonic: FC<ImportMnemonicProps> = ({ activeStep, password, handleBack }) => {
   const navigate = useNavigate();
-  const { importMnemonic, wallets } = useWallet();
+  const { importMnemonic } = useWallet();
   const [mnemonicError, setMnemonicError] = useState('');
 
   const handleNext = useCallback(() => {
     const isValidMnemonic = importMnemonic(
+      password,
       (document.getElementById('mnemonic') as HTMLInputElement).value
     );
     if (isValidMnemonic) {
-      try {
-        // TODO: This saving logic shouldn't be done here,
-        // it should be by default when importMnemonic is called
-        const _wallet = {
-          publicAddress: wallets[wallets.length - 1]!.publicAddress,
-          seed: wallets[wallets.length - 1]!.seed
-        };
-        saveWallet(_wallet, password);
-        navigate(LIST_WALLETS);
-      } catch (e) {
-        Sentry.captureException(e);
-      }
+      navigate(LIST_WALLETS);
     } else {
       setMnemonicError('Your mnemonic is invalid');
     }
-  }, [importMnemonic, navigate, password, wallets]);
+  }, [importMnemonic, navigate, password]);
 
   return (
     <PageWithStepper

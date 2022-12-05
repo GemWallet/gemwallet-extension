@@ -1,12 +1,10 @@
 import { FC, useState, useCallback } from 'react';
 
 import { TextField, Typography } from '@mui/material';
-import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
 
 import { LIST_WALLETS } from '../../../../../constants';
 import { useWallet } from '../../../../../contexts';
-import { saveWallet } from '../../../../../utils';
 import { PageWithStepper } from '../../../../templates';
 
 export interface ImportSeedProps {
@@ -17,28 +15,20 @@ export interface ImportSeedProps {
 
 export const ImportSeed: FC<ImportSeedProps> = ({ activeStep, password, handleBack }) => {
   const navigate = useNavigate();
-  const { importSeed, wallets } = useWallet();
+  const { importSeed } = useWallet();
   const [seedError, setSeedError] = useState('');
 
   const handleNext = useCallback(() => {
-    const isValidSeed = importSeed((document.getElementById('seed') as HTMLInputElement).value);
+    const isValidSeed = importSeed(
+      password,
+      (document.getElementById('seed') as HTMLInputElement).value
+    );
     if (isValidSeed) {
-      try {
-        // TODO: This saving logic shouldn't be done here,
-        // it should be by default when importSeed is called
-        const _wallet = {
-          publicAddress: wallets[wallets.length - 1]!.publicAddress,
-          seed: wallets[wallets.length - 1]!.seed
-        };
-        saveWallet(_wallet, password);
-        navigate(LIST_WALLETS);
-      } catch (e) {
-        Sentry.captureException(e);
-      }
+      navigate(LIST_WALLETS);
     } else {
       setSeedError('Your seed is invalid');
     }
-  }, [importSeed, navigate, password, wallets]);
+  }, [importSeed, navigate, password]);
 
   return (
     <PageWithStepper

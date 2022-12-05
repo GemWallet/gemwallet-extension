@@ -1,4 +1,4 @@
-import { Dispatch, FC, SetStateAction, useCallback, useState } from 'react';
+import { FC, useCallback, useState } from 'react';
 
 import { TextField, Typography } from '@mui/material';
 
@@ -8,35 +8,29 @@ import { PageWithStepper } from '../../../templates';
 export interface SecretSeedProps {
   activeStep: number;
   steps: number;
-  handleBack: () => void;
-  setActiveStep: Dispatch<SetStateAction<number>>;
+  onBack: () => void;
+  onNext: (seed: string) => void;
 }
 
-export const SecretSeed: FC<SecretSeedProps> = ({
-  activeStep,
-  steps,
-  handleBack,
-  setActiveStep
-}) => {
+export const SecretSeed: FC<SecretSeedProps> = ({ activeStep, steps, onBack, onNext }) => {
   const [seedError, setSeedError] = useState('');
-  const { importSeed } = useWallet();
+  const { isValidSeed } = useWallet();
 
   const handleNext = useCallback(() => {
     const seedValue = (document.getElementById('seed') as HTMLInputElement).value;
-    const isValidSeed = importSeed(seedValue);
-    if (isValidSeed) {
-      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    if (isValidSeed(seedValue)) {
+      onNext(seedValue);
     } else {
       setSeedError('Your seed is invalid');
     }
-  }, [importSeed, setActiveStep]);
+  }, [isValidSeed, onNext]);
 
   return (
     <PageWithStepper
       steps={steps}
       activeStep={activeStep}
       buttonText="Next"
-      handleBack={handleBack}
+      handleBack={onBack}
       handleNext={handleNext}
     >
       <Typography variant="h4" component="h1" style={{ marginTop: '130px' }}>

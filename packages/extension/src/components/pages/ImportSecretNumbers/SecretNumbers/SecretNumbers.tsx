@@ -1,4 +1,4 @@
-import { Dispatch, FC, SetStateAction, useCallback, useState, FocusEvent } from 'react';
+import { FC, useCallback, useState, FocusEvent } from 'react';
 
 import { Grid, TextField, Typography } from '@mui/material';
 
@@ -25,17 +25,12 @@ const DIGIT_ERROR = 'You need 6 digits';
 export interface SecretNumbersProps {
   activeStep: number;
   steps: number;
-  handleBack: () => void;
-  setActiveStep: Dispatch<SetStateAction<number>>;
+  onBack: () => void;
+  onNext: (seed: string[]) => void;
 }
 
-export const SecretNumbers: FC<SecretNumbersProps> = ({
-  activeStep,
-  steps,
-  handleBack,
-  setActiveStep
-}) => {
-  const { importNumbers } = useWallet();
+export const SecretNumbers: FC<SecretNumbersProps> = ({ activeStep, steps, onBack, onNext }) => {
+  const { isValidNumbers } = useWallet();
   const [numbersError, setNumbersError] = useState('');
   const [inputErrors, setInputErrors] = useState<InputErrors>({
     numbersA: '',
@@ -71,21 +66,20 @@ export const SecretNumbers: FC<SecretNumbersProps> = ({
     );
 
     if (numbers.find((number) => !schemaInput.test(number)) === undefined) {
-      const isValidNumbers = importNumbers(numbers);
-      if (isValidNumbers) {
-        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      if (isValidNumbers(numbers)) {
+        onNext(numbers);
       } else {
         setNumbersError('Your secret numbers are incorrect.');
       }
     }
-  }, [importNumbers, inputErrors, setActiveStep]);
+  }, [inputErrors, isValidNumbers, onNext]);
 
   return (
     <PageWithStepper
       steps={steps}
       activeStep={activeStep}
       buttonText="Next"
-      handleBack={handleBack}
+      handleBack={onBack}
       handleNext={handleNext}
     >
       <Typography variant="h4" component="h1" style={{ marginTop: '20px' }}>
