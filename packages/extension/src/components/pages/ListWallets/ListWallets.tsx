@@ -30,14 +30,16 @@ export const ListWallets: FC = () => {
         actionIcon: <AddIcon />
       }}
     >
-      {wallets.map(({ name, publicAddress }) => (
-        <Wallet
-          name={name}
-          publicAddress={publicAddress}
-          key={publicAddress}
-          style={{ marginBottom: '10px' }}
-        />
-      ))}
+      <div style={{ overflowY: 'scroll', height: '518px' }}>
+        {wallets.map(({ name, publicAddress }) => (
+          <Wallet
+            name={name}
+            publicAddress={publicAddress}
+            key={publicAddress}
+            style={{ marginBottom: '10px' }}
+          />
+        ))}
+      </div>
     </PageWithReturn>
   );
 };
