@@ -1,4 +1,4 @@
-import { STORAGE_WALLETS } from '../constants/localStorage';
+import { STORAGE_SELECTED_WALLET, STORAGE_WALLETS } from '../constants/localStorage';
 import { Wallet } from '../types';
 import { decrypt, encrypt } from './crypto';
 import { loadData, removeData, saveData } from './storage';
@@ -38,4 +38,21 @@ export const removeWallets = () => {
   return Promise.resolve().then(() => {
     removeData(STORAGE_WALLETS);
   });
+};
+
+export const saveSelectedWallet = (index: number): void => {
+  try {
+    saveData(STORAGE_SELECTED_WALLET, String(index));
+  } catch (e) {
+    throw e;
+  }
+};
+
+export const loadSelectedWallet = (): number => {
+  try {
+    const data = loadData(STORAGE_SELECTED_WALLET);
+    return data ? Number(JSON.parse(data)) : 0;
+  } catch (e) {
+    return 0;
+  }
 };

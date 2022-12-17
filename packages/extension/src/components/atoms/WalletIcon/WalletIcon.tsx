@@ -8,9 +8,15 @@ export interface WalletIconProps {
   onClick?: MouseEventHandler<HTMLDivElement>;
   publicAddress: string;
   size?: 'md' | 'xl';
+  isConnectedInformation?: boolean;
 }
 
-export const WalletIcon: FC<WalletIconProps> = ({ publicAddress, onClick, size = 'md' }) => {
+export const WalletIcon: FC<WalletIconProps> = ({
+  publicAddress,
+  onClick,
+  size = 'md',
+  isConnectedInformation = false
+}) => {
   const { client } = useNetwork();
 
   return (
@@ -18,7 +24,7 @@ export const WalletIcon: FC<WalletIconProps> = ({ publicAddress, onClick, size =
       style={{
         width: size === 'md' ? '45px' : '60px',
         height: size === 'md' ? '45px' : '60px',
-        border: `solid 2px ${client ? 'green' : 'red'}`,
+        border: isConnectedInformation ? `solid 2px ${client ? 'green' : 'red'}` : 'none',
         borderRadius: '50%',
         display: 'flex',
         alignItems: 'center',

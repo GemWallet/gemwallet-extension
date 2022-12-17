@@ -9,10 +9,12 @@ import { Wallet as WalletToSaveType } from '../../types';
 import { WalletLedger } from '../../types';
 import {
   encrypt,
+  loadSelectedWallet,
   loadWallets,
   numbersToSeed,
   removeWallets,
   saveData,
+  saveSelectedWallet,
   saveWallet
 } from '../../utils';
 
@@ -20,6 +22,7 @@ export interface WalletContextType {
   signIn: (password: string) => boolean;
   signOut: () => void;
   generateWallet: (walletName?: string) => Wallet;
+  selectWallet: (index: number) => void;
   isValidSeed: (seed: string) => boolean;
   importSeed: (password: string, seed: string, walletName?: string) => boolean | undefined;
   isValidMnemonic: (mnemonic: string) => boolean;
@@ -38,6 +41,7 @@ export interface WalletContextType {
 const WalletContext = createContext<WalletContextType>({
   signIn: () => false,
   signOut: () => {},
+  selectWallet: () => {},
   generateWallet: () => Wallet.generate(),
   getCurrentWallet: () => undefined,
   getWalletByPublicAddress: () => undefined,
@@ -57,12 +61,7 @@ const WalletContext = createContext<WalletContextType>({
 const WalletProvider: FC = ({ children }) => {
   const navigate = useNavigate();
   const [wallets, setWallets] = useState<WalletLedger[]>([]);
-  // TODO: Use setSelectedWallet when multi-wallet creation and choosing feature will be done
-  /* The default selectedWallet will be selected by a value in local storage
-   * In order to be sure that the last selected wallet of the user stays the same
-   */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [selectedWallet, setSelectedWallet] = useState<number>(0);
+  const [selectedWallet, setSelectedWallet] = useState<number>(loadSelectedWallet());
   const [password, setPassword] = useState<string>();
 
   const signIn = useCallback((password: string) => {
@@ -98,6 +97,11 @@ const WalletProvider: FC = ({ children }) => {
 
   const generateWallet = useCallback(() => {
     return Wallet.generate();
+  }, []);
+
+  const selectWallet = useCallback((index: number) => {
+    saveSelectedWallet(index);
+    setSelectedWallet(index);
   }, []);
 
   const isValidSeed = useCallback((seed: string) => {
@@ -300,6 +304,7 @@ const WalletProvider: FC = ({ children }) => {
   const value: WalletContextType = {
     signIn,
     signOut,
+    selectWallet,
     generateWallet,
     getCurrentWallet,
     getWalletByPublicAddress,

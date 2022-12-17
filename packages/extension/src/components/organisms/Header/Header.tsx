@@ -68,7 +68,11 @@ export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => 
               alignItems: 'center'
             }}
           >
-            <WalletIcon publicAddress={publicAddress} onClick={onWalletIconClick} />
+            <WalletIcon
+              publicAddress={publicAddress}
+              onClick={onWalletIconClick}
+              isConnectedInformation
+            />
             <NetworkIndicator />
           </div>
           <Typography variant="body2" style={{ marginTop: '10px' }}>

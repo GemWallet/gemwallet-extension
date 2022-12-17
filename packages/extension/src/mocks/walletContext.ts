@@ -18,6 +18,7 @@ const mockWalletLedger: WalletLedger = {
 };
 
 export interface GenerateWalletContextParams {
+  selectWallet?: () => void;
   generateWallet?: () => Wallet;
   getCurrentWallet?: () => WalletLedger | undefined;
   getWalletByPublicAddress?: () => WalletLedger | undefined;
@@ -45,8 +46,6 @@ export const generateWalletContext = (params?: GenerateWalletContextParams): Wal
     importMnemonic = () => true,
     isValidNumbers = () => true,
     importNumbers = () => true,
-    renameWallet = () => {},
-    removeWallet = () => {},
     selectedWallet = 0,
     wallets = [mockWalletLedger],
     password
@@ -55,6 +54,7 @@ export const generateWalletContext = (params?: GenerateWalletContextParams): Wal
   return {
     signIn: jest.fn(),
     signOut: jest.fn(),
+    selectWallet: jest.fn(),
     generateWallet,
     getCurrentWallet,
     getWalletByPublicAddress,
@@ -64,8 +64,8 @@ export const generateWalletContext = (params?: GenerateWalletContextParams): Wal
     importMnemonic,
     isValidNumbers,
     importNumbers,
-    renameWallet,
-    removeWallet,
+    renameWallet: jest.fn(),
+    removeWallet: jest.fn(),
     selectedWallet,
     wallets,
     password
