@@ -43,7 +43,13 @@ export const Wallet: FC<WalletProps> = ({ publicAddress, name, isSelected = fals
           </Typography>
         </div>
       </div>
-      <IconButton aria-label="More" onClick={() => navigate(`${EDIT_WALLET}/${publicAddress}`)}>
+      <IconButton
+        aria-label="More"
+        onClick={(e) => {
+          e.stopPropagation();
+          navigate(`${EDIT_WALLET}/${publicAddress}`);
+        }}
+      >
         <MoreHorizIcon />
       </IconButton>
     </Paper>

@@ -1,6 +1,7 @@
 import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
+import ContentPasteGoIcon from '@mui/icons-material/ContentPasteGo';
 import WarningIcon from '@mui/icons-material/Warning';
 import { Button, Paper, TextField, Typography } from '@mui/material';
 import copyToClipboard from 'copy-to-clipboard';
@@ -20,6 +21,7 @@ export interface ShowSecretProps {
 export const ShowSecret: FC<ShowSecretProps> = ({ seed, mnemonic, onBackButton }) => {
   const [passwordError, setPasswordError] = useState<string>('');
   const [step, setStep] = useState<'password' | 'showSecret'>('password');
+  const [isCopied, setIsCopied] = useState(false);
   const { password } = useWallet();
 
   const secretType: Secret = useMemo(() => (seed ? 'seed' : 'mnemonic'), [seed]);
@@ -38,6 +40,7 @@ export const ShowSecret: FC<ShowSecretProps> = ({ seed, mnemonic, onBackButton }
 
   const handleCopy = useCallback(() => {
     copyToClipboard((seed || mnemonic) as string);
+    setIsCopied(true);
   }, [seed, mnemonic]);
 
   /*
@@ -122,7 +125,11 @@ export const ShowSecret: FC<ShowSecretProps> = ({ seed, mnemonic, onBackButton }
                 <Typography variant="body1" style={{ marginRight: '5px' }}>
                   Copy
                 </Typography>
-                <ContentPasteIcon fontSize="small" />
+                {isCopied ? (
+                  <ContentPasteGoIcon color="success" fontSize="small" />
+                ) : (
+                  <ContentPasteIcon fontSize="small" />
+                )}
               </Paper>
             </>
           )}
