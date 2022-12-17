@@ -21,6 +21,14 @@ export const ListWallets: FC = () => {
     navigate(ADD_NEW_WALLET);
   }, [navigate]);
 
+  const handleSelectWallet = useCallback(
+    (index: number) => {
+      selectWallet(index);
+      handleBack();
+    },
+    [handleBack, selectWallet]
+  );
+
   return (
     <PageWithReturn
       title="Your wallets"
@@ -37,7 +45,7 @@ export const ListWallets: FC = () => {
             publicAddress={publicAddress}
             key={publicAddress}
             isSelected={selectedWallet === index}
-            onClick={() => selectWallet(index)}
+            onClick={() => handleSelectWallet(index)}
           />
         ))}
       </div>
