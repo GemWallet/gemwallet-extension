@@ -23,9 +23,9 @@ export interface WalletContextType {
   isValidSeed: (seed: string) => boolean;
   importSeed: (password: string, seed: string, walletName?: string) => boolean | undefined;
   isValidMnemonic: (mnemonic: string) => boolean;
-  importMnemonic: (password: string, mnemonic: string, walletName?: string) => boolean;
+  importMnemonic: (password: string, mnemonic: string, walletName?: string) => boolean | undefined;
   isValidNumbers: (numbers: string[]) => boolean;
-  importNumbers: (password: string, numbers: string[], walletName?: string) => boolean;
+  importNumbers: (password: string, numbers: string[], walletName?: string) => boolean | undefined;
   getCurrentWallet: () => WalletLedger | undefined;
   getWalletByPublicAddress: (publicAddress: string) => WalletLedger | undefined;
   renameWallet: (name: string, publicAddress: string) => void;
@@ -121,13 +121,13 @@ const WalletProvider: FC = ({ children }) => {
     (password: string, seed: string, walletName?: string) => {
       try {
         const wallet = Wallet.fromSeed(seed);
+        if (wallets.filter((w) => w.publicAddress === wallet.address).length > 0) {
+          return undefined;
+        }
         const _wallet = {
           publicAddress: wallet.address,
           seed
         };
-        if (wallets.filter((w) => w.publicAddress === wallet.address).length > 0) {
-          return undefined;
-        }
         saveWallet(_wallet, password);
         setWallets((wallets) => [
           ...wallets,
@@ -161,31 +161,37 @@ const WalletProvider: FC = ({ children }) => {
     }
   }, []);
 
-  const importMnemonic = useCallback((password: string, mnemonic: string, walletName?: string) => {
-    try {
-      const wallet = Wallet.fromMnemonic(mnemonic);
-      const _wallet = {
-        publicAddress: wallet.address,
-        mnemonic
-      };
-      saveWallet(_wallet, password);
-      setWallets((wallets) => [
-        ...wallets,
-        {
-          name: walletName || `Wallet ${wallets.length + 1}`,
-          publicAddress: wallet.address,
-          mnemonic,
-          wallet
+  const importMnemonic = useCallback(
+    (password: string, mnemonic: string, walletName?: string) => {
+      try {
+        const wallet = Wallet.fromMnemonic(mnemonic);
+        if (wallets.filter((w) => w.publicAddress === wallet.classicAddress).length > 0) {
+          return undefined;
         }
-      ]);
-      if (wallet) {
-        return true;
+        const _wallet = {
+          publicAddress: wallet.address,
+          mnemonic
+        };
+        saveWallet(_wallet, password);
+        setWallets((wallets) => [
+          ...wallets,
+          {
+            name: walletName || `Wallet ${wallets.length + 1}`,
+            publicAddress: wallet.address,
+            mnemonic,
+            wallet
+          }
+        ]);
+        if (wallet) {
+          return true;
+        }
+        return false;
+      } catch (e) {
+        return false;
       }
-      return false;
-    } catch (e) {
-      return false;
-    }
-  }, []);
+    },
+    [wallets]
+  );
 
   const isValidNumbers = useCallback((numbers: string[]) => {
     try {
@@ -200,32 +206,38 @@ const WalletProvider: FC = ({ children }) => {
     }
   }, []);
 
-  const importNumbers = useCallback((password: string, numbers: string[], walletName?: string) => {
-    try {
-      const seed = numbersToSeed(numbers);
-      const wallet = Wallet.fromSeed(seed);
-      const _wallet = {
-        publicAddress: wallet.address,
-        seed
-      };
-      saveWallet(_wallet, password);
-      setWallets((wallets) => [
-        ...wallets,
-        {
-          name: walletName || `Wallet ${wallets.length + 1}`,
-          publicAddress: wallet.address,
-          seed,
-          wallet
+  const importNumbers = useCallback(
+    (password: string, numbers: string[], walletName?: string) => {
+      try {
+        const seed = numbersToSeed(numbers);
+        const wallet = Wallet.fromSeed(seed);
+        if (wallets.filter((w) => w.publicAddress === wallet.address).length > 0) {
+          return undefined;
         }
-      ]);
-      if (wallet) {
-        return true;
+        const _wallet = {
+          publicAddress: wallet.address,
+          seed
+        };
+        saveWallet(_wallet, password);
+        setWallets((wallets) => [
+          ...wallets,
+          {
+            name: walletName || `Wallet ${wallets.length + 1}`,
+            publicAddress: wallet.address,
+            seed,
+            wallet
+          }
+        ]);
+        if (wallet) {
+          return true;
+        }
+        return false;
+      } catch (e) {
+        return false;
       }
-      return false;
-    } catch (e) {
-      return false;
-    }
-  }, []);
+    },
+    [wallets]
+  );
 
   const renameWallet = useCallback(
     (name: string, publicAddress: string) => {

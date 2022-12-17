@@ -74,8 +74,10 @@ export const ImportSecretNumbers: FC<ImportSecretNumbersProps> = ({
       const isValidNumbers = importNumbers(password, numbers);
       if (isValidNumbers) {
         navigate(LIST_WALLETS);
-      } else {
+      } else if (isValidNumbers === false) {
         setNumbersError('Your secret numbers are incorrect.');
+      } else {
+        setNumbersError('This wallet is already imported');
       }
     }
   }, [importNumbers, inputErrors, navigate, password]);

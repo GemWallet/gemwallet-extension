@@ -25,8 +25,10 @@ export const ImportMnemonic: FC<ImportMnemonicProps> = ({ activeStep, password, 
     );
     if (isValidMnemonic) {
       navigate(LIST_WALLETS);
-    } else {
+    } else if (isValidMnemonic === false) {
       setMnemonicError('Your mnemonic is invalid');
+    } else {
+      setMnemonicError('This wallet is already imported');
     }
   }, [importMnemonic, navigate, password]);
 
