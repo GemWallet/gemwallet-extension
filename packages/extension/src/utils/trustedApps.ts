@@ -34,11 +34,11 @@ export const saveTrustedApp = (trustedApp: TrustedApp, walletIndex: number): voi
     permissions: [...new Set([...previousTrustedApp.permissions, ...trustedApp.permissions])]
   };
 
-  // We update the trustedApp if it already exist
+  // We update the trustedApp if it already exists
   if (previousTrustedAppIndex !== -1) {
     trustedApps[walletIndex][previousTrustedAppIndex] = newTrustedApp;
-    // Else we just push the newTrustedApp
   } else {
+    // Else we just push the newTrustedApp
     trustedApps[walletIndex].push(newTrustedApp);
   }
 
@@ -52,11 +52,15 @@ export const saveTrustedApp = (trustedApp: TrustedApp, walletIndex: number): voi
 };
 
 export const loadTrustedApps = (walletIndex: number): TrustedApp[] => {
-  const data = loadData(STORAGE_TRUSTED_APPS);
-  if (data) {
-    return JSON.parse(data)[walletIndex];
+  try {
+    const trustedAppsData = loadData(STORAGE_TRUSTED_APPS);
+    if (!trustedAppsData) return [];
+
+    const trustedAppsArray = JSON.parse(trustedAppsData);
+    return trustedAppsArray[walletIndex] || [];
+  } catch (error) {
+    return [];
   }
-  return [];
 };
 
 export const removeTrustedApp = (url: string, walletIndex: number): TrustedApp[] => {

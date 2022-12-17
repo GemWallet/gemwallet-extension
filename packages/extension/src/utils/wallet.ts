@@ -24,14 +24,18 @@ export const saveWallet = (wallet: WalletToSave, password: string) => {
 };
 
 export const loadWallets = (password: string): Wallet[] => {
-  const data = loadData(STORAGE_WALLETS);
-  if (data) {
-    const decryptedData = decrypt(data, password);
-    if (decryptedData !== undefined) {
-      return JSON.parse(decryptedData);
+  try {
+    const data = loadData(STORAGE_WALLETS);
+    if (data) {
+      const decryptedData = decrypt(data, password);
+      if (decryptedData !== undefined) {
+        return JSON.parse(decryptedData);
+      }
     }
+    return [];
+  } catch (error) {
+    return [];
   }
-  return [];
 };
 
 export const removeWallets = () => {

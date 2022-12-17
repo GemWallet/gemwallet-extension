@@ -5,7 +5,7 @@ describe('breakStringByLine', () => {
     const originalString =
       'This is a very long string that needs to be wrapped every 30 characters.';
     const expectedString =
-      'This is a very long strin\ng that needs to be wrap\nped every 30 character\ns.';
+      'This is a very long string tha\nt needs to be wrapped every 30\n characters.';
     expect(breakStringByLine(originalString, 30)).toEqual(expectedString);
   });
 
@@ -13,7 +13,7 @@ describe('breakStringByLine', () => {
     const originalString =
       'This is a very long string that needs to be wrapped every 50 characters.';
     const expectedString =
-      'This is a very long strin\ng that needs to be wrapped\n every 50 characters.';
+      'This is a very long string that needs to be wrappe\nd every 50 characters.';
     expect(breakStringByLine(originalString, 50)).toEqual(expectedString);
   });
 
