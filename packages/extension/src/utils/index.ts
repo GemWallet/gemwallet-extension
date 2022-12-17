@@ -1,3 +1,4 @@
+export * from './breakStringByLine';
 export * from './crypto';
 export * from './format';
 export * from './link';

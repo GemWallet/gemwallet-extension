@@ -20,28 +20,36 @@ const mockWalletLedger: WalletLedger = {
 export interface GenerateWalletContextParams {
   generateWallet?: () => Wallet;
   getCurrentWallet?: () => WalletLedger | undefined;
+  getWalletByPublicAddress?: () => WalletLedger | undefined;
   isValidSeed?: () => boolean;
   importSeed?: () => boolean;
   isValidMnemonic?: () => boolean;
   importMnemonic?: () => boolean;
   isValidNumbers?: () => boolean;
   importNumbers?: () => boolean;
+  renameWallet?: () => void;
+  removeWallet?: () => void;
   selectedWallet?: number;
   wallets?: WalletLedger[];
+  password?: string;
 }
 
 export const generateWalletContext = (params?: GenerateWalletContextParams): WalletContextType => {
   const {
     generateWallet = () => mockWallet,
     getCurrentWallet = () => mockWalletLedger,
+    getWalletByPublicAddress = () => mockWalletLedger,
     isValidSeed = () => true,
     importSeed = () => true,
     isValidMnemonic = () => true,
     importMnemonic = () => true,
     isValidNumbers = () => true,
     importNumbers = () => true,
+    renameWallet = () => {},
+    removeWallet = () => {},
     selectedWallet = 0,
-    wallets = [mockWalletLedger]
+    wallets = [mockWalletLedger],
+    password
   } = params || {};
 
   return {
@@ -49,13 +57,17 @@ export const generateWalletContext = (params?: GenerateWalletContextParams): Wal
     signOut: jest.fn(),
     generateWallet,
     getCurrentWallet,
+    getWalletByPublicAddress,
     isValidSeed,
     importSeed,
     isValidMnemonic,
     importMnemonic,
     isValidNumbers,
     importNumbers,
+    renameWallet,
+    removeWallet,
     selectedWallet,
-    wallets
+    wallets,
+    password
   };
 };

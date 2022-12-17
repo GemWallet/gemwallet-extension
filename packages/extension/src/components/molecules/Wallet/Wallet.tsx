@@ -2,8 +2,9 @@ import { CSSProperties, FC, useMemo } from 'react';
 
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import { IconButton, Paper, Typography } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
-import { SECONDARY_GRAY } from '../../../constants';
+import { EDIT_WALLET, SECONDARY_GRAY } from '../../../constants';
 import { truncateAddress } from '../../../utils';
 import { WalletIcon } from '../../atoms';
 
@@ -14,6 +15,8 @@ export interface WalletProps {
 }
 
 export const Wallet: FC<WalletProps> = ({ publicAddress, name, style }) => {
+  const navigate = useNavigate();
+
   const truncatedAddress = useMemo(() => truncateAddress(publicAddress), [publicAddress]);
 
   return (
@@ -36,7 +39,7 @@ export const Wallet: FC<WalletProps> = ({ publicAddress, name, style }) => {
           </Typography>
         </div>
       </div>
-      <IconButton aria-label="More">
+      <IconButton aria-label="More" onClick={() => navigate(`${EDIT_WALLET}/${publicAddress}`)}>
         <MoreHorizIcon />
       </IconButton>
     </Paper>

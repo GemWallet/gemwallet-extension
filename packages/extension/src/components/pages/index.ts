@@ -1,6 +1,7 @@
 export * from './About';
 export * from './AddNewWallet';
 export * from './CreateWallet';
+export * from './EditWallet';
 export * from './Home';
 export * from './ImportMnemonic';
 export * from './ImportSecretNumbers';

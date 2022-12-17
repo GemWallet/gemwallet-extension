@@ -2,6 +2,7 @@ export const MAIN_FILE = '/index.html';
 export const ABOUT_PATH = '/about';
 export const ADD_NEW_WALLET = '/add-new-wallet';
 export const CREATE_NEW_WALLET_PATH = '/create-new-wallet';
+export const EDIT_WALLET = '/edit-wallet';
 export const HISTORY_PATH = '/history';
 export const HOME_PATH = '/home';
 export const IMPORT_MNEMONIC_PATH = '/import-mnemonic';

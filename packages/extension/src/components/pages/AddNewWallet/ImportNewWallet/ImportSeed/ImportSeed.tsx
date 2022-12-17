@@ -25,8 +25,10 @@ export const ImportSeed: FC<ImportSeedProps> = ({ activeStep, password, handleBa
     );
     if (isValidSeed) {
       navigate(LIST_WALLETS);
-    } else {
+    } else if (isValidSeed === false) {
       setSeedError('Your seed is invalid');
+    } else {
+      setSeedError('This wallet is already imported');
     }
   }, [importSeed, navigate, password]);
 

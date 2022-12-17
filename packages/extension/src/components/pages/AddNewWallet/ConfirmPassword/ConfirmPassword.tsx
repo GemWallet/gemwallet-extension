@@ -27,6 +27,7 @@ export const ConfirmPassword: FC<ConfirmPasswordProps> = ({ setPassword, onConfi
 
   const handleConfirmPassword = useCallback(() => {
     const passwordValue = (document.getElementById('password') as HTMLInputElement).value;
+    //TODO: See how to refactor this maybe just comparing with a password string from the context would be enough
     if (passwordValue && signIn(passwordValue)) {
       setPassword(passwordValue);
       onConfirmPassword();
@@ -37,6 +38,7 @@ export const ConfirmPassword: FC<ConfirmPasswordProps> = ({ setPassword, onConfi
   /*
    * Handle Confirm Password step button by pressing 'Enter'
    */
+  //TODO: This can be converted to a custom hook everywhere it is used in the codebase
   useEffect(() => {
     const upHandler = ({ key }: { key: string }) => {
       if (key === 'Enter') {

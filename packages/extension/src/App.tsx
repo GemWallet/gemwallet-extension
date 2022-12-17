@@ -15,6 +15,7 @@ import {
   About,
   AddNewWallet,
   CreateWallet,
+  EditWallet,
   Home,
   ImportMnemonic,
   ImportSecretNumbers,
@@ -50,7 +51,8 @@ import {
   IMPORT_MNEMONIC_PATH,
   IMPORT_SECRET_NUMBERS_PATH,
   LIST_WALLETS,
-  ADD_NEW_WALLET
+  ADD_NEW_WALLET,
+  EDIT_WALLET
 } from './constants';
 import { useBrowser } from './contexts';
 
@@ -106,6 +108,14 @@ const App: FC = () => {
           element={
             <PrivateRoute>
               <ListWallets />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path={`${EDIT_WALLET}/:publicAddress`}
+          element={
+            <PrivateRoute>
+              <EditWallet />
             </PrivateRoute>
           }
         />

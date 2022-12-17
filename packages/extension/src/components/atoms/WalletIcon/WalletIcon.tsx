@@ -7,16 +7,17 @@ import { useNetwork } from '../../../contexts';
 export interface WalletIconProps {
   onClick?: MouseEventHandler<HTMLDivElement>;
   publicAddress: string;
+  size?: 'md' | 'xl';
 }
 
-export const WalletIcon: FC<WalletIconProps> = ({ publicAddress, onClick }) => {
+export const WalletIcon: FC<WalletIconProps> = ({ publicAddress, onClick, size = 'md' }) => {
   const { client } = useNetwork();
 
   return (
     <div
       style={{
-        width: '45px',
-        height: '45px',
+        width: size === 'md' ? '45px' : '60px',
+        height: size === 'md' ? '45px' : '60px',
         border: `solid 2px ${client ? 'green' : 'red'}`,
         borderRadius: '50%',
         display: 'flex',
@@ -30,14 +31,14 @@ export const WalletIcon: FC<WalletIconProps> = ({ publicAddress, onClick }) => {
         style={{
           borderRadius: '50%',
           backgroundColor: 'white',
-          width: '42px',
-          height: '42px',
+          width: size === 'md' ? '42px' : '60px',
+          height: size === 'md' ? '42px' : '60px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center'
         }}
       >
-        <Hashicon value={publicAddress} size={35} />
+        <Hashicon value={publicAddress} size={size === 'md' ? 35 : 50} />
       </div>
     </div>
   );

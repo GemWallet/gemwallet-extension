@@ -4,23 +4,35 @@ import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
 import { Wallet } from 'xrpl';
 
-import { HOME_PATH } from '../../constants';
+import { HOME_PATH, STORAGE_WALLETS } from '../../constants';
+import { Wallet as WalletToSaveType } from '../../types';
 import { WalletLedger } from '../../types';
-import { loadWallets, numbersToSeed, saveWallet } from '../../utils';
+import {
+  encrypt,
+  loadWallets,
+  numbersToSeed,
+  removeWallets,
+  saveData,
+  saveWallet
+} from '../../utils';
 
 export interface WalletContextType {
   signIn: (password: string) => boolean;
   signOut: () => void;
   generateWallet: (walletName?: string) => Wallet;
   isValidSeed: (seed: string) => boolean;
-  importSeed: (password: string, seed: string, walletName?: string) => boolean;
+  importSeed: (password: string, seed: string, walletName?: string) => boolean | undefined;
   isValidMnemonic: (mnemonic: string) => boolean;
   importMnemonic: (password: string, mnemonic: string, walletName?: string) => boolean;
   isValidNumbers: (numbers: string[]) => boolean;
   importNumbers: (password: string, numbers: string[], walletName?: string) => boolean;
   getCurrentWallet: () => WalletLedger | undefined;
+  getWalletByPublicAddress: (publicAddress: string) => WalletLedger | undefined;
+  renameWallet: (name: string, publicAddress: string) => void;
+  removeWallet: (publicAddress: string) => void;
   wallets: WalletLedger[];
   selectedWallet: number;
+  password?: string;
 }
 
 const WalletContext = createContext<WalletContextType>({
@@ -28,14 +40,18 @@ const WalletContext = createContext<WalletContextType>({
   signOut: () => {},
   generateWallet: () => Wallet.generate(),
   getCurrentWallet: () => undefined,
+  getWalletByPublicAddress: () => undefined,
   isValidSeed: () => false,
   importSeed: () => false,
   isValidMnemonic: () => false,
   importMnemonic: () => false,
   isValidNumbers: () => false,
   importNumbers: () => false,
+  renameWallet: () => {},
+  removeWallet: () => {},
   wallets: [],
-  selectedWallet: 0
+  selectedWallet: 0,
+  password: undefined
 });
 
 const WalletProvider: FC = ({ children }) => {
@@ -47,6 +63,7 @@ const WalletProvider: FC = ({ children }) => {
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [selectedWallet, setSelectedWallet] = useState<number>(0);
+  const [password, setPassword] = useState<string>();
 
   const signIn = useCallback((password: string) => {
     const wallets = loadWallets(password);
@@ -68,6 +85,7 @@ const WalletProvider: FC = ({ children }) => {
         };
       });
       setWallets(_wallets);
+      setPassword(password);
       return true;
     }
     return false;
@@ -94,31 +112,42 @@ const WalletProvider: FC = ({ children }) => {
     }
   }, []);
 
-  const importSeed = useCallback((password: string, seed: string, walletName?: string) => {
-    try {
-      const wallet = Wallet.fromSeed(seed);
-      const _wallet = {
-        publicAddress: wallet.address,
-        seed
-      };
-      saveWallet(_wallet, password);
-      setWallets((wallets) => [
-        ...wallets,
-        {
-          name: walletName || `Wallet ${wallets.length + 1}`,
+  /* Returns:
+   * true: if import is successful
+   * false: if import is not successful
+   * undefined: if wallet is already present
+   */
+  const importSeed = useCallback(
+    (password: string, seed: string, walletName?: string) => {
+      try {
+        const wallet = Wallet.fromSeed(seed);
+        const _wallet = {
           publicAddress: wallet.address,
-          seed,
-          wallet
+          seed
+        };
+        if (wallets.filter((w) => w.publicAddress === wallet.address).length > 0) {
+          return undefined;
         }
-      ]);
-      if (wallet.seed) {
-        return true;
+        saveWallet(_wallet, password);
+        setWallets((wallets) => [
+          ...wallets,
+          {
+            name: walletName || `Wallet ${wallets.length + 1}`,
+            publicAddress: wallet.address,
+            seed,
+            wallet
+          }
+        ]);
+        if (wallet.seed) {
+          return true;
+        }
+        return false;
+      } catch (e) {
+        return false;
       }
-      return false;
-    } catch (e) {
-      return false;
-    }
-  }, []);
+    },
+    [wallets]
+  );
 
   const isValidMnemonic = useCallback((mnemonic: string) => {
     try {
@@ -198,23 +227,81 @@ const WalletProvider: FC = ({ children }) => {
     }
   }, []);
 
+  const renameWallet = useCallback(
+    (name: string, publicAddress: string) => {
+      const walletIndex = wallets.findIndex((wallet) => wallet.publicAddress === publicAddress);
+      if (walletIndex >= 0) {
+        const newWallet = { ...wallets[walletIndex] };
+        newWallet.name = name;
+        const newWallets = [...wallets];
+        newWallets[walletIndex] = newWallet;
+        setWallets(newWallets);
+        const walletToSave: WalletToSaveType[] = newWallets.map(
+          ({ name, publicAddress, seed, mnemonic }) => ({
+            name,
+            publicAddress,
+            seed,
+            mnemonic
+          })
+        );
+        saveData(STORAGE_WALLETS, encrypt(JSON.stringify(walletToSave), password as string));
+      }
+    },
+    [password, wallets]
+  );
+
+  const removeWallet = useCallback(
+    (publicAddress: string) => {
+      const walletIndex = wallets.findIndex((wallet) => wallet.publicAddress === publicAddress);
+      if (walletIndex >= 0) {
+        if (wallets.length === 1) {
+          removeWallets();
+        }
+        const newWallets = [...wallets];
+        newWallets.splice(walletIndex, 1);
+        setWallets(newWallets);
+        const walletToSave: WalletToSaveType[] = newWallets.map(
+          ({ name, publicAddress, seed, mnemonic }) => ({
+            name,
+            publicAddress,
+            seed,
+            mnemonic
+          })
+        );
+        saveData(STORAGE_WALLETS, encrypt(JSON.stringify(walletToSave), password as string));
+      }
+    },
+    [password, wallets]
+  );
+
   const getCurrentWallet = useCallback(() => {
     return wallets[selectedWallet];
   }, [selectedWallet, wallets]);
+
+  const getWalletByPublicAddress = useCallback(
+    (publicAddress: string) => {
+      return wallets.filter((wallet) => wallet.publicAddress === publicAddress)[0] || undefined;
+    },
+    [wallets]
+  );
 
   const value: WalletContextType = {
     signIn,
     signOut,
     generateWallet,
     getCurrentWallet,
+    getWalletByPublicAddress,
     isValidSeed,
     importSeed,
     isValidMnemonic,
     importMnemonic,
     isValidNumbers,
     importNumbers,
+    renameWallet,
+    removeWallet,
     wallets,
-    selectedWallet
+    selectedWallet,
+    password
   };
 
   return <WalletContext.Provider value={value}>{children}</WalletContext.Provider>;
