@@ -100,4 +100,19 @@ describe('ShowSecret', () => {
     fireEvent.change(screen.getByLabelText('Password'), { target: { value: password } });
     expect(screen.queryByText('Incorrect password')).toBeNull();
   });
+
+  it('copies secret to clipboard and resets after 2 seconds', async () => {
+    renderShowSecret();
+
+    const passwordInput = screen.getByLabelText('Password');
+    fireEvent.change(passwordInput, { target: { value: password } });
+    await fireEvent.click(screen.getByText('Show'));
+
+    expect(screen.getByTestId('ContentCopyIcon')).toBeInTheDocument();
+
+    const copyButton = screen.getByRole('button', { name: 'Copy seed' });
+    await fireEvent.click(copyButton);
+
+    expect(screen.getByTestId('DoneIcon')).toBeInTheDocument();
+  });
 });

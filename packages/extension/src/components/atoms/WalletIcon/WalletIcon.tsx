@@ -19,12 +19,16 @@ export const WalletIcon: FC<WalletIconProps> = ({
 }) => {
   const { client } = useNetwork();
 
+  const borderColor = client ? 'green' : 'red';
+
   return (
     <div
+      role={onClick ? 'button' : undefined}
+      aria-label={isConnectedInformation ? `Wallet icon with ${borderColor} border` : 'Wallet icon'}
       style={{
         width: size === 'md' ? '45px' : '60px',
         height: size === 'md' ? '45px' : '60px',
-        border: isConnectedInformation ? `solid 2px ${client ? 'green' : 'red'}` : 'none',
+        border: isConnectedInformation ? `solid 2px ${borderColor}` : 'none',
         borderRadius: '50%',
         display: 'flex',
         alignItems: 'center',
