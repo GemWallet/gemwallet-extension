@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import { FC, useCallback, useMemo, useState } from 'react';
 
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import DoneIcon from '@mui/icons-material/Done';
@@ -7,7 +7,7 @@ import { Button, Paper, TextField, Typography } from '@mui/material';
 import copyToClipboard from 'copy-to-clipboard';
 
 import { useWallet } from '../../../../contexts';
-import { useTimeout } from '../../../../hooks';
+import { useKeyUp, useTimeout } from '../../../../hooks';
 import { breakStringByLine } from '../../../../utils';
 import { PageWithReturn } from '../../../templates';
 
@@ -46,20 +46,16 @@ export const ShowSecret: FC<ShowSecretProps> = ({ seed, mnemonic, onBackButton }
     setTimeout(() => setIsCopied(false));
   }, [seed, mnemonic, setTimeout]);
 
-  /*
-   * Handle Confirm Password step button by pressing 'Enter'
-   */
-  useEffect(() => {
-    const upHandler = ({ key }: { key: string }) => {
-      if (key === 'Enter') {
-        handleConfirmPassword();
-      }
-    };
-    window.addEventListener('keyup', upHandler);
-    return () => {
-      window.removeEventListener('keyup', upHandler);
-    };
-  }, [handleConfirmPassword]);
+  const handleKeyUp = useCallback(() => {
+    if (step === 'password') {
+      handleConfirmPassword();
+    } else {
+      onBackButton();
+    }
+  }, [handleConfirmPassword, onBackButton, step]);
+
+  // Handle Confirm Password step or Done button by pressing 'Enter'
+  useKeyUp('Enter', handleKeyUp);
 
   return (
     <PageWithReturn title={`Show ${secretType}`} onBackClick={onBackButton}>

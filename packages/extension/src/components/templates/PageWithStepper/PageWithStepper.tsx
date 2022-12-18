@@ -1,8 +1,10 @@
-import { FC, useEffect } from 'react';
+import { FC } from 'react';
 
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import { Button, Container, MobileStepper } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+
+import { useKeyUp } from '../../../hooks';
 
 export interface PageWithStepperProps {
   steps: number;
@@ -24,20 +26,8 @@ export const PageWithStepper: FC<PageWithStepperProps> = ({
 }) => {
   const navigate = useNavigate();
 
-  /*
-   * Handle Next step button by pressing 'Enter'
-   */
-  useEffect(() => {
-    const upHandler = ({ key }: { key: string }) => {
-      if (key === 'Enter') {
-        handleNext();
-      }
-    };
-    window.addEventListener('keyup', upHandler);
-    return () => {
-      window.removeEventListener('keyup', upHandler);
-    };
-  }, [activeStep, handleNext]);
+  //Handle Next step button by pressing 'Enter'
+  useKeyUp('Enter', handleNext);
 
   const handleBackButton = () => {
     if (activeStep === 0) {

@@ -1,10 +1,11 @@
-import { FC, useCallback, useEffect, useState } from 'react';
+import { FC, useCallback, useState } from 'react';
 
 import { Button, TextField, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 import { LIST_WALLETS } from '../../../../constants';
 import { useWallet } from '../../../../contexts';
+import { useKeyUp } from '../../../../hooks';
 import { PageWithReturn } from '../../../templates';
 
 export interface ConfirmPasswordProps {
@@ -35,21 +36,8 @@ export const ConfirmPassword: FC<ConfirmPasswordProps> = ({ setPassword, onConfi
     setPasswordError('Incorrect password');
   }, [onConfirmPassword, setPassword, signIn]);
 
-  /*
-   * Handle Confirm Password step button by pressing 'Enter'
-   */
-  //TODO: This can be converted to a custom hook everywhere it is used in the codebase
-  useEffect(() => {
-    const upHandler = ({ key }: { key: string }) => {
-      if (key === 'Enter') {
-        handleConfirmPassword();
-      }
-    };
-    window.addEventListener('keyup', upHandler);
-    return () => {
-      window.removeEventListener('keyup', upHandler);
-    };
-  }, [handleConfirmPassword]);
+  // Handle Confirm Password step button by pressing 'Enter'
+  useKeyUp('Enter', handleConfirmPassword);
 
   return (
     <PageWithReturn title="Add Wallet" onBackClick={handleBack} style={{ height: '100%' }}>
