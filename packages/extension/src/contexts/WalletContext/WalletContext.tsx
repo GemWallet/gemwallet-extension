@@ -12,6 +12,7 @@ import {
   loadSelectedWallet,
   loadWallets,
   numbersToSeed,
+  removeWalletFromTrustedApp,
   removeWallets,
   saveData,
   saveSelectedWallet,
@@ -284,6 +285,8 @@ const WalletProvider: FC = ({ children }) => {
             mnemonic
           })
         );
+        // We also want to remove the trusted apps associated to this wallet
+        removeWalletFromTrustedApp(walletIndex);
         saveData(STORAGE_WALLETS, encrypt(JSON.stringify(walletToSave), password as string));
       }
     },
