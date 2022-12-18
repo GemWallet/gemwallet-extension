@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import DoneIcon from '@mui/icons-material/Done';
@@ -7,6 +7,7 @@ import { Button, Paper, TextField, Typography } from '@mui/material';
 import copyToClipboard from 'copy-to-clipboard';
 
 import { useWallet } from '../../../../contexts';
+import { useTimeout } from '../../../../hooks';
 import { breakStringByLine } from '../../../../utils';
 import { PageWithReturn } from '../../../templates';
 
@@ -18,23 +19,12 @@ export interface ShowSecretProps {
   onBackButton: () => void;
 }
 
-const resetTimeout = (timeoutReference: NodeJS.Timeout | null) => {
-  if (timeoutReference) {
-    clearTimeout(timeoutReference);
-  }
-};
-
 export const ShowSecret: FC<ShowSecretProps> = ({ seed, mnemonic, onBackButton }) => {
-  // TODO: Refactor the timer as a custom hook (used in different components)
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
   const [passwordError, setPasswordError] = useState<string>('');
   const [step, setStep] = useState<'password' | 'showSecret'>('password');
   const [isCopied, setIsCopied] = useState(false);
   const { password } = useWallet();
-
-  useEffect(() => {
-    return () => resetTimeout(timerRef.current);
-  }, []);
+  const setTimeout = useTimeout(2000);
 
   const secretType: Secret = useMemo(() => (seed ? 'seed' : 'mnemonic'), [seed]);
 
@@ -51,11 +41,10 @@ export const ShowSecret: FC<ShowSecretProps> = ({ seed, mnemonic, onBackButton }
   }, [password]);
 
   const handleCopy = useCallback(() => {
-    resetTimeout(timerRef.current);
     copyToClipboard((seed || mnemonic) as string);
     setIsCopied(true);
-    timerRef.current = setTimeout(() => setIsCopied(false), 2000);
-  }, [seed, mnemonic]);
+    setTimeout(() => setIsCopied(false));
+  }, [seed, mnemonic, setTimeout]);
 
   /*
    * Handle Confirm Password step button by pressing 'Enter'

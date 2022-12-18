@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FC, useCallback, useMemo, useState } from 'react';
 
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import DoneIcon from '@mui/icons-material/Done';
@@ -8,6 +8,7 @@ import copyToClipboard from 'copy-to-clipboard';
 import { useNavigate } from 'react-router-dom';
 
 import { HEADER_HEIGHT_WITHOUT_PADDING, LIST_WALLETS, SECONDARY_GRAY } from '../../../constants';
+import { useTimeout } from '../../../hooks';
 import { WalletLedger } from '../../../types';
 import { truncateAddress } from '../../../utils';
 import { WalletIcon } from '../../atoms';
@@ -23,34 +24,23 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   }
 }));
 
-const resetTimeout = (timeoutReference: NodeJS.Timeout | null) => {
-  if (timeoutReference) {
-    clearTimeout(timeoutReference);
-  }
-};
-
 export interface HeaderProps {
   wallet: WalletLedger;
 }
 
 export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => {
   const navigate = useNavigate();
+  const setTimeout = useTimeout(2000);
 
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
   const [isCopied, setIsCopied] = useState(false);
-
-  useEffect(() => {
-    return () => resetTimeout(timerRef.current);
-  }, []);
 
   const truncatedAddress = useMemo(() => truncateAddress(publicAddress), [publicAddress]);
 
   const handleShare = useCallback(() => {
-    resetTimeout(timerRef.current);
     copyToClipboard(publicAddress);
     setIsCopied(true);
-    timerRef.current = setTimeout(() => setIsCopied(false), 2000);
-  }, [publicAddress]);
+    setTimeout(() => setIsCopied(false));
+  }, [publicAddress, setTimeout]);
 
   const onWalletIconClick = useCallback(() => {
     navigate(LIST_WALLETS);
