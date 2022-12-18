@@ -87,6 +87,20 @@ export const removeTrustedApp = (url: string, walletIndex: number): TrustedApp[]
   return trustedApps[walletIndex];
 };
 
+export const removeWalletFromTrustedApp = (walletIndex: number): void => {
+  const trustedApps: TrustedApp[][] = JSON.parse(loadData(STORAGE_TRUSTED_APPS) || '[[]]');
+
+  if (trustedApps[walletIndex]) {
+    trustedApps.splice(walletIndex, 1);
+  }
+
+  try {
+    saveData(STORAGE_TRUSTED_APPS, JSON.stringify(trustedApps));
+  } catch (e) {
+    throw e;
+  }
+};
+
 // Checks if the trustedApp includes all the permissions
 export const checkPermissions = (trustedApp: TrustedApp, permissions: Permission[]): boolean => {
   return permissions.every((permission) => trustedApp.permissions.includes(permission));
