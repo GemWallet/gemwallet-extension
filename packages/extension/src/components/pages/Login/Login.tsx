@@ -18,6 +18,7 @@ import {
   SHARE_PUBLIC_KEY_PATH
 } from '../../../constants';
 import { useWallet } from '../../../contexts';
+import { useKeyUp } from '../../../hooks/useKeyUp';
 import { loadData } from '../../../utils';
 import { Logo } from '../../atoms/Logo';
 
@@ -66,20 +67,8 @@ export const Login: FC = () => {
     }
   }, [signIn, search, navigate]);
 
-  /*
-   * Handle Login step button by pressing 'Enter'
-   */
-  useEffect(() => {
-    const upHandler = ({ key }: { key: string }) => {
-      if (key === 'Enter') {
-        handleUnlock();
-      }
-    };
-    window.addEventListener('keyup', upHandler);
-    return () => {
-      window.removeEventListener('keyup', upHandler);
-    };
-  }, [handleUnlock]);
+  // Handle Login step button by pressing 'Enter'
+  useKeyUp('Enter', handleUnlock);
 
   const handleTextFieldChange = useCallback(() => {
     setPasswordError('');
@@ -126,7 +115,7 @@ export const Login: FC = () => {
           onChange={handleTextFieldChange}
           helperText={passwordError}
           type="password"
-          style={{ marginBottom: '20px' }}
+          style={{ marginBottom: !passwordError ? '33px' : '10px' }}
         />
         <Button variant="contained" onClick={handleUnlock}>
           Unlock

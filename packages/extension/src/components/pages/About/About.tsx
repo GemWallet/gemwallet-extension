@@ -52,7 +52,7 @@ export const About: FC = () => {
   }, [navigate]);
 
   return (
-    <PageWithReturn title="About" handleBack={handleBack}>
+    <PageWithReturn title="About" onBackClick={handleBack}>
       <div
         style={{
           height: '100%',

@@ -5,6 +5,10 @@ import { generateWalletContext } from '../../../mocks';
 import { WalletLedger } from '../../../types';
 import { Header } from './Header';
 
+jest.mock('react-router-dom', () => ({
+  useNavigate: () => jest.fn()
+}));
+
 jest.mock('../../atoms', () => ({ WalletIcon: () => 'Mocked Wallet Icon' }));
 window.prompt = jest.fn();
 

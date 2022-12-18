@@ -1,4 +1,4 @@
-import { Dispatch, FC, SetStateAction, useCallback, useState } from 'react';
+import { FC, useCallback, useState } from 'react';
 
 import { TextField, Typography } from '@mui/material';
 
@@ -8,30 +8,29 @@ import { PageWithStepper } from '../../../templates';
 export interface MnemonicProps {
   activeStep: number;
   steps: number;
-  handleBack: () => void;
-  setActiveStep: Dispatch<SetStateAction<number>>;
+  onBack: () => void;
+  onNext: (mnemonic: string) => void;
 }
 
-export const Mnemonic: FC<MnemonicProps> = ({ activeStep, steps, handleBack, setActiveStep }) => {
+export const Mnemonic: FC<MnemonicProps> = ({ activeStep, steps, onBack, onNext }) => {
   const [mnemonicError, setMnemonicError] = useState('');
-  const { importMnemonic } = useWallet();
+  const { isValidMnemonic } = useWallet();
 
   const handleNext = useCallback(() => {
     const mnemonicValue = (document.getElementById('mnemonic') as HTMLInputElement).value;
-    const isValidMnemonic = importMnemonic(mnemonicValue);
-    if (isValidMnemonic) {
-      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    if (isValidMnemonic(mnemonicValue)) {
+      onNext(mnemonicValue);
     } else {
       setMnemonicError('Your mnemonic is invalid');
     }
-  }, [importMnemonic, setActiveStep]);
+  }, [isValidMnemonic, onNext]);
 
   return (
     <PageWithStepper
       steps={steps}
       activeStep={activeStep}
       buttonText="Next"
-      handleBack={handleBack}
+      handleBack={onBack}
       handleNext={handleNext}
     >
       <Typography variant="h4" component="h1" style={{ marginTop: '140px' }}>

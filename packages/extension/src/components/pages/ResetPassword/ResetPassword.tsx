@@ -25,7 +25,7 @@ export const ResetPassword: FC = () => {
   }, [resetNetwork, signOut]);
 
   return (
-    <PageWithReturn title="Reset Password" handleBack={handleBack}>
+    <PageWithReturn title="Reset Password" onBackClick={handleBack}>
       <div
         style={{
           height: '100%',

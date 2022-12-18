@@ -2,11 +2,11 @@ import { Dispatch, FC, SetStateAction, useCallback } from 'react';
 
 import { Typography } from '@mui/material';
 
-import { useWallet } from '../../../../contexts';
 import { TextCopy } from '../../../molecules';
 import { PageWithStepper } from '../../../templates';
 
 export interface SecretSeedProps {
+  seed: string;
   activeStep: number;
   steps: number;
   handleBack: () => void;
@@ -14,13 +14,12 @@ export interface SecretSeedProps {
 }
 
 export const SecretSeed: FC<SecretSeedProps> = ({
+  seed,
   activeStep,
   steps,
   handleBack,
   setActiveStep
 }) => {
-  const { wallets, selectedWallet } = useWallet();
-
   const handleNext = useCallback(() => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   }, [setActiveStep]);
@@ -40,7 +39,7 @@ export const SecretSeed: FC<SecretSeedProps> = ({
         This is the only way you will be able to recover your account. Please store it somewhere
         safe!
       </Typography>
-      <TextCopy text={wallets[selectedWallet].seed!} />
+      <TextCopy text={seed} />
     </PageWithStepper>
   );
 };

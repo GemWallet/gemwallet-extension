@@ -1,1 +1,1 @@
-export const STEPS = 4;
+export const STEPS = 3;

@@ -1,7 +1,7 @@
 import { FC } from 'react';
 
 import { useWallet } from '../../../contexts';
-import { Wallet } from '../../molecules';
+import { WalletDetail } from '../../organisms';
 import { PageWithHeader } from '../../templates';
 
 export const Home: FC = () => {
@@ -9,7 +9,7 @@ export const Home: FC = () => {
 
   return (
     <PageWithHeader>
-      <Wallet address={wallets?.[selectedWallet]?.publicAddress || 'Loading...'} />
+      <WalletDetail address={wallets?.[selectedWallet]?.publicAddress || 'Loading...'} />
     </PageWithHeader>
   );
 };

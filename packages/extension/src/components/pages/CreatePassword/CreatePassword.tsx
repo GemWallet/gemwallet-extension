@@ -4,11 +4,11 @@ import { TextField, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
 
 import { ERROR_RED } from '../../../constants';
-import { useWallet } from '../../../contexts';
-import { saveWallet } from '../../../utils';
+import { saveWallet, WalletToSave } from '../../../utils';
 import { PageWithStepper } from '../../templates';
 
 export interface CreatePasswordProps {
+  wallet: WalletToSave;
   activeStep: number;
   steps: number;
   handleBack: () => void;
@@ -16,6 +16,7 @@ export interface CreatePasswordProps {
 }
 
 export const CreatePassword: FC<CreatePasswordProps> = ({
+  wallet,
   activeStep,
   steps,
   handleBack,
@@ -23,7 +24,6 @@ export const CreatePassword: FC<CreatePasswordProps> = ({
 }) => {
   const [passwordError, setPasswordError] = useState('');
   const [saveWalletError, setSaveWalletError] = useState('');
-  const { wallets, selectedWallet } = useWallet();
 
   const handleNext = useCallback(() => {
     const passwordValue = (document.getElementById('password') as HTMLInputElement).value;
@@ -33,14 +33,9 @@ export const CreatePassword: FC<CreatePasswordProps> = ({
       setPasswordError('Password must be at least 8 characters long');
     } else if (passwordValue !== confirmPasswordValue) {
       setPasswordError('Passwords must match');
-    } else if (wallets[selectedWallet]) {
-      const _wallet = {
-        publicAddress: wallets[selectedWallet].publicAddress,
-        seed: wallets[selectedWallet].seed,
-        mnemonic: wallets[selectedWallet].mnemonic
-      };
+    } else {
       try {
-        saveWallet(_wallet, passwordValue);
+        saveWallet(wallet, passwordValue);
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
       } catch (e) {
         Sentry.captureException(e);
@@ -49,7 +44,7 @@ export const CreatePassword: FC<CreatePasswordProps> = ({
         );
       }
     }
-  }, [selectedWallet, setActiveStep, wallets]);
+  }, [setActiveStep, wallet]);
 
   return (
     <PageWithStepper

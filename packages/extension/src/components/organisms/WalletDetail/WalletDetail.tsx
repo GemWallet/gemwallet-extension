@@ -8,8 +8,8 @@ import * as Sentry from '@sentry/react';
 import { Tokens } from '../../../constants';
 import { useNetwork, useServer } from '../../../contexts';
 import { TokenLoader } from '../../atoms';
-import { InformationMessage } from '../InformationMessage';
-import { TokenDisplay } from '../TokenDisplay';
+import { InformationMessage } from '../../molecules/InformationMessage';
+import { TokenDisplay } from '../../molecules/TokenDisplay';
 
 const LOADING_STATE = 'Loading...';
 const ERROR_STATE = 'Error';
@@ -27,7 +27,7 @@ const Transition = forwardRef(function Transition(
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export const Wallet: FC<WalletProps> = ({ address }) => {
+export const WalletDetail: FC<WalletProps> = ({ address }) => {
   const [balance, setBalance] = useState(LOADING_STATE);
   const [explanationOpen, setExplanationOpen] = useState(false);
   const { client } = useNetwork();

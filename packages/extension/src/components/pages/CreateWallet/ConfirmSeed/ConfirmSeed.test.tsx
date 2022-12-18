@@ -6,10 +6,11 @@ import { ConfirmSeed, ConfirmSeedProps } from './ConfirmSeed';
 
 const mockedSetActiveStep = jest.fn();
 const defaultProps: ConfirmSeedProps = {
+  seed: WALLET_SEED,
   activeStep: 2,
   steps: 4,
   handleBack: jest.fn(),
-  setActiveStep: mockedSetActiveStep
+  onConfirm: mockedSetActiveStep
 };
 
 jest.mock('react-router-dom', () => ({

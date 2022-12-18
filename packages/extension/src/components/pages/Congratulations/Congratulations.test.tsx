@@ -9,13 +9,7 @@ import {
   TRANSACTION_PATH
 } from '../../../constants';
 import { generateWalletContext } from '../../../mocks';
-import { Congratulations, CongratulationsProps } from './Congratulations';
-
-const defaultProps: CongratulationsProps = {
-  activeStep: 2,
-  steps: 3,
-  handleBack: jest.fn()
-};
+import { Congratulations } from './Congratulations';
 
 const mockWalletContext = generateWalletContext();
 jest.mock('../../../contexts', () => ({
@@ -32,7 +26,7 @@ describe('Congratulations Page', () => {
   test('Should render the proper elements', async () => {
     render(
       <BrowserRouter>
-        <Congratulations {...defaultProps} />
+        <Congratulations />
       </BrowserRouter>
     );
 
@@ -43,7 +37,7 @@ describe('Congratulations Page', () => {
     const search = `?${PARAMETER_TRANSACTION_PAYMENT}&amount=50&destination=rNhjf7Re4B9LvWiJwpGg1A1B1fWy4xh2Le`;
     render(
       <MemoryRouter initialEntries={[`${IMPORT_SEED_PATH}${search}`]}>
-        <Congratulations {...defaultProps} />
+        <Congratulations />
       </MemoryRouter>
     );
 
@@ -59,7 +53,7 @@ describe('Congratulations Page', () => {
     const search = `?amount=50&destination=rNhjf7Re4B9LvWiJwpGg1A1B1fWy4xh2Le`;
     render(
       <MemoryRouter initialEntries={[`${IMPORT_SEED_PATH}${search}`]}>
-        <Congratulations {...defaultProps} />
+        <Congratulations />
       </MemoryRouter>
     );
     const user = userEvent.setup();

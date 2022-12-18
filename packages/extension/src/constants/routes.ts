@@ -1,12 +1,15 @@
 export const MAIN_FILE = '/index.html';
 export const ABOUT_PATH = '/about';
+export const ADD_NEW_WALLET = '/add-new-wallet';
 export const CREATE_NEW_WALLET_PATH = '/create-new-wallet';
+export const EDIT_WALLET = '/edit-wallet';
 export const HISTORY_PATH = '/history';
 export const HOME_PATH = '/home';
 export const IMPORT_MNEMONIC_PATH = '/import-mnemonic';
 export const IMPORT_SECRET_NUMBERS_PATH = '/import-secret-numbers';
 export const IMPORT_SEED_PATH = '/import-seed';
 export const IMPORT_WALLET_PATH = '/import-wallet';
+export const LIST_WALLETS = '/list-wallets';
 export const RESET_PASSWORD_PATH = '/reset-password';
 export const SETTINGS_PATH = '/settings';
 export const SIGN_MESSAGE_PATH = '/sign-message';
