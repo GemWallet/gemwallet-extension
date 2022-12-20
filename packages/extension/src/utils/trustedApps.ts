@@ -1,6 +1,5 @@
 import { STORAGE_TRUSTED_APPS } from '../constants/localStorage';
-
-import { loadData, removeData, saveData } from '.';
+import { loadData, removeData, saveData } from './storage';
 
 export enum Permission {
   Address = 'address',
@@ -16,30 +15,32 @@ export interface TrustedApp {
 export const saveTrustedApp = (trustedApp: TrustedApp, walletIndex: number): void => {
   const trustedApps: TrustedApp[][] = JSON.parse(loadData(STORAGE_TRUSTED_APPS) || '[[]]');
 
-  if (!trustedApps[walletIndex]) {
-    throw new Error("Couldn't find the wallet while saving the trusted app");
-  }
+  if (trustedApps[walletIndex]) {
+    // We update the trustedApps of the wallet if it already exists
+    const previousTrustedAppIndex = trustedApps[walletIndex].findIndex(
+      (tApp) => tApp.url === trustedApp.url
+    );
 
-  const previousTrustedAppIndex = trustedApps[walletIndex].findIndex(
-    (tApp) => tApp.url === trustedApp.url
-  );
+    const previousTrustedApp = trustedApps[walletIndex][previousTrustedAppIndex] || {
+      url: trustedApp.url,
+      permissions: []
+    };
 
-  const previousTrustedApp = trustedApps[walletIndex][previousTrustedAppIndex] || {
-    url: trustedApp.url,
-    permissions: []
-  };
+    const newTrustedApp = {
+      url: trustedApp.url,
+      permissions: [...new Set([...previousTrustedApp.permissions, ...trustedApp.permissions])]
+    };
 
-  const newTrustedApp = {
-    url: trustedApp.url,
-    permissions: [...new Set([...previousTrustedApp.permissions, ...trustedApp.permissions])]
-  };
-
-  // We update the trustedApp if it already exists
-  if (previousTrustedAppIndex !== -1) {
-    trustedApps[walletIndex][previousTrustedAppIndex] = newTrustedApp;
+    // We update the trustedApp if it already exists
+    if (previousTrustedAppIndex !== -1) {
+      trustedApps[walletIndex][previousTrustedAppIndex] = newTrustedApp;
+    } else {
+      // Else we just push the newTrustedApp
+      trustedApps[walletIndex].push(newTrustedApp);
+    }
   } else {
     // Else we just push the newTrustedApp
-    trustedApps[walletIndex].push(newTrustedApp);
+    trustedApps[walletIndex] = [trustedApp];
   }
 
   const stringifiedNewTrustedApps = JSON.stringify(trustedApps);
