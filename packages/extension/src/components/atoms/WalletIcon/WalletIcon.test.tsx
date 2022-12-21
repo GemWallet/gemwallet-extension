@@ -37,26 +37,26 @@ describe('WalletIcon', () => {
     };
   });
 
-  it('renders the public address as a hashicon', () => {
+  test('renders the public address as a hashicon', () => {
     renderWalletIcon();
     expect(screen.getByText(defaultPublicAddress)).toBeInTheDocument();
     expect(screen.getByText('35')).toBeInTheDocument();
   });
 
-  it('renders a larger icon if the size prop is set to "xl"', () => {
+  test('renders a larger icon if the size prop is set to "xl"', () => {
     renderWalletIcon({ size: 'xl' });
 
     expect(screen.getByText('50')).toBeInTheDocument();
   });
 
-  it('calls the onClick prop when the icon is clicked', () => {
+  test('calls the onClick prop when the icon is clicked', () => {
     const onClick = jest.fn();
     renderWalletIcon({ onClick });
     fireEvent.click(screen.getByRole('button', { name: 'Wallet icon' }));
     expect(onClick).toHaveBeenCalled();
   });
 
-  it('renders a green border if the client is connected to a network', () => {
+  test('renders a green border if the client is connected to a network', () => {
     mockNetworkContext = {
       client: true
     };
@@ -64,7 +64,7 @@ describe('WalletIcon', () => {
     expect(screen.getByLabelText('Wallet icon with green border')).toBeInTheDocument();
   });
 
-  it('renders a red border if the client is not connected to a network', () => {
+  test('renders a red border if the client is not connected to a network', () => {
     mockNetworkContext = {
       client: false
     };

@@ -3,12 +3,7 @@ import { FC, useEffect } from 'react';
 import * as Sentry from '@sentry/react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 
-import {
-  GEM_WALLET,
-  Message,
-  Network,
-  ReceiveNetworkBackgroundMessage
-} from '@gemwallet/constants';
+import { GEM_WALLET, Message, ReceiveNetworkBackgroundMessage } from '@gemwallet/constants';
 
 import { PrivateRoute } from './components/atoms/PrivateRoute';
 import {
@@ -55,6 +50,7 @@ import {
   EDIT_WALLET
 } from './constants';
 import { useBrowser } from './contexts';
+import { loadNetwork } from './utils';
 
 const SentryRoutes = Sentry.withSentryReactRouterV6Routing(Routes);
 
@@ -74,13 +70,16 @@ const App: FC = () => {
           type: Message.ReceiveNetwork,
           payload: {
             id: Number(urlParams.get('id')) || 0,
-            network: (localStorage.getItem('network') as Network | null) || Network.MAINNET
+            network: loadNetwork().name
           }
         })
         .then(() => {
           if (extensionWindow?.id) {
             closeExtension({ windowId: Number(extensionWindow.id) });
           }
+        })
+        .catch((e) => {
+          Sentry.captureException(e);
         });
     }
   }, [closeExtension, extensionWindow, search]);

@@ -4,10 +4,10 @@ import userEvent from '@testing-library/user-event';
 import { generateWalletContext } from '../../../../mocks';
 import { ShowSecret, ShowSecretProps } from './ShowSecret';
 
-const password = 'test-password';
+const passwordTest = 'test-password';
 
 let mockWalletContext = generateWalletContext({
-  password
+  password: passwordTest
 });
 
 jest.mock('../../../../contexts', () => ({
@@ -23,7 +23,7 @@ const renderShowSecret = (props?: Partial<ShowSecretProps>) =>
   render(<ShowSecret seed={seed} mnemonic={mnemonic} onBackButton={onBackButton} {...props} />);
 
 describe('ShowSecret', () => {
-  it('renders the seed password step correctly', () => {
+  test('renders the seed password step correctly', () => {
     renderShowSecret();
     expect(screen.getByText(/^Do not share your seed!/m)).toBeInTheDocument();
     expect(
@@ -35,7 +35,7 @@ describe('ShowSecret', () => {
     expect(screen.getByText('Show seed')).toBeInTheDocument();
   });
 
-  it('renders the mnemonic password step correctly', () => {
+  test('renders the mnemonic password step correctly', () => {
     renderShowSecret({ seed: undefined, mnemonic });
     expect(screen.getByText(/^Do not share your mnemonic!/m)).toBeInTheDocument();
     expect(
@@ -47,12 +47,12 @@ describe('ShowSecret', () => {
     expect(screen.getByText('Show mnemonic')).toBeInTheDocument();
   });
 
-  it('renders the seed step correctly', () => {
+  test('renders the seed step correctly', () => {
     renderShowSecret();
     fireEvent.click(screen.getByText('Show'));
 
     const passwordInput = screen.getByLabelText('Password');
-    fireEvent.change(passwordInput, { target: { value: password } });
+    fireEvent.change(passwordInput, { target: { value: passwordTest } });
     fireEvent.click(screen.getByText('Show'));
 
     expect(screen.getByText(seed)).toBeInTheDocument();
@@ -60,12 +60,12 @@ describe('ShowSecret', () => {
     expect(screen.getByText('Done')).toBeInTheDocument();
   });
 
-  it('renders the mnemonic step correctly', () => {
+  test('renders the mnemonic step correctly', () => {
     renderShowSecret({ seed: undefined, mnemonic });
     fireEvent.click(screen.getByText('Show'));
 
     const passwordInput = screen.getByLabelText('Password');
-    fireEvent.change(passwordInput, { target: { value: password } });
+    fireEvent.change(passwordInput, { target: { value: passwordTest } });
     fireEvent.click(screen.getByText('Show'));
 
     expect(screen.getByText(mnemonic)).toBeInTheDocument();
@@ -73,7 +73,7 @@ describe('ShowSecret', () => {
     expect(screen.getByText('Done')).toBeInTheDocument();
   });
 
-  it('displays an error message when the password is incorrect', () => {
+  test('displays an error message when the password is incorrect', () => {
     renderShowSecret();
 
     const passwordInput = screen.getByLabelText('Password');
@@ -83,7 +83,7 @@ describe('ShowSecret', () => {
     expect(screen.getByText('Incorrect password')).toBeInTheDocument();
   });
 
-  it('calls the onBackButton function when the Cancel button is clicked', () => {
+  test('calls the onBackButton function when the Cancel button is clicked', () => {
     renderShowSecret();
 
     fireEvent.click(screen.getByText('Cancel'));
@@ -91,21 +91,21 @@ describe('ShowSecret', () => {
     expect(onBackButton).toHaveBeenCalled();
   });
 
-  it('renders the password error when the password is incorrect and clears it when correct', () => {
+  test('renders the password error when the password is incorrect and clears it when correct', () => {
     renderShowSecret();
     fireEvent.click(screen.getByText('Show'));
     userEvent.type(screen.getByLabelText('Password'), incorrectPassword);
     fireEvent.click(screen.getByText('Show'));
     expect(screen.getByLabelText('Password')).toBeInTheDocument();
-    fireEvent.change(screen.getByLabelText('Password'), { target: { value: password } });
+    fireEvent.change(screen.getByLabelText('Password'), { target: { value: passwordTest } });
     expect(screen.queryByText('Incorrect password')).toBeNull();
   });
 
-  it('copies secret to clipboard and resets after 2 seconds', async () => {
+  test('copies secret to clipboard and resets after 2 seconds', async () => {
     renderShowSecret();
 
     const passwordInput = screen.getByLabelText('Password');
-    fireEvent.change(passwordInput, { target: { value: password } });
+    fireEvent.change(passwordInput, { target: { value: passwordTest } });
     await fireEvent.click(screen.getByText('Show'));
 
     expect(screen.getByTestId('ContentCopyIcon')).toBeInTheDocument();

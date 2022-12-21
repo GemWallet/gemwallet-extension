@@ -78,7 +78,7 @@ fs.readFile('./package.json', 'utf8', (err, data) => {
 
     // Replace "@gemwallet/constants" by "../_constants"
     fromDir(DESTINATION_FOLDER, /\.js$/, (filename) => {
-      fs.readFile(filename, 'utf-8', (err, contents) => {
+      fs.readFile(filename, 'utf8', (err, contents) => {
         if (err) {
           console.log('Error while reading the file', err);
           return;

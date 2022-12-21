@@ -17,23 +17,23 @@ const renderButtonOption = (props?: Partial<ButtonOptionProps>) =>
   );
 
 describe('ButtonOption', () => {
-  it('renders correctly', () => {
+  test('renders correctly', () => {
     renderButtonOption();
     expect(screen.getByText(defaultName)).toBeInTheDocument();
     expect(screen.getByText(defaultDescription)).toBeInTheDocument();
   });
 
-  it('renders a check icon if the button option is selected', () => {
+  test('renders a check icon if the button option is selected', () => {
     renderButtonOption({ isSelected: true });
     expect(screen.getByTestId('CheckIcon')).toBeInTheDocument();
   });
 
-  it('does not render a check icon if the button option is not selected', () => {
+  test('does not render a check icon if the button option is not selected', () => {
     renderButtonOption({ isSelected: false });
     expect(screen.queryByTestId('check-icon')).not.toBeInTheDocument();
   });
 
-  it('calls the onClick prop when the card is clicked', () => {
+  test('calls the onClick prop when the card is clicked', () => {
     const onClick = jest.fn();
     const { container } = renderButtonOption({ onClick });
     fireEvent.click(container.querySelector('.MuiPaper-root') as Element);
