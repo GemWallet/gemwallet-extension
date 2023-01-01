@@ -59,6 +59,9 @@ export const SignMessage: FC = () => {
         if (extensionWindow?.id) {
           closeExtension({ windowId: Number(extensionWindow.id) });
         }
+      })
+      .catch((e) => {
+        Sentry.captureException(e);
       });
   }, [closeExtension, extensionWindow?.id, id]);
 
@@ -77,6 +80,9 @@ export const SignMessage: FC = () => {
         if (extensionWindow?.id) {
           closeExtension({ windowId: Number(extensionWindow.id) });
         }
+      })
+      .catch((e) => {
+        Sentry.captureException(e);
       });
   }, [closeExtension, extensionWindow?.id, id, message, signMessage]);
 

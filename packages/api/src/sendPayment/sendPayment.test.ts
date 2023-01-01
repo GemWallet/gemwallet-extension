@@ -28,6 +28,7 @@ jest.mock('../helpers/extensionMessaging', () => ({
 describe('sendPayment api', () => {
   test('should return a transaction hash as sendMessageToContentScript is returning a hash', async () => {
     let response;
+    // deepcode ignore PromiseNotCaughtGeneral/test: Promise used in unit test
     await sendPayment(payload).then((res) => {
       response = res;
     });
@@ -37,6 +38,7 @@ describe('sendPayment api', () => {
   test('should return an null if the user refused the payment', async () => {
     let response;
     payload.destination = 'refused';
+    // deepcode ignore PromiseNotCaughtGeneral/test: Promise used in unit test
     await sendPayment(payload).then((res) => {
       response = res;
     });

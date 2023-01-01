@@ -13,15 +13,23 @@ export const saveNetwork = (network: Network) => {
 };
 
 export const loadNetwork = () => {
-  const data = loadData(STORAGE_NETWORK);
-  if (data) {
-    return NETWORK[data as Network];
+  try {
+    const data = loadData(STORAGE_NETWORK);
+    if (data) {
+      return NETWORK[data as Network];
+    }
+    return NETWORK[Network.MAINNET];
+  } catch (error) {
+    return NETWORK[Network.MAINNET];
   }
-  return NETWORK[Network.MAINNET];
 };
 
 export const removeNetwork = () => {
-  return Promise.resolve().then(() => {
-    removeData(STORAGE_NETWORK);
-  });
+  return Promise.resolve()
+    .then(() => {
+      removeData(STORAGE_NETWORK);
+    })
+    .catch((error) => {
+      throw error;
+    });
 };

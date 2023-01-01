@@ -1,5 +1,7 @@
 import { FC, useCallback, useMemo } from 'react';
 
+import * as Sentry from '@sentry/react';
+
 import { GEM_WALLET, Message, ReceiveAddressBackgroundMessage } from '@gemwallet/constants';
 
 import { useBrowser, useWallet } from '../../../contexts';
@@ -39,6 +41,9 @@ export const ShareAddress: FC = () => {
         if (extensionWindow?.id) {
           closeExtension({ windowId: Number(extensionWindow.id) });
         }
+      })
+      .catch((e) => {
+        Sentry.captureException(e);
       });
   }, [closeExtension, extensionWindow?.id, id]);
 
@@ -58,6 +63,9 @@ export const ShareAddress: FC = () => {
         if (extensionWindow?.id) {
           closeExtension({ windowId: Number(extensionWindow.id) });
         }
+      })
+      .catch((e) => {
+        Sentry.captureException(e);
       });
   }, [closeExtension, extensionWindow?.id, getCurrentWallet, id, selectedWallet, url]);
 

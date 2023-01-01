@@ -30,10 +30,12 @@ setTimeout(() => {
   // Redirect Messages To Background script
   window.addEventListener(
     'message',
+    // deepcode ignore PromiseNotCaughtGeneral: This is not a promise, deepcode ignore InsufficientPostmessageValidation: we allow any website
     (event: EventListener) => {
-      const messagedId = event.data.messageId;
+      if (event.origin !== window.origin) return;
       if (event.source !== window && event.data.app === GEM_WALLET) return;
       if (!event.data.source || event.data.source !== Message.MsgRequest) return;
+      const messagedId = event.data.messageId;
 
       const {
         data: { app, type }

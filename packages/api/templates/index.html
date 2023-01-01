@@ -17,17 +17,30 @@
 
 <script>
   function handlePayment() {
-    gemWalletApi.isConnected().then((isConnected) => {
-      if (isConnected) {
-        const payment = {
-          amount: '0.0020',
-          destination: 'rNvFCZXpDtGeQ3bVas95wGLN6N2stGmA9o'
-        };
-        gemWalletApi.sendPayment(payment).then((trHash) => {
-          const addressContainer = document.getElementById('address');
-          addressContainer.insertAdjacentText('afterbegin', `Transaction sent with ID: ${trHash}`);
-        });
-      }
-    });
+    gemWalletApi
+      .isConnected()
+      .then((isConnected) => {
+        if (isConnected) {
+          const payment = {
+            amount: '0.0020',
+            destination: 'rNvFCZXpDtGeQ3bVas95wGLN6N2stGmA9o'
+          };
+          gemWalletApi
+            .sendPayment(payment)
+            .then((trHash) => {
+              const addressContainer = document.getElementById('address');
+              addressContainer.insertAdjacentText(
+                'afterbegin',
+                `Transaction sent with ID: ${trHash}`
+              );
+            })
+            .catch((e) => {
+              console.error('Cannot proceed the payment: ', e);
+            });
+        }
+      })
+      .catch((e) => {
+        console.error('GemWallet is not connected: ', e);
+      });
   }
 </script>
