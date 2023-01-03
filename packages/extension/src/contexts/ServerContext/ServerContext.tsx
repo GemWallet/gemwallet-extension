@@ -8,7 +8,8 @@ import { useNetwork } from '../NetworkContext';
 type ServerInfo = ServerInfoResponse['result'];
 
 interface ContextType {
-  serverInfo?: ServerInfo;
+  // Returns null if serverInfo couldn't be fetched
+  serverInfo?: ServerInfo | null;
 }
 
 const ServerContext = createContext<ContextType>({
@@ -18,7 +19,7 @@ const ServerContext = createContext<ContextType>({
 const ServerProvider: FC = ({ children }) => {
   const { client } = useNetwork();
 
-  const [serverInfo, setServerInfo] = useState<ServerInfo | undefined>();
+  const [serverInfo, setServerInfo] = useState<ServerInfo | null>();
 
   useEffect(() => {
     client
@@ -29,8 +30,8 @@ const ServerProvider: FC = ({ children }) => {
         setServerInfo(result);
       })
       .catch((e) => {
+        setServerInfo(null);
         Sentry.captureException(e);
-        throw e;
       });
   }, [client]);
 
@@ -46,7 +47,6 @@ const useServer = (): ContextType => {
   if (context === undefined) {
     const error = new Error('useServer must be used within a ServerProvider');
     Sentry.captureException(error);
-    throw error;
   }
   return context;
 };
