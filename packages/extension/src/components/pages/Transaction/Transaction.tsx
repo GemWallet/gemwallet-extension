@@ -6,7 +6,7 @@ import * as Sentry from '@sentry/react';
 
 import { GEM_WALLET, Message, ReceivePaymentHashBackgroundMessage } from '@gemwallet/constants';
 
-import { ERROR_RED, Tokens } from '../../../constants';
+import { DEFAULT_RESERVE, ERROR_RED, Tokens } from '../../../constants';
 import { useLedger, useNetwork, useServer, useWallet } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
 import { formatToken } from '../../../utils';
@@ -79,7 +79,7 @@ export const Transaction: FC = () => {
         .then((currentBalance) => {
           const difference =
             Number(currentBalance) -
-            Number(serverInfo?.info.validated_ledger?.reserve_base_xrp) -
+            Number(serverInfo?.info.validated_ledger?.reserve_base_xrp || DEFAULT_RESERVE) -
             Number(params.amount);
           setDifference(difference);
         })
