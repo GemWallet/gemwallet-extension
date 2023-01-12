@@ -9,6 +9,7 @@ export interface PageWithReturnProps {
   action?: {
     onClick: React.MouseEventHandler<HTMLButtonElement>;
     actionIcon: React.ReactElement;
+    ariaLabel: string;
   };
   style?: CSSProperties;
 }
@@ -37,7 +38,7 @@ export const PageWithReturn: FC<PageWithReturnProps> = ({
         {action?.onClick ? (
           <IconButton
             style={{ position: 'fixed', right: 0 }}
-            aria-label="close"
+            aria-label={action.ariaLabel}
             onClick={action.onClick}
           >
             {action.actionIcon}

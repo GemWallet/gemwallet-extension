@@ -38,6 +38,7 @@
     "@types/node": "^12.0.0",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
+    "cypress": "^12.3.0",
     "jest-canvas-mock": "^2.4.0",
     "ts-loader": "~8.2.0"
   },
@@ -47,6 +48,7 @@
   "scripts": {
     "start": "craco start",
     "build": "INLINE_RUNTIME_CHUNK=false GENERATE_SOURCEMAP=false craco build",
+    "cypress:open": "cypress open",
     "test": "craco test --all --coverage",
     "type-check": "tsc --project tsconfig.json --pretty --noEmit",
     "eject": "react-scripts eject"

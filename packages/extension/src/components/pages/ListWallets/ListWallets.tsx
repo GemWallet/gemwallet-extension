@@ -35,10 +35,11 @@ export const ListWallets: FC = () => {
       onBackClick={handleBack}
       action={{
         onClick: handleCreateWallet,
-        actionIcon: <AddIcon />
+        actionIcon: <AddIcon />,
+        ariaLabel: 'Add wallet'
       }}
     >
-      <div style={{ overflowY: 'scroll', height: '518px' }}>
+      <div style={{ overflowY: 'scroll', height: '518px' }} data-testid="wallet-container">
         {wallets.map(({ name, publicAddress }, index) => (
           <Wallet
             name={name}
