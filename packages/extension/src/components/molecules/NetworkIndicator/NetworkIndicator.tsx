@@ -113,6 +113,7 @@ export const NetworkIndicator: FC = () => {
           />
         }
         onClick={handleOpen}
+        data-testid="network-indicator"
       />
       {isLoading ? (
         <LoadingOverlay />
@@ -122,6 +123,7 @@ export const NetworkIndicator: FC = () => {
           open={explanationOpen}
           onClose={handleClose}
           TransitionComponent={Transition}
+          data-testid="network-indicator-dialog"
         >
           <AppBar sx={{ position: 'relative' }}>
             <Toolbar>

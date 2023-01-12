@@ -7,14 +7,13 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { LIST_WALLETS } from '../../../constants';
 import { useWallet } from '../../../contexts';
 import { WalletLedger } from '../../../types';
-import { truncateAddress } from '../../../utils';
 import { WalletIcon } from '../../atoms';
 import { PageWithReturn, PageWithSpinner } from '../../templates';
 import { RemoveWallet } from './RemoveWallet';
 import { ShowSecret } from './ShowSecret';
 import { WalletName } from './WalletName';
 
-type Menu = 'walletName' | 'walletAddress' | 'showSecret' | 'removeWallet';
+type Menu = 'walletName' | 'showSecret' | 'removeWallet';
 
 export const EditWallet: FC = () => {
   const navigate = useNavigate();
@@ -49,16 +48,11 @@ export const EditWallet: FC = () => {
         onClick: () => setMenu('walletName')
       },
       {
-        name: 'Wallet Address',
-        value: truncateAddress(wallet?.publicAddress || ''),
-        onClick: () => setMenu('walletAddress')
-      },
-      {
         name: wallet?.seed ? 'Show your seed' : 'Show your mnemonic',
         onClick: () => setMenu('showSecret')
       }
     ],
-    [wallet?.name, wallet?.publicAddress, wallet?.seed]
+    [wallet?.name, wallet?.seed]
   );
 
   if (publicAddress === undefined) {

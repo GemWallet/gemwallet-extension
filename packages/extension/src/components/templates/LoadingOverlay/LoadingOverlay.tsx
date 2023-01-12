@@ -20,6 +20,7 @@ export const LoadingOverlay: FC = () => {
         justifyContent: 'center',
         alignItems: 'center'
       }}
+      data-testid="loading"
     >
       <CircularProgress />
     </div>
