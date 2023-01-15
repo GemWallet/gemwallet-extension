@@ -14,7 +14,7 @@ import {
 import { TransitionProps } from '@mui/material/transitions';
 import * as Sentry from '@sentry/react';
 
-import { DEFAULT_RESERVE, Tokens } from '../../../constants';
+import { DEFAULT_RESERVE } from '../../../constants';
 import { useNetwork, useServer } from '../../../contexts';
 import { TokenLoader } from '../../atoms';
 import { InformationMessage } from '../../molecules/InformationMessage';
@@ -23,7 +23,12 @@ import { TokenDisplay } from '../../molecules/TokenDisplay';
 const LOADING_STATE = 'Loading...';
 const ERROR_STATE = 'Error';
 
-export interface WalletProps {
+interface TrustLineBalance {
+  value: string;
+  currency: string;
+  issuer: string;
+}
+export interface TokenListingProps {
   address: string;
 }
 
@@ -36,8 +41,9 @@ const Transition = forwardRef(function Transition(
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export const WalletDetail: FC<WalletProps> = ({ address }) => {
-  const [balance, setBalance] = useState(LOADING_STATE);
+export const TokenListing: FC<TokenListingProps> = ({ address }) => {
+  const [XRPBalance, setXRPBalance] = useState<string>(LOADING_STATE);
+  const [trustLineBalances, setTrustLineBalances] = useState<TrustLineBalance[]>([]);
   const [explanationOpen, setExplanationOpen] = useState(false);
   const { client, reconnectToNetwork } = useNetwork();
   const { serverInfo } = useServer();
@@ -45,15 +51,22 @@ export const WalletDetail: FC<WalletProps> = ({ address }) => {
   useEffect(() => {
     async function fetchBalance() {
       try {
-        const balance = await client?.getXrpBalance(address);
-        if (balance) {
-          setBalance(balance);
+        const balances = await client?.getBalances(address);
+        const XRPBalance = balances?.find((balance) => balance.issuer === undefined);
+        const trustLineBalances = balances?.filter(
+          (balance) => balance.issuer !== undefined
+        ) as TrustLineBalance[];
+        if (XRPBalance) {
+          setXRPBalance(XRPBalance.value);
+        }
+        if (trustLineBalances) {
+          setTrustLineBalances(trustLineBalances);
         }
       } catch (e: any) {
         if (e?.data?.error !== 'actNotFound') {
           Sentry.captureException(e);
         }
-        setBalance(ERROR_STATE);
+        setXRPBalance(ERROR_STATE);
       }
     }
 
@@ -88,12 +101,12 @@ export const WalletDetail: FC<WalletProps> = ({ address }) => {
     );
   }
 
-  if (balance === LOADING_STATE || serverInfo === undefined) {
+  if (XRPBalance === LOADING_STATE || serverInfo === undefined) {
     return <TokenLoader />;
   }
   const reserve = serverInfo?.info.validated_ledger?.reserve_base_xrp || DEFAULT_RESERVE;
 
-  if (balance === ERROR_STATE) {
+  if (XRPBalance === ERROR_STATE) {
     return (
       <InformationMessage title="Account not activated">
         <div style={{ marginBottom: '5px' }}>
@@ -115,12 +128,20 @@ export const WalletDetail: FC<WalletProps> = ({ address }) => {
   }
 
   return (
-    <>
+    <div>
       <TokenDisplay
-        balance={Number(balance) - reserve}
-        token={Tokens.XRP}
+        balance={Number(XRPBalance) - reserve}
+        token="XRP"
+        isXRPToken
         onExplainClick={handleOpen}
       />
+      {trustLineBalances.map((trustedLine) => (
+        <TokenDisplay
+          balance={Number(trustedLine.value)}
+          token={trustedLine.currency}
+          key={`${trustedLine.issuer}|${trustedLine.currency}`}
+        />
+      ))}
       <Dialog
         fullScreen
         open={explanationOpen}
@@ -157,11 +178,11 @@ export const WalletDetail: FC<WalletProps> = ({ address }) => {
             </Link>
           </InformationMessage>
           <Typography style={{ margin: '20px 0 10px 0' }}>Account balance</Typography>
-          <TokenDisplay balance={Number(balance)} token={Tokens.XRP} />
+          <TokenDisplay balance={Number(XRPBalance)} isXRPToken token="XRP" />
           <Typography style={{ margin: '20px 0 10px 0' }}>Amount that can be spent</Typography>
-          <TokenDisplay balance={Number(balance) - reserve} token={Tokens.XRP} />
+          <TokenDisplay balance={Number(XRPBalance) - reserve} isXRPToken token="XRP" />
         </div>
       </Dialog>
-    </>
+    </div>
   );
 };
