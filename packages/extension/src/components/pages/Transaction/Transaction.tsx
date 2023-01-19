@@ -6,7 +6,7 @@ import * as Sentry from '@sentry/react';
 
 import { GEM_WALLET, Message, ReceivePaymentHashBackgroundMessage } from '@gemwallet/constants';
 
-import { DEFAULT_RESERVE, ERROR_RED, Tokens } from '../../../constants';
+import { DEFAULT_RESERVE, ERROR_RED } from '../../../constants';
 import { useLedger, useNetwork, useServer, useWallet } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
 import { formatToken } from '../../../utils';
@@ -256,7 +256,7 @@ export const Transaction: FC = () => {
       <Paper elevation={24} style={{ padding: '10px' }}>
         <Typography variant="body1">Amount:</Typography>
         <Typography variant="h4" component="h1" gutterBottom align="right">
-          {formatToken(Number(amount), Tokens.XRP)}
+          {formatToken(Number(amount), 'XRP')}
         </Typography>
       </Paper>
       <Paper elevation={24} style={{ padding: '10px' }}>
@@ -276,7 +276,7 @@ export const Transaction: FC = () => {
           ) : fees === DEFAULT_FEES ? (
             <TileLoader secondLineOnly />
           ) : (
-            formatToken(Number(fees), Tokens.XRP)
+            formatToken(Number(fees), 'XRP')
           )}
         </Typography>
       </Paper>

@@ -5,17 +5,24 @@ import { Paper, Typography } from '@mui/material';
 
 import { SECONDARY_GRAY } from '../../../constants';
 import { formatToken } from '../../../utils';
-import { Xrp } from '../../atoms';
+import { GemWallet, Xrp } from '../../atoms';
 import { IconTextButton } from '../../atoms/IconTextButton';
 
 export interface TokenDisplayProps {
   balance: number;
   token: string;
+  isXRPToken?: boolean;
   onExplainClick?: () => void;
   style?: CSSProperties;
 }
 
-export const TokenDisplay: FC<TokenDisplayProps> = ({ balance, token, onExplainClick, style }) => {
+export const TokenDisplay: FC<TokenDisplayProps> = ({
+  balance,
+  token,
+  isXRPToken = false,
+  onExplainClick,
+  style
+}) => {
   return (
     <Paper
       elevation={5}
@@ -24,11 +31,12 @@ export const TokenDisplay: FC<TokenDisplayProps> = ({ balance, token, onExplainC
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
+        marginBottom: '10px',
         ...style
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center' }}>
-        <Xrp />
+        {isXRPToken ? <Xrp /> : <GemWallet />}
         <div style={{ marginLeft: '10px' }}>
           <Typography>{token}</Typography>
           <Typography variant="body2" style={{ color: SECONDARY_GRAY }}>

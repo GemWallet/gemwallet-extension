@@ -6,4 +6,3 @@ export * from './parameters';
 export * from './routes';
 export * from './server';
 export * from './sizes';
-export * from './tokens';

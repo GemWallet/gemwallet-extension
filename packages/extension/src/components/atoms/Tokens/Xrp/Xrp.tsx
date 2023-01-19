@@ -1,7 +1,7 @@
 import { FC } from 'react';
 
 export const Xrp: FC = (props) => (
-  <svg width={45} height={45} xmlns="http://www.w3.org/2000/svg" {...props}>
+  <svg width={45} height={45} xmlns="http://www.w3.org/2000/svg" {...props} data-testid="xrp-icon">
     <g stroke="null" fill="none">
       <circle cx={22.492} cy={22.51} r={22.363} fill="#1E1E1E" />
       <path
