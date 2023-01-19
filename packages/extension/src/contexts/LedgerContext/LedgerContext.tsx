@@ -73,30 +73,25 @@ const LedgerProvider: FC = ({ children }) => {
           // Sign the transaction
           const signed = wallet.wallet.sign(prepared);
           // Submit the signed blob
-          try {
-            const tx = await client.submitAndWait(signed.tx_blob);
-            if ((tx.result.meta! as TransactionMetadata).TransactionResult === 'tesSUCCESS') {
-              return tx.result.hash;
-            } else if (
-              (tx.result.meta! as TransactionMetadata).TransactionResult === 'tecUNFUNDED_PAYMENT'
-            ) {
-              throw new Error('Insufficient funds');
-            } else if (
-              (tx.result.meta! as TransactionMetadata).TransactionResult === 'tecNO_DST_INSUF_XRP'
-            ) {
-              throw new Error(
-                'The account you are trying to make this transaction to does not exist, and the transaction is not sending enough XRP to create it.'
-              );
-            } else {
-              throw new Error(
-                `Something went wrong, we couldn't submit properly the transaction - ${
-                  (tx.result.meta! as TransactionMetadata).TransactionResult
-                }`
-              );
-            }
-          } catch (e) {
-            Sentry.captureException(e);
-            throw e;
+          const tx = await client.submitAndWait(signed.tx_blob);
+          if ((tx.result.meta! as TransactionMetadata).TransactionResult === 'tesSUCCESS') {
+            return tx.result.hash;
+          } else if (
+            (tx.result.meta! as TransactionMetadata).TransactionResult === 'tecUNFUNDED_PAYMENT'
+          ) {
+            throw new Error('Insufficient funds');
+          } else if (
+            (tx.result.meta! as TransactionMetadata).TransactionResult === 'tecNO_DST_INSUF_XRP'
+          ) {
+            throw new Error(
+              'The account you are trying to make this transaction to does not exist, and the transaction is not sending enough XRP to create it.'
+            );
+          } else {
+            throw new Error(
+              `Something went wrong, we couldn't submit properly the transaction - ${
+                (tx.result.meta! as TransactionMetadata).TransactionResult
+              }`
+            );
           }
         } catch (e) {
           if (
