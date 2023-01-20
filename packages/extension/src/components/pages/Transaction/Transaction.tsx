@@ -131,7 +131,6 @@ export const Transaction: FC = () => {
         chrome.runtime.sendMessage<ReceivePaymentHashBackgroundMessage>(message);
       })
       .catch((e) => {
-        Sentry.captureException(e);
         setErrorRequestRejection(e.message);
         setTransaction(TransactionStatus.Rejected);
         const message = createMessage(undefined);

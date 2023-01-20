@@ -76,29 +76,23 @@ const LedgerProvider: FC = ({ children }) => {
           const tx = await client.submitAndWait(signed.tx_blob);
           if ((tx.result.meta! as TransactionMetadata).TransactionResult === 'tesSUCCESS') {
             return tx.result.hash;
-          } else if (
-            (tx.result.meta! as TransactionMetadata).TransactionResult === 'tecUNFUNDED_PAYMENT'
-          ) {
-            throw new Error('Insufficient funds');
-          } else if (
-            (tx.result.meta! as TransactionMetadata).TransactionResult === 'tecNO_DST_INSUF_XRP'
-          ) {
-            throw new Error(
-              'The account you are trying to make this transaction to does not exist, and the transaction is not sending enough XRP to create it.'
-            );
-          } else {
-            throw new Error(
-              `Something went wrong, we couldn't submit properly the transaction - ${
-                (tx.result.meta! as TransactionMetadata).TransactionResult
-              }`
-            );
           }
+          throw new Error(
+            (tx.result.meta as TransactionMetadata)?.TransactionResult ||
+              `Something went wrong, we couldn't submit properly the transaction`
+          );
         } catch (e) {
           if (
             (e as Error).message === 'checksum_invalid' ||
             (e as Error).message.includes('version_invalid')
           ) {
             throw new Error('The destination address is incorrect');
+          } else if ((e as Error).message === 'tecUNFUNDED_PAYMENT') {
+            throw new Error('Insufficient funds');
+          } else if ((e as Error).message === 'tecNO_DST_INSUF_XRP') {
+            throw new Error(
+              'The account you are trying to make this transaction to does not exist, and the transaction is not sending enough XRP to create it.'
+            );
           } else {
             Sentry.captureException(e);
             throw e;
