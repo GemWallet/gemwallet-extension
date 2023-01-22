@@ -1,4 +1,4 @@
-import { FC, useCallback, useState } from 'react';
+import { FC, useCallback, useRef, useState } from 'react';
 
 import { TextField, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
@@ -17,18 +17,21 @@ export const ImportMnemonic: FC<ImportMnemonicProps> = ({ activeStep, password, 
   const navigate = useNavigate();
   const { importMnemonic } = useWallet();
   const [mnemonicError, setMnemonicError] = useState('');
+  const mnemonicRef = useRef<HTMLInputElement | null>(null);
 
   const handleNext = useCallback(() => {
-    const isValidMnemonic = importMnemonic(
-      password,
-      (document.getElementById('mnemonic') as HTMLInputElement).value
-    );
-    if (isValidMnemonic) {
-      navigate(LIST_WALLETS);
-    } else if (isValidMnemonic === false) {
-      setMnemonicError('Your mnemonic is invalid');
+    let mnemonicValue = mnemonicRef.current?.value;
+    if (mnemonicValue !== undefined) {
+      const isValidMnemonic = importMnemonic(password, mnemonicValue);
+      if (isValidMnemonic) {
+        navigate(LIST_WALLETS);
+      } else if (isValidMnemonic === false) {
+        setMnemonicError('Your mnemonic is invalid');
+      } else {
+        setMnemonicError('This wallet is already imported');
+      }
     } else {
-      setMnemonicError('This wallet is already imported');
+      setMnemonicError('Cannot find mnemonic');
     }
   }, [importMnemonic, navigate, password]);
 
@@ -52,6 +55,7 @@ export const ImportMnemonic: FC<ImportMnemonicProps> = ({ activeStep, password, 
         key="mnemonic"
         name="mnemonic"
         label="Mnemonic"
+        inputRef={mnemonicRef}
         error={!!mnemonicError}
         helperText={mnemonicError}
         style={{ marginTop: '20px' }}

@@ -1,4 +1,4 @@
-import { useState, useEffect, FC, useCallback } from 'react';
+import { useState, useEffect, FC, useCallback, useRef } from 'react';
 
 import { Button, Container, TextField, Typography } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -27,6 +27,7 @@ export const Login: FC = () => {
   const navigate = useNavigate();
   const { search } = useLocation();
   const { signIn, wallets, selectedWallet } = useWallet();
+  const passwordRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     // Check if we are still logged-in
@@ -49,7 +50,7 @@ export const Login: FC = () => {
   }, [navigate, search, selectedWallet, wallets]);
 
   const handleUnlock = useCallback(() => {
-    const passwordValue = (document.getElementById('password') as HTMLInputElement).value;
+    let passwordValue = passwordRef.current?.value;
     if (passwordValue && signIn(passwordValue)) {
       if (search.includes(PARAMETER_TRANSACTION_PAYMENT)) {
         navigate(`${TRANSACTION_PATH}${search}`);
@@ -111,6 +112,7 @@ export const Login: FC = () => {
           id="password"
           name="password"
           label="Password"
+          inputRef={passwordRef}
           error={!!passwordError}
           onChange={handleTextFieldChange}
           helperText={passwordError}

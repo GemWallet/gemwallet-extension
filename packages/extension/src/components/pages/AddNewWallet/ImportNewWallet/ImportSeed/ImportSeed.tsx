@@ -1,4 +1,4 @@
-import { FC, useState, useCallback } from 'react';
+import { FC, useCallback, useRef, useState } from 'react';
 
 import { TextField, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
@@ -17,18 +17,21 @@ export const ImportSeed: FC<ImportSeedProps> = ({ activeStep, password, handleBa
   const navigate = useNavigate();
   const { importSeed } = useWallet();
   const [seedError, setSeedError] = useState('');
+  const seedRef = useRef<HTMLInputElement | null>(null);
 
   const handleNext = useCallback(() => {
-    const isValidSeed = importSeed(
-      password,
-      (document.getElementById('seed') as HTMLInputElement).value
-    );
-    if (isValidSeed) {
-      navigate(LIST_WALLETS);
-    } else if (isValidSeed === false) {
-      setSeedError('Your seed is invalid');
+    let seedValue = seedRef.current?.value;
+    if (seedValue !== undefined) {
+      const isValidSeed = importSeed(password, seedValue);
+      if (isValidSeed) {
+        navigate(LIST_WALLETS);
+      } else if (isValidSeed === false) {
+        setSeedError('Your seed is invalid');
+      } else {
+        setSeedError('This wallet is already imported');
+      }
     } else {
-      setSeedError('This wallet is already imported');
+      setSeedError('Your seed is empty');
     }
   }, [importSeed, navigate, password]);
 
@@ -52,6 +55,7 @@ export const ImportSeed: FC<ImportSeedProps> = ({ activeStep, password, handleBa
         key="seed"
         name="seed"
         label="Seed"
+        inputRef={seedRef}
         error={!!seedError}
         helperText={seedError}
         style={{ marginTop: '20px' }}
