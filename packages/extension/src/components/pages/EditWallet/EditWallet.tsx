@@ -4,7 +4,7 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import { Button, CircularProgress, List, ListItem, ListItemText } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { LIST_WALLETS } from '../../../constants';
+import { LIST_WALLETS_PATH } from '../../../constants';
 import { useWallet } from '../../../contexts';
 import { WalletLedger } from '../../../types';
 import { WalletIcon } from '../../atoms';
@@ -24,7 +24,7 @@ export const EditWallet: FC = () => {
   const { getWalletByPublicAddress } = useWallet();
 
   const handleBack = useCallback(() => {
-    navigate(LIST_WALLETS);
+    navigate(LIST_WALLETS_PATH);
   }, [navigate]);
 
   useEffect(() => {

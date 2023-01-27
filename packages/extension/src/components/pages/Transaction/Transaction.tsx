@@ -3,6 +3,7 @@ import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import ErrorIcon from '@mui/icons-material/Error';
 import { Button, Container, IconButton, Paper, Tooltip, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
+import { isValidAddress, xrpToDrops } from 'xrpl';
 
 import { GEM_WALLET, Message, ReceivePaymentHashBackgroundMessage } from '@gemwallet/constants';
 
@@ -59,8 +60,14 @@ export const Transaction: FC = () => {
   }, []);
 
   useEffect(() => {
-    if (client && params.amount && params.destination) {
-      estimateNetworkFees({ amount: params.amount, destination: params.destination })
+    const currentWallet = getCurrentWallet();
+    if (currentWallet && client && params.amount && params.destination) {
+      estimateNetworkFees({
+        TransactionType: 'Payment',
+        Account: currentWallet.publicAddress,
+        Amount: xrpToDrops(params.amount),
+        Destination: params.destination
+      })
         .then((fees) => {
           setFees(fees);
         })
@@ -69,7 +76,7 @@ export const Transaction: FC = () => {
           setErrorFees(e.message);
         });
     }
-  }, [client, estimateNetworkFees, params.amount, params.destination]);
+  }, [client, estimateNetworkFees, getCurrentWallet, params.amount, params.destination]);
 
   useEffect(() => {
     const currentWallet = getCurrentWallet();
@@ -94,11 +101,12 @@ export const Transaction: FC = () => {
     serverInfo?.info.validated_ledger?.reserve_base_xrp
   ]);
 
-  useEffect(() => {
-    if (isParamsMissing) {
-      Sentry.captureMessage('Params are missing');
+  const isValidDestination = useMemo(() => {
+    if (params.destination) {
+      isValidAddress(params.destination);
     }
-  }, [isParamsMissing]);
+    return false;
+  }, [params.destination]);
 
   const createMessage = useCallback(
     (transactionHash: string | null | undefined): ReceivePaymentHashBackgroundMessage => {
@@ -158,6 +166,22 @@ export const Transaction: FC = () => {
     );
   }
 
+  if (!isValidDestination) {
+    return (
+      <AsyncTransaction
+        title="Incorrect transaction"
+        subtitle={
+          <>
+            Your transaction is incorrect.
+            <br />
+            The destination address of the transaction is invalid.
+          </>
+        }
+        transaction={TransactionStatus.Rejected}
+      />
+    );
+  }
+
   if (errorDifference) {
     if (errorDifference === 'Account not found.') {
       return (
@@ -188,7 +212,7 @@ export const Transaction: FC = () => {
     return <PageWithSpinner />;
   }
 
-  if (transaction === TransactionStatus.Success) {
+  if (transaction === TransactionStatus.Success || transaction === TransactionStatus.Pending) {
     return (
       <AsyncTransaction
         title="Transaction accepted"
@@ -199,7 +223,7 @@ export const Transaction: FC = () => {
             Please wait
           </>
         }
-        transaction={TransactionStatus.Success}
+        transaction={transaction}
       />
     );
   }
@@ -216,22 +240,6 @@ export const Transaction: FC = () => {
           </>
         }
         transaction={TransactionStatus.Rejected}
-      />
-    );
-  }
-
-  if (transaction === TransactionStatus.Pending) {
-    return (
-      <AsyncTransaction
-        title="Transaction in progress"
-        subtitle={
-          <>
-            We are processing your transaction
-            <br />
-            Please wait
-          </>
-        }
-        transaction={TransactionStatus.Pending}
       />
     );
   }

@@ -17,6 +17,17 @@ export interface PaymentRequestPayload {
   destination: string;
 }
 
+export interface TrustlineRequestPayload {
+  // The token to be used
+  currency: string;
+  // The address of the account owing the token
+  issuer: string;
+  // The amount of XRP to pay to receive the token's value
+  fee?: string;
+  // 	The amount of currency to deliver
+  value: string;
+}
+
 export interface SignMessageRequestPayload {
   url: string;
   title: string;

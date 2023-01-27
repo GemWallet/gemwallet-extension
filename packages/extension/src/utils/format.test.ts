@@ -16,5 +16,10 @@ describe('Format util', () => {
       const value = 1234567.8977;
       expect(formatToken(value, '')).toEqual('1,234,567.8977 ');
     });
+
+    test('should return 1,234,567.8977 XRP if no currency is passed over', () => {
+      const value = 1234567.8977;
+      expect(formatToken(value)).toEqual('1,234,567.8977 XRP');
+    });
   });
 });

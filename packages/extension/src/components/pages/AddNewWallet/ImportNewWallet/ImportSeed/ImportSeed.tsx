@@ -3,7 +3,7 @@ import { FC, useCallback, useRef, useState } from 'react';
 import { TextField, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
-import { LIST_WALLETS } from '../../../../../constants';
+import { LIST_WALLETS_PATH } from '../../../../../constants';
 import { useWallet } from '../../../../../contexts';
 import { PageWithStepper } from '../../../../templates';
 
@@ -24,7 +24,7 @@ export const ImportSeed: FC<ImportSeedProps> = ({ activeStep, password, handleBa
     if (seedValue !== undefined) {
       const isValidSeed = importSeed(password, seedValue);
       if (isValidSeed) {
-        navigate(LIST_WALLETS);
+        navigate(LIST_WALLETS_PATH);
       } else if (isValidSeed === false) {
         setSeedError('Your seed is invalid');
       } else {

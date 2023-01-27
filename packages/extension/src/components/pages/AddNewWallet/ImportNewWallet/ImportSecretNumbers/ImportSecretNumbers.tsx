@@ -3,7 +3,7 @@ import { FC, useCallback, useState, FocusEvent } from 'react';
 import { Grid, TextField, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
-import { ERROR_RED, LIST_WALLETS } from '../../../../../constants';
+import { ERROR_RED, LIST_WALLETS_PATH } from '../../../../../constants';
 import { useWallet } from '../../../../../contexts';
 import { PageWithStepper } from '../../../../templates';
 import styles from './styles.module.css';
@@ -73,7 +73,7 @@ export const ImportSecretNumbers: FC<ImportSecretNumbersProps> = ({
     if (numbers.find((number) => !schemaInput.test(number)) === undefined) {
       const isValidNumbers = importNumbers(password, numbers);
       if (isValidNumbers) {
-        navigate(LIST_WALLETS);
+        navigate(LIST_WALLETS_PATH);
       } else if (isValidNumbers === false) {
         setNumbersError('Your secret numbers are incorrect.');
       } else {

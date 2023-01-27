@@ -8,6 +8,7 @@ import { GEM_WALLET, Message, ReceiveNetworkBackgroundMessage } from '@gemwallet
 import { PrivateRoute } from './components/atoms/PrivateRoute';
 import {
   About,
+  AddNewTrustline,
   AddNewWallet,
   CreateWallet,
   EditWallet,
@@ -45,9 +46,10 @@ import {
   WELCOME_PATH,
   IMPORT_MNEMONIC_PATH,
   IMPORT_SECRET_NUMBERS_PATH,
-  LIST_WALLETS,
-  ADD_NEW_WALLET,
-  EDIT_WALLET
+  LIST_WALLETS_PATH,
+  ADD_NEW_WALLET_PATH,
+  EDIT_WALLET_PATH,
+  ADD_NEW_TRUSTLINE_PATH
 } from './constants';
 import { useBrowser } from './contexts';
 import { loadNetwork } from './utils';
@@ -103,7 +105,7 @@ const App: FC = () => {
           }
         />
         <Route
-          path={LIST_WALLETS}
+          path={LIST_WALLETS_PATH}
           element={
             <PrivateRoute>
               <ListWallets />
@@ -111,7 +113,7 @@ const App: FC = () => {
           }
         />
         <Route
-          path={`${EDIT_WALLET}/:publicAddress`}
+          path={`${EDIT_WALLET_PATH}/:publicAddress`}
           element={
             <PrivateRoute>
               <EditWallet />
@@ -119,10 +121,18 @@ const App: FC = () => {
           }
         />
         <Route
-          path={ADD_NEW_WALLET}
+          path={ADD_NEW_WALLET_PATH}
           element={
             <PrivateRoute>
               <AddNewWallet />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path={ADD_NEW_TRUSTLINE_PATH}
+          element={
+            <PrivateRoute>
+              <AddNewTrustline />
             </PrivateRoute>
           }
         />
