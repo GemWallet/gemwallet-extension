@@ -20,7 +20,7 @@ export const ImportSeed: FC<ImportSeedProps> = ({ activeStep, password, handleBa
   const seedRef = useRef<HTMLInputElement | null>(null);
 
   const handleNext = useCallback(() => {
-    let seedValue = seedRef.current?.value;
+    const seedValue = seedRef.current?.value;
     if (seedValue !== undefined) {
       const isValidSeed = importSeed(password, seedValue);
       if (isValidSeed) {

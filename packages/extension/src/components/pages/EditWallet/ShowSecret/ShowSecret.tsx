@@ -33,7 +33,7 @@ export const ShowSecret: FC<ShowSecretProps> = ({ seed, mnemonic, onBackButton }
   }, []);
 
   const handleConfirmPassword = useCallback(() => {
-    let passwordValue = passwordRef.current?.value;
+    const passwordValue = passwordRef.current?.value;
     if (passwordValue === password) {
       setStep('showSecret');
     }

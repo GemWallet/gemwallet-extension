@@ -50,7 +50,7 @@ export const Login: FC = () => {
   }, [navigate, search, selectedWallet, wallets]);
 
   const handleUnlock = useCallback(() => {
-    let passwordValue = passwordRef.current?.value;
+    const passwordValue = passwordRef.current?.value;
     if (passwordValue && signIn(passwordValue)) {
       if (search.includes(PARAMETER_TRANSACTION_PAYMENT)) {
         navigate(`${TRANSACTION_PATH}${search}`);

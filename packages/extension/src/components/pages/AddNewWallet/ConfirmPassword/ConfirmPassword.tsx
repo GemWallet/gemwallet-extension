@@ -29,7 +29,7 @@ export const ConfirmPassword: FC<ConfirmPasswordProps> = ({ setPassword, onConfi
 
   const handleConfirmPassword = useCallback(() => {
     //TODO: See how to refactor this maybe just comparing with a password string from the context would be enough
-    let passwordValue = passwordRef.current?.value;
+    const passwordValue = passwordRef.current?.value;
     if (passwordValue && signIn(passwordValue)) {
       setPassword(passwordValue);
       onConfirmPassword();

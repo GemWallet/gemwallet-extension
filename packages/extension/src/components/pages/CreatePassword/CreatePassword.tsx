@@ -28,8 +28,8 @@ export const CreatePassword: FC<CreatePasswordProps> = ({
   const confirmPasswordRef = useRef<HTMLInputElement | null>(null);
 
   const handleNext = useCallback(() => {
-    let passwordValue: string | undefined = passwordRef.current?.value;
-    let confirmPasswordValue: string | undefined = confirmPasswordRef.current?.value;
+    const passwordValue: string | undefined = passwordRef.current?.value;
+    const confirmPasswordValue: string | undefined = confirmPasswordRef.current?.value;
     if (passwordValue === undefined || passwordValue == null || passwordValue.length < 8) {
       setPasswordError('Password must be at least 8 characters long');
     } else if (passwordValue !== confirmPasswordValue) {

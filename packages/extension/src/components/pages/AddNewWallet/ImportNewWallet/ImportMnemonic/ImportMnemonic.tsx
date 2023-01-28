@@ -20,7 +20,7 @@ export const ImportMnemonic: FC<ImportMnemonicProps> = ({ activeStep, password, 
   const mnemonicRef = useRef<HTMLInputElement | null>(null);
 
   const handleNext = useCallback(() => {
-    let mnemonicValue = mnemonicRef.current?.value;
+    const mnemonicValue = mnemonicRef.current?.value;
     if (mnemonicValue !== undefined) {
       const isValidMnemonic = importMnemonic(password, mnemonicValue);
       if (isValidMnemonic) {
