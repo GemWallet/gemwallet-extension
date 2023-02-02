@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo, useState } from 'react';
+import { FC, useCallback, useMemo, useRef, useState } from 'react';
 
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import DoneIcon from '@mui/icons-material/Done';
@@ -25,7 +25,7 @@ export const ShowSecret: FC<ShowSecretProps> = ({ seed, mnemonic, onBackButton }
   const [isCopied, setIsCopied] = useState(false);
   const { password } = useWallet();
   const setTimeout = useTimeout(2000);
-
+  const passwordRef = useRef<HTMLInputElement | null>(null);
   const secretType: Secret = useMemo(() => (seed ? 'seed' : 'mnemonic'), [seed]);
 
   const handlePasswordChange = useCallback(() => {
@@ -33,7 +33,7 @@ export const ShowSecret: FC<ShowSecretProps> = ({ seed, mnemonic, onBackButton }
   }, []);
 
   const handleConfirmPassword = useCallback(() => {
-    const passwordValue = (document.getElementById('password') as HTMLInputElement).value;
+    const passwordValue = passwordRef.current?.value;
     if (passwordValue === password) {
       setStep('showSecret');
     }
@@ -85,6 +85,7 @@ export const ShowSecret: FC<ShowSecretProps> = ({ seed, mnemonic, onBackButton }
                 id="password"
                 name="password"
                 label="Password"
+                inputRef={passwordRef}
                 error={!!passwordError}
                 onChange={handlePasswordChange}
                 helperText={passwordError}

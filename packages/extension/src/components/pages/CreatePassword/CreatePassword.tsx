@@ -1,4 +1,4 @@
-import { Dispatch, FC, SetStateAction, useCallback, useState } from 'react';
+import { Dispatch, FC, SetStateAction, useCallback, useRef, useState } from 'react';
 
 import { TextField, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
@@ -24,18 +24,19 @@ export const CreatePassword: FC<CreatePasswordProps> = ({
 }) => {
   const [passwordError, setPasswordError] = useState('');
   const [saveWalletError, setSaveWalletError] = useState('');
+  const passwordRef = useRef<HTMLInputElement | null>(null);
+  const confirmPasswordRef = useRef<HTMLInputElement | null>(null);
 
   const handleNext = useCallback(() => {
-    const passwordValue = (document.getElementById('password') as HTMLInputElement).value;
-    const confirmPasswordValue = (document.getElementById('confirm-password') as HTMLInputElement)
-      .value;
-    if (passwordValue.length < 8) {
+    const passwordValue: string | undefined = passwordRef.current?.value;
+    const confirmPasswordValue: string | undefined = confirmPasswordRef.current?.value;
+    if (passwordValue === undefined || passwordValue == null || passwordValue.length < 8) {
       setPasswordError('Password must be at least 8 characters long');
     } else if (passwordValue !== confirmPasswordValue) {
       setPasswordError('Passwords must match');
     } else {
       try {
-        saveWallet(wallet, passwordValue);
+        saveWallet(wallet, confirmPasswordValue);
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
       } catch (e) {
         Sentry.captureException(e);
@@ -66,6 +67,7 @@ export const CreatePassword: FC<CreatePasswordProps> = ({
         key="password"
         name="password"
         label="Password"
+        inputRef={passwordRef}
         error={!!passwordError}
         type="password"
         style={{ marginTop: '20px' }}
@@ -76,6 +78,7 @@ export const CreatePassword: FC<CreatePasswordProps> = ({
         key="confirm-password"
         name="confirm-password"
         label="Confirm Password"
+        inputRef={confirmPasswordRef}
         error={!!passwordError}
         helperText={passwordError}
         type="password"

@@ -1,4 +1,4 @@
-import { FC, useState, useCallback } from 'react';
+import { FC, useState, useCallback, useRef } from 'react';
 
 import { TextField, Typography } from '@mui/material';
 
@@ -20,9 +20,10 @@ export const ConfirmSeed: FC<ConfirmSeedProps> = ({
   onConfirm
 }) => {
   const [seedError, setSeedError] = useState('');
+  const seedRef = useRef<HTMLInputElement | null>(null);
 
   const handleNext = useCallback(() => {
-    if ((document.getElementById('seed') as HTMLInputElement).value === seed) {
+    if (seedRef.current?.value === seed) {
       onConfirm();
     } else {
       setSeedError('Seed incorrect');
@@ -49,6 +50,7 @@ export const ConfirmSeed: FC<ConfirmSeedProps> = ({
         key="seed"
         name="seed"
         label="Seed"
+        inputRef={seedRef}
         error={!!seedError}
         helperText={seedError}
         style={{ marginTop: '20px' }}

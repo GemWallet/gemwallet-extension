@@ -1,4 +1,4 @@
-import { FC, useCallback, useState } from 'react';
+import { FC, useCallback, useState, useRef } from 'react';
 
 import { Button, TextField, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
@@ -17,6 +17,7 @@ export const ConfirmPassword: FC<ConfirmPasswordProps> = ({ setPassword, onConfi
   const navigate = useNavigate();
   const { signIn } = useWallet();
   const [passwordError, setPasswordError] = useState<string>('');
+  const passwordRef = useRef<HTMLInputElement | null>(null);
 
   const handleBack = useCallback(() => {
     navigate(LIST_WALLETS);
@@ -27,8 +28,8 @@ export const ConfirmPassword: FC<ConfirmPasswordProps> = ({ setPassword, onConfi
   }, []);
 
   const handleConfirmPassword = useCallback(() => {
-    const passwordValue = (document.getElementById('password') as HTMLInputElement).value;
     //TODO: See how to refactor this maybe just comparing with a password string from the context would be enough
+    const passwordValue = passwordRef.current?.value;
     if (passwordValue && signIn(passwordValue)) {
       setPassword(passwordValue);
       onConfirmPassword();
@@ -59,6 +60,7 @@ export const ConfirmPassword: FC<ConfirmPasswordProps> = ({ setPassword, onConfi
             id="password"
             name="password"
             label="Password"
+            inputRef={passwordRef}
             error={!!passwordError}
             onChange={handleTextFieldChange}
             helperText={passwordError}
