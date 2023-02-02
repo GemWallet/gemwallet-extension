@@ -28,7 +28,7 @@ export const loadWallets = (password: string): Wallet[] => {
     const data = loadData(STORAGE_WALLETS);
     if (data) {
       const decryptedData = decrypt(data, password);
-      if (decryptedData !== undefined) {
+      if (decryptedData !== '') {
         return JSON.parse(decryptedData);
       }
     }

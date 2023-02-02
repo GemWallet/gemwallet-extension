@@ -10,6 +10,7 @@
   <body>
     <div id="wrapper">
       <button onclick="handlePayment()">Pay</button>
+      <button onclick="handleTrustline()">Add trustline</button>
       <div id="address"></div>
     </div>
   </body>
@@ -17,16 +18,14 @@
 
 <script>
   function handlePayment() {
-    gemWalletApi
-      .isConnected()
+    GemWalletApi.isConnected()
       .then((isConnected) => {
         if (isConnected) {
           const payment = {
             amount: '0.0020',
             destination: 'rNvFCZXpDtGeQ3bVas95wGLN6N2stGmA9o'
           };
-          gemWalletApi
-            .sendPayment(payment)
+          GemWalletApi.sendPayment(payment)
             .then((trHash) => {
               const addressContainer = document.getElementById('address');
               addressContainer.insertAdjacentText(
@@ -36,6 +35,32 @@
             })
             .catch((e) => {
               console.error('Cannot proceed the payment: ', e);
+            });
+        }
+      })
+      .catch((e) => {
+        console.error('GemWallet is not connected: ', e);
+      });
+  }
+  function handleTrustline() {
+    GemWalletApi.isConnected()
+      .then((isConnected) => {
+        if (isConnected) {
+          const transaction = {
+            currency: 'USD',
+            issuer: 'rwtDvu9QDfCskWuyE2TSEt3s56RbiWUKJN',
+            value: '20'
+          };
+          GemWalletApi.addTrustline(transaction)
+            .then((trHash) => {
+              const addressContainer = document.getElementById('address');
+              addressContainer.insertAdjacentText(
+                'afterbegin',
+                `Transaction sent with ID: ${trHash}`
+              );
+            })
+            .catch((e) => {
+              console.error('Cannot proceed the transaction: ', e);
             });
         }
       })

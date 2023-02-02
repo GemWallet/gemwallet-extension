@@ -101,7 +101,7 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
     );
   }
 
-  if (XRPBalance === LOADING_STATE || serverInfo === undefined) {
+  if (XRPBalance === LOADING_STATE) {
     return <TokenLoader />;
   }
   const reserve = serverInfo?.info.validated_ledger?.reserve_base_xrp || DEFAULT_RESERVE;

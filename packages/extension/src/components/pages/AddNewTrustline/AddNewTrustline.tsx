@@ -6,6 +6,8 @@ import { Button, Container, IconButton, Paper, Tooltip, Typography } from '@mui/
 import * as Sentry from '@sentry/react';
 import { isValidAddress } from 'xrpl';
 
+import { GEM_WALLET, Message, ReceiveTrustlineHashBackgroundMessage } from '@gemwallet/constants';
+
 import { DEFAULT_RESERVE, ERROR_RED } from '../../../constants';
 import { useLedger, useNetwork, useServer, useWallet } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
@@ -130,17 +132,37 @@ export const AddNewTrustline: FC = () => {
   ]);
 
   const isValidIssuer = useMemo(() => {
-    if (params.issuer) {
-      isValidAddress(params.issuer);
+    if (params.issuer && isValidAddress(params.issuer)) {
+      return true;
     }
     return false;
   }, [params.issuer]);
 
   const hasEnoughFunds = useMemo(() => Number(difference) > 0, [difference]);
 
+  const createMessage = useCallback(
+    (transactionHash: string | null | undefined): ReceiveTrustlineHashBackgroundMessage => {
+      return {
+        app: GEM_WALLET,
+        type: Message.ReceiveTrustlineHash,
+        payload: {
+          id: params.id,
+          hash: transactionHash
+        }
+      };
+    },
+    [params.id]
+  );
+
+  const handleReject = useCallback(() => {
+    setTransaction(TransactionStatus.Rejected);
+    const message = createMessage(null);
+    chrome.runtime.sendMessage<ReceiveTrustlineHashBackgroundMessage>(message);
+  }, [createMessage]);
+
   const handleConfirm = useCallback(() => {
     setTransaction(TransactionStatus.Pending);
-    // Value, currency and issuer be present because if not,
+    // Value, currency and issuer will be present because if not,
     // we won't be able to go to the confirm transaction state
     if (params.value === null || params.currency === null || params.issuer === null) {
       setIsParamsMissing(true);
@@ -153,17 +175,17 @@ export const AddNewTrustline: FC = () => {
       })
         .then((transactionHash) => {
           setTransaction(TransactionStatus.Success);
-          // const message = createMessage(transactionHash);
-          // chrome.runtime.sendMessage<ReceivePaymentHashBackgroundMessage>(message);
+          const message = createMessage(transactionHash);
+          chrome.runtime.sendMessage<ReceiveTrustlineHashBackgroundMessage>(message);
         })
         .catch((e) => {
           setErrorRequestRejection(e.message);
           setTransaction(TransactionStatus.Rejected);
-          // const message = createMessage(undefined);
-          // chrome.runtime.sendMessage<ReceivePaymentHashBackgroundMessage>(message);
+          const message = createMessage(undefined);
+          chrome.runtime.sendMessage<ReceiveTrustlineHashBackgroundMessage>(message);
         });
     }
-  }, [addTrustline, params.currency, params.fee, params.issuer, params.value]);
+  }, [addTrustline, createMessage, params.currency, params.fee, params.issuer, params.value]);
 
   if (isParamsMissing) {
     return (
@@ -298,7 +320,7 @@ export const AddNewTrustline: FC = () => {
           </Typography>
         </div>
         <Container style={{ display: 'flex', justifyContent: 'space-evenly' }}>
-          <Button variant="contained" color="secondary" onClick={() => window.close()}>
+          <Button variant="contained" color="secondary" onClick={handleReject}>
             Reject
           </Button>
           <Button variant="contained" onClick={() => setStep('TRANSACTION')} disabled={false}>
@@ -373,7 +395,7 @@ export const AddNewTrustline: FC = () => {
         </Typography>
       </Paper>
       <Container style={{ display: 'flex', justifyContent: 'space-evenly' }}>
-        <Button variant="contained" color="secondary" onClick={() => {}}>
+        <Button variant="contained" color="secondary" onClick={handleReject}>
           Reject
         </Button>
         <Button variant="contained" onClick={handleConfirm} disabled={!hasEnoughFunds}>

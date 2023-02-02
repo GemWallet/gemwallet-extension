@@ -2,6 +2,7 @@ import { GEM_WALLET } from '../global/global.constant';
 import { Message } from '../message/message.constant';
 import {
   PaymentRequestPayload,
+  TrustlineRequestPayload,
   SignMessageRequestPayload,
   WebsiteRequestPayload
 } from '../payload/payload.types';
@@ -13,7 +14,11 @@ interface MessageEventData {
   source: Message.MsgRequest;
   messageId: number;
   // Not all the MessageEventData have a payload
-  payload?: WebsiteRequestPayload | PaymentRequestPayload | SignMessageRequestPayload;
+  payload?:
+    | WebsiteRequestPayload
+    | PaymentRequestPayload
+    | TrustlineRequestPayload
+    | SignMessageRequestPayload;
 }
 
 export interface NetworkEventListener extends MessageEvent<MessageEventData> {
@@ -65,9 +70,20 @@ export interface PaymentEventListener extends MessageEvent<MessageEventData> {
   };
 }
 
+export interface AddTrustlineEventListener extends MessageEvent<MessageEventData> {
+  data: {
+    app: typeof GEM_WALLET;
+    type: Message.RequestAddTrustline;
+    source: Message.MsgRequest;
+    messageId: number;
+    payload: TrustlineRequestPayload;
+  };
+}
+
 export type EventListener =
   | NetworkEventListener
   | AddressEventListener
   | PublicKeyEventListener
   | PaymentEventListener
+  | AddTrustlineEventListener
   | SignMessageListener;

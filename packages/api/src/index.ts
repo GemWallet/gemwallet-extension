@@ -1,3 +1,4 @@
+export * from './addTrustline';
 export * from './getAddress';
 export * from './getNetwork';
 export * from './getPublicKey';

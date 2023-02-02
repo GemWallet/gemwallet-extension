@@ -14,6 +14,8 @@ jest.mock('../../../../contexts', () => ({
   useWallet: () => mockWalletContext
 }));
 
+window.prompt = jest.fn();
+
 const seed = 'test-seed';
 const mnemonic = 'test mnemonic';
 const incorrectPassword = 'incorrect-password';

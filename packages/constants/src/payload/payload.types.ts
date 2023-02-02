@@ -22,7 +22,8 @@ export interface TrustlineRequestPayload {
   currency: string;
   // The address of the account owing the token
   issuer: string;
-  // The amount of XRP to pay to receive the token's value
+  // Integer amount of XRP, in drops, to be destroyed as a cost for distributing this transaction to the network.
+  // Some transaction types have different minimum requirements.
   fee?: string;
   // 	The amount of currency to deliver
   value: string;
@@ -60,5 +61,9 @@ export interface IsConnectedResponsePayload {
 }
 
 export interface PaymentHashResponsePayload {
+  hash: string | null | undefined;
+}
+
+export interface TrustlineHashResponsePayload {
   hash: string | null | undefined;
 }

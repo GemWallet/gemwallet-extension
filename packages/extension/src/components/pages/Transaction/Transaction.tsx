@@ -102,8 +102,8 @@ export const Transaction: FC = () => {
   ]);
 
   const isValidDestination = useMemo(() => {
-    if (params.destination) {
-      isValidAddress(params.destination);
+    if (params.destination && isValidAddress(params.destination)) {
+      return true;
     }
     return false;
   }, [params.destination]);
