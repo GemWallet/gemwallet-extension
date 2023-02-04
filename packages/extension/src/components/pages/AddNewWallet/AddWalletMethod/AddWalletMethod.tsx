@@ -3,7 +3,7 @@ import { FC, useCallback } from 'react';
 import { Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
-import { LIST_WALLETS } from '../../../../constants';
+import { LIST_WALLETS_PATH } from '../../../../constants';
 import { ButtonOption } from '../../../atoms';
 import { PageWithReturn } from '../../../templates';
 
@@ -19,7 +19,7 @@ export const AddWalletMethod: FC<AddWalletMethodProps> = ({
   const navigate = useNavigate();
 
   const handleBack = useCallback(() => {
-    navigate(LIST_WALLETS);
+    navigate(LIST_WALLETS_PATH);
   }, [navigate]);
 
   return (

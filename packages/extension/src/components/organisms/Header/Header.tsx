@@ -7,7 +7,11 @@ import { styled } from '@mui/material/styles';
 import copyToClipboard from 'copy-to-clipboard';
 import { useNavigate } from 'react-router-dom';
 
-import { HEADER_HEIGHT_WITHOUT_PADDING, LIST_WALLETS, SECONDARY_GRAY } from '../../../constants';
+import {
+  HEADER_HEIGHT_WITHOUT_PADDING,
+  LIST_WALLETS_PATH,
+  SECONDARY_GRAY
+} from '../../../constants';
 import { useTimeout } from '../../../hooks';
 import { WalletLedger } from '../../../types';
 import { truncateAddress } from '../../../utils';
@@ -43,7 +47,7 @@ export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => 
   }, [publicAddress, setTimeout]);
 
   const onWalletIconClick = useCallback(() => {
-    navigate(LIST_WALLETS);
+    navigate(LIST_WALLETS_PATH);
   }, [navigate]);
 
   return (

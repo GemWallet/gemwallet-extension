@@ -3,7 +3,7 @@ import { FC, useCallback } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import { useNavigate } from 'react-router-dom';
 
-import { ADD_NEW_WALLET, HOME_PATH } from '../../../constants';
+import { ADD_NEW_WALLET_PATH, HOME_PATH } from '../../../constants';
 import { useWallet } from '../../../contexts';
 import { PageWithReturn } from '../../templates';
 import { Wallet } from './Wallet';
@@ -18,7 +18,7 @@ export const ListWallets: FC = () => {
   }, [navigate]);
 
   const handleCreateWallet = useCallback(() => {
-    navigate(ADD_NEW_WALLET);
+    navigate(ADD_NEW_WALLET_PATH);
   }, [navigate]);
 
   const handleSelectWallet = useCallback(

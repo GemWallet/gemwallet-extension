@@ -1,4 +1,5 @@
 export * from './About';
+export * from './AddNewTrustline';
 export * from './AddNewWallet';
 export * from './CreateWallet';
 export * from './EditWallet';

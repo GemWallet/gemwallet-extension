@@ -3,7 +3,7 @@ import { FC, useCallback, useState, useRef } from 'react';
 import { Button, TextField, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
-import { LIST_WALLETS } from '../../../../constants';
+import { LIST_WALLETS_PATH } from '../../../../constants';
 import { useWallet } from '../../../../contexts';
 import { useKeyUp } from '../../../../hooks';
 import { PageWithReturn } from '../../../templates';
@@ -20,7 +20,7 @@ export const ConfirmPassword: FC<ConfirmPasswordProps> = ({ setPassword, onConfi
   const passwordRef = useRef<HTMLInputElement | null>(null);
 
   const handleBack = useCallback(() => {
-    navigate(LIST_WALLETS);
+    navigate(LIST_WALLETS_PATH);
   }, [navigate]);
 
   const handleTextFieldChange = useCallback(() => {

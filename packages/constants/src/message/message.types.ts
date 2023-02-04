@@ -6,10 +6,12 @@ import {
   NetworkResponsePayload,
   PaymentHashResponsePayload,
   PaymentRequestPayload,
+  TrustlineRequestPayload,
   PublicKeyResponsePayload,
   SignedMessageResponsePayload,
   SignMessageRequestPayload,
-  WebsiteRequestPayload
+  WebsiteRequestPayload,
+  TrustlineHashResponsePayload
 } from '../payload/payload.types';
 
 /*
@@ -38,6 +40,12 @@ export interface RequestPaymentMessage {
   payload: PaymentRequestPayload;
 }
 
+export interface RequestTrustlineMessage {
+  app: typeof GEM_WALLET;
+  type: Message.RequestAddTrustline;
+  payload: TrustlineRequestPayload;
+}
+
 export interface RequestSignMessageMessage {
   app: typeof GEM_WALLET;
   type: Message.RequestSignMessage;
@@ -57,12 +65,18 @@ export type PublicKeyResponse = MessagingResponse & PublicKeyResponsePayload;
 export type SignedMessageResponse = MessagingResponse & SignedMessageResponsePayload;
 export type IsConnectedResponse = MessagingResponse & IsConnectedResponsePayload;
 export type PaymentResponse = MessagingResponse & PaymentHashResponsePayload;
+export type TrustlineResponse = MessagingResponse & TrustlineHashResponsePayload;
 
 // Content Script Messages
 export interface ReceivePaymentHashContentMessage {
   app: typeof GEM_WALLET;
   type: Message.ReceivePaymentHash;
   payload: PaymentHashResponsePayload;
+}
+export interface ReceiveTrustlineHashContentMessage {
+  app: typeof GEM_WALLET;
+  type: Message.ReceiveTrustlineHash;
+  payload: TrustlineHashResponsePayload;
 }
 export interface ReceiveAddressContentMessage {
   app: typeof GEM_WALLET;
@@ -95,6 +109,9 @@ type BackgroundMessagePayload = {
 export type ReceivePaymentHashBackgroundMessage = ReceivePaymentHashContentMessage &
   BackgroundMessagePayload;
 
+export type ReceiveTrustlineHashBackgroundMessage = ReceiveTrustlineHashContentMessage &
+  BackgroundMessagePayload;
+
 export type ReceiveAddressBackgroundMessage = ReceiveAddressContentMessage &
   BackgroundMessagePayload;
 
@@ -113,9 +130,11 @@ export type BackgroundMessage =
   | RequestAddressMessage
   | RequestPublicKeyMessage
   | RequestPaymentMessage
+  | RequestTrustlineMessage
   | RequestSignMessageMessage
   // Outputted Messages - DO contain ID within the payloads
   | ReceivePaymentHashBackgroundMessage
+  | ReceiveTrustlineHashBackgroundMessage
   | ReceiveAddressBackgroundMessage
   | ReceiveNetworkBackgroundMessage
   | ReceivePublicKeyBackgroundMessage
@@ -133,4 +152,5 @@ export type APIMessages =
   | RequestPublicKeyMessage
   | RequestIsConnectedMessage
   | RequestPaymentMessage
+  | RequestTrustlineMessage
   | RequestSignMessageMessage;

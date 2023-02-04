@@ -10,6 +10,7 @@ export const TokenLoader: FC = () => {
       style={{
         padding: '10px 10px 2px 10px'
       }}
+      data-testid="token-loader"
     >
       <ContentLoader
         speed={2}
@@ -22,7 +23,7 @@ export const TokenLoader: FC = () => {
         <rect x="60" y="7" rx="3" ry="3" width="52" height="10" />
         <rect x="60" y="28" rx="3" ry="3" width="200" height="10" />
         <circle cx="23" cy="23" r="23" />
-      </ContentLoader>{' '}
+      </ContentLoader>
     </Paper>
   );
 };

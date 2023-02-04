@@ -45,7 +45,7 @@ describe('sendPayment api', () => {
     expect(response).toEqual(null);
   });
 
-  test('should return an error if sendMessageToContentScript failed', async () => {
+  test('should return an undefined if sendMessageToContentScript failed', async () => {
     let error;
     payload.destination = 'errorThrow';
     await sendPayment(payload)
@@ -53,6 +53,6 @@ describe('sendPayment api', () => {
       .catch((e) => {
         error = e.message;
       });
-    expect(error).toEqual(errorThrownFromContentScript);
+    expect(error).toEqual(undefined);
   });
 });

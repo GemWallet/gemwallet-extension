@@ -7,7 +7,7 @@ import {
   IMPORT_MNEMONIC_PATH,
   IMPORT_SECRET_NUMBERS_PATH,
   IMPORT_SEED_PATH,
-  LIST_WALLETS
+  LIST_WALLETS_PATH
 } from '../../../../constants';
 import { ButtonOption } from '../../../atoms';
 import { PageWithStepper } from '../../../templates';
@@ -43,7 +43,7 @@ export const ImportNewWallet: FC<ImportNewWalletProps> = ({ password }) => {
   const [selectedAccount, setSelectedAccount] = useState(-1);
 
   const handleBack = useCallback(() => {
-    navigate(LIST_WALLETS);
+    navigate(LIST_WALLETS_PATH);
   }, [navigate]);
 
   const handleNext = useCallback(() => {

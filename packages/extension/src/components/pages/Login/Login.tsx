@@ -15,7 +15,9 @@ import {
   TRANSACTION_PATH,
   WELCOME_PATH,
   PARAMETER_PUBLIC_KEY,
-  SHARE_PUBLIC_KEY_PATH
+  SHARE_PUBLIC_KEY_PATH,
+  ADD_NEW_TRUSTLINE_PATH,
+  PARAMETER_TRANSACTION_TRUSTLINE
 } from '../../../constants';
 import { useWallet } from '../../../contexts';
 import { useKeyUp } from '../../../hooks/useKeyUp';
@@ -40,6 +42,8 @@ export const Login: FC = () => {
         navigate(`${SHARE_PUBLIC_KEY_PATH}${search}`);
       } else if (search.includes(PARAMETER_SIGN_MESSAGE)) {
         navigate(`${SIGN_MESSAGE_PATH}${search}`);
+      } else if (search.includes(PARAMETER_TRANSACTION_TRUSTLINE)) {
+        navigate(`${ADD_NEW_TRUSTLINE_PATH}${search}`);
       } else {
         navigate(`${HOME_PATH}${search}`);
       }
@@ -60,6 +64,8 @@ export const Login: FC = () => {
         navigate(`${SHARE_PUBLIC_KEY_PATH}${search}`);
       } else if (search.includes(PARAMETER_SIGN_MESSAGE)) {
         navigate(`${SIGN_MESSAGE_PATH}${search}`);
+      } else if (search.includes(PARAMETER_TRANSACTION_TRUSTLINE)) {
+        navigate(`${ADD_NEW_TRUSTLINE_PATH}${search}`);
       } else {
         navigate(`${HOME_PATH}${search}`);
       }

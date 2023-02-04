@@ -1,5 +1,6 @@
 import {
   AddressEventListener,
+  AddTrustlineEventListener,
   EventListener,
   GEM_WALLET,
   Message,
@@ -14,13 +15,16 @@ import {
   ReceivePaymentHashContentMessage,
   ReceivePublicKeyContentMessage,
   ReceiveSignMessageContentMessage,
+  ReceiveTrustlineHashContentMessage,
   RequestAddressMessage,
   RequestNetworkMessage,
   RequestPaymentMessage,
   RequestPublicKeyMessage,
   RequestSignMessageMessage,
+  RequestTrustlineMessage,
   SignedMessageResponse,
-  SignMessageListener
+  SignMessageListener,
+  TrustlineResponse
 } from '@gemwallet/constants';
 
 /**
@@ -162,6 +166,37 @@ setTimeout(() => {
                   const { hash } = payload;
                   window.postMessage(
                     { source: Message.MsgResponse, messagedId, hash } as PaymentResponse,
+                    window.location.origin
+                  );
+                }
+              }
+              chrome.runtime.onMessage.removeListener(messageListener);
+            };
+            chrome.runtime.onMessage.addListener(messageListener);
+          }
+        );
+      } else if (type === Message.RequestAddTrustline) {
+        const {
+          data: { payload }
+        } = event as AddTrustlineEventListener;
+        chrome.runtime.sendMessage<RequestTrustlineMessage>(
+          {
+            app,
+            type,
+            payload
+          },
+          () => {
+            const messageListener = (
+              message: ReceiveTrustlineHashContentMessage,
+              sender: chrome.runtime.MessageSender
+            ) => {
+              const { app, type, payload } = message;
+              // We make sure that the message comes from GemWallet
+              if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
+                if (type === Message.ReceiveTrustlineHash) {
+                  const { hash } = payload;
+                  window.postMessage(
+                    { source: Message.MsgResponse, messagedId, hash } as TrustlineResponse,
                     window.location.origin
                   );
                 }

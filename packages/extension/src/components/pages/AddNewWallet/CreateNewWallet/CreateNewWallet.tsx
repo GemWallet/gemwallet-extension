@@ -3,7 +3,7 @@ import { useState, useEffect, FC, useCallback } from 'react';
 import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
 
-import { LIST_WALLETS } from '../../../../constants';
+import { LIST_WALLETS_PATH } from '../../../../constants';
 import { useWallet } from '../../../../contexts';
 import { WalletToSave } from '../../../../utils';
 import { PageWithSpinner } from '../../../templates';
@@ -34,7 +34,7 @@ export const CreateNewWallet: FC<CreateNewWalletProps> = ({ password }) => {
     if (activeStep === 2) {
       try {
         importSeed(password, wallet!.seed!);
-        navigate(LIST_WALLETS);
+        navigate(LIST_WALLETS_PATH);
       } catch (e) {
         Sentry.captureException('Cannot save wallet - CreateNewWallet: ' + e);
       }

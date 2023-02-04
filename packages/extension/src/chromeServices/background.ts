@@ -7,7 +7,8 @@ import {
   ReceiveNetworkContentMessage,
   ReceivePaymentHashContentMessage,
   ReceivePublicKeyContentMessage,
-  ReceiveSignMessageContentMessage
+  ReceiveSignMessageContentMessage,
+  ReceiveTrustlineHashContentMessage
 } from '@gemwallet/constants';
 
 import {
@@ -15,7 +16,8 @@ import {
   PARAMETER_NETWORK,
   PARAMETER_PUBLIC_KEY,
   PARAMETER_SIGN_MESSAGE,
-  PARAMETER_TRANSACTION_PAYMENT
+  PARAMETER_TRANSACTION_PAYMENT,
+  PARAMETER_TRANSACTION_TRUSTLINE
 } from './../constants/parameters';
 import { MAIN_FILE } from './../constants/routes';
 
@@ -251,6 +253,65 @@ chrome.runtime.onMessage.addListener((message: BackgroundMessage, sender, sendRe
             }
           });
         });
+    } else if (type === Message.RequestAddTrustline) {
+      chrome.windows
+        .getAll()
+        .then((openedWindows) => {
+          // We check if the popup is currently open
+          if (
+            _currentWindowPopup &&
+            openedWindows.find((window) => window.id === _currentWindowPopup?.id)
+          ) {
+            // TODO: Why popup are created more than one time :O
+            chrome.windows.update(_currentWindowPopup.id as number, { focused: true });
+          } else {
+            const { payload } = message;
+            getLastFocusedWindow()
+              .then((lastFocused) => {
+                const top = lastFocused.top;
+                let left = undefined;
+                if (lastFocused.left && lastFocused.width) {
+                  left = lastFocused.left + (lastFocused.width - NOTIFICATION_WIDTH);
+                }
+                chrome.windows.create(
+                  {
+                    url: `../..${MAIN_FILE}${serializeToQueryString({
+                      ...payload,
+                      id: sender.tab?.id
+                    })}&${PARAMETER_TRANSACTION_TRUSTLINE}`,
+                    type: 'popup',
+                    width: NOTIFICATION_WIDTH,
+                    height: NOTIFICATION_HEIGHT,
+                    left,
+                    top
+                  },
+                  (_window) => {
+                    _currentWindowPopup = _window;
+                  }
+                );
+              })
+              .catch((error) => {
+                console.error(error);
+                chrome.tabs.sendMessage<ReceiveTrustlineHashContentMessage>(sender.tab?.id || 0, {
+                  app: GEM_WALLET,
+                  type: Message.ReceiveTrustlineHash,
+                  payload: {
+                    hash: undefined
+                  }
+                });
+              });
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+          chrome.tabs.sendMessage<ReceiveTrustlineHashContentMessage>(sender.tab?.id || 0, {
+            app: GEM_WALLET,
+            type: Message.ReceiveTrustlineHash,
+            payload: {
+              hash: undefined
+            }
+          });
+        });
     } else if (type === Message.RequestSignMessage) {
       chrome.windows
         .getAll()
@@ -317,6 +378,15 @@ chrome.runtime.onMessage.addListener((message: BackgroundMessage, sender, sendRe
       chrome.tabs.sendMessage<ReceivePaymentHashContentMessage>(payload.id, {
         app,
         type: Message.ReceivePaymentHash,
+        payload: {
+          hash: payload.hash
+        }
+      });
+    } else if (type === Message.ReceiveTrustlineHash) {
+      const { payload } = message;
+      chrome.tabs.sendMessage<ReceiveTrustlineHashContentMessage>(payload.id, {
+        app,
+        type: Message.ReceiveTrustlineHash,
         payload: {
           hash: payload.hash
         }

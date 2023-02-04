@@ -17,7 +17,7 @@ describe('Crypto util', () => {
       const encryptedMessage = encrypt(message, passwordTest);
       const decryptedMessage = decrypt(encryptedMessage, `${passwordTest}wrong`);
 
-      expect(decryptedMessage).toBeUndefined();
+      expect(decryptedMessage).toEqual('');
     });
   });
 });

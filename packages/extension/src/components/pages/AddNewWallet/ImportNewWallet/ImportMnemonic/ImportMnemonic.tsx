@@ -3,7 +3,7 @@ import { FC, useCallback, useRef, useState } from 'react';
 import { TextField, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
-import { LIST_WALLETS } from '../../../../../constants';
+import { LIST_WALLETS_PATH } from '../../../../../constants';
 import { useWallet } from '../../../../../contexts';
 import { PageWithStepper } from '../../../../templates';
 
@@ -24,7 +24,7 @@ export const ImportMnemonic: FC<ImportMnemonicProps> = ({ activeStep, password, 
     if (mnemonicValue !== undefined) {
       const isValidMnemonic = importMnemonic(password, mnemonicValue);
       if (isValidMnemonic) {
-        navigate(LIST_WALLETS);
+        navigate(LIST_WALLETS_PATH);
       } else if (isValidMnemonic === false) {
         setMnemonicError('Your mnemonic is invalid');
       } else {
