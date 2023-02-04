@@ -207,6 +207,8 @@ describe('Setup the initial wallet (no previous wallet)', () => {
 });
 
 describe('Add an additional wallet (with previous wallet)', () => {
+  // deepcode ignore NoHardcodedPasswords: password used for testing purposes
+  const PASSWORD = 'SECRET_PASSWORD';
   const SEED = 'sEdSPaf6j72fpTWbufHtN8yBTtm4QSK';
   const MNEMONIC =
     'frozen voyage arrest venture question deny print brother genuine hip tooth rigid life output bitter raccoon kidney wine urban rookie allow envelope pitch marriage';
@@ -356,6 +358,8 @@ describe('Add an additional wallet (with previous wallet)', () => {
 });
 
 describe('Edit wallet', () => {
+  // deepcode ignore NoHardcodedPasswords: password used for testing purposes
+  const PASSWORD = 'SECRET_PASSWORD';
   const MNEMONIC =
     'frozen voyage arrest venture question deny print brother genuine hip tooth rigid life output bitter raccoon kidney wine urban rookie allow envelope pitch marriage';
 
@@ -485,6 +489,8 @@ describe('Edit wallet', () => {
 });
 
 describe('Switch wallet', () => {
+  // deepcode ignore NoHardcodedPasswords: password used for testing purposes
+  const PASSWORD = 'SECRET_PASSWORD';
   beforeEach(() => {
     // Mock the localStorage with a wallet already loaded
     cy.window().then((win) => {
