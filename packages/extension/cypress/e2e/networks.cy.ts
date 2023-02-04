@@ -69,7 +69,7 @@ describe('Switch networks', () => {
     });
   });
 
-  it('Switch from Devnet (localStorage) to NFTDevnet', () => {
+  it('Switch from Devnet (localStorage) to AMMDevnet', () => {
     // Devnet should be the network from localStorage
     cy.get('div[data-testid="network-indicator"]').should('have.text', 'Devnet');
 
@@ -79,12 +79,12 @@ describe('Switch networks', () => {
       .find('header')
       .should('have.text', 'Change Network');
 
-    // Select the NFTDevnet network
-    cy.contains('button', 'NFTDevnet').click();
+    // Select the AMMDevnet network
+    cy.contains('button', 'AMM-Devnet').click();
 
-    // Make sure that the network is switched to NFTDevnet
+    // Make sure that the network is switched to AMMDevnet
     cy.get('div[data-testid="loading"]').should('be.visible');
-    cy.get('div[data-testid="network-indicator"]').should('have.text', 'NFTDevnet');
+    cy.get('div[data-testid="network-indicator"]').should('have.text', 'AMM-Devnet');
 
     // Save the current state of the localStorage
     cy.window().then((win) => {
@@ -92,9 +92,9 @@ describe('Switch networks', () => {
     });
   });
 
-  it('Switch from NFTDevnet (localStorage) to Mainnet', () => {
-    // NFTDevnet should be the network from localStorage
-    cy.get('div[data-testid="network-indicator"]').should('have.text', 'NFTDevnet');
+  it('Switch from AMMDevnet (localStorage) to Mainnet', () => {
+    // AMMDevnet should be the network from localStorage
+    cy.get('div[data-testid="network-indicator"]').should('have.text', 'AMM-Devnet');
 
     // Open the change network window
     cy.get('div[data-testid="network-indicator"]').click();
