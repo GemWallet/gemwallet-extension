@@ -2,14 +2,14 @@ export enum Network {
   MAINNET = 'Mainnet',
   TESTNET = 'Testnet',
   DEVNET = 'Devnet',
-  NFT_DEVNET = 'NFTDevnet'
+  AMM_DEVNET = 'AMM-Devnet'
 }
 
 export enum NetworkServer {
   MAINNET = 'wss://xrplcluster.com',
   TESTNET = 'wss://s.altnet.rippletest.net:51233',
   DEVNET = 'wss://s.devnet.rippletest.net:51233',
-  NFT_DEVNET = 'wss://xls20-sandbox.rippletest.net:51233'
+  AMM_DEVNET = 'wss://amm.devnet.rippletest.net:51233'
 }
 
 export const NETWORK = {
@@ -29,9 +29,9 @@ export const NETWORK = {
     server: NetworkServer.DEVNET,
     description: 'A preview of upcoming features, where unstable changes are tested out.'
   },
-  [Network.NFT_DEVNET]: {
-    name: Network.NFT_DEVNET,
-    server: NetworkServer.NFT_DEVNET,
-    description: 'A preview of the XLS-20d standard for non-fungible tokens on the XRP Ledger.'
+  [Network.AMM_DEVNET]: {
+    name: Network.AMM_DEVNET,
+    server: NetworkServer.AMM_DEVNET,
+    description: 'XLS-30d Automated Market Makers preview network.'
   }
 };
