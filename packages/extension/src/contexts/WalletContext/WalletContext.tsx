@@ -1,4 +1,4 @@
-import { useContext, useState, createContext, FC, useCallback } from 'react';
+import { useContext, useState, createContext, FC, useCallback, useEffect } from 'react';
 
 import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
@@ -303,6 +303,12 @@ const WalletProvider: FC = ({ children }) => {
     },
     [wallets]
   );
+
+  useEffect(() => {
+    if (selectedWallet > wallets.length) {
+      selectWallet(0);
+    }
+  }, [selectWallet, selectedWallet, wallets]);
 
   const value: WalletContextType = {
     signIn,
