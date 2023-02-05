@@ -15,7 +15,7 @@ export const saveNetwork = (network: Network) => {
 export const loadNetwork = () => {
   try {
     const data = loadData(STORAGE_NETWORK);
-    if (data) {
+    if (data && NETWORK[data as Network]) {
       return NETWORK[data as Network];
     }
     return NETWORK[Network.MAINNET];
