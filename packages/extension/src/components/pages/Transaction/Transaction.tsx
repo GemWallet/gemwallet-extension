@@ -20,13 +20,17 @@ interface Params {
   amount: string | null;
   destination: string | null;
   id: number;
+  currency: string | null;
+  issuer: string | null;
 }
 
 export const Transaction: FC = () => {
   const [params, setParams] = useState<Params>({
     amount: null,
     destination: null,
-    id: 0
+    id: 0,
+    currency: null,
+    issuer: null
   });
   const [fees, setFees] = useState<string>(DEFAULT_FEES);
   const [errorFees, setErrorFees] = useState('');
@@ -47,6 +51,8 @@ export const Transaction: FC = () => {
     const amount = urlParams.get('amount');
     const destination = urlParams.get('destination');
     const id = Number(urlParams.get('id')) || 0;
+    const currency = urlParams.get('currency');
+    const issuer = urlParams.get('issuer');
 
     if (amount === null || destination === null) {
       setIsParamsMissing(true);
@@ -55,7 +61,9 @@ export const Transaction: FC = () => {
     setParams({
       amount,
       destination,
-      id
+      id,
+      currency,
+      issuer
     });
   }, []);
 
@@ -132,7 +140,12 @@ export const Transaction: FC = () => {
     setTransaction(TransactionStatus.Pending);
     // Amount and Destination will be present because if not,
     // we won't be able to go to the confirm transaction state
-    sendPayment({ amount: params.amount as string, destination: params.destination as string })
+    sendPayment({
+      amount: params.amount as string,
+      destination: params.destination as string,
+      currency: params.currency ?? undefined,
+      issuer: params.issuer ?? undefined
+    })
       .then((transactionHash) => {
         setTransaction(TransactionStatus.Success);
         const message = createMessage(transactionHash);
@@ -144,7 +157,14 @@ export const Transaction: FC = () => {
         const message = createMessage(undefined);
         chrome.runtime.sendMessage<ReceivePaymentHashBackgroundMessage>(message);
       });
-  }, [createMessage, params.amount, params.destination, sendPayment]);
+  }, [
+    createMessage,
+    params.amount,
+    params.currency,
+    params.destination,
+    params.issuer,
+    sendPayment
+  ]);
 
   const hasEnoughFunds = useMemo(() => {
     return Number(difference) > 0;
@@ -244,7 +264,7 @@ export const Transaction: FC = () => {
     );
   }
 
-  const { amount, destination } = params;
+  const { amount, destination, currency } = params;
 
   return (
     <PageWithTitle title="Confirm Transaction">
@@ -263,7 +283,7 @@ export const Transaction: FC = () => {
       <Paper elevation={24} style={{ padding: '10px' }}>
         <Typography variant="body1">Amount:</Typography>
         <Typography variant="h4" component="h1" gutterBottom align="right">
-          {formatToken(Number(amount), 'XRP')}
+          {formatToken(Number(amount), currency || 'XRP')}
         </Typography>
       </Paper>
       <Paper elevation={24} style={{ padding: '10px' }}>
