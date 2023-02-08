@@ -9,7 +9,8 @@
 
   <body>
     <div id="wrapper">
-      <button onclick="handlePayment()">Pay</button>
+      <button onclick="handlePayment()">Pay XRP</button>
+      <button onclick="handlePayment('ETH', 'rnm76Qgz4G9G4gZBJVuXVvkbt7gVD7szey')">Pay ETH</button>
       <button onclick="handleTrustline()">Add trustline</button>
       <div id="address"></div>
     </div>
@@ -17,13 +18,15 @@
 </html>
 
 <script>
-  function handlePayment() {
+  function handlePayment(currency, issuer) {
     GemWalletApi.isConnected()
       .then((isConnected) => {
         if (isConnected) {
           const payment = {
-            amount: '0.0020',
-            destination: 'rNvFCZXpDtGeQ3bVas95wGLN6N2stGmA9o'
+            amount: '20',
+            destination: issuer || 'rNvFCZXpDtGeQ3bVas95wGLN6N2stGmA9o',
+            currency,
+            issuer
           };
           GemWalletApi.sendPayment(payment)
             .then((trHash) => {
@@ -49,7 +52,7 @@
           const transaction = {
             currency: 'USD',
             issuer: 'rwtDvu9QDfCskWuyE2TSEt3s56RbiWUKJN',
-            value: '20'
+            value: '10000000'
           };
           GemWalletApi.addTrustline(transaction)
             .then((trHash) => {

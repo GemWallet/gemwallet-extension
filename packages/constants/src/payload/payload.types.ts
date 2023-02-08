@@ -15,6 +15,10 @@ export interface PaymentRequestPayload {
   amount: string;
   // The unique address of the account receiving the payment
   destination: string;
+  // The token that can be used
+  currency?: string;
+  // The issuer of the token
+  issuer?: string;
 }
 
 export interface TrustlineRequestPayload {
@@ -25,7 +29,7 @@ export interface TrustlineRequestPayload {
   // Integer amount of XRP, in drops, to be destroyed as a cost for distributing this transaction to the network.
   // Some transaction types have different minimum requirements.
   fee?: string;
-  // 	The amount of currency to deliver
+  // 	The maximum amount of currency that can be exchanged to the trustline
   value: string;
 }
 

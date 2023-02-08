@@ -52,7 +52,7 @@ const LedgerProvider: FC = ({ children }) => {
   );
 
   const sendPayment = useCallback(
-    async ({ amount, destination }: PaymentRequestPayload) => {
+    async ({ amount, destination, currency, issuer }: PaymentRequestPayload) => {
       const wallet = getCurrentWallet();
       if (!client) {
         throw new Error('You need to be connected to a ledger to make a transaction');
@@ -64,7 +64,14 @@ const LedgerProvider: FC = ({ children }) => {
           const prepared: Payment = await client.autofill({
             TransactionType: 'Payment',
             Account: wallet.publicAddress,
-            Amount: xrpToDrops(amount),
+            Amount:
+              currency && issuer
+                ? {
+                    currency,
+                    issuer,
+                    value: amount
+                  }
+                : xrpToDrops(amount),
             Destination: destination
           });
           // Sign the transaction
@@ -90,6 +97,10 @@ const LedgerProvider: FC = ({ children }) => {
           } else if ((e as Error).message === 'tecNO_DST_INSUF_XRP') {
             throw new Error(
               'The account you are trying to make this transaction to does not exist, and the transaction is not sending enough XRP to create it.'
+            );
+          } else if ((e as Error).message === 'tecPATH_DRY') {
+            throw new Error(
+              'The transaction failed because the provided paths did not have enough liquidity to send anything at all. This could mean that the source and destination accounts are not linked by trust lines.'
             );
           } else {
             Sentry.captureException(e);
