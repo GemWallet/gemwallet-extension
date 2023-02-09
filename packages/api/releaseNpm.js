@@ -29,6 +29,9 @@ fs.readFile('./package.json', 'utf8', (err, data) => {
   // Clean packageJSON
   delete packageJSON.scripts;
   packageJSON.private = false;
+  packageJSON.main = './index.js';
+  packageJSON.module = './index.js';
+  packageJSON.types = './index.d.ts';
   delete packageJSON.devDependencies;
   fs.writeFile(`${DESTINATION_FOLDER}/package.json`, JSON.stringify(packageJSON), function (err) {
     if (err) return console.log(err);
@@ -95,4 +98,17 @@ fs.readFile('./package.json', 'utf8', (err, data) => {
       });
     });
   });
+
+  // Add the umd file for the CDN
+  if (!fs.existsSync(`${DESTINATION_FOLDER}/umd`)) {
+    fs.mkdirSync(`${DESTINATION_FOLDER}/umd/`);
+  }
+  fs.copyFile(
+    '../../dist/gemwallet-api.js',
+    `${DESTINATION_FOLDER}/umd/gemwallet-api.js`,
+    (err) => {
+      if (err) throw err;
+      console.log('UMD file prepared');
+    }
+  );
 });
