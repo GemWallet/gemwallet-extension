@@ -19,7 +19,13 @@ export const PageWithTitle: FC<PageWithTitleProps> = ({ title, children }) => {
         overflowY: 'auto'
       }}
     >
-      <Typography variant="h6" component="h1" style={{ fontSize: '1.75rem' }} gutterBottom>
+      <Typography
+        variant="h6"
+        component="h1"
+        style={{ fontSize: '1.75rem' }}
+        gutterBottom
+        data-testid="page-title"
+      >
         {title}
       </Typography>
       {children}

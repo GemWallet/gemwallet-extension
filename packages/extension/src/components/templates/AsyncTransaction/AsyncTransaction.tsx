@@ -64,10 +64,15 @@ export const AsyncTransaction: FC<AsyncTransactionProps> = ({ title, subtitle, t
         style={styleAnimation}
       />
       <div style={{ marginBottom: '80px' }}>
-        <Typography variant="h5" component="h1" align="center">
+        <Typography variant="h5" component="h1" align="center" data-testid="transaction-title">
           {title}
         </Typography>
-        <Typography variant="body1" align="center" style={{ marginTop: '10px' }}>
+        <Typography
+          variant="body1"
+          align="center"
+          style={{ marginTop: '10px' }}
+          data-testid="transaction-subtitle"
+        >
           {subtitle}
         </Typography>
       </div>
