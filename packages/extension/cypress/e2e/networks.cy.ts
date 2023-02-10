@@ -1,9 +1,9 @@
 /// <reference types="cypress" />
 
-// deepcode ignore NoHardcodedPasswords: password used for testing purposes
-const PASSWORD = 'SECRET_PASSWORD';
-
 describe('Switch networks', () => {
+  // deepcode ignore NoHardcodedPasswords: password used for testing purposes
+  const PASSWORD = 'SECRET_PASSWORD';
+
   let networkLocalStorage = undefined;
   beforeEach(() => {
     // Mock the localStorage with a wallet already loaded
