@@ -125,7 +125,7 @@ describe('Make payment - ETH', () => {
     cy.contains('Destination:').next().should('have.text', DESTINATION_ADDRESS);
     cy.contains('Amount:').next().should('have.text', `${AMOUNT} ${TOKEN}`);
 
-    // Confirm the payment
+    // Reject the payment
     cy.contains('button', 'Reject').click();
     cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction rejected');
     cy.get('p[data-testid="transaction-subtitle"]').should(
