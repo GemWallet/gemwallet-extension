@@ -1,6 +1,6 @@
 {
   "name": "@gemwallet/extension",
-  "version": "2.2.1",
+  "version": "2.3.0",
   "description": "GemWallet browser extension",
   "private": true,
   "dependencies": {
@@ -10,8 +10,8 @@
     "@emotion/styled": "^11.6.0",
     "@mui/icons-material": "^5.2.4",
     "@mui/material": "^5.2.3",
-    "@sentry/react": "^7.29.0",
-    "@sentry/tracing": "^7.29.0",
+    "@sentry/react": "^7.37.1",
+    "@sentry/tracing": "^7.37.1",
     "copy-to-clipboard": "^3.3.1",
     "crypto-js": "^4.1.1",
     "lottie-react": "^2.1.0",
