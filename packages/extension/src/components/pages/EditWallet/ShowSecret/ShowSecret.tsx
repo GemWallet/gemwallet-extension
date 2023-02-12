@@ -97,7 +97,6 @@ export const ShowSecret: FC<ShowSecretProps> = ({ seed, mnemonic, onBackButton }
           ) : (
             <>
               <Paper
-                onClick={() => console.log('yoo')}
                 elevation={5}
                 style={{
                   marginTop: '50px',
