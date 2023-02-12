@@ -305,7 +305,7 @@ const WalletProvider: FC = ({ children }) => {
   );
 
   useEffect(() => {
-    if (selectedWallet > wallets.length) {
+    if (wallets.length > 0 && selectedWallet >= wallets.length) {
       selectWallet(0);
     }
   }, [selectWallet, selectedWallet, wallets]);
