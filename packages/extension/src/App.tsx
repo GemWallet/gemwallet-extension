@@ -20,6 +20,7 @@ import {
   ListWallets,
   Login,
   ResetPassword,
+  History,
   Settings,
   ShareAddress,
   SharePublicKey,
@@ -49,7 +50,8 @@ import {
   LIST_WALLETS_PATH,
   ADD_NEW_WALLET_PATH,
   EDIT_WALLET_PATH,
-  ADD_NEW_TRUSTLINE_PATH
+  ADD_NEW_TRUSTLINE_PATH,
+  HISTORY_PATH
 } from './constants';
 import { useBrowser } from './contexts';
 import { loadNetwork } from './utils';
@@ -141,6 +143,14 @@ const App: FC = () => {
           element={
             <PrivateRoute>
               <Transaction />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path={HISTORY_PATH}
+          element={
+            <PrivateRoute>
+              <History />
             </PrivateRoute>
           }
         />

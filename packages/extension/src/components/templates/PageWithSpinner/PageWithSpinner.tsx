@@ -5,6 +5,7 @@ import { CircularProgress, Container } from '@mui/material';
 export const PageWithSpinner: FC = () => {
   return (
     <Container
+      data-testid="page-with-spinner"
       component="main"
       style={{
         display: 'flex',

@@ -3,6 +3,7 @@ export * from './AddNewTrustline';
 export * from './AddNewWallet';
 export * from './CreateWallet';
 export * from './EditWallet';
+export * from './History';
 export * from './Home';
 export * from './ImportMnemonic';
 export * from './ImportSecretNumbers';

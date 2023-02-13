@@ -6,6 +6,7 @@ import { xrpToDrops, dropsToXrp, TransactionMetadata, Payment, Transaction, Trus
 
 import { PaymentRequestPayload, TrustlineRequestPayload } from '@gemwallet/constants';
 
+import { AccountTransaction } from '../../types';
 import { useNetwork } from '../NetworkContext';
 import { useWallet } from '../WalletContext';
 
@@ -15,6 +16,7 @@ export interface LedgerContextType {
   addTrustline: (payload: TrustlineRequestPayload) => Promise<string>;
   signMessage: (message: string) => string | undefined;
   estimateNetworkFees: (payload: Transaction) => Promise<string>;
+  getTransactions: () => Promise<AccountTransaction[]>;
 }
 
 const LedgerContext = createContext<LedgerContextType>({
@@ -24,6 +26,10 @@ const LedgerContext = createContext<LedgerContextType>({
   estimateNetworkFees: () =>
     new Promise((resolve) => {
       resolve('0');
+    }),
+  getTransactions: () =>
+    new Promise((resolve) => {
+      resolve([]);
     })
 });
 
@@ -50,6 +56,26 @@ const LedgerProvider: FC = ({ children }) => {
     },
     [client, getCurrentWallet]
   );
+
+  const getTransactions = async () => {
+    const wallet = getCurrentWallet();
+    if (!client) {
+      throw new Error('You need to be connected to a ledger to make a transaction');
+    } else if (!wallet) {
+      throw new Error('You need to have a wallet connected to make a transaction');
+    } else {
+      // Prepare the transaction
+      const prepared = await client.request({
+        command: 'account_tx',
+        account: wallet.publicAddress
+      });
+      if (!prepared.result?.transactions) {
+        throw new Error("Couldn't get the transaction history");
+      } else {
+        return prepared.result.transactions;
+      }
+    }
+  };
 
   const sendPayment = useCallback(
     async ({ amount, destination, currency, issuer }: PaymentRequestPayload) => {
@@ -159,12 +185,8 @@ const LedgerProvider: FC = ({ children }) => {
           } else if ((e as Error).message.includes('Unsupported Currency representation')) {
             throw new Error('The currency is incorrect, you cannot add this trustline.');
           }
-          console.log('error: ', (e as Error).message);
+          Sentry.captureException(e);
           throw e;
-          // } else {
-          //   Sentry.captureException(e);
-          //   throw e;
-          // }
         }
       }
     },
@@ -195,7 +217,8 @@ const LedgerProvider: FC = ({ children }) => {
     sendPayment,
     addTrustline,
     signMessage,
-    estimateNetworkFees
+    estimateNetworkFees,
+    getTransactions
   };
 
   return <LedgerContext.Provider value={value}>{children}</LedgerContext.Provider>;
