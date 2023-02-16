@@ -12,9 +12,10 @@ const CONTAINER_HEIGHT_TAKEN = HEADER_HEIGHT + NAV_MENU_HEIGHT + MARGIN_TOP_CONT
 
 export interface PageWithHeaderProps {
   title?: string;
+  disableSendButton?: boolean;
 }
 
-export const PageWithHeader: FC<PageWithHeaderProps> = ({ children, title }) => {
+export const PageWithHeader: FC<PageWithHeaderProps> = ({ children, title, disableSendButton }) => {
   const { wallets, selectedWallet } = useWallet();
 
   if (!wallets?.[selectedWallet]) {
@@ -22,20 +23,19 @@ export const PageWithHeader: FC<PageWithHeaderProps> = ({ children, title }) => 
   }
   return (
     <>
-      <Header wallet={wallets[selectedWallet]} />
+      <Header wallet={wallets[selectedWallet]} disableSendButton={disableSendButton} />
       <Container
         component="main"
         style={{
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'space-between',
           height: `calc(100vh - ${CONTAINER_HEIGHT_TAKEN}px)`,
           margin: `${MARGIN_TOP_CONTAINER}px auto 0 auto`,
           overflowY: 'auto'
         }}
       >
         {title && (
-          <Typography variant="h4" component="h1" style={{ fontSize: '1.75rem' }} gutterBottom>
+          <Typography variant="h5" component="h1" align="center" gutterBottom>
             {title}
           </Typography>
         )}

@@ -28,7 +28,8 @@ import {
   SignMessage,
   Transaction,
   TrustedApps,
-  Welcome
+  Welcome,
+  SendPayment
 } from './components/pages';
 import { ErrorBoundary } from './components/templates';
 import {
@@ -53,7 +54,8 @@ import {
   EDIT_WALLET_PATH,
   ADD_NEW_TRUSTLINE_PATH,
   HISTORY_PATH,
-  SHARE_NFT_PATH
+  SHARE_NFT_PATH,
+  SEND_PATH
 } from './constants';
 import { useBrowser } from './contexts';
 import { loadNetwork } from './utils';
@@ -153,6 +155,14 @@ const App: FC = () => {
           element={
             <PrivateRoute>
               <History />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path={SEND_PATH}
+          element={
+            <PrivateRoute>
+              <SendPayment />
             </PrivateRoute>
           }
         />

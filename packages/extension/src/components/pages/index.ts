@@ -12,6 +12,7 @@ export * from './ImportWallet';
 export * from './ListWallets';
 export * from './Login';
 export * from './ResetPassword';
+export * from './SendPayment';
 export * from './Settings';
 export * from './ShareAddress';
 export * from './ShareNFT';

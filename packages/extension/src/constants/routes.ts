@@ -12,6 +12,7 @@ export const IMPORT_SEED_PATH = '/import-seed';
 export const IMPORT_WALLET_PATH = '/import-wallet';
 export const LIST_WALLETS_PATH = '/list-wallets';
 export const RESET_PASSWORD_PATH = '/reset-password';
+export const SEND_PATH = '/send';
 export const SETTINGS_PATH = '/settings';
 export const SIGN_MESSAGE_PATH = '/sign-message';
 export const SHARE_NFT_PATH = '/share-nft';
