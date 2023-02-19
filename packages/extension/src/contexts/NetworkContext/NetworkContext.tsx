@@ -3,13 +3,12 @@ import { useContext, useState, useEffect, createContext, FC, useCallback } from 
 import * as Sentry from '@sentry/react';
 import { Client } from 'xrpl';
 
-import { NETWORK, Network } from '@gemwallet/constants';
+import { Network } from '@gemwallet/constants';
 
 import { loadNetwork, removeNetwork, saveNetwork } from '../../utils';
 
 interface ContextType {
-  connectToNetwork: () => void;
-  switchNetwork: (network: Network) => void;
+  connectToNetwork: (network?: Network) => void;
   resetNetwork: () => void;
   // Returns null if client couldn't connect
   client?: Client | null;
@@ -19,7 +18,6 @@ interface ContextType {
 
 const NetworkContext = createContext<ContextType>({
   connectToNetwork: () => {},
-  switchNetwork: () => {},
   resetNetwork: () => {},
   client: undefined,
   network: undefined,
@@ -32,35 +30,22 @@ const NetworkProvider: FC = ({ children }) => {
   const [isDisconnected, setIsDisconnected] = useState<Boolean>(false);
 
   useEffect(() => {
+    // open ws connection at startup
     connectToNetwork();
+    // Make sure the WebSocket connection is disconnected before the extension is closed
+    window.addEventListener('beforeunload', disconnect, { once: true });
   }, []);
 
-  useEffect(() => {
-    const handleBeforeUnload = () => {
-      // Close the WebSocket connection if it is open
-      if (client) {
-        client?.disconnect();
-      }
-    };
-    // Add event listener for beforeunload event
-    window.addEventListener('beforeunload', handleBeforeUnload);
-
-    // Remove event listener when the component unmounts
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
-  }, [client]);
-
-  async function disconnect() {
+  const disconnect = async () => {
     if (client && client.isConnected()) {
       await client.disconnect();
-      setClient(null);
-      setIsDisconnected(true);
     }
-  }
+    setClient(null);
+    setIsDisconnected(true);
+  };
 
-  async function connect(loadedNetwork: { name: Network; server: string; description: string }) {
-    const ws = new Client(network || loadedNetwork.server);
+  const connect = async (loadedNetwork: { name: Network; server: string; description: string }) => {
+    const ws = new Client(loadedNetwork.server);
     await ws.connect();
     setNetwork(loadedNetwork.name);
     setClient(ws);
@@ -73,48 +58,33 @@ const NetworkProvider: FC = ({ children }) => {
       setIsDisconnected(false);
     });
     setIsDisconnected(false);
-  }
+  };
 
-  const connectToNetwork = async () => {
+  const connectToNetwork = useCallback(async (network?: Network) => {
     try {
       await disconnect();
-      const loadedNetwork = loadNetwork();
+      const loadedNetwork = loadNetwork(network);
       await connect(loadedNetwork);
+      if (network) saveNetwork(network);
     } catch (err) {
       await disconnect();
       Sentry.captureException(err);
     }
-  };
-
-  const switchNetwork = useCallback(
-    async (network: Network) => {
-      try {
-        await disconnect();
-        const loadedNetwork = NETWORK[network];
-        await connect(loadedNetwork);
-        saveNetwork(network);
-      } catch (err) {
-        await disconnect();
-        Sentry.captureException(err);
-      }
-    },
-    [client]
-  );
+  }, []);
 
   // Remove Network configuration and set default one
   const resetNetwork = useCallback(async () => {
     try {
       await removeNetwork();
-      const network = await loadNetwork();
-      setNetwork(network.name);
+      await connectToNetwork();
     } catch (err) {
+      await disconnect();
       Sentry.captureException(err);
     }
   }, []);
 
   const value: ContextType = {
     connectToNetwork,
-    switchNetwork,
     resetNetwork,
     client,
     network,

@@ -1,4 +1,4 @@
-import { useState, useEffect, FC, forwardRef, useCallback } from 'react';
+import { FC, forwardRef, useCallback, useEffect, useState } from 'react';
 
 import CloseIcon from '@mui/icons-material/Close';
 import {
@@ -93,7 +93,7 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
           There was an error attempting to retrieve your assets. Please refresh and try again.
         </Typography>
         <div style={{ textAlign: 'center', margin: '10px 0' }}>
-          <Button variant="contained" onClick={connectToNetwork}>
+          <Button variant="contained" onClick={() => connectToNetwork()}>
             Refresh
           </Button>
         </div>

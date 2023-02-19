@@ -78,7 +78,7 @@ const NetworkDisplay: FC<NetworkDisplayProps> = ({
 };
 
 export const NetworkIndicator: FC = () => {
-  const { client, network, switchNetwork } = useNetwork();
+  const { client, network, connectToNetwork } = useNetwork();
   const [explanationOpen, setExplanationOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -94,10 +94,10 @@ export const NetworkIndicator: FC = () => {
   const handleClickOnNetwork = useCallback(
     async (network: Network) => {
       setIsLoading(true);
-      await switchNetwork(network);
+      await connectToNetwork(network);
       handleClose();
     },
-    [handleClose, switchNetwork]
+    [handleClose, connectToNetwork]
   );
 
   return (
