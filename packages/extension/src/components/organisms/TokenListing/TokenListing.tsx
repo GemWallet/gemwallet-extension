@@ -1,4 +1,4 @@
-import { useState, useEffect, FC, forwardRef, useCallback } from 'react';
+import { FC, forwardRef, useCallback, useEffect, useState } from 'react';
 
 import CloseIcon from '@mui/icons-material/Close';
 import {
@@ -46,7 +46,7 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
   const [XRPBalance, setXRPBalance] = useState<string>(LOADING_STATE);
   const [trustLineBalances, setTrustLineBalances] = useState<TrustLineBalance[]>([]);
   const [explanationOpen, setExplanationOpen] = useState(false);
-  const { client, reconnectToNetwork } = useNetwork();
+  const { client, connectToNetwork } = useNetwork();
   const { serverInfo } = useServer();
 
   useEffect(() => {
@@ -94,7 +94,7 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
           There was an error attempting to retrieve your assets. Please refresh and try again.
         </Typography>
         <div style={{ textAlign: 'center', margin: '10px 0' }}>
-          <Button variant="contained" onClick={reconnectToNetwork}>
+          <Button variant="contained" onClick={() => connectToNetwork()}>
             Refresh
           </Button>
         </div>

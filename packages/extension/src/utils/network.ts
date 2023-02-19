@@ -1,4 +1,4 @@
-import { NETWORK, Network } from '@gemwallet/constants';
+import { Network, Networks, NetworkInfo } from '@gemwallet/constants';
 
 import { STORAGE_NETWORK } from '../constants/localStorage';
 
@@ -12,15 +12,26 @@ export const saveNetwork = (network: Network) => {
   }
 };
 
-export const loadNetwork = () => {
+function getNetworkInfoOrThrows(network: Network): NetworkInfo {
+  const value = Networks.get(network);
+  if (!value) {
+    throw new Error('Unable to find Network with value ' + network);
+  }
+  return value;
+}
+
+export const loadNetwork = (network?: Network): NetworkInfo => {
   try {
-    const data = loadData(STORAGE_NETWORK);
-    if (data && NETWORK[data as Network]) {
-      return NETWORK[data as Network];
+    if (network) {
+      return getNetworkInfoOrThrows(network);
     }
-    return NETWORK[Network.MAINNET];
+    const data = loadData(STORAGE_NETWORK);
+    if (data && getNetworkInfoOrThrows(data as Network)) {
+      return getNetworkInfoOrThrows(data as Network);
+    }
+    return getNetworkInfoOrThrows(Network.MAINNET);
   } catch (error) {
-    return NETWORK[Network.MAINNET];
+    return getNetworkInfoOrThrows(Network.MAINNET);
   }
 };
 

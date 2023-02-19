@@ -1,9 +1,9 @@
 import { FC, forwardRef, useCallback, useState } from 'react';
 
 import {
+  Check as CheckIcon,
   Close as CloseIcon,
-  FiberManualRecord as FiberManualRecordIcon,
-  Check as CheckIcon
+  FiberManualRecord as FiberManualRecordIcon
 } from '@mui/icons-material';
 import {
   AppBar,
@@ -20,7 +20,7 @@ import {
 } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 
-import { NETWORK, Network } from '@gemwallet/constants';
+import { Network, Networks } from '@gemwallet/constants';
 
 import { SECONDARY_GRAY } from '../../../constants';
 import { useNetwork } from '../../../contexts';
@@ -78,7 +78,7 @@ const NetworkDisplay: FC<NetworkDisplayProps> = ({
 };
 
 export const NetworkIndicator: FC = () => {
-  const { client, network, switchNetwork } = useNetwork();
+  const { client, network, connectToNetwork } = useNetwork();
   const [explanationOpen, setExplanationOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -94,10 +94,10 @@ export const NetworkIndicator: FC = () => {
   const handleClickOnNetwork = useCallback(
     async (network: Network) => {
       setIsLoading(true);
-      await switchNetwork(network);
+      await connectToNetwork(network);
       handleClose();
     },
-    [handleClose, switchNetwork]
+    [handleClose, connectToNetwork]
   );
 
   return (
@@ -136,16 +136,16 @@ export const NetworkIndicator: FC = () => {
             </Toolbar>
           </AppBar>
           <div style={{ overflowY: 'scroll', height: '544px', margin: '20px 20px 0 20px' }}>
-            {Object.keys(NETWORK).map((_network) => {
-              const { name, server, description } = NETWORK[_network as Network];
+            {Array.from(Networks, ([key, values]) => {
+              const { name, server, description } = values;
               return (
                 <NetworkDisplay
-                  key={_network}
+                  key={name}
                   name={name}
                   server={server}
-                  description={description}
+                  description={description.toString()}
                   isSelected={name === network}
-                  onClick={() => handleClickOnNetwork(_network as Network)}
+                  onClick={() => handleClickOnNetwork(name)}
                 />
               );
             })}

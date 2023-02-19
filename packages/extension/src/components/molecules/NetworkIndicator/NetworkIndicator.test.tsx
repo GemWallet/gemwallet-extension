@@ -16,7 +16,7 @@ describe('NetworkIndicator', () => {
     mockUseNetwork.mockReturnValue({
       client: undefined,
       network: 'testnet',
-      switchNetwork: jest.fn()
+      connectToNetwork: jest.fn()
     });
 
     render(<NetworkIndicator />);
@@ -28,7 +28,7 @@ describe('NetworkIndicator', () => {
     mockUseNetwork.mockReturnValue({
       client: undefined,
       network: undefined,
-      switchNetwork: jest.fn()
+      connectToNetwork: jest.fn()
     });
 
     render(<NetworkIndicator />);
@@ -40,7 +40,7 @@ describe('NetworkIndicator', () => {
     mockUseNetwork.mockReturnValue({
       client: jest.fn(),
       network: 'testnet',
-      switchNetwork: jest.fn()
+      connectToNetwork: jest.fn()
     });
 
     render(<NetworkIndicator />);
@@ -52,7 +52,7 @@ describe('NetworkIndicator', () => {
     mockUseNetwork.mockReturnValue({
       client: undefined,
       network: 'testnet',
-      switchNetwork: jest.fn()
+      connectToNetwork: jest.fn()
     });
 
     render(<NetworkIndicator />);
@@ -64,7 +64,7 @@ describe('NetworkIndicator', () => {
     mockUseNetwork.mockReturnValue({
       client: undefined,
       network: 'testnet',
-      switchNetwork: jest.fn()
+      connectToNetwork: jest.fn()
     });
 
     render(<NetworkIndicator />);
@@ -78,7 +78,7 @@ describe('NetworkIndicator', () => {
     mockUseNetwork.mockReturnValue({
       client: undefined,
       network: 'testnet',
-      switchNetwork: jest.fn()
+      connectToNetwork: jest.fn()
     });
 
     render(<NetworkIndicator />);
