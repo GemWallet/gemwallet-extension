@@ -8,41 +8,30 @@ import { NETWORK, Network } from '@gemwallet/constants';
 import { loadNetwork, removeNetwork, saveNetwork } from '../../utils';
 
 interface ContextType {
-  reconnectToNetwork: () => void;
+  connectToNetwork: () => void;
   switchNetwork: (network: Network) => void;
   resetNetwork: () => void;
   // Returns null if client couldn't connect
   client?: Client | null;
   network?: Network;
+  isDisconnected: Boolean;
 }
 
 const NetworkContext = createContext<ContextType>({
-  reconnectToNetwork: () => {},
+  connectToNetwork: () => {},
   switchNetwork: () => {},
   resetNetwork: () => {},
   client: undefined,
-  network: undefined
+  network: undefined,
+  isDisconnected: true
 });
 
 const NetworkProvider: FC = ({ children }) => {
   const [client, setClient] = useState<Client | null>();
   const [network, setNetwork] = useState<Network>();
+  const [isDisconnected, setIsDisconnected] = useState<Boolean>(false);
 
   useEffect(() => {
-    const connectToNetwork = async () => {
-      const network = loadNetwork();
-      const ws = new Client(network.server);
-      try {
-        await ws.connect();
-        setNetwork(network.name);
-        setClient(ws);
-      } catch (err) {
-        await ws?.disconnect();
-        setClient(null);
-        Sentry.captureException(err);
-      }
-    };
-
     connectToNetwork();
   }, []);
 
@@ -62,16 +51,37 @@ const NetworkProvider: FC = ({ children }) => {
     };
   }, [client]);
 
-  const reconnectToNetwork = async () => {
-    try {
-      const loadedNetwork = loadNetwork();
-      const ws = new Client(network || loadedNetwork.server);
-      await ws.connect();
-      setNetwork(network || loadedNetwork.name);
-      setClient(ws);
-    } catch (err) {
-      await client?.disconnect();
+  async function disconnect() {
+    if (client && client.isConnected()) {
+      await client.disconnect();
       setClient(null);
+      setIsDisconnected(true);
+    }
+  }
+
+  async function connect(loadedNetwork: { name: Network; server: string; description: string }) {
+    const ws = new Client(network || loadedNetwork.server);
+    await ws.connect();
+    setNetwork(loadedNetwork.name);
+    setClient(ws);
+    client?.on('disconnected', () => {
+      console.log('DISCONNECTED');
+      setIsDisconnected(true);
+    });
+    client?.on('connected', () => {
+      console.log('CONNECTED');
+      setIsDisconnected(false);
+    });
+    setIsDisconnected(false);
+  }
+
+  const connectToNetwork = async () => {
+    try {
+      await disconnect();
+      const loadedNetwork = loadNetwork();
+      await connect(loadedNetwork);
+    } catch (err) {
+      await disconnect();
       Sentry.captureException(err);
     }
   };
@@ -79,15 +89,12 @@ const NetworkProvider: FC = ({ children }) => {
   const switchNetwork = useCallback(
     async (network: Network) => {
       try {
-        await client?.disconnect();
-        const ws = new Client(NETWORK[network].server);
-        await ws.connect();
-        setNetwork(network);
+        await disconnect();
+        const loadedNetwork = NETWORK[network];
+        await connect(loadedNetwork);
         saveNetwork(network);
-        setClient(ws);
       } catch (err) {
-        await client?.disconnect();
-        setClient(null);
+        await disconnect();
         Sentry.captureException(err);
       }
     },
@@ -106,12 +113,15 @@ const NetworkProvider: FC = ({ children }) => {
   }, []);
 
   const value: ContextType = {
-    reconnectToNetwork,
+    connectToNetwork,
     switchNetwork,
     resetNetwork,
     client,
-    network
+    network,
+    isDisconnected
   };
+
+  console.log('isDisconnected ' + isDisconnected);
 
   return <NetworkContext.Provider value={value}>{children}</NetworkContext.Provider>;
 };
