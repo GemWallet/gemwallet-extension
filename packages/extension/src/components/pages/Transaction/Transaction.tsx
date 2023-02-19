@@ -73,7 +73,14 @@ export const Transaction: FC = () => {
       estimateNetworkFees({
         TransactionType: 'Payment',
         Account: currentWallet.publicAddress,
-        Amount: xrpToDrops(params.amount),
+        Amount:
+          params.currency && params.issuer
+            ? {
+                currency: params.currency,
+                issuer: params.issuer,
+                value: params.amount
+              }
+            : xrpToDrops(params.amount),
         Destination: params.destination
       })
         .then((fees) => {
@@ -84,7 +91,15 @@ export const Transaction: FC = () => {
           setErrorFees(e.message);
         });
     }
-  }, [client, estimateNetworkFees, getCurrentWallet, params.amount, params.destination]);
+  }, [
+    client,
+    estimateNetworkFees,
+    getCurrentWallet,
+    params.amount,
+    params.currency,
+    params.destination,
+    params.issuer
+  ]);
 
   useEffect(() => {
     const currentWallet = getCurrentWallet();

@@ -50,6 +50,7 @@
     "start": "craco start",
     "build": "INLINE_RUNTIME_CHUNK=false GENERATE_SOURCEMAP=false craco build",
     "cypress:open": "cypress open",
+    "cypress:e2e": "cypress open --browser chrome --e2e",
     "test": "craco test --all --coverage",
     "type-check": "tsc --project tsconfig.json --pretty --noEmit",
     "eject": "react-scripts eject"
