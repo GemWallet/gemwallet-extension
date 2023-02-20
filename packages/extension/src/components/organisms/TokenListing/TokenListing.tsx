@@ -16,6 +16,7 @@ import * as Sentry from '@sentry/react';
 
 import { DEFAULT_RESERVE } from '../../../constants';
 import { useNetwork, useServer } from '../../../contexts';
+import { convertCurrencyString } from '../../../utils';
 import { TokenLoader } from '../../atoms';
 import { InformationMessage } from '../../molecules/InformationMessage';
 import { TokenDisplay } from '../../molecules/TokenDisplay';
@@ -135,13 +136,16 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
         isXRPToken
         onExplainClick={handleOpen}
       />
-      {trustLineBalances.map((trustedLine) => (
-        <TokenDisplay
-          balance={Number(trustedLine.value)}
-          token={trustedLine.currency}
-          key={`${trustedLine.issuer}|${trustedLine.currency}`}
-        />
-      ))}
+      {trustLineBalances.map((trustedLine) => {
+        const currencyToDisplay = convertCurrencyString(trustedLine.currency);
+        return (
+          <TokenDisplay
+            balance={Number(trustedLine.value)}
+            token={currencyToDisplay}
+            key={`${trustedLine.issuer}|${currencyToDisplay}`}
+          />
+        );
+      })}
       <Dialog
         fullScreen
         open={explanationOpen}
