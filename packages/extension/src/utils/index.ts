@@ -1,4 +1,5 @@
 export * from './breakStringByLine';
+export * from './convertCurrencyString';
 export * from './crypto';
 export * from './format';
 export * from './link';
