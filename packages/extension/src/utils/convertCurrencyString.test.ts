@@ -4,7 +4,7 @@ describe('convertCurrencyString', () => {
   it('should convert a currency string with 40 characters into its corresponding characters', () => {
     const currency = '534F4C4F00000000000000000000000000000000';
     const expected = 'SOLO';
-    expect(convertCurrencyString(currency)).toMatch(expected);
+    expect(convertCurrencyString(currency)).toEqual(expected);
   });
 
   it('should return the original currency string if it does not have 40 characters', () => {
@@ -56,10 +56,10 @@ describe('convertCurrencyString', () => {
   it('should convert a valid currency with all authorized characters', () => {
     const currency = '7151313f21402324255e00000000000000000000';
     const expected = 'qQ1?!@#$%^';
-    expect(convertCurrencyString(currency)).toMatch(expected);
+    expect(convertCurrencyString(currency)).toEqual(expected);
     const currency2 = '262a28293c3e28297b7d5b5d0000000000000000';
     const expected2 = '&*()<>(){}[]';
-    expect(convertCurrencyString(currency2)).toMatch(expected2);
+    expect(convertCurrencyString(currency2)).toEqual(expected2);
     //
   });
 });

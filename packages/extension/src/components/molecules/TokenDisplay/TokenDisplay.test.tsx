@@ -3,13 +3,17 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { formatToken } from '../../../utils';
 import { TokenDisplay, TokenDisplayProps } from './TokenDisplay';
 
+jest.mock('../../atoms/Tokens/CommunityToken', () => ({
+  CommunityToken: () => <div data-testid="gem-icon" />
+}));
+
 describe('TokenDisplay', () => {
   let props: TokenDisplayProps;
   beforeEach(() => {
     props = {
       balance: 100,
       token: 'ETH',
-      isXRPToken: false,
+      issuer: 'rnm76Qgz4G9G4gZBJVuXVvkbt7gVD7szey',
       onExplainClick: jest.fn()
     };
   });
@@ -21,9 +25,8 @@ describe('TokenDisplay', () => {
     expect(screen.getByTestId('gem-icon')).toBeInTheDocument();
   });
 
-  test('should display the XRP icon if isXRPToken is true', () => {
-    props.isXRPToken = true;
-    render(<TokenDisplay {...props} />);
+  test('should display the XRP icon if issuer is undefined', () => {
+    render(<TokenDisplay {...props} issuer={undefined} />);
     expect(screen.getByTestId('xrp-icon')).toBeInTheDocument();
   });
 

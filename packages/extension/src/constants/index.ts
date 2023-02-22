@@ -1,3 +1,4 @@
+export * from './approvedTokens';
 export * from './colors';
 export * from './links';
 export * from './localStorage';

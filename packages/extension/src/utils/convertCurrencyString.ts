@@ -7,5 +7,12 @@ export const convertCurrencyString = (currency: string): string => {
   if (!currencyChars) {
     return currency;
   }
-  return currencyChars.map((charCode) => String.fromCharCode(parseInt(charCode, 16))).join('');
+  return (
+    currencyChars
+      .map((charCode) => String.fromCharCode(parseInt(charCode, 16)))
+      .join('')
+      //Remove all non-printable characters using regex
+      // eslint-disable-next-line no-control-regex
+      .replace(/[\x00-\x1F\x7F]/g, '')
+  );
 };

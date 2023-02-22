@@ -133,7 +133,7 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
       <TokenDisplay
         balance={Number(XRPBalance) - reserve}
         token="XRP"
-        isXRPToken
+        issuer={undefined}
         onExplainClick={handleOpen}
       />
       {trustLineBalances.map((trustedLine) => {
@@ -142,6 +142,7 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
           <TokenDisplay
             balance={Number(trustedLine.value)}
             token={currencyToDisplay}
+            issuer={trustedLine.issuer}
             key={`${trustedLine.issuer}|${currencyToDisplay}`}
           />
         );
@@ -182,9 +183,9 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
             </Link>
           </InformationMessage>
           <Typography style={{ margin: '20px 0 10px 0' }}>Account balance</Typography>
-          <TokenDisplay balance={Number(XRPBalance)} isXRPToken token="XRP" />
+          <TokenDisplay balance={Number(XRPBalance)} token="XRP" issuer={undefined} />
           <Typography style={{ margin: '20px 0 10px 0' }}>Amount that can be spent</Typography>
-          <TokenDisplay balance={Number(XRPBalance) - reserve} isXRPToken token="XRP" />
+          <TokenDisplay balance={Number(XRPBalance) - reserve} token="XRP" issuer={undefined} />
         </div>
       </Dialog>
     </div>
