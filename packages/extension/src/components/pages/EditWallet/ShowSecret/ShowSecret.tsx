@@ -8,7 +8,6 @@ import copyToClipboard from 'copy-to-clipboard';
 
 import { useWallet } from '../../../../contexts';
 import { useKeyUp, useTimeout } from '../../../../hooks';
-import { breakStringByLine } from '../../../../utils';
 import { PageWithReturn } from '../../../templates';
 
 type Secret = 'seed' | 'mnemonic';
@@ -100,14 +99,11 @@ export const ShowSecret: FC<ShowSecretProps> = ({ seed, mnemonic, onBackButton }
                 elevation={5}
                 style={{
                   marginTop: '50px',
-                  padding: '15px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between'
+                  padding: '15px'
                 }}
               >
-                <Typography>
-                  {secretType === 'seed' ? breakStringByLine(seed as string, 30) : mnemonic}
+                <Typography variant="body2" align="center">
+                  {secretType === 'seed' ? seed : mnemonic}
                 </Typography>
               </Paper>
               <Paper
