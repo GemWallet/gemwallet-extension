@@ -3,7 +3,8 @@ import { loadData, removeData, saveData } from './storage';
 
 export enum Permission {
   Address = 'address',
-  PublicKey = 'public-key'
+  PublicKey = 'public-key',
+  NFTs = 'nfts'
 }
 export interface TrustedApp {
   // The URL acts as a unique key

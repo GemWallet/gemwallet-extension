@@ -5,6 +5,8 @@ import {
   GEM_WALLET,
   Message,
   NetworkResponse,
+  NFTEventListener,
+  NFTResponse,
   PaymentEventListener,
   PaymentResponse,
   PublicAddressResponse,
@@ -12,12 +14,14 @@ import {
   PublicKeyResponse,
   ReceiveAddressContentMessage,
   ReceiveNetworkContentMessage,
+  ReceiveNFTContentMessage,
   ReceivePaymentHashContentMessage,
   ReceivePublicKeyContentMessage,
   ReceiveSignMessageContentMessage,
   ReceiveTrustlineHashContentMessage,
   RequestAddressMessage,
   RequestNetworkMessage,
+  RequestNFTMessage,
   RequestPaymentMessage,
   RequestPublicKeyMessage,
   RequestSignMessageMessage,
@@ -135,6 +139,40 @@ setTimeout(() => {
                       address: payload.address,
                       publicKey: payload.publicKey
                     } as PublicKeyResponse,
+                    window.location.origin
+                  );
+                }
+              }
+              chrome.runtime.onMessage.removeListener(messageListener);
+            };
+            chrome.runtime.onMessage.addListener(messageListener);
+          }
+        );
+      } else if (type === Message.RequestNFT) {
+        const {
+          data: { payload }
+        } = event as NFTEventListener;
+        chrome.runtime.sendMessage<RequestNFTMessage>(
+          {
+            app,
+            type,
+            payload
+          },
+          () => {
+            const messageListener = (
+              message: ReceiveNFTContentMessage,
+              sender: chrome.runtime.MessageSender
+            ) => {
+              const { app, type, payload } = message;
+              // We make sure that the message comes from GemWallet
+              if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
+                if (type === Message.ReceiveNFT) {
+                  window.postMessage(
+                    {
+                      source: Message.MsgResponse,
+                      messagedId,
+                      nfts: payload.nfts
+                    } as NFTResponse,
                     window.location.origin
                   );
                 }

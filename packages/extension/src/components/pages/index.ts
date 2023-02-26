@@ -14,6 +14,7 @@ export * from './Login';
 export * from './ResetPassword';
 export * from './Settings';
 export * from './ShareAddress';
+export * from './ShareNFT';
 export * from './SharePublicKey';
 export * from './SignMessage';
 export * from './Transaction';

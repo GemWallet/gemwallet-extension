@@ -5,6 +5,7 @@ import {
   Network,
   ReceiveAddressContentMessage,
   ReceiveNetworkContentMessage,
+  ReceiveNFTContentMessage,
   ReceivePaymentHashContentMessage,
   ReceivePublicKeyContentMessage,
   ReceiveSignMessageContentMessage,
@@ -14,6 +15,7 @@ import {
 import {
   PARAMETER_ADDRESS,
   PARAMETER_NETWORK,
+  PARAMETER_NFT,
   PARAMETER_PUBLIC_KEY,
   PARAMETER_SIGN_MESSAGE,
   PARAMETER_TRANSACTION_PAYMENT,
@@ -191,6 +193,65 @@ chrome.runtime.onMessage.addListener((message: BackgroundMessage, sender, sendRe
             payload: {
               address: undefined,
               publicKey: undefined
+            }
+          });
+        });
+    } else if (type === Message.RequestNFT) {
+      chrome.windows
+        .getAll()
+        .then((openedWindows) => {
+          // We check if the popup is currently open
+          if (
+            _currentWindowPopup &&
+            openedWindows.find((window) => window.id === _currentWindowPopup?.id)
+          ) {
+            // TODO: Why popup are created more than one time? - Maybe to be removed?
+            chrome.windows.update(_currentWindowPopup.id as number, { focused: true });
+          } else {
+            getLastFocusedWindow()
+              .then((lastFocused) => {
+                const top = lastFocused.top;
+                let left = undefined;
+                if (lastFocused.left && lastFocused.width) {
+                  left = lastFocused.left + (lastFocused.width - NOTIFICATION_WIDTH);
+                }
+                const payload = {
+                  ...message.payload,
+                  id: sender.tab?.id
+                };
+                chrome.windows.create(
+                  {
+                    url: `../..${MAIN_FILE}${serializeToQueryString(payload)}&${PARAMETER_NFT}`,
+                    type: 'popup',
+                    width: NOTIFICATION_WIDTH,
+                    height: NOTIFICATION_HEIGHT,
+                    left,
+                    top
+                  },
+                  (_window) => {
+                    _currentWindowPopup = _window;
+                  }
+                );
+              })
+              .catch((error) => {
+                console.error(error);
+                chrome.tabs.sendMessage<ReceiveNFTContentMessage>(sender.tab?.id || 0, {
+                  app: GEM_WALLET,
+                  type: Message.ReceiveNFT,
+                  payload: {
+                    nfts: undefined
+                  }
+                });
+              });
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+          chrome.tabs.sendMessage<ReceiveNFTContentMessage>(sender.tab?.id || 0, {
+            app: GEM_WALLET,
+            type: Message.ReceiveNFT,
+            payload: {
+              nfts: undefined
             }
           });
         });
@@ -417,6 +478,15 @@ chrome.runtime.onMessage.addListener((message: BackgroundMessage, sender, sendRe
         payload: {
           address: payload.address,
           publicKey: payload.publicKey
+        }
+      });
+    } else if (type === Message.ReceiveNFT) {
+      const { payload } = message;
+      chrome.tabs.sendMessage<ReceiveNFTContentMessage>(payload.id, {
+        app,
+        type: Message.ReceiveNFT,
+        payload: {
+          nfts: payload.nfts
         }
       });
     } else if (type === Message.ReceiveSignMessage) {

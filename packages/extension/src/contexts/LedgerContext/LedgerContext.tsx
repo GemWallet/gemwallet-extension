@@ -4,7 +4,12 @@ import * as Sentry from '@sentry/react';
 import { sign } from 'ripple-keypairs';
 import { xrpToDrops, dropsToXrp, TransactionMetadata, Payment, Transaction, TrustSet } from 'xrpl';
 
-import { PaymentRequestPayload, TrustlineRequestPayload } from '@gemwallet/constants';
+import {
+  AccountNFToken,
+  NFTRequestPayload,
+  PaymentRequestPayload,
+  TrustlineRequestPayload
+} from '@gemwallet/constants';
 
 import { AccountTransaction } from '../../types';
 import { useNetwork } from '../NetworkContext';
@@ -16,6 +21,7 @@ export interface LedgerContextType {
   addTrustline: (payload: TrustlineRequestPayload) => Promise<string>;
   signMessage: (message: string) => string | undefined;
   estimateNetworkFees: (payload: Transaction) => Promise<string>;
+  getNFTs: (payload?: NFTRequestPayload) => Promise<AccountNFToken[]>;
   getTransactions: () => Promise<AccountTransaction[]>;
 }
 
@@ -27,6 +33,7 @@ const LedgerContext = createContext<LedgerContextType>({
     new Promise((resolve) => {
       resolve('0');
     }),
+  getNFTs: () => new Promise(() => []),
   getTransactions: () =>
     new Promise((resolve) => {
       resolve([]);
@@ -57,7 +64,33 @@ const LedgerProvider: FC = ({ children }) => {
     [client, getCurrentWallet]
   );
 
-  const getTransactions = async () => {
+  const getNFTs = useCallback(
+    async (payload?: NFTRequestPayload) => {
+      const wallet = getCurrentWallet();
+      if (!client) {
+        throw new Error('You need to be connected to a ledger to get the NFTs');
+      } else if (!wallet) {
+        throw new Error('You need to have a wallet connected to get the NFTs');
+      } else {
+        // Prepare the transaction
+        const prepared = await client.request({
+          command: 'account_nfts',
+          account: wallet.publicAddress,
+          limit: payload?.limit,
+          marker: payload?.marker,
+          ledger_index: 'validated'
+        });
+        if (!prepared.result?.account_nfts) {
+          throw new Error("Couldn't get the NFTs");
+        } else {
+          return prepared.result.account_nfts;
+        }
+      }
+    },
+    [client, getCurrentWallet]
+  );
+
+  const getTransactions = useCallback(async () => {
     const wallet = getCurrentWallet();
     if (!client) {
       throw new Error('You need to be connected to a ledger to make a transaction');
@@ -75,7 +108,7 @@ const LedgerProvider: FC = ({ children }) => {
         return prepared.result.transactions;
       }
     }
-  };
+  }, [client, getCurrentWallet]);
 
   const sendPayment = useCallback(
     async ({ amount, destination, currency, issuer }: PaymentRequestPayload) => {
@@ -218,6 +251,7 @@ const LedgerProvider: FC = ({ children }) => {
     addTrustline,
     signMessage,
     estimateNetworkFees,
+    getNFTs,
     getTransactions
   };
 

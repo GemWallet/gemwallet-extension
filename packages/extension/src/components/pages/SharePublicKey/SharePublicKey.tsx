@@ -19,9 +19,7 @@ export const SharePublicKey: FC = () => {
     const urlParams = new URLSearchParams(queryString);
     return {
       id: Number(urlParams.get('id')) || 0,
-      url: urlParams.get('url'),
-      title: urlParams.get('title'),
-      favicon: urlParams.get('favicon') || undefined
+      url: urlParams.get('url')
     };
   }, []);
 

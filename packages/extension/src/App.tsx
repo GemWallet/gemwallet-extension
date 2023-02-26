@@ -23,6 +23,7 @@ import {
   History,
   Settings,
   ShareAddress,
+  ShareNFT,
   SharePublicKey,
   SignMessage,
   Transaction,
@@ -51,7 +52,8 @@ import {
   ADD_NEW_WALLET_PATH,
   EDIT_WALLET_PATH,
   ADD_NEW_TRUSTLINE_PATH,
-  HISTORY_PATH
+  HISTORY_PATH,
+  SHARE_NFT_PATH
 } from './constants';
 import { useBrowser } from './contexts';
 import { loadNetwork } from './utils';
@@ -167,6 +169,14 @@ const App: FC = () => {
           element={
             <PrivateRoute>
               <SignMessage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path={SHARE_NFT_PATH}
+          element={
+            <PrivateRoute>
+              <ShareNFT />
             </PrivateRoute>
           }
         />
