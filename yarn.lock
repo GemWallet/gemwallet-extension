@@ -13676,10 +13676,10 @@ xrpl-secret-numbers@^0.3.3:
     brorand "^1.1.0"
     ripple-keypairs "^1.0.3"
 
-xrpl@^2.4.0:
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/xrpl/-/xrpl-2.4.0.tgz#3a160a8341e3ffde7e3fc6dcbe802842667fc744"
-  integrity sha512-/mV4vb0+ls9Rw0Qsy62m0fCcU1ZmdiPRmXBtqJidBE2EUbyA0rTjZwx/6+zxGzZ+fDcLK8T1nWC1W+d1hO71Fw==
+xrpl@^2.6.0:
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/xrpl/-/xrpl-2.6.0.tgz#cfe9bc012e85721213f7f0e373ce5ff1d27e38c4"
+  integrity sha512-++rKtgO1j65TMm//mird3aGFGFYUn7VP9TjxwJkTUQZOdWkMUfiG2cd2o3tZ/zE07Ev8YVD09KgMZ9HzynJN9Q==
   dependencies:
     bignumber.js "^9.0.0"
     bip32 "^2.0.6"

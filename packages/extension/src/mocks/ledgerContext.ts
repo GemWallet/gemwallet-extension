@@ -5,5 +5,6 @@ export const valueLedgerContext: LedgerContextType = {
   addTrustline: jest.fn(),
   signMessage: jest.fn(),
   estimateNetworkFees: jest.fn(),
+  getNFTs: jest.fn(),
   getTransactions: jest.fn()
 };

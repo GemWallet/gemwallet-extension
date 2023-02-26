@@ -1,4 +1,5 @@
 import { Network } from '../network/network.constant';
+import { AccountNFToken } from './../xrpl/nft.types';
 
 /*
  * Request Payloads
@@ -31,6 +32,13 @@ export interface TrustlineRequestPayload {
   fee?: string;
   // 	The maximum amount of currency that can be exchanged to the trustline
   value: string;
+}
+
+export interface NFTRequestPayload {
+  // Limit the number of NFTokens to retrieve.
+  limit?: number;
+  // Value from a previous paginated response. Resume retrieving data where that response left off.
+  marker?: unknown;
 }
 
 export interface SignMessageRequestPayload {
@@ -70,4 +78,8 @@ export interface PaymentHashResponsePayload {
 
 export interface TrustlineHashResponsePayload {
   hash: string | null | undefined;
+}
+
+export interface NFTResponsePayload {
+  nfts: AccountNFToken[] | null | undefined;
 }

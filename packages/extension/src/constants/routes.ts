@@ -14,6 +14,7 @@ export const LIST_WALLETS_PATH = '/list-wallets';
 export const RESET_PASSWORD_PATH = '/reset-password';
 export const SETTINGS_PATH = '/settings';
 export const SIGN_MESSAGE_PATH = '/sign-message';
+export const SHARE_NFT_PATH = '/share-nft';
 export const SHARE_PUBLIC_ADDRESS_PATH = '/share-public-address';
 export const SHARE_PUBLIC_KEY_PATH = '/share-public-key';
 export const TRANSACTION_PATH = '/transaction';

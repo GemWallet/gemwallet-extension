@@ -24,7 +24,7 @@
     "ripple-keypairs": "^1.1.4",
     "typescript": "^4.1.2",
     "web-vitals": "^1.0.1",
-    "xrpl": "^2.4.0",
+    "xrpl": "^2.6.0",
     "xrpl-secret-numbers": "^0.3.3"
   },
   "devDependencies": {
