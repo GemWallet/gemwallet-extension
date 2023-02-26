@@ -457,7 +457,7 @@ describe('Edit wallet', () => {
     // Show seed
     cy.get('input[name="password"]').clear().type(PASSWORD);
     cy.contains('button', 'Show').click();
-    cy.contains('sEdSPaf6j72fpTWbufHtN8yBTtm4QS K').should('be.visible');
+    cy.contains('sEdSPaf6j72fpTWbufHtN8yBTtm4QSK').should('be.visible');
   });
 
   it('Show Mnemonic', () => {
