@@ -2,6 +2,9 @@ html,
 body {
   margin: 0;
   background-color: #282c34;
+  font-family: Arial, Helvetica, sans-serif;
+  /* max-width: 357px;
+  max-height: 600px; */
 }
 
 /* Hide scroll bars on webkit browsers */

@@ -110,5 +110,53 @@ export const mockTransactions = [
       ledger_index: 35320142
     },
     validated: true
+  },
+  {
+    meta: {
+      AffectedNodes: [
+        {
+          ModifiedNode: {
+            FinalFields: {
+              Account: 'rhikRdkFw28csKw9z7fVoBjWncz1HSoQij',
+              Balance: '459993543',
+              Flags: 0,
+              OwnerCount: 4,
+              Sequence: 34325154
+            },
+            LedgerEntryType: 'AccountRoot',
+            LedgerIndex: 'ED3BE698EB952BF74DC1A42BEB30DBDABFE946914A7B1AC06213791755A68358',
+            PreviousFields: {
+              Balance: '459993555',
+              Sequence: 34325153
+            },
+            PreviousTxnID: 'A51FF5E411248D77D92E1085DFAC3902401CE54C1924D3D0B415C83D4EA6A03F',
+            PreviousTxnLgrSeq: 35320122
+          }
+        }
+      ],
+      TransactionIndex: 0,
+      TransactionResult: 'tesSUCCESS'
+    },
+    tx: {
+      Account: 'rhikRdkFw28csKw9z7fVoBjWncz1HSoQij',
+      Fee: '12',
+      Flags: 0,
+      LastLedgerSequence: 35320163,
+      LimitAmount: {
+        currency: 'USDC',
+        issuer: 'rwtDvu9QDfCskWuyE2TSEt3s56RbiWUKJN',
+        value: '1000000'
+      },
+      Sequence: 34325153,
+      SigningPubKey: 'ED320B639DE36DD5779AE0E41A1930889BCD09A667E1848C96E38C65FB9D1F77DA',
+      TransactionType: 'New Transaction Type',
+      TxnSignature:
+        'E1D827FA13B3B46BAE3B235B54B014F59BA214E3AE806D1056AD4929A3EC05CD144658359A5E8990B8D2C7810DE3CBD5ED10BB4D948ABA599ED57F88D71D500D',
+      date: 729499754,
+      hash: '88B55BF2C181014ABDBEADBF6703945F1BAD7C47ED97A5138849D64DDD7D6765',
+      inLedger: 35320144,
+      ledger_index: 35320144
+    },
+    validated: true
   }
 ];

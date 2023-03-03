@@ -1,9 +1,24 @@
-import { FC } from 'react';
+import React, { FC, useState } from 'react';
 
+import CloseIcon from '@mui/icons-material/Close';
 import TransactionIcon from '@mui/icons-material/CompareArrows';
-import { List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
+import {
+  AppBar,
+  Dialog,
+  Divider,
+  IconButton,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Paper,
+  Slide,
+  Toolbar,
+  Typography
+} from '@mui/material';
+import { TransitionProps } from '@mui/material/transitions';
 import { unix } from 'moment';
-import { dropsToXrp } from 'xrpl';
+import { convertHexToString, dropsToXrp } from 'xrpl';
 
 import { useWallet } from '../../../contexts';
 import { AccountTransaction, TransactionTypes } from '../../../types';
@@ -14,6 +29,15 @@ import { PageWithSpinner } from '../../templates';
 export interface TransactionListingProps {
   transactions: AccountTransaction[];
 }
+
+const Transition = React.forwardRef(function Transition(
+  props: TransitionProps & {
+    children: React.ReactElement;
+  },
+  ref: React.Ref<unknown>
+) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 const formatTransaction = (transaction: AccountTransaction, publicAddress: string): string => {
   switch (transaction.tx?.TransactionType) {
@@ -95,13 +119,16 @@ const formatDate = (unixTimestamp: number): string => {
 export const TransactionListing: FC<TransactionListingProps> = ({ transactions }) => {
   const { getCurrentWallet } = useWallet();
 
+  const [tx, setTx] = useState(
+    transactions.length > 0 ? transactions.map((t) => ({ ...t, touched: false })) : []
+  );
   const wallet = getCurrentWallet();
 
   if (!wallet) {
     return <PageWithSpinner />;
   }
 
-  if (transactions.length === 0) {
+  if (tx.length === 0) {
     return (
       <InformationMessage title="No transactions to show">
         <div style={{ marginBottom: '5px' }}>
@@ -111,18 +138,115 @@ export const TransactionListing: FC<TransactionListingProps> = ({ transactions }
     );
   }
 
+  const handleClick = (index: number) => {
+    const newTx = [...tx];
+    newTx[index].touched = !newTx[index].touched;
+    setTx(newTx);
+  };
+
+  const handleClose = (index: number) => {
+    const newTx = [...tx];
+    newTx[index].touched = false;
+    setTx(newTx);
+  };
+
   return (
     <List dense>
-      {transactions.map((transaction, index) => (
-        <ListItem key={transaction.tx?.hash ?? index}>
-          <ListItemIcon>
-            <TransactionIcon />
-          </ListItemIcon>
-          <ListItemText
-            primary={formatTransaction(transaction, wallet.publicAddress)}
-            secondary={transaction.tx?.date ? formatDate(transaction.tx?.date) : undefined}
-          />
-        </ListItem>
+      {tx.map((transaction, index) => (
+        <div key={transaction.tx?.hash ?? index}>
+          <Paper
+            elevation={5}
+            style={{
+              padding: '10px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginBottom: '10px',
+              cursor: 'pointer'
+            }}
+            onClick={() => handleClick(index)}
+          >
+            <ListItem>
+              <ListItemIcon>
+                <TransactionIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary={formatTransaction(transaction, wallet.publicAddress)}
+                secondary={transaction.tx?.date ? formatDate(transaction.tx?.date) : undefined}
+              />
+            </ListItem>
+          </Paper>
+          <Dialog
+            open={transaction.touched}
+            TransitionComponent={Transition}
+            fullScreen
+            data-testid="dialog"
+          >
+            <AppBar sx={{ position: 'relative' }}>
+              <Toolbar>
+                <IconButton
+                  edge="start"
+                  color="inherit"
+                  aria-label="close"
+                  onClick={() => handleClose(index)}
+                  style={{ cursor: 'pointer' }}
+                  data-testid="close-button"
+                >
+                  <CloseIcon />
+                </IconButton>
+                <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+                  Transaction Details
+                </Typography>
+              </Toolbar>
+            </AppBar>
+            <List sx={{ width: '100%', wordBreak: 'break-word' }}>
+              <ListItem style={{ padding: '8px 24px' }}>
+                <ListItemText primary="Account" secondary={transaction.tx?.Account} />
+              </ListItem>
+              <Divider light />
+              <ListItem style={{ padding: '8px 24px' }}>
+                <ListItemText primary="Destination" secondary={transaction.tx?.Destination} />
+              </ListItem>
+              <Divider light />
+              <ListItem style={{ padding: '8px 24px' }}>
+                <ListItemText
+                  primary="Transaction"
+                  secondary={formatTransaction(transaction, wallet.publicAddress)}
+                />
+              </ListItem>
+              <Divider light />
+              <ListItem style={{ padding: '8px 24px' }}>
+                <ListItemText primary="Fees" secondary={dropsToXrp(Number(transaction.tx?.Fee))} />
+              </ListItem>
+              <Divider light />
+              <ListItem style={{ padding: '8px 24px' }}>
+                <ListItemText
+                  primary="Date"
+                  secondary={transaction.tx?.date ? formatDate(transaction.tx?.date) : undefined}
+                />
+              </ListItem>
+              <Divider light />
+              {transaction.tx?.Memos?.[0]?.Memo?.MemoData && (
+                <>
+                  <ListItem style={{ padding: '8px 24px' }}>
+                    <ListItemText
+                      primary="Memo"
+                      secondary={convertHexToString(transaction.tx?.Memos?.[0]?.Memo?.MemoData)}
+                    />
+                  </ListItem>
+                  <Divider light />
+                </>
+              )}
+              <ListItem style={{ padding: '8px 24px' }}>
+                <ListItemText primary="Transaction Hash" secondary={transaction.tx?.hash} />
+              </ListItem>
+              <Divider light />
+              <ListItem style={{ padding: '8px 24px' }}>
+                <ListItemText primary="Ledger Index" secondary={transaction.tx?.ledger_index} />
+              </ListItem>
+            </List>
+          </Dialog>
+        </div>
       ))}
     </List>
   );
