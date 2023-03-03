@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useCallback, useState } from 'react';
 
 import CloseIcon from '@mui/icons-material/Close';
 import TransactionIcon from '@mui/icons-material/CompareArrows';
@@ -124,6 +124,24 @@ export const TransactionListing: FC<TransactionListingProps> = ({ transactions }
   );
   const wallet = getCurrentWallet();
 
+  const handleClick = useCallback(
+    (index: number) => {
+      const newTx = [...tx];
+      newTx[index].touched = !newTx[index].touched;
+      setTx(newTx);
+    },
+    [tx]
+  );
+
+  const handleClose = useCallback(
+    (index: number) => {
+      const newTx = [...tx];
+      newTx[index].touched = false;
+      setTx(newTx);
+    },
+    [tx]
+  );
+
   if (!wallet) {
     return <PageWithSpinner />;
   }
@@ -137,18 +155,6 @@ export const TransactionListing: FC<TransactionListingProps> = ({ transactions }
       </InformationMessage>
     );
   }
-
-  const handleClick = (index: number) => {
-    const newTx = [...tx];
-    newTx[index].touched = !newTx[index].touched;
-    setTx(newTx);
-  };
-
-  const handleClose = (index: number) => {
-    const newTx = [...tx];
-    newTx[index].touched = false;
-    setTx(newTx);
-  };
 
   return (
     <List dense>

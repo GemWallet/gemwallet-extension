@@ -1,4 +1,4 @@
-import { TransactionMetadata, Transaction } from 'xrpl';
+import { Transaction, TransactionMetadata } from 'xrpl';
 import { ResponseOnlyTxInfo } from 'xrpl/dist/npm/models/common';
 
 export enum TransactionStatus {
@@ -39,10 +39,15 @@ export enum TransactionTypes {
   TrustSet = 'TrustSet'
 }
 
+interface TransactionConditionalFields {
+  Destination?: string;
+  Fee?: string;
+}
+
 export interface AccountTransaction {
   ledger_index: number;
   meta: string | TransactionMetadata;
-  tx?: Transaction & ResponseOnlyTxInfo;
+  tx?: Transaction & ResponseOnlyTxInfo & TransactionConditionalFields;
   tx_blob?: string;
   validated: boolean;
 }
