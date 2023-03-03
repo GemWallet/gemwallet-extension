@@ -111,4 +111,10 @@ fs.readFile('./package.json', 'utf8', (err, data) => {
       console.log('UMD file prepared');
     }
   );
+
+  //Remove the api/src folder
+  fs.rmSync(`${DESTINATION_FOLDER}/api`, { recursive: true });
+
+  //Remove the constants folder
+  fs.rmSync(`${DESTINATION_FOLDER}/constants`, { recursive: true });
 });
