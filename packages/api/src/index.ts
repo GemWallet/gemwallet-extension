@@ -6,3 +6,5 @@ export * from './getPublicKey';
 export * from './isConnected';
 export * from './sendPayment';
 export * from './signMessage';
+
+export type { AccountNFToken } from '@gemwallet/constants';
