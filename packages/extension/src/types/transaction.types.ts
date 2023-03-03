@@ -39,15 +39,10 @@ export enum TransactionTypes {
   TrustSet = 'TrustSet'
 }
 
-interface TransactionConditionalFields {
-  Destination?: string;
-  Fee?: string;
-}
-
 export interface AccountTransaction {
   ledger_index: number;
   meta: string | TransactionMetadata;
-  tx?: Transaction & ResponseOnlyTxInfo & TransactionConditionalFields;
+  tx?: Transaction & ResponseOnlyTxInfo;
   tx_blob?: string;
   validated: boolean;
 }

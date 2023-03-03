@@ -112,6 +112,17 @@ const formatTransaction = (transaction: AccountTransaction, publicAddress: strin
   }
 };
 
+const renderDestinationField = (transaction: AccountTransaction): JSX.Element | null => {
+  if (transaction.tx && 'Destination' in transaction.tx) {
+    return (
+      <ListItem style={{ padding: '8px 24px' }}>
+        <ListItemText primary="Destination" secondary={transaction.tx?.Destination} />
+      </ListItem>
+    );
+  }
+  return null;
+};
+
 const formatDate = (unixTimestamp: number): string => {
   return unix(946684800 + unixTimestamp).format('DD MMMM YYYY - HH:mm');
 };
@@ -210,9 +221,7 @@ export const TransactionListing: FC<TransactionListingProps> = ({ transactions }
                 <ListItemText primary="Account" secondary={transaction.tx?.Account} />
               </ListItem>
               <Divider light />
-              <ListItem style={{ padding: '8px 24px' }}>
-                <ListItemText primary="Destination" secondary={transaction.tx?.Destination} />
-              </ListItem>
+              {renderDestinationField(transaction)}
               <Divider light />
               <ListItem style={{ padding: '8px 24px' }}>
                 <ListItemText
