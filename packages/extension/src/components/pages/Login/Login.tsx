@@ -1,7 +1,10 @@
 import { useState, useEffect, FC, useCallback, useRef } from 'react';
 
 import { Button, Container, TextField, Typography } from '@mui/material';
+import * as Sentry from '@sentry/react';
 import { useNavigate, useLocation } from 'react-router-dom';
+
+import { GEM_WALLET, Message } from '@gemwallet/constants';
 
 import {
   HOME_PATH,
@@ -21,7 +24,8 @@ import {
   PARAMETER_NFT,
   SHARE_NFT_PATH
 } from '../../../constants';
-import { useWallet } from '../../../contexts';
+import { useBrowser, useWallet } from '../../../contexts';
+import { useBeforeUnload } from '../../../hooks';
 import { useKeyUp } from '../../../hooks/useKeyUp';
 import { loadData } from '../../../utils';
 import { Logo } from '../../atoms/Logo';
@@ -30,55 +34,125 @@ export const Login: FC = () => {
   const [passwordError, setPasswordError] = useState('');
   const navigate = useNavigate();
   const { search } = useLocation();
+  const { window: extensionWindow, closeExtension } = useBrowser();
   const { signIn, wallets, selectedWallet } = useWallet();
   const passwordRef = useRef<HTMLInputElement | null>(null);
+
+  const handleTransaction = useCallback(
+    (payload: unknown) => {
+      chrome.runtime
+        .sendMessage(payload)
+        .then(() => {
+          if (extensionWindow?.id) {
+            closeExtension({ windowId: Number(extensionWindow.id) });
+          }
+        })
+        .catch((e) => {
+          Sentry.captureException(e);
+        });
+    },
+    [closeExtension, extensionWindow?.id]
+  );
+
+  useBeforeUnload(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const windowId = Number(urlParams.get('id'));
+    if (extensionWindow?.id && windowId) {
+      if (search.includes(PARAMETER_TRANSACTION_PAYMENT)) {
+        handleTransaction({
+          app: GEM_WALLET,
+          type: Message.ReceivePaymentHash,
+          payload: {
+            id: windowId,
+            hash: null
+          }
+        });
+      } else if (search.includes(PARAMETER_ADDRESS)) {
+        handleTransaction({
+          app: GEM_WALLET,
+          type: Message.ReceiveAddress,
+          payload: {
+            id: windowId,
+            publicAddress: null
+          }
+        });
+      } else if (search.includes(PARAMETER_PUBLIC_KEY)) {
+        handleTransaction({
+          app: GEM_WALLET,
+          type: Message.ReceivePublicKey,
+          payload: {
+            id: windowId,
+            address: null,
+            publicKey: null
+          }
+        });
+      } else if (search.includes(PARAMETER_SIGN_MESSAGE)) {
+        handleTransaction({
+          app: GEM_WALLET,
+          type: Message.ReceiveSignMessage,
+          payload: {
+            id: windowId,
+            signedMessage: null
+          }
+        });
+      } else if (search.includes(PARAMETER_TRANSACTION_TRUSTLINE)) {
+        handleTransaction({
+          app: GEM_WALLET,
+          type: Message.ReceiveTrustlineHash,
+          payload: {
+            id: windowId,
+            hash: null
+          }
+        });
+      } else if (search.includes(PARAMETER_NFT)) {
+        handleTransaction({
+          app: GEM_WALLET,
+          type: Message.ReceiveNFT,
+          payload: {
+            id: windowId,
+            nfts: null
+          }
+        });
+      }
+    }
+  });
+
+  const navigateToPath = useCallback(() => {
+    if (search.includes(PARAMETER_TRANSACTION_PAYMENT)) {
+      navigate(`${TRANSACTION_PATH}${search}`);
+    } else if (search.includes(PARAMETER_ADDRESS)) {
+      navigate(`${SHARE_PUBLIC_ADDRESS_PATH}${search}`);
+    } else if (search.includes(PARAMETER_PUBLIC_KEY)) {
+      navigate(`${SHARE_PUBLIC_KEY_PATH}${search}`);
+    } else if (search.includes(PARAMETER_SIGN_MESSAGE)) {
+      navigate(`${SIGN_MESSAGE_PATH}${search}`);
+    } else if (search.includes(PARAMETER_TRANSACTION_TRUSTLINE)) {
+      navigate(`${ADD_NEW_TRUSTLINE_PATH}${search}`);
+    } else if (search.includes(PARAMETER_NFT)) {
+      navigate(`${SHARE_NFT_PATH}${search}`);
+    } else {
+      navigate(`${HOME_PATH}${search}`);
+    }
+  }, [navigate, search]);
 
   useEffect(() => {
     // Check if we are still logged-in
     if (wallets?.[selectedWallet]) {
-      if (search.includes(PARAMETER_TRANSACTION_PAYMENT)) {
-        navigate(`${TRANSACTION_PATH}${search}`);
-      } else if (search.includes(PARAMETER_ADDRESS)) {
-        navigate(`${SHARE_PUBLIC_ADDRESS_PATH}${search}`);
-      } else if (search.includes(PARAMETER_PUBLIC_KEY)) {
-        navigate(`${SHARE_PUBLIC_KEY_PATH}${search}`);
-      } else if (search.includes(PARAMETER_SIGN_MESSAGE)) {
-        navigate(`${SIGN_MESSAGE_PATH}${search}`);
-      } else if (search.includes(PARAMETER_TRANSACTION_TRUSTLINE)) {
-        navigate(`${ADD_NEW_TRUSTLINE_PATH}${search}`);
-      } else if (search.includes(PARAMETER_NFT)) {
-        navigate(`${SHARE_NFT_PATH}${search}`);
-      } else {
-        navigate(`${HOME_PATH}${search}`);
-      }
+      navigateToPath();
       // We check if a wallet is saved
     } else if (!loadData(STORAGE_WALLETS)) {
       navigate(`${WELCOME_PATH}${search}`);
     }
-  }, [navigate, search, selectedWallet, wallets]);
+  }, [navigate, navigateToPath, search, selectedWallet, wallets]);
 
   const handleUnlock = useCallback(() => {
     const passwordValue = passwordRef.current?.value;
     if (passwordValue && signIn(passwordValue)) {
-      if (search.includes(PARAMETER_TRANSACTION_PAYMENT)) {
-        navigate(`${TRANSACTION_PATH}${search}`);
-      } else if (search.includes(PARAMETER_ADDRESS)) {
-        navigate(`${SHARE_PUBLIC_ADDRESS_PATH}${search}`);
-      } else if (search.includes(PARAMETER_PUBLIC_KEY)) {
-        navigate(`${SHARE_PUBLIC_KEY_PATH}${search}`);
-      } else if (search.includes(PARAMETER_SIGN_MESSAGE)) {
-        navigate(`${SIGN_MESSAGE_PATH}${search}`);
-      } else if (search.includes(PARAMETER_TRANSACTION_TRUSTLINE)) {
-        navigate(`${ADD_NEW_TRUSTLINE_PATH}${search}`);
-      } else if (search.includes(PARAMETER_NFT)) {
-        navigate(`${SHARE_NFT_PATH}${search}`);
-      } else {
-        navigate(`${HOME_PATH}${search}`);
-      }
+      navigateToPath();
     } else {
       setPasswordError('Incorrect password');
     }
-  }, [signIn, search, navigate]);
+  }, [signIn, navigateToPath]);
 
   // Handle Login step button by pressing 'Enter'
   useKeyUp('Enter', handleUnlock);
