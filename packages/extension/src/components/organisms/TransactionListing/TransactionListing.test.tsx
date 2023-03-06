@@ -30,7 +30,7 @@ describe('TransactionListing', () => {
   test('renders the list of transactions', async () => {
     const screen = render(<TransactionListing transactions={mockTransactions} />);
     expect(screen.getByText('Payment sent - 20 XRP')).toBeInTheDocument();
-    expect(screen.getByText('12 February 2023 - 17:31')).toBeInTheDocument();
+    expect(screen.getByText('12 February 2023 - 18:31')).toBeInTheDocument();
     expect(screen.getByText('TrustLine transaction')).toBeInTheDocument();
     expect(screen.getByText('12 February 2023 - 06:48')).toBeInTheDocument();
   });
