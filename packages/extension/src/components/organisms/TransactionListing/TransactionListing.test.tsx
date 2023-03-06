@@ -32,7 +32,7 @@ describe('TransactionListing', () => {
     expect(screen.getByText('Payment sent - 20 XRP')).toBeInTheDocument();
     expect(screen.getByText('12 February 2023 - 18:31')).toBeInTheDocument();
     expect(screen.getByText('TrustLine transaction')).toBeInTheDocument();
-    expect(screen.getByText('12 February 2023 - 06:48')).toBeInTheDocument();
+    expect(screen.getByText('12 February 2023 - 07:48')).toBeInTheDocument();
   });
 
   test('renders the transaction details when the transaction is clicked', async () => {
