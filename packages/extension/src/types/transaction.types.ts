@@ -1,4 +1,4 @@
-import { TransactionMetadata, Transaction } from 'xrpl';
+import { Transaction, TransactionMetadata } from 'xrpl';
 import { ResponseOnlyTxInfo } from 'xrpl/dist/npm/models/common';
 
 export enum TransactionStatus {

@@ -2,6 +2,7 @@ html,
 body {
   margin: 0;
   background-color: #282c34;
+  font-family: 'Roboto', sans-serif;
 }
 
 /* Hide scroll bars on webkit browsers */
