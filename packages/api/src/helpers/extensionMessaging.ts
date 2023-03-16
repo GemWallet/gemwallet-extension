@@ -9,7 +9,7 @@ import {
 declare global {
   interface Window {
     gemWallet?: boolean;
-    gemWalletApi?: { [key: string]: any };
+    GemWalletApi?: Record<string, any>;
   }
 }
 
