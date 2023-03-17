@@ -48,6 +48,13 @@ export interface SignMessageRequestPayload {
   message: string;
 }
 
+export type RequestPayload =
+  | WebsiteRequestPayload
+  | PaymentRequestPayload
+  | TrustlineRequestPayload
+  | NFTRequestPayload
+  | SignMessageRequestPayload;
+
 /*
  * Response Payloads
  */

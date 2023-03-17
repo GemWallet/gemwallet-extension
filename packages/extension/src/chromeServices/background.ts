@@ -10,6 +10,7 @@ import {
   ReceivePublicKeyContentMessage,
   ReceiveSignMessageContentMessage,
   ReceiveTrustlineHashContentMessage,
+  RequestPayload,
   ResponsePayload
 } from '@gemwallet/constants';
 
@@ -26,7 +27,6 @@ import { MAIN_FILE } from './../constants/routes';
 
 const NOTIFICATION_HEIGHT = 620;
 const NOTIFICATION_WIDTH = 360;
-let currentWindowPopup: chrome.windows.Window | undefined = undefined;
 
 /**
  * Return a promise which will resolve the window object
@@ -47,36 +47,27 @@ const sendMessageToTab = <T>(tabId: number | undefined, message: any) => {
   chrome.tabs.sendMessage<T>(tabId ?? 0, message);
 };
 
-// TODO: Pass the <T> down
-const focusOrCreatePopupWindow = async <T>({
-  message,
+const focusOrCreatePopupWindow = async ({
+  payload,
   sender,
   parameter,
   receivingMessage,
   errorPayload
 }: {
-  //TODO: Any needs to be replaced by the proper type
-  message: any;
+  payload: RequestPayload;
   sender: chrome.runtime.MessageSender;
   parameter: string;
   receivingMessage: ReceiveMessage;
   errorPayload: ResponsePayload;
-}) => {
+}): Promise<void> => {
   try {
     const openedWindows = await chrome.windows.getAll();
-    // We check if the popup is currently open
     const { currentWindowId } = await chrome.storage.local.get('currentWindowId');
 
     if (currentWindowId && openedWindows.find((window) => window.id === currentWindowId)) {
       chrome.windows.update(currentWindowId, { focused: true });
     } else {
-      const { payload } = message;
       const lastFocusedWindow = await getLastFocusedWindow();
-      const top = lastFocusedWindow.top;
-      let left = undefined;
-      if (lastFocusedWindow.left && lastFocusedWindow.width) {
-        left = lastFocusedWindow.left + (lastFocusedWindow.width - NOTIFICATION_WIDTH);
-      }
 
       const currentWindow = await chrome.windows.create({
         url: `../..${MAIN_FILE}${serializeToQueryString({
@@ -86,11 +77,14 @@ const focusOrCreatePopupWindow = async <T>({
         type: 'popup',
         width: NOTIFICATION_WIDTH,
         height: NOTIFICATION_HEIGHT,
-        left,
-        top
+        left:
+          lastFocusedWindow?.left && lastFocusedWindow?.width
+            ? lastFocusedWindow.left + (lastFocusedWindow.width - NOTIFICATION_WIDTH)
+            : undefined,
+        top: lastFocusedWindow?.top
       });
 
-      chrome.storage.local.set({ currentWindowId: currentWindow?.id });
+      chrome.storage.local.set({ currentWindowId: currentWindow.id });
     }
   } catch (error) {
     console.error(error);
@@ -121,261 +115,57 @@ chrome.runtime.onMessage.addListener(
       const payload = {
         id: sender.tab?.id
       };
-      chrome.windows.create(
-        {
-          url: `../..${MAIN_FILE}${serializeToQueryString(payload)}&${PARAMETER_NETWORK}`,
-          type: 'popup',
-          width: 1,
-          height: 1
-        },
-        (_window) => {
-          currentWindowPopup = _window;
-        }
-      );
+      chrome.windows.create({
+        url: `../..${MAIN_FILE}${serializeToQueryString(payload)}&${PARAMETER_NETWORK}`,
+        type: 'popup',
+        width: 1,
+        height: 1
+      });
       sendResponse(Network.TESTNET);
     } else if (type === 'REQUEST_ADDRESS') {
-      chrome.windows
-        .getAll()
-        .then((openedWindows) => {
-          // We check if the popup is currently open
-          if (
-            currentWindowPopup &&
-            openedWindows.find((window) => window.id === currentWindowPopup?.id)
-          ) {
-            // TODO: Why popup are created more than one time? - Maybe to be removed?
-            chrome.windows.update(currentWindowPopup.id as number, { focused: true });
-          } else {
-            getLastFocusedWindow()
-              .then((lastFocused) => {
-                const top = lastFocused.top;
-                let left = undefined;
-                if (lastFocused.left && lastFocused.width) {
-                  left = lastFocused.left + (lastFocused.width - NOTIFICATION_WIDTH);
-                }
-                const payload = {
-                  ...message.payload,
-                  id: sender.tab?.id
-                };
-                chrome.windows.create(
-                  {
-                    url: `../..${MAIN_FILE}${serializeToQueryString(payload)}&${PARAMETER_ADDRESS}`,
-                    type: 'popup',
-                    width: NOTIFICATION_WIDTH,
-                    height: NOTIFICATION_HEIGHT,
-                    left,
-                    top
-                  },
-                  (_window) => {
-                    currentWindowPopup = _window;
-                  }
-                );
-              })
-              .catch((error) => {
-                console.error(error);
-                chrome.tabs.sendMessage<ReceiveAddressContentMessage>(sender.tab?.id || 0, {
-                  app: GEM_WALLET,
-                  type: 'RECEIVE_ADDRESS',
-                  payload: {
-                    publicAddress: undefined
-                  }
-                });
-              });
-          }
-        })
-        .catch((error) => {
-          console.error(error);
-          chrome.tabs.sendMessage<ReceiveAddressContentMessage>(sender.tab?.id || 0, {
-            app: GEM_WALLET,
-            type: 'RECEIVE_ADDRESS',
-            payload: {
-              publicAddress: undefined
-            }
-          });
-        });
+      focusOrCreatePopupWindow({
+        payload: message.payload,
+        sender,
+        parameter: PARAMETER_ADDRESS,
+        receivingMessage: 'RECEIVE_ADDRESS',
+        errorPayload: {
+          publicAddress: undefined
+        }
+      });
     } else if (type === 'REQUEST_PUBLIC_KEY') {
-      chrome.windows
-        .getAll()
-        .then((openedWindows) => {
-          // We check if the popup is currently open
-          if (
-            currentWindowPopup &&
-            openedWindows.find((window) => window.id === currentWindowPopup?.id)
-          ) {
-            // TODO: Why popup are created more than one time? - Maybe to be removed?
-            chrome.windows.update(currentWindowPopup.id as number, { focused: true });
-          } else {
-            getLastFocusedWindow()
-              .then((lastFocused) => {
-                const top = lastFocused.top;
-                let left = undefined;
-                if (lastFocused.left && lastFocused.width) {
-                  left = lastFocused.left + (lastFocused.width - NOTIFICATION_WIDTH);
-                }
-                const payload = {
-                  ...message.payload,
-                  id: sender.tab?.id
-                };
-                chrome.windows.create(
-                  {
-                    url: `../..${MAIN_FILE}${serializeToQueryString(
-                      payload
-                    )}&${PARAMETER_PUBLIC_KEY}`,
-                    type: 'popup',
-                    width: NOTIFICATION_WIDTH,
-                    height: NOTIFICATION_HEIGHT,
-                    left,
-                    top
-                  },
-                  (_window) => {
-                    currentWindowPopup = _window;
-                  }
-                );
-              })
-              .catch((error) => {
-                console.error(error);
-                chrome.tabs.sendMessage<ReceivePublicKeyContentMessage>(sender.tab?.id || 0, {
-                  app: GEM_WALLET,
-                  type: 'RECEIVE_PUBLIC_KEY',
-                  payload: {
-                    address: undefined,
-                    publicKey: undefined
-                  }
-                });
-              });
-          }
-        })
-        .catch((error) => {
-          console.error(error);
-          chrome.tabs.sendMessage<ReceivePublicKeyContentMessage>(sender.tab?.id || 0, {
-            app: GEM_WALLET,
-            type: 'RECEIVE_PUBLIC_KEY',
-            payload: {
-              address: undefined,
-              publicKey: undefined
-            }
-          });
-        });
+      focusOrCreatePopupWindow({
+        payload: message.payload,
+        sender,
+        parameter: PARAMETER_PUBLIC_KEY,
+        receivingMessage: 'RECEIVE_PUBLIC_KEY',
+        errorPayload: {
+          address: undefined,
+          publicKey: undefined
+        }
+      });
     } else if (type === 'REQUEST_NFT') {
-      chrome.windows
-        .getAll()
-        .then((openedWindows) => {
-          // We check if the popup is currently open
-          if (
-            currentWindowPopup &&
-            openedWindows.find((window) => window.id === currentWindowPopup?.id)
-          ) {
-            // TODO: Why popup are created more than one time? - Maybe to be removed?
-            chrome.windows.update(currentWindowPopup.id as number, { focused: true });
-          } else {
-            getLastFocusedWindow()
-              .then((lastFocused) => {
-                const top = lastFocused.top;
-                let left = undefined;
-                if (lastFocused.left && lastFocused.width) {
-                  left = lastFocused.left + (lastFocused.width - NOTIFICATION_WIDTH);
-                }
-                const payload = {
-                  ...message.payload,
-                  id: sender.tab?.id
-                };
-                chrome.windows.create(
-                  {
-                    url: `../..${MAIN_FILE}${serializeToQueryString(payload)}&${PARAMETER_NFT}`,
-                    type: 'popup',
-                    width: NOTIFICATION_WIDTH,
-                    height: NOTIFICATION_HEIGHT,
-                    left,
-                    top
-                  },
-                  (_window) => {
-                    currentWindowPopup = _window;
-                  }
-                );
-              })
-              .catch((error) => {
-                console.error(error);
-                chrome.tabs.sendMessage<ReceiveNFTContentMessage>(sender.tab?.id || 0, {
-                  app: GEM_WALLET,
-                  type: 'RECEIVE_NFT',
-                  payload: {
-                    nfts: undefined
-                  }
-                });
-              });
-          }
-        })
-        .catch((error) => {
-          console.error(error);
-          chrome.tabs.sendMessage<ReceiveNFTContentMessage>(sender.tab?.id || 0, {
-            app: GEM_WALLET,
-            type: 'RECEIVE_NFT',
-            payload: {
-              nfts: undefined
-            }
-          });
-        });
+      focusOrCreatePopupWindow({
+        payload: message.payload,
+        sender,
+        parameter: PARAMETER_NFT,
+        receivingMessage: 'RECEIVE_NFT',
+        errorPayload: {
+          nfts: undefined
+        }
+      });
     } else if (type === 'REQUEST_PAYMENT') {
-      chrome.windows
-        .getAll()
-        .then((openedWindows) => {
-          // We check if the popup is currently open
-          if (
-            currentWindowPopup &&
-            openedWindows.find((window) => window.id === currentWindowPopup?.id)
-          ) {
-            // TODO: Why popup are created more than one time :O
-            chrome.windows.update(currentWindowPopup.id as number, { focused: true });
-          } else {
-            const { payload } = message;
-            getLastFocusedWindow()
-              .then((lastFocused) => {
-                const top = lastFocused.top;
-                let left = undefined;
-                if (lastFocused.left && lastFocused.width) {
-                  left = lastFocused.left + (lastFocused.width - NOTIFICATION_WIDTH);
-                }
-                chrome.windows.create(
-                  {
-                    url: `../..${MAIN_FILE}${serializeToQueryString({
-                      ...payload,
-                      id: sender.tab?.id
-                    })}&${PARAMETER_TRANSACTION_PAYMENT}`,
-                    type: 'popup',
-                    width: NOTIFICATION_WIDTH,
-                    height: NOTIFICATION_HEIGHT,
-                    left,
-                    top
-                  },
-                  (_window) => {
-                    currentWindowPopup = _window;
-                  }
-                );
-              })
-              .catch((error) => {
-                console.error(error);
-                chrome.tabs.sendMessage<ReceivePaymentHashContentMessage>(sender.tab?.id || 0, {
-                  app: GEM_WALLET,
-                  type: 'RECEIVE_PAYMENT_HASH',
-                  payload: {
-                    hash: undefined
-                  }
-                });
-              });
-          }
-        })
-        .catch((error) => {
-          console.error(error);
-          chrome.tabs.sendMessage<ReceivePaymentHashContentMessage>(sender.tab?.id || 0, {
-            app: GEM_WALLET,
-            type: 'RECEIVE_PAYMENT_HASH',
-            payload: {
-              hash: undefined
-            }
-          });
-        });
+      focusOrCreatePopupWindow({
+        payload: message.payload,
+        sender,
+        parameter: PARAMETER_TRANSACTION_PAYMENT,
+        receivingMessage: 'RECEIVE_PAYMENT_HASH',
+        errorPayload: {
+          hash: undefined
+        }
+      });
     } else if (type === 'REQUEST_ADD_TRUSTLINE') {
-      focusOrCreatePopupWindow<ReceiveTrustlineHashContentMessage>({
-        message,
+      focusOrCreatePopupWindow({
+        payload: message.payload,
         sender,
         parameter: PARAMETER_TRANSACTION_TRUSTLINE,
         receivingMessage: 'RECEIVE_TRUSTLINE_HASH',
@@ -384,66 +174,15 @@ chrome.runtime.onMessage.addListener(
         }
       });
     } else if (type === 'REQUEST_SIGN_MESSAGE') {
-      chrome.windows
-        .getAll()
-        .then((openedWindows) => {
-          // We check if the popup is currently open
-          if (
-            currentWindowPopup &&
-            openedWindows.find((window) => window.id === currentWindowPopup?.id)
-          ) {
-            // TODO: Why popup are created more than one time? - Maybe to be removed?
-            chrome.windows.update(currentWindowPopup.id as number, { focused: true });
-          } else {
-            getLastFocusedWindow()
-              .then((lastFocused) => {
-                const top = lastFocused.top;
-                let left = undefined;
-                if (lastFocused.left && lastFocused.width) {
-                  left = lastFocused.left + (lastFocused.width - NOTIFICATION_WIDTH);
-                }
-                const payload = {
-                  ...message.payload,
-                  id: sender.tab?.id
-                };
-                chrome.windows.create(
-                  {
-                    url: `../..${MAIN_FILE}${serializeToQueryString(
-                      payload
-                    )}&${PARAMETER_SIGN_MESSAGE}`,
-                    type: 'popup',
-                    width: NOTIFICATION_WIDTH,
-                    height: NOTIFICATION_HEIGHT,
-                    left,
-                    top
-                  },
-                  (_window) => {
-                    currentWindowPopup = _window;
-                  }
-                );
-              })
-              .catch((error) => {
-                console.error(error);
-                chrome.tabs.sendMessage<ReceiveSignMessageContentMessage>(sender.tab?.id || 0, {
-                  app: GEM_WALLET,
-                  type: 'RECEIVE_SIGN_MESSAGE',
-                  payload: {
-                    signedMessage: undefined
-                  }
-                });
-              });
-          }
-        })
-        .catch((error) => {
-          console.error(error);
-          chrome.tabs.sendMessage<ReceiveSignMessageContentMessage>(sender.tab?.id || 0, {
-            app: GEM_WALLET,
-            type: 'RECEIVE_SIGN_MESSAGE',
-            payload: {
-              signedMessage: undefined
-            }
-          });
-        });
+      focusOrCreatePopupWindow({
+        payload: message.payload,
+        sender,
+        parameter: PARAMETER_SIGN_MESSAGE,
+        receivingMessage: 'RECEIVE_SIGN_MESSAGE',
+        errorPayload: {
+          signedMessage: undefined
+        }
+      });
     } else if (type === 'RECEIVE_PAYMENT_HASH') {
       const { payload } = message;
       sendMessageToTab<ReceivePaymentHashContentMessage>(payload.id, {
