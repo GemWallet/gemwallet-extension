@@ -2,7 +2,7 @@ import { FC, useCallback, useMemo } from 'react';
 
 import * as Sentry from '@sentry/react';
 
-import { GEM_WALLET, Message, ReceiveNFTBackgroundMessage } from '@gemwallet/constants';
+import { GEM_WALLET, ReceiveNFTBackgroundMessage } from '@gemwallet/constants';
 
 import { useBrowser, useLedger, useWallet } from '../../../contexts';
 import { Permission, saveTrustedApp } from '../../../utils';
@@ -33,7 +33,7 @@ export const ShareNFT: FC = () => {
       chrome.runtime
         .sendMessage<ReceiveNFTBackgroundMessage>({
           app: GEM_WALLET,
-          type: Message.ReceiveNFT,
+          type: 'RECEIVE_NFT',
           payload: {
             id,
             nfts

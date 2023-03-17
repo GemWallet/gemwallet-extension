@@ -1,7 +1,6 @@
 import {
   APIMessages,
   IsConnectedResponse,
-  Message,
   NetworkResponse,
   PublicAddressResponse
 } from '@gemwallet/constants';
@@ -30,7 +29,7 @@ export const sendMessageToContentScript = (msg: APIMessages): Promise<any> => {
 
   window.postMessage(
     {
-      source: Message.MsgRequest,
+      source: 'GEM_WALLET_MSG_REQUEST',
       messageId,
       ...msg
     },
@@ -38,7 +37,7 @@ export const sendMessageToContentScript = (msg: APIMessages): Promise<any> => {
   );
 
   return new Promise((resolve, reject) => {
-    if (!window.gemWallet && msg.type !== Message.RequestConnection) {
+    if (!window.gemWallet && msg.type !== 'REQUEST_CONNECTION') {
       reject(
         new Error(
           'Please check if GemWallet is connected - GemWallet needs to be installed: https://gemwallet.app'
@@ -53,7 +52,7 @@ export const sendMessageToContentScript = (msg: APIMessages): Promise<any> => {
       // We only accept messages from ourselves
       if (event.source !== window) return;
       // Only respond to messages tagged as being from our content script
-      if (event?.data?.source !== Message.MsgResponse) return;
+      if (event?.data?.source !== 'GEM_WALLET_MSG_RESPONSE') return;
       // Only respond to messages that this instance of sendMessageToContentScript sent
       if (event?.data?.messagedId !== messageId) return;
 

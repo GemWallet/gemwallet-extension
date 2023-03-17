@@ -1,15 +1,16 @@
 import {
   BackgroundMessage,
   GEM_WALLET,
-  Message,
   Network,
   ReceiveAddressContentMessage,
+  ReceiveMessage,
   ReceiveNetworkContentMessage,
   ReceiveNFTContentMessage,
   ReceivePaymentHashContentMessage,
   ReceivePublicKeyContentMessage,
   ReceiveSignMessageContentMessage,
-  ReceiveTrustlineHashContentMessage
+  ReceiveTrustlineHashContentMessage,
+  ResponsePayload
 } from '@gemwallet/constants';
 
 import {
@@ -46,6 +47,61 @@ const sendMessageToTab = <T>(tabId: number | undefined, message: any) => {
   chrome.tabs.sendMessage<T>(tabId ?? 0, message);
 };
 
+// TODO: Pass the <T> down
+const focusOrCreatePopupWindow = async <T>({
+  message,
+  sender,
+  parameter,
+  receivingMessage,
+  errorPayload
+}: {
+  //TODO: Any needs to be replaced by the proper type
+  message: any;
+  sender: chrome.runtime.MessageSender;
+  parameter: string;
+  receivingMessage: ReceiveMessage;
+  errorPayload: ResponsePayload;
+}) => {
+  try {
+    const openedWindows = await chrome.windows.getAll();
+    // We check if the popup is currently open
+    const { currentWindowId } = await chrome.storage.local.get('currentWindowId');
+
+    if (currentWindowId && openedWindows.find((window) => window.id === currentWindowId)) {
+      chrome.windows.update(currentWindowId, { focused: true });
+    } else {
+      const { payload } = message;
+      const lastFocusedWindow = await getLastFocusedWindow();
+      const top = lastFocusedWindow.top;
+      let left = undefined;
+      if (lastFocusedWindow.left && lastFocusedWindow.width) {
+        left = lastFocusedWindow.left + (lastFocusedWindow.width - NOTIFICATION_WIDTH);
+      }
+
+      const currentWindow = await chrome.windows.create({
+        url: `../..${MAIN_FILE}${serializeToQueryString({
+          ...payload,
+          id: sender.tab?.id
+        })}&${parameter}`,
+        type: 'popup',
+        width: NOTIFICATION_WIDTH,
+        height: NOTIFICATION_HEIGHT,
+        left,
+        top
+      });
+
+      chrome.storage.local.set({ currentWindowId: currentWindow?.id });
+    }
+  } catch (error) {
+    console.error(error);
+    chrome.tabs.sendMessage(sender.tab?.id || 0, {
+      app: GEM_WALLET,
+      type: receivingMessage,
+      payload: errorPayload
+    });
+  }
+};
+
 /*
  * Keep only one listener for easier debugging
  */
@@ -61,7 +117,7 @@ chrome.runtime.onMessage.addListener(
       return; // exit early if the message is not from gem-wallet or the sender is not the extension itself
     }
 
-    if (type === Message.RequestNetwork) {
+    if (type === 'REQUEST_NETWORK') {
       const payload = {
         id: sender.tab?.id
       };
@@ -77,7 +133,7 @@ chrome.runtime.onMessage.addListener(
         }
       );
       sendResponse(Network.TESTNET);
-    } else if (type === Message.RequestAddress) {
+    } else if (type === 'REQUEST_ADDRESS') {
       chrome.windows
         .getAll()
         .then((openedWindows) => {
@@ -118,7 +174,7 @@ chrome.runtime.onMessage.addListener(
                 console.error(error);
                 chrome.tabs.sendMessage<ReceiveAddressContentMessage>(sender.tab?.id || 0, {
                   app: GEM_WALLET,
-                  type: Message.ReceiveAddress,
+                  type: 'RECEIVE_ADDRESS',
                   payload: {
                     publicAddress: undefined
                   }
@@ -130,13 +186,13 @@ chrome.runtime.onMessage.addListener(
           console.error(error);
           chrome.tabs.sendMessage<ReceiveAddressContentMessage>(sender.tab?.id || 0, {
             app: GEM_WALLET,
-            type: Message.ReceiveAddress,
+            type: 'RECEIVE_ADDRESS',
             payload: {
               publicAddress: undefined
             }
           });
         });
-    } else if (type === Message.RequestPublicKey) {
+    } else if (type === 'REQUEST_PUBLIC_KEY') {
       chrome.windows
         .getAll()
         .then((openedWindows) => {
@@ -179,7 +235,7 @@ chrome.runtime.onMessage.addListener(
                 console.error(error);
                 chrome.tabs.sendMessage<ReceivePublicKeyContentMessage>(sender.tab?.id || 0, {
                   app: GEM_WALLET,
-                  type: Message.ReceivePublicKey,
+                  type: 'RECEIVE_PUBLIC_KEY',
                   payload: {
                     address: undefined,
                     publicKey: undefined
@@ -192,14 +248,14 @@ chrome.runtime.onMessage.addListener(
           console.error(error);
           chrome.tabs.sendMessage<ReceivePublicKeyContentMessage>(sender.tab?.id || 0, {
             app: GEM_WALLET,
-            type: Message.ReceivePublicKey,
+            type: 'RECEIVE_PUBLIC_KEY',
             payload: {
               address: undefined,
               publicKey: undefined
             }
           });
         });
-    } else if (type === Message.RequestNFT) {
+    } else if (type === 'REQUEST_NFT') {
       chrome.windows
         .getAll()
         .then((openedWindows) => {
@@ -240,7 +296,7 @@ chrome.runtime.onMessage.addListener(
                 console.error(error);
                 chrome.tabs.sendMessage<ReceiveNFTContentMessage>(sender.tab?.id || 0, {
                   app: GEM_WALLET,
-                  type: Message.ReceiveNFT,
+                  type: 'RECEIVE_NFT',
                   payload: {
                     nfts: undefined
                   }
@@ -252,13 +308,13 @@ chrome.runtime.onMessage.addListener(
           console.error(error);
           chrome.tabs.sendMessage<ReceiveNFTContentMessage>(sender.tab?.id || 0, {
             app: GEM_WALLET,
-            type: Message.ReceiveNFT,
+            type: 'RECEIVE_NFT',
             payload: {
               nfts: undefined
             }
           });
         });
-    } else if (type === Message.SendPayment) {
+    } else if (type === 'REQUEST_PAYMENT') {
       chrome.windows
         .getAll()
         .then((openedWindows) => {
@@ -299,7 +355,7 @@ chrome.runtime.onMessage.addListener(
                 console.error(error);
                 chrome.tabs.sendMessage<ReceivePaymentHashContentMessage>(sender.tab?.id || 0, {
                   app: GEM_WALLET,
-                  type: Message.ReceivePaymentHash,
+                  type: 'RECEIVE_PAYMENT_HASH',
                   payload: {
                     hash: undefined
                   }
@@ -311,69 +367,23 @@ chrome.runtime.onMessage.addListener(
           console.error(error);
           chrome.tabs.sendMessage<ReceivePaymentHashContentMessage>(sender.tab?.id || 0, {
             app: GEM_WALLET,
-            type: Message.ReceivePaymentHash,
+            type: 'RECEIVE_PAYMENT_HASH',
             payload: {
               hash: undefined
             }
           });
         });
-    } else if (type === Message.RequestAddTrustline) {
-      chrome.windows
-        .getAll()
-        .then(async (openedWindows) => {
-          // We check if the popup is currently open
-          const { currentWindowId } = await chrome.storage.local.get('currentWindowId');
-          if (currentWindowId && openedWindows.find((window) => window.id === currentWindowId)) {
-            chrome.windows.update(currentWindowId, { focused: true });
-          } else {
-            const { payload } = message;
-            getLastFocusedWindow()
-              .then((lastFocused) => {
-                const top = lastFocused.top;
-                let left = undefined;
-                if (lastFocused.left && lastFocused.width) {
-                  left = lastFocused.left + (lastFocused.width - NOTIFICATION_WIDTH);
-                }
-                chrome.windows.create(
-                  {
-                    url: `../..${MAIN_FILE}${serializeToQueryString({
-                      ...payload,
-                      id: sender.tab?.id
-                    })}&${PARAMETER_TRANSACTION_TRUSTLINE}`,
-                    type: 'popup',
-                    width: NOTIFICATION_WIDTH,
-                    height: NOTIFICATION_HEIGHT,
-                    left,
-                    top
-                  },
-                  (currentWindow) => {
-                    chrome.storage.local.set({ currentWindowId: currentWindow?.id });
-                  }
-                );
-              })
-              .catch((error) => {
-                console.error(error);
-                chrome.tabs.sendMessage<ReceiveTrustlineHashContentMessage>(sender.tab?.id || 0, {
-                  app: GEM_WALLET,
-                  type: Message.ReceiveTrustlineHash,
-                  payload: {
-                    hash: undefined
-                  }
-                });
-              });
-          }
-        })
-        .catch((error) => {
-          console.error(error);
-          chrome.tabs.sendMessage<ReceiveTrustlineHashContentMessage>(sender.tab?.id || 0, {
-            app: GEM_WALLET,
-            type: Message.ReceiveTrustlineHash,
-            payload: {
-              hash: undefined
-            }
-          });
-        });
-    } else if (type === Message.RequestSignMessage) {
+    } else if (type === 'REQUEST_ADD_TRUSTLINE') {
+      focusOrCreatePopupWindow<ReceiveTrustlineHashContentMessage>({
+        message,
+        sender,
+        parameter: PARAMETER_TRANSACTION_TRUSTLINE,
+        receivingMessage: 'RECEIVE_TRUSTLINE_HASH',
+        errorPayload: {
+          hash: undefined
+        }
+      });
+    } else if (type === 'REQUEST_SIGN_MESSAGE') {
       chrome.windows
         .getAll()
         .then((openedWindows) => {
@@ -416,7 +426,7 @@ chrome.runtime.onMessage.addListener(
                 console.error(error);
                 chrome.tabs.sendMessage<ReceiveSignMessageContentMessage>(sender.tab?.id || 0, {
                   app: GEM_WALLET,
-                  type: Message.ReceiveSignMessage,
+                  type: 'RECEIVE_SIGN_MESSAGE',
                   payload: {
                     signedMessage: undefined
                   }
@@ -428,72 +438,72 @@ chrome.runtime.onMessage.addListener(
           console.error(error);
           chrome.tabs.sendMessage<ReceiveSignMessageContentMessage>(sender.tab?.id || 0, {
             app: GEM_WALLET,
-            type: Message.ReceiveSignMessage,
+            type: 'RECEIVE_SIGN_MESSAGE',
             payload: {
               signedMessage: undefined
             }
           });
         });
-    } else if (type === Message.ReceivePaymentHash) {
+    } else if (type === 'RECEIVE_PAYMENT_HASH') {
       const { payload } = message;
       sendMessageToTab<ReceivePaymentHashContentMessage>(payload.id, {
         app,
-        type: Message.ReceivePaymentHash,
+        type: 'RECEIVE_PAYMENT_HASH',
         payload: {
           hash: payload.hash
         }
       });
-    } else if (type === Message.ReceiveTrustlineHash) {
+    } else if (type === 'RECEIVE_TRUSTLINE_HASH') {
       const { payload } = message;
       sendMessageToTab<ReceiveTrustlineHashContentMessage>(payload.id, {
         app,
-        type: Message.ReceiveTrustlineHash,
+        type: 'RECEIVE_TRUSTLINE_HASH',
         payload: {
           hash: payload.hash
         }
       });
-    } else if (type === Message.ReceiveAddress) {
+    } else if (type === 'RECEIVE_ADDRESS') {
       const { payload } = message;
       sendMessageToTab<ReceiveAddressContentMessage>(payload.id, {
         app,
-        type: Message.ReceiveAddress,
+        type: 'RECEIVE_ADDRESS',
         payload: {
           publicAddress: payload.publicAddress
         }
       });
-    } else if (type === Message.ReceiveNetwork) {
+    } else if (type === 'RECEIVE_NETWORK') {
       const { payload } = message;
       sendMessageToTab<ReceiveNetworkContentMessage>(payload.id, {
         app,
-        type: Message.ReceiveNetwork,
+        type: 'RECEIVE_NETWORK',
         payload: {
           network: payload.network
         }
       });
-    } else if (type === Message.ReceivePublicKey) {
+    } else if (type === 'RECEIVE_PUBLIC_KEY') {
       const { payload } = message;
       sendMessageToTab<ReceivePublicKeyContentMessage>(payload.id, {
         app,
-        type: Message.ReceivePublicKey,
+        type: 'RECEIVE_PUBLIC_KEY',
         payload: {
           address: payload.address,
           publicKey: payload.publicKey
         }
       });
-    } else if (type === Message.ReceiveNFT) {
+    } else if (type === 'RECEIVE_NFT') {
       const { payload } = message;
       sendMessageToTab<ReceiveNFTContentMessage>(payload.id, {
         app,
-        type: Message.ReceiveNFT,
+        type: 'RECEIVE_NFT',
         payload: {
           nfts: payload.nfts
         }
       });
-    } else if (type === Message.ReceiveSignMessage) {
+    } else if (type === 'RECEIVE_SIGN_MESSAGE') {
       const { payload } = message;
       sendMessageToTab<ReceiveSignMessageContentMessage>(payload.id, {
         app,
-        type: Message.ReceiveSignMessage,
+        type: 'RECEIVE_SIGN_MESSAGE',
         payload: {
           signedMessage: payload.signedMessage
         }

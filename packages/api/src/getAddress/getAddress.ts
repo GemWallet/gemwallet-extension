@@ -1,4 +1,4 @@
-import { GEM_WALLET, Message, RequestAddressMessage } from '@gemwallet/constants';
+import { GEM_WALLET, RequestAddressMessage } from '@gemwallet/constants';
 
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
 import { getFavicon } from '../helpers/getFavicon';
@@ -13,7 +13,7 @@ export const getAddress = async () => {
     const favicon = getFavicon();
     const message: RequestAddressMessage = {
       app: GEM_WALLET,
-      type: Message.RequestAddress,
+      type: 'REQUEST_ADDRESS',
       payload: {
         url: window.location.origin,
         title: document.title,

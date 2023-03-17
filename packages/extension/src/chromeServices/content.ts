@@ -3,7 +3,6 @@ import {
   AddTrustlineEventListener,
   EventListener,
   GEM_WALLET,
-  Message,
   NetworkResponse,
   NFTEventListener,
   NFTResponse,
@@ -42,14 +41,14 @@ setTimeout(() => {
     (event: EventListener) => {
       if (event.origin !== window.origin) return;
       if (event.source !== window && event.data.app === GEM_WALLET) return;
-      if (!event.data.source || event.data.source !== Message.MsgRequest) return;
+      if (!event.data.source || event.data.source !== 'GEM_WALLET_MSG_REQUEST') return;
       const messagedId = event.data.messageId;
 
       const {
         data: { app, type }
       } = event;
       // Check if it's an allowed event type to be forwarded
-      if (type === Message.RequestNetwork) {
+      if (type === 'REQUEST_NETWORK') {
         chrome.runtime.sendMessage<RequestNetworkMessage>(
           {
             app,
@@ -63,10 +62,10 @@ setTimeout(() => {
               const { app, type, payload } = message;
               // We make sure that the message comes from GemWallet
               if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
-                if (type === Message.ReceiveNetwork) {
+                if (type === 'RECEIVE_NETWORK') {
                   window.postMessage(
                     {
-                      source: Message.MsgResponse,
+                      source: 'GEM_WALLET_MSG_RESPONSE',
                       messagedId,
                       network: payload.network
                     } as NetworkResponse,
@@ -79,7 +78,7 @@ setTimeout(() => {
             chrome.runtime.onMessage.addListener(messageListener);
           }
         );
-      } else if (type === Message.RequestAddress) {
+      } else if (type === 'REQUEST_ADDRESS') {
         const {
           data: { payload }
         } = event as AddressEventListener;
@@ -97,10 +96,10 @@ setTimeout(() => {
               const { app, type, payload } = message;
               // We make sure that the message comes from GemWallet
               if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
-                if (type === Message.ReceiveAddress) {
+                if (type === 'RECEIVE_ADDRESS') {
                   window.postMessage(
                     {
-                      source: Message.MsgResponse,
+                      source: 'GEM_WALLET_MSG_RESPONSE',
                       messagedId,
                       publicAddress: payload.publicAddress
                     } as PublicAddressResponse,
@@ -113,7 +112,7 @@ setTimeout(() => {
             chrome.runtime.onMessage.addListener(messageListener);
           }
         );
-      } else if (type === Message.RequestPublicKey) {
+      } else if (type === 'REQUEST_PUBLIC_KEY') {
         const {
           data: { payload }
         } = event as PublicKeyEventListener;
@@ -131,10 +130,10 @@ setTimeout(() => {
               const { app, type, payload } = message;
               // We make sure that the message comes from GemWallet
               if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
-                if (type === Message.ReceivePublicKey) {
+                if (type === 'RECEIVE_PUBLIC_KEY') {
                   window.postMessage(
                     {
-                      source: Message.MsgResponse,
+                      source: 'GEM_WALLET_MSG_RESPONSE',
                       messagedId,
                       address: payload.address,
                       publicKey: payload.publicKey
@@ -148,7 +147,7 @@ setTimeout(() => {
             chrome.runtime.onMessage.addListener(messageListener);
           }
         );
-      } else if (type === Message.RequestNFT) {
+      } else if (type === 'REQUEST_NFT') {
         const {
           data: { payload }
         } = event as NFTEventListener;
@@ -166,10 +165,10 @@ setTimeout(() => {
               const { app, type, payload } = message;
               // We make sure that the message comes from GemWallet
               if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
-                if (type === Message.ReceiveNFT) {
+                if (type === 'RECEIVE_NFT') {
                   window.postMessage(
                     {
-                      source: Message.MsgResponse,
+                      source: 'GEM_WALLET_MSG_RESPONSE',
                       messagedId,
                       nfts: payload.nfts
                     } as NFTResponse,
@@ -182,7 +181,7 @@ setTimeout(() => {
             chrome.runtime.onMessage.addListener(messageListener);
           }
         );
-      } else if (type === Message.SendPayment) {
+      } else if (type === 'REQUEST_PAYMENT') {
         const {
           data: { payload }
         } = event as PaymentEventListener;
@@ -200,10 +199,10 @@ setTimeout(() => {
               const { app, type, payload } = message;
               // We make sure that the message comes from GemWallet
               if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
-                if (type === Message.ReceivePaymentHash) {
+                if (type === 'RECEIVE_PAYMENT_HASH') {
                   const { hash } = payload;
                   window.postMessage(
-                    { source: Message.MsgResponse, messagedId, hash } as PaymentResponse,
+                    { source: 'GEM_WALLET_MSG_RESPONSE', messagedId, hash } as PaymentResponse,
                     window.location.origin
                   );
                 }
@@ -213,7 +212,7 @@ setTimeout(() => {
             chrome.runtime.onMessage.addListener(messageListener);
           }
         );
-      } else if (type === Message.RequestAddTrustline) {
+      } else if (type === 'REQUEST_ADD_TRUSTLINE') {
         const {
           data: { payload }
         } = event as AddTrustlineEventListener;
@@ -231,10 +230,10 @@ setTimeout(() => {
               const { app, type, payload } = message;
               // We make sure that the message comes from GemWallet
               if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
-                if (type === Message.ReceiveTrustlineHash) {
+                if (type === 'RECEIVE_TRUSTLINE_HASH') {
                   const { hash } = payload;
                   window.postMessage(
-                    { source: Message.MsgResponse, messagedId, hash } as TrustlineResponse,
+                    { source: 'GEM_WALLET_MSG_RESPONSE', messagedId, hash } as TrustlineResponse,
                     window.location.origin
                   );
                 }
@@ -244,7 +243,7 @@ setTimeout(() => {
             chrome.runtime.onMessage.addListener(messageListener);
           }
         );
-      } else if (type === Message.RequestSignMessage) {
+      } else if (type === 'REQUEST_SIGN_MESSAGE') {
         const {
           data: { payload }
         } = event as SignMessageListener;
@@ -262,10 +261,10 @@ setTimeout(() => {
               const { app, type, payload } = message;
               // We make sure that the message comes from GemWallet
               if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
-                if (type === Message.ReceiveSignMessage) {
+                if (type === 'RECEIVE_SIGN_MESSAGE') {
                   window.postMessage(
                     {
-                      source: Message.MsgResponse,
+                      source: 'GEM_WALLET_MSG_RESPONSE',
                       messagedId,
                       signedMessage: payload.signedMessage
                     } as SignedMessageResponse,
@@ -278,9 +277,9 @@ setTimeout(() => {
             chrome.runtime.onMessage.addListener(messageListener);
           }
         );
-      } else if (type === Message.RequestConnection) {
+      } else if (type === 'REQUEST_CONNECTION') {
         window.postMessage(
-          { source: Message.MsgResponse, messagedId, isConnected: true },
+          { source: 'GEM_WALLET_MSG_RESPONSE', messagedId, isConnected: true },
           window.location.origin
         );
       }

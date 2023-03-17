@@ -1,7 +1,6 @@
 import {
   AccountNFToken,
   GEM_WALLET,
-  Message,
   NFTRequestPayload,
   RequestNFTMessage
 } from '@gemwallet/constants';
@@ -19,7 +18,7 @@ export const getNFT = async (payload?: NFTRequestPayload) => {
     const favicon = getFavicon();
     const message: RequestNFTMessage = {
       app: GEM_WALLET,
-      type: Message.RequestNFT,
+      type: 'REQUEST_NFT',
       payload: {
         url: window.location.origin,
         title: document.title,

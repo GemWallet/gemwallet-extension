@@ -83,3 +83,12 @@ export interface TrustlineHashResponsePayload {
 export interface NFTResponsePayload {
   nfts: AccountNFToken[] | null | undefined;
 }
+
+export type ResponsePayload =
+  | AddressResponsePayload
+  | PublicKeyResponsePayload
+  | SignedMessageResponsePayload
+  | IsConnectedResponsePayload
+  | PaymentHashResponsePayload
+  | TrustlineHashResponsePayload
+  | NFTResponsePayload;

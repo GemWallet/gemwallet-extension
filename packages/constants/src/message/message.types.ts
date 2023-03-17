@@ -1,5 +1,4 @@
 import { GEM_WALLET } from '../global/global.constant';
-import { Message } from '../message/message.constant';
 import {
   AddressResponsePayload,
   IsConnectedResponsePayload,
@@ -16,47 +15,68 @@ import {
   NFTRequestPayload
 } from '../payload/payload.types';
 
+export type RequestMessage =
+  | 'REQUEST_PAYMENT'
+  | 'REQUEST_ADDRESS'
+  | 'REQUEST_ADD_TRUSTLINE'
+  | 'REQUEST_CONNECTION'
+  | 'REQUEST_NETWORK'
+  | 'REQUEST_NFT'
+  | 'REQUEST_PUBLIC_KEY'
+  | 'REQUEST_SIGN_MESSAGE';
+
+export type ReceiveMessage =
+  | 'RECEIVE_PAYMENT_HASH'
+  | 'RECEIVE_ADDRESS'
+  | 'RECEIVE_TRUSTLINE_HASH'
+  | 'RECEIVE_NETWORK'
+  | 'RECEIVE_NFT'
+  | 'RECEIVE_PUBLIC_KEY'
+  | 'RECEIVE_SIGN_MESSAGE';
+
+export type SourceMessage = 'GEM_WALLET_MSG_REQUEST' | 'GEM_WALLET_MSG_RESPONSE';
+
 /*
  * Requests
  */
 export interface RequestNetworkMessage {
   app: typeof GEM_WALLET;
-  type: Message.RequestNetwork;
+  type: 'REQUEST_NETWORK';
 }
 
 export interface RequestAddressMessage {
   app: typeof GEM_WALLET;
-  type: Message.RequestAddress;
+  type: 'REQUEST_ADDRESS';
   payload: WebsiteRequestPayload;
 }
 
 export interface RequestPublicKeyMessage {
   app: typeof GEM_WALLET;
-  type: Message.RequestPublicKey;
+  type: 'REQUEST_PUBLIC_KEY';
   payload: WebsiteRequestPayload;
 }
 
 export interface RequestPaymentMessage {
   app: typeof GEM_WALLET;
-  type: Message.SendPayment;
+  type: 'REQUEST_PAYMENT';
   payload: PaymentRequestPayload;
 }
 
 export interface RequestTrustlineMessage {
   app: typeof GEM_WALLET;
-  type: Message.RequestAddTrustline;
+  type: 'REQUEST_ADD_TRUSTLINE';
   payload: TrustlineRequestPayload;
 }
 
 export interface RequestNFTMessage {
   app: typeof GEM_WALLET;
-  type: Message.RequestNFT;
+  type: 'REQUEST_NFT';
   payload: NFTRequestPayload & WebsiteRequestPayload;
 }
 
 export interface RequestSignMessageMessage {
   app: typeof GEM_WALLET;
-  type: Message.RequestSignMessage;
+  type: 'REQUEST_SIGN_MESSAGE';
   payload: SignMessageRequestPayload;
 }
 
@@ -64,7 +84,7 @@ export interface RequestSignMessageMessage {
  * Responses
  */
 export type MessagingResponse = {
-  source?: Message.MsgResponse;
+  source?: 'GEM_WALLET_MSG_RESPONSE';
   messagedId?: number;
 };
 export type NetworkResponse = MessagingResponse & NetworkResponsePayload;
@@ -79,39 +99,39 @@ export type TrustlineResponse = MessagingResponse & TrustlineHashResponsePayload
 // Content Script Messages
 export interface ReceivePaymentHashContentMessage {
   app: typeof GEM_WALLET;
-  type: Message.ReceivePaymentHash;
+  type: 'RECEIVE_PAYMENT_HASH';
   payload: PaymentHashResponsePayload;
 }
 export interface ReceiveTrustlineHashContentMessage {
   app: typeof GEM_WALLET;
-  type: Message.ReceiveTrustlineHash;
+  type: 'RECEIVE_TRUSTLINE_HASH';
   payload: TrustlineHashResponsePayload;
 }
 export interface ReceiveAddressContentMessage {
   app: typeof GEM_WALLET;
-  type: Message.ReceiveAddress;
+  type: 'RECEIVE_ADDRESS';
   payload: AddressResponsePayload;
 }
 export interface ReceiveNetworkContentMessage {
   app: typeof GEM_WALLET;
-  type: Message.ReceiveNetwork;
+  type: 'RECEIVE_NETWORK';
   payload: NetworkResponsePayload;
 }
 
 export interface ReceiveNFTContentMessage {
   app: typeof GEM_WALLET;
-  type: Message.ReceiveNFT;
+  type: 'RECEIVE_NFT';
   payload: NFTResponsePayload;
 }
 
 export interface ReceivePublicKeyContentMessage {
   app: typeof GEM_WALLET;
-  type: Message.ReceivePublicKey;
+  type: 'RECEIVE_PUBLIC_KEY';
   payload: PublicKeyResponsePayload;
 }
 export interface ReceiveSignMessageContentMessage {
   app: typeof GEM_WALLET;
-  type: Message.ReceiveSignMessage;
+  type: 'RECEIVE_SIGN_MESSAGE';
   payload: SignedMessageResponsePayload;
 }
 
@@ -163,7 +183,7 @@ export type BackgroundMessage =
 // API Messages
 export interface RequestIsConnectedMessage {
   app: typeof GEM_WALLET;
-  type: Message.RequestConnection;
+  type: 'REQUEST_CONNECTION';
 }
 
 export type APIMessages =
