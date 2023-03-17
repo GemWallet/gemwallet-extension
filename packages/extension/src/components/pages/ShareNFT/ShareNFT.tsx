@@ -58,8 +58,8 @@ export const ShareNFT: FC = () => {
   const handleShare = useCallback(async () => {
     try {
       saveTrustedApp({ url: String(url), permissions }, selectedWallet);
-      const nfts = await getNFTs({ limit, marker });
-      handleSendMessage(nfts);
+      const { account_nfts: nfts, marker: newMarker } = await getNFTs({ limit, marker });
+      handleSendMessage({ nfts, marker: newMarker });
     } catch (e) {
       // Returns an empty array if the account is not activated
       if ((e as Error).message === 'Account not found.') {
