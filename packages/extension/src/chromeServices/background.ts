@@ -320,14 +320,11 @@ chrome.runtime.onMessage.addListener(
     } else if (type === Message.RequestAddTrustline) {
       chrome.windows
         .getAll()
-        .then((openedWindows) => {
+        .then(async (openedWindows) => {
           // We check if the popup is currently open
-          if (
-            currentWindowPopup &&
-            openedWindows.find((window) => window.id === currentWindowPopup?.id)
-          ) {
-            // TODO: Why popup are created more than one time :O
-            chrome.windows.update(currentWindowPopup.id as number, { focused: true });
+          const { currentWindowId } = await chrome.storage.local.get('currentWindowId');
+          if (currentWindowId && openedWindows.find((window) => window.id === currentWindowId)) {
+            chrome.windows.update(currentWindowId, { focused: true });
           } else {
             const { payload } = message;
             getLastFocusedWindow()
@@ -349,8 +346,8 @@ chrome.runtime.onMessage.addListener(
                     left,
                     top
                   },
-                  (_window) => {
-                    currentWindowPopup = _window;
+                  (currentWindow) => {
+                    chrome.storage.local.set({ currentWindowId: currentWindow?.id });
                   }
                 );
               })
