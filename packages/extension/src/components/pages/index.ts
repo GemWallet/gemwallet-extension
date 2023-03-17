@@ -31,3 +31,4 @@ export * from './SubmitTransaction';
 export * from './Transaction';
 export * from './TrustedApps';
 export * from './Welcome';
+export * from './Nfts';

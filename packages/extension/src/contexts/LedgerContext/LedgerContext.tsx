@@ -4,6 +4,7 @@ import * as Sentry from '@sentry/react';
 import { sign } from 'ripple-keypairs';
 import {
   AccountSet,
+  convertHexToString,
   NFTokenAcceptOffer,
   NFTokenBurn,
   NFTokenCancelOffer,
@@ -32,6 +33,8 @@ import {
   CreateOfferRequest,
   GetNFTRequest,
   MintNFTRequest,
+  NFTData,
+  NftImageRequestPayload,
   SendPaymentRequest,
   SetAccountRequest,
   SetTrustlineRequest,
@@ -111,6 +114,7 @@ export interface LedgerContextType {
   cancelOffer: (payload: CancelOfferRequest) => Promise<CancelOfferResponse>;
   submitTransaction: (payload: SubmitTransactionRequest) => Promise<SubmitTransactionResponse>;
   getAccountInfo: () => Promise<AccountInfoResponse>;
+  getNFTData: (payload: NftImageRequestPayload) => Promise<NFTData>;
 }
 
 const LedgerContext = createContext<LedgerContextType>({
@@ -139,7 +143,8 @@ const LedgerContext = createContext<LedgerContextType>({
   createOffer: () => new Promise(() => {}),
   cancelOffer: () => new Promise(() => {}),
   submitTransaction: () => new Promise(() => {}),
-  getAccountInfo: () => new Promise(() => {})
+  getAccountInfo: () => new Promise(() => {}),
+  getNFTData: () => new Promise(() => {})
 });
 
 const LedgerProvider: FC = ({ children }) => {
@@ -795,6 +800,33 @@ const LedgerProvider: FC = ({ children }) => {
     ...(payload.txnSignature && { TxnSignature: payload.txnSignature })
   });
 
+  const getNFTData = useCallback(async ({ nft }: NftImageRequestPayload) => {
+    try {
+      const { URI } = nft;
+      let url = URI ? await convertHexToString(String(URI)) : '';
+
+      if (url.length === 0) {
+        throw new Error('URI is empty');
+      }
+
+      url = url.replace('ipfs://', 'https://ipfs.io/ipfs/');
+      const nftData = await fetch(url)
+        .then((res) => res.json())
+        .catch(() => ({
+          name: '-',
+          description: '-',
+          image: null
+        }));
+      nftData.image = nftData.image
+        ? nftData.image.replace('ipfs://', 'https://ipfs.io/ipfs/')
+        : url.replace('.json', '.png');
+      return nftData;
+    } catch (e) {
+      Sentry.captureException(e);
+      throw e;
+    }
+  }, []);
+
   const value: LedgerContextType = {
     sendPayment,
     setTrustline,
@@ -812,7 +844,8 @@ const LedgerProvider: FC = ({ children }) => {
     createOffer,
     cancelOffer,
     submitTransaction,
-    getAccountInfo
+    getAccountInfo,
+    getNFTData
   };
 
   return <LedgerContext.Provider value={value}>{children}</LedgerContext.Provider>;

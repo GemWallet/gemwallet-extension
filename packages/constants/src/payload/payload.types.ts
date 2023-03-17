@@ -240,6 +240,10 @@ export interface SubmitTransactionRequest {
   transaction: Transaction;
 }
 
+export interface NftImageRequestPayload {
+  nft: AccountNFToken;
+}
+
 export type RequestPayload =
   | AcceptNFTOfferRequest
   | BurnNFTRequest

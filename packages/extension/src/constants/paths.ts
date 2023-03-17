@@ -31,3 +31,4 @@ export const SHARE_PUBLIC_KEY_PATH = '/share-public-key';
 export const TRANSACTION_PATH = '/transaction';
 export const TRUSTED_APPS_PATH = '/trusted-apps';
 export const WELCOME_PATH = '/welcome';
+export const NFTS_PATH = '/nfts';
