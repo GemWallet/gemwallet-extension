@@ -4,7 +4,7 @@ import { Button, Container, TextField, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-import { GEM_WALLET, Message } from '@gemwallet/constants';
+import { GEM_WALLET } from '@gemwallet/constants';
 
 import {
   HOME_PATH,
@@ -61,7 +61,7 @@ export const Login: FC = () => {
       if (search.includes(PARAMETER_TRANSACTION_PAYMENT)) {
         handleTransaction({
           app: GEM_WALLET,
-          type: Message.ReceivePaymentHash,
+          type: 'RECEIVE_PAYMENT_HASH',
           payload: {
             id: windowId,
             hash: null
@@ -70,7 +70,7 @@ export const Login: FC = () => {
       } else if (search.includes(PARAMETER_ADDRESS)) {
         handleTransaction({
           app: GEM_WALLET,
-          type: Message.ReceiveAddress,
+          type: 'RECEIVE_ADDRESS',
           payload: {
             id: windowId,
             publicAddress: null
@@ -79,7 +79,7 @@ export const Login: FC = () => {
       } else if (search.includes(PARAMETER_PUBLIC_KEY)) {
         handleTransaction({
           app: GEM_WALLET,
-          type: Message.ReceivePublicKey,
+          type: 'RECEIVE_PUBLIC_KEY',
           payload: {
             id: windowId,
             address: null,
@@ -89,7 +89,7 @@ export const Login: FC = () => {
       } else if (search.includes(PARAMETER_SIGN_MESSAGE)) {
         handleTransaction({
           app: GEM_WALLET,
-          type: Message.ReceiveSignMessage,
+          type: 'RECEIVE_SIGN_MESSAGE',
           payload: {
             id: windowId,
             signedMessage: null
@@ -98,7 +98,7 @@ export const Login: FC = () => {
       } else if (search.includes(PARAMETER_TRANSACTION_TRUSTLINE)) {
         handleTransaction({
           app: GEM_WALLET,
-          type: Message.ReceiveTrustlineHash,
+          type: 'RECEIVE_TRUSTLINE_HASH',
           payload: {
             id: windowId,
             hash: null
@@ -107,7 +107,7 @@ export const Login: FC = () => {
       } else if (search.includes(PARAMETER_NFT)) {
         handleTransaction({
           app: GEM_WALLET,
-          type: Message.ReceiveNFT,
+          type: 'RECEIVE_NFT',
           payload: {
             id: windowId,
             nfts: null

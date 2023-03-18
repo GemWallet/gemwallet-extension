@@ -6,7 +6,7 @@ import { Button, Container, IconButton, Paper, Tooltip, Typography } from '@mui/
 import * as Sentry from '@sentry/react';
 import { isValidAddress } from 'xrpl';
 
-import { GEM_WALLET, Message, ReceiveTrustlineHashBackgroundMessage } from '@gemwallet/constants';
+import { GEM_WALLET, ReceiveTrustlineHashBackgroundMessage } from '@gemwallet/constants';
 
 import { DEFAULT_RESERVE, ERROR_RED } from '../../../constants';
 import { useLedger, useNetwork, useServer, useWallet } from '../../../contexts';
@@ -144,7 +144,7 @@ export const AddNewTrustline: FC = () => {
     (transactionHash: string | null | undefined): ReceiveTrustlineHashBackgroundMessage => {
       return {
         app: GEM_WALLET,
-        type: Message.ReceiveTrustlineHash,
+        type: 'RECEIVE_TRUSTLINE_HASH',
         payload: {
           id: params.id,
           hash: transactionHash

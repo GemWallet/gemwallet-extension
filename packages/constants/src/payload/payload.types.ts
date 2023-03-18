@@ -48,6 +48,13 @@ export interface SignMessageRequestPayload {
   message: string;
 }
 
+export type RequestPayload =
+  | WebsiteRequestPayload
+  | PaymentRequestPayload
+  | TrustlineRequestPayload
+  | NFTRequestPayload
+  | SignMessageRequestPayload;
+
 /*
  * Response Payloads
  */
@@ -83,3 +90,12 @@ export interface TrustlineHashResponsePayload {
 export interface NFTResponsePayload {
   nfts: AccountNFToken[] | null | undefined;
 }
+
+export type ResponsePayload =
+  | AddressResponsePayload
+  | PublicKeyResponsePayload
+  | SignedMessageResponsePayload
+  | IsConnectedResponsePayload
+  | PaymentHashResponsePayload
+  | TrustlineHashResponsePayload
+  | NFTResponsePayload;

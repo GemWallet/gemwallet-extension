@@ -1,6 +1,5 @@
 import {
   GEM_WALLET,
-  Message,
   PaymentResponse,
   PaymentRequestPayload,
   RequestPaymentMessage
@@ -17,7 +16,7 @@ export const sendPayment = async (payment: PaymentRequestPayload) => {
   try {
     const message: RequestPaymentMessage = {
       app: GEM_WALLET,
-      type: Message.SendPayment,
+      type: 'REQUEST_PAYMENT',
       payload: payment
     };
     const { hash }: PaymentResponse = await sendMessageToContentScript(message);

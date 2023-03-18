@@ -1,6 +1,5 @@
 import {
   GEM_WALLET,
-  Message,
   PaymentResponse,
   TrustlineRequestPayload,
   RequestTrustlineMessage
@@ -17,7 +16,7 @@ export const addTrustline = async (payment: TrustlineRequestPayload) => {
   try {
     const message: RequestTrustlineMessage = {
       app: GEM_WALLET,
-      type: Message.RequestAddTrustline,
+      type: 'REQUEST_ADD_TRUSTLINE',
       payload: payment
     };
     const { hash }: PaymentResponse = await sendMessageToContentScript(message);

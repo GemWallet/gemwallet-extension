@@ -1,4 +1,4 @@
-import { GEM_WALLET, Message } from '@gemwallet/constants';
+import { GEM_WALLET } from '@gemwallet/constants';
 
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
 import { getNetwork } from './getNetwork';
@@ -14,7 +14,7 @@ describe('getNetwork', () => {
     expect(network).toEqual('testnet');
     expect(sendMessageToContentScript).toHaveBeenCalledWith({
       app: GEM_WALLET,
-      type: Message.RequestNetwork
+      type: 'REQUEST_NETWORK'
     });
   });
 

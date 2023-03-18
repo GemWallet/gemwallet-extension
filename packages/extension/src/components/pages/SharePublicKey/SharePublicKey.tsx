@@ -2,7 +2,7 @@ import { FC, useCallback, useMemo } from 'react';
 
 import * as Sentry from '@sentry/react';
 
-import { GEM_WALLET, Message, ReceivePublicKeyBackgroundMessage } from '@gemwallet/constants';
+import { GEM_WALLET, ReceivePublicKeyBackgroundMessage } from '@gemwallet/constants';
 
 import { useBrowser, useWallet } from '../../../contexts';
 import { saveTrustedApp, Permission } from '../../../utils';
@@ -29,7 +29,7 @@ export const SharePublicKey: FC = () => {
     chrome.runtime
       .sendMessage<ReceivePublicKeyBackgroundMessage>({
         app: GEM_WALLET,
-        type: Message.ReceivePublicKey,
+        type: 'RECEIVE_PUBLIC_KEY',
         payload: {
           id,
           address: null,
@@ -52,7 +52,7 @@ export const SharePublicKey: FC = () => {
     chrome.runtime
       .sendMessage<ReceivePublicKeyBackgroundMessage>({
         app: GEM_WALLET,
-        type: Message.ReceivePublicKey,
+        type: 'RECEIVE_PUBLIC_KEY',
         payload: {
           id,
           address: currentWallet?.publicAddress,

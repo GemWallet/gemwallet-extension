@@ -5,7 +5,7 @@ import { Button, Container, IconButton, Paper, Tooltip, Typography } from '@mui/
 import * as Sentry from '@sentry/react';
 import { isValidAddress, xrpToDrops } from 'xrpl';
 
-import { GEM_WALLET, Message, ReceivePaymentHashBackgroundMessage } from '@gemwallet/constants';
+import { GEM_WALLET, ReceivePaymentHashBackgroundMessage } from '@gemwallet/constants';
 
 import { DEFAULT_RESERVE, ERROR_RED } from '../../../constants';
 import { useLedger, useNetwork, useServer, useWallet } from '../../../contexts';
@@ -135,7 +135,7 @@ export const Transaction: FC = () => {
     (transactionHash: string | null | undefined): ReceivePaymentHashBackgroundMessage => {
       return {
         app: GEM_WALLET,
-        type: Message.ReceivePaymentHash,
+        type: 'RECEIVE_PAYMENT_HASH',
         payload: {
           id: params.id,
           hash: transactionHash

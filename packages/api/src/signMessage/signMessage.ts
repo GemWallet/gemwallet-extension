@@ -1,4 +1,4 @@
-import { GEM_WALLET, Message, RequestSignMessageMessage } from '@gemwallet/constants';
+import { GEM_WALLET, RequestSignMessageMessage } from '@gemwallet/constants';
 
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
 import { getFavicon } from '../helpers/getFavicon';
@@ -13,7 +13,7 @@ export const signMessage = async (message: string) => {
     const favicon = getFavicon();
     const messageToContentScript: RequestSignMessageMessage = {
       app: GEM_WALLET,
-      type: Message.RequestSignMessage,
+      type: 'REQUEST_SIGN_MESSAGE',
       payload: {
         url: window.location.origin,
         title: document.title,

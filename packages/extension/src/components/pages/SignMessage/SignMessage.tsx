@@ -3,7 +3,7 @@ import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { Container, Typography, Button, Paper, Avatar, Divider } from '@mui/material';
 import * as Sentry from '@sentry/react';
 
-import { GEM_WALLET, Message, ReceiveSignMessageBackgroundMessage } from '@gemwallet/constants';
+import { GEM_WALLET, ReceiveSignMessageBackgroundMessage } from '@gemwallet/constants';
 
 import { SECONDARY_GRAY } from '../../../constants';
 import { useBrowser, useLedger } from '../../../contexts';
@@ -49,7 +49,7 @@ export const SignMessage: FC = () => {
     chrome.runtime
       .sendMessage<ReceiveSignMessageBackgroundMessage>({
         app: GEM_WALLET,
-        type: Message.ReceiveSignMessage,
+        type: 'RECEIVE_SIGN_MESSAGE',
         payload: {
           id,
           signedMessage: null
@@ -70,7 +70,7 @@ export const SignMessage: FC = () => {
     chrome.runtime
       .sendMessage<ReceiveSignMessageBackgroundMessage>({
         app: GEM_WALLET,
-        type: Message.ReceiveSignMessage,
+        type: 'RECEIVE_SIGN_MESSAGE',
         payload: {
           id,
           signedMessage: signature

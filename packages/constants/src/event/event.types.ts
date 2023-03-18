@@ -1,5 +1,5 @@
 import { GEM_WALLET } from '../global/global.constant';
-import { Message } from '../message/message.constant';
+import { RequestMessage } from '../message/message.types';
 import {
   PaymentRequestPayload,
   TrustlineRequestPayload,
@@ -10,8 +10,8 @@ import {
 // Event listeners
 interface MessageEventData {
   app: typeof GEM_WALLET;
-  type: Message;
-  source: Message.MsgRequest;
+  type: RequestMessage;
+  source: 'GEM_WALLET_MSG_REQUEST';
   messageId: number;
   // Not all the MessageEventData have a payload
   payload?:
@@ -24,8 +24,8 @@ interface MessageEventData {
 export interface NetworkEventListener extends MessageEvent<MessageEventData> {
   data: {
     app: typeof GEM_WALLET;
-    type: Message.RequestNetwork;
-    source: Message.MsgRequest;
+    type: 'REQUEST_NETWORK';
+    source: 'GEM_WALLET_MSG_REQUEST';
     messageId: number;
   };
 }
@@ -33,8 +33,8 @@ export interface NetworkEventListener extends MessageEvent<MessageEventData> {
 export interface AddressEventListener extends MessageEvent<MessageEventData> {
   data: {
     app: typeof GEM_WALLET;
-    type: Message.RequestAddress;
-    source: Message.MsgRequest;
+    type: 'REQUEST_ADDRESS';
+    source: 'GEM_WALLET_MSG_REQUEST';
     messageId: number;
     payload: WebsiteRequestPayload;
   };
@@ -43,8 +43,8 @@ export interface AddressEventListener extends MessageEvent<MessageEventData> {
 export interface PublicKeyEventListener extends MessageEvent<MessageEventData> {
   data: {
     app: typeof GEM_WALLET;
-    type: Message.RequestPublicKey;
-    source: Message.MsgRequest;
+    type: 'REQUEST_PUBLIC_KEY';
+    source: 'GEM_WALLET_MSG_REQUEST';
     messageId: number;
     payload: WebsiteRequestPayload;
   };
@@ -53,8 +53,8 @@ export interface PublicKeyEventListener extends MessageEvent<MessageEventData> {
 export interface NFTEventListener extends MessageEvent<MessageEventData> {
   data: {
     app: typeof GEM_WALLET;
-    type: Message.RequestNFT;
-    source: Message.MsgRequest;
+    type: 'REQUEST_NFT';
+    source: 'GEM_WALLET_MSG_REQUEST';
     messageId: number;
     payload: WebsiteRequestPayload;
   };
@@ -63,8 +63,8 @@ export interface NFTEventListener extends MessageEvent<MessageEventData> {
 export interface SignMessageListener extends MessageEvent<MessageEventData> {
   data: {
     app: typeof GEM_WALLET;
-    type: Message.RequestSignMessage;
-    source: Message.MsgRequest;
+    type: 'REQUEST_SIGN_MESSAGE';
+    source: 'GEM_WALLET_MSG_REQUEST';
     messageId: number;
     payload: SignMessageRequestPayload;
   };
@@ -73,8 +73,8 @@ export interface SignMessageListener extends MessageEvent<MessageEventData> {
 export interface PaymentEventListener extends MessageEvent<MessageEventData> {
   data: {
     app: typeof GEM_WALLET;
-    type: Message.SendPayment;
-    source: Message.MsgRequest;
+    type: 'REQUEST_PAYMENT';
+    source: 'GEM_WALLET_MSG_REQUEST';
     messageId: number;
     payload: PaymentRequestPayload;
   };
@@ -83,8 +83,8 @@ export interface PaymentEventListener extends MessageEvent<MessageEventData> {
 export interface AddTrustlineEventListener extends MessageEvent<MessageEventData> {
   data: {
     app: typeof GEM_WALLET;
-    type: Message.RequestAddTrustline;
-    source: Message.MsgRequest;
+    type: 'REQUEST_ADD_TRUSTLINE';
+    source: 'GEM_WALLET_MSG_REQUEST';
     messageId: number;
     payload: TrustlineRequestPayload;
   };
