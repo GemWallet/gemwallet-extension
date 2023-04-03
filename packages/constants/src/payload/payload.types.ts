@@ -5,6 +5,10 @@ import { AccountNFToken } from './../xrpl/nft.types';
  * Request Payloads
  */
 
+export interface NetworkRequestPayload {
+  id: number | undefined;
+}
+
 export interface WebsiteRequestPayload {
   url: string;
   title: string;
@@ -49,6 +53,7 @@ export interface SignMessageRequestPayload {
 }
 
 export type RequestPayload =
+  | NetworkRequestPayload
   | WebsiteRequestPayload
   | PaymentRequestPayload
   | TrustlineRequestPayload
@@ -59,7 +64,7 @@ export type RequestPayload =
  * Response Payloads
  */
 export interface NetworkResponsePayload {
-  network: Network;
+  network: Network | undefined;
 }
 
 export interface AddressResponsePayload {
@@ -92,6 +97,7 @@ export interface NFTResponsePayload {
 }
 
 export type ResponsePayload =
+  | NetworkResponsePayload
   | AddressResponsePayload
   | PublicKeyResponsePayload
   | SignedMessageResponsePayload
