@@ -1,7 +1,6 @@
 import {
   BackgroundMessage,
   GEM_WALLET,
-  Network,
   ReceiveAddressContentMessage,
   ReceiveMessage,
   ReceiveNetworkContentMessage,
@@ -52,13 +51,17 @@ const focusOrCreatePopupWindow = async ({
   sender,
   parameter,
   receivingMessage,
-  errorPayload
+  errorPayload,
+  width = NOTIFICATION_WIDTH,
+  height = NOTIFICATION_HEIGHT
 }: {
   payload: RequestPayload;
   sender: chrome.runtime.MessageSender;
   parameter: string;
   receivingMessage: ReceiveMessage;
   errorPayload: ResponsePayload;
+  width?: number;
+  height?: number;
 }): Promise<void> => {
   try {
     const openedWindows = await chrome.windows.getAll();
@@ -75,8 +78,8 @@ const focusOrCreatePopupWindow = async ({
           id: sender.tab?.id
         })}&${parameter}`,
         type: 'popup',
-        width: NOTIFICATION_WIDTH,
-        height: NOTIFICATION_HEIGHT,
+        width,
+        height,
         left:
           lastFocusedWindow?.left && lastFocusedWindow?.width
             ? lastFocusedWindow.left + (lastFocusedWindow.width - NOTIFICATION_WIDTH)
@@ -100,11 +103,7 @@ const focusOrCreatePopupWindow = async ({
  * Keep only one listener for easier debugging
  */
 chrome.runtime.onMessage.addListener(
-  (
-    message: BackgroundMessage,
-    sender: chrome.runtime.MessageSender,
-    sendResponse: (response: any) => void
-  ) => {
+  (message: BackgroundMessage, sender: chrome.runtime.MessageSender) => {
     const { app, type } = message;
     // We make sure that the message comes from gem-wallet
     if (app !== GEM_WALLET || sender.id !== chrome.runtime.id) {
@@ -112,16 +111,19 @@ chrome.runtime.onMessage.addListener(
     }
 
     if (type === 'REQUEST_NETWORK') {
-      const payload = {
-        id: sender.tab?.id
-      };
-      chrome.windows.create({
-        url: `../..${MAIN_FILE}${serializeToQueryString(payload)}&${PARAMETER_NETWORK}`,
-        type: 'popup',
+      focusOrCreatePopupWindow({
+        payload: {
+          id: sender.tab?.id
+        },
+        sender,
+        parameter: PARAMETER_NETWORK,
+        receivingMessage: 'RECEIVE_NETWORK',
+        errorPayload: {
+          network: undefined
+        },
         width: 1,
         height: 1
       });
-      sendResponse(Network.TESTNET);
     } else if (type === 'REQUEST_ADDRESS') {
       focusOrCreatePopupWindow({
         payload: message.payload,

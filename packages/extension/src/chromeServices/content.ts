@@ -71,9 +71,9 @@ setTimeout(() => {
                     } as NetworkResponse,
                     window.location.origin
                   );
+                  chrome.runtime.onMessage.removeListener(messageListener);
                 }
               }
-              chrome.runtime.onMessage.removeListener(messageListener);
             };
             chrome.runtime.onMessage.addListener(messageListener);
           }
@@ -105,9 +105,9 @@ setTimeout(() => {
                     } as PublicAddressResponse,
                     window.location.origin
                   );
+                  chrome.runtime.onMessage.removeListener(messageListener);
                 }
               }
-              chrome.runtime.onMessage.removeListener(messageListener);
             };
             chrome.runtime.onMessage.addListener(messageListener);
           }
@@ -140,9 +140,9 @@ setTimeout(() => {
                     } as PublicKeyResponse,
                     window.location.origin
                   );
+                  chrome.runtime.onMessage.removeListener(messageListener);
                 }
               }
-              chrome.runtime.onMessage.removeListener(messageListener);
             };
             chrome.runtime.onMessage.addListener(messageListener);
           }
@@ -174,9 +174,9 @@ setTimeout(() => {
                     } as NFTResponse,
                     window.location.origin
                   );
+                  chrome.runtime.onMessage.removeListener(messageListener);
                 }
               }
-              chrome.runtime.onMessage.removeListener(messageListener);
             };
             chrome.runtime.onMessage.addListener(messageListener);
           }
@@ -205,9 +205,9 @@ setTimeout(() => {
                     { source: 'GEM_WALLET_MSG_RESPONSE', messagedId, hash } as PaymentResponse,
                     window.location.origin
                   );
+                  chrome.runtime.onMessage.removeListener(messageListener);
                 }
               }
-              chrome.runtime.onMessage.removeListener(messageListener);
             };
             chrome.runtime.onMessage.addListener(messageListener);
           }
@@ -236,9 +236,9 @@ setTimeout(() => {
                     { source: 'GEM_WALLET_MSG_RESPONSE', messagedId, hash } as TrustlineResponse,
                     window.location.origin
                   );
+                  chrome.runtime.onMessage.removeListener(messageListener);
                 }
               }
-              chrome.runtime.onMessage.removeListener(messageListener);
             };
             chrome.runtime.onMessage.addListener(messageListener);
           }
@@ -270,9 +270,9 @@ setTimeout(() => {
                     } as SignedMessageResponse,
                     window.location.origin
                   );
+                  chrome.runtime.onMessage.removeListener(messageListener);
                 }
               }
-              chrome.runtime.onMessage.removeListener(messageListener);
             };
             chrome.runtime.onMessage.addListener(messageListener);
           }

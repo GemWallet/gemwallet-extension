@@ -70,23 +70,23 @@ const App: FC = () => {
       const queryString = window.location.search;
       const urlParams = new URLSearchParams(queryString);
 
-      chrome.runtime
-        .sendMessage<ReceiveNetworkBackgroundMessage>({
-          app: GEM_WALLET,
-          type: 'RECEIVE_NETWORK',
-          payload: {
-            id: Number(urlParams.get('id')) || 0,
-            network: loadNetwork().name
-          }
-        })
-        .then(() => {
-          if (extensionWindow?.id) {
+      if (extensionWindow) {
+        chrome.runtime
+          .sendMessage<ReceiveNetworkBackgroundMessage>({
+            app: GEM_WALLET,
+            type: 'RECEIVE_NETWORK',
+            payload: {
+              id: Number(urlParams.get('id')) || 0,
+              network: loadNetwork().name
+            }
+          })
+          .then(() => {
             closeExtension({ windowId: Number(extensionWindow.id) });
-          }
-        })
-        .catch((e) => {
-          Sentry.captureException(e);
-        });
+          })
+          .catch((e) => {
+            Sentry.captureException(e);
+          });
+      }
     }
   }, [closeExtension, extensionWindow, search]);
 
