@@ -17,7 +17,15 @@ describe('Trustline', () => {
       win.localStorage.setItem('network', 'Testnet');
     });
     cy.visit(
-      `http://localhost:3000?currency=${CURRENCY}&issuer=${DESTINATION_ADDRESS}&value=${VALUE}&id=93376196&transaction=trustSet`
+      `http://localhost:3000?currency=${CURRENCY}&issuer=${DESTINATION_ADDRESS}&value=${VALUE}&id=93376196&transaction=trustSet`,
+      {
+        onBeforeLoad(win) {
+          (win as any).chrome = (win as any).chrome || {};
+          (win as any).chrome.runtime = {
+            sendMessage(message, cb) {}
+          };
+        }
+      }
     );
 
     // Login
@@ -81,11 +89,16 @@ describe('Trustline', () => {
     // Confirm the trustline
     cy.contains('button', 'Confirm').click();
 
-    cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction accepted');
+    cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction in progress');
     cy.get('p[data-testid="transaction-subtitle"]').should(
       'have.text',
       'We are processing your transactionPlease wait'
     );
+
+    cy.get('h1[data-testid="transaction-title"]').contains('Transaction accepted', {
+      timeout: 10000
+    });
+    cy.get('p[data-testid="transaction-subtitle"]').should('have.text', 'Transaction Successful');
   });
 
   it('Reject the trustline', () => {

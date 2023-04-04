@@ -250,13 +250,21 @@ export const Transaction: FC = () => {
   if (transaction === TransactionStatus.Success || transaction === TransactionStatus.Pending) {
     return (
       <AsyncTransaction
-        title="Transaction accepted"
+        title={
+          transaction === TransactionStatus.Success
+            ? 'Transaction accepted'
+            : 'Transaction in progress'
+        }
         subtitle={
-          <>
-            We are processing your transaction
-            <br />
-            Please wait
-          </>
+          transaction === TransactionStatus.Success ? (
+            'Transaction Successful'
+          ) : (
+            <>
+              We are processing your transaction
+              <br />
+              Please wait
+            </>
+          )
         }
         transaction={transaction}
       />

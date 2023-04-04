@@ -15,7 +15,15 @@ describe('Make payment - XRP', () => {
       win.localStorage.setItem('network', 'Testnet');
     });
     cy.visit(
-      `http://localhost:3000?amount=${AMOUNT}&destination=${DESTINATION_ADDRESS}&id=93376012&transaction=payment/`
+      `http://localhost:3000?amount=${AMOUNT}&destination=${DESTINATION_ADDRESS}&id=93376012&transaction=payment/`,
+      {
+        onBeforeLoad(win) {
+          (win as any).chrome = (win as any).chrome || {};
+          (win as any).chrome.runtime = {
+            sendMessage(message, cb) {}
+          };
+        }
+      }
     );
 
     // Login
@@ -38,11 +46,16 @@ describe('Make payment - XRP', () => {
     // Confirm the payment
     cy.contains('button', 'Confirm').click();
 
-    cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction accepted');
+    cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction in progress');
     cy.get('p[data-testid="transaction-subtitle"]').should(
       'have.text',
       'We are processing your transactionPlease wait'
     );
+
+    cy.get('h1[data-testid="transaction-title"]').contains('Transaction accepted', {
+      timeout: 10000
+    });
+    cy.get('p[data-testid="transaction-subtitle"]').should('have.text', 'Transaction Successful');
   });
 
   it('Reject the payment', () => {
@@ -106,11 +119,16 @@ describe('Make payment - ETH', () => {
     // Confirm the payment
     cy.contains('button', 'Confirm').click();
 
-    cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction accepted');
+    cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction in progress');
     cy.get('p[data-testid="transaction-subtitle"]').should(
       'have.text',
       'We are processing your transactionPlease wait'
     );
+
+    cy.get('h1[data-testid="transaction-title"]').contains('Transaction accepted', {
+      timeout: 10000
+    });
+    cy.get('p[data-testid="transaction-subtitle"]').should('have.text', 'Transaction Successful');
   });
 
   it('Reject the payment', () => {

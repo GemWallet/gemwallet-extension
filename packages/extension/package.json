@@ -1,6 +1,6 @@
 {
   "name": "@gemwallet/extension",
-  "version": "2.5.0",
+  "version": "2.6.0",
   "description": "GemWallet browser extension",
   "private": true,
   "dependencies": {
@@ -10,8 +10,8 @@
     "@emotion/styled": "^11.6.0",
     "@mui/icons-material": "^5.2.4",
     "@mui/material": "^5.2.3",
-    "@sentry/react": "^7.38.0",
-    "@sentry/tracing": "^7.38.0",
+    "@sentry/react": "^7.46.0",
+    "@sentry/tracing": "^7.46.0",
     "copy-to-clipboard": "^3.3.1",
     "crypto-js": "^4.1.1",
     "lottie-react": "^2.1.0",
@@ -21,11 +21,11 @@
     "react-dom": "^17.0.2",
     "react-router-dom": "6",
     "react-scripts": "4.0.3",
-    "ripple-keypairs": "^1.1.4",
+    "ripple-keypairs": "^1.1.5",
     "typescript": "^4.1.2",
     "web-vitals": "^1.0.1",
-    "xrpl": "^2.6.0",
-    "xrpl-secret-numbers": "^0.3.3"
+    "xrpl": "^2.7.0",
+    "xrpl-secret-numbers": "^0.3.4"
   },
   "devDependencies": {
     "@gemwallet/constants": "*",
@@ -40,7 +40,7 @@
     "@types/node": "^12.0.0",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
-    "cypress": "^12.5.1",
+    "cypress": "^12.9.0",
     "jest-canvas-mock": "^2.4.0",
     "ts-loader": "~8.2.0"
   },
