@@ -16,7 +16,7 @@ export const sendPayment = async (payment: PaymentRequestPayload) => {
   try {
     const message: RequestPaymentMessage = {
       app: GEM_WALLET,
-      type: 'REQUEST_PAYMENT',
+      type: 'SEND_PAYMENT',
       payload: payment
     };
     const { hash }: PaymentResponse = await sendMessageToContentScript(message);

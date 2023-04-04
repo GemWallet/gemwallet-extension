@@ -181,7 +181,7 @@ setTimeout(() => {
             chrome.runtime.onMessage.addListener(messageListener);
           }
         );
-      } else if (type === 'REQUEST_PAYMENT') {
+      } else if (type === 'SEND_PAYMENT') {
         const {
           data: { payload }
         } = event as PaymentEventListener;

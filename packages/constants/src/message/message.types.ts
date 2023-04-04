@@ -16,7 +16,7 @@ import {
 } from '../payload/payload.types';
 
 export type RequestMessage =
-  | 'REQUEST_PAYMENT'
+  | 'SEND_PAYMENT'
   | 'REQUEST_ADDRESS'
   | 'REQUEST_ADD_TRUSTLINE'
   | 'REQUEST_CONNECTION'
@@ -58,7 +58,7 @@ export interface RequestPublicKeyMessage {
 
 export interface RequestPaymentMessage {
   app: typeof GEM_WALLET;
-  type: 'REQUEST_PAYMENT';
+  type: 'SEND_PAYMENT';
   payload: PaymentRequestPayload;
 }
 
