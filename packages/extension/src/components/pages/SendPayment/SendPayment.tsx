@@ -1,7 +1,21 @@
-import { FC } from 'react';
+import { FC, useCallback, useState } from 'react';
 
+import { ConfirmPayment } from './ConfirmPayment';
 import { PreparePayment } from './PreparePayment';
 
 export const SendPayment: FC = () => {
-  return <PreparePayment onSendPaymentClick={(obj) => console.log(obj)} />;
+  const [payment, setPayment] = useState<{
+    address: string;
+    token: string;
+    amount: string;
+  } | null>(null);
+
+  const handlePreparePayment = useCallback((payment) => {
+    setPayment(payment);
+  }, []);
+
+  if (payment) {
+    return <ConfirmPayment payment={payment} onClickBack={() => setPayment(null)} />;
+  }
+  return <PreparePayment onSendPaymentClick={handlePreparePayment} />;
 };

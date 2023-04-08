@@ -57,7 +57,12 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
             <Typography variant="body1">
               You may want to click on this refresh button or try again later.
             </Typography>
-            <Button variant="contained" fullWidth style={{ marginTop: '80px' }} onClick={() => {}}>
+            <Button
+              variant="contained"
+              fullWidth
+              style={{ marginTop: '80px' }}
+              onClick={() => (window.location.href = 'index.html')}
+            >
               Refresh
             </Button>
           </Container>

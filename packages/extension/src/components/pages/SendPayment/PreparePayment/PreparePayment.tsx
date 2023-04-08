@@ -10,11 +10,13 @@ import {
   TextField
 } from '@mui/material';
 import * as Sentry from '@sentry/react';
+import { useNavigate } from 'react-router-dom';
 import { isValidAddress } from 'xrpl';
 
 import { useNetwork, useWallet } from '../../../../contexts';
 import { NumericInput } from '../../../atoms';
-import { PageWithHeader, PageWithSpinner } from '../../../templates';
+import { InformationMessage } from '../../../molecules';
+import { PageWithReturn, PageWithSpinner } from '../../../templates';
 
 export interface PreparePaymentProps {
   onSendPaymentClick: ({
@@ -35,8 +37,6 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
   const [amount, setAmount] = useState<string>('');
   const [errorAddress, setErrorAddress] = useState<string>('');
   const [errorAmount, setErrorAmount] = useState<string>('');
-  const tokenRef = useRef<HTMLInputElement | null>(null);
-
   const [tokens, setTokens] = useState<
     | {
         value: string;
@@ -45,24 +45,28 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
       }[]
     | undefined
   >();
+  const [errorTokens, setErrorTokens] = useState<string>('');
+  const tokenRef = useRef<HTMLInputElement | null>(null);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
-    async function fetchBalance() {
+    async function fetchBalances() {
       try {
         const currentWallet = getCurrentWallet();
         if (currentWallet?.publicAddress) {
           const balances = await client?.getBalances(currentWallet.publicAddress);
           setTokens(balances);
         } else {
-          // Handle this case
+          setErrorTokens("Impossible to fetch tokens, we couldn't get your current wallet");
         }
       } catch (e: any) {
+        setErrorTokens('Impossible to fetch tokens, please try again');
         Sentry.captureException(e);
-        // setXRPBalance(ERROR_STATE);
       }
     }
 
-    fetchBalance();
+    fetchBalances();
   }, [client, getCurrentWallet]);
 
   const hasEnoughFunds = useCallback(
@@ -81,10 +85,13 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
   );
 
   const handleAddressBlur = useCallback((e: FocusEvent<HTMLInputElement>) => {
-    setAddress(e.target.value);
     if (e.target.value !== '') {
       setErrorAddress(!isValidAddress(e.target.value) ? 'Your destination address is invalid' : '');
     }
+  }, []);
+
+  const handleAddressChange = useCallback((e: FocusEvent<HTMLInputElement>) => {
+    setAddress(e.target.value);
   }, []);
 
   const handleTokenChange = useCallback(
@@ -98,22 +105,27 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
     [amount, hasEnoughFunds]
   );
 
-  const handleAmountBlur = useCallback(
+  const handleAmountChange = useCallback(
     (e: FocusEvent<HTMLInputElement>) => {
       if (Number(e.target.value) <= 0 && e.target.value !== '') {
         setErrorAmount('You can only send an amount greater than zero');
-      } else if (!hasEnoughFunds(e.target.value, tokenRef.current?.value ?? '')) {
+      } else if (
+        Number(e.target.value) &&
+        !hasEnoughFunds(e.target.value, tokenRef.current?.value ?? '')
+      ) {
         setErrorAmount('You do not have enough funds to send this amount');
       } else {
         setErrorAmount('');
       }
-      setAmount(e.target.value);
+      if (Number(e.target.value)) {
+        setAmount(e.target.value);
+      }
     },
     [hasEnoughFunds]
   );
 
   const isSendPaymentDisabled = useMemo(() => {
-    return !(address !== '' && amount !== '' && errorAddress === '');
+    return !(address !== '' && isValidAddress(address) && amount !== '' && errorAddress === '');
   }, [address, amount, errorAddress]);
 
   const handleSendPayment = useCallback(() => {
@@ -131,8 +143,25 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
     return <PageWithSpinner />;
   }
 
+  if (errorTokens !== '') {
+    return (
+      <InformationMessage title="Something went wrong">
+        <div style={{ marginBottom: '5px' }}>{errorTokens}</div>
+      </InformationMessage>
+    );
+  }
+
   return (
-    <PageWithHeader title="Send Payment" disableSendButton>
+    <PageWithReturn
+      title="Send Payment"
+      onBackClick={() => navigate(-1)}
+      style={{
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-around'
+      }}
+    >
       <div>
         <TextField
           label="Recipient's address"
@@ -140,7 +169,9 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
           error={!!errorAddress}
           helperText={errorAddress}
           onBlur={handleAddressBlur}
+          onChange={handleAddressChange}
           style={{ marginTop: '20px', marginBottom: errorAddress === '' ? '33px' : '10px' }}
+          autoComplete="off"
         />
         <FormControl fullWidth style={{ marginBottom: '33px' }}>
           <InputLabel id="token-label">Token</InputLabel>
@@ -168,17 +199,18 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
           style={{ marginBottom: '33px' }}
           error={!!errorAmount}
           helperText={errorAmount}
-          onBlur={handleAmountBlur}
+          onChange={handleAmountChange}
+          autoComplete="off"
         />
-        <Button
-          fullWidth
-          variant="contained"
-          onClick={handleSendPayment}
-          disabled={isSendPaymentDisabled}
-        >
-          Send Payment
-        </Button>
       </div>
-    </PageWithHeader>
+      <Button
+        fullWidth
+        variant="contained"
+        onClick={handleSendPayment}
+        disabled={isSendPaymentDisabled}
+      >
+        Send Payment
+      </Button>
+    </PageWithReturn>
   );
 };
