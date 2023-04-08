@@ -1,6 +1,14 @@
-import { FC, FocusEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { FC, FocusEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { Button, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
+import {
+  Button,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  TextField
+} from '@mui/material';
 import * as Sentry from '@sentry/react';
 import { isValidAddress } from 'xrpl';
 
@@ -9,7 +17,15 @@ import { NumericInput } from '../../../atoms';
 import { PageWithHeader, PageWithSpinner } from '../../../templates';
 
 export interface PreparePaymentProps {
-  onSendPaymentClick: () => void;
+  onSendPaymentClick: ({
+    address,
+    token,
+    amount
+  }: {
+    address: string;
+    token: string;
+    amount: string;
+  }) => void;
 }
 
 export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) => {
@@ -19,6 +35,7 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
   const [amount, setAmount] = useState<string>('');
   const [errorAddress, setErrorAddress] = useState<string>('');
   const [errorAmount, setErrorAmount] = useState<string>('');
+  const tokenRef = useRef<HTMLInputElement | null>(null);
 
   const [tokens, setTokens] = useState<
     | {
@@ -48,6 +65,21 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
     fetchBalance();
   }, [client, getCurrentWallet]);
 
+  const hasEnoughFunds = useCallback(
+    (amountToSend: string, currentToken) => {
+      const [currency, issuer] = currentToken.split('-');
+      const token = tokens?.find((token) => {
+        if (currency === 'XRP') {
+          return token.currency === 'XRP';
+        }
+        return token.currency === currency && token.issuer === issuer;
+      });
+
+      return token && Number(token.value) >= Number(amountToSend);
+    },
+    [tokens]
+  );
+
   const handleAddressBlur = useCallback((e: FocusEvent<HTMLInputElement>) => {
     setAddress(e.target.value);
     if (e.target.value !== '') {
@@ -55,21 +87,45 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
     }
   }, []);
 
+  const handleTokenChange = useCallback(
+    (e: SelectChangeEvent<string>) => {
+      if (!hasEnoughFunds(amount, e.target.value)) {
+        setErrorAmount('You do not have enough funds to send this amount');
+      } else {
+        setErrorAmount('');
+      }
+    },
+    [amount, hasEnoughFunds]
+  );
+
   const handleAmountBlur = useCallback(
     (e: FocusEvent<HTMLInputElement>) => {
       if (Number(e.target.value) <= 0 && e.target.value !== '') {
         setErrorAmount('You can only send an amount greater than zero');
-      } else if (errorAmount !== '') {
+      } else if (!hasEnoughFunds(e.target.value, tokenRef.current?.value ?? '')) {
+        setErrorAmount('You do not have enough funds to send this amount');
+      } else {
         setErrorAmount('');
       }
       setAmount(e.target.value);
     },
-    [errorAmount]
+    [hasEnoughFunds]
   );
 
   const isSendPaymentDisabled = useMemo(() => {
-    return !(address !== '' && amount !== '' && errorAddress === undefined);
+    return !(address !== '' && amount !== '' && errorAddress === '');
   }, [address, amount, errorAddress]);
+
+  const handleSendPayment = useCallback(() => {
+    if (!isSendPaymentDisabled) {
+      onSendPaymentClick({
+        address,
+        token:
+          tokenRef.current?.value === 'XRP-undefined' ? 'XRP' : tokenRef.current?.value ?? 'XRP',
+        amount
+      });
+    }
+  }, [address, amount, isSendPaymentDisabled, onSendPaymentClick]);
 
   if (!tokens) {
     return <PageWithSpinner />;
@@ -84,16 +140,17 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
           error={!!errorAddress}
           helperText={errorAddress}
           onBlur={handleAddressBlur}
-          style={{ marginTop: '20px', marginBottom: !errorAddress ? '33px' : '10px' }}
+          style={{ marginTop: '20px', marginBottom: errorAddress === '' ? '33px' : '10px' }}
         />
         <FormControl fullWidth style={{ marginBottom: '33px' }}>
           <InputLabel id="token-label">Token</InputLabel>
           <Select
             labelId="token-label"
             id="demo-simple-select"
+            inputRef={tokenRef}
             defaultValue={`${tokens[0].currency}-${tokens[0].issuer}`}
             label="Token"
-            onChange={() => {}}
+            onChange={handleTokenChange}
           >
             {tokens.map((token) => (
               <MenuItem
@@ -116,7 +173,7 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
         <Button
           fullWidth
           variant="contained"
-          onClick={onSendPaymentClick}
+          onClick={handleSendPayment}
           disabled={isSendPaymentDisabled}
         >
           Send Payment
