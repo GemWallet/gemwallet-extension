@@ -37,15 +37,20 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
   const [transaction, setTransaction] = useState<TransactionStatus>();
   const wallet = getCurrentWallet();
 
-  const currency = undefined;
-
   useEffect(() => {
     if (wallet) {
-      // TODO: Handle payment for the trustlines as well
+      const [currency, issuer] = token.split('-');
       estimateNetworkFees({
         TransactionType: 'Payment',
         Account: wallet.publicAddress,
-        Amount: xrpToDrops(amount),
+        Amount:
+          currency && issuer
+            ? {
+                currency,
+                issuer,
+                value: amount
+              }
+            : xrpToDrops(amount),
         Destination: address
       })
         .then((fees) => {
@@ -56,7 +61,7 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
           setErrorFees(e.message);
         });
     }
-  }, [address, amount, estimateNetworkFees, getCurrentWallet, wallet]);
+  }, [address, amount, estimateNetworkFees, getCurrentWallet, token, wallet]);
 
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);
@@ -150,7 +155,7 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
       <Paper elevation={24} style={{ padding: '10px' }}>
         <Typography variant="body1">Amount:</Typography>
         <Typography variant="h6" component="h1" gutterBottom align="right">
-          {formatToken(Number(amount), currency || 'XRP')}
+          {formatToken(Number(amount), token.split('-')[0] || 'XRP')}
         </Typography>
       </Paper>
       <Paper elevation={24} style={{ padding: '10px' }}>

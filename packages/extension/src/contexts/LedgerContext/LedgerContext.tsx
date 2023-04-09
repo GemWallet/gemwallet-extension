@@ -161,6 +161,10 @@ const LedgerProvider: FC = ({ children }) => {
             throw new Error(
               'The transaction failed because the provided paths did not have enough liquidity to send anything at all. This could mean that the source and destination accounts are not linked by trust lines.'
             );
+          } else if ((e as Error).message.includes('temREDUNDANT')) {
+            throw new Error(
+              'The transaction would do nothing; for example, it is sending a payment directly to the sending account, or creating an offer to buy and sell the same currency from the same issuer.'
+            );
           } else {
             Sentry.captureException(e);
             throw e;

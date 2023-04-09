@@ -84,15 +84,20 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
     [tokens]
   );
 
-  const handleAddressBlur = useCallback((e: FocusEvent<HTMLInputElement>) => {
-    if (e.target.value !== '') {
-      setErrorAddress(!isValidAddress(e.target.value) ? 'Your destination address is invalid' : '');
-    }
-  }, []);
-
-  const handleAddressChange = useCallback((e: FocusEvent<HTMLInputElement>) => {
-    setAddress(e.target.value);
-  }, []);
+  const handleAddressChange = useCallback(
+    (e: FocusEvent<HTMLInputElement>) => {
+      const currentWallet = getCurrentWallet();
+      if (e.target.value === currentWallet?.publicAddress) {
+        setErrorAddress('You cannot send to yourself');
+      } else if (e.target.value !== '') {
+        setErrorAddress(
+          !isValidAddress(e.target.value) ? 'Your destination address is invalid' : ''
+        );
+      }
+      setAddress(e.target.value);
+    },
+    [getCurrentWallet]
+  );
 
   const handleTokenChange = useCallback(
     (e: SelectChangeEvent<string>) => {
@@ -168,7 +173,6 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
           fullWidth
           error={!!errorAddress}
           helperText={errorAddress}
-          onBlur={handleAddressBlur}
           onChange={handleAddressChange}
           style={{ marginTop: '20px', marginBottom: errorAddress === '' ? '33px' : '10px' }}
           autoComplete="off"
