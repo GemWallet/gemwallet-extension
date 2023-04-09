@@ -88,7 +88,7 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
     (e: FocusEvent<HTMLInputElement>) => {
       const currentWallet = getCurrentWallet();
       if (e.target.value === currentWallet?.publicAddress) {
-        setErrorAddress('You cannot send to yourself');
+        setErrorAddress('You cannot make a payment to yourself');
       } else if (e.target.value !== '') {
         setErrorAddress(
           !isValidAddress(e.target.value) ? 'Your destination address is invalid' : ''
@@ -170,6 +170,8 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
       <div>
         <TextField
           label="Recipient's address"
+          id="recipient-address"
+          name="recipient-address"
           fullWidth
           error={!!errorAddress}
           helperText={errorAddress}
@@ -181,7 +183,7 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
           <InputLabel id="token-label">Token</InputLabel>
           <Select
             labelId="token-label"
-            id="demo-simple-select"
+            id="token-select"
             inputRef={tokenRef}
             defaultValue={`${tokens[0].currency}-${tokens[0].issuer}`}
             label="Token"
@@ -199,6 +201,8 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
         </FormControl>
         <NumericInput
           label="Amount"
+          id="amount"
+          name="amount"
           fullWidth
           style={{ marginBottom: '33px' }}
           error={!!errorAmount}
