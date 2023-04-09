@@ -41,7 +41,7 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
     | {
         value: string;
         currency: string;
-        issuer?: string | undefined;
+        issuer?: string;
       }[]
     | undefined
   >();

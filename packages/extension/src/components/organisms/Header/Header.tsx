@@ -32,10 +32,9 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
 
 export interface HeaderProps {
   wallet: WalletLedger;
-  disableSendButton?: boolean;
 }
 
-export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress }, disableSendButton }) => {
+export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => {
   const navigate = useNavigate();
   const setTimeout = useTimeout(2000);
 
@@ -105,7 +104,6 @@ export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress }, disab
             <Button
               aria-label="send"
               size="small"
-              disabled={disableSendButton}
               onClick={handleSend}
               style={{
                 display: 'flex',
@@ -116,10 +114,10 @@ export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress }, disab
               <OutboundIcon
                 style={{
                   transform: 'rotate(-45deg)',
-                  color: disableSendButton ? SECONDARY_GRAY : 'white'
+                  color: 'white'
                 }}
               />
-              <Typography color={disableSendButton ? SECONDARY_GRAY : 'white'} variant="caption">
+              <Typography color="white" variant="caption">
                 Send
               </Typography>
             </Button>
