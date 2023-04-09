@@ -371,7 +371,7 @@ export const AddNewTrustline: FC = () => {
         elevation={24}
         style={{ padding: '10px', display: 'flex', justifyContent: 'space-between' }}
       >
-        <Typography variant="body1">Value:</Typography>
+        <Typography variant="body1">Limit:</Typography>
         <Typography variant="body1">{formatToken(Number(value), currency || undefined)}</Typography>
       </Paper>
       <Paper
