@@ -28,14 +28,13 @@ export const PageWithHeader: FC<PageWithHeaderProps> = ({ children, title }) => 
         style={{
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'space-between',
           height: `calc(100vh - ${CONTAINER_HEIGHT_TAKEN}px)`,
           margin: `${MARGIN_TOP_CONTAINER}px auto 0 auto`,
           overflowY: 'auto'
         }}
       >
         {title && (
-          <Typography variant="h4" component="h1" style={{ fontSize: '1.75rem' }} gutterBottom>
+          <Typography variant="h5" component="h1" align="center" gutterBottom>
             {title}
           </Typography>
         )}

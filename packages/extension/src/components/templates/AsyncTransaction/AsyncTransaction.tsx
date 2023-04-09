@@ -13,6 +13,7 @@ export interface AsyncTransactionProps {
   title: string;
   subtitle: React.ReactNode;
   transaction: TransactionStatus;
+  onClick?: () => void;
 }
 
 type LogoStyle = {
@@ -21,7 +22,12 @@ type LogoStyle = {
   marginTop?: string;
 };
 
-export const AsyncTransaction: FC<AsyncTransactionProps> = ({ title, subtitle, transaction }) => {
+export const AsyncTransaction: FC<AsyncTransactionProps> = ({
+  title,
+  subtitle,
+  transaction,
+  onClick
+}) => {
   const { window, closeExtension } = useBrowser();
   let animation: object = loading;
 
@@ -83,7 +89,7 @@ export const AsyncTransaction: FC<AsyncTransactionProps> = ({ title, subtitle, t
           transaction === TransactionStatus.Pending || transaction === TransactionStatus.Waiting
         }
         color={transaction === TransactionStatus.Rejected ? 'secondary' : 'primary'}
-        onClick={handleClick}
+        onClick={onClick ?? handleClick}
       >
         {buttonText}
       </Button>
