@@ -1,4 +1,4 @@
-import { FC, useEffect } from 'react';
+import { FC, useEffect, Suspense } from 'react';
 
 import * as Sentry from '@sentry/react';
 import { Routes, Route, useLocation } from 'react-router-dom';
@@ -94,136 +94,138 @@ const App: FC = () => {
 
   return (
     <ErrorBoundary>
-      <SentryRoutes>
-        <Route path="*" element={<Login />} />
-        <Route path={WELCOME_PATH} element={<Welcome />} />
-        <Route path={IMPORT_MNEMONIC_PATH} element={<ImportMnemonic />} />
-        <Route path={IMPORT_SECRET_NUMBERS_PATH} element={<ImportSecretNumbers />} />
-        <Route path={IMPORT_SEED_PATH} element={<ImportSeed />} />
-        <Route path={IMPORT_WALLET_PATH} element={<ImportWallet />} />
-        <Route path={CREATE_NEW_WALLET_PATH} element={<CreateWallet />} />
-        <Route
-          path={HOME_PATH}
-          element={
-            <PrivateRoute>
-              <Home />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path={LIST_WALLETS_PATH}
-          element={
-            <PrivateRoute>
-              <ListWallets />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path={`${EDIT_WALLET_PATH}/:publicAddress`}
-          element={
-            <PrivateRoute>
-              <EditWallet />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path={ADD_NEW_WALLET_PATH}
-          element={
-            <PrivateRoute>
-              <AddNewWallet />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path={ADD_NEW_TRUSTLINE_PATH}
-          element={
-            <PrivateRoute>
-              <AddNewTrustline />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path={TRANSACTION_PATH}
-          element={
-            <PrivateRoute>
-              <Transaction />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path={HISTORY_PATH}
-          element={
-            <PrivateRoute>
-              <History />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path={SEND_PATH}
-          element={
-            <PrivateRoute>
-              <SendPayment />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path={SETTINGS_PATH}
-          element={
-            <PrivateRoute>
-              <Settings />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path={SIGN_MESSAGE_PATH}
-          element={
-            <PrivateRoute>
-              <SignMessage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path={SHARE_NFT_PATH}
-          element={
-            <PrivateRoute>
-              <ShareNFT />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path={SHARE_PUBLIC_ADDRESS_PATH}
-          element={
-            <PrivateRoute>
-              <ShareAddress />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path={SHARE_PUBLIC_KEY_PATH}
-          element={
-            <PrivateRoute>
-              <SharePublicKey />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path={ABOUT_PATH}
-          element={
-            <PrivateRoute>
-              <About />
-            </PrivateRoute>
-          }
-        />
-        <Route path={RESET_PASSWORD_PATH} element={<ResetPassword />} />
-        <Route
-          path={TRUSTED_APPS_PATH}
-          element={
-            <PrivateRoute>
-              <TrustedApps />
-            </PrivateRoute>
-          }
-        />
-      </SentryRoutes>
+      <Suspense fallback="loading">
+        <SentryRoutes>
+          <Route path="*" element={<Login />} />
+          <Route path={WELCOME_PATH} element={<Welcome />} />
+          <Route path={IMPORT_MNEMONIC_PATH} element={<ImportMnemonic />} />
+          <Route path={IMPORT_SECRET_NUMBERS_PATH} element={<ImportSecretNumbers />} />
+          <Route path={IMPORT_SEED_PATH} element={<ImportSeed />} />
+          <Route path={IMPORT_WALLET_PATH} element={<ImportWallet />} />
+          <Route path={CREATE_NEW_WALLET_PATH} element={<CreateWallet />} />
+          <Route
+            path={HOME_PATH}
+            element={
+              <PrivateRoute>
+                <Home />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path={LIST_WALLETS_PATH}
+            element={
+              <PrivateRoute>
+                <ListWallets />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path={`${EDIT_WALLET_PATH}/:publicAddress`}
+            element={
+              <PrivateRoute>
+                <EditWallet />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path={ADD_NEW_WALLET_PATH}
+            element={
+              <PrivateRoute>
+                <AddNewWallet />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path={ADD_NEW_TRUSTLINE_PATH}
+            element={
+              <PrivateRoute>
+                <AddNewTrustline />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path={TRANSACTION_PATH}
+            element={
+              <PrivateRoute>
+                <Transaction />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path={HISTORY_PATH}
+            element={
+              <PrivateRoute>
+                <History />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path={SEND_PATH}
+            element={
+              <PrivateRoute>
+                <SendPayment />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path={SETTINGS_PATH}
+            element={
+              <PrivateRoute>
+                <Settings />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path={SIGN_MESSAGE_PATH}
+            element={
+              <PrivateRoute>
+                <SignMessage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path={SHARE_NFT_PATH}
+            element={
+              <PrivateRoute>
+                <ShareNFT />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path={SHARE_PUBLIC_ADDRESS_PATH}
+            element={
+              <PrivateRoute>
+                <ShareAddress />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path={SHARE_PUBLIC_KEY_PATH}
+            element={
+              <PrivateRoute>
+                <SharePublicKey />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path={ABOUT_PATH}
+            element={
+              <PrivateRoute>
+                <About />
+              </PrivateRoute>
+            }
+          />
+          <Route path={RESET_PASSWORD_PATH} element={<ResetPassword />} />
+          <Route
+            path={TRUSTED_APPS_PATH}
+            element={
+              <PrivateRoute>
+                <TrustedApps />
+              </PrivateRoute>
+            }
+          />
+        </SentryRoutes>
+      </Suspense>
     </ErrorBoundary>
   );
 };

@@ -1,9 +1,8 @@
 {
-  "translation": {
     "TEXT_WELCOME_SUBTITLE": "Internet cryptocurrency payments made easy",
-    "TEXT_CREATE_NEW_WALLET": "CREATE A NEW WALLET",
+    "TEXT_CREATE_NEW_WALLET": "Create a new wallet",
     "TEXT_PASSWORD": "Password",
-    "TEXT_IMPORT_WALLET": "IMPORT A WALLET",
+    "TEXT_IMPORT_WALLET": "Import a wallet",
     "TEXT_UNLOCK": "Unlock",
     "TEXT_RESET_PASSWORD": "Reset Password",
     "TEXT_ABOUT": "About",
@@ -85,5 +84,4 @@
     "TEXT_NETWORK_FEES": "Network fees",
     "TEXT_REJECT": "Reject",
     "TEXT_CONFIRM": "Confirm"
-  }
 }

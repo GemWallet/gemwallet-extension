@@ -1,5 +1,4 @@
 {
-  "translation": {
     "TEXT_WELCOME_SUBTITLE": "簡単なインターネット暗号通貨決済",
     "TEXT_CREATE_NEW_WALLET": "新しいウォレットを作成する",
     "TEXT_PASSWORD": "パスワード",
@@ -85,5 +84,4 @@
     "TEXT_NETWORK_FEES": "ネットワーク手数料",
     "TEXT_REJECT": "リジェクト",
     "TEXT_CONFIRM": "確認する"
-  }
 }

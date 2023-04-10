@@ -1,4 +1,5 @@
 import React from 'react';
+import './i18n';
 
 import Paper from '@mui/material/Paper';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
