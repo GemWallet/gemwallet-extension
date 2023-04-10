@@ -1,6 +1,7 @@
 import { FC, useCallback, useMemo } from 'react';
 
 import * as Sentry from '@sentry/react';
+import { useTranslation } from 'react-i18next';
 
 import { GEM_WALLET, ReceivePublicKeyBackgroundMessage } from '@gemwallet/constants';
 
@@ -13,6 +14,7 @@ const permissions = [Permission.Address, Permission.PublicKey];
 export const SharePublicKey: FC = () => {
   const { getCurrentWallet, selectedWallet } = useWallet();
   const { window: extensionWindow, closeExtension } = useBrowser();
+  const { t } = useTranslation('common');
 
   const payload = useMemo(() => {
     const queryString = window.location.search;
@@ -71,9 +73,9 @@ export const SharePublicKey: FC = () => {
 
   return (
     <SharingPage
-      title="Share your public key"
+      title={t('TEXT_SHARE_PUBLIC_KEY')}
       permissions={permissions}
-      permissionDetails={['View your public key', 'View your address']}
+      permissionDetails={[t('TEXT_VIEW_PUBLIC_KEY'), t('TEXT_VIEW_ADDRESS')]}
       handleShare={handleShare}
       handleReject={handleReject}
     />

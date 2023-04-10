@@ -12,26 +12,27 @@ export enum NetworkServer {
   AMM_DEVNET = 'wss://amm.devnet.rippletest.net:51233'
 }
 
+// Network description only embeds the translation key. You can pass the translation key to i18n.t() to get the
+// translation.
 export const NETWORK = {
   [Network.MAINNET]: {
     name: Network.MAINNET,
     server: NetworkServer.MAINNET,
-    description: 'Main network using the production version of the XRP Ledger.'
+    description_key: 'TEXT_NETWORK_DESCRIPTION_MAINNET'
   },
   [Network.TESTNET]: {
     name: Network.TESTNET,
     server: NetworkServer.TESTNET,
-    description:
-      'Acts as a testing network, without impacting production users and risking real money.'
+    description_key: 'TEXT_NETWORK_DESCRIPTION_TESTNET'
   },
   [Network.DEVNET]: {
     name: Network.DEVNET,
     server: NetworkServer.DEVNET,
-    description: 'A preview of upcoming features, where unstable changes are tested out.'
+    description_key: 'TEXT_NETWORK_DESCRIPTION_DEVNET'
   },
   [Network.AMM_DEVNET]: {
     name: Network.AMM_DEVNET,
     server: NetworkServer.AMM_DEVNET,
-    description: 'XLS-30d Automated Market Makers preview network.'
+    description_key: 'TEXT_NETWORK_DESCRIPTION_AMM_DEVNET'
   }
 };

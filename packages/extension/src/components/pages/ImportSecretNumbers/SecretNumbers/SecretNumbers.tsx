@@ -1,6 +1,7 @@
 import { FC, useCallback, useState, FocusEvent } from 'react';
 
 import { Grid, TextField, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 import { ERROR_RED } from '../../../../constants';
 import { useWallet } from '../../../../contexts';
@@ -30,6 +31,7 @@ export interface SecretNumbersProps {
 }
 
 export const SecretNumbers: FC<SecretNumbersProps> = ({ activeStep, steps, onBack, onNext }) => {
+  const { t } = useTranslation('common');
   const { isValidNumbers } = useWallet();
   const [numbersError, setNumbersError] = useState('');
   const [inputErrors, setInputErrors] = useState<InputErrors>({
@@ -78,7 +80,7 @@ export const SecretNumbers: FC<SecretNumbersProps> = ({ activeStep, steps, onBac
     <PageWithStepper
       steps={steps}
       activeStep={activeStep}
-      buttonText="Next"
+      buttonText={t('TEXT_NEXT')}
       handleBack={onBack}
       handleNext={handleNext}
     >

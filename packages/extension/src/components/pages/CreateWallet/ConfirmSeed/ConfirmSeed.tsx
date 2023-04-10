@@ -1,6 +1,7 @@
 import { FC, useState, useCallback, useRef } from 'react';
 
 import { TextField, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 import { PageWithStepper } from '../../../templates';
 
@@ -21,6 +22,7 @@ export const ConfirmSeed: FC<ConfirmSeedProps> = ({
 }) => {
   const [seedError, setSeedError] = useState('');
   const seedRef = useRef<HTMLInputElement | null>(null);
+  const { t } = useTranslation('common');
 
   const handleNext = useCallback(() => {
     if (seedRef.current?.value === seed) {
@@ -34,22 +36,22 @@ export const ConfirmSeed: FC<ConfirmSeedProps> = ({
     <PageWithStepper
       steps={steps}
       activeStep={activeStep}
-      buttonText="Confirm"
+      buttonText={t('TEXT_CONFIRM')}
       handleBack={handleBack}
       handleNext={handleNext}
     >
       <Typography variant="h4" component="h1" style={{ marginTop: '120px' }}>
-        Confirm Your Secret Seed
+        {t('TEXT_CONFIRM_SECRET_SEED')}
       </Typography>
       <Typography variant="subtitle1" component="h2" style={{ marginTop: '30px' }}>
-        Enter your seed to confirm that you have properly stored it.
+        {t('TEXT_CONFIRM_SECRET_SEED_DETAILS')}
       </Typography>
       <TextField
         fullWidth
         id="seed"
         key="seed"
         name="seed"
-        label="Seed"
+        label={t('TEXT_SEED')}
         inputRef={seedRef}
         error={!!seedError}
         helperText={seedError}

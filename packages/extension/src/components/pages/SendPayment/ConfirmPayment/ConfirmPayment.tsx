@@ -3,6 +3,7 @@ import { FC, useCallback, useEffect, useState } from 'react';
 import ErrorIcon from '@mui/icons-material/Error';
 import { Button, Container, IconButton, Paper, Tooltip, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { xrpToDrops } from 'xrpl';
 
@@ -38,6 +39,7 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
   const [errorRequestRejection, setErrorRequestRejection] = useState<string>('');
   const [transaction, setTransaction] = useState<TransactionStatus>();
   const wallet = getCurrentWallet();
+  const { t } = useTranslation('common');
 
   useEffect(() => {
     if (wallet) {
@@ -101,17 +103,17 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
       <AsyncTransaction
         title={
           transaction === TransactionStatus.Success
-            ? 'Transaction accepted'
-            : 'Transaction in progress'
+            ? t('TEXT_TRANSACTION_ACCEPTED')
+            : t('TEXT_TRANSACTION_IN_PROGRESS')
         }
         subtitle={
           transaction === TransactionStatus.Success ? (
-            'Transaction Successful'
+            t('TEXT_TRANSACTION_SUCCESSFUL')
           ) : (
             <>
-              We are processing your transaction
+              {t('TEXT_TRANSACTION_PROCESSING')}
               <br />
-              Please wait
+              {t('TEXT_PLEASE_WAIT')}
             </>
           )
         }
@@ -124,10 +126,10 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
   if (transaction === TransactionStatus.Rejected) {
     return (
       <AsyncTransaction
-        title="Transaction rejected"
+        title={t('TEXT_TRANSACTION_REJECTED')}
         subtitle={
           <>
-            Your transaction failed, please try again.
+            {t('TEXT_TRANSACTION_FAILED')}
             <br />
             {errorRequestRejection ? errorRequestRejection : ''}
           </>
@@ -140,7 +142,7 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
 
   return (
     <PageWithReturn
-      title="Confirm Payment"
+      title={t('TEXT_CONFIRM_PAYMENT')}
       onBackClick={onClickBack}
       style={{
         height: '100%',
@@ -150,12 +152,12 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
       }}
     >
       <Paper elevation={24} style={{ padding: '10px' }}>
-        <Typography variant="body1">From:</Typography>
+        <Typography variant="body1">{t('TEXT_FROM')}:</Typography>
         <Typography variant="body2">{wallet?.name}</Typography>
         <Typography variant="body2">{wallet?.publicAddress}</Typography>
       </Paper>
       <Paper elevation={24} style={{ padding: '10px' }}>
-        <Typography variant="body1">Destination:</Typography>
+        <Typography variant="body1">{t('TEXT_DESTINATION')}:</Typography>
         <Typography variant="body2">{address}</Typography>
       </Paper>
       {memo ? (
@@ -179,19 +181,19 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
         </Paper>
       ) : null}
       <Paper elevation={24} style={{ padding: '10px' }}>
-        <Typography variant="body1">Amount:</Typography>
+        <Typography variant="body1">{t('TEXT_AMOUNT')}:</Typography>
         <Typography variant="h6" component="h1" gutterBottom align="right">
           {formatToken(Number(amount), convertCurrencyString(token.split('-')[0]) || 'XRP')}
         </Typography>
       </Paper>
       <Paper elevation={24} style={{ padding: '10px' }}>
         <Typography variant="body1" style={{ display: 'flex', alignItems: 'center' }}>
-          <Tooltip title="These are the fees to make the transaction over the network">
+          <Tooltip title={t('TEXT_FEES_EXPLANATION')}>
             <IconButton size="small">
               <ErrorIcon />
             </IconButton>
           </Tooltip>
-          Network fees:
+          {t('TEXT_NETWORK_FEES')}:
         </Typography>
         <Typography variant="body2" gutterBottom align="right">
           {errorFees ? (
@@ -207,10 +209,10 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
       </Paper>
       <Container style={{ display: 'flex', justifyContent: 'space-evenly' }}>
         <Button variant="contained" color="secondary" onClick={handleReject}>
-          Reject
+          {t('TEXT_REJECT')}
         </Button>
         <Button variant="contained" onClick={handleConfirmPayment}>
-          Confirm
+          {t('TEXT_CONFIRM')}
         </Button>
       </Container>
     </PageWithReturn>

@@ -1,6 +1,7 @@
 import { FC, useCallback } from 'react';
 
 import { Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
 import { LIST_WALLETS_PATH } from '../../../../constants';
@@ -21,21 +22,22 @@ export const AddWalletMethod: FC<AddWalletMethodProps> = ({
   const handleBack = useCallback(() => {
     navigate(LIST_WALLETS_PATH);
   }, [navigate]);
+  const { t } = useTranslation('common');
 
   return (
-    <PageWithReturn title="Add Wallet" onBackClick={handleBack}>
+    <PageWithReturn title={t('TEXT_ADD_WALLET')} onBackClick={handleBack}>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         <Typography style={{ margin: '10px 0 30px 0' }} align="center">
-          Import an existing wallet or create a new one
+          {t('TEXT_IMPORT_OR_CREATE_WALLET')}
         </Typography>
         <ButtonOption
-          name="Create a new wallet"
-          description="Generate a new wallet address"
+          name={t('TEXT_CREATE_NEW_WALLET')}
+          description={t('TEXT_GENERATE_NEW_WALLET_ADDRESS')}
           onClick={onCreateNewWallet}
         />
         <ButtonOption
           name="Import a new wallet"
-          description="Import an existing wallet"
+          description={t('TEXT_IMPORT_EXISTING_WALLET')}
           onClick={onImportWallet}
         />
       </div>

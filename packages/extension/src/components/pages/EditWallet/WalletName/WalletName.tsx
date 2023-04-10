@@ -1,6 +1,7 @@
 import { ChangeEvent, FC, useCallback, useRef, useState } from 'react';
 
 import { Button, TextField, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 import { useWallet } from '../../../../contexts';
 import { WalletLedger } from '../../../../types';
@@ -16,6 +17,7 @@ export const WalletName: FC<WalletNameProps> = ({ wallet, onBackButton }) => {
   const { renameWallet } = useWallet();
   const textRef = useRef<HTMLInputElement>(null);
   const [isNameDifferent, setIsNameDifferent] = useState<boolean>(false);
+  const { t } = useTranslation('common');
 
   const handleChangeName = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
@@ -48,13 +50,13 @@ export const WalletName: FC<WalletNameProps> = ({ wallet, onBackButton }) => {
             <WalletIcon publicAddress={wallet.publicAddress} size="xl" />
           </div>
           <Typography align="center" variant="h5">
-            Wallet Name
+            {t('TEXT_WALLET_NAME')}
           </Typography>
           <TextField
             inputRef={textRef}
             id="walletName"
             name="walletName"
-            label="Name"
+            label={t('TEXT_NAME')}
             fullWidth
             style={{
               marginTop: '40px'
@@ -72,7 +74,7 @@ export const WalletName: FC<WalletNameProps> = ({ wallet, onBackButton }) => {
           }}
         >
           <Button variant="outlined" size="large" style={{ width: '45%' }} onClick={onBackButton}>
-            Cancel
+            {t('TEXT_CANCEL')}
           </Button>
           <Button
             variant="contained"
@@ -81,7 +83,7 @@ export const WalletName: FC<WalletNameProps> = ({ wallet, onBackButton }) => {
             disabled={!isNameDifferent}
             onClick={handleSave}
           >
-            Save
+            {t('TEXT_SAVE')}
           </Button>
         </div>
       </div>

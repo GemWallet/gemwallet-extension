@@ -1,6 +1,7 @@
 import { Dispatch, FC, SetStateAction, useCallback } from 'react';
 
 import { Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 import { TextCopy } from '../../../molecules';
 import { PageWithStepper } from '../../../templates';
@@ -23,6 +24,7 @@ export const SecretSeed: FC<SecretSeedProps> = ({
   const handleNext = useCallback(() => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   }, [setActiveStep]);
+  const { t } = useTranslation('common');
 
   return (
     <PageWithStepper
@@ -33,11 +35,10 @@ export const SecretSeed: FC<SecretSeedProps> = ({
       handleNext={handleNext}
     >
       <Typography variant="h4" component="h1" style={{ marginTop: '120px' }}>
-        Secret Seed
+        {t('TEXT_SECRET_SEED')}
       </Typography>
       <Typography variant="subtitle1" component="h2" style={{ marginTop: '30px' }}>
-        This is the only way you will be able to recover your account. Please store it somewhere
-        safe!
+        {t('TEXT_SECRET_SEED_DISCLAIMER')}
       </Typography>
       <TextCopy text={seed} />
     </PageWithStepper>

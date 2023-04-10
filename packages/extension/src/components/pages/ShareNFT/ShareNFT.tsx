@@ -1,6 +1,7 @@
 import { FC, useCallback, useMemo } from 'react';
 
 import * as Sentry from '@sentry/react';
+import { useTranslation } from 'react-i18next';
 
 import { GEM_WALLET, ReceiveNFTBackgroundMessage } from '@gemwallet/constants';
 
@@ -14,6 +15,7 @@ export const ShareNFT: FC = () => {
   const { getNFTs } = useLedger();
   const { selectedWallet } = useWallet();
   const { window: extensionWindow, closeExtension } = useBrowser();
+  const { t } = useTranslation('common');
 
   const payload = useMemo(() => {
     const queryString = window.location.search;
@@ -73,9 +75,9 @@ export const ShareNFT: FC = () => {
 
   return (
     <SharingPage
-      title="Share your NFTs"
+      title={t('TEXT_SHARE_NFT')}
       permissions={permissions}
-      permissionDetails={['View your NFTs']}
+      permissionDetails={[t('TEXT_VIEW_NFT')]}
       handleShare={handleShare}
       handleReject={handleReject}
     />

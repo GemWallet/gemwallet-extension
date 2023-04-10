@@ -1,6 +1,7 @@
 import { FC, useCallback, useState } from 'react';
 
 import { Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
 import {
@@ -41,6 +42,7 @@ export const ImportNewWallet: FC<ImportNewWalletProps> = ({ password }) => {
   const navigate = useNavigate();
   const [activeStep, setActiveStep] = useState<number>(0);
   const [selectedAccount, setSelectedAccount] = useState(-1);
+  const { t } = useTranslation('common');
 
   const handleBack = useCallback(() => {
     navigate(LIST_WALLETS_PATH);
@@ -80,7 +82,7 @@ export const ImportNewWallet: FC<ImportNewWalletProps> = ({ password }) => {
     <PageWithStepper
       steps={0}
       activeStep={0}
-      buttonText="Next"
+      buttonText={t('TEXT_NEXT')}
       handleBack={handleBack}
       handleNext={handleNext}
       disabledNext={selectedAccount === -1}

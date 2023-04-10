@@ -19,6 +19,7 @@ import {
   Typography
 } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
+import { useTranslation } from 'react-i18next';
 
 import { NETWORK, Network } from '@gemwallet/constants';
 
@@ -81,6 +82,7 @@ export const NetworkIndicator: FC = () => {
   const { client, network, switchNetwork } = useNetwork();
   const [explanationOpen, setExplanationOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const { t } = useTranslation('common');
 
   const handleOpen = useCallback(() => {
     setExplanationOpen(true);
@@ -137,13 +139,13 @@ export const NetworkIndicator: FC = () => {
           </AppBar>
           <div style={{ overflowY: 'scroll', height: '544px', margin: '20px 20px 0 20px' }}>
             {Object.keys(NETWORK).map((_network) => {
-              const { name, server, description } = NETWORK[_network as Network];
+              const { name, server, description_key } = NETWORK[_network as Network];
               return (
                 <NetworkDisplay
                   key={_network}
                   name={name}
                   server={server}
-                  description={description}
+                  description={t(description_key)}
                   isSelected={name === network}
                   onClick={() => handleClickOnNetwork(_network as Network)}
                 />

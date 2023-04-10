@@ -2,6 +2,7 @@ import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Container, Typography, Button, Paper, Avatar, Divider } from '@mui/material';
 import * as Sentry from '@sentry/react';
+import { useTranslation } from 'react-i18next';
 
 import { GEM_WALLET, ReceiveSignMessageBackgroundMessage } from '@gemwallet/constants';
 
@@ -14,6 +15,7 @@ export const SignMessage: FC = () => {
   const { signMessage } = useLedger();
   const { window: extensionWindow, closeExtension } = useBrowser();
   const [isParamsMissing, setIsParamsMissing] = useState(false);
+  const { t } = useTranslation('common');
 
   useEffect(() => {
     if (isParamsMissing) {
@@ -89,12 +91,12 @@ export const SignMessage: FC = () => {
   if (isParamsMissing) {
     return (
       <AsyncTransaction
-        title="Signature failed"
+        title={t('TEXT_SIGN_FAILED')}
         subtitle={
           <>
-            A message has not be provided to the extension
+            {t('TEXT_SIGN_FAILED_DETAILS_1')}
             <br />
-            Please contact the developer of the website
+            {t('TEXT_SIGN_FAILED_DETAILS_2')}
           </>
         }
         transaction={TransactionStatus.Rejected}
@@ -103,7 +105,7 @@ export const SignMessage: FC = () => {
   }
 
   return (
-    <PageWithTitle title="Sign Message">
+    <PageWithTitle title={t('TEXT_SIGN_MESSAGE')}>
       <Paper
         elevation={24}
         style={{
@@ -119,7 +121,7 @@ export const SignMessage: FC = () => {
       </Paper>
 
       <Paper elevation={24} style={{ padding: '10px' }}>
-        <Typography variant="body1">You are signing:</Typography>
+        <Typography variant="body1">{t('TEXT_YOU_ARE_SIGNING')}:</Typography>
         <Divider style={{ margin: '10px 0' }} />
         <div style={{ overflowY: 'scroll', height: '200px' }}>
           <Typography variant="body2" style={{ color: SECONDARY_GRAY }}>
@@ -129,15 +131,15 @@ export const SignMessage: FC = () => {
       </Paper>
 
       <div style={{ display: 'flex', justifyContent: 'center', color: SECONDARY_GRAY }}>
-        <Typography>Only sign messages with a website you trust</Typography>
+        <Typography>{t('TEXT_SIGN_DISCLAIMER')}</Typography>
       </div>
 
       <Container style={{ display: 'flex', justifyContent: 'space-evenly' }}>
         <Button variant="contained" color="secondary" onClick={handleReject}>
-          Reject
+          {t('TEXT_REJECT')}
         </Button>
         <Button variant="contained" onClick={handleSign}>
-          Sign
+          {t('TEXT_SIGN')}
         </Button>
       </Container>
     </PageWithTitle>

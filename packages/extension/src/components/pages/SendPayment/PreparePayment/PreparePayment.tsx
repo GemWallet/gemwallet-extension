@@ -14,6 +14,7 @@ import {
   Typography
 } from '@mui/material';
 import * as Sentry from '@sentry/react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { isValidAddress } from 'xrpl';
 
@@ -66,6 +67,7 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
   const [errorTokens, setErrorTokens] = useState<string>('');
   const [isWalletActivated, setIsWalletActivated] = useState<boolean>(true);
   const tokenRef = useRef<HTMLInputElement | null>(null);
+  const { t } = useTranslation('common');
 
   const navigate = useNavigate();
 
@@ -297,7 +299,7 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
 
   return (
     <PageWithReturn
-      title="Send Payment"
+      title={t('TEXT_SEND_PAYMENT')}
       onBackClick={() => navigate(-1)}
       style={{
         height: '100%',
@@ -308,7 +310,7 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
     >
       <div>
         <TextField
-          label="Recipient's address"
+          label={t('TEXT_RECIPIENT_ADDRESS')}
           id="recipient-address"
           name="recipient-address"
           fullWidth
@@ -325,7 +327,7 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
             id="token-select"
             inputRef={tokenRef}
             defaultValue={`${tokens[0].currency}-${tokens[0].issuer}`}
-            label="Token"
+            label={t('TEXT_TOKEN')}
             onChange={handleTokenChange}
           >
             {tokens.map((token) => (
@@ -339,7 +341,7 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
           </Select>
         </FormControl>
         <NumericInput
-          label="Amount"
+          label={t('TEXT_AMOUNT')}
           id="amount"
           name="amount"
           fullWidth
@@ -378,7 +380,7 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
         onClick={handleSendPayment}
         disabled={isSendPaymentDisabled}
       >
-        Send Payment
+        {t('TEXT_SEND_PAYMENT')}
       </Button>
     </PageWithReturn>
   );

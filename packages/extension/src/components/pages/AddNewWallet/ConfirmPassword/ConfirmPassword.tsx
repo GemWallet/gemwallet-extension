@@ -1,6 +1,7 @@
 import { FC, useCallback, useState, useRef } from 'react';
 
 import { Button, TextField, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
 import { LIST_WALLETS_PATH } from '../../../../constants';
@@ -39,9 +40,10 @@ export const ConfirmPassword: FC<ConfirmPasswordProps> = ({ setPassword, onConfi
 
   // Handle Confirm Password step button by pressing 'Enter'
   useKeyUp('Enter', handleConfirmPassword);
+  const { t } = useTranslation('common');
 
   return (
-    <PageWithReturn title="Add Wallet" onBackClick={handleBack} style={{ height: '100%' }}>
+    <PageWithReturn title={t('TEXT_ADD_WALLET')} onBackClick={handleBack} style={{ height: '100%' }}>
       <div
         style={{
           display: 'flex',
@@ -52,14 +54,14 @@ export const ConfirmPassword: FC<ConfirmPasswordProps> = ({ setPassword, onConfi
         }}
       >
         <Typography variant="h6" style={{ marginTop: '80px' }} align="center">
-          Please confirm your password to add a new wallet
+          {t('TEXT_PLEASE_CONFIRM_PASSWORD')}
         </Typography>
         <div>
           <TextField
             fullWidth
             id="password"
             name="password"
-            label="Password"
+            label={t('TEXT_PASSWORD')}
             inputRef={passwordRef}
             error={!!passwordError}
             onChange={handleTextFieldChange}
@@ -69,7 +71,7 @@ export const ConfirmPassword: FC<ConfirmPasswordProps> = ({ setPassword, onConfi
             autoComplete="off"
           />
           <Button fullWidth variant="contained" onClick={handleConfirmPassword}>
-            Confirm Password
+            {t('TEXT_CONFIRM_PASSWORD')}
           </Button>
         </div>
       </div>

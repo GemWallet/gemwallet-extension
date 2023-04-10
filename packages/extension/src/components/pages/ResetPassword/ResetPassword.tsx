@@ -2,6 +2,7 @@ import { FC, useCallback } from 'react';
 
 import WarningIcon from '@mui/icons-material/Warning';
 import { Button, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
 import { SETTINGS_PATH } from '../../../constants';
@@ -13,6 +14,7 @@ export const ResetPassword: FC = () => {
   const navigate = useNavigate();
   const { signOut } = useWallet();
   const { resetNetwork } = useNetwork();
+  const { t } = useTranslation('common');
 
   const handleBack = useCallback(() => {
     navigate(SETTINGS_PATH);
@@ -25,7 +27,7 @@ export const ResetPassword: FC = () => {
   }, [resetNetwork, signOut]);
 
   return (
-    <PageWithReturn title="Reset Password" onBackClick={handleBack}>
+    <PageWithReturn title={t('TEXT_RESET_PASSWORD')} onBackClick={handleBack}>
       <div
         style={{
           height: '100%',
@@ -40,12 +42,11 @@ export const ResetPassword: FC = () => {
           <WarningIcon color="warning" fontSize="large" />
         </div>
         <Typography variant="h5" align="center">
-          Resetting your password will remove your secret seeds
+          {t('TEXT_RESET_PASSWORD_DISCLAIMER_1')}
         </Typography>
       </div>
       <Typography align="center" style={{ marginTop: '0.25rem' }}>
-        This will remove all existing wallets and replace them with new ones. Make sure you have
-        your existing private secret seeds backed up.
+        {t('TEXT_RESET_PASSWORD_DISCLAIMER_2')}
       </Typography>
       <div
         style={{
@@ -59,10 +60,10 @@ export const ResetPassword: FC = () => {
         }}
       >
         <Button variant="contained" size="large" onClick={handleBack}>
-          Cancel
+          {t('TEXT_CANCEL')}
         </Button>
         <Button variant="contained" size="large" onClick={handleRemoveWallets}>
-          Continue
+          {t('TEXT_CONTINUE')}
         </Button>
       </div>
     </PageWithReturn>

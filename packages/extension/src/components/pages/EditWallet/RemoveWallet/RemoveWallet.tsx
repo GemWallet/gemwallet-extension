@@ -2,6 +2,7 @@ import { FC, useCallback } from 'react';
 
 import WarningIcon from '@mui/icons-material/Warning';
 import { Button, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 import { useWallet } from '../../../../contexts';
 import { PageWithReturn } from '../../../templates';
@@ -13,6 +14,7 @@ export interface RemoveWalletProps {
 
 export const RemoveWallet: FC<RemoveWalletProps> = ({ publicAddress, onBackButton }) => {
   const { removeWallet } = useWallet();
+  const { t } = useTranslation('common');
 
   const handleRemove = useCallback(() => {
     removeWallet(publicAddress);
@@ -20,7 +22,7 @@ export const RemoveWallet: FC<RemoveWalletProps> = ({ publicAddress, onBackButto
   }, [onBackButton, publicAddress, removeWallet]);
 
   return (
-    <PageWithReturn title="Remove Wallet" onBackClick={onBackButton}>
+    <PageWithReturn title={t('TEXT_REMOVE_WALLET')} onBackClick={onBackButton}>
       <div
         style={{
           height: '518px',
@@ -34,11 +36,10 @@ export const RemoveWallet: FC<RemoveWalletProps> = ({ publicAddress, onBackButto
             <WarningIcon color="warning" fontSize="large" />
           </div>
           <Typography variant="h5" align="center">
-            Are you sure you want to remove your wallet?
+            {t('TEXT_REMOVE_WALLET_DISCLAIMER_1')}
           </Typography>
           <Typography align="center" style={{ marginTop: '0.25rem' }}>
-            This action will remove your wallet from GemWallet. Make sure that you have your private
-            seeds backed up. You can import back this wallet into Gemwallet later on if you want to.
+            {t('TEXT_REMOVE_WALLET_DISCLAIMER_2')}
           </Typography>
         </div>
         <div
@@ -49,10 +50,10 @@ export const RemoveWallet: FC<RemoveWalletProps> = ({ publicAddress, onBackButto
           }}
         >
           <Button variant="outlined" size="large" style={{ width: '45%' }} onClick={onBackButton}>
-            Cancel
+            {t('TEXT_CANCEL')}
           </Button>
           <Button variant="contained" size="large" style={{ width: '45%' }} onClick={handleRemove}>
-            Remove
+            {t('TEXT_REMOVE')}
           </Button>
         </div>
       </div>

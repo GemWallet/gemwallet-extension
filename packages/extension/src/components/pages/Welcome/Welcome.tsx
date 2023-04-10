@@ -1,6 +1,7 @@
 import { FC } from 'react';
 
 import { Button, Container, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 import { CREATE_NEW_WALLET_PATH, IMPORT_WALLET_PATH } from '../../../constants';
@@ -9,6 +10,7 @@ import { Logo } from '../../atoms/Logo';
 export const Welcome: FC = () => {
   const navigate = useNavigate();
   const { search } = useLocation();
+  const { t } = useTranslation('common');
 
   return (
     <Container
@@ -27,7 +29,7 @@ export const Welcome: FC = () => {
           GemWallet
         </Typography>
         <Typography variant="h6" component="h2" style={{ marginTop: '30px' }}>
-          Internet cryptocurrency payments made easy
+          {t('TEXT_WELCOME_SUBTITLE')}
         </Typography>
       </Container>
       <Container style={{ display: 'flex', flexDirection: 'column' }}>
@@ -36,14 +38,14 @@ export const Welcome: FC = () => {
           style={{ marginBottom: '10px' }}
           onClick={() => navigate(`${CREATE_NEW_WALLET_PATH}${search}`)}
         >
-          Create a new wallet
+          {t('TEXT_CREATE_NEW_WALLET')}
         </Button>
         <Button
           variant="contained"
           color="secondary"
           onClick={() => navigate(`${IMPORT_WALLET_PATH}${search}`)}
         >
-          Import a wallet
+          {t('TEXT_IMPORT_WALLET')}
         </Button>
       </Container>
     </Container>

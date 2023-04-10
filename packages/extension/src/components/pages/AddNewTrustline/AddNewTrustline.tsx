@@ -4,6 +4,7 @@ import ErrorIcon from '@mui/icons-material/Error';
 import WarningIcon from '@mui/icons-material/Warning';
 import { Button, Container, IconButton, Paper, Tooltip, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
+import { useTranslation } from 'react-i18next';
 import { isValidAddress } from 'xrpl';
 
 import { GEM_WALLET, ReceiveTrustlineHashBackgroundMessage } from '@gemwallet/constants';
@@ -49,6 +50,7 @@ export const AddNewTrustline: FC = () => {
   const { client, network } = useNetwork();
   const { getCurrentWallet } = useWallet();
   const { serverInfo } = useServer();
+  const { t } = useTranslation('common');
 
   useEffect(() => {
     const queryString = window.location.search;
@@ -190,11 +192,11 @@ export const AddNewTrustline: FC = () => {
   if (isParamsMissing) {
     return (
       <AsyncTransaction
-        title="Transaction rejected"
+        title={t('TEXT_TRANSACTION_REJECTED')}
         subtitle={
           <>
-            Your transaction failed, please try again.
-            <br />A value, currency and issuer need to be provided to the extension.
+            {t('TEXT_TRANSACTION_FAILED')}
+            <br />{t('TEXT_TRANSACTION_FAILED_DETAILS_2')}
           </>
         }
         transaction={TransactionStatus.Rejected}
@@ -205,12 +207,12 @@ export const AddNewTrustline: FC = () => {
   if (!isValidIssuer) {
     return (
       <AsyncTransaction
-        title="Incorrect transaction"
+        title={t('TEXT_INCORRECT_TRANSACTION')}
         subtitle={
           <>
-            Your transaction is incorrect.
+            {t('TEXT_INCORRECT_TRANSACTION_DETAILS_1')}
             <br />
-            The issuer of the trustline is invalid.
+            {t('TEXT_INVALID_TRUSTLINE_ISSUER')}
           </>
         }
         transaction={TransactionStatus.Rejected}
@@ -221,12 +223,12 @@ export const AddNewTrustline: FC = () => {
   if (errorValue) {
     return (
       <AsyncTransaction
-        title="Incorrect transaction"
+        title={t('TEXT_INCORRECT_TRANSACTION')}
         subtitle={
           <>
             {errorValue}
             <br />
-            {'Please try again with a correct transaction'}
+            {t('TEXT_TRY_AGAIN_WITH_CORRECT_TRANSACTION')}
           </>
         }
         transaction={TransactionStatus.Rejected}
@@ -238,12 +240,12 @@ export const AddNewTrustline: FC = () => {
     if (errorDifference === 'Account not found.') {
       return (
         <AsyncTransaction
-          title="Account not activated"
+          title={t('TEXT_ACCOUNT_NOT_ACTIVATED')}
           subtitle={
             <>
-              {`Your account is not activated on the ${network} network.`}
+              {t('TEXT_ACCOUNT_NOT_ACTIVATED_ON_NETWORK', { network: network })}
               <br />
-              {'Switch network or activate your account.'}
+              {t('TEXT_PLEASE_SWITCH_NETWORK')}
             </>
           }
           transaction={TransactionStatus.Rejected}
@@ -269,17 +271,17 @@ export const AddNewTrustline: FC = () => {
       <AsyncTransaction
         title={
           transaction === TransactionStatus.Success
-            ? 'Transaction accepted'
-            : 'Transaction in progress'
+            ? t('TEXT_TRANSACTION_ACCEPTED')
+            : t('TEXT_TRANSACTION_IN_PROGRESS')
         }
         subtitle={
           transaction === TransactionStatus.Success ? (
-            'Transaction Successful'
+            t('TEXT_TRANSACTION_SUCCESSFUL')
           ) : (
             <>
-              We are processing your transaction
+              {t('TEXT_TRANSACTION_PROCESSING')}
               <br />
-              Please wait
+              {t('TEXT_PLEASE_WAIT')}
             </>
           )
         }
@@ -291,10 +293,10 @@ export const AddNewTrustline: FC = () => {
   if (transaction === TransactionStatus.Rejected) {
     return (
       <AsyncTransaction
-        title="Transaction rejected"
+        title={t('TEXT_TRANSACTION_REJECTED')}
         subtitle={
           <>
-            Your transaction failed, please try again.
+            {t('TEXT_TRANSACTION_FAILED')}
             <br />
             {errorRequestRejection ? errorRequestRejection : 'Something went wrong'}
           </>
@@ -306,7 +308,7 @@ export const AddNewTrustline: FC = () => {
 
   if (step === 'WARNING') {
     return (
-      <PageWithTitle title="Add Trustline">
+      <PageWithTitle title={t('TEXT_ADD_TRUSTLINE')}>
         <div
           style={{
             height: '100%',
@@ -318,21 +320,21 @@ export const AddNewTrustline: FC = () => {
             <Typography color="#ffac33">Warning</Typography>
           </div>
           <Typography align="center" style={{ marginTop: '2rem' }}>
-            GemWallet does not recommend or support any particular token or issuer.
+            {t('TEXT_DISPLAIMER_TOKEN_1')}
           </Typography>
           <Typography align="center" variant="body2" style={{ marginTop: '1rem' }}>
-            It is important to add only the tokens and issuers you trust.
+            {t('TEXT_DISCLAIMER_TOKEN_2')}
           </Typography>
           <Typography align="center" variant="body2" style={{ marginTop: '1rem' }}>
-            Continue at your own risk
+            {t('TEXT_DISCLAIMER_TOKEN_3')}
           </Typography>
         </div>
         <Container style={{ display: 'flex', justifyContent: 'space-evenly' }}>
           <Button variant="contained" color="secondary" onClick={handleReject}>
-            Reject
+            {t('TEXT_REJECT')}
           </Button>
           <Button variant="contained" onClick={() => setStep('TRANSACTION')} disabled={false}>
-            Continue
+            {t('TEXT_CONFIRM')}
           </Button>
         </Container>
       </PageWithTitle>
@@ -342,28 +344,28 @@ export const AddNewTrustline: FC = () => {
   const { issuer, currency, value, fee } = params;
 
   return (
-    <PageWithTitle title="Add Trustline - Confirm">
+    <PageWithTitle title={t('TEXT_ADD_TRUSTLINE_CONFIRM')}>
       {!hasEnoughFunds ? (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <Tooltip title="You need more funds on your wallet to proceed">
+          <Tooltip title={t('TEXT_NEED_MORE_FUNDS')}>
             <IconButton size="small">
               <ErrorIcon style={{ color: ERROR_RED }} />
             </IconButton>
           </Tooltip>
           <Typography variant="body1" style={{ marginLeft: '10px', color: ERROR_RED }}>
-            Insufficient funds.
+            {t('TEXT_INSUFFICIENT_FUNDS')}
           </Typography>
         </div>
       ) : null}
       <Paper elevation={24} style={{ padding: '10px' }}>
-        <Typography variant="body1">Issuer:</Typography>
+        <Typography variant="body1">{t('TEXT_ISSUER')}:</Typography>
         <Typography variant="body2">{issuer}</Typography>
       </Paper>
       <Paper
         elevation={24}
         style={{ padding: '10px', display: 'flex', justifyContent: 'space-between' }}
       >
-        <Typography variant="body1">Currency:</Typography>
+        <Typography variant="body1">{t('TEXT_CURRENCY')}:</Typography>
         <Typography variant="body1">{currency}</Typography>
       </Paper>
 
@@ -371,24 +373,24 @@ export const AddNewTrustline: FC = () => {
         elevation={24}
         style={{ padding: '10px', display: 'flex', justifyContent: 'space-between' }}
       >
-        <Typography variant="body1">Limit:</Typography>
+        <Typography variant="body1">{t('TEXT_LIMIT')}:</Typography>
         <Typography variant="body1">{formatToken(Number(value), currency || undefined)}</Typography>
       </Paper>
       <Paper
         elevation={24}
         style={{ padding: '10px', display: 'flex', justifyContent: 'space-between' }}
       >
-        <Typography variant="body1">Fees:</Typography>
+        <Typography variant="body1">{t('TEXT_FEES')}:</Typography>
         <Typography variant="body1">{formatToken(Number(fee))}</Typography>
       </Paper>
       <Paper elevation={24} style={{ padding: '10px' }}>
         <Typography variant="body1" style={{ display: 'flex', alignItems: 'center' }}>
-          <Tooltip title="These are the fees to make the transaction over the network">
+          <Tooltip title={t('TEXT_FEES_EXPLANATION')}>
             <IconButton size="small">
               <ErrorIcon />
             </IconButton>
           </Tooltip>
-          Network fees:
+          {t('TEXT_NETWORK_FEES')}:
         </Typography>
         <Typography variant="body2" gutterBottom align="right">
           {errorFees ? (
@@ -404,10 +406,10 @@ export const AddNewTrustline: FC = () => {
       </Paper>
       <Container style={{ display: 'flex', justifyContent: 'space-evenly' }}>
         <Button variant="contained" color="secondary" onClick={handleReject}>
-          Reject
+          {t('TEXT_REJECT')}
         </Button>
         <Button variant="contained" onClick={handleConfirm} disabled={!hasEnoughFunds}>
-          Confirm
+          {t('TEXT_CONFIRM')}
         </Button>
       </Container>
     </PageWithTitle>

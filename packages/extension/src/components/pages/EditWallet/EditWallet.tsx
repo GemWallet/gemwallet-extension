@@ -2,6 +2,7 @@ import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import { Button, CircularProgress, List, ListItem, ListItemText } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { LIST_WALLETS_PATH } from '../../../constants';
@@ -20,6 +21,7 @@ export const EditWallet: FC = () => {
   const { publicAddress } = useParams();
   const [wallet, setWallet] = useState<WalletLedger>();
   const [menu, setMenu] = useState<Menu>();
+  const { t } = useTranslation('common');
 
   const { getWalletByPublicAddress } = useWallet();
 
@@ -81,7 +83,7 @@ export const EditWallet: FC = () => {
   }
 
   return (
-    <PageWithReturn title="Edit wallet" onBackClick={handleBack}>
+    <PageWithReturn title={t('TEXT_EDIT_WALLET')} onBackClick={handleBack}>
       {wallet === undefined ? (
         <div
           style={{
@@ -129,7 +131,7 @@ export const EditWallet: FC = () => {
               size="large"
               onClick={() => setMenu('removeWallet')}
             >
-              Remove Wallet
+              {t('TEXT_REMOVE_WALLET')}
             </Button>
           </div>
         </div>

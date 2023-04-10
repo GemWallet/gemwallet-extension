@@ -1,6 +1,7 @@
 import { FC, useCallback, useState } from 'react';
 
 import { TextField, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 import { useWallet } from '../../../../contexts';
 import { PageWithStepper } from '../../../templates';
@@ -15,6 +16,7 @@ export interface SecretSeedProps {
 export const SecretSeed: FC<SecretSeedProps> = ({ activeStep, steps, onBack, onNext }) => {
   const [seedError, setSeedError] = useState('');
   const { isValidSeed } = useWallet();
+  const { t } = useTranslation('common');
 
   const handleNext = useCallback(() => {
     const seedValue = (document.getElementById('seed') as HTMLInputElement).value;
@@ -29,22 +31,22 @@ export const SecretSeed: FC<SecretSeedProps> = ({ activeStep, steps, onBack, onN
     <PageWithStepper
       steps={steps}
       activeStep={activeStep}
-      buttonText="Next"
+      buttonText={t('TEXT_NEXT')}
       handleBack={onBack}
       handleNext={handleNext}
     >
       <Typography variant="h4" component="h1" style={{ marginTop: '130px' }}>
-        Secret Seed
+        {t('TEXT_SECRET_SEED')}
       </Typography>
       <Typography variant="subtitle1" component="h2" style={{ marginTop: '30px' }}>
-        Please enter your seed in order to load your wallet to GemWallet.
+        {t('TEXT_PLEASE_ENTER_SEED')}
       </Typography>
       <TextField
         fullWidth
         id="seed"
         key="seed"
         name="seed"
-        label="Seed"
+        label={t('TEXT_SEED')}
         error={!!seedError}
         helperText={seedError}
         style={{ marginTop: '20px' }}

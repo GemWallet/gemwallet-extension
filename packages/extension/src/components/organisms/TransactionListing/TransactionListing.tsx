@@ -18,6 +18,7 @@ import {
 } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 import { unix } from 'moment';
+import { useTranslation } from 'react-i18next';
 import { convertHexToString, dropsToXrp } from 'xrpl';
 
 import { useWallet } from '../../../contexts';
@@ -129,6 +130,7 @@ const formatDate = (unixTimestamp: number): string => {
 
 export const TransactionListing: FC<TransactionListingProps> = ({ transactions }) => {
   const { getCurrentWallet } = useWallet();
+  const { t } = useTranslation('common');
 
   const [tx, setTx] = useState(
     transactions.length > 0 ? transactions.map((t) => ({ ...t, touched: false })) : []
@@ -161,7 +163,7 @@ export const TransactionListing: FC<TransactionListingProps> = ({ transactions }
     return (
       <InformationMessage title="No transactions to show">
         <div style={{ marginBottom: '5px' }}>
-          There are no history of transactions with this wallet.
+          {t('TEXT_NO_HISTORY')}
         </div>
       </InformationMessage>
     );
@@ -212,7 +214,7 @@ export const TransactionListing: FC<TransactionListingProps> = ({ transactions }
                   <CloseIcon />
                 </IconButton>
                 <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-                  Transaction Details
+                  {t('TEXT_TRANSACTION_DETAILS')}
                 </Typography>
               </Toolbar>
             </AppBar>

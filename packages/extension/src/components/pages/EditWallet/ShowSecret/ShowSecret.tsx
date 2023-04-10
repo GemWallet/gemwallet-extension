@@ -5,6 +5,7 @@ import DoneIcon from '@mui/icons-material/Done';
 import WarningIcon from '@mui/icons-material/Warning';
 import { Button, Paper, TextField, Typography } from '@mui/material';
 import copyToClipboard from 'copy-to-clipboard';
+import { useTranslation } from 'react-i18next';
 
 import { useWallet } from '../../../../contexts';
 import { useKeyUp, useTimeout } from '../../../../hooks';
@@ -26,6 +27,7 @@ export const ShowSecret: FC<ShowSecretProps> = ({ seed, mnemonic, onBackButton }
   const setTimeout = useTimeout(2000);
   const passwordRef = useRef<HTMLInputElement | null>(null);
   const secretType: Secret = useMemo(() => (seed ? 'seed' : 'mnemonic'), [seed]);
+  const { t } = useTranslation('common');
 
   const handlePasswordChange = useCallback(() => {
     setPasswordError('');
@@ -71,19 +73,18 @@ export const ShowSecret: FC<ShowSecretProps> = ({ seed, mnemonic, onBackButton }
             <WarningIcon color="warning" fontSize="large" />
           </div>
           <Typography align="center">
-            Do not share your {secretType}! If someone has your {secretType} they will have full
-            control of your wallet.
+            {t('TEXT_DISCLAIMER_DO_NOT_SHARE_SECRET', { secretType: secretType })}
           </Typography>
           {step === 'password' ? (
             <>
               <Typography align="center" variant="body2" style={{ marginTop: '30px' }}>
-                Please confirm your password before we show you your {secretType}
+                {t('TEXT_CONFIRM_BEFORE_SHOWING_SECRET', { secretType: secretType })}
               </Typography>
               <TextField
                 fullWidth
                 id="password"
                 name="password"
-                label="Password"
+                label={t('TEXT_PASSWORD')}
                 inputRef={passwordRef}
                 error={!!passwordError}
                 onChange={handlePasswordChange}
@@ -154,12 +155,12 @@ export const ShowSecret: FC<ShowSecretProps> = ({ seed, mnemonic, onBackButton }
                 style={{ width: '45%' }}
                 onClick={handleConfirmPassword}
               >
-                Show
+                {t('TEXT_SHOW')}
               </Button>
             </>
           ) : (
             <Button size="large" variant="contained" fullWidth onClick={onBackButton}>
-              Done
+              {t('TEXT_DONE')}
             </Button>
           )}
         </div>

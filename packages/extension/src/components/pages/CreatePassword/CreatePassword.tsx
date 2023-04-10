@@ -2,6 +2,7 @@ import { Dispatch, FC, SetStateAction, useCallback, useRef, useState } from 'rea
 
 import { TextField, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
+import { useTranslation } from 'react-i18next';
 
 import { ERROR_RED } from '../../../constants';
 import { saveWallet, WalletToSave } from '../../../utils';
@@ -26,6 +27,7 @@ export const CreatePassword: FC<CreatePasswordProps> = ({
   const [saveWalletError, setSaveWalletError] = useState('');
   const passwordRef = useRef<HTMLInputElement | null>(null);
   const confirmPasswordRef = useRef<HTMLInputElement | null>(null);
+  const { t } = useTranslation('common');
 
   const handleNext = useCallback(() => {
     const passwordValue: string | undefined = passwordRef.current?.value;
@@ -56,17 +58,17 @@ export const CreatePassword: FC<CreatePasswordProps> = ({
       handleNext={handleNext}
     >
       <Typography variant="h4" component="h1" style={{ marginTop: '100px' }}>
-        Create a password
+        {t('TEXT_CREATE_PASSWORD')}
       </Typography>
       <Typography variant="subtitle1" component="h2" style={{ marginTop: '30px' }}>
-        You will use this password to unlock your wallet
+        {t('TEXT_CREATE_PASSWORD_DETAILS')}
       </Typography>
       <TextField
         fullWidth
         id="password"
         key="password"
         name="password"
-        label="Password"
+        label={t('TEXT_PASSWORD')}
         inputRef={passwordRef}
         error={!!passwordError}
         type="password"
@@ -77,7 +79,7 @@ export const CreatePassword: FC<CreatePasswordProps> = ({
         id="confirm-password"
         key="confirm-password"
         name="confirm-password"
-        label="Confirm Password"
+        label={t('TEXT_CONFIRM_PASSWORD')}
         inputRef={confirmPasswordRef}
         error={!!passwordError}
         helperText={passwordError}

@@ -3,6 +3,7 @@ import { FC, useCallback } from 'react';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import { Button, Container, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 import {
@@ -16,6 +17,7 @@ import { openExternalLink } from '../../../utils';
 export const Congratulations: FC = () => {
   const navigate = useNavigate();
   const { search } = useLocation();
+  const { t } = useTranslation('common');
 
   const handleNext = useCallback(() => {
     if (search.includes(PARAMETER_TRANSACTION_PAYMENT)) {
@@ -43,10 +45,10 @@ export const Congratulations: FC = () => {
         }}
       >
         <Typography variant="h4" component="h1" style={{ marginTop: '140px' }}>
-          Woo, you're in!
+          {t('TEXT_WOO')}
         </Typography>
         <Typography variant="subtitle1" component="h2" style={{ marginTop: '30px' }}>
-          Follow along with product updates or reach out if you have any questions.
+          {t('TEXT_FOLLOW_ALONG')}
         </Typography>
         <Button
           variant="contained"
@@ -58,12 +60,12 @@ export const Congratulations: FC = () => {
             openExternalLink(TWITTER_LINK);
           }}
         >
-          Follow us on Twitter
+          {t('TEXT_FOLLOW_TWITTER')}
         </Button>
       </Container>
       <Container style={{ display: 'flex', flexDirection: 'column', marginTop: '24px' }}>
         <Button variant="contained" onClick={handleNext}>
-          Finish
+          {t('TEXT_FINISH')}
         </Button>
       </Container>
     </Container>

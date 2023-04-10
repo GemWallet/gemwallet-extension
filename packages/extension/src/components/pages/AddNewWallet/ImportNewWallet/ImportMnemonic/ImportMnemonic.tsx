@@ -1,6 +1,7 @@
 import { FC, useCallback, useRef, useState } from 'react';
 
 import { TextField, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
 import { LIST_WALLETS_PATH } from '../../../../../constants';
@@ -18,6 +19,7 @@ export const ImportMnemonic: FC<ImportMnemonicProps> = ({ activeStep, password, 
   const { importMnemonic } = useWallet();
   const [mnemonicError, setMnemonicError] = useState('');
   const mnemonicRef = useRef<HTMLInputElement | null>(null);
+  const { t } = useTranslation('common');
 
   const handleNext = useCallback(() => {
     const mnemonicValue = mnemonicRef.current?.value;
@@ -44,17 +46,17 @@ export const ImportMnemonic: FC<ImportMnemonicProps> = ({ activeStep, password, 
       handleNext={handleNext}
     >
       <Typography variant="h4" component="h1" style={{ marginTop: '140px' }}>
-        Mnemonic
+        {t('TEXT_MNEMONIC')}
       </Typography>
       <Typography variant="subtitle1" component="h2" style={{ marginTop: '30px' }}>
-        Please enter your mnemonic in order to load your wallet to GemWallet.
+        {t('TEXT_PLEASE_ENTER_MNEMONIC')}
       </Typography>
       <TextField
         fullWidth
         id="mnemonic"
         key="mnemonic"
         name="mnemonic"
-        label="Mnemonic"
+        label={t('TEXT_MNEMONIC')}
         inputRef={mnemonicRef}
         error={!!mnemonicError}
         helperText={mnemonicError}

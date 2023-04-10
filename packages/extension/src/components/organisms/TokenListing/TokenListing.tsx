@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 import * as Sentry from '@sentry/react';
+import { useTranslation } from 'react-i18next';
 
 import { DEFAULT_RESERVE } from '../../../constants';
 import { useNetwork, useServer } from '../../../contexts';
@@ -48,6 +49,7 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
   const [explanationOpen, setExplanationOpen] = useState(false);
   const { client, reconnectToNetwork } = useNetwork();
   const { serverInfo } = useServer();
+  const { t } = useTranslation('common');
 
   useEffect(() => {
     async function fetchBalance() {
@@ -91,11 +93,11 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
         }}
       >
         <Typography style={{ marginBottom: '5px' }}>
-          There was an error attempting to retrieve your assets. Please refresh and try again.
+          {t('TEXT_ERROR_RETRIEVING_ASSETS')}
         </Typography>
         <div style={{ textAlign: 'center', margin: '10px 0' }}>
           <Button variant="contained" onClick={reconnectToNetwork}>
-            Refresh
+            {t('TEXT_REFRESH')}
           </Button>
         </div>
       </InformationMessage>
@@ -111,18 +113,17 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
     return (
       <InformationMessage title="Account not activated">
         <div style={{ marginBottom: '5px' }}>
-          To create this account to the XRP ledger, you will have to make a first deposit of a
-          minimum {reserve} XRP.
+          {t('TEXT_DEPOSIT_REQUIRED', { reserve: reserve})}
         </div>
         <Link
           href="https://xrpl.org/reserves.html?utm_source=gemwallet.app"
           target="_blank"
           rel="noreferrer"
         >
-          Learn more about the account reserve.
+          {t('TEXT_LEARN_MORE_ABOUT_RESERVE')}
         </Link>
         <div style={{ marginTop: '5px' }}>
-          Your reserved XRP will not show up within your GemWallet's balance as you cannot spend it.
+          {t('TEXT_RESERVE_WILL_NOT_SHOW')}
         </div>
       </InformationMessage>
     );
@@ -158,7 +159,7 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
               <CloseIcon />
             </IconButton>
             <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-              Account balance
+              {t('TEXT_ACCOUNT_BALANCE')}
             </Typography>
           </Toolbar>
         </AppBar>
@@ -170,20 +171,19 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
             }}
           >
             <Typography style={{ marginBottom: '5px' }}>
-              To create this account to the XRP ledger, you will have to make a first deposit of a
-              minimum {reserve} XRP.
+              {t('TEXT_DEPOSIT_REQUIRED', { reserve: reserve })}
             </Typography>
             <Link
               href="https://xrpl.org/reserves.html?utm_source=gemwallet.app"
               target="_blank"
               rel="noreferrer"
             >
-              Learn more about the account reserve.
+              {t('TEXT_LEARN_MORE_ABOUT_RESERVE')}
             </Link>
           </InformationMessage>
-          <Typography style={{ margin: '20px 0 10px 0' }}>Account balance</Typography>
+          <Typography style={{ margin: '20px 0 10px 0' }}>{t('TEXT_ACCOUNT_BALANCE')}</Typography>
           <TokenDisplay balance={Number(XRPBalance)} isXRPToken token="XRP" />
-          <Typography style={{ margin: '20px 0 10px 0' }}>Amount that can be spent</Typography>
+          <Typography style={{ margin: '20px 0 10px 0' }}>{t('TEXT_AMOUNT_TO_SEND')}</Typography>
           <TokenDisplay balance={Number(XRPBalance) - reserve} isXRPToken token="XRP" />
         </div>
       </Dialog>

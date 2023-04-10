@@ -2,6 +2,7 @@ import { CSSProperties, FC, useMemo, useState } from 'react';
 
 import { KeyboardArrowLeft } from '@mui/icons-material';
 import { Divider, IconButton, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
 import { navigation, NAV_MENU_HEIGHT, SETTINGS_PATH } from '../../../constants';
@@ -44,6 +45,8 @@ export const TrustedApps: FC = () => {
     setTrustedApps(newTrustedApps);
   };
 
+  const { t } = useTranslation('common');
+
   return (
     <PageWithNavMenu indexDefaultNav={indexDefaultNav}>
       <div
@@ -65,7 +68,7 @@ export const TrustedApps: FC = () => {
       </div>
       <Divider />
       <div style={trustedAppContainerStyle}>
-        {trustedApps.length === 0 ? <Typography>No trusted apps</Typography> : null}
+        {trustedApps.length === 0 ? <Typography>{t('TEXT_NO_TRUSTED_APPS')}</Typography> : null}
         {trustedApps.map(({ url }) => (
           <TrustedApp
             key={url}

@@ -2,6 +2,7 @@ import { useState, useEffect, FC, useCallback, useRef } from 'react';
 
 import { Button, Container, TextField, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 import { GEM_WALLET } from '@gemwallet/constants';
@@ -37,6 +38,7 @@ export const Login: FC = () => {
   const { window: extensionWindow, closeExtension } = useBrowser();
   const { signIn, wallets, selectedWallet } = useWallet();
   const passwordRef = useRef<HTMLInputElement | null>(null);
+  const { t } = useTranslation('common');
 
   const handleTransaction = useCallback(
     (payload: unknown) => {
@@ -182,7 +184,7 @@ export const Login: FC = () => {
           GemWallet
         </Typography>
         <Typography variant="h6" component="h2" style={{ marginTop: '30px' }}>
-          Internet cryptocurrency payments made easy
+          {t('TEXT_WELCOME_SUBTITLE')}
         </Typography>
       </Container>
       <Container
@@ -198,7 +200,7 @@ export const Login: FC = () => {
           autoFocus
           id="password"
           name="password"
-          label="Password"
+          label={t('TEXT_PASSWORD')}
           inputRef={passwordRef}
           error={!!passwordError}
           onChange={handleTextFieldChange}
@@ -207,7 +209,7 @@ export const Login: FC = () => {
           style={{ marginBottom: !passwordError ? '33px' : '10px' }}
         />
         <Button variant="contained" onClick={handleUnlock}>
-          Unlock
+          {t('TEXT_UNLOCK')}
         </Button>
         <Typography
           variant="caption"
@@ -216,7 +218,7 @@ export const Login: FC = () => {
           style={{ marginTop: '10px', cursor: 'pointer' }}
           onClick={handleReset}
         >
-          Reset Password
+          {t('TEXT_RESET_PASSWORD')}
         </Typography>
       </Container>
     </Container>

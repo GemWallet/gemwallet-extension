@@ -3,6 +3,7 @@ import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import ErrorIcon from '@mui/icons-material/Error';
 import { Button, Container, IconButton, Paper, Tooltip, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
+import { useTranslation } from 'react-i18next';
 import { isValidAddress, xrpToDrops } from 'xrpl';
 
 import { GEM_WALLET, ReceivePaymentHashBackgroundMessage } from '@gemwallet/constants';
@@ -44,6 +45,7 @@ export const Transaction: FC = () => {
   const { getCurrentWallet } = useWallet();
   const { client, network } = useNetwork();
   const { serverInfo } = useServer();
+  const { t } = useTranslation('common');
 
   useEffect(() => {
     const queryString = window.location.search;
@@ -188,12 +190,12 @@ export const Transaction: FC = () => {
   if (isParamsMissing) {
     return (
       <AsyncTransaction
-        title="Transaction rejected"
+        title={t('TEXT_TRANSACTION_REJECTED')}
         subtitle={
           <>
-            Your transaction failed, please try again.
+            {t('TEXT_TRANSACTION_FAILED')}
             <br />
-            An amount and a destination have not been provided to the extension.
+            {t('TEXT_TRANSACTION_FAILED_DETAILS_1')}
           </>
         }
         transaction={TransactionStatus.Rejected}
@@ -204,12 +206,12 @@ export const Transaction: FC = () => {
   if (!isValidDestination) {
     return (
       <AsyncTransaction
-        title="Incorrect transaction"
+        title={t('TEXT_INCORRECT_TRANSACTION')}
         subtitle={
           <>
-            Your transaction is incorrect.
+            {t('TEXT_INCORRECT_TRANSACTION_DETAILS_1')}
             <br />
-            The destination address of the transaction is invalid.
+            {t('TEXT_INCORRECT_TRANSACTION_DETAILS_2')}
           </>
         }
         transaction={TransactionStatus.Rejected}
@@ -221,12 +223,12 @@ export const Transaction: FC = () => {
     if (errorDifference === 'Account not found.') {
       return (
         <AsyncTransaction
-          title="Account not activated"
+          title={t('TEXT_ACCOUNT_NOT_ACTIVATED')}
           subtitle={
             <>
-              {`Your account is not activated on the ${network} network.`}
+              {t('TEXT_ACCOUNT_NOT_ACTIVATED_ON_NETWORK', { network: network })}
               <br />
-              {'Switch network or activate your account.'}
+              {t('TEXT_PLEASE_SWITCH_NETWORK')}
             </>
           }
           transaction={TransactionStatus.Rejected}
@@ -252,17 +254,17 @@ export const Transaction: FC = () => {
       <AsyncTransaction
         title={
           transaction === TransactionStatus.Success
-            ? 'Transaction accepted'
-            : 'Transaction in progress'
+            ? t('TEXT_TRANSACTION_ACCEPTED')
+            : t('TEXT_TRANSACTION_IN_PROGRESS')
         }
         subtitle={
           transaction === TransactionStatus.Success ? (
-            'Transaction Successful'
+            t('TEXT_TRANSACTION_SUCCESSFUL')
           ) : (
             <>
-              We are processing your transaction
+              {t('TEXT_TRANSACTION_PROCESSING')}
               <br />
-              Please wait
+              {t('TEXT_PLEASE_WAIT')}
             </>
           )
         }
@@ -274,12 +276,12 @@ export const Transaction: FC = () => {
   if (transaction === TransactionStatus.Rejected) {
     return (
       <AsyncTransaction
-        title="Transaction rejected"
+        title={t('TEXT_TRANSACTION_REJECTED')}
         subtitle={
           <>
-            Your transaction failed, please try again.
+            {t('TEXT_TRANSACTION_FAILED')}
             <br />
-            {errorRequestRejection ? errorRequestRejection : 'Something went wrong'}
+            {errorRequestRejection ? errorRequestRejection : t('TEXT_SOMETHING_WENT_WRONG')}
           </>
         }
         transaction={TransactionStatus.Rejected}
@@ -290,33 +292,33 @@ export const Transaction: FC = () => {
   const { amount, destination, currency } = params;
 
   return (
-    <PageWithTitle title="Confirm Transaction">
+    <PageWithTitle title={t('TEXT_CONFIRM_TRANSACTION')}>
       {!hasEnoughFunds ? (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <ErrorIcon style={{ color: ERROR_RED }} />
           <Typography variant="body1" style={{ marginLeft: '10px', color: ERROR_RED }}>
-            Insufficient funds.
+            {t('TEXT_INSUFFICIENT_FUNDS')}
           </Typography>
         </div>
       ) : null}
       <Paper elevation={24} style={{ padding: '10px' }}>
-        <Typography variant="body1">Destination:</Typography>
+        <Typography variant="body1">{t('TEXT_DESTINATION')}:</Typography>
         <Typography variant="body2">{destination}</Typography>
       </Paper>
       <Paper elevation={24} style={{ padding: '10px' }}>
-        <Typography variant="body1">Amount:</Typography>
+        <Typography variant="body1">{t('TEXT_AMOUNT')}:</Typography>
         <Typography variant="h4" component="h1" gutterBottom align="right">
           {formatToken(Number(amount), currency || 'XRP')}
         </Typography>
       </Paper>
       <Paper elevation={24} style={{ padding: '10px' }}>
         <Typography variant="body1" style={{ display: 'flex', alignItems: 'center' }}>
-          <Tooltip title="These are the fees to make the transaction over the network">
+          <Tooltip title={t('TEXT_FEES_EXPLANATION')}>
             <IconButton size="small">
               <ErrorIcon />
             </IconButton>
           </Tooltip>
-          Network fees:
+          {t('TEXT_NETWORK_FEES')}:
         </Typography>
         <Typography variant="body2" gutterBottom align="right">
           {errorFees ? (
@@ -332,10 +334,10 @@ export const Transaction: FC = () => {
       </Paper>
       <Container style={{ display: 'flex', justifyContent: 'space-evenly' }}>
         <Button variant="contained" color="secondary" onClick={handleReject}>
-          Reject
+          {t('TEXT_REJECT')}
         </Button>
         <Button variant="contained" onClick={handleConfirm} disabled={!hasEnoughFunds}>
-          Confirm
+          {t('TEXT_CONFIRM')}
         </Button>
       </Container>
     </PageWithTitle>

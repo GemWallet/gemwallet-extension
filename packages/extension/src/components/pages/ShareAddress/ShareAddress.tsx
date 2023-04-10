@@ -1,6 +1,7 @@
 import { FC, useCallback, useMemo } from 'react';
 
 import * as Sentry from '@sentry/react';
+import { useTranslation } from 'react-i18next';
 
 import { GEM_WALLET, ReceiveAddressBackgroundMessage } from '@gemwallet/constants';
 
@@ -13,6 +14,7 @@ const permissions = [Permission.Address];
 export const ShareAddress: FC = () => {
   const { getCurrentWallet, selectedWallet } = useWallet();
   const { window: extensionWindow, closeExtension } = useBrowser();
+  const { t } = useTranslation('common');
 
   const payload = useMemo(() => {
     const queryString = window.location.search;
@@ -69,9 +71,9 @@ export const ShareAddress: FC = () => {
 
   return (
     <SharingPage
-      title="Share your address"
+      title={t('TEXT_SHARE_ADDRESS')}
       permissions={permissions}
-      permissionDetails={['View your address']}
+      permissionDetails={[t('TEXT_VIEW_ADDRESS')]}
       handleShare={handleShare}
       handleReject={handleReject}
     />

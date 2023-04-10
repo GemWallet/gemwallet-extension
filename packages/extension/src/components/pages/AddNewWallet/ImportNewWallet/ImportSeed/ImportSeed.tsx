@@ -1,6 +1,7 @@
 import { FC, useCallback, useRef, useState } from 'react';
 
 import { TextField, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
 import { LIST_WALLETS_PATH } from '../../../../../constants';
@@ -18,6 +19,7 @@ export const ImportSeed: FC<ImportSeedProps> = ({ activeStep, password, handleBa
   const { importSeed } = useWallet();
   const [seedError, setSeedError] = useState('');
   const seedRef = useRef<HTMLInputElement | null>(null);
+  const { t } = useTranslation('common');
 
   const handleNext = useCallback(() => {
     const seedValue = seedRef.current?.value;
@@ -39,22 +41,22 @@ export const ImportSeed: FC<ImportSeedProps> = ({ activeStep, password, handleBa
     <PageWithStepper
       steps={1}
       activeStep={activeStep}
-      buttonText="Add Seed"
+      buttonText={t('TEXT_ADD_SEED')}
       handleBack={handleBack}
       handleNext={handleNext}
     >
       <Typography variant="h4" component="h1" style={{ marginTop: '120px' }}>
-        Enter Your Secret Seed
+        {t('TEXT_ENTER_SECRET_SEED')}
       </Typography>
       <Typography variant="subtitle1" component="h2" style={{ marginTop: '30px' }}>
-        Enter your seed to recover your wallet.
+        {t('TEXT_ENTER_SEED_TO_RECOVER_WALLET')}
       </Typography>
       <TextField
         fullWidth
         id="seed"
         key="seed"
         name="seed"
-        label="Seed"
+        label={t('TEXT_SEED')}
         inputRef={seedRef}
         error={!!seedError}
         helperText={seedError}

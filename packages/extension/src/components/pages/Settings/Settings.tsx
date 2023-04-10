@@ -10,6 +10,7 @@ import {
   ListItemText,
   Typography
 } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
 import {
@@ -27,6 +28,7 @@ import { PageWithNavMenu } from '../../templates';
 export const Settings: FC = () => {
   const navigate = useNavigate();
   const { signOut } = useWallet();
+  const { t } = useTranslation('common');
 
   const handleLock = useCallback(() => {
     signOut();
@@ -35,27 +37,27 @@ export const Settings: FC = () => {
   const items = useMemo(
     () => [
       {
-        name: 'Trusted Apps',
+        name: t('TEXT_TRUSTED_APPS'),
         onClick: () => navigate(TRUSTED_APPS_PATH)
       },
       {
-        name: 'Help',
+        name: t('TEXT_HELP'),
         onClick: () => openExternalLink(FAQ_LINK)
       },
       {
-        name: 'Leave A Feedback',
+        name: t('TEXT_LEAVE_FEEDBACK'),
         onClick: () => openExternalLink(FEEDBACK_LINK)
       },
       {
-        name: 'Reset Password',
+        name: t('TEXT_RESET_PASSWORD'),
         onClick: () => navigate(RESET_PASSWORD_PATH)
       },
       {
-        name: 'About',
+        name: t('TEXT_ABOUT'),
         onClick: () => navigate(ABOUT_PATH)
       }
     ],
-    [navigate]
+    [navigate, t]
   );
 
   return (
@@ -65,7 +67,7 @@ export const Settings: FC = () => {
           padding: '0.75rem 1rem'
         }}
       >
-        <Typography variant="h6">Settings</Typography>
+        <Typography variant="h6">{t('TEXT_SETTINGS')}</Typography>
       </div>
       <Divider />
       <div
@@ -92,7 +94,7 @@ export const Settings: FC = () => {
           }}
         >
           <Button variant="contained" fullWidth size="large" onClick={handleLock}>
-            Lock
+            {t('TEXT_LOCK')}
           </Button>
         </div>
       </div>

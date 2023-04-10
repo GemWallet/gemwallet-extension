@@ -1,6 +1,7 @@
 import { FC, useCallback, useState } from 'react';
 
 import { Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
 import {
@@ -33,6 +34,7 @@ const SECRET_TYPES = [
 export const ImportWallet: FC = () => {
   const navigate = useNavigate();
   const [selectedAccount, setSelectedAccount] = useState(-1);
+  const { t } = useTranslation('common');
 
   const handleBack = useCallback(() => {
     navigate(WELCOME_PATH);
@@ -46,20 +48,20 @@ export const ImportWallet: FC = () => {
     <PageWithStepper
       steps={0}
       activeStep={0}
-      buttonText="Next"
+      buttonText={t('TEXT_NEXT')}
       handleBack={handleBack}
       handleNext={handleNext}
       disabledNext={selectedAccount === -1}
     >
       <Typography variant="h4" component="h1" style={{ marginTop: '30px' }}>
-        Import Wallet
+        {t('TEXT_IMPORT_WALLET')}
       </Typography>
       <Typography
         variant="subtitle1"
         component="h2"
         style={{ marginTop: '30px', marginBottom: '20px' }}
       >
-        Please select your account secret type
+        {t('TEXT_SELECT_ACCOUNT_SECRET_TYPE')}
       </Typography>
       {SECRET_TYPES.map(({ name, description }, index) => (
         <ButtonOption
