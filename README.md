@@ -1,21 +1,30 @@
 # 💎 GemWallet Extension
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+
 [![All Contributors](https://img.shields.io/badge/all_contributors-5-orange.svg?style=flat-square)](#contributors-)
+
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
-## GemWallet: Crypto payments made easy
+## GemWallet: A crypto wallet & Web3 layer for the XRPL
 
 ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)
 ![license](https://img.shields.io/badge/license-file%20LICENSE-blue)
 ![npm version](https://img.shields.io/npm/v/@gemwallet/api)
 ![extension version](https://img.shields.io/github/package-json/v/GemWallet/gemwallet-extension?filename=%2Fpackages%2Fextension%2Fpackage.json)
 
+## Useful links
+
+- Download on the [Chrome Store](https://chrome.google.com/webstore/detail/gemwallet/egebedonbdapoieedfcfkofloclfghab)
+- Visit the [official website](https://gemwallet.app)
+- Visit the [documentation](https://gemwallet.app/docs/user-guide/introduction)
+- Join us on [Discord](https://discord.gg/CnkP9KGHBe)
+- Follow us on [Twitter](https://twitter.com/gemwallet_app)
+- Watch our tutorials on [YouTube](https://www.youtube.com/channel/UCP980esJwyzU7qU4qZQ6A5Q)
+
 ## Introduction
 
-GemWallet is a web extension that allows you to make online payments with one click on the XRPL. It also provides an API that bridges web browsers to the blockchain, allowing developers to easily build web3 applications integrated with XRP.
-
-Our vision is really oriented toward payments, micro-payments, donations, and payment streaming.
+GemWallet is a cutting-edge crypto wallet and Web3 layer for the XRP Ledger (XRPL). Our browser extension enables you to make fast and secure payments on the XRP Ledger directly from your browser. Say goodbye to the hassle of copying and pasting private keys, and join the revolution of effortless blockchain transactions with GemWallet. Experience the future of finance with us today.
 
 ![](demo.gif)
 
