@@ -111,7 +111,7 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
 
   if (XRPBalance === ERROR_STATE) {
     return (
-      <InformationMessage title="Account not activated">
+      <InformationMessage title={t('TEXT_ACCOUNT_NOT_ACTIVATED') || "Account not activated"}>
         <div style={{ marginBottom: '5px' }}>
           {t('TEXT_DEPOSIT_REQUIRED', { reserve: reserve})}
         </div>

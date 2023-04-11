@@ -291,7 +291,7 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
 
   if (errorTokens !== '') {
     return (
-      <InformationMessage title="Something went wrong">
+      <InformationMessage title={t('TEXT_SOMETHING_WENT_WRONG') || "Something went wrong"}>
         <div style={{ marginBottom: '5px' }}>{errorTokens}</div>
       </InformationMessage>
     );

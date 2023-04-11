@@ -161,7 +161,7 @@ export const TransactionListing: FC<TransactionListingProps> = ({ transactions }
 
   if (tx.length === 0) {
     return (
-      <InformationMessage title="No transactions to show">
+      <InformationMessage title={t('TEXT_NO_TRANSACTIONS_TO_SHOW') || "No transactions to show"}>
         <div style={{ marginBottom: '5px' }}>
           {t('TEXT_NO_HISTORY')}
         </div>
