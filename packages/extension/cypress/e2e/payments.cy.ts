@@ -96,7 +96,15 @@ describe('Make payment - ETH', () => {
       win.localStorage.setItem('network', 'Testnet');
     });
     cy.visit(
-      `http://localhost:3000?amount=${AMOUNT}&destination=${DESTINATION_ADDRESS}&currency=${TOKEN}&issuer=${DESTINATION_ADDRESS}&id=93376135&transaction=payment`
+      `http://localhost:3000?amount=${AMOUNT}&destination=${DESTINATION_ADDRESS}&currency=${TOKEN}&issuer=${DESTINATION_ADDRESS}&id=93376135&transaction=payment`,
+      {
+        onBeforeLoad(win) {
+          (win as any).chrome = (win as any).chrome || {};
+          (win as any).chrome.runtime = {
+            sendMessage(message, cb) {}
+          };
+        }
+      }
     );
 
     // Login

@@ -257,7 +257,7 @@ describe('Add an additional wallet (with previous wallet)', () => {
       // Redirection to the wallets page
       cy.contains('Your wallets').should('be.visible');
       cy.get('div[data-testid="wallet-container"]').children().should('have.length', 2);
-      cy.get('div[data-testid="wallet-container"]').first().contains('rJD2...q9uV');
+      cy.get('div[data-testid="wallet-container"]').first().contains('rJD2...9uVr');
 
       // Save the current state of the localStorage
       cy.window().then((win) => {
@@ -285,7 +285,7 @@ describe('Add an additional wallet (with previous wallet)', () => {
     // Redirection to the wallets page
     cy.contains('Your wallets').should('be.visible');
     cy.get('div[data-testid="wallet-container"]').children().should('have.length', 3);
-    cy.get('div[data-testid="wallet-container"]').first().contains('rJD2...q9uV');
+    cy.get('div[data-testid="wallet-container"]').first().contains('rJD2...9uVr');
 
     // Save the current state of the localStorage
     cy.window().then((win) => {
@@ -312,7 +312,7 @@ describe('Add an additional wallet (with previous wallet)', () => {
     // Redirection to the wallets page
     cy.contains('Your wallets').should('be.visible');
     cy.get('div[data-testid="wallet-container"]').children().should('have.length', 4);
-    cy.get('div[data-testid="wallet-container"]').first().contains('rJD2...q9uV');
+    cy.get('div[data-testid="wallet-container"]').first().contains('rJD2...9uVr');
 
     // Save the current state of the localStorage
     cy.window().then((win) => {
@@ -353,7 +353,7 @@ describe('Add an additional wallet (with previous wallet)', () => {
     // Redirection to the wallets page
     cy.contains('Your wallets').should('be.visible');
     cy.get('div[data-testid="wallet-container"]').children().should('have.length', 5);
-    cy.get('div[data-testid="wallet-container"]').first().contains('rJD2...q9uV');
+    cy.get('div[data-testid="wallet-container"]').first().contains('rJD2...9uVr');
   });
 });
 
