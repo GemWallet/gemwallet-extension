@@ -83,7 +83,7 @@ describe('Trustline', () => {
     // Should have the proper information
     cy.contains('Issuer:').next().should('have.text', DESTINATION_ADDRESS);
     cy.contains('Currency:').next().should('have.text', CURRENCY);
-    cy.contains('Value:').next().should('have.text', `10,000,000 ${CURRENCY}`);
+    cy.contains('Limit:').next().should('have.text', `10,000,000 ${CURRENCY}`);
     cy.contains('Fees:').next().should('have.text', '0 XRP');
 
     // Confirm the trustline
@@ -127,7 +127,7 @@ describe('Trustline', () => {
     // Should have the proper information
     cy.contains('Issuer:').next().should('have.text', DESTINATION_ADDRESS);
     cy.contains('Currency:').next().should('have.text', CURRENCY);
-    cy.contains('Value:').next().should('have.text', `10,000,000 ${CURRENCY}`);
+    cy.contains('Limit:').next().should('have.text', `10,000,000 ${CURRENCY}`);
     cy.contains('Fees:').next().should('have.text', '0 XRP');
 
     // Confirm the trustline
