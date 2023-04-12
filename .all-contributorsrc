@@ -52,6 +52,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "ThibautBremand",
+      "name": "Thibaut Bremand",
+      "avatar_url": "https://avatars.githubusercontent.com/u/9871294?v=4",
+      "profile": "https://fr.linkedin.com/in/thibautbremand",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
