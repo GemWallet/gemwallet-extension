@@ -247,7 +247,7 @@ describe('Add an additional wallet (with previous wallet)', () => {
 
     // Go to the add wallet screen
     cy.get('[aria-label="Wallet icon with green border"]').click();
-    cy.get('button[aria-label="Add wallet"]').click();
+    cy.get('button[aria-label="Add Wallet"]').click();
 
     //Type password
     cy.get('input[name="password"]').type(PASSWORD);

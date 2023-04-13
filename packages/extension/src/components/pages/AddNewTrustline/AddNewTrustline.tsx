@@ -334,7 +334,7 @@ export const AddNewTrustline: FC = () => {
             {t('TEXT_REJECT')}
           </Button>
           <Button variant="contained" onClick={() => setStep('TRANSACTION')} disabled={false}>
-            {t('TEXT_CONFIRM')}
+            {t('TEXT_CONTINUE')}
           </Button>
         </Container>
       </PageWithTitle>
