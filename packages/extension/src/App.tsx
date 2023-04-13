@@ -31,7 +31,7 @@ import {
   Welcome,
   SendPayment
 } from './components/pages';
-import { ErrorBoundary } from './components/templates';
+import { ErrorBoundary, LoadingOverlay } from './components/templates';
 import {
   ABOUT_PATH,
   CREATE_NEW_WALLET_PATH,
@@ -94,7 +94,7 @@ const App: FC = () => {
 
   return (
     <ErrorBoundary>
-      <Suspense fallback="loading">
+      <Suspense fallback={<LoadingOverlay />}>
         <SentryRoutes>
           <Route path="*" element={<Login />} />
           <Route path={WELCOME_PATH} element={<Welcome />} />
