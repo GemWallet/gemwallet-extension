@@ -120,7 +120,7 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
           target="_blank"
           rel="noreferrer"
         >
-          {t('TEXT_LEARN_MORE_ABOUT_RESERVE')}
+          {t('TEXT_LEARN_ABOUT_ACCOUNT_RESERVE')}
         </Link>
         <div style={{ marginTop: '5px' }}>
           {t('TEXT_RESERVE_WILL_NOT_SHOW')}
@@ -178,7 +178,7 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
               target="_blank"
               rel="noreferrer"
             >
-              {t('TEXT_LEARN_MORE_ABOUT_RESERVE')}
+              {t('TEXT_LEARN_ABOUT_ACCOUNT_RESERVE')}
             </Link>
           </InformationMessage>
           <Typography style={{ margin: '20px 0 10px 0' }}>{t('TEXT_ACCOUNT_BALANCE')}</Typography>
