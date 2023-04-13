@@ -1,6 +1,7 @@
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
+import { render } from '../../../../mocks/render';
 import { SecretNumbers, SecretNumbersProps } from './SecretNumbers';
 
 const defaultProps: SecretNumbersProps = {

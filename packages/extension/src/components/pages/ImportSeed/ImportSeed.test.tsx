@@ -1,8 +1,9 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 
 import { WALLET_SEED } from '../../../mocks';
+import { render } from '../../../mocks/render';
 import { ImportSeed } from './ImportSeed';
 
 describe('ImportSeed Page', () => {

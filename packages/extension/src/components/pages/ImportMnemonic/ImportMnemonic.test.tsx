@@ -1,8 +1,9 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 
 import { WALLET_MNEMONIC } from '../../../mocks';
+import { render } from '../../../mocks/render';
 import { ImportMnemonic } from './ImportMnemonic';
 
 describe('ImportMnemonic Page', () => {

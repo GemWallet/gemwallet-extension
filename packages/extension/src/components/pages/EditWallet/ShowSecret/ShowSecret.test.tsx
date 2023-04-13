@@ -1,7 +1,8 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { generateWalletContext } from '../../../../mocks';
+import { render } from '../../../../mocks/render';
 import { ShowSecret, ShowSecretProps } from './ShowSecret';
 
 const passwordTest = 'test-password';

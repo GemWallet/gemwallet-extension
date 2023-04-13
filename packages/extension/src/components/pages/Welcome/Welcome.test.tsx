@@ -1,9 +1,10 @@
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter, MemoryRouter } from 'react-router-dom';
 
 import App from '../../../App';
 import { CREATE_NEW_WALLET_PATH, IMPORT_WALLET_PATH, WELCOME_PATH } from '../../../constants';
+import { render } from '../../../mocks/render';
 import { Welcome } from './Welcome';
 
 const mockedUsedNavigate = jest.fn();

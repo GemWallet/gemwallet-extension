@@ -1,5 +1,6 @@
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { act, screen, waitFor } from '@testing-library/react';
 
+import { render } from '../../mocks/render';
 import { ServerProvider, useServer } from './ServerContext';
 
 jest.mock('../NetworkContext', () => ({

@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter, MemoryRouter } from 'react-router-dom';
 
@@ -9,6 +9,7 @@ import {
   TRANSACTION_PATH
 } from '../../../constants';
 import { generateWalletContext } from '../../../mocks';
+import { render } from '../../../mocks/render';
 import { Congratulations } from './Congratulations';
 
 const mockWalletContext = generateWalletContext();

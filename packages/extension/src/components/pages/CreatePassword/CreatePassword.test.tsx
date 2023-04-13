@@ -1,8 +1,9 @@
-import { render, fireEvent } from '@testing-library/react';
+import { fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 
 import { generateWalletContext } from '../../../mocks';
+import { render } from '../../../mocks/render';
 import { CreatePassword, CreatePasswordProps } from './CreatePassword';
 
 const defaultProps: CreatePasswordProps = {

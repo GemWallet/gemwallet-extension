@@ -1,6 +1,7 @@
 import * as Sentry from '@sentry/react';
-import { render, fireEvent, screen, waitFor } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 
+import { render } from '../../../mocks/render';
 import { TokenListing, TokenListingProps } from './TokenListing';
 
 jest.mock('@sentry/react', () => {

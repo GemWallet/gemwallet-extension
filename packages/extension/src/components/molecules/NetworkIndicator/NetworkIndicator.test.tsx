@@ -1,6 +1,7 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
+import { render } from '../../../mocks/render';
 import { NetworkIndicator } from './NetworkIndicator';
 
 const mockUseNetwork = jest.fn();

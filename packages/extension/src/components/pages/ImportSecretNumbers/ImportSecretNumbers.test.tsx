@@ -1,7 +1,8 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 
+import { render } from '../../../mocks/render';
 import { ImportSecretNumbers } from './ImportSecretNumbers';
 
 describe('ImportSecretNumbers Page', () => {

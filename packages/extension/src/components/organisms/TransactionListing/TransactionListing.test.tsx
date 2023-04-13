@@ -1,6 +1,7 @@
-import { fireEvent, render } from '@testing-library/react';
+import { fireEvent } from '@testing-library/react';
 
 import { generateWalletContext } from '../../../mocks';
+import { render } from '../../../mocks/render';
 import { TransactionListing } from './TransactionListing';
 import { mockTransactions } from './TransactionListing.mock';
 

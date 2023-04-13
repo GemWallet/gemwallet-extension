@@ -1,6 +1,7 @@
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 
 import { generateWalletContext } from '../../../../mocks';
+import { render } from '../../../../mocks/render';
 import { SecretSeed, SecretSeedProps } from './SecretSeed';
 
 const defaultProps: SecretSeedProps = {
