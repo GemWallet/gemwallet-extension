@@ -9,7 +9,7 @@ import { xrpToDrops } from 'xrpl';
 import { ERROR_RED, HOME_PATH } from '../../../../constants';
 import { useLedger, useWallet } from '../../../../contexts';
 import { TransactionStatus } from '../../../../types';
-import { formatToken } from '../../../../utils';
+import { convertCurrencyString, formatToken } from '../../../../utils';
 import { TileLoader } from '../../../atoms';
 import { AsyncTransaction, PageWithReturn } from '../../../templates';
 
@@ -155,7 +155,7 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
       <Paper elevation={24} style={{ padding: '10px' }}>
         <Typography variant="body1">Amount:</Typography>
         <Typography variant="h6" component="h1" gutterBottom align="right">
-          {formatToken(Number(amount), token.split('-')[0] || 'XRP')}
+          {formatToken(Number(amount), convertCurrencyString(token.split('-')[0]) || 'XRP')}
         </Typography>
       </Paper>
       <Paper elevation={24} style={{ padding: '10px' }}>
