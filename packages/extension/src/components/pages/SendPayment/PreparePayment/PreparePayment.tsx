@@ -14,6 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import { isValidAddress } from 'xrpl';
 
 import { useNetwork, useWallet } from '../../../../contexts';
+import { convertCurrencyString } from '../../../../utils';
 import { NumericInput } from '../../../atoms';
 import { InformationMessage } from '../../../molecules';
 import { PageWithReturn, PageWithSpinner } from '../../../templates';
@@ -194,7 +195,7 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
                 key={`${token.currency}-${token.issuer}`}
                 value={`${token.currency}-${token.issuer}`}
               >
-                {token.currency}
+                {convertCurrencyString(token.currency)}
               </MenuItem>
             ))}
           </Select>
