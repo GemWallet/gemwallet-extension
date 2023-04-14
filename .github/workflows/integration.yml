@@ -1,0 +1,74 @@
+# This workflow contains the integration workflow
+name: Integration
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "master" branch
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  integration:
+    name: 🛠️ Integration
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Downloads and caches distribution of the .nvmrc Node.js version and cache yarn dependencies
+      - name: Setup node from .nvmrc
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'yarn'
+
+      # Install node modules within the monorepository
+      - name: Install modules
+        run: yarn install --frozen-lockfile
+
+      # Cache build artifacts
+      - name: Cache build artifacts
+        uses: actions/cache@v3
+        with:
+          path: packages/extension/build
+          key: ${{ runner.os }}-build-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-build-
+
+      # Run the unit tests
+      - name: Run tests
+        run: yarn test
+
+      # Build the extension
+      - name: Build the extension
+        run: yarn build
+
+      # Run cypress tests
+      - name: Cypress run
+        uses: cypress-io/github-action@v5
+        with:
+          start: yarn start
+          wait-on: 'http://localhost:3000'
+          wait-on-timeout: 120
+          browser: chrome
+          config-file: cypress.config.ts
+          working-directory: packages/extension
+
+      # Build the CDN API
+      - name: Build the CDN API
+        run: yarn build:api:cdn
+
+      # Build the npm API
+      - name: Build the npm API
+        run: yarn build:api:npm
