@@ -14,7 +14,7 @@
     "release:api:npm": "cd packages/api/dist && npm publish --access=public",
     "start": "yarn workspace @gemwallet/extension start",
     "start:api": "yarn workspace @gemwallet/api start",
-    "test": "yarn workspaces run test --runInBand"
+    "test": "TZ=UTC yarn workspaces run test --runInBand"
   },
   "repository": {
     "type": "git",
