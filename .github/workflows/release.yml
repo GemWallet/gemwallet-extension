@@ -7,6 +7,11 @@ on:
 
   # Runnable manually from the Actions tab
   workflow_dispatch:
+    inputs:
+      version:
+        description: "Version number"
+        type: "string"
+        required: true
 
 jobs:
   call-workflow-integration:
@@ -24,6 +29,13 @@ jobs:
         with:
           name: api-build
           path: packages/api/dist
+
+      # Change version in package.json
+      - name: Change api version in package.json
+        run: |
+          echo "Setting api version to: ${{ github.event.inputs.version }}"
+          npm version ${{ github.event.inputs.version }} --no-git-tag-version
+        working-directory: packages/api/dist
 
       # Publish to npm registry
       - name: Publish to npm
