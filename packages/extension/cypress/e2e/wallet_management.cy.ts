@@ -9,7 +9,16 @@ describe('Setup the initial wallet (no previous wallet)', () => {
   const ERROR_MNEMONIC = 'You need 6 digits';
 
   beforeEach(() => {
-    cy.visit('http://localhost:3000/');
+    cy.visit('http://localhost:3000/',
+      {
+        onBeforeLoad(win) {
+          (win as any).chrome = (win as any).chrome || {};
+          (win as any).chrome.runtime = {
+            sendMessage(message, cb) {}
+          };
+        }
+      }
+    );
   });
 
   it('Create a new wallet', () => {
@@ -221,7 +230,16 @@ describe('Add an additional wallet (with previous wallet)', () => {
     cy.window().then((win) => {
       win.localStorage.setItem('wallets', walletLocalStorage);
     });
-    cy.visit('http://localhost:3000/');
+    cy.visit('http://localhost:3000/',
+      {
+        onBeforeLoad(win) {
+          (win as any).chrome = (win as any).chrome || {};
+          (win as any).chrome.runtime = {
+            sendMessage(message, cb) {}
+          };
+        }
+      }
+    );
 
     // Login
     cy.get('input[name="password"]').type(PASSWORD);
@@ -371,7 +389,16 @@ describe('Edit wallet', () => {
         'U2FsdGVkX18lhnWbAn5EJDspfPXAVOsREMhg5+2NHl2IH8nrDClBsmNH75PutpB4AO0ddYhMYmNk8fsfx2ym2HW3VJGn8x+ZQreGATWF7beHhhx2vPJDsnODdOXWdcF2eqmeEp7P3pQZfZnGggvXiwqvn/NPg4mbzx5GjPcx1TfuFjBLM/YbyxXskVeOKs+fL4fGvCBj4s1/8x0Ok9fRYFdN2i9ODEJDNuJRrAZygsiqVaFPEBHHg7FfZYLuECwIOA2MukcjESPOAPRg2JMLbjWblI6rcLVx4zblkjMsfWOYujuq7zDWWt6hNCncs6DnHpBr4joQIayx6bNqpXUBQ0sEA1gpSeAvKuDf7eWpHzEJtpCUYEXYa8zW25XeABiUU8Hht7dK0r6L2V7mWpPNbQTTFA7yaXrhTQI2JNCt31ZEIWCWd2w5vgTGvPTJcs8xKPmUtXk+fJDbG9zHzwSrMDMLh5TtxzCGmTFUGNAc2NCZJKNjj6SUJGW2AgLqt3NYPpG91Ec6V0baina40VAZ/5pgCgzUWgkcxFU8J1htMaD2cMnAs6MeqVCeJOPpOVjIVD70RsJRsR8782K2pJezwV5TdzEYKkfpzEYMEl6aKfJSGzbGcActM1LDpi8fJBuqUia3YhqhAMevSFWpuw9anA=='
       );
     });
-    cy.visit('http://localhost:3000/');
+    cy.visit('http://localhost:3000/',
+      {
+        onBeforeLoad(win) {
+          (win as any).chrome = (win as any).chrome || {};
+          (win as any).chrome.runtime = {
+            sendMessage(message, cb) {}
+          };
+        }
+      }
+    );
 
     // Login
     cy.get('input[name="password"]').type(PASSWORD);
@@ -499,7 +526,16 @@ describe('Switch wallet', () => {
         'U2FsdGVkX18lhnWbAn5EJDspfPXAVOsREMhg5+2NHl2IH8nrDClBsmNH75PutpB4AO0ddYhMYmNk8fsfx2ym2HW3VJGn8x+ZQreGATWF7beHhhx2vPJDsnODdOXWdcF2eqmeEp7P3pQZfZnGggvXiwqvn/NPg4mbzx5GjPcx1TfuFjBLM/YbyxXskVeOKs+fL4fGvCBj4s1/8x0Ok9fRYFdN2i9ODEJDNuJRrAZygsiqVaFPEBHHg7FfZYLuECwIOA2MukcjESPOAPRg2JMLbjWblI6rcLVx4zblkjMsfWOYujuq7zDWWt6hNCncs6DnHpBr4joQIayx6bNqpXUBQ0sEA1gpSeAvKuDf7eWpHzEJtpCUYEXYa8zW25XeABiUU8Hht7dK0r6L2V7mWpPNbQTTFA7yaXrhTQI2JNCt31ZEIWCWd2w5vgTGvPTJcs8xKPmUtXk+fJDbG9zHzwSrMDMLh5TtxzCGmTFUGNAc2NCZJKNjj6SUJGW2AgLqt3NYPpG91Ec6V0baina40VAZ/5pgCgzUWgkcxFU8J1htMaD2cMnAs6MeqVCeJOPpOVjIVD70RsJRsR8782K2pJezwV5TdzEYKkfpzEYMEl6aKfJSGzbGcActM1LDpi8fJBuqUia3YhqhAMevSFWpuw9anA=='
       );
     });
-    cy.visit('http://localhost:3000/');
+    cy.visit('http://localhost:3000/',
+      {
+        onBeforeLoad(win) {
+          (win as any).chrome = (win as any).chrome || {};
+          (win as any).chrome.runtime = {
+            sendMessage(message, cb) {}
+          };
+        }
+      }
+    );
 
     // Login
     cy.get('input[name="password"]').type(PASSWORD);
@@ -544,7 +580,16 @@ describe('Reset password', () => {
         'U2FsdGVkX18lhnWbAn5EJDspfPXAVOsREMhg5+2NHl2IH8nrDClBsmNH75PutpB4AO0ddYhMYmNk8fsfx2ym2HW3VJGn8x+ZQreGATWF7beHhhx2vPJDsnODdOXWdcF2eqmeEp7P3pQZfZnGggvXiwqvn/NPg4mbzx5GjPcx1TfuFjBLM/YbyxXskVeOKs+fL4fGvCBj4s1/8x0Ok9fRYFdN2i9ODEJDNuJRrAZygsiqVaFPEBHHg7FfZYLuECwIOA2MukcjESPOAPRg2JMLbjWblI6rcLVx4zblkjMsfWOYujuq7zDWWt6hNCncs6DnHpBr4joQIayx6bNqpXUBQ0sEA1gpSeAvKuDf7eWpHzEJtpCUYEXYa8zW25XeABiUU8Hht7dK0r6L2V7mWpPNbQTTFA7yaXrhTQI2JNCt31ZEIWCWd2w5vgTGvPTJcs8xKPmUtXk+fJDbG9zHzwSrMDMLh5TtxzCGmTFUGNAc2NCZJKNjj6SUJGW2AgLqt3NYPpG91Ec6V0baina40VAZ/5pgCgzUWgkcxFU8J1htMaD2cMnAs6MeqVCeJOPpOVjIVD70RsJRsR8782K2pJezwV5TdzEYKkfpzEYMEl6aKfJSGzbGcActM1LDpi8fJBuqUia3YhqhAMevSFWpuw9anA=='
       );
     });
-    cy.visit('http://localhost:3000/');
+    cy.visit('http://localhost:3000/',
+      {
+        onBeforeLoad(win) {
+          (win as any).chrome = (win as any).chrome || {};
+          (win as any).chrome.runtime = {
+            sendMessage(message, cb) {}
+          };
+        }
+      }
+    );
   });
 
   it('Reset password', () => {

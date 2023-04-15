@@ -13,7 +13,16 @@ describe('Send Token', () => {
       );
       win.localStorage.setItem('network', 'Testnet');
     });
-    cy.visit('http://localhost:3000/');
+    cy.visit('http://localhost:3000/',
+      {
+        onBeforeLoad(win) {
+          (win as any).chrome = (win as any).chrome || {};
+          (win as any).chrome.runtime = {
+            sendMessage(message, cb) {}
+          };
+        }
+      }
+    );
 
     // Login
     cy.get('input[name="password"]').type(PASSWORD);
