@@ -75,3 +75,10 @@ jobs:
       # Build the npm API
       - name: Build the npm API
         run: yarn build:api:npm
+
+      # Upload the api build as an artifact
+      - name: Upload api-build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: api-build
+          path: packages/api/dist
