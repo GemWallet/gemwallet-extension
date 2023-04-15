@@ -1,0 +1,27 @@
+# This workflow publish the GemWallet API to the npm repository
+name: Release
+
+on:
+  push:
+    branches: [ "feat/ci-release" ] # TODO: remove this before merge
+  pull_request:
+    branches: []
+
+  # Runnable manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  call-workflow-integration:
+    uses: ./.github/workflows/integration.yml
+
+  release:
+    name: 🚀 Release
+    needs: call-workflow-integration
+    runs-on: ubuntu-latest
+    steps:
+      # Publish to npm registry
+      - name: Publish to npm
+        run: echo "fake npm run release:api:npm"
+        # working-directory: my-package
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}
