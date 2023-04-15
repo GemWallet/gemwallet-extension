@@ -7,9 +7,18 @@
 ## GemWallet: A crypto wallet & Web3 layer for the XRPL
 
 ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)
-![license](https://img.shields.io/badge/license-file%20LICENSE-blue)
+[![license](https://img.shields.io/badge/license-file%20LICENSE-blue)](https://github.com/GemWallet/gemwallet-extension/blob/master/LICENSE)
+[![Chrome Store users](https://img.shields.io/chrome-web-store/users/egebedonbdapoieedfcfkofloclfghab)](https://chrome.google.com/webstore/detail/gemwallet/egebedonbdapoieedfcfkofloclfghab)
+[![Chrome Store rating](https://img.shields.io/chrome-web-store/rating/egebedonbdapoieedfcfkofloclfghab)](https://chrome.google.com/webstore/detail/gemwallet/egebedonbdapoieedfcfkofloclfghab)
 ![npm version](https://img.shields.io/npm/v/@gemwallet/api)
 ![extension version](https://img.shields.io/github/package-json/v/GemWallet/gemwallet-extension?filename=%2Fpackages%2Fextension%2Fpackage.json)
+![Build Status](https://img.shields.io/github/actions/workflow/status/GemWallet/gemwallet-extension/integration.yml)
+![Last commit](https://img.shields.io/github/last-commit/GemWallet/gemwallet-extension)
+
+[![Chrome Store](https://img.shields.io/chrome-web-store/v/egebedonbdapoieedfcfkofloclfghab)](https://chrome.google.com/webstore/detail/gemwallet/egebedonbdapoieedfcfkofloclfghab)
+[![Twitter](https://img.shields.io/twitter/follow/gemwallet_app?style=social)](https://twitter.com/gemwallet_app)
+[![Discord](https://img.shields.io/discord/963846288263249971)](https://discord.gg/CnkP9KGHBe)
+[![Youtube](https://img.shields.io/youtube/channel/subscribers/UCP980esJwyzU7qU4qZQ6A5Q?style=social)](https://www.youtube.com/channel/UCP980esJwyzU7qU4qZQ6A5Q)
 
 ## Useful links
 
