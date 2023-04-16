@@ -1,7 +1,7 @@
 # 💎 GemWallet Extension
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-6-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-7-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 ## GemWallet: A crypto wallet & Web3 layer for the XRPL
@@ -124,6 +124,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/mmaryo"><img src="https://avatars.githubusercontent.com/u/1669985?v=4?s=100" width="100px;" alt="Mario"/><br /><sub><b>Mario</b></sub></a><br /><a href="https://github.com/GemWallet/gemwallet-extension/commits?author=mmaryo" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/TusharPardhe"><img src="https://avatars.githubusercontent.com/u/31487192?v=4?s=100" width="100px;" alt="Tushar Pardhe"/><br /><sub><b>Tushar Pardhe</b></sub></a><br /><a href="https://github.com/GemWallet/gemwallet-extension/commits?author=TusharPardhe" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://fr.linkedin.com/in/thibautbremand"><img src="https://avatars.githubusercontent.com/u/9871294?v=4?s=100" width="100px;" alt="Thibaut Bremand"/><br /><sub><b>Thibaut Bremand</b></sub></a><br /><a href="https://github.com/GemWallet/gemwallet-extension/commits?author=ThibautBremand" title="Code">💻</a> <a href="#infra-ThibautBremand" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="https://github.com/GemWallet/gemwallet-extension/commits?author=ThibautBremand" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/markibanez"><img src="https://avatars.githubusercontent.com/u/7534847?v=4?s=100" width="100px;" alt="Mark Ibanez"/><br /><sub><b>Mark Ibanez</b></sub></a><br /><a href="https://github.com/GemWallet/gemwallet-extension/issues?q=author%3Amarkibanez" title="Bug reports">🐛</a></td>
     </tr>
   </tbody>
 </table>
