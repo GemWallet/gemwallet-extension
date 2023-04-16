@@ -2,9 +2,6 @@
 name: Release
 
 on:
-  push:
-    branches: [ "feat/ci-release" ] # TODO: remove this before merge
-
   # Runnable manually from the Actions tab
   workflow_dispatch:
     inputs:
@@ -39,8 +36,7 @@ jobs:
 
       # Publish to npm registry
       - name: Publish to npm
-        run: echo "npm release disabled for now"
-#        run: npm run release:api:npm
+        run: npm run release:api:npm
         # working-directory: my-package
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}
