@@ -12,9 +12,12 @@ import {
   GetNFTMessagingResponseDeprecated,
   GetPublicKeyMessagingResponse,
   GetPublicKeyMessagingResponseDeprecated,
+  MintNFTEventListener,
+  MintNFTResponse,
   PaymentEventListener,
   PaymentEventListenerDeprecated,
   PublicKeyEventListener,
+  ReceiveMintNFTContentMessage,
   ReceiveGetAddressContentMessage,
   ReceiveGetAddressContentMessageDeprecated,
   ReceiveGetNFTContentMessage,
@@ -29,6 +32,7 @@ import {
   ReceiveSetTrustlineContentMessageDeprecated,
   ReceiveSignMessageContentMessage,
   ReceiveSignMessageContentMessageDeprecated,
+  RequestMintNFTMessage,
   RequestGetAddressMessage,
   RequestGetAddressMessageDeprecated,
   RequestGetNetworkMessage,
@@ -448,6 +452,43 @@ setTimeout(() => {
                       result,
                       error
                     } as SetTrustlineMessagingResponse,
+                    window.location.origin
+                  );
+                  chrome.runtime.onMessage.removeListener(messageListener);
+                }
+              }
+            };
+            chrome.runtime.onMessage.addListener(messageListener);
+          }
+        );
+      } else if (type === 'REQUEST_MINT_NFT') {
+        const {
+          data: { payload }
+        } = event as MintNFTEventListener;
+        chrome.runtime.sendMessage<RequestMintNFTMessage>(
+          {
+            app,
+            type,
+            payload
+          },
+          () => {
+            const messageListener = (
+              message: ReceiveMintNFTContentMessage,
+              sender: chrome.runtime.MessageSender
+            ) => {
+              const { app, type, payload } = message;
+              // We make sure that the message comes from GemWallet
+              if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
+                if (type === 'RECEIVE_MINT_NFT') {
+                  const { NFTokenID, URI, hash } = payload;
+                  window.postMessage(
+                    {
+                      source: 'GEM_WALLET_MSG_RESPONSE',
+                      messagedId,
+                      NFTokenID,
+                      URI,
+                      hash
+                    } as MintNFTResponse,
                     window.location.origin
                   );
                   chrome.runtime.onMessage.removeListener(messageListener);

@@ -1,3 +1,4 @@
+import { NFTokenMintFlagsInterface } from 'xrpl';
 import { Amount, IssuedCurrencyAmount } from 'xrpl/dist/npm/models/common';
 
 import { Network } from '../network/network.constant';
@@ -74,6 +75,14 @@ export interface SetTrustlineRequestDeprecated {
   value: string;
 }
 
+export interface MintNFTRequestPayload {
+  URI: string | null;
+  flags: number | NFTokenMintFlagsInterface | null;
+  //TODO: Maybe we would need the issuer, maybe we can issue for someone else?
+  transferFee: number | null;
+  NFTokenTaxon: number | null;
+}
+
 export interface GetNFTRequest {
   // Limit the number of NFTokens to retrieve.
   limit?: number;
@@ -91,6 +100,7 @@ export interface SignMessageRequest {
 export type RequestPayload =
   | GetNetworkRequest
   | GetNFTRequest
+  | MintNFTRequestPayload
   | WebsiteRequest
   | SendPaymentRequest
   | SendPaymentRequestDeprecated
@@ -160,6 +170,12 @@ export interface GetNFTResponseDeprecated {
   nfts: AccountNFToken[] | null | undefined;
 }
 
+export interface MintNFTResponsePayload {
+  NFTokenID: string;
+  URI: string | undefined;
+  hash: string;
+}
+
 export type ResponsePayload =
   | GetAddressResponse
   | GetAddressResponseDeprecated
@@ -170,6 +186,7 @@ export type ResponsePayload =
   | GetNetworkResponseDeprecated
   | GetPublicKeyResponse
   | GetPublicKeyResponseDeprecated
+  | MintNFTResponsePayload
   | SendPaymentResponse
   | SendPaymentResponseDeprecated
   | SetTrustlineResponse

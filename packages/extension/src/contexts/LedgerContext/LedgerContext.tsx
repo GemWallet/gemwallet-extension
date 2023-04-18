@@ -2,10 +2,18 @@ import { useContext, createContext, FC, useCallback } from 'react';
 
 import * as Sentry from '@sentry/react';
 import { sign } from 'ripple-keypairs';
-import { TransactionMetadata, Payment, Transaction, TrustSet, Wallet } from 'xrpl';
+import { TransactionMetadata, Payment, Transaction, TrustSet, Wallet, convertStringToHex } from 'xrpl';
+import {
+  CreatedNode,
+  DeletedNode,
+  ModifiedNode,
+  Node
+} from 'xrpl/dist/npm/models/transactions/metadata';
 
 import {
   AccountNFToken,
+  MintNFTRequestPayload,
+  MintNFTResponsePayload,
   GetNFTRequest,
   SendPaymentRequest,
   SetTrustlineRequest
@@ -13,6 +21,7 @@ import {
 
 import { AccountTransaction } from '../../types';
 import { toXRPLMemos } from '../../utils';
+import { getLastItemFromArray } from '../../utils';
 import { useNetwork } from '../NetworkContext';
 import { useWallet } from '../WalletContext';
 
@@ -26,6 +35,19 @@ export interface FundWalletResponse {
   balance: number;
 }
 
+type NFToken = {
+  NFTokenID: string;
+  URI: string | undefined;
+};
+
+const isCreatedNode = (node: Node): node is CreatedNode => {
+  return (node as CreatedNode).CreatedNode !== undefined;
+};
+
+const isModifiedNode = (node: Node): node is ModifiedNode => {
+  return (node as ModifiedNode).ModifiedNode !== undefined;
+};
+
 export interface LedgerContextType {
   // Return transaction hash in case of success
   sendPayment: (payload: SendPaymentRequest) => Promise<string>;
@@ -35,6 +57,7 @@ export interface LedgerContextType {
   getNFTs: (payload?: GetNFTRequest) => Promise<GetNFTsResponse>;
   getTransactions: () => Promise<AccountTransaction[]>;
   fundWallet: () => Promise<FundWalletResponse>;
+  mintNFT: (payload: MintNFTRequestPayload) => Promise<MintNFTResponsePayload>;
 }
 
 const LedgerContext = createContext<LedgerContextType>({
@@ -53,7 +76,8 @@ const LedgerContext = createContext<LedgerContextType>({
     new Promise((resolve) => {
       resolve([]);
     }),
-  fundWallet: () => new Promise(() => {})
+  fundWallet: () => new Promise(() => {}),
+  mintNFT: () => new Promise(() => {})
 });
 
 const LedgerProvider: FC = ({ children }) => {
@@ -130,6 +154,84 @@ const LedgerProvider: FC = ({ children }) => {
       }
     }
   }, [client, getCurrentWallet]);
+
+  const mintNFT = useCallback(
+    async (payload: MintNFTRequestPayload) => {
+      const wallet = getCurrentWallet();
+      if (!client) {
+        throw new Error('You need to be connected to a ledger to mint an NFT');
+      } else if (!wallet) {
+        throw new Error('You need to have a wallet connected to mint an NFT');
+      } else {
+        const tx = await client.submitAndWait(
+          {
+            TransactionType: 'NFTokenMint',
+            Account: wallet.wallet.classicAddress,
+            URI: payload.URI ? convertStringToHex(payload.URI) : undefined,
+            Flags: payload.flags ?? undefined,
+            TransferFee: payload.transferFee ?? undefined,
+            NFTokenTaxon: payload.NFTokenTaxon ?? 0
+          },
+          { wallet: wallet.wallet }
+        );
+
+        if (!tx.result.hash) {
+          throw new Error("Couldn't mint the NFT");
+        }
+
+        const nfTokenPagesNode = (tx.result.meta as TransactionMetadata).AffectedNodes.find(
+          (node: CreatedNode | ModifiedNode | DeletedNode) =>
+            // We check only for CreatedNode and ModifiedNode as NFTokenMint won't be using DeletedNode
+            (node as CreatedNode).CreatedNode?.LedgerEntryType === 'NFTokenPage' ||
+            (node as ModifiedNode).ModifiedNode?.LedgerEntryType === 'NFTokenPage'
+        );
+
+        const lastNFT =
+          (nfTokenPagesNode &&
+            isCreatedNode(nfTokenPagesNode) &&
+            nfTokenPagesNode.CreatedNode.NewFields.NFTokens &&
+            getLastItemFromArray(
+              nfTokenPagesNode.CreatedNode.NewFields.NFTokens as { NFToken: NFToken }[]
+            )?.NFToken) ||
+          (nfTokenPagesNode &&
+            isModifiedNode(nfTokenPagesNode) &&
+            nfTokenPagesNode.ModifiedNode.PreviousFields?.NFTokens &&
+            getLastItemFromArray(
+              nfTokenPagesNode.ModifiedNode.PreviousFields.NFTokens as { NFToken: NFToken }[]
+            )?.NFToken);
+
+        if (lastNFT) {
+          return {
+            hash: tx.result.hash,
+            URI: (lastNFT as NFToken).URI,
+            NFTokenID: (lastNFT as NFToken).NFTokenID
+          };
+        }
+
+        const nfts = await client.request({
+          command: 'account_nfts',
+          account: wallet.wallet.classicAddress
+        });
+
+        const lastFetchedNFT = getLastItemFromArray(nfts.result.account_nfts);
+        const lastNFTFromFetched = lastFetchedNFT && {
+          hash: tx.result.hash,
+          URI: lastFetchedNFT.URI,
+          NFTokenID: lastFetchedNFT.NFTokenID
+        };
+
+        return (
+          lastNFTFromFetched ||
+          (() => {
+            throw new Error(
+              "Couldn't fetch your NFT from the XRPL but the transaction was successful"
+            );
+          })()
+        );
+      }
+    },
+    [client, getCurrentWallet]
+  );
 
   const sendPayment = useCallback(
     async ({ amount, destination, memos, destinationTag, fee, flags }: SendPaymentRequest) => {
@@ -263,7 +365,8 @@ const LedgerProvider: FC = ({ children }) => {
     estimateNetworkFees,
     getNFTs,
     getTransactions,
-    fundWallet
+    fundWallet,
+    mintNFT
   };
 
   return <LedgerContext.Provider value={value}>{children}</LedgerContext.Provider>;

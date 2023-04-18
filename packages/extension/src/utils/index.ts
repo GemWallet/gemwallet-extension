@@ -2,6 +2,7 @@ export * from './breakStringByLine';
 export * from './convertCurrencyString';
 export * from './crypto';
 export * from './format';
+export * from './getLastItemFromArray';
 export * from './hexConverter';
 export * from './link';
 export * from './network';

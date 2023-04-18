@@ -143,6 +143,16 @@ export interface PaymentEventListenerDeprecated extends MessageEvent<MessageEven
   };
 }
 
+export interface MintNFTEventListener extends MessageEvent<MessageEventData> {
+  data: {
+    app: typeof GEM_WALLET;
+    type: 'REQUEST_MINT_NFT';
+    source: 'GEM_WALLET_MSG_REQUEST';
+    messageId: number;
+    payload: SendPaymentRequest;
+  };
+}
+
 export interface SetTrustlineEventListener extends MessageEvent<MessageEventData> {
   data: {
     app: typeof GEM_WALLET;
@@ -168,6 +178,7 @@ export type EventListener =
   | AddressEventListenerDeprecated
   | GetNFTEventListener
   | GetNFTEventListenerDeprecated
+  | MintNFTEventListener
   | NetworkEventListener
   | NetworkEventListenerDeprecated
   | PublicKeyEventListener

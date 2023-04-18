@@ -11,6 +11,7 @@ export * from './ImportSeed';
 export * from './ImportWallet';
 export * from './ListWallets';
 export * from './Login';
+export * from './MintNFT';
 export * from './ResetPassword';
 export * from './SendPayment';
 export * from './Settings';

@@ -6,6 +6,8 @@ import {
   IsInstalledResponse,
   GetNetworkResponse,
   GetNFTRequest,
+  MintNFTRequestPayload,
+  MintNFTResponsePayload,
   SendPaymentRequest,
   SendPaymentRequestDeprecated,
   GetPublicKeyResponse,
@@ -32,6 +34,7 @@ export type RequestMessage =
   | 'REQUEST_GET_NETWORK/V3'
   | 'REQUEST_GET_NFT/V3'
   | 'REQUEST_GET_PUBLIC_KEY/V3'
+  | 'REQUEST_MINT_NFT'
   | 'REQUEST_NETWORK'
   | 'REQUEST_NFT'
   | 'REQUEST_PUBLIC_KEY'
@@ -47,6 +50,7 @@ export type ReceiveMessage =
   | 'RECEIVE_GET_NFT/V3'
   | 'RECEIVE_GET_PUBLIC_KEY/V3'
   | 'RECEIVE_GET_NETWORK/V3'
+  | 'RECEIVE_MINT_NFT'
   | 'RECEIVE_NETWORK'
   | 'RECEIVE_NFT'
   | 'RECEIVE_PAYMENT_HASH'
@@ -120,6 +124,12 @@ export interface RequestSetTrustlineMessageDeprecated {
   payload: SetTrustlineRequestDeprecated;
 }
 
+export interface RequestMintNFTMessage {
+  app: typeof GEM_WALLET;
+  type: 'REQUEST_MINT_NFT';
+  payload: MintNFTRequestPayload;
+}
+
 export interface RequestGetNFTMessage {
   app: typeof GEM_WALLET;
   type: 'REQUEST_GET_NFT/V3';
@@ -181,6 +191,7 @@ export type SendPaymentMessagingResponseDeprecated = MessagingResponse &
 export type SetTrustlineMessagingResponse = MessagingResponse & SetTrustlineResponse;
 export type SetTrustlineMessagingResponseDeprecated = MessagingResponse &
   SetTrustlineResponseDeprecated;
+export type MintNFTResponse = MessagingResponse & MintNFTResponsePayload;
 
 // Content Script Messages
 export interface ReceiveSendPaymentContentMessage {
@@ -267,6 +278,12 @@ export interface ReceiveSignMessageContentMessageDeprecated {
   payload: SignMessageResponseDeprecated;
 }
 
+export interface ReceiveMintNFTContentMessage {
+  app: typeof GEM_WALLET;
+  type: 'RECEIVE_MINT_NFT_MESSAGE';
+  payload: MintNFTResponsePayload;
+}
+
 // Background Script Messages
 type BackgroundMessagePayload = {
   payload: {
@@ -315,6 +332,9 @@ export type ReceiveSignMessageBackgroundMessage = ReceiveSignMessageContentMessa
 export type ReceiveSignMessageBackgroundMessageDeprecated =
   ReceiveSignMessageContentMessageDeprecated & BackgroundMessagePayload;
 
+export type ReceiveMintNFTBackgroundMessage = ReceiveMintNFTContentMessage &
+  BackgroundMessagePayload;
+
 export type BackgroundMessage =
   // Inputted messages - DO NOT contain ID within the payloads
   | RequestGetAddressMessage
@@ -325,6 +345,7 @@ export type BackgroundMessage =
   | RequestGetNFTMessageDeprecated
   | RequestGetPublicKeyMessage
   | RequestGetPublicKeyMessageDeprecated
+  | RequestMintNFTMessage
   | RequestSendPaymentMessage
   | RequestSendPaymentMessageDeprecated
   | RequestSetTrustlineMessage
@@ -338,6 +359,7 @@ export type BackgroundMessage =
   | ReceiveGetNetworkBackgroundMessageDeprecated
   | ReceiveGetNFTBackgroundMessage
   | ReceiveGetNFTBackgroundMessageDeprecated
+  | ReceiveMintNFTBackgroundMessage
   | ReceivePublicKeyBackgroundMessage
   | ReceivePublicKeyBackgroundMessageDeprecated
   | ReceiveSendPaymentBackgroundMessage
@@ -358,6 +380,7 @@ export type APIMessages =
   | RequestGetNetworkMessage
   | RequestGetNFTMessage
   | RequestGetPublicKeyMessage
+  | RequestMintNFTMessage
   | RequestIsInstalledMessage
   | RequestSendPaymentMessage
   | RequestSetTrustlineMessage

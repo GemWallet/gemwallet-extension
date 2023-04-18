@@ -27,6 +27,7 @@ import {
   PARAMETER_SHARE_NFT,
   PARAMETER_SHARE_PUBLIC_KEY,
   PARAMETER_SIGN_MESSAGE,
+  PARAMETER_TRANSACTION_MINT_NFT,
   PARAMETER_TRANSACTION_PAYMENT,
   PARAMETER_TRANSACTION_TRUSTLINE
 } from './../constants/parameters';
@@ -242,6 +243,16 @@ chrome.runtime.onMessage.addListener(
         sender,
         parameter: PARAMETER_TRANSACTION_PAYMENT,
         receivingMessage: 'RECEIVE_PAYMENT_HASH',
+        errorPayload: {
+          hash: undefined
+        }
+      });
+    } else if (type === 'REQUEST_MINT_NFT') {
+      focusOrCreatePopupWindow({
+        payload: message.payload,
+        sender,
+        parameter: PARAMETER_TRANSACTION_MINT_NFT,
+        receivingMessage: 'RECEIVE_MINT_NFT',
         errorPayload: {
           hash: undefined
         }

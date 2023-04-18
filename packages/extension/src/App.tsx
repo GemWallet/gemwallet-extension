@@ -27,6 +27,7 @@ import {
   ImportWallet,
   ListWallets,
   Login,
+  MintNFT,
   ResetPassword,
   SendPayment,
   Settings,
@@ -52,6 +53,7 @@ import {
   IMPORT_SEED_PATH,
   IMPORT_WALLET_PATH,
   LIST_WALLETS_PATH,
+  MINT_NFT_PATH,
   PARAMETER_SHARE_ADDRESS,
   PARAMETER_SHARE_NETWORK,
   PARAMETER_SHARE_NFT,
@@ -375,6 +377,14 @@ const App: FC = () => {
           element={
             <PrivateRoute>
               <SharePublicKey />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path={MINT_NFT_PATH}
+          element={
+            <PrivateRoute>
+              <MintNFT />
             </PrivateRoute>
           }
         />
