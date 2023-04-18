@@ -195,6 +195,7 @@ export const Login: FC = () => {
       >
         <TextField
           fullWidth
+          autoFocus
           id="password"
           name="password"
           label="Password"
