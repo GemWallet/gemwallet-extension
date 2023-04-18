@@ -211,6 +211,17 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
           onChange={handleAmountChange}
           autoComplete="off"
         />
+        <TextField
+          label="Memo"
+          id="memo"
+          name="memo"
+          fullWidth
+          style={{ marginBottom: '33px' }}
+          error={!!errorAddress}
+          helperText={errorAddress}
+          onChange={handleAddressChange}
+          autoComplete="off"
+        />
       </div>
       <Button
         fullWidth
