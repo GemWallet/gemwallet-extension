@@ -1,6 +1,7 @@
 import { FC, useContext, useEffect, useState } from 'react';
 
-import { CircularProgress, ListItem, Paper } from '@mui/material';
+import { OpenInNewOutlined } from '@mui/icons-material';
+import { Button, CircularProgress, ListItem, Paper } from '@mui/material';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 import { AccountNFToken, NFTData } from '@gemwallet/constants';
@@ -31,6 +32,10 @@ export const NftCard: FC<NftCardProps> = ({ nft }) => {
     fetchNftImg();
   }, [getNFTData, nft]);
 
+  const handleViewNftClick = () => {
+    window.open('someurl', '_blank'); // TODO: Add redirection url (Potential collaboration with NFT marketplace)?
+  };
+
   return (
     <Paper
       elevation={5}
@@ -57,16 +62,21 @@ export const NftCard: FC<NftCardProps> = ({ nft }) => {
             style={{ borderRadius: '4px', boxShadow: '4px 4px 0px black' }}
             beforeLoad={() => <CircularProgress />}
             effect="blur"
-            src={nftData?.image} // use normal <img> attributes as props
+            src={nftData?.image}
             width={150}
           />
-          //   <img src={nftData?.image} alt="nft" style={{ maxWidth: "150px", borderRadius: "10px", boxShadow: "4px 4px 0px black" }} />
         )}
         <div style={{ fontSize: '16px', color: 'white', marginTop: '10px' }}>{nftData?.name}</div>
         <div style={{ fontSize: '14px', color: 'grey', marginTop: '10px' }}>
           {nftData?.description}
         </div>
-        {/* <Button variant="outlined" style={{ marginTop: '10px', fontSize: '14px', gap: '10px' }}>View <OpenInNewIcon style={{ fontSize: '16px' }} /></Button> */}
+        <Button
+          variant="outlined"
+          style={{ marginTop: '10px', fontSize: '14px', gap: '10px' }}
+          onClick={handleViewNftClick}
+        >
+          View <OpenInNewOutlined style={{ fontSize: '16px' }} />
+        </Button>
       </ListItem>
     </Paper>
   );
