@@ -23,11 +23,13 @@ export interface PreparePaymentProps {
   onSendPaymentClick: ({
     address,
     token,
-    amount
+    amount,
+    memo,
   }: {
     address: string;
     token: string;
     amount: string;
+    memo?: string;
   }) => void;
 }
 
@@ -36,8 +38,10 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
   const { getCurrentWallet } = useWallet();
   const [address, setAddress] = useState<string>('');
   const [amount, setAmount] = useState<string>('');
+  const [memo, setMemo] = useState<string | undefined>(undefined);
   const [errorAddress, setErrorAddress] = useState<string>('');
   const [errorAmount, setErrorAmount] = useState<string>('');
+  const [errorMemo] = useState<string>('');
   const [tokens, setTokens] = useState<
     | {
         value: string;
@@ -130,6 +134,13 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
     [hasEnoughFunds]
   );
 
+  const handleMemoChange = useCallback(
+    (e: FocusEvent<HTMLInputElement>) => {
+      setMemo(e.target.value);
+    },
+    []
+  );
+
   const isSendPaymentDisabled = useMemo(() => {
     return !(address !== '' && isValidAddress(address) && amount !== '' && errorAddress === '');
   }, [address, amount, errorAddress]);
@@ -140,10 +151,11 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
         address,
         token:
           tokenRef.current?.value === 'XRP-undefined' ? 'XRP' : tokenRef.current?.value ?? 'XRP',
-        amount
+        amount,
+        memo
       });
     }
-  }, [address, amount, isSendPaymentDisabled, onSendPaymentClick]);
+  }, [address, amount, isSendPaymentDisabled, memo, onSendPaymentClick]);
 
   if (!tokens) {
     return <PageWithSpinner />;
@@ -217,9 +229,9 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
           name="memo"
           fullWidth
           style={{ marginBottom: '33px' }}
-          error={!!errorAddress}
-          helperText={errorAddress}
-          onChange={handleAddressChange}
+          error={!!errorMemo}
+          helperText={errorMemo}
+          onChange={handleMemoChange}
           autoComplete="off"
         />
       </div>
