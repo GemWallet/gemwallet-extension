@@ -25,7 +25,7 @@ export interface PaymentRequestPayload {
   // The issuer of the token
   issuer?: string;
   // The memo to attach to the transaction
-  memo?: TxMemo;
+  memo?: string;
 }
 
 export interface TrustlineRequestPayload {
@@ -98,20 +98,15 @@ export interface NFTResponsePayload {
   nfts: AccountNFToken[] | null | undefined;
 }
 
-export const DEFAULT_MEMO_TYPE = 'Note';
+export const DEFAULT_MEMO_TYPE = 'Description';
 
-export interface TxMemo {
-  memoType?: string;
-  memoData: string;
-}
-
-export const buildMemos = (memo: TxMemo | undefined): { Memo: { MemoType: string; MemoData: string } }[] => {
-  if (memo === undefined) return [];
+export const buildMemos = (memoData: string | undefined): { Memo: { MemoType: string; MemoData: string } }[] => {
+  if (memoData === undefined) return [];
   return [
     {
       Memo: {
-        MemoType: Buffer.from(memo.memoType ? memo.memoType : DEFAULT_MEMO_TYPE, 'utf8').toString('hex').toUpperCase(),
-        MemoData: Buffer.from(memo.memoData, 'utf8').toString('hex').toUpperCase()
+        MemoType: Buffer.from(DEFAULT_MEMO_TYPE, 'utf8').toString('hex').toUpperCase(),
+        MemoData: Buffer.from(memoData, 'utf8').toString('hex').toUpperCase()
       }
     }
   ];

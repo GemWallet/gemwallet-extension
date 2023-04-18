@@ -6,7 +6,7 @@ import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
 import { xrpToDrops } from 'xrpl';
 
-import { TxMemo, buildMemos } from "@gemwallet/constants";
+import { buildMemos } from "@gemwallet/constants";
 
 import { ERROR_RED, HOME_PATH } from '../../../../constants';
 import { useLedger, useWallet } from '../../../../contexts';
@@ -22,7 +22,7 @@ export interface ConfirmPaymentProps {
     address: string;
     token: string;
     amount: string;
-    memo?: TxMemo;
+    memo?: string;
   };
   onClickBack: () => void;
 }
