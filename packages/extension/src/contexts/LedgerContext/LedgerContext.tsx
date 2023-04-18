@@ -5,10 +5,11 @@ import { sign } from 'ripple-keypairs';
 import { xrpToDrops, dropsToXrp, TransactionMetadata, Payment, Transaction, TrustSet } from 'xrpl';
 
 import {
+  buildMemos,
   AccountNFToken,
   NFTRequestPayload,
   PaymentRequestPayload,
-  TrustlineRequestPayload
+  TrustlineRequestPayload,
 } from '@gemwallet/constants';
 
 import { AccountTransaction } from '../../types';
@@ -111,7 +112,7 @@ const LedgerProvider: FC = ({ children }) => {
   }, [client, getCurrentWallet]);
 
   const sendPayment = useCallback(
-    async ({ amount, destination, currency, issuer }: PaymentRequestPayload) => {
+    async ({ amount, destination, currency, issuer, memo }: PaymentRequestPayload) => {
       const wallet = getCurrentWallet();
       if (!client) {
         throw new Error('You need to be connected to a ledger to make a transaction');
@@ -131,7 +132,8 @@ const LedgerProvider: FC = ({ children }) => {
                     value: amount
                   }
                 : xrpToDrops(amount),
-            Destination: destination
+            Destination: destination,
+            Memos: buildMemos(memo)
           });
           // Sign the transaction
           const signed = wallet.wallet.sign(prepared);

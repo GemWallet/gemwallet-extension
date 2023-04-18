@@ -98,10 +98,25 @@ export interface NFTResponsePayload {
   nfts: AccountNFToken[] | null | undefined;
 }
 
+export const DEFAULT_MEMO_TYPE = 'Note';
+
 export interface TxMemo {
   memoType?: string;
   memoData: string;
 }
+
+export const buildMemos = (memo: TxMemo | undefined): { Memo: { MemoType: string; MemoData: string } }[] => {
+  if (memo === undefined) return [];
+  return [
+    {
+      Memo: {
+        MemoType: Buffer.from(memo.memoType ? memo.memoType : DEFAULT_MEMO_TYPE, 'utf8').toString('hex').toUpperCase(),
+        MemoData: Buffer.from(memo.memoData, 'utf8').toString('hex').toUpperCase()
+      }
+    }
+  ];
+}
+
 
 export type ResponsePayload =
   | NetworkResponsePayload
