@@ -24,6 +24,8 @@ export interface PaymentRequestPayload {
   currency?: string;
   // The issuer of the token
   issuer?: string;
+  // The memo to attach to the transaction
+  memo?: TxMemo;
 }
 
 export interface TrustlineRequestPayload {
@@ -94,6 +96,11 @@ export interface TrustlineHashResponsePayload {
 
 export interface NFTResponsePayload {
   nfts: AccountNFToken[] | null | undefined;
+}
+
+export interface TxMemo {
+  memoType?: string;
+  memoData: string;
 }
 
 export type ResponsePayload =
