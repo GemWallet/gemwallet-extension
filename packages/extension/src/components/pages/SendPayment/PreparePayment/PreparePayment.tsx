@@ -92,8 +92,8 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
   );
 
   const hasValidMemoLength = useCallback(
-    (memo: string) => {
-      return memo.length <= MAX_MEMO_LENGTH;
+    (memo: string | undefined) => {
+      return memo === undefined || memo.length <= MAX_MEMO_LENGTH;
     },
     []
   );
@@ -146,7 +146,7 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
   const handleMemoChange = useCallback(
     (e: FocusEvent<HTMLInputElement>) => {
       if (!hasValidMemoLength(e.target.value)) {
-        setErrorMemo('Your memo is long. The transaction may fail.');
+        setErrorMemo(`Your memo is too long, it cannot exceed ${MAX_MEMO_LENGTH} characters`);
       } else {
         setErrorMemo('');
       }
@@ -156,8 +156,8 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
   );
 
   const isSendPaymentDisabled = useMemo(() => {
-    return !(address !== '' && isValidAddress(address) && amount !== '' && errorAddress === '');
-  }, [address, amount, errorAddress]);
+    return !(address !== '' && isValidAddress(address) && amount !== '' && errorAddress === '') || !(hasValidMemoLength(memo));
+  }, [address, amount, errorAddress, hasValidMemoLength, memo]);
 
   const handleSendPayment = useCallback(() => {
     if (!isSendPaymentDisabled) {
@@ -238,7 +238,7 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
           autoComplete="off"
         />
         <TextField
-          label="Memo"
+          label="Memo (optional)"
           id="memo"
           name="memo"
           fullWidth
