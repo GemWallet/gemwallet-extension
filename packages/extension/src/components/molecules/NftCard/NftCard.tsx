@@ -54,7 +54,7 @@ export const NftCard: FC<NftCardProps> = ({ nft }) => {
         }}
       >
         {loading ? (
-          <CircularProgress />
+          <CircularProgress data-testid="progressbar" />
         ) : (
           <LazyLoadImage
             alt="nft"
@@ -66,10 +66,19 @@ export const NftCard: FC<NftCardProps> = ({ nft }) => {
             width={150}
           />
         )}
-        <div style={{ fontSize: '16px', color: 'white', marginTop: '10px' }}>{nftData?.name}</div>
-        <div style={{ fontSize: '14px', color: 'grey', marginTop: '10px' }}>
-          {nftData?.description}
-        </div>
+        {nftData && (
+          <>
+            <div
+              style={{ fontSize: '16px', color: 'white', marginTop: '10px' }}
+              data-testid="nft_name"
+            >
+              {nftData.name}
+            </div>
+            <div style={{ fontSize: '14px', color: 'grey', marginTop: '10px' }}>
+              {nftData.description}
+            </div>
+          </>
+        )}
         <Button
           variant="outlined"
           style={{ marginTop: '10px', fontSize: '14px', gap: '10px' }}
