@@ -33,59 +33,19 @@ describe('Send Token', () => {
   });
 
   it('Send XRP', () => {
-    // Add receipient address
-    cy.get('input[name="recipient-address"]').type('rheBcnFv4FcQpccJNcQVS3jZKJE4RWcxW3');
+    sendXRP();
+  });
 
-    // Add amount
-    cy.get('input[name="amount"]').type('0.001');
-
-    // Click on send payment button
-    cy.contains('button', 'Send Payment').click();
-
-    // Confirm the payment
-    cy.contains('button', 'Confirm').click();
-
-    // Make sure the transaction was successful
-    cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction in progress');
-    cy.get('p[data-testid="transaction-subtitle"]').should(
-      'have.text',
-      'We are processing your transactionPlease wait'
-    );
-
-    cy.get('h1[data-testid="transaction-title"]').contains('Transaction accepted', {
-      timeout: 10000
-    });
-    cy.get('p[data-testid="transaction-subtitle"]').should('have.text', 'Transaction Successful');
+  it('Send XRP with memo', () => {
+    sendXRP('This is a memo');
   });
 
   it('Send USD', () => {
-    // Add receipient address
-    cy.get('input[name="recipient-address"]').type('rheBcnFv4FcQpccJNcQVS3jZKJE4RWcxW3');
+    sendUSD();
+  });
 
-    // Select USD token
-    cy.get('#token-select').click();
-    cy.contains('li', 'USD').click();
-
-    // Add amount
-    cy.get('input[name="amount"]').type('0.001');
-
-    // Click on send payment button
-    cy.contains('button', 'Send Payment').click();
-
-    // Confirm the payment
-    cy.contains('button', 'Confirm').click();
-
-    // Make sure the transaction was successful
-    cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction in progress');
-    cy.get('p[data-testid="transaction-subtitle"]').should(
-      'have.text',
-      'We are processing your transactionPlease wait'
-    );
-
-    cy.get('h1[data-testid="transaction-title"]').contains('Transaction accepted', {
-      timeout: 10000
-    });
-    cy.get('p[data-testid="transaction-subtitle"]').should('have.text', 'Transaction Successful');
+  it('Send USD with memo', () => {
+    sendUSD('This is another memo');
   });
 
   it('Reject Send XRP', () => {
@@ -125,9 +85,19 @@ describe('Send Token', () => {
       'You can only send an amount greater than zero'
     );
 
-    //Add a valid amount and a valid receipient address
+    // Add a too large memo
+    cy.get('input[name="memo"]').clear().type('a'.repeat(301));
+
+    // Expect an error if the user inputs a too large memo
+    cy.get('p#memo-helper-text').should(
+      'have.text',
+      'Your memo is too long, it cannot exceed 300 characters'
+    );
+
+    //Add a valid amount, a valid receipient address and a valid memo
     cy.get('input[name="recipient-address"]').clear().type('rheBcnFv4FcQpccJNcQVS3jZKJE4RWcxW3');
     cy.get('input[name="amount"]').clear().type('0.001');
+    cy.get('input[name="memo"]').clear().type('This is a memo');
 
     // Click on send payment button
     cy.contains('button', 'Send Payment').click();
@@ -143,3 +113,49 @@ describe('Send Token', () => {
     );
   });
 });
+
+const sendXRP = (memo?: string) => {
+  // Add receipient address
+  cy.get('input[name="recipient-address"]').type('rheBcnFv4FcQpccJNcQVS3jZKJE4RWcxW3');
+
+  handleTransaction(memo);
+}
+
+const sendUSD = (memo?: string) => {
+  // Add receipient address
+  cy.get('input[name="recipient-address"]').type('rheBcnFv4FcQpccJNcQVS3jZKJE4RWcxW3');
+
+  // Select USD token
+  cy.get('#token-select').click();
+  cy.contains('li', 'USD').click();
+
+  handleTransaction(memo);
+}
+
+const handleTransaction = (memo?: string) => {
+  // Add amount
+  cy.get('input[name="amount"]').type('0.001');
+
+  // Add memo
+  if (memo) {
+    cy.get('input[name="memo"]').type(memo);
+  }
+
+  // Click on send payment button
+  cy.contains('button', 'Send Payment').click();
+
+  // Confirm the payment
+  cy.contains('button', 'Confirm').click();
+
+  // Make sure the transaction was successful
+  cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction in progress');
+  cy.get('p[data-testid="transaction-subtitle"]').should(
+    'have.text',
+    'We are processing your transactionPlease wait'
+  );
+
+  cy.get('h1[data-testid="transaction-title"]').contains('Transaction accepted', {
+    timeout: 10000
+  });
+  cy.get('p[data-testid="transaction-subtitle"]').should('have.text', 'Transaction Successful');
+}
