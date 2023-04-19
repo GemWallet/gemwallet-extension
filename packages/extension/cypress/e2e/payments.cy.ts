@@ -3,7 +3,7 @@
 describe('Make payment - XRP', () => {
   // deepcode ignore NoHardcodedPasswords: password used for testing purposes
   const PASSWORD = 'SECRET_PASSWORD';
-  const AMOUNT = '20';
+  const AMOUNT = '0.01';
   const DESTINATION_ADDRESS = 'rNvFCZXpDtGeQ3bVas95wGLN6N2stGmA9o';
   beforeEach(() => {
     // Mock the localStorage with a wallet already loaded
@@ -84,7 +84,7 @@ describe('Make payment - ETH', () => {
   // deepcode ignore NoHardcodedPasswords: password used for testing purposes
   const PASSWORD = 'SECRET_PASSWORD';
   const TOKEN = 'ETH';
-  const AMOUNT = '20';
+  const AMOUNT = '0.01';
   const DESTINATION_ADDRESS = 'rnm76Qgz4G9G4gZBJVuXVvkbt7gVD7szey';
   beforeEach(() => {
     // Mock the localStorage with a wallet already loaded
