@@ -19,6 +19,8 @@ import { NumericInput } from '../../../atoms';
 import { InformationMessage } from '../../../molecules';
 import { PageWithReturn, PageWithSpinner } from '../../../templates';
 
+const MAX_MEMO_LENGTH = 300;
+
 export interface PreparePaymentProps {
   onSendPaymentClick: ({
     address,
@@ -41,7 +43,7 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
   const [memo, setMemo] = useState<string | undefined>(undefined);
   const [errorAddress, setErrorAddress] = useState<string>('');
   const [errorAmount, setErrorAmount] = useState<string>('');
-  const [errorMemo] = useState<string>('');
+  const [errorMemo, setErrorMemo] = useState<string>('');
   const [tokens, setTokens] = useState<
     | {
         value: string;
@@ -87,6 +89,13 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
       return token && Number(token.value) >= Number(amountToSend);
     },
     [tokens]
+  );
+
+  const hasValidMemoLength = useCallback(
+    (memo: string) => {
+      return memo.length <= MAX_MEMO_LENGTH;
+    },
+    []
   );
 
   const handleAddressChange = useCallback(
@@ -136,9 +145,14 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
 
   const handleMemoChange = useCallback(
     (e: FocusEvent<HTMLInputElement>) => {
+      if (!hasValidMemoLength(e.target.value)) {
+        setErrorMemo('Your memo is long. The transaction may fail.');
+      } else {
+        setErrorMemo('');
+      }
       setMemo(e.target.value);
     },
-    []
+    [hasValidMemoLength]
   );
 
   const isSendPaymentDisabled = useMemo(() => {
