@@ -160,7 +160,15 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
       {memo && (
         <Paper elevation={24} style={{padding: '10px'}}>
           <Typography variant="body1">Memo:</Typography>
-          <Typography variant="body2">{memo && memo.length > 50 ? memo.slice(0, 50) + '...' : memo}</Typography>
+          <Typography
+            variant="body2"
+            style={{
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              maxWidth: '100%',
+            }}
+          >{memo}</Typography>
         </Paper>
       )}
       <Paper elevation={24} style={{ padding: '10px' }}>
