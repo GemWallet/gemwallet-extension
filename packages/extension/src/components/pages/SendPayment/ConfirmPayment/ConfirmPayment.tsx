@@ -9,7 +9,7 @@ import { xrpToDrops } from 'xrpl';
 import { ERROR_RED, HOME_PATH } from '../../../../constants';
 import { useLedger, useWallet } from '../../../../contexts';
 import { TransactionStatus } from '../../../../types';
-import { convertCurrencyString, formatToken } from '../../../../utils';
+import { convertCurrencyString, formatToken, buildMemos } from '../../../../utils';
 import { TileLoader } from '../../../atoms';
 import { AsyncTransaction, PageWithReturn } from '../../../templates';
 
@@ -20,12 +20,13 @@ export interface ConfirmPaymentProps {
     address: string;
     token: string;
     amount: string;
+    memo?: string;
   };
   onClickBack: () => void;
 }
 
 export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
-  payment: { address, token, amount },
+  payment: { address, token, amount, memo },
   onClickBack
 }) => {
   const { getCurrentWallet } = useWallet();
@@ -51,7 +52,8 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
                 value: amount
               }
             : xrpToDrops(amount),
-        Destination: address
+        Destination: address,
+        Memos: buildMemos(memo)
       })
         .then((fees) => {
           setFees(fees);
@@ -61,7 +63,7 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
           setErrorFees(e.message);
         });
     }
-  }, [address, amount, estimateNetworkFees, getCurrentWallet, token, wallet]);
+  }, [address, amount, estimateNetworkFees, getCurrentWallet, memo, token, wallet]);
 
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);
@@ -74,7 +76,8 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
       amount: amount,
       destination: address,
       currency: currency ?? undefined,
-      issuer: issuer ?? undefined
+      issuer: issuer ?? undefined,
+      memo: memo ?? undefined
     })
       .then(() => {
         setTransaction(TransactionStatus.Success);
@@ -84,7 +87,7 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
         setTransaction(TransactionStatus.Rejected);
         Sentry.captureException(e);
       });
-  }, [address, amount, sendPayment, token]);
+  }, [address, amount, memo, sendPayment, token]);
 
   const handleTransactionClick = useCallback(() => {
     navigate(HOME_PATH);
@@ -152,6 +155,20 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
         <Typography variant="body1">Destination:</Typography>
         <Typography variant="body2">{address}</Typography>
       </Paper>
+      {memo ? (
+        <Paper elevation={24} style={{padding: '10px'}}>
+          <Typography variant="body1">Memo:</Typography>
+          <Typography
+            variant="body2"
+            style={{
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              maxWidth: '100%',
+            }}
+          >{memo}</Typography>
+        </Paper>
+      ) : null}
       <Paper elevation={24} style={{ padding: '10px' }}>
         <Typography variant="body1">Amount:</Typography>
         <Typography variant="h6" component="h1" gutterBottom align="right">

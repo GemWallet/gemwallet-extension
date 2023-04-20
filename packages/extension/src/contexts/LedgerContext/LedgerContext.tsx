@@ -8,10 +8,11 @@ import {
   AccountNFToken,
   NFTRequestPayload,
   PaymentRequestPayload,
-  TrustlineRequestPayload
+  TrustlineRequestPayload,
 } from '@gemwallet/constants';
 
 import { AccountTransaction } from '../../types';
+import { buildMemos } from '../../utils';
 import { useNetwork } from '../NetworkContext';
 import { useWallet } from '../WalletContext';
 
@@ -111,7 +112,7 @@ const LedgerProvider: FC = ({ children }) => {
   }, [client, getCurrentWallet]);
 
   const sendPayment = useCallback(
-    async ({ amount, destination, currency, issuer }: PaymentRequestPayload) => {
+    async ({ amount, destination, currency, issuer, memo }: PaymentRequestPayload) => {
       const wallet = getCurrentWallet();
       if (!client) {
         throw new Error('You need to be connected to a ledger to make a transaction');
@@ -120,6 +121,7 @@ const LedgerProvider: FC = ({ children }) => {
       } else {
         // Prepare the transaction
         try {
+          const memos = buildMemos(memo);
           const prepared: Payment = await client.autofill({
             TransactionType: 'Payment',
             Account: wallet.publicAddress,
@@ -131,7 +133,8 @@ const LedgerProvider: FC = ({ children }) => {
                     value: amount
                   }
                 : xrpToDrops(amount),
-            Destination: destination
+            Destination: destination,
+            ...(memos && { Memos: memos }) // Only add the Memos field if the memos are defined, otherwise it would fail
           });
           // Sign the transaction
           const signed = wallet.wallet.sign(prepared);

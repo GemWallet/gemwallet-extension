@@ -19,15 +19,19 @@ import { NumericInput } from '../../../atoms';
 import { InformationMessage } from '../../../molecules';
 import { PageWithReturn, PageWithSpinner } from '../../../templates';
 
+const MAX_MEMO_LENGTH = 300;
+
 export interface PreparePaymentProps {
   onSendPaymentClick: ({
     address,
     token,
-    amount
+    amount,
+    memo,
   }: {
     address: string;
     token: string;
     amount: string;
+    memo?: string;
   }) => void;
 }
 
@@ -36,8 +40,10 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
   const { getCurrentWallet } = useWallet();
   const [address, setAddress] = useState<string>('');
   const [amount, setAmount] = useState<string>('');
+  const [memo, setMemo] = useState<string | undefined>(undefined);
   const [errorAddress, setErrorAddress] = useState<string>('');
   const [errorAmount, setErrorAmount] = useState<string>('');
+  const [errorMemo, setErrorMemo] = useState<string>('');
   const [tokens, setTokens] = useState<
     | {
         value: string;
@@ -85,6 +91,13 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
     [tokens]
   );
 
+  const hasValidMemoLength = useCallback(
+    (memo: string | undefined) => {
+      return memo === undefined || memo.length <= MAX_MEMO_LENGTH;
+    },
+    []
+  );
+
   const handleAddressChange = useCallback(
     (e: FocusEvent<HTMLInputElement>) => {
       const currentWallet = getCurrentWallet();
@@ -130,9 +143,21 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
     [hasEnoughFunds]
   );
 
+  const handleMemoChange = useCallback(
+    (e: FocusEvent<HTMLInputElement>) => {
+      if (!hasValidMemoLength(e.target.value)) {
+        setErrorMemo(`Your memo is too long, it cannot exceed ${MAX_MEMO_LENGTH} characters`);
+      } else {
+        setErrorMemo('');
+      }
+      setMemo(e.target.value);
+    },
+    [hasValidMemoLength]
+  );
+
   const isSendPaymentDisabled = useMemo(() => {
-    return !(address !== '' && isValidAddress(address) && amount !== '' && errorAddress === '');
-  }, [address, amount, errorAddress]);
+    return !(address !== '' && isValidAddress(address) && amount !== '' && errorAddress === '') || !(hasValidMemoLength(memo));
+  }, [address, amount, errorAddress, hasValidMemoLength, memo]);
 
   const handleSendPayment = useCallback(() => {
     if (!isSendPaymentDisabled) {
@@ -140,10 +165,11 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
         address,
         token:
           tokenRef.current?.value === 'XRP-undefined' ? 'XRP' : tokenRef.current?.value ?? 'XRP',
-        amount
+        amount,
+        memo
       });
     }
-  }, [address, amount, isSendPaymentDisabled, onSendPaymentClick]);
+  }, [address, amount, isSendPaymentDisabled, memo, onSendPaymentClick]);
 
   if (!tokens) {
     return <PageWithSpinner />;
@@ -209,6 +235,17 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
           error={!!errorAmount}
           helperText={errorAmount}
           onChange={handleAmountChange}
+          autoComplete="off"
+        />
+        <TextField
+          label="Memo (optional)"
+          id="memo"
+          name="memo"
+          fullWidth
+          style={{ marginBottom: '33px' }}
+          error={!!errorMemo}
+          helperText={errorMemo}
+          onChange={handleMemoChange}
           autoComplete="off"
         />
       </div>

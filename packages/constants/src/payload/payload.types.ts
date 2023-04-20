@@ -24,6 +24,8 @@ export interface PaymentRequestPayload {
   currency?: string;
   // The issuer of the token
   issuer?: string;
+  // The memo to attach to the transaction
+  memo?: string;
 }
 
 export interface TrustlineRequestPayload {
