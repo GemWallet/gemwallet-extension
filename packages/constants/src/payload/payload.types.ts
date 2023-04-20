@@ -98,8 +98,6 @@ export interface NFTResponsePayload {
   nfts: AccountNFToken[] | null | undefined;
 }
 
-export const DEFAULT_MEMO_TYPE = 'Description';
-
 export type ResponsePayload =
   | NetworkResponsePayload
   | AddressResponsePayload
