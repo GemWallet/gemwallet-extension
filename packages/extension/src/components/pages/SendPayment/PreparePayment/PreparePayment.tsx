@@ -145,14 +145,18 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
 
   const handleAmountChange = useCallback(
     (e: FocusEvent<HTMLInputElement>) => {
-      if (Number(e.target.value) <= 0 && e.target.value !== '') {
+      // Int and decimal numbers only
+      const isValidNumber = /^\d*\.?\d*$/.test(e.target.value);
+
+      if (Number(e.target.value) <= 0 && e.target.value !== '' && isValidNumber) {
         setErrorAmount('You can only send an amount greater than zero');
       } else if (
         Number(e.target.value) &&
-        !hasEnoughFunds(e.target.value, tokenRef.current?.value ?? '')
+        !hasEnoughFunds(e.target.value, tokenRef.current?.value ?? '') &&
+        isValidNumber
       ) {
         setErrorAmount('You do not have enough funds to send this amount');
-      } else {
+      } else if (isValidNumber) {
         setErrorAmount('');
       }
       if (Number(e.target.value)) {
