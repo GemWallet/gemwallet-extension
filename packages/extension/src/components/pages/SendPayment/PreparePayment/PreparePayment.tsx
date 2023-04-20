@@ -33,7 +33,7 @@ export interface PreparePaymentProps {
     address,
     token,
     amount,
-    memo
+    memo,
   }: {
     address: string;
     token: string;
@@ -179,11 +179,8 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
   );
 
   const isSendPaymentDisabled = useMemo(() => {
-    return (
-      !(address !== '' && isValidAddress(address) && amount !== '' && errorAddress === '') ||
-      !hasValidMemoLength(memo)
-    );
-  }, [address, amount, errorAddress, hasValidMemoLength, memo]);
+    return !(address !== '' && isValidAddress(address) && amount !== '' && errorAddress === '' && errorMemo === '');
+  }, [address, amount, errorAddress, errorMemo]);
 
   const handleSendPayment = useCallback(() => {
     if (!isSendPaymentDisabled) {
