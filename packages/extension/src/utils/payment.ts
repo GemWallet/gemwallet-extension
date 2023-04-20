@@ -1,4 +1,4 @@
-import { DEFAULT_MEMO_TYPE } from '@gemwallet/constants';
+import { DEFAULT_MEMO_TYPE } from '../constants/payload';
 
 export const buildMemos = (memoData: string | undefined): { Memo: { MemoType: string; MemoData: string } }[] | undefined => {
   if (memoData === undefined || memoData === '') return undefined;

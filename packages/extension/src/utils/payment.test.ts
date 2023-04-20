@@ -1,5 +1,4 @@
-import { DEFAULT_MEMO_TYPE } from '@gemwallet/constants';
-
+import { DEFAULT_MEMO_TYPE } from '../constants/payload';
 import { buildMemos } from './payment';
 
 describe('buildMemos', () => {
