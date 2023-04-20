@@ -155,7 +155,7 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
         <Typography variant="body1">Destination:</Typography>
         <Typography variant="body2">{address}</Typography>
       </Paper>
-      {memo && (
+      {memo ? (
         <Paper elevation={24} style={{padding: '10px'}}>
           <Typography variant="body1">Memo:</Typography>
           <Typography
@@ -168,7 +168,7 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
             }}
           >{memo}</Typography>
         </Paper>
-      )}
+      ) : null}
       <Paper elevation={24} style={{ padding: '10px' }}>
         <Typography variant="body1">Amount:</Typography>
         <Typography variant="h6" component="h1" gutterBottom align="right">
