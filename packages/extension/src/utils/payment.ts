@@ -1,0 +1,13 @@
+import { DEFAULT_MEMO_TYPE } from '@gemwallet/constants';
+
+export const buildMemos = (memoData: string | undefined): { Memo: { MemoType: string; MemoData: string } }[] | undefined => {
+  if (memoData === undefined || memoData === '') return undefined;
+  return [
+    {
+      Memo: {
+        MemoType: Buffer.from(DEFAULT_MEMO_TYPE, 'utf8').toString('hex').toUpperCase(),
+        MemoData: Buffer.from(memoData, 'utf8').toString('hex').toUpperCase()
+      }
+    }
+  ];
+}

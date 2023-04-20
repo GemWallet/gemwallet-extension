@@ -100,19 +100,6 @@ export interface NFTResponsePayload {
 
 export const DEFAULT_MEMO_TYPE = 'Description';
 
-export const buildMemos = (memoData: string | undefined): { Memo: { MemoType: string; MemoData: string } }[] => {
-  if (memoData === undefined) return [];
-  return [
-    {
-      Memo: {
-        MemoType: Buffer.from(DEFAULT_MEMO_TYPE, 'utf8').toString('hex').toUpperCase(),
-        MemoData: Buffer.from(memoData, 'utf8').toString('hex').toUpperCase()
-      }
-    }
-  ];
-}
-
-
 export type ResponsePayload =
   | NetworkResponsePayload
   | AddressResponsePayload

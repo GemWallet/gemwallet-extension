@@ -6,12 +6,10 @@ import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
 import { xrpToDrops } from 'xrpl';
 
-import { buildMemos } from "@gemwallet/constants";
-
 import { ERROR_RED, HOME_PATH } from '../../../../constants';
 import { useLedger, useWallet } from '../../../../contexts';
 import { TransactionStatus } from '../../../../types';
-import { convertCurrencyString, formatToken } from '../../../../utils';
+import { convertCurrencyString, formatToken, buildMemos } from '../../../../utils';
 import { TileLoader } from '../../../atoms';
 import { AsyncTransaction, PageWithReturn } from '../../../templates';
 

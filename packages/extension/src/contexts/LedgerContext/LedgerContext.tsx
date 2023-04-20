@@ -5,7 +5,6 @@ import { sign } from 'ripple-keypairs';
 import { xrpToDrops, dropsToXrp, TransactionMetadata, Payment, Transaction, TrustSet } from 'xrpl';
 
 import {
-  buildMemos,
   AccountNFToken,
   NFTRequestPayload,
   PaymentRequestPayload,
@@ -13,6 +12,7 @@ import {
 } from '@gemwallet/constants';
 
 import { AccountTransaction } from '../../types';
+import { buildMemos } from '../../utils';
 import { useNetwork } from '../NetworkContext';
 import { useWallet } from '../WalletContext';
 
