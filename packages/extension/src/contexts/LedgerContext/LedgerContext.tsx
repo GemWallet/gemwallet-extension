@@ -121,6 +121,7 @@ const LedgerProvider: FC = ({ children }) => {
       } else {
         // Prepare the transaction
         try {
+          const memos = buildMemos(memo);
           const prepared: Payment = await client.autofill({
             TransactionType: 'Payment',
             Account: wallet.publicAddress,
@@ -133,7 +134,7 @@ const LedgerProvider: FC = ({ children }) => {
                   }
                 : xrpToDrops(amount),
             Destination: destination,
-            Memos: buildMemos(memo)
+            ...(memos && { Memos: memos }) // Only add the Memos field if the memos are defined, otherwise it would fail
           });
           // Sign the transaction
           const signed = wallet.wallet.sign(prepared);
