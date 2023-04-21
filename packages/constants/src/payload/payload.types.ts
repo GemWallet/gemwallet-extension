@@ -27,7 +27,7 @@ export interface PaymentRequestPayload {
   // The memo to attach to the transaction
   memo?: string;
   // The destination tag to attach to the transaction
-  destinationTag?: number;
+  destinationTag?: string;
 }
 
 export interface TrustlineRequestPayload {

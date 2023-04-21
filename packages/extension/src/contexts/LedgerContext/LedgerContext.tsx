@@ -12,7 +12,7 @@ import {
 } from '@gemwallet/constants';
 
 import { AccountTransaction } from '../../types';
-import { buildMemos } from '../../utils';
+import { buildDestinationTag, buildMemos } from '../../utils';
 import { useNetwork } from '../NetworkContext';
 import { useWallet } from '../WalletContext';
 
@@ -135,7 +135,7 @@ const LedgerProvider: FC = ({ children }) => {
                 : xrpToDrops(amount),
             Destination: destination,
             ...(memos && { Memos: memos }), // Only add the Memos field if the memos are defined, otherwise it would fail
-            DestinationTag: destinationTag
+            DestinationTag: buildDestinationTag(destinationTag)
           });
           // Sign the transaction
           const signed = wallet.wallet.sign(prepared);

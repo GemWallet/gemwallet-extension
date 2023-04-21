@@ -11,3 +11,8 @@ export const buildMemos = (memoData: string | undefined): { Memo: { MemoType: st
     }
   ];
 }
+
+export const buildDestinationTag = (destinationTag: string | undefined): number | undefined => {
+  if (destinationTag === undefined || destinationTag === '') return undefined;
+  return Number(destinationTag);
+}
