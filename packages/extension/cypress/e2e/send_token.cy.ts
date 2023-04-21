@@ -9,20 +9,18 @@ describe('Send Token', () => {
     cy.window().then((win) => {
       win.localStorage.setItem(
         'wallets',
-        'U2FsdGVkX19VA07d7tVhAAtUbt+YVbw0xQY7OZMykOW4YI4nRZK9iZ7LT3+xHvrj4kwlPKEcRg0S1GjbIWSFaMzg3Mw8fklZrZLL9QZvnbF821SeDB5lBBj/F9PBg8A07uZhYz1p4sTDsWAOFvrnKJjmlWIqXzN5MFFbWBb3os2xGtAGTslFVUXuTp6eM9X9'
+        'U2FsdGVkX1/JAHkPXi6ZonxQukDVxSlHcveDl30pBLB/Y9tPmrtAIi0ulBoj+mgxv/qj29Odgw8pRm0QzwGpT5zKmTRyf4QHmjpl5UcSNfRw95l/ZxPMgOpy/qrOJgWQHKNVK1TUpQHuV/c+ULBmpyOeMsI60paKXKvBEddTfHggacZV9ABvmCZZbIMM4h3tRn0HtVQY8kFvp9yJuUxq8T6BMgHzCys7hzUjtwdZ81YVEfdUShzEkleuqLsx4STqNvibUmf6HnwCgMCCPTzjulr3XvZK+yfreBb3RPsivSCsl5dwSz0ORtNwg04zjLiTvR+1btv91kifEBrMo3dh/Q=='
       );
       win.localStorage.setItem('network', 'Testnet');
     });
-    cy.visit('http://localhost:3000/',
-      {
-        onBeforeLoad(win) {
-          (win as any).chrome = (win as any).chrome || {};
-          (win as any).chrome.runtime = {
-            sendMessage(message, cb) {}
-          };
-        }
+    cy.visit('http://localhost:3000/', {
+      onBeforeLoad(win) {
+        (win as any).chrome = (win as any).chrome || {};
+        (win as any).chrome.runtime = {
+          sendMessage(message, cb) {}
+        };
       }
-    );
+    });
 
     // Login
     cy.get('input[name="password"]').type(PASSWORD);
@@ -30,6 +28,35 @@ describe('Send Token', () => {
 
     // Go to the send page
     cy.contains('button', 'Send').click();
+  });
+
+  it('Cannot send token if the wallet is not activated', () => {
+    // Go back to the home page
+    cy.get('button[aria-label="close"]').click();
+
+    // Go to the list wallet screen
+    cy.get('[aria-label="Wallet icon with green border"]').click();
+
+    // Select the second wallet
+    cy.contains('Your wallets').should('be.visible');
+    cy.get('div[data-testid="wallet-container"]').children().should('have.length', 2);
+    cy.get('div[data-testid="wallet-container"]').children().eq(1).click();
+
+    // Check the current wallet
+    cy.contains('Wallet 2').should('be.visible');
+
+    // Go to the send page
+    cy.contains('button', 'Send').click();
+
+    // Check that the error message is displayed
+    cy.get('div[data-testid="wallet-not-activated"]>div>div>p').should(
+      'have.text',
+      'Wallet not activated'
+    );
+    cy.get('div[data-testid="wallet-not-activated"]>div')
+      .children()
+      .eq(1)
+      .should('have.text', 'You cannot send a payment because your wallet is not activated');
   });
 
   it('Send XRP', () => {
@@ -119,7 +146,7 @@ const sendXRP = (memo?: string) => {
   cy.get('input[name="recipient-address"]').type('rheBcnFv4FcQpccJNcQVS3jZKJE4RWcxW3');
 
   handleTransaction(memo);
-}
+};
 
 const sendUSD = (memo?: string) => {
   // Add receipient address
@@ -130,7 +157,7 @@ const sendUSD = (memo?: string) => {
   cy.contains('li', 'USD').click();
 
   handleTransaction(memo);
-}
+};
 
 const handleTransaction = (memo?: string) => {
   // Add amount
@@ -158,4 +185,4 @@ const handleTransaction = (memo?: string) => {
     timeout: 10000
   });
   cy.get('p[data-testid="transaction-subtitle"]').should('have.text', 'Transaction Successful');
-}
+};

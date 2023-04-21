@@ -103,7 +103,7 @@ export const SignMessage: FC = () => {
   }
 
   return (
-    <PageWithTitle title="Sign Transaction">
+    <PageWithTitle title="Sign Message">
       <Paper
         elevation={24}
         style={{
