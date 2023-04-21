@@ -201,10 +201,7 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
     (e: FocusEvent<HTMLInputElement>) => {
       if (Number(e.target.value) < 0 && e.target.value !== '') {
         setErrorDestinationTag('The destination tag cannot be a negative number');
-      } else if (
-        Number(e.target.value) &&
-        (!Number.isInteger(Number(e.target.value)) || e.target.value.endsWith('.'))
-      ) {
+      } else if (!Number.isInteger(Number(e.target.value)) || e.target.value.endsWith('.')) {
         setErrorDestinationTag('The destination tag cannot be a decimal number');
       } else if (Number(e.target.value) && e.target.value.length > MAX_DESTINATION_TAG_LENGTH) {
         setErrorDestinationTag(
