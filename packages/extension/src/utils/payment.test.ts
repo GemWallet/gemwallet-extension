@@ -23,7 +23,6 @@ describe('buildMemos', () => {
   });
 });
 
-
 describe('buildDestinationTag', () => {
   it('should return undefined when destinationTag is undefined or an empty string', () => {
     expect(buildDestinationTag(undefined)).toBeUndefined();

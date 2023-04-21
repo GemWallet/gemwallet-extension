@@ -26,7 +26,6 @@ import { PageWithNavMenu, PageWithReturn, PageWithSpinner } from '../../../templ
 
 const MAX_MEMO_LENGTH = 300;
 const MAX_DESTINATION_TAG_LENGTH = 10;
-
 const INDEX_DEFAULT_NAV = navigation.findIndex((link) => link.pathname === HOME_PATH);
 
 export interface PreparePaymentProps {
@@ -122,23 +121,20 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
     return memo === undefined || memo.length <= MAX_MEMO_LENGTH;
   }, []);
 
-  const hasValidDestinationTag = useCallback(
-    (destinationTag: string | undefined) => {
-      if (destinationTag === undefined || destinationTag === '') {
-        return true;
-      }
+  const hasValidDestinationTag = useCallback((destinationTag: string | undefined) => {
+    if (destinationTag === undefined || destinationTag === '') {
+      return true;
+    }
 
-      // Must be an integer greater or equal to 0
-      const isValidNumber = /^\d+$/.test(destinationTag);
-      if (!isValidNumber || Number(destinationTag) < 0) {
-        return false;
-      }
+    // Must be an integer greater or equal to 0
+    const isValidNumber = /^\d+$/.test(destinationTag);
+    if (!isValidNumber || Number(destinationTag) < 0) {
+      return false;
+    }
 
-      // Must be 'MAX_DESTINATION_TAG_LENGTH' digits or less
-      return destinationTag.length <= MAX_DESTINATION_TAG_LENGTH;
-    },
-    []
-  );
+    // Must be 'MAX_DESTINATION_TAG_LENGTH' digits or less
+    return destinationTag.length <= MAX_DESTINATION_TAG_LENGTH;
+  }, []);
 
   const handleAddressChange = useCallback(
     (e: FocusEvent<HTMLInputElement>) => {
@@ -205,10 +201,15 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
     (e: FocusEvent<HTMLInputElement>) => {
       if (Number(e.target.value) < 0 && e.target.value !== '') {
         setErrorDestinationTag('The destination tag cannot be a negative number');
-      } else if (Number(e.target.value) && (!(Number.isInteger(Number(e.target.value))) || e.target.value.endsWith('.'))) {
+      } else if (
+        Number(e.target.value) &&
+        (!Number.isInteger(Number(e.target.value)) || e.target.value.endsWith('.'))
+      ) {
         setErrorDestinationTag('The destination tag cannot be a decimal number');
       } else if (Number(e.target.value) && e.target.value.length > MAX_DESTINATION_TAG_LENGTH) {
-        setErrorDestinationTag(`The destination tag cannot exceed ${MAX_DESTINATION_TAG_LENGTH} digits`);
+        setErrorDestinationTag(
+          `The destination tag cannot exceed ${MAX_DESTINATION_TAG_LENGTH} digits`
+        );
       } else if (hasValidDestinationTag(e.target.value)) {
         setErrorDestinationTag('');
       }
@@ -221,7 +222,14 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
   );
 
   const isSendPaymentDisabled = useMemo(() => {
-    return !(address !== '' && isValidAddress(address) && amount !== '' && errorAddress === '' && errorMemo === '' && errorDestinationTag === '');
+    return !(
+      address !== '' &&
+      isValidAddress(address) &&
+      amount !== '' &&
+      errorAddress === '' &&
+      errorMemo === '' &&
+      errorDestinationTag === ''
+    );
   }, [address, amount, errorAddress, errorDestinationTag, errorMemo]);
 
   const handleSendPayment = useCallback(() => {
