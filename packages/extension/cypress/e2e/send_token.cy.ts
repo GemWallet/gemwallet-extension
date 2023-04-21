@@ -67,12 +67,16 @@ describe('Send Token', () => {
     sendXRP('This is a memo');
   });
 
+  it('Send XRP with destination tag', () => {
+    sendXRP(undefined, '123456789');
+  });
+
   it('Send USD', () => {
     sendUSD();
   });
 
-  it('Send USD with memo', () => {
-    sendUSD('This is another memo');
+  it('Send USD with memo and destination tag', () => {
+    sendUSD('This is another memo', '12');
   });
 
   it('Reject Send XRP', () => {
@@ -121,10 +125,29 @@ describe('Send Token', () => {
       'Your memo is too long, it cannot exceed 300 characters'
     );
 
+    // Add a too large destination tag
+    cy.get('input[name="destination-tag"]').clear().type('1'.repeat(11));
+
+    // Expect an error if the user inputs a too large destination tag
+    cy.get('p#destination-tag-helper-text').should(
+      'have.text',
+      'The destination tag cannot exceed 10 digits'
+    );
+
+    // Add a decimal destination tag
+    cy.get('input[name="destination-tag"]').clear().type('1.1');
+
+    // Expect an error if the user inputs a decimal destination tag
+    cy.get('p#destination-tag-helper-text').should(
+      'have.text',
+      'The destination tag cannot be a decimal number'
+    );
+
     //Add a valid amount, a valid receipient address and a valid memo
     cy.get('input[name="recipient-address"]').clear().type('rheBcnFv4FcQpccJNcQVS3jZKJE4RWcxW3');
     cy.get('input[name="amount"]').clear().type('0.001');
     cy.get('input[name="memo"]').clear().type('This is a memo');
+    cy.get('input[name="destination-tag"]').clear().type('123456789');
 
     // Click on send payment button
     cy.contains('button', 'Send Payment').click();
@@ -141,14 +164,14 @@ describe('Send Token', () => {
   });
 });
 
-const sendXRP = (memo?: string) => {
+const sendXRP = (memo?: string, destinationTag?: string) => {
   // Add receipient address
   cy.get('input[name="recipient-address"]').type('rheBcnFv4FcQpccJNcQVS3jZKJE4RWcxW3');
 
-  handleTransaction(memo);
+  handleTransaction(memo, destinationTag);
 };
 
-const sendUSD = (memo?: string) => {
+const sendUSD = (memo?: string, destinationTag?: string) => {
   // Add receipient address
   cy.get('input[name="recipient-address"]').type('rheBcnFv4FcQpccJNcQVS3jZKJE4RWcxW3');
 
@@ -156,16 +179,21 @@ const sendUSD = (memo?: string) => {
   cy.get('#token-select').click();
   cy.contains('li', 'USD').click();
 
-  handleTransaction(memo);
+  handleTransaction(memo, destinationTag);
 };
 
-const handleTransaction = (memo?: string) => {
+const handleTransaction = (memo?: string, destinationTag?: string) => {
   // Add amount
   cy.get('input[name="amount"]').type('0.001');
 
   // Add memo
   if (memo) {
     cy.get('input[name="memo"]').type(memo);
+  }
+
+  // Add destination tag
+  if (destinationTag) {
+    cy.get('input[name="destination-tag"]').type(destinationTag);
   }
 
   // Click on send payment button

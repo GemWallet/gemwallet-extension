@@ -135,7 +135,7 @@ const LedgerProvider: FC = ({ children }) => {
                   }
                 : xrpToDrops(amount),
             Destination: destination,
-            // Only add the Memos and DestinationTag field if the memos are defined, otherwise it would fail
+            // Only add the Memos and DestinationTag fields if they are are defined, otherwise it would fail
             ...(memos && { Memos: memos }),
             ...(parsedDestinationTag && { DestinationTag: parsedDestinationTag })
           });
