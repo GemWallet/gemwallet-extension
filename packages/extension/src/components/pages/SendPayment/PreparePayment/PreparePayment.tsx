@@ -1,32 +1,39 @@
 import { FC, FocusEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
+import { KeyboardArrowLeft } from '@mui/icons-material';
 import {
   Button,
+  Divider,
   FormControl,
+  IconButton,
   InputLabel,
   MenuItem,
   Select,
   SelectChangeEvent,
-  TextField
+  TextField,
+  Typography
 } from '@mui/material';
 import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
 import { isValidAddress } from 'xrpl';
 
+import { HOME_PATH, navigation } from '../../../../constants';
 import { useNetwork, useWallet } from '../../../../contexts';
 import { convertCurrencyString } from '../../../../utils';
 import { NumericInput } from '../../../atoms';
 import { InformationMessage } from '../../../molecules';
-import { PageWithReturn, PageWithSpinner } from '../../../templates';
+import { PageWithNavMenu, PageWithReturn, PageWithSpinner } from '../../../templates';
 
 const MAX_MEMO_LENGTH = 300;
+
+const INDEX_DEFAULT_NAV = navigation.findIndex((link) => link.pathname === HOME_PATH);
 
 export interface PreparePaymentProps {
   onSendPaymentClick: ({
     address,
     token,
     amount,
-    memo,
+    memo
   }: {
     address: string;
     token: string;
@@ -53,6 +60,7 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
     | undefined
   >();
   const [errorTokens, setErrorTokens] = useState<string>('');
+  const [isWalletActivated, setIsWalletActivated] = useState<boolean>(true);
   const tokenRef = useRef<HTMLInputElement | null>(null);
 
   const navigate = useNavigate();
@@ -76,6 +84,20 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
     fetchBalances();
   }, [client, getCurrentWallet]);
 
+  useEffect(() => {
+    async function checkWalletActivated() {
+      try {
+        const wallet = getCurrentWallet();
+        await client?.getXrpBalance(wallet!.publicAddress);
+        setIsWalletActivated(true);
+      } catch (e) {
+        setIsWalletActivated(false);
+      }
+    }
+
+    checkWalletActivated();
+  }, [client, getCurrentWallet]);
+
   const hasEnoughFunds = useCallback(
     (amountToSend: string, currentToken) => {
       const [currency, issuer] = currentToken.split('-');
@@ -91,12 +113,9 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
     [tokens]
   );
 
-  const hasValidMemoLength = useCallback(
-    (memo: string | undefined) => {
-      return memo === undefined || memo.length <= MAX_MEMO_LENGTH;
-    },
-    []
-  );
+  const hasValidMemoLength = useCallback((memo: string | undefined) => {
+    return memo === undefined || memo.length <= MAX_MEMO_LENGTH;
+  }, []);
 
   const handleAddressChange = useCallback(
     (e: FocusEvent<HTMLInputElement>) => {
@@ -156,7 +175,10 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
   );
 
   const isSendPaymentDisabled = useMemo(() => {
-    return !(address !== '' && isValidAddress(address) && amount !== '' && errorAddress === '') || !(hasValidMemoLength(memo));
+    return (
+      !(address !== '' && isValidAddress(address) && amount !== '' && errorAddress === '') ||
+      !hasValidMemoLength(memo)
+    );
   }, [address, amount, errorAddress, hasValidMemoLength, memo]);
 
   const handleSendPayment = useCallback(() => {
@@ -170,6 +192,47 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
       });
     }
   }, [address, amount, isSendPaymentDisabled, memo, onSendPaymentClick]);
+
+  if (!isWalletActivated) {
+    return (
+      <PageWithNavMenu indexDefaultNav={INDEX_DEFAULT_NAV}>
+        <div
+          style={{
+            padding: '0.75rem 1rem',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
+        >
+          <IconButton
+            style={{ position: 'fixed', left: 0 }}
+            aria-label="close"
+            onClick={() => navigate(HOME_PATH)}
+          >
+            <KeyboardArrowLeft />
+          </IconButton>
+          <Typography variant="h6">Send Payment</Typography>
+        </div>
+        <Divider />
+        <div
+          data-testid="wallet-not-activated"
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            height: 'calc(100vh - 112px)',
+            margin: '20px 20px',
+            overflowY: 'auto'
+          }}
+        >
+          <InformationMessage title="Wallet not activated">
+            <div style={{ marginBottom: '5px' }}>
+              You cannot send a payment because your wallet is not activated
+            </div>
+          </InformationMessage>
+        </div>
+      </PageWithNavMenu>
+    );
+  }
 
   if (!tokens) {
     return <PageWithSpinner />;
