@@ -9,6 +9,7 @@ export const SendPayment: FC = () => {
     token: string;
     amount: string;
     memo?: string;
+    destinationTag?: string;
   } | null>(null);
 
   const handlePreparePayment = useCallback((payment) => {

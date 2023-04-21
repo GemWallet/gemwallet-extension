@@ -25,7 +25,7 @@ import { InformationMessage } from '../../../molecules';
 import { PageWithNavMenu, PageWithReturn, PageWithSpinner } from '../../../templates';
 
 const MAX_MEMO_LENGTH = 300;
-
+const MAX_DESTINATION_TAG_LENGTH = 10;
 const INDEX_DEFAULT_NAV = navigation.findIndex((link) => link.pathname === HOME_PATH);
 
 export interface PreparePaymentProps {
@@ -33,12 +33,14 @@ export interface PreparePaymentProps {
     address,
     token,
     amount,
-    memo
+    memo,
+    destinationTag
   }: {
     address: string;
     token: string;
     amount: string;
     memo?: string;
+    destinationTag?: string;
   }) => void;
 }
 
@@ -48,9 +50,11 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
   const [address, setAddress] = useState<string>('');
   const [amount, setAmount] = useState<string>('');
   const [memo, setMemo] = useState<string | undefined>(undefined);
+  const [destinationTag, setDestinationTag] = useState<string | undefined>(undefined);
   const [errorAddress, setErrorAddress] = useState<string>('');
   const [errorAmount, setErrorAmount] = useState<string>('');
   const [errorMemo, setErrorMemo] = useState<string>('');
+  const [errorDestinationTag, setErrorDestinationTag] = useState<string>('');
   const [tokens, setTokens] = useState<
     | {
         value: string;
@@ -117,6 +121,21 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
     return memo === undefined || memo.length <= MAX_MEMO_LENGTH;
   }, []);
 
+  const hasValidDestinationTag = useCallback((destinationTag: string | undefined) => {
+    if (destinationTag === undefined || destinationTag === '') {
+      return true;
+    }
+
+    // Must be an integer greater or equal to 0
+    const isValidNumber = /^\d+$/.test(destinationTag);
+    if (!isValidNumber || Number(destinationTag) < 0) {
+      return false;
+    }
+
+    // Must be 'MAX_DESTINATION_TAG_LENGTH' digits or less
+    return destinationTag.length <= MAX_DESTINATION_TAG_LENGTH;
+  }, []);
+
   const handleAddressChange = useCallback(
     (e: FocusEvent<HTMLInputElement>) => {
       const currentWallet = getCurrentWallet();
@@ -145,14 +164,18 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
 
   const handleAmountChange = useCallback(
     (e: FocusEvent<HTMLInputElement>) => {
-      if (Number(e.target.value) <= 0 && e.target.value !== '') {
+      // Int and decimal numbers only
+      const isValidNumber = /^\d*\.?\d*$/.test(e.target.value);
+
+      if (Number(e.target.value) <= 0 && e.target.value !== '' && isValidNumber) {
         setErrorAmount('You can only send an amount greater than zero');
       } else if (
         Number(e.target.value) &&
-        !hasEnoughFunds(e.target.value, tokenRef.current?.value ?? '')
+        !hasEnoughFunds(e.target.value, tokenRef.current?.value ?? '') &&
+        isValidNumber
       ) {
         setErrorAmount('You do not have enough funds to send this amount');
-      } else {
+      } else if (isValidNumber) {
         setErrorAmount('');
       }
       if (Number(e.target.value)) {
@@ -174,12 +197,37 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
     [hasValidMemoLength]
   );
 
+  const handleDestinationTagChange = useCallback(
+    (e: FocusEvent<HTMLInputElement>) => {
+      if (Number(e.target.value) < 0 && e.target.value !== '') {
+        setErrorDestinationTag('The destination tag cannot be a negative number');
+      } else if (!Number.isInteger(Number(e.target.value)) || e.target.value.endsWith('.')) {
+        setErrorDestinationTag('The destination tag cannot be a decimal number');
+      } else if (Number(e.target.value) && e.target.value.length > MAX_DESTINATION_TAG_LENGTH) {
+        setErrorDestinationTag(
+          `The destination tag cannot exceed ${MAX_DESTINATION_TAG_LENGTH} digits`
+        );
+      } else if (hasValidDestinationTag(e.target.value)) {
+        setErrorDestinationTag('');
+      }
+
+      if (Number(e.target.value)) {
+        setDestinationTag(e.target.value);
+      }
+    },
+    [hasValidDestinationTag]
+  );
+
   const isSendPaymentDisabled = useMemo(() => {
-    return (
-      !(address !== '' && isValidAddress(address) && amount !== '' && errorAddress === '') ||
-      !hasValidMemoLength(memo)
+    return !(
+      address !== '' &&
+      isValidAddress(address) &&
+      amount !== '' &&
+      errorAddress === '' &&
+      errorMemo === '' &&
+      errorDestinationTag === ''
     );
-  }, [address, amount, errorAddress, hasValidMemoLength, memo]);
+  }, [address, amount, errorAddress, errorDestinationTag, errorMemo]);
 
   const handleSendPayment = useCallback(() => {
     if (!isSendPaymentDisabled) {
@@ -188,10 +236,11 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
         token:
           tokenRef.current?.value === 'XRP-undefined' ? 'XRP' : tokenRef.current?.value ?? 'XRP',
         amount,
-        memo
+        memo,
+        destinationTag
       });
     }
-  }, [address, amount, isSendPaymentDisabled, memo, onSendPaymentClick]);
+  }, [address, amount, destinationTag, isSendPaymentDisabled, memo, onSendPaymentClick]);
 
   if (!isWalletActivated) {
     return (
@@ -309,6 +358,17 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
           error={!!errorMemo}
           helperText={errorMemo}
           onChange={handleMemoChange}
+          autoComplete="off"
+        />
+        <NumericInput
+          label="Destination Tag (optional, numeric)"
+          id="destination-tag"
+          name="destination-tag"
+          fullWidth
+          style={{ marginBottom: '33px' }}
+          error={!!errorDestinationTag}
+          helperText={errorDestinationTag}
+          onChange={handleDestinationTagChange}
           autoComplete="off"
         />
       </div>
