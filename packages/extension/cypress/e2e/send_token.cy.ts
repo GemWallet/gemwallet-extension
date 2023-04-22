@@ -213,4 +213,23 @@ const handleTransaction = (memo?: string, destinationTag?: string) => {
     timeout: 10000
   });
   cy.get('p[data-testid="transaction-subtitle"]').should('have.text', 'Transaction Successful');
+
+  // Go back to the home page
+  cy.contains('button', 'Close').click();
+
+  // Go to the transactions page
+  cy.contains('button', 'History').click();
+
+  // Click on the latest transaction
+  cy.contains('li', 'Payment sent').first().click();
+
+  // Make sure the transaction details are correct
+  cy.contains('Payment sent - 0.001 XRP');
+
+  if (memo) {
+    cy.contains('Memo');
+    cy.contains(memo);
+  } else {
+    cy.should('not.contain', 'Memo');
+  }
 };
