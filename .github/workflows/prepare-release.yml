@@ -1,0 +1,74 @@
+name: Prepare Extension Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      new_version:
+        description: 'New version number'
+        required: true
+
+jobs:
+  prepare_release:
+    name: 🚀 Prepare Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Set up Git user
+        run: |
+          git config user.name "GemWallet Release Bot"
+          git config user.email "release@gemwallet.app"
+
+      - name: Setup node from .nvmrc
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'yarn'
+
+      - name: Install modules
+        run: yarn install --frozen-lockfile
+
+      - name: Update @gemwallet/extension version
+        run: |
+          new_version=${{ github.event.inputs.new_version }}
+          sed -i "s/\(\"version\": \"\)[^\"]*\"/\1$new_version\"/g" packages/extension/package.json
+
+      - name: Update version in manifest.json
+        run: |
+          new_version=${{ github.event.inputs.new_version }}
+          sed -i "s/\"version\": \"[0-9]*\.[0-9]*\.[0-9]*\"/\"version\": \"$new_version\"/g" packages/extension/public/manifest.json
+
+      - name: Upgrade @sentry/react, @sentry/tracing and xrpl
+        run: yarn upgrade @sentry/react @sentry/tracing xrpl
+
+      - name: Update dependencies
+        run: yarn
+
+      - name: Build the CDN API
+        run: yarn build:api:cdn
+
+      - name: Build the extension
+        run: yarn build
+
+      - name: Cypress run
+        uses: cypress-io/github-action@v5
+        with:
+          start: yarn start
+          wait-on: 'http://localhost:3000'
+          wait-on-timeout: 120
+          browser: chrome
+          config-file: cypress.config.ts
+          working-directory: packages/extension
+
+      - name: Commit changes
+        run: |
+          git add .
+          git commit -m "Release ${{ github.event.inputs.new_version }}"
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v3
+        with:
+          title: 'Release ${{ github.event.inputs.new_version }}'
+          branch: "release/${{ github.event.inputs.new_version }}"
