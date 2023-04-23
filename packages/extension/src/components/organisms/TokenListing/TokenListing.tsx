@@ -1,4 +1,4 @@
-import { useState, useEffect, FC, forwardRef, useCallback } from 'react';
+import { useState, useEffect, FC, forwardRef, useCallback, FocusEvent, useMemo } from 'react';
 
 import CloseIcon from '@mui/icons-material/Close';
 import {
@@ -8,18 +8,20 @@ import {
   IconButton,
   Link,
   Slide,
+  TextField,
   Toolbar,
   Typography
 } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 import * as Sentry from '@sentry/react';
+import { useNavigate } from 'react-router-dom';
 
 import { Network } from '@gemwallet/constants';
 
-import { DEFAULT_RESERVE, ERROR_RED } from '../../../constants';
+import { ADD_NEW_TRUSTLINE_PATH, DEFAULT_RESERVE, ERROR_RED } from '../../../constants';
 import { useLedger, useNetwork, useServer } from '../../../contexts';
 import { convertCurrencyString } from '../../../utils';
-import { TokenLoader } from '../../atoms';
+import { NumericInput, TokenLoader } from '../../atoms';
 import { InformationMessage } from '../../molecules/InformationMessage';
 import { TokenDisplay } from '../../molecules/TokenDisplay';
 
@@ -49,9 +51,17 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [trustLineBalances, setTrustLineBalances] = useState<TrustLineBalance[]>([]);
   const [explanationOpen, setExplanationOpen] = useState(false);
+  const [trustlineDialogOpen, setTrustlineDialogOpen] = useState(false);
+  const [issuer, setIssuer] = useState<string>('');
+  const [token, setToken] = useState<string>('');
+  const [limit, setLimit] = useState<string>('');
+  const [errorIssuer, setErrorIssuer] = useState<string>('');
+  const [errorToken, setErrorToken] = useState<string>('');
+  const [errorLimit, setErrorLimit] = useState<string>('');
   const { client, reconnectToNetwork, network } = useNetwork();
   const { serverInfo } = useServer();
   const { fundWallet } = useLedger();
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchBalance() {
@@ -96,6 +106,44 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
         setErrorMessage(e.message);
       });
   }, [fundWallet]);
+
+  const handleTrustlineDialogOpen = useCallback(() => {
+    setTrustlineDialogOpen(true);
+  }, []);
+
+  const handleTrustlineClose = useCallback(() => {
+    setTrustlineDialogOpen(false);
+  }, []);
+
+  const handleTokenChange = useCallback((e: FocusEvent<HTMLInputElement>) => {
+    setErrorToken('');
+    setToken(e.target.value);
+  }, []);
+
+  const handleIssuerChange = useCallback((e: FocusEvent<HTMLInputElement>) => {
+    setErrorIssuer('');
+    setIssuer(e.target.value);
+  }, []);
+
+  const handleLimitChange = useCallback((e: FocusEvent<HTMLInputElement>) => {
+    setErrorLimit('');
+    setLimit(e.target.value);
+  }, []);
+
+  const isAddTrustlineDisabled = useMemo(() => {
+    return !(
+      issuer !== '' &&
+      token !== '' &&
+      limit !== '' &&
+      errorIssuer === '' &&
+      errorToken === '' &&
+      errorLimit === ''
+    );
+  }, [errorIssuer, errorLimit, errorToken, issuer, limit, token]);
+
+  const handleAddTrustline = useCallback(() => {
+    navigate(`${ADD_NEW_TRUSTLINE_PATH}?value=${limit}&currency=${token}&issuer=${issuer}`);
+  }, [issuer, limit, navigate, token]);
 
   if (client === null) {
     return (
@@ -209,6 +257,86 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
           <TokenDisplay balance={Number(XRPBalance)} isXRPToken token="XRP" />
           <Typography style={{ margin: '20px 0 10px 0' }}>Amount that can be spent</Typography>
           <TokenDisplay balance={Number(XRPBalance) - reserve} isXRPToken token="XRP" />
+        </div>
+      </Dialog>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column'
+        }}
+      >
+        <Button
+          variant="contained"
+          onClick={handleTrustlineDialogOpen}
+          style={{ marginTop: '20px' }}
+        >
+          Add trustline
+        </Button>
+      </div>
+      <Dialog
+        fullScreen
+        open={trustlineDialogOpen}
+        onClose={handleTrustlineClose}
+        TransitionComponent={Transition}
+      >
+        <AppBar sx={{ position: 'relative' }}>
+          <Toolbar>
+            <IconButton
+              edge="start"
+              color="inherit"
+              onClick={handleTrustlineClose}
+              aria-label="close"
+            >
+              <CloseIcon />
+            </IconButton>
+            <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+              Add trustline
+            </Typography>
+          </Toolbar>
+        </AppBar>
+        <div style={{ margin: '20px' }}>
+          <TextField
+            label="Issuer"
+            id="issuer"
+            name="issuer"
+            fullWidth
+            error={!!errorIssuer}
+            helperText={errorIssuer}
+            onChange={handleIssuerChange}
+            style={{ marginTop: '20px', marginBottom: '10px' }}
+            autoComplete="off"
+          />
+          <TextField
+            label="Token"
+            id="token"
+            name="token"
+            fullWidth
+            error={!!errorToken}
+            helperText={errorToken}
+            onChange={handleTokenChange}
+            style={{ marginTop: '20px', marginBottom: '10px' }}
+            autoComplete="off"
+          />
+          <NumericInput
+            label="Limit"
+            id="limit"
+            name="limit"
+            fullWidth
+            style={{ marginTop: '20px', marginBottom: '10px' }}
+            error={!!errorLimit}
+            helperText={errorLimit}
+            onChange={handleLimitChange}
+            autoComplete="off"
+          />
+          <Button
+            fullWidth
+            variant="contained"
+            onClick={handleAddTrustline}
+            disabled={isAddTrustlineDisabled}
+            style={{ marginTop: '20px', marginBottom: '10px' }}
+          >
+            Add trustline
+          </Button>
         </div>
       </Dialog>
     </div>
