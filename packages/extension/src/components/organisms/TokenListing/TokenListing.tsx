@@ -137,7 +137,7 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
 
   const handleAddTrustline = useCallback(
     () => {
-      navigate(`${ADD_NEW_TRUSTLINE_PATH}?value=${limit}&currency=${token}&issuer=${issuer}`);
+      navigate(`${ADD_NEW_TRUSTLINE_PATH}?value=${limit}&currency=${token}&issuer=${issuer}&inAppCall=true`);
     },
     [issuer, limit, navigate, token]
   );

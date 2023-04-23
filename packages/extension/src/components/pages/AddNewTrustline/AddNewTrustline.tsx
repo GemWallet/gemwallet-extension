@@ -41,6 +41,7 @@ interface Params {
   id: number;
   memos: Memo[] | null;
   flags: TrustSetFlags | null;
+  inAppCall: boolean;
 }
 
 export const AddNewTrustline: FC = () => {
@@ -51,7 +52,8 @@ export const AddNewTrustline: FC = () => {
     fee: null,
     id: 0,
     memos: null,
-    flags: null
+    flags: null,
+    inAppCall: false
   });
   const [estimatedFees, setEstimatedFees] = useState<string>(DEFAULT_FEES);
   const [errorFees, setErrorFees] = useState('');
@@ -74,6 +76,7 @@ export const AddNewTrustline: FC = () => {
     const id = Number(urlParams.get('id')) || 0;
     const memos = parseMemos(urlParams.get('memos'));
     const flags = parseTrustSetFlags(urlParams.get('flags'));
+    const inAppCall = urlParams.get('inAppCall') === 'true' || false;
 
     if (limitAmount === null) {
       setIsParamsMissing(true);
@@ -88,7 +91,8 @@ export const AddNewTrustline: FC = () => {
       fee,
       id,
       memos,
-      flags
+      flags,
+      inAppCall,
     });
   }, []);
 
@@ -190,16 +194,20 @@ export const AddNewTrustline: FC = () => {
         .then((transactionHash) => {
           setTransaction(TransactionStatus.Success);
           const message = createMessage(transactionHash);
-          chrome.runtime.sendMessage<ReceiveTrustlineHashBackgroundMessage>(message);
+          if (!params.inAppCall) {
+            chrome.runtime.sendMessage<ReceiveTrustlineHashBackgroundMessage>(message);
+          }
         })
         .catch((e) => {
           setErrorRequestRejection(e.message);
           setTransaction(TransactionStatus.Rejected);
           const message = createMessage(undefined);
-          chrome.runtime.sendMessage<ReceiveTrustlineHashBackgroundMessage>(message);
+          if (!params.inAppCall) {
+            chrome.runtime.sendMessage<ReceiveTrustlineHashBackgroundMessage>(message);
+          }
         });
     }
-  }, [setTrustline, createMessage, params.limitAmount, params.fee, params.flags, params.memos]);
+  }, [setTrustline, createMessage, params.limitAmount, params.fee, params.inAppCall, params.flags, params.memos]);
 
   if (isParamsMissing) {
     return (
