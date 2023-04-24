@@ -9,6 +9,7 @@ import { PrivateRoute } from './components/atoms/PrivateRoute';
 import {
   About,
   AddNewTrustline,
+  AddNewTrustlineForm,
   AddNewWallet,
   CreateWallet,
   EditWallet,
@@ -55,7 +56,8 @@ import {
   ADD_NEW_TRUSTLINE_PATH,
   HISTORY_PATH,
   SHARE_NFT_PATH,
-  SEND_PATH
+  SEND_PATH,
+  ADD_NEW_TRUSTLINE_FORM_PATH
 } from './constants';
 import { useBrowser } from './contexts';
 import { loadNetwork } from './utils';
@@ -139,6 +141,14 @@ const App: FC = () => {
           element={
             <PrivateRoute>
               <AddNewTrustline />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path={ADD_NEW_TRUSTLINE_FORM_PATH}
+          element={
+            <PrivateRoute>
+              <AddNewTrustlineForm />
             </PrivateRoute>
           }
         />

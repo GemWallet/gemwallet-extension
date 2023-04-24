@@ -2,6 +2,7 @@ export const MAIN_FILE = '/index.html';
 export const ABOUT_PATH = '/about';
 export const ADD_NEW_WALLET_PATH = '/add-new-wallet';
 export const ADD_NEW_TRUSTLINE_PATH = '/add-new-trustline';
+export const ADD_NEW_TRUSTLINE_FORM_PATH = '/add-new-trustline-form';
 export const CREATE_NEW_WALLET_PATH = '/create-new-wallet';
 export const EDIT_WALLET_PATH = '/edit-wallet';
 export const HISTORY_PATH = '/history';
