@@ -4,6 +4,7 @@ import ErrorIcon from '@mui/icons-material/Error';
 import WarningIcon from '@mui/icons-material/Warning';
 import { Button, Container, IconButton, Paper, Tooltip, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
+import { useNavigate } from 'react-router-dom';
 import { isValidAddress } from 'xrpl';
 
 import {
@@ -14,7 +15,7 @@ import {
   LimitAmount
 } from '@gemwallet/constants';
 
-import { DEFAULT_RESERVE, ERROR_RED } from '../../../constants';
+import { DEFAULT_RESERVE, ERROR_RED, HOME_PATH } from '../../../constants';
 import { useLedger, useNetwork, useServer, useWallet } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
 import {
@@ -67,6 +68,7 @@ export const AddNewTrustline: FC = () => {
   const { client, network } = useNetwork();
   const { getCurrentWallet } = useWallet();
   const { serverInfo } = useServer();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const queryString = window.location.search;
@@ -220,6 +222,7 @@ export const AddNewTrustline: FC = () => {
           </>
         }
         transaction={TransactionStatus.Rejected}
+        {...(params.inAppCall ? { onClick: () => navigate(HOME_PATH) } : {})}
       />
     );
   }
@@ -236,6 +239,7 @@ export const AddNewTrustline: FC = () => {
           </>
         }
         transaction={TransactionStatus.Rejected}
+        {...(params.inAppCall ? { onClick: () => navigate(HOME_PATH) } : {})}
       />
     );
   }
@@ -252,6 +256,7 @@ export const AddNewTrustline: FC = () => {
           </>
         }
         transaction={TransactionStatus.Rejected}
+        {...(params.inAppCall ? { onClick: () => navigate(HOME_PATH) } : {})}
       />
     );
   }
@@ -269,6 +274,7 @@ export const AddNewTrustline: FC = () => {
             </>
           }
           transaction={TransactionStatus.Rejected}
+          {...(params.inAppCall ? { onClick: () => navigate(HOME_PATH) } : {})}
         />
       );
     }
@@ -278,6 +284,7 @@ export const AddNewTrustline: FC = () => {
         title="Error"
         subtitle={errorDifference}
         transaction={TransactionStatus.Rejected}
+        {...(params.inAppCall ? { onClick: () => navigate(HOME_PATH) } : {})}
       />
     );
   }
@@ -306,6 +313,7 @@ export const AddNewTrustline: FC = () => {
           )
         }
         transaction={transaction}
+        {...(params.inAppCall ? { onClick: () => navigate(HOME_PATH) } : {})}
       />
     );
   }
@@ -322,6 +330,7 @@ export const AddNewTrustline: FC = () => {
           </>
         }
         transaction={TransactionStatus.Rejected}
+        {...(params.inAppCall ? { onClick: () => navigate(HOME_PATH) } : {})}
       />
     );
   }
