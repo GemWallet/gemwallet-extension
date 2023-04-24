@@ -1,8 +1,5 @@
 import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 
-import ErrorIcon from '@mui/icons-material/Error';
-import WarningIcon from '@mui/icons-material/Warning';
-import { Button, Container, IconButton, Paper, Tooltip, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
 import { isValidAddress } from 'xrpl';
@@ -15,23 +12,22 @@ import {
   LimitAmount
 } from '@gemwallet/constants';
 
-import { DEFAULT_RESERVE, ERROR_RED, HOME_PATH } from '../../../constants';
+import { DEFAULT_RESERVE, HOME_PATH } from '../../../constants';
 import { useLedger, useNetwork, useServer, useWallet } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
 import {
   checkFee,
-  formatAmount,
-  formatFlags,
-  formatToken,
-  fromHexMemos,
   parseLimitAmount,
   parseMemos,
   parseTrustSetFlags,
   toXRPLMemos
 } from '../../../utils';
-import { TileLoader } from '../../atoms';
-import { AddNewTrustlineForm } from '../../pages';
-import { AsyncTransaction, PageWithSpinner, PageWithTitle } from '../../templates';
+import {
+  StepForm,
+  StepWarning,
+  StepConfirm
+} from '../../pages';
+import { AsyncTransaction, PageWithSpinner } from '../../templates';
 
 const DEFAULT_FEES = 'Loading ...';
 
@@ -182,8 +178,10 @@ export const AddNewTrustline: FC = () => {
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);
     const message = createMessage(null);
-    chrome.runtime.sendMessage<ReceiveTrustlineHashBackgroundMessage>(message);
-  }, [createMessage]);
+    if (!params.inAppCall) {
+      chrome.runtime.sendMessage<ReceiveTrustlineHashBackgroundMessage>(message);
+    }
+  }, [createMessage, params.inAppCall]);
 
   const handleConfirm = useCallback(() => {
     setTransaction(TransactionStatus.Pending);
@@ -232,7 +230,7 @@ export const AddNewTrustline: FC = () => {
 
   if (params.showForm) {
     return (
-      <AddNewTrustlineForm onTrustlineSubmit={handleTrustlineSubmit} />
+      <StepForm onTrustlineSubmit={handleTrustlineSubmit} />
     )
   }
 
@@ -362,139 +360,20 @@ export const AddNewTrustline: FC = () => {
 
   if (step === 'WARNING') {
     return (
-      <PageWithTitle title="Add Trustline">
-        <div
-          style={{
-            height: '100%',
-            paddingTop: '50px'
-          }}
-        >
-          <div style={{ textAlign: 'center' }}>
-            <WarningIcon color="warning" fontSize="large" />
-            <Typography color="#ffac33">Warning</Typography>
-          </div>
-          <Typography align="center" style={{ marginTop: '2rem' }}>
-            GemWallet does not recommend or support any particular token or issuer.
-          </Typography>
-          <Typography align="center" variant="body2" style={{ marginTop: '1rem' }}>
-            It is important to add only the tokens and issuers you trust.
-          </Typography>
-          <Typography align="center" variant="body2" style={{ marginTop: '1rem' }}>
-            Continue at your own risk
-          </Typography>
-        </div>
-        <Container style={{ display: 'flex', justifyContent: 'space-evenly' }}>
-          <Button variant="contained" color="secondary" onClick={handleReject}>
-            Reject
-          </Button>
-          <Button variant="contained" onClick={() => setStep('TRANSACTION')} disabled={false}>
-            Continue
-          </Button>
-        </Container>
-      </PageWithTitle>
+      <StepWarning onReject={handleReject} onContinue={() => setStep('TRANSACTION')} />
     );
   }
 
-  const { limitAmount, fee, flags, memos } = params;
-  const decodedMemos = fromHexMemos(memos || []);
-
   return (
-    <PageWithTitle title="Add Trustline - Confirm">
-      {!hasEnoughFunds ? (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <Tooltip title="You need more funds on your wallet to proceed">
-            <IconButton size="small">
-              <ErrorIcon style={{ color: ERROR_RED }} />
-            </IconButton>
-          </Tooltip>
-          <Typography variant="body1" style={{ marginLeft: '10px', color: ERROR_RED }}>
-            Insufficient funds.
-          </Typography>
-        </div>
-      ) : null}
-      <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-        <Typography variant="body1">Issuer:</Typography>
-        <Typography variant="body2">{limitAmount?.issuer}</Typography>
-      </Paper>
-      <Paper
-        elevation={24}
-        style={{ padding: '10px', display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}
-      >
-        <Typography variant="body1">Currency:</Typography>
-        <Typography variant="body1">{limitAmount?.currency}</Typography>
-      </Paper>
-
-      <Paper
-        elevation={24}
-        style={{ padding: '10px', display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}
-      >
-        <Typography variant="body1">Limit:</Typography>
-        <Typography variant="body1">{limitAmount ? formatAmount(limitAmount) : undefined}</Typography>
-      </Paper>
-      {decodedMemos && decodedMemos.length > 0 ? (
-        <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-          <Typography variant='body1'>Memos:</Typography>
-          {decodedMemos.map((memo, index) => (
-            <div
-              key={index}
-              style={{
-                marginBottom: index === decodedMemos.length - 1 ? 0 : '8px',
-              }}
-            >
-              <Typography
-                variant='body2'
-                style={{
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  maxWidth: '100%',
-                }}
-              >
-                {memo.memo.memoData}
-              </Typography>
-            </div>
-          ))}
-        </Paper>
-      ) : null}
-      {flags ? (
-        <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-          <Typography variant="body1">Flags:</Typography>
-          <Typography variant="body2">
-            <pre style={{ margin: 0 }}>
-              {formatFlags(flags)}
-            </pre>
-          </Typography>
-        </Paper>
-      ) : null}
-      <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-        <Typography variant="body1" style={{ display: 'flex', alignItems: 'center' }}>
-          <Tooltip title="These are the fees to make the transaction over the network">
-            <IconButton size="small">
-              <ErrorIcon />
-            </IconButton>
-          </Tooltip>
-          Network fees:
-        </Typography>
-        <Typography variant="body2" gutterBottom align="right">
-          {errorFees ? (
-            <Typography variant="caption" style={{ color: ERROR_RED }}>
-              {errorFees}
-            </Typography>
-          ) : estimatedFees === DEFAULT_FEES ? (
-            <TileLoader secondLineOnly />
-          ) : (
-            fee ? formatToken(Number(fee), 'XRP (manual)', true) : formatAmount(estimatedFees)
-          )}
-        </Typography>
-      </Paper>
-      <Container style={{ display: 'flex', justifyContent: 'space-evenly' }}>
-        <Button variant="contained" color="secondary" onClick={handleReject}>
-          Reject
-        </Button>
-        <Button variant="contained" onClick={handleConfirm} disabled={!hasEnoughFunds}>
-          Confirm
-        </Button>
-      </Container>
-    </PageWithTitle>
+    <StepConfirm
+      limitAmount={params.limitAmount}
+      fee={params.fee}
+      newtorkFees={estimatedFees}
+      errorFees={errorFees}
+      hasEnoughFunds={hasEnoughFunds}
+      defaultFee={DEFAULT_FEES}
+      onReject={handleReject}
+      onConfirm={handleConfirm}
+    />
   );
 };

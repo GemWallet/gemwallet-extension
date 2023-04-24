@@ -55,7 +55,7 @@ import {
   ADD_NEW_TRUSTLINE_PATH,
   HISTORY_PATH,
   SHARE_NFT_PATH,
-  SEND_PATH,
+  SEND_PATH
 } from './constants';
 import { useBrowser } from './contexts';
 import { loadNetwork } from './utils';
