@@ -7,6 +7,8 @@ import { ADD_NEW_TRUSTLINE_PATH, HOME_PATH } from '../../../constants';
 import { NumericInput } from '../../atoms';
 import { PageWithReturn } from '../../templates';
 
+const MAX_TOKEN_LENGTH = 30;
+
 export const AddNewTrustlineForm: FC = () => {
   const [issuer, setIssuer] = useState<string>('');
   const [token, setToken] = useState<string>('');
@@ -21,7 +23,11 @@ export const AddNewTrustlineForm: FC = () => {
   }, [navigate]);
 
   const handleTokenChange = useCallback((e: FocusEvent<HTMLInputElement>) => {
-    setErrorToken('');
+    if (e.target.value.length > MAX_TOKEN_LENGTH) {
+      setErrorToken('Your token is too long.');
+    } else {
+      setErrorToken('');
+    }
     setToken(e.target.value);
   }, []);
 
@@ -31,8 +37,15 @@ export const AddNewTrustlineForm: FC = () => {
   }, []);
 
   const handleLimitChange = useCallback((e: FocusEvent<HTMLInputElement>) => {
-    setErrorLimit('');
-    setLimit(e.target.value);
+    if (Number(e.target.value) < 0 && e.target.value !== '') {
+      setErrorLimit('The limit cannot be a negative number');
+    } else {
+      setErrorLimit('');
+    }
+
+    if (Number(e.target.value)) {
+      setLimit(e.target.value);
+    }
   }, []);
 
   const isAddTrustlineDisabled = useMemo(() => {
