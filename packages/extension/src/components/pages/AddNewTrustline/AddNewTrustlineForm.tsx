@@ -3,13 +3,17 @@ import {FC, FocusEvent, useCallback, useMemo, useState} from 'react';
 import { Button, TextField } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
-import { ADD_NEW_TRUSTLINE_PATH, HOME_PATH } from '../../../constants';
+import { HOME_PATH } from '../../../constants';
 import { NumericInput } from '../../atoms';
 import { PageWithReturn } from '../../templates';
 
 const MAX_TOKEN_LENGTH = 30;
 
-export const AddNewTrustlineForm: FC = () => {
+interface AddNewTrustlineFormProps {
+  onTrustlineSubmit: (issuer: string, token: string, limit: string, showForm: boolean, isParamsMissing: boolean) => void;
+}
+
+export const AddNewTrustlineForm: FC<AddNewTrustlineFormProps> = ({ onTrustlineSubmit }) => {
   const [issuer, setIssuer] = useState<string>('');
   const [token, setToken] = useState<string>('');
   const [limit, setLimit] = useState<string>('');
@@ -70,9 +74,9 @@ export const AddNewTrustlineForm: FC = () => {
 
   const handleAddTrustline = useCallback(
     () => {
-      navigate(`${ADD_NEW_TRUSTLINE_PATH}?value=${limit}&currency=${token}&issuer=${issuer}&inAppCall=true`);
+      onTrustlineSubmit(issuer, token, limit, false, false);
     },
-    [issuer, limit, navigate, token]
+    [issuer, limit, onTrustlineSubmit, token]
   );
 
   return (

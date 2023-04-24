@@ -30,6 +30,7 @@ import {
   toXRPLMemos
 } from '../../../utils';
 import { TileLoader } from '../../atoms';
+import { AddNewTrustlineForm } from '../../pages';
 import { AsyncTransaction, PageWithSpinner, PageWithTitle } from '../../templates';
 
 const DEFAULT_FEES = 'Loading ...';
@@ -43,6 +44,7 @@ interface Params {
   memos: Memo[] | null;
   flags: TrustSetFlags | null;
   inAppCall: boolean;
+  showForm: boolean;
 }
 
 export const AddNewTrustline: FC = () => {
@@ -54,7 +56,8 @@ export const AddNewTrustline: FC = () => {
     id: 0,
     memos: null,
     flags: null,
-    inAppCall: false
+    inAppCall: false,
+    showForm: false
   });
   const [estimatedFees, setEstimatedFees] = useState<string>(DEFAULT_FEES);
   const [errorFees, setErrorFees] = useState('');
@@ -79,6 +82,7 @@ export const AddNewTrustline: FC = () => {
     const memos = parseMemos(urlParams.get('memos'));
     const flags = parseTrustSetFlags(urlParams.get('flags'));
     const inAppCall = urlParams.get('inAppCall') === 'true' || false;
+    const showForm = urlParams.get('showForm') === 'true' || false;
 
     if (limitAmount === null) {
       setIsParamsMissing(true);
@@ -95,6 +99,7 @@ export const AddNewTrustline: FC = () => {
       memos,
       flags,
       inAppCall,
+      showForm
     });
   }, []);
 
@@ -210,6 +215,26 @@ export const AddNewTrustline: FC = () => {
         });
     }
   }, [setTrustline, createMessage, params.limitAmount, params.fee, params.inAppCall, params.flags, params.memos]);
+
+  const handleTrustlineSubmit = (issuer: string, token: string, limit: string, showForm: boolean, isParamsMissing: boolean) => {
+    setParams({
+      limitAmount: params.limitAmount,
+      fee: params.fee,
+      id: params.id,
+      memos: params.memos,
+      flags: params.flags,
+      showForm: showForm,
+      inAppCall: true,
+    });
+
+    setIsParamsMissing(isParamsMissing);
+  };
+
+  if (params.showForm) {
+    return (
+      <AddNewTrustlineForm onTrustlineSubmit={handleTrustlineSubmit} />
+    )
+  }
 
   if (isParamsMissing) {
     return (

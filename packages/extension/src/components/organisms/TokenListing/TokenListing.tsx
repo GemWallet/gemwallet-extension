@@ -15,7 +15,7 @@ import { TransitionProps } from '@mui/material/transitions';
 import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
 
-import { ADD_NEW_TRUSTLINE_FORM_PATH, DEFAULT_RESERVE } from '../../../constants';
+import { ADD_NEW_TRUSTLINE_PATH, DEFAULT_RESERVE } from '../../../constants';
 import { useNetwork, useServer } from '../../../contexts';
 import { convertCurrencyString } from '../../../utils';
 import { TokenLoader } from '../../atoms';
@@ -203,7 +203,7 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
       >
         <Button
           variant="contained"
-          onClick={() => navigate(ADD_NEW_TRUSTLINE_FORM_PATH)}
+          onClick={() => navigate(`${ADD_NEW_TRUSTLINE_PATH}?showForm=true`)}
           style={{ marginTop: '20px' }}
         >
           Add trustline
