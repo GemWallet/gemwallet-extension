@@ -172,6 +172,7 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
           />
         );
       })}
+      <div style={{ height: '60px' }} />
       <Dialog
         fullScreen
         open={explanationOpen}
@@ -216,7 +217,12 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
       <div
         style={{
           display: 'flex',
-          flexDirection: 'column'
+          justifyContent: 'center',
+          position: 'fixed',
+          bottom: 70,
+          left: 0,
+          right: 0,
+          zIndex: 1
         }}
       >
         <Button
