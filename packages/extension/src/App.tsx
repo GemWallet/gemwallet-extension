@@ -16,6 +16,7 @@ import { PrivateRoute } from './components/atoms/PrivateRoute';
 import {
   About,
   AddNewTrustline,
+  AddNewTrustlineForm,
   AddNewWallet,
   CreateWallet,
   EditWallet,
@@ -41,6 +42,7 @@ import {
 import { ErrorBoundary } from './components/templates';
 import {
   ABOUT_PATH,
+  ADD_NEW_TRUSTLINE_FORM_PATH,
   ADD_NEW_TRUSTLINE_PATH,
   ADD_NEW_WALLET_PATH,
   CREATE_NEW_WALLET_PATH,
@@ -311,6 +313,14 @@ const App: FC = () => {
           element={
             <PrivateRoute>
               <AddNewTrustline />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path={ADD_NEW_TRUSTLINE_FORM_PATH}
+          element={
+            <PrivateRoute>
+              <AddNewTrustlineForm />
             </PrivateRoute>
           }
         />
