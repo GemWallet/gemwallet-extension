@@ -9,7 +9,7 @@ import { PageWithReturn } from '../../templates';
 
 const MAX_TOKEN_LENGTH = 30;
 
-interface AddNewTrustlineFormProps {
+interface StepFormProps {
   onTrustlineSubmit: (
     issuer: string,
     token: string,
@@ -19,7 +19,7 @@ interface AddNewTrustlineFormProps {
   ) => void;
 }
 
-export const AddNewTrustlineForm: FC<AddNewTrustlineFormProps> = ({ onTrustlineSubmit }) => {
+export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit }) => {
   const [issuer, setIssuer] = useState<string>('');
   const [token, setToken] = useState<string>('');
   const [limit, setLimit] = useState<string>('');
