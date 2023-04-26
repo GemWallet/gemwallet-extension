@@ -12,6 +12,7 @@ export interface TokenDisplayProps {
   balance: number;
   token: string;
   isXRPToken?: boolean;
+  trustlineLimit?: number;
   onExplainClick?: () => void;
   style?: CSSProperties;
 }
@@ -20,6 +21,7 @@ export const TokenDisplay: FC<TokenDisplayProps> = ({
   balance,
   token,
   isXRPToken = false,
+  trustlineLimit,
   onExplainClick,
   style
 }) => {
@@ -38,7 +40,7 @@ export const TokenDisplay: FC<TokenDisplayProps> = ({
       <div style={{ display: 'flex', alignItems: 'center' }}>
         {isXRPToken ? <Xrp /> : <GemWallet />}
         <div style={{ marginLeft: '10px' }}>
-          <Typography>{token}</Typography>
+          <Typography style={trustlineLimit === 0 ? { color: 'brown' } : {}}>{token}</Typography>
           <Typography variant="body2" style={{ color: SECONDARY_GRAY }}>
             {formatToken(balance, token)}
           </Typography>
