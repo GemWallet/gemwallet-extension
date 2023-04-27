@@ -1,12 +1,19 @@
 import { FC, FocusEvent, useCallback, useMemo, useState } from 'react';
 
 import { Button, TextField } from '@mui/material';
+import { Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { isValidAddress } from 'xrpl';
 
 import { HOME_PATH, MAX_TOKEN_LENGTH } from '../../../constants';
 import { NumericInput } from '../../atoms';
 import { PageWithReturn } from '../../templates';
+
+interface InitialValues {
+  issuer: string;
+  token: string;
+  limit: number;
+}
 
 interface StepFormProps {
   onTrustlineSubmit: (
@@ -16,12 +23,13 @@ interface StepFormProps {
     showForm: boolean,
     isParamsMissing: boolean
   ) => void;
+  initialValues?: InitialValues;
 }
 
-export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit }) => {
-  const [issuer, setIssuer] = useState<string>('');
-  const [token, setToken] = useState<string>('');
-  const [limit, setLimit] = useState<string>('');
+export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }) => {
+  const [issuer, setIssuer] = useState<string>(initialValues?.issuer || '');
+  const [token, setToken] = useState<string>(initialValues?.token || '');
+  const [limit, setLimit] = useState<string>(initialValues?.limit.toString() || '');
   const [errorIssuer, setErrorIssuer] = useState<string>('');
   const [errorToken, setErrorToken] = useState<string>('');
   const [errorLimit, setErrorLimit] = useState<string>('');
@@ -80,7 +88,7 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit }) => {
 
   return (
     <PageWithReturn
-      title="Add trustline"
+      title={initialValues ? 'Edit trustline' : 'Add trustline'}
       onBackClick={handleBack}
       style={{
         height: '100%',
@@ -89,6 +97,15 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit }) => {
         justifyContent: 'space-around'
       }}
     >
+      {initialValues ? (
+        <div style={{ margin: '20px' }}>
+          <div style={{ margin: '20px' }}>
+            <Typography variant="body2" color="textSecondary">
+              Tip: You can remove a trustline by setting the limit to 0.
+            </Typography>
+          </div>
+        </div>
+      ) : null}
       <div style={{ margin: '20px' }}>
         <TextField
           label="Issuer"
@@ -101,6 +118,7 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit }) => {
           onBlur={handleIssuerBlur}
           style={{ marginTop: '20px', marginBottom: '10px' }}
           autoComplete="off"
+          value={issuer}
         />
         <TextField
           label="Token"
@@ -112,6 +130,7 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit }) => {
           onChange={handleTokenChange}
           style={{ marginTop: '20px', marginBottom: '10px' }}
           autoComplete="off"
+          value={token}
         />
         <NumericInput
           label="Limit"
@@ -123,6 +142,7 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit }) => {
           helperText={errorLimit}
           onChange={handleLimitChange}
           autoComplete="off"
+          initialValue={limit}
         />
         <Button
           fullWidth
@@ -131,7 +151,7 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit }) => {
           disabled={isAddTrustlineDisabled}
           style={{ marginTop: '20px', marginBottom: '10px' }}
         >
-          Add trustline
+          {initialValues ? 'Edit trustline' : 'Add trustline'}
         </Button>
       </div>
     </PageWithReturn>

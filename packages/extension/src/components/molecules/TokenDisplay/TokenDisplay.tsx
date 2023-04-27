@@ -14,6 +14,7 @@ export interface TokenDisplayProps {
   isXRPToken?: boolean;
   trustlineLimit?: number;
   onExplainClick?: () => void;
+  onTrustlineDetailsClick?: () => void;
   style?: CSSProperties;
 }
 
@@ -23,6 +24,7 @@ export const TokenDisplay: FC<TokenDisplayProps> = ({
   isXRPToken = false,
   trustlineLimit,
   onExplainClick,
+  onTrustlineDetailsClick,
   style
 }) => {
   return (
@@ -51,6 +53,14 @@ export const TokenDisplay: FC<TokenDisplayProps> = ({
           <InfoOutlinedIcon style={{ color: SECONDARY_GRAY }} fontSize="small" />
           <Typography variant="body2" style={{ color: SECONDARY_GRAY, marginLeft: '3px' }}>
             Explain
+          </Typography>
+        </IconTextButton>
+      ) : null}
+      {onTrustlineDetailsClick ? (
+        <IconTextButton onClick={onTrustlineDetailsClick}>
+          <InfoOutlinedIcon style={{ color: SECONDARY_GRAY }} fontSize="small" />
+          <Typography variant="body2" style={{ color: SECONDARY_GRAY, marginLeft: '3px' }}>
+            Edit
           </Typography>
         </IconTextButton>
       ) : null}

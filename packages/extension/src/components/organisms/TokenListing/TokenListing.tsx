@@ -32,7 +32,8 @@ interface TrustLineBalance {
   value: string;
   currency: string;
   issuer: string;
-  trustlineDetails?: { // Details need to be fetched with a separate call
+  trustlineDetails?: {
+    // Details need to be fetched with a separate call
     limit: number;
   };
 }
@@ -72,19 +73,25 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
         // Retrieve trustlines details
         const accountLines = await client?.request({
           command: 'account_lines',
-          account: address,
+          account: address
         });
 
         if (accountLines?.result?.lines) {
           trustLineBalances = trustLineBalances.map((trustlineBalance) => {
             const trustlineDetails = accountLines.result.lines.find((line: Trustline) => {
-              return line.currency === trustlineBalance.currency && line.account === trustlineBalance.issuer;
+              return (
+                line.currency === trustlineBalance.currency &&
+                line.account === trustlineBalance.issuer
+              );
             });
             return {
               ...trustlineBalance,
-              trustlineDetails: trustlineDetails && Number(trustlineDetails.limit) ? {
-                limit: Number(trustlineDetails.limit)
-              } : undefined
+              trustlineDetails:
+                trustlineDetails && Number(trustlineDetails.limit)
+                  ? {
+                      limit: Number(trustlineDetails.limit)
+                    }
+                  : undefined
             };
           });
         }
@@ -104,7 +111,6 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
     }
 
     fetchBalance();
-
   }, [address, client]);
 
   const handleOpen = useCallback(() => {
@@ -197,6 +203,14 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
             token={currencyToDisplay}
             key={`${trustedLine.issuer}|${currencyToDisplay}`}
             trustlineLimit={trustedLine.trustlineDetails?.limit}
+            onTrustlineDetailsClick={
+              trustedLine.trustlineDetails
+                ? () =>
+                    navigate(
+                      `${ADD_NEW_TRUSTLINE_PATH}?showForm=true&currency=${trustedLine.currency}&issuer=${trustedLine.issuer}&value=${trustedLine.trustlineDetails?.limit}`
+                    )
+                : undefined
+            }
           />
         );
       })}

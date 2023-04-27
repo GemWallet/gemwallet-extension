@@ -299,8 +299,20 @@ export const AddNewTrustline: FC = () => {
     setIsParamsMissing(isParamsMissing);
   };
 
+  const buildInitialValues = () => {
+    if (!params.limitAmount) return undefined;
+
+    return {
+      issuer: params.limitAmount.issuer,
+      token: params.limitAmount.currency,
+      limit: Number(params.limitAmount.value)
+    };
+  };
+
   if (params.showForm) {
-    return <StepForm onTrustlineSubmit={handleTrustlineSubmit} />;
+    return (
+      <StepForm onTrustlineSubmit={handleTrustlineSubmit} initialValues={buildInitialValues()} />
+    );
   }
 
   if (isParamsMissing) {
