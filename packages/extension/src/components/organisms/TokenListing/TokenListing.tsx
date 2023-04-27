@@ -93,7 +93,7 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
                     }
                   : undefined
             };
-          });
+          }).filter((trustlineBalance) => trustlineBalance.trustlineDetails); // Hide revoked trustlines
         }
 
         if (XRPBalance) {
