@@ -66,7 +66,7 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
       setErrorLimit('');
     }
 
-    if (Number(e.target.value)) {
+    if (!isNaN(Number(e.target.value))) {
       setLimit(e.target.value);
     }
   }, []);
@@ -103,6 +103,9 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
             <Typography variant="body2" color="textSecondary">
               Tip: You can remove a trustline by setting the limit to 0.
             </Typography>
+            <Typography variant="body2" color="textSecondary" style={{ fontStyle: 'italic' }}>
+              (If the balance of the trustline is 0).
+            </Typography>
           </div>
         </div>
       ) : null}
@@ -119,6 +122,7 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
           style={{ marginTop: '20px', marginBottom: '10px' }}
           autoComplete="off"
           value={issuer}
+          disabled={!!initialValues}
         />
         <TextField
           label="Token"
@@ -131,6 +135,7 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
           style={{ marginTop: '20px', marginBottom: '10px' }}
           autoComplete="off"
           value={token}
+          disabled={!!initialValues}
         />
         <NumericInput
           label="Limit"
