@@ -104,7 +104,7 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
               Tip: You can remove a trustline by setting the limit to 0.
             </Typography>
             <Typography variant="body2" color="textSecondary" style={{ fontStyle: 'italic' }}>
-              (If the balance of the trustline is 0).
+              (It will still be visible if the balance is not 0).
             </Typography>
           </div>
         </div>

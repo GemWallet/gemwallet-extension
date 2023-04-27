@@ -77,23 +77,28 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
         });
 
         if (accountLines?.result?.lines) {
-          trustLineBalances = trustLineBalances.map((trustlineBalance) => {
-            const trustlineDetails = accountLines.result.lines.find((line: Trustline) => {
-              return (
-                line.currency === trustlineBalance.currency &&
-                line.account === trustlineBalance.issuer
-              );
-            });
-            return {
-              ...trustlineBalance,
-              trustlineDetails:
-                trustlineDetails && Number(trustlineDetails.limit)
-                  ? {
-                      limit: Number(trustlineDetails.limit)
-                    }
-                  : undefined
-            };
-          }).filter((trustlineBalance) => trustlineBalance.trustlineDetails); // Hide revoked trustlines
+          trustLineBalances = trustLineBalances
+            .map((trustlineBalance) => {
+              const trustlineDetails = accountLines.result.lines.find((line: Trustline) => {
+                return (
+                  line.currency === trustlineBalance.currency &&
+                  line.account === trustlineBalance.issuer
+                );
+              });
+              return {
+                ...trustlineBalance,
+                trustlineDetails:
+                  trustlineDetails && Number(trustlineDetails.limit)
+                    ? {
+                        limit: Number(trustlineDetails.limit)
+                      }
+                    : undefined
+              };
+            })
+            .filter(
+              (trustlineBalance) =>
+                trustlineBalance.trustlineDetails || trustlineBalance.value !== '0'
+            ); // Hide revoked trustlines with a balance of 0
         }
 
         if (XRPBalance) {
@@ -202,12 +207,21 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
             balance={Number(trustedLine.value)}
             token={currencyToDisplay}
             key={`${trustedLine.issuer}|${currencyToDisplay}`}
-            trustlineLimit={trustedLine.trustlineDetails?.limit}
+            trustlineLimit={
+              trustedLine.trustlineDetails?.limit ? trustedLine.trustlineDetails?.limit : 0
+            }
+            // Show the Edit Trustline button if the trustline is not revoked or if the trustline has a non-zero balance
             onTrustlineDetailsClick={
-              trustedLine.trustlineDetails
+              trustedLine.trustlineDetails || trustedLine.value !== '0'
                 ? () =>
                     navigate(
-                      `${ADD_NEW_TRUSTLINE_PATH}?showForm=true&currency=${trustedLine.currency}&issuer=${trustedLine.issuer}&value=${trustedLine.trustlineDetails?.limit}`
+                      `${ADD_NEW_TRUSTLINE_PATH}?showForm=true&currency=${
+                        trustedLine.currency
+                      }&issuer=${trustedLine.issuer}&value=${
+                        trustedLine.trustlineDetails?.limit
+                          ? trustedLine.trustlineDetails?.limit
+                          : 0
+                      }`
                     )
                 : undefined
             }
