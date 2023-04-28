@@ -1,7 +1,7 @@
 import { FC, FocusEvent, useCallback, useMemo, useState } from 'react';
 
-import { Button, TextField } from '@mui/material';
-import { Typography } from '@mui/material';
+import { Button, TextField, Typography } from '@mui/material';
+import { Checkbox, FormControlLabel } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { isValidAddress } from 'xrpl';
 
@@ -13,6 +13,7 @@ interface InitialValues {
   issuer: string;
   token: string;
   limit: number;
+  noRipple: boolean;
 }
 
 interface StepFormProps {
@@ -20,6 +21,7 @@ interface StepFormProps {
     issuer: string,
     token: string,
     limit: string,
+    noRipple: boolean,
     showForm: boolean,
     isParamsMissing: boolean
   ) => void;
@@ -30,6 +32,9 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
   const [issuer, setIssuer] = useState<string>(initialValues?.issuer || '');
   const [token, setToken] = useState<string>(initialValues?.token || '');
   const [limit, setLimit] = useState<string>(initialValues?.limit.toString() || '');
+  const [noRipple, setNoRipple] = useState<boolean>(
+    initialValues?.noRipple === undefined ? true : initialValues?.noRipple
+  );
   const [errorIssuer, setErrorIssuer] = useState<string>('');
   const [errorToken, setErrorToken] = useState<string>('');
   const [errorLimit, setErrorLimit] = useState<string>('');
@@ -71,6 +76,10 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
     }
   }, []);
 
+  const handleNoRippleChange = useCallback((event) => {
+    setNoRipple(!event.target.checked);
+  }, []);
+
   const isAddTrustlineDisabled = useMemo(() => {
     return !(
       issuer !== '' &&
@@ -83,8 +92,8 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
   }, [errorIssuer, errorLimit, errorToken, issuer, limit, token]);
 
   const handleAddTrustline = useCallback(() => {
-    onTrustlineSubmit(issuer, token, limit, false, false);
-  }, [issuer, limit, onTrustlineSubmit, token]);
+    onTrustlineSubmit(issuer, token, limit, noRipple, false, false);
+  }, [noRipple, issuer, limit, onTrustlineSubmit, token]);
 
   return (
     <PageWithReturn
@@ -149,6 +158,36 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
           autoComplete="off"
           initialValue={limit}
         />
+        {initialValues ? (
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={!noRipple}
+                onChange={handleNoRippleChange}
+                name="noRipple"
+                color="primary"
+              />
+            }
+            label="Allow rippling"
+            style={{
+              marginTop: '20px',
+              color: '#bababa'
+            }}
+          />
+        ) : null}
+        {initialValues ? (
+          <Typography
+            variant="body2"
+            component="p"
+            style={{
+              fontStyle: 'italic',
+              color: '#757575',
+              marginBottom: '10px'
+            }}
+          >
+            We recommend to keep rippling disabled.
+          </Typography>
+        ) : null}
         <Button
           fullWidth
           variant="contained"

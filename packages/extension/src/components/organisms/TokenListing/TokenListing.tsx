@@ -35,6 +35,7 @@ interface TrustLineBalance {
   trustlineDetails?: {
     // Details need to be fetched with a separate call
     limit: number;
+    noRipple: boolean;
   };
 }
 export interface TokenListingProps {
@@ -90,7 +91,8 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
                 trustlineDetails:
                   trustlineDetails && Number(trustlineDetails.limit)
                     ? {
-                        limit: Number(trustlineDetails.limit)
+                        limit: Number(trustlineDetails.limit),
+                        noRipple: !trustlineDetails.no_ripple
                       }
                     : undefined
               };
@@ -210,6 +212,7 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
             trustlineLimit={
               trustedLine.trustlineDetails?.limit ? trustedLine.trustlineDetails?.limit : 0
             }
+            trustlineNoRipple={trustedLine.trustlineDetails?.noRipple}
             // Show the Edit Trustline button if the trustline is not revoked or if the trustline has a non-zero balance
             onTrustlineDetailsClick={
               trustedLine.trustlineDetails || trustedLine.value !== '0'
@@ -221,6 +224,10 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
                         trustedLine.trustlineDetails?.limit
                           ? trustedLine.trustlineDetails?.limit
                           : 0
+                      }&noRipple=${
+                        trustedLine.trustlineDetails?.noRipple
+                          ? trustedLine.trustlineDetails?.noRipple
+                          : false
                       }`
                     )
                 : undefined

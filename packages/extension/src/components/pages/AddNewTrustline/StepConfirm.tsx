@@ -65,7 +65,6 @@ export const StepConfirm: FC<StepConfirmProps> = ({
       <Typography variant="body1">Currency:</Typography>
       <Typography variant="body1">{limitAmount.currency}</Typography>
     </Paper>
-
     <Paper
       elevation={24}
       style={{
@@ -103,6 +102,13 @@ export const StepConfirm: FC<StepConfirmProps> = ({
         ))}
       </Paper>
     ) : null}
+    <Paper
+      elevation={24}
+      style={{ padding: '10px', display: 'flex', justifyContent: 'space-between' }}
+    >
+      <Typography variant="body1">Allow rippling:</Typography>
+      <Typography variant="body1">{noRipple ? 'No' : 'Yes'}</Typography>
+    </Paper>
     {flags ? (
       <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
         <Typography variant="body1">Flags:</Typography>

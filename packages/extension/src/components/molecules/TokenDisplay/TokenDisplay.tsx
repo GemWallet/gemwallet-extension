@@ -13,6 +13,7 @@ export interface TokenDisplayProps {
   token: string;
   isXRPToken?: boolean;
   trustlineLimit?: number;
+  trustlineNoRipple?: boolean;
   onExplainClick?: () => void;
   onTrustlineDetailsClick?: () => void;
   style?: CSSProperties;
@@ -23,6 +24,7 @@ export const TokenDisplay: FC<TokenDisplayProps> = ({
   token,
   isXRPToken = false,
   trustlineLimit,
+  trustlineNoRipple,
   onExplainClick,
   onTrustlineDetailsClick,
   style
@@ -42,7 +44,12 @@ export const TokenDisplay: FC<TokenDisplayProps> = ({
       <div style={{ display: 'flex', alignItems: 'center' }}>
         {isXRPToken ? <Xrp /> : <GemWallet />}
         <div style={{ marginLeft: '10px' }}>
-          <Typography style={trustlineLimit === 0 ? { color: 'brown' } : {}}>{token}</Typography>
+          {/* We display the trustline in brown if its limit is 0 or if the noRipple flag is set to false */}
+          <Typography
+            style={trustlineLimit === 0 || trustlineNoRipple === false ? { color: 'brown' } : {}}
+          >
+            {token}
+          </Typography>
           <Typography variant="body2" style={{ color: SECONDARY_GRAY }}>
             {formatToken(balance, token)}
           </Typography>

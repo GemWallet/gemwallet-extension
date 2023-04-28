@@ -45,6 +45,7 @@ interface Params {
   id: number;
   memos: Memo[] | null;
   flags: TrustSetFlags | null;
+  noRipple: boolean;
   inAppCall: boolean;
   showForm: boolean;
 }
@@ -62,6 +63,7 @@ export const AddNewTrustline: FC = () => {
     id: 0,
     memos: null,
     flags: null,
+    noRipple: true,
     inAppCall,
     showForm: false
   });
@@ -133,6 +135,7 @@ export const AddNewTrustline: FC = () => {
     const id = Number(urlParams.get('id')) || 0;
     const memos = parseMemos(urlParams.get('memos'));
     const flags = parseTrustSetFlags(urlParams.get('flags'));
+    const noRipple = urlParams.get('noRipple') === 'true' || false;
     const showForm = urlParams.get('showForm') === 'true' || false;
 
     if (limitAmount === null) {
@@ -149,6 +152,7 @@ export const AddNewTrustline: FC = () => {
       id,
       memos,
       flags,
+      noRipple,
       inAppCall,
       showForm
     });
@@ -240,7 +244,8 @@ export const AddNewTrustline: FC = () => {
         limitAmount: params.limitAmount,
         fee: params.fee || undefined,
         memos: params.memos || undefined,
-        flags: params.flags || undefined
+        flags: params.flags || undefined,
+        noRipple: params.noRipple
       })
         .then((transactionHash) => {
           setTransaction(TransactionStatus.Success);
@@ -272,13 +277,15 @@ export const AddNewTrustline: FC = () => {
     params.fee,
     params.inAppCall,
     params.flags,
-    params.memos
+    params.memos,
+    params.noRipple
   ]);
 
   const handleTrustlineSubmit = (
     issuer: string,
     token: string,
     limit: string,
+    noRipple: boolean,
     showForm: boolean,
     isParamsMissing: boolean
   ) => {
@@ -292,6 +299,7 @@ export const AddNewTrustline: FC = () => {
       id: params.id,
       memos: params.memos,
       flags: params.flags,
+      noRipple: noRipple,
       showForm: showForm,
       inAppCall: true
     });
@@ -305,7 +313,8 @@ export const AddNewTrustline: FC = () => {
     return {
       issuer: params.limitAmount.issuer,
       token: params.limitAmount.currency,
-      limit: Number(params.limitAmount.value)
+      limit: Number(params.limitAmount.value),
+      noRipple: params.noRipple
     };
   };
 
@@ -496,6 +505,7 @@ export const AddNewTrustline: FC = () => {
       errorFees={errorFees}
       hasEnoughFunds={hasEnoughFunds}
       defaultFee={DEFAULT_FEES}
+      noRipple={params.noRipple}
       onReject={handleReject}
       onConfirm={handleConfirm}
     />
