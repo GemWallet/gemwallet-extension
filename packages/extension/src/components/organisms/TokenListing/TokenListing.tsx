@@ -204,6 +204,9 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
       />
       {trustLineBalances.map((trustedLine) => {
         const currencyToDisplay = convertCurrencyString(trustedLine.currency);
+        const canBeEdited = trustedLine.trustlineDetails || trustedLine.value !== '0';
+        const limit = trustedLine.trustlineDetails?.limit || 0;
+        const noRipple = trustedLine.trustlineDetails?.noRipple || false;
         return (
           <TokenDisplay
             balance={Number(trustedLine.value)}
@@ -215,20 +218,10 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
             trustlineNoRipple={trustedLine.trustlineDetails?.noRipple}
             // Show the Edit Trustline button if the trustline is not revoked or if the trustline has a non-zero balance
             onTrustlineDetailsClick={
-              trustedLine.trustlineDetails || trustedLine.value !== '0'
+              canBeEdited
                 ? () =>
                     navigate(
-                      `${ADD_NEW_TRUSTLINE_PATH}?showForm=true&currency=${
-                        trustedLine.currency
-                      }&issuer=${trustedLine.issuer}&value=${
-                        trustedLine.trustlineDetails?.limit
-                          ? trustedLine.trustlineDetails?.limit
-                          : 0
-                      }&noRipple=${
-                        trustedLine.trustlineDetails?.noRipple
-                          ? trustedLine.trustlineDetails?.noRipple
-                          : false
-                      }`
+                      `${ADD_NEW_TRUSTLINE_PATH}?showForm=true&currency=${trustedLine.currency}&issuer=${trustedLine.issuer}&value=${limit}&noRipple=${noRipple}`
                     )
                 : undefined
             }
