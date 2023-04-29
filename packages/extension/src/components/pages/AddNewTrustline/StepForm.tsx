@@ -164,7 +164,7 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
               <Checkbox
                 checked={!noRipple}
                 onChange={handleNoRippleChange}
-                name="noRipple"
+                name="rippling"
                 color="primary"
               />
             }

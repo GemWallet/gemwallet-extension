@@ -13,6 +13,7 @@ describe('Trustline', () => {
   });
   const HOME_URL = `http://localhost:3000`;
   const SET_TRUSTLINE_URL = `${HOME_URL}?limitAmount=${AMOUNT}&id=93376196&transaction=trustSet`;
+  const ALLOW_RIPPLING = 'No'; // By default, we don't allow rippling
 
   beforeEach(() => {
     // Mock the localStorage with a wallet already loaded
@@ -59,7 +60,7 @@ describe('Trustline', () => {
       // Continue with the test
       return false;
     });
-    validateTrustlineTx(DESTINATION_ADDRESS, CURRENCY, '10,000,000');
+    validateTrustlineTx(DESTINATION_ADDRESS, CURRENCY, '10,000,000', ALLOW_RIPPLING);
   });
 
   it('Reject the trustline', () => {
@@ -139,6 +140,64 @@ describe('Trustline', () => {
       validateTrustlineTx(testCase.issuer, testCase.token, testCase.formattedLimit);
     });
   });
+
+  it('Edit the trustline', () => {
+    const newLimit = '5';
+    const newNoRipple = false;
+
+    cy.on('uncaught:exception', (err, runnable) => {
+      // Continue with the test
+      return false;
+    });
+
+    navigate(HOME_URL, PASSWORD);
+
+    // Find the trustline to edit
+    cy.contains(CURRENCY).closest('.MuiPaper-root').find('button').contains('Edit').click();
+
+    // Change the limit
+    cy.get('input[name="limit"]').clear();
+    cy.get('input[name="limit"]').type(newLimit);
+
+    // Change the rippling
+    newNoRipple
+      ? cy.get('input[name="rippling"]').uncheck()
+      : cy.get('input[name="rippling"]').check();
+
+    // Confirm the trustline
+    cy.contains('button', 'Edit trustline').click();
+    cy.contains('button', 'Continue').click();
+
+    // Check values in the confirmation page
+    cy.contains('Limit:').next().should('have.text', `${newLimit} ${CURRENCY}`);
+    cy.contains('Allow rippling:')
+      .next()
+      .should('have.text', newNoRipple ? 'No' : 'Yes');
+
+    // Confirm
+    cy.contains('button', 'Confirm').click();
+
+    cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction in progress');
+
+    cy.get('p[data-testid="transaction-subtitle"]').should(
+      'have.text',
+      'We are processing your transactionPlease wait'
+    );
+
+    cy.get('h1[data-testid="transaction-title"]').contains('Transaction accepted', {
+      timeout: 10000
+    });
+    cy.get('p[data-testid="transaction-subtitle"]').should('have.text', 'Transaction Successful');
+
+    // Close
+    cy.contains('button', 'Close').click();
+
+    // Check that the trustline was updated
+    cy.contains(CURRENCY).closest('.MuiPaper-root').find('button').contains('Edit').click();
+
+    cy.get('input[name="limit"]').should('have.value', '5');
+    cy.get('input[name="rippling"]').should('be.checked');
+  });
 });
 
 const navigate = (url: string, password: string) => {
@@ -156,7 +215,12 @@ const navigate = (url: string, password: string) => {
   cy.contains('button', 'Unlock').click();
 };
 
-const validateTrustlineTx = (destinationAddress: string, currency: string, limit: string) => {
+const validateTrustlineTx = (
+  destinationAddress: string,
+  currency: string,
+  limit: string,
+  ALLOW_RIPPLING?: string
+) => {
   // Should be on the Warning Trustline Page
   cy.get('h1[data-testid="page-title"]').should('have.text', 'Add Trustline');
 
@@ -178,6 +242,9 @@ const validateTrustlineTx = (destinationAddress: string, currency: string, limit
   cy.contains('Issuer:').next().should('have.text', destinationAddress);
   cy.contains('Currency:').next().should('have.text', currency);
   cy.contains('Limit:').next().should('have.text', `${limit} ${currency}`);
+  if (ALLOW_RIPPLING) {
+    cy.contains('Allow rippling:').next().should('have.text', ALLOW_RIPPLING);
+  }
 
   // Confirm the trustline
   cy.contains('button', 'Confirm').click();
