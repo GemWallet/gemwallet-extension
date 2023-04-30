@@ -10,10 +10,11 @@ import { NftCard } from '../../molecules/NftCard';
 
 export interface NftListingProps extends AccountNFTokenResponse {
   onLoadMoreClick: () => void;
+  loading: boolean;
 }
 
-export const NftListing: FC<NftListingProps> = ({ account_nfts, marker, onLoadMoreClick }) => {
-  if (account_nfts.length === 0) {
+export const NftListing: FC<NftListingProps> = ({ loading, account_nfts, onLoadMoreClick }) => {
+  if (account_nfts.length === 0 && !loading) {
     return (
       <InformationMessage title="No NFTs to show">
         <div style={{ marginBottom: '5px' }}>There are no NFTs found in this wallet.</div>

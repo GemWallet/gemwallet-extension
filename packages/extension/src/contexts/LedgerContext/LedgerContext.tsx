@@ -93,6 +93,10 @@ interface SubmitTransactionResponse {
   hash: string;
 }
 
+export interface NftImageRequestPayload {
+  nft: AccountNFToken;
+}
+
 export const LEDGER_CONNECTION_ERROR = 'You need to be connected to a ledger to make a transaction';
 
 export interface LedgerContextType {
