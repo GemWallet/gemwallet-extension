@@ -12,7 +12,6 @@ import {
 } from '@gemwallet/constants';
 
 import { AccountTransaction } from '../../types';
-import { buildDestinationTag, buildMemos } from '../../utils';
 import { useNetwork } from '../NetworkContext';
 import { useWallet } from '../WalletContext';
 
@@ -112,7 +111,7 @@ const LedgerProvider: FC = ({ children }) => {
   }, [client, getCurrentWallet]);
 
   const sendPayment = useCallback(
-    async ({ amount, destination, currency, issuer, memo, destinationTag }: PaymentRequestPayload) => {
+    async ({ amount, destination, currency, issuer, memos, destinationTag }: PaymentRequestPayload) => {
       const wallet = getCurrentWallet();
       if (!client) {
         throw new Error('You need to be connected to a ledger to make a transaction');
@@ -121,8 +120,6 @@ const LedgerProvider: FC = ({ children }) => {
       } else {
         // Prepare the transaction
         try {
-          const memos = buildMemos(memo);
-          const parsedDestinationTag = buildDestinationTag(destinationTag);
           const prepared: Payment = await client.autofill({
             TransactionType: 'Payment',
             Account: wallet.publicAddress,
@@ -137,7 +134,7 @@ const LedgerProvider: FC = ({ children }) => {
             Destination: destination,
             // Only add the Memos and DestinationTag fields if they are are defined, otherwise it would fail
             ...(memos && { Memos: memos }),
-            ...(parsedDestinationTag && { DestinationTag: parsedDestinationTag })
+            ...(destinationTag && Number(destinationTag) && { DestinationTag: Number(destinationTag) })
           });
           // Sign the transaction
           const signed = wallet.wallet.sign(prepared);

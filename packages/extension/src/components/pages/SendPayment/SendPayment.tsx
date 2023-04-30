@@ -1,5 +1,7 @@
 import { FC, useCallback, useState } from 'react';
 
+import { Memo } from 'xrpl/dist/npm/models/common';
+
 import { ConfirmPayment } from './ConfirmPayment';
 import { PreparePayment } from './PreparePayment';
 
@@ -8,8 +10,8 @@ export const SendPayment: FC = () => {
     address: string;
     token: string;
     amount: string;
-    memo?: string;
-    destinationTag?: string;
+    memos?: Memo[];
+    destinationTag?: number;
   } | null>(null);
 
   const handlePreparePayment = useCallback((payment) => {

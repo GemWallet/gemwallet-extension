@@ -4,6 +4,7 @@ import ErrorIcon from '@mui/icons-material/Error';
 import { Button, Container, IconButton, Paper, Tooltip, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
 import { isValidAddress, xrpToDrops } from 'xrpl';
+import { Memo } from 'xrpl/dist/npm/models/common';
 
 import { GEM_WALLET, ReceivePaymentHashBackgroundMessage } from '@gemwallet/constants';
 
@@ -22,6 +23,8 @@ interface Params {
   id: number;
   currency: string | null;
   issuer: string | null;
+  memos: Memo[] | null;
+  destinationTag: number | null;
 }
 
 export const Transaction: FC = () => {
@@ -30,7 +33,9 @@ export const Transaction: FC = () => {
     destination: null,
     id: 0,
     currency: null,
-    issuer: null
+    issuer: null,
+    memos: null,
+    destinationTag: null
   });
   const [fees, setFees] = useState<string>(DEFAULT_FEES);
   const [errorFees, setErrorFees] = useState('');
@@ -53,6 +58,9 @@ export const Transaction: FC = () => {
     const id = Number(urlParams.get('id')) || 0;
     const currency = urlParams.get('currency');
     const issuer = urlParams.get('issuer');
+    const memosString = urlParams.get('memos');
+    const memos = memosString ? JSON.parse(memosString) as Memo[] : null;
+    const destinationTag = urlParams.get('destinationTag') ? Number(urlParams.get('destinationTag')) : null;
 
     if (amount === null || destination === null) {
       setIsParamsMissing(true);
@@ -63,7 +71,9 @@ export const Transaction: FC = () => {
       destination,
       id,
       currency,
-      issuer
+      issuer,
+      memos,
+      destinationTag
     });
   }, []);
 
@@ -81,7 +91,9 @@ export const Transaction: FC = () => {
                 value: params.amount
               }
             : xrpToDrops(params.amount),
-        Destination: params.destination
+        Destination: params.destination,
+        Memos: params.memos ? params.memos : undefined,
+        DestinationTag: params.destinationTag ?? undefined
       })
         .then((fees) => {
           setFees(fees);
@@ -98,7 +110,9 @@ export const Transaction: FC = () => {
     params.amount,
     params.currency,
     params.destination,
-    params.issuer
+    params.issuer,
+    params.memos,
+    params.destinationTag
   ]);
 
   useEffect(() => {
@@ -159,7 +173,9 @@ export const Transaction: FC = () => {
       amount: params.amount as string,
       destination: params.destination as string,
       currency: params.currency ?? undefined,
-      issuer: params.issuer ?? undefined
+      issuer: params.issuer ?? undefined,
+      memos: params.memos ?? undefined,
+      destinationTag: params.destinationTag ?? undefined
     })
       .then((transactionHash) => {
         setTransaction(TransactionStatus.Success);
@@ -178,6 +194,8 @@ export const Transaction: FC = () => {
     params.currency,
     params.destination,
     params.issuer,
+    params.memos,
+    params.destinationTag,
     sendPayment
   ]);
 

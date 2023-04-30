@@ -1,3 +1,5 @@
+import { Memo } from 'xrpl/dist/npm/models/common';
+
 import { Network } from '../network/network.constant';
 import { AccountNFToken } from './../xrpl/nft.types';
 
@@ -24,10 +26,10 @@ export interface PaymentRequestPayload {
   currency?: string;
   // The issuer of the token
   issuer?: string;
-  // The memo to attach to the transaction
-  memo?: string;
+  // The memos to attach to the transaction
+  memos?: Memo[];
   // The destination tag to attach to the transaction
-  destinationTag?: string;
+  destinationTag?: number;
 }
 
 export interface TrustlineRequestPayload {

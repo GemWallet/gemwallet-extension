@@ -16,10 +16,12 @@ import {
 import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
 import { isValidAddress } from 'xrpl';
+import { Memo } from 'xrpl/dist/npm/models/common';
 
 import { HOME_PATH, navigation } from '../../../../constants';
 import { useNetwork, useWallet } from '../../../../contexts';
 import { convertCurrencyString } from '../../../../utils';
+import { buildRawMemos } from '../../../../utils/payment';
 import { NumericInput } from '../../../atoms';
 import { InformationMessage } from '../../../molecules';
 import { PageWithNavMenu, PageWithReturn, PageWithSpinner } from '../../../templates';
@@ -33,13 +35,13 @@ export interface PreparePaymentProps {
     address,
     token,
     amount,
-    memo,
+    memos,
     destinationTag
   }: {
     address: string;
     token: string;
     amount: string;
-    memo?: string;
+    memos?: Memo[];
     destinationTag?: string;
   }) => void;
 }
@@ -49,7 +51,7 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
   const { getCurrentWallet } = useWallet();
   const [address, setAddress] = useState<string>('');
   const [amount, setAmount] = useState<string>('');
-  const [memo, setMemo] = useState<string | undefined>(undefined);
+  const [memos, setMemos] = useState<Memo[] | undefined>(undefined);
   const [destinationTag, setDestinationTag] = useState<string | undefined>(undefined);
   const [errorAddress, setErrorAddress] = useState<string>('');
   const [errorAmount, setErrorAmount] = useState<string>('');
@@ -192,7 +194,7 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
       } else {
         setErrorMemo('');
       }
-      setMemo(e.target.value);
+      setMemos(buildRawMemos(e.target.value));
     },
     [hasValidMemoLength]
   );
@@ -236,11 +238,11 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
         token:
           tokenRef.current?.value === 'XRP-undefined' ? 'XRP' : tokenRef.current?.value ?? 'XRP',
         amount,
-        memo,
+        memos,
         destinationTag
       });
     }
-  }, [address, amount, destinationTag, isSendPaymentDisabled, memo, onSendPaymentClick]);
+  }, [address, amount, destinationTag, isSendPaymentDisabled, memos, onSendPaymentClick]);
 
   if (!isWalletActivated) {
     return (

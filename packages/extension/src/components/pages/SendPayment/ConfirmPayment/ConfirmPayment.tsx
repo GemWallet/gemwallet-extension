@@ -5,11 +5,13 @@ import { Button, Container, IconButton, Paper, Tooltip, Typography } from '@mui/
 import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
 import { xrpToDrops } from 'xrpl';
+import { Memo } from 'xrpl/dist/npm/models/common';
 
 import { ERROR_RED, HOME_PATH } from '../../../../constants';
 import { useLedger, useWallet } from '../../../../contexts';
 import { TransactionStatus } from '../../../../types';
-import { convertCurrencyString, formatToken, buildMemos, buildDestinationTag } from '../../../../utils';
+import { convertCurrencyString, formatToken } from '../../../../utils';
+import { toHexMemos } from '../../../../utils/payment';
 import { TileLoader } from '../../../atoms';
 import { AsyncTransaction, PageWithReturn } from '../../../templates';
 
@@ -20,14 +22,14 @@ export interface ConfirmPaymentProps {
     address: string;
     token: string;
     amount: string;
-    memo?: string;
-    destinationTag?: string;
+    memos?: Memo[];
+    destinationTag?: number;
   };
   onClickBack: () => void;
 }
 
 export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
-  payment: { address, token, amount, memo, destinationTag },
+  payment: { address, token, amount, memos, destinationTag },
   onClickBack
 }) => {
   const { getCurrentWallet } = useWallet();
@@ -54,8 +56,8 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
               }
             : xrpToDrops(amount),
         Destination: address,
-        Memos: buildMemos(memo),
-        DestinationTag: buildDestinationTag(destinationTag)
+        Memos: memos,
+        DestinationTag: destinationTag
       })
         .then((fees) => {
           setFees(fees);
@@ -65,7 +67,7 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
           setErrorFees(e.message);
         });
     }
-  }, [address, amount, destinationTag, estimateNetworkFees, getCurrentWallet, memo, token, wallet]);
+  }, [address, amount, destinationTag, estimateNetworkFees, getCurrentWallet, memos, token, wallet]);
 
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);
@@ -79,8 +81,8 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
       destination: address,
       currency: currency ?? undefined,
       issuer: issuer ?? undefined,
-      memo: memo ?? undefined,
-      destinationTag: destinationTag ?? undefined
+      memos: toHexMemos(memos),
+      destinationTag: destinationTag
     })
       .then(() => {
         setTransaction(TransactionStatus.Success);
@@ -90,7 +92,7 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
         setTransaction(TransactionStatus.Rejected);
         Sentry.captureException(e);
       });
-  }, [address, amount, destinationTag, memo, sendPayment, token]);
+  }, [address, amount, destinationTag, memos, sendPayment, token]);
 
   const handleTransactionClick = useCallback(() => {
     navigate(HOME_PATH);
@@ -158,7 +160,7 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
         <Typography variant="body1">Destination:</Typography>
         <Typography variant="body2">{address}</Typography>
       </Paper>
-      {memo ? (
+      {memos && memos.length > 0 ? memos.map((memo) => (
         <Paper elevation={24} style={{padding: '10px'}}>
           <Typography variant="body1">Memo:</Typography>
           <Typography
@@ -169,9 +171,9 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
               textOverflow: 'ellipsis',
               maxWidth: '100%',
             }}
-          >{memo}</Typography>
+          >{memo.Memo.MemoData}</Typography>
         </Paper>
-      ) : null}
+      )) : null}
       {destinationTag ? (
         <Paper elevation={24} style={{ padding: '10px' }}>
           <Typography variant="body1">Destination Tag:</Typography>
