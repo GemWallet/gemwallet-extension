@@ -106,8 +106,8 @@ export const StepConfirm: FC<StepConfirmProps> = ({
       elevation={24}
       style={{ padding: '10px', display: 'flex', justifyContent: 'space-between' }}
     >
-      <Typography variant="body1">Allow rippling:</Typography>
-      <Typography variant="body1">{noRipple ? 'No' : 'Yes'}</Typography>
+      <Typography variant="body1">No Ripple:</Typography>
+      <Typography variant="body1">{noRipple ? 'Yes' : 'No'}</Typography>
     </Paper>
     {flags ? (
       <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>

@@ -77,7 +77,7 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
   }, []);
 
   const handleNoRippleChange = useCallback((event) => {
-    setNoRipple(!event.target.checked);
+    setNoRipple(event.target.checked);
   }, []);
 
   const isAddTrustlineDisabled = useMemo(() => {
@@ -162,13 +162,13 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
           <FormControlLabel
             control={
               <Checkbox
-                checked={!noRipple}
+                checked={noRipple}
                 onChange={handleNoRippleChange}
-                name="rippling"
+                name="noRipple"
                 color="primary"
               />
             }
-            label="Allow rippling"
+            label="No Ripple"
             style={{
               marginTop: '5px',
               color: '#bababa'
@@ -185,7 +185,7 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
               marginBottom: '10px'
             }}
           >
-            We recommend to keep rippling disabled.
+            We recommend to keep No Ripple enabled.
           </Typography>
         ) : null}
         <Button

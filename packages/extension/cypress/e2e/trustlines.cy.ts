@@ -13,7 +13,7 @@ describe('Trustline', () => {
   });
   const HOME_URL = `http://localhost:3000`;
   const SET_TRUSTLINE_URL = `${HOME_URL}?limitAmount=${AMOUNT}&id=93376196&transaction=trustSet`;
-  const ALLOW_RIPPLING = 'No'; // By default, we don't allow rippling
+  const NO_RIPPLE = 'Yes'; // By default, we don't allow rippling
 
   beforeEach(() => {
     // Mock the localStorage with a wallet already loaded
@@ -92,6 +92,7 @@ describe('Trustline', () => {
     cy.contains('Issuer:').next().should('have.text', DESTINATION_ADDRESS);
     cy.contains('Currency:').next().should('have.text', CURRENCY);
     cy.contains('Limit:').next().should('have.text', `10,000,000 ${CURRENCY}`);
+    cy.contains('No Ripple:').next().should('have.text', NO_RIPPLE);
 
     // Confirm the trustline
     cy.contains('button', 'Reject').click();
@@ -141,10 +142,8 @@ describe('Trustline', () => {
     });
   });
 
-  it('Edit the trustline', () => {
+  it('Edit the trustline by disabling No Ripple', () => {
     const newLimit = '5';
-    const newNoRipple = false;
-
     cy.on('uncaught:exception', (err, runnable) => {
       // Continue with the test
       return false;
@@ -160,9 +159,8 @@ describe('Trustline', () => {
     cy.get('input[name="limit"]').type(newLimit);
 
     // Change the rippling
-    newNoRipple
-      ? cy.get('input[name="rippling"]').uncheck()
-      : cy.get('input[name="rippling"]').check();
+    cy.get('input[name="noRipple"]').should('be.checked'); // No Ripple is initially true
+    cy.get('input[name="noRipple"]').uncheck();
 
     // Confirm the trustline
     cy.contains('button', 'Edit trustline').click();
@@ -170,9 +168,7 @@ describe('Trustline', () => {
 
     // Check values in the confirmation page
     cy.contains('Limit:').next().should('have.text', `${newLimit} ${CURRENCY}`);
-    cy.contains('Allow rippling:')
-      .next()
-      .should('have.text', newNoRipple ? 'No' : 'Yes');
+    cy.contains('No Ripple:').next().should('have.text', 'No');
 
     // Confirm
     cy.contains('button', 'Confirm').click();
@@ -196,7 +192,7 @@ describe('Trustline', () => {
     cy.contains(CURRENCY).closest('.MuiPaper-root').find('button').contains('Edit').click();
 
     cy.get('input[name="limit"]').should('have.value', '5');
-    cy.get('input[name="rippling"]').should('be.checked');
+    cy.get('input[name="noRipple"]').should('not.be.checked');
   });
 });
 

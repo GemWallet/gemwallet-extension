@@ -92,7 +92,7 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
                   trustlineDetails && Number(trustlineDetails.limit)
                     ? {
                         limit: Number(trustlineDetails.limit),
-                        noRipple: !trustlineDetails.no_ripple
+                        noRipple: trustlineDetails.no_ripple === true
                       }
                     : undefined
               };
@@ -215,13 +215,17 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
             trustlineLimit={
               trustedLine.trustlineDetails?.limit ? trustedLine.trustlineDetails?.limit : 0
             }
-            trustlineNoRipple={trustedLine.trustlineDetails?.noRipple}
+            trustlineNoRipple={noRipple}
             // Show the Edit Trustline button if the trustline is not revoked or if the trustline has a non-zero balance
             onTrustlineDetailsClick={
               canBeEdited
                 ? () =>
                     navigate(
-                      `${ADD_NEW_TRUSTLINE_PATH}?showForm=true&currency=${trustedLine.currency}&issuer=${trustedLine.issuer}&value=${limit}&noRipple=${noRipple}`
+                      `${ADD_NEW_TRUSTLINE_PATH}?showForm=true&currency=${
+                        trustedLine.currency
+                      }&issuer=${trustedLine.issuer}&value=${limit}${
+                        noRipple === false ? '&noRipple=false' : '&noRipple=true'
+                      }`
                     )
                 : undefined
             }
