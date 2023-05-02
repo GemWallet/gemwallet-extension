@@ -324,37 +324,48 @@ export const Transaction: FC = () => {
           </Typography>
         </div>
       ) : null}
-      <Paper elevation={24} style={{ padding: '10px' }}>
+      <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
         <Typography variant="body1">Destination:</Typography>
         <Typography variant="body2">{destination}</Typography>
       </Paper>
-      {memos && memos.length > 0 ? memos.map((memo) => (
-        <Paper elevation={24} style={{padding: '10px'}}>
-          <Typography variant="body1">Memo:</Typography>
-          <Typography
-            variant="body2"
-            style={{
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              maxWidth: '100%',
-            }}
-          >{memo.Memo.MemoData}</Typography>
+      {memos && memos.length > 0 ? (
+        <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
+          <Typography variant='body1'>Memos:</Typography>
+          {memos.map((memo, index) => (
+            <div
+              key={index}
+              style={{
+                marginBottom: index === memos.length - 1 ? 0 : '8px',
+              }}
+            >
+              <Typography
+                variant='body2'
+                style={{
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  maxWidth: '100%',
+                }}
+              >
+                {memo.Memo.MemoData}
+              </Typography>
+            </div>
+          ))}
         </Paper>
-      )) : null}
+      ) : null}
       {destinationTag ? (
-        <Paper elevation={24} style={{ padding: '10px' }}>
+        <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
           <Typography variant="body1">Destination Tag:</Typography>
           <Typography variant="body2">{destinationTag}</Typography>
         </Paper>
       ) : null}
-      <Paper elevation={24} style={{ padding: '10px' }}>
+      <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
         <Typography variant="body1">Amount:</Typography>
         <Typography variant="h4" component="h1" gutterBottom align="right">
           {formatToken(Number(amount), currency || 'XRP')}
         </Typography>
       </Paper>
-      <Paper elevation={24} style={{ padding: '10px' }}>
+      <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
         <Typography variant="body1" style={{ display: 'flex', alignItems: 'center' }}>
           <Tooltip title="These are the fees to make the transaction over the network">
             <IconButton size="small">
