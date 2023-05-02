@@ -25,6 +25,7 @@ interface Params {
   issuer: string | null;
   memos: Memo[] | null;
   destinationTag: number | null;
+  fee: string | null;
 }
 
 export const Transaction: FC = () => {
@@ -35,7 +36,8 @@ export const Transaction: FC = () => {
     currency: null,
     issuer: null,
     memos: null,
-    destinationTag: null
+    destinationTag: null,
+    fee: null
   });
   const [fees, setFees] = useState<string>(DEFAULT_FEES);
   const [errorFees, setErrorFees] = useState('');
@@ -61,6 +63,7 @@ export const Transaction: FC = () => {
     const memosString = urlParams.get('memos');
     const memos = memosString ? JSON.parse(memosString) as Memo[] : null;
     const destinationTag = urlParams.get('destinationTag') ? Number(urlParams.get('destinationTag')) : null;
+    const fee = urlParams.get('fee');
 
     if (amount === null || destination === null) {
       setIsParamsMissing(true);
@@ -73,13 +76,14 @@ export const Transaction: FC = () => {
       currency,
       issuer,
       memos,
-      destinationTag
+      destinationTag,
+      fee
     });
   }, []);
 
   useEffect(() => {
     const currentWallet = getCurrentWallet();
-    if (currentWallet && client && params.amount && params.destination) {
+    if (currentWallet && client && params.amount && params.destination && !(params.fee)) {
       estimateNetworkFees({
         TransactionType: 'Payment',
         Account: currentWallet.publicAddress,
@@ -112,7 +116,8 @@ export const Transaction: FC = () => {
     params.destination,
     params.issuer,
     params.memos,
-    params.destinationTag
+    params.destinationTag,
+    params.fee
   ]);
 
   useEffect(() => {
@@ -175,7 +180,8 @@ export const Transaction: FC = () => {
       currency: params.currency ?? undefined,
       issuer: params.issuer ?? undefined,
       memos: params.memos ? toHexMemos(params.memos) : undefined,
-      destinationTag: params.destinationTag ?? undefined
+      destinationTag: params.destinationTag ?? undefined,
+      fee: params.fee ?? undefined
     })
       .then((transactionHash) => {
         setTransaction(TransactionStatus.Success);
@@ -196,6 +202,7 @@ export const Transaction: FC = () => {
     params.issuer,
     params.memos,
     params.destinationTag,
+    params.fee,
     sendPayment
   ]);
 
@@ -305,7 +312,7 @@ export const Transaction: FC = () => {
     );
   }
 
-  const { amount, destination, currency, memos, destinationTag } = params;
+  const { amount, destination, currency, memos, destinationTag, fee } = params;
 
   return (
     <PageWithTitle title="Confirm Transaction">
@@ -361,10 +368,10 @@ export const Transaction: FC = () => {
             <Typography variant="caption" style={{ color: ERROR_RED }}>
               {errorFees}
             </Typography>
-          ) : fees === DEFAULT_FEES ? (
+          ) : fees === DEFAULT_FEES && !fee ? (
             <TileLoader secondLineOnly />
           ) : (
-            formatToken(Number(fees), 'XRP')
+            fee ? formatToken(Number(fee), 'XRP (manual)') : formatToken(Number(fees), 'XRP')
           )}
         </Typography>
       </Paper>

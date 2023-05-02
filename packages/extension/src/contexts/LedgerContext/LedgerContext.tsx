@@ -111,7 +111,7 @@ const LedgerProvider: FC = ({ children }) => {
   }, [client, getCurrentWallet]);
 
   const sendPayment = useCallback(
-    async ({ amount, destination, currency, issuer, memos, destinationTag }: PaymentRequestPayload) => {
+    async ({ amount, destination, currency, issuer, memos, destinationTag, fee }: PaymentRequestPayload) => {
       const wallet = getCurrentWallet();
       if (!client) {
         throw new Error('You need to be connected to a ledger to make a transaction');
@@ -134,7 +134,8 @@ const LedgerProvider: FC = ({ children }) => {
             Destination: destination,
             // Only add the Memos and DestinationTag fields if they are are defined, otherwise it would fail
             ...(memos && { Memos: memos }),
-            ...(destinationTag && Number(destinationTag) && { DestinationTag: Number(destinationTag) })
+            ...(destinationTag && Number(destinationTag) && { DestinationTag: Number(destinationTag) }),
+            ...(fee && { Fee: xrpToDrops(fee) })
           });
           // Sign the transaction
           const signed = wallet.wallet.sign(prepared);

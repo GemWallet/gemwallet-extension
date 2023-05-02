@@ -30,6 +30,8 @@ export interface PaymentRequestPayload {
   memos?: Memo[];
   // The destination tag to attach to the transaction
   destinationTag?: number;
+  // Integer amount of XRP, in drops, to be destroyed as a cost for distributing this transaction to the network.
+  fee?: string;
 }
 
 export interface TrustlineRequestPayload {
