@@ -25,10 +25,20 @@
       .then((isConnected) => {
         if (isConnected) {
           const payment = {
-            amount: '20',
+            amount: '0.2',
             destination: issuer || 'rNvFCZXpDtGeQ3bVas95wGLN6N2stGmA9o',
             currency,
-            issuer
+            issuer,
+            memos: [
+              {
+                Memo: {
+                  MemoType: 'Description',
+                  MemoData: 'Test memo',
+                },
+              },
+            ],
+            destinationTag: 12,
+            fee: '0.000199',
           };
           GemWalletApi.sendPayment(payment)
             .then((trHash) => {
