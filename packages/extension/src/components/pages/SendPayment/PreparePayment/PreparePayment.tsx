@@ -21,7 +21,7 @@ import { Memo } from 'xrpl/dist/npm/models/common';
 import { HOME_PATH, navigation } from '../../../../constants';
 import { useNetwork, useWallet } from '../../../../contexts';
 import { convertCurrencyString } from '../../../../utils';
-import { buildRawMemos } from '../../../../utils/payment';
+import { buildDefaultMemos } from '../../../../utils/payment';
 import { NumericInput } from '../../../atoms';
 import { InformationMessage } from '../../../molecules';
 import { PageWithNavMenu, PageWithReturn, PageWithSpinner } from '../../../templates';
@@ -194,7 +194,7 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
       } else {
         setErrorMemo('');
       }
-      setMemos(buildRawMemos(e.target.value));
+      setMemos(buildDefaultMemos(e.target.value));
     },
     [hasValidMemoLength]
   );

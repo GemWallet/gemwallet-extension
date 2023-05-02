@@ -1,10 +1,10 @@
 import { DEFAULT_MEMO_TYPE } from '../constants/payload';
-import { buildMemos, buildDestinationTag } from './payment';
+import { buildDefaultMemos, buildDestinationTag, toHexMemos } from './payment';
 
-describe('buildMemos', () => {
+describe('buildRawMemos', () => {
   test('returns undefined when memoData is undefined or an empty string', () => {
-    expect(buildMemos(undefined)).toBeUndefined();
-    expect(buildMemos('')).toBeUndefined();
+    expect(buildDefaultMemos(undefined)).toBeUndefined();
+    expect(buildDefaultMemos('')).toBeUndefined();
   });
 
   test('returns an array with Memo object when memoData is a non-empty string', () => {
@@ -19,7 +19,7 @@ describe('buildMemos', () => {
       }
     ];
 
-    expect(buildMemos(memoData)).toEqual(expectedResult);
+    expect(toHexMemos(buildDefaultMemos(memoData))).toEqual(expectedResult);
   });
 });
 

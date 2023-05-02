@@ -11,7 +11,7 @@ import { GEM_WALLET, ReceivePaymentHashBackgroundMessage } from '@gemwallet/cons
 import { DEFAULT_RESERVE, ERROR_RED } from '../../../constants';
 import { useLedger, useNetwork, useServer, useWallet } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
-import { formatToken } from '../../../utils';
+import { formatToken, toHexMemos } from '../../../utils';
 import { TileLoader } from '../../atoms';
 import { AsyncTransaction, PageWithSpinner, PageWithTitle } from '../../templates';
 
@@ -174,7 +174,7 @@ export const Transaction: FC = () => {
       destination: params.destination as string,
       currency: params.currency ?? undefined,
       issuer: params.issuer ?? undefined,
-      memos: params.memos ?? undefined,
+      memos: params.memos ? toHexMemos(params.memos) : undefined,
       destinationTag: params.destinationTag ?? undefined
     })
       .then((transactionHash) => {
@@ -305,7 +305,7 @@ export const Transaction: FC = () => {
     );
   }
 
-  const { amount, destination, currency, destinationTag } = params;
+  const { amount, destination, currency, memos, destinationTag } = params;
 
   return (
     <PageWithTitle title="Confirm Transaction">
@@ -321,6 +321,20 @@ export const Transaction: FC = () => {
         <Typography variant="body1">Destination:</Typography>
         <Typography variant="body2">{destination}</Typography>
       </Paper>
+      {memos && memos.length > 0 ? memos.map((memo) => (
+        <Paper elevation={24} style={{padding: '10px'}}>
+          <Typography variant="body1">Memo:</Typography>
+          <Typography
+            variant="body2"
+            style={{
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              maxWidth: '100%',
+            }}
+          >{memo.Memo.MemoData}</Typography>
+        </Paper>
+      )) : null}
       {destinationTag ? (
         <Paper elevation={24} style={{ padding: '10px' }}>
           <Typography variant="body1">Destination Tag:</Typography>

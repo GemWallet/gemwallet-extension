@@ -2,9 +2,14 @@ import { Memo } from 'xrpl/dist/npm/models/common';
 
 import { DEFAULT_MEMO_TYPE } from '../constants/payload';
 
-// For display purposes on the confirmation screen.
-// Will be converted to hex before sending the transaction.
-export const buildRawMemos = (
+/**
+ * Build default memos when a single MemoData is provided from the UI.
+ * For display purposes, will need to be converted to hex before sending the transaction.
+ *
+ * Unused by the API.
+ * @param memoData - MemoData string from the UI.
+ */
+export const buildDefaultMemos = (
   memoData: string | undefined
 ): Memo[] | undefined => {
   if (memoData === undefined || memoData === '') return undefined;
