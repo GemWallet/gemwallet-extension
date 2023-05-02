@@ -305,7 +305,7 @@ export const Transaction: FC = () => {
     );
   }
 
-  const { amount, destination, currency } = params;
+  const { amount, destination, currency, destinationTag } = params;
 
   return (
     <PageWithTitle title="Confirm Transaction">
@@ -321,6 +321,12 @@ export const Transaction: FC = () => {
         <Typography variant="body1">Destination:</Typography>
         <Typography variant="body2">{destination}</Typography>
       </Paper>
+      {destinationTag ? (
+        <Paper elevation={24} style={{ padding: '10px' }}>
+          <Typography variant="body1">Destination Tag:</Typography>
+          <Typography variant="body2">{destinationTag}</Typography>
+        </Paper>
+      ) : null}
       <Paper elevation={24} style={{ padding: '10px' }}>
         <Typography variant="body1">Amount:</Typography>
         <Typography variant="h4" component="h1" gutterBottom align="right">
