@@ -13,7 +13,7 @@ interface StepConfirmProps {
   currency: string | null;
   value: string | null;
   fee: string | null;
-  newtorkFees: string;
+  estimatedFees: string;
   errorFees: string;
   hasEnoughFunds: boolean;
   defaultFee: string;
@@ -26,7 +26,7 @@ export const StepConfirm: FC<StepConfirmProps> = ({
   currency,
   value,
   fee,
-  newtorkFees,
+  estimatedFees,
   errorFees,
   hasEnoughFunds,
   defaultFee,
@@ -65,14 +65,7 @@ export const StepConfirm: FC<StepConfirmProps> = ({
       <Typography variant="body1">Limit:</Typography>
       <Typography variant="body1">{formatToken(Number(value), currency || undefined)}</Typography>
     </Paper>
-    <Paper
-      elevation={24}
-      style={{ padding: '10px', display: 'flex', justifyContent: 'space-between' }}
-    >
-      <Typography variant="body1">Fees:</Typography>
-      <Typography variant="body1">{formatToken(Number(fee))}</Typography>
-    </Paper>
-    <Paper elevation={24} style={{ padding: '10px' }}>
+    <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
       <Typography variant="body1" style={{ display: 'flex', alignItems: 'center' }}>
         <Tooltip title="These are the fees to make the transaction over the network">
           <IconButton size="small">
@@ -86,10 +79,10 @@ export const StepConfirm: FC<StepConfirmProps> = ({
           <Typography variant="caption" style={{ color: ERROR_RED }}>
             {errorFees}
           </Typography>
-        ) : newtorkFees === defaultFee ? (
+        ) : estimatedFees === defaultFee ? (
           <TileLoader secondLineOnly />
         ) : (
-          formatToken(Number(newtorkFees), 'XRP')
+          fee ? formatToken(Number(fee), 'XRP (manual)', true) : formatToken(Number(estimatedFees), 'XRP', true)
         )}
       </Typography>
     </Paper>

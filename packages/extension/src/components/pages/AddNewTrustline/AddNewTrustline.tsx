@@ -368,7 +368,7 @@ export const AddNewTrustline: FC = () => {
     <StepConfirm
       limitAmount={params.limitAmount}
       fee={params.fee}
-      newtorkFees={estimatedFees}
+      estimatedFees={estimatedFees}
       errorFees={errorFees}
       hasEnoughFunds={hasEnoughFunds}
       defaultFee={DEFAULT_FEES}
