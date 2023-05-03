@@ -10,7 +10,7 @@ import { Amount, GEM_WALLET, Memo, PaymentFlags, ReceivePaymentHashBackgroundMes
 import { DEFAULT_RESERVE, ERROR_RED } from '../../../constants';
 import { useLedger, useNetwork, useServer, useWallet } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
-import { formatAmount, formatToken, fromHexMemos, toXRPLMemos } from '../../../utils';
+import { checkFee, formatAmount, formatToken, fromHexMemos, toXRPLMemos } from '../../../utils';
 import { TileLoader } from '../../atoms';
 import { AsyncTransaction, PageWithSpinner, PageWithTitle } from '../../templates';
 
@@ -196,17 +196,6 @@ export const Transaction: FC = () => {
   const hasEnoughFunds = useMemo(() => {
     return Number(difference) > 0;
   }, [difference]);
-
-  const checkFee = (fee: string | null) => {
-    if (fee) {
-      try {
-        if (Number(fee) && dropsToXrp(fee)) {
-          return fee;
-        }
-      } catch (e) {}
-    }
-    return null;
-  }
 
   const parseAmountFromString = (amountString: string | null) => {
     if (!amountString) {

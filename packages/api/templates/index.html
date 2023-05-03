@@ -80,7 +80,8 @@
           const transaction = {
             currency: 'USD',
             issuer: 'rwtDvu9QDfCskWuyE2TSEt3s56RbiWUKJN',
-            value: '10000000'
+            value: '10000000',
+            fee: '199',
           };
           GemWalletApi.addTrustline(transaction)
             .then((trHash) => {

@@ -11,7 +11,7 @@ import { GEM_WALLET, ReceiveTrustlineHashBackgroundMessage } from '@gemwallet/co
 import { DEFAULT_RESERVE, ERROR_RED } from '../../../constants';
 import { useLedger, useNetwork, useServer, useWallet } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
-import { formatAmount, formatToken } from '../../../utils';
+import { checkFee, formatAmount, formatToken } from '../../../utils';
 import { TileLoader } from '../../atoms';
 import { AsyncTransaction, PageWithSpinner, PageWithTitle } from '../../templates';
 
@@ -53,7 +53,7 @@ export const AddNewTrustline: FC = () => {
   useEffect(() => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
-    const fee = urlParams.get('fee');
+    const fee = checkFee(urlParams.get('fee'));
     const value = urlParams.get('value');
     const currency = urlParams.get('currency');
     const issuer = urlParams.get('issuer');
@@ -339,7 +339,7 @@ export const AddNewTrustline: FC = () => {
     );
   }
 
-  const { issuer, currency, value } = params;
+  const { issuer, currency, value, fee } = params;
 
   return (
     <PageWithTitle title="Add Trustline - Confirm">
@@ -374,7 +374,7 @@ export const AddNewTrustline: FC = () => {
         <Typography variant="body1">Limit:</Typography>
         <Typography variant="body1">{formatToken(Number(value), currency || undefined)}</Typography>
       </Paper>
-      <Paper elevation={24} style={{ padding: '10px' }}>
+      <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
         <Typography variant="body1" style={{ display: 'flex', alignItems: 'center' }}>
           <Tooltip title="These are the fees to make the transaction over the network">
             <IconButton size="small">
@@ -391,7 +391,7 @@ export const AddNewTrustline: FC = () => {
           ) : estimatedFees === DEFAULT_FEES ? (
             <TileLoader secondLineOnly />
           ) : (
-            formatAmount(estimatedFees)
+            fee ? formatToken(Number(fee), 'XRP (manual)', true) : formatAmount(estimatedFees)
           )}
         </Typography>
       </Paper>
