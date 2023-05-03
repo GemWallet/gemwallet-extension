@@ -62,8 +62,7 @@ export const Transaction: FC = () => {
     const memosString = urlParams.get('memos');
     const memos = memosString ? JSON.parse(memosString) as Memo[] : null;
     const destinationTag = urlParams.get('destinationTag') ? Number(urlParams.get('destinationTag')) : null;
-    let fee = checkFee(urlParams.get('fee'));
-
+    const fee = checkFee(urlParams.get('fee'));
 
     if (amount === null || destination === null) {
       setIsParamsMissing(true);
