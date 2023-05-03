@@ -2,7 +2,7 @@ import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 
 import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
-import { isValidAddress } from 'xrpl';
+import { dropsToXrp, isValidAddress } from 'xrpl';
 import { IssuedCurrencyAmount } from 'xrpl/dist/npm/models/common';
 
 import {
@@ -24,6 +24,7 @@ import { useLedger, useNetwork, useServer, useWallet } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
 import {
   checkFee,
+  fromHexMemos,
   parseLimitAmount,
   parseMemos,
   parseTrustSetFlags,
@@ -48,6 +49,10 @@ interface Params {
 }
 
 export const AddNewTrustline: FC = () => {
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  const inAppCall = urlParams.get('inAppCall') === 'true' || false;
+
   const [step, setStep] = useState<STEP>('WARNING');
   const [isParamsMissing, setIsParamsMissing] = useState(false);
   const [params, setParams] = useState<Params>({
@@ -56,7 +61,7 @@ export const AddNewTrustline: FC = () => {
     id: 0,
     memos: null,
     flags: null,
-    inAppCall: false,
+    inAppCall,
     showForm: false
   });
   const [estimatedFees, setEstimatedFees] = useState<string>(DEFAULT_FEES);
@@ -134,7 +139,7 @@ export const AddNewTrustline: FC = () => {
       setIsParamsMissing(true);
     }
 
-    if (Number.isNaN(Number(limitAmount?.value))) {
+    if (limitAmount && Number.isNaN(Number(limitAmount.value))) {
       setErrorValue('The value must be a number, the value provided was not a number.');
     }
 
@@ -187,7 +192,7 @@ export const AddNewTrustline: FC = () => {
           const difference =
             Number(currentBalance) -
             Number(serverInfo?.info.validated_ledger?.reserve_base_xrp || DEFAULT_RESERVE) -
-            Number(params.fee || 0);
+            (params.fee ? Number(dropsToXrp(params.fee)) : 0);
           setDifference(difference);
         })
         .catch((e) => {
@@ -219,7 +224,7 @@ export const AddNewTrustline: FC = () => {
         ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
       >(createMessage({ transactionHash: null }));
     }
-  }, [createMessage]);
+  }, [createMessage, params.inAppCall]);
 
   const handleConfirm = useCallback(() => {
     setTransaction(TransactionStatus.Pending);
@@ -275,7 +280,11 @@ export const AddNewTrustline: FC = () => {
     isParamsMissing: boolean
   ) => {
     setParams({
-      limitAmount: params.limitAmount,
+      limitAmount: {
+        currency: token,
+        issuer: issuer,
+        value: limit
+      },
       fee: params.fee,
       id: params.id,
       memos: params.memos,
@@ -292,9 +301,16 @@ export const AddNewTrustline: FC = () => {
   }
 
   if (isParamsMissing) {
-    chrome.runtime.sendMessage<
-      ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
-    >(createMessage({ transactionHash: null, error: new Error(API_ERROR_BAD_REQUEST) }));
+    if (!params.inAppCall) {
+      chrome.runtime.sendMessage<
+        ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
+      >(
+        createMessage({
+          transactionHash: null,
+          error: new Error(API_ERROR_BAD_REQUEST)
+        })
+      );
+    }
     return (
       <AsyncTransaction
         title="Transaction rejected"
@@ -311,9 +327,16 @@ export const AddNewTrustline: FC = () => {
   }
 
   if (!isValidIssuer) {
-    chrome.runtime.sendMessage<
-      ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
-    >(createMessage({ transactionHash: null, error: new Error(API_ERROR_BAD_ISSUER) }));
+    if (!params.inAppCall) {
+      chrome.runtime.sendMessage<
+        ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
+      >(
+        createMessage({
+          transactionHash: null,
+          error: new Error(API_ERROR_BAD_ISSUER)
+        })
+      );
+    }
     return (
       <AsyncTransaction
         title="Incorrect transaction"
@@ -331,9 +354,16 @@ export const AddNewTrustline: FC = () => {
   }
 
   if (errorValue) {
-    chrome.runtime.sendMessage<
-      ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
-    >(createMessage({ transactionHash: null, error: new Error(API_ERROR_BAD_REQUEST) }));
+    if (!params.inAppCall) {
+      chrome.runtime.sendMessage<
+        ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
+      >(
+        createMessage({
+          transactionHash: null,
+          error: new Error(API_ERROR_BAD_REQUEST)
+        })
+      );
+    }
     return (
       <AsyncTransaction
         title="Incorrect transaction"
@@ -351,9 +381,16 @@ export const AddNewTrustline: FC = () => {
   }
 
   if (errorDifference) {
-    chrome.runtime.sendMessage<
-      ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
-    >(createMessage({ transactionHash: null, error: errorDifference }));
+    if (!params.inAppCall) {
+      chrome.runtime.sendMessage<
+        ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
+      >(
+        createMessage({
+          transactionHash: null,
+          error: errorDifference
+        })
+      );
+    }
     if (errorDifference.message === 'Account not found.') {
       return (
         <AsyncTransaction
@@ -431,11 +468,16 @@ export const AddNewTrustline: FC = () => {
     return <StepWarning onReject={handleReject} onContinue={() => setStep('TRANSACTION')} />;
   }
 
+  const limitAmount = params.limitAmount as IssuedCurrencyAmount;
+  const memos = fromHexMemos(params.memos ?? undefined) ?? [];
+
   return (
     <StepConfirm
-      limitAmount={params.limitAmount}
+      limitAmount={limitAmount}
       fee={params.fee}
-      newtorkFees={estimatedFees}
+      memos={memos}
+      flags={params.flags}
+      estimatedFees={estimatedFees}
       errorFees={errorFees}
       hasEnoughFunds={hasEnoughFunds}
       defaultFee={DEFAULT_FEES}

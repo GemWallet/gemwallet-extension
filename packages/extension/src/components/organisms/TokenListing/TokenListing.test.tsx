@@ -60,7 +60,11 @@ describe('TokenListing', () => {
 
   test('should display an error when client failed to load', () => {
     mockClient = null;
-    render(<MemoryRouter><TokenListing {...props} /></MemoryRouter>);
+    render(
+      <MemoryRouter>
+        <TokenListing {...props} />
+      </MemoryRouter>
+    );
     expect(
       screen.queryByText(
         'There was an error attempting to retrieve your assets. Please refresh and try again.'
@@ -69,7 +73,11 @@ describe('TokenListing', () => {
   });
 
   test('should display the loading token state when the XRPBalance is not calculated', () => {
-    render(<MemoryRouter><TokenListing {...props} /></MemoryRouter>);
+    render(
+      <MemoryRouter>
+        <TokenListing {...props} />
+      </MemoryRouter>
+    );
     expect(screen.getByTestId('token-loader')).toBeInTheDocument();
   });
 
@@ -79,7 +87,11 @@ describe('TokenListing', () => {
       { value: '50', currency: 'USD', issuer: 'r123' },
       { value: '20', currency: 'ETH', issuer: 'r456' }
     ]);
-    render(<MemoryRouter><TokenListing {...props} /></MemoryRouter>);
+    render(
+      <MemoryRouter>
+        <TokenListing {...props} />
+      </MemoryRouter>
+    );
     await waitFor(() => {
       expect(screen.getByText('90 XRP')).toBeInTheDocument();
       expect(screen.getByText('50 USD')).toBeInTheDocument();
@@ -91,7 +103,11 @@ describe('TokenListing', () => {
     mockGetBalancesPromise.mockRejectedValueOnce(
       new Error('Throw an error if there is an error fetching the balances')
     );
-    render(<MemoryRouter><TokenListing {...props} /></MemoryRouter>);
+    render(
+      <MemoryRouter>
+        <TokenListing {...props} />
+      </MemoryRouter>
+    );
     await waitFor(() => {
       expect(screen.getByText('Account not activated')).toBeVisible();
       expect(Sentry.captureException).toHaveBeenCalled();
@@ -102,7 +118,11 @@ describe('TokenListing', () => {
     mockGetBalancesPromise.mockResolvedValueOnce([
       { value: '100', currency: 'XRP', issuer: undefined }
     ]);
-    render(<MemoryRouter><TokenListing {...props} /></MemoryRouter>);
+    render(
+      <MemoryRouter>
+        <TokenListing {...props} />
+      </MemoryRouter>
+    );
     const explainButton = await screen.findByText('Explain');
     await fireEvent.click(explainButton);
     expect(
@@ -117,7 +137,11 @@ describe('TokenListing', () => {
     mockGetBalancesPromise.mockRejectedValueOnce(
       new Error('Throw an error if there is an error fetching the balances')
     );
-    render(<TokenListing {...props} />);
+    render(
+      <MemoryRouter>
+        <TokenListing {...props} />
+      </MemoryRouter>
+    );
     await waitFor(() => {
       const button = screen.queryByTestId('fund-wallet-button');
       expect(button).toBeInTheDocument();
@@ -129,7 +153,11 @@ describe('TokenListing', () => {
     mockGetBalancesPromise.mockRejectedValueOnce(
       new Error('Throw an error if there is an error fetching the balances')
     );
-    render(<TokenListing {...props} />);
+    render(
+      <MemoryRouter>
+        <TokenListing {...props} />
+      </MemoryRouter>
+    );
     await waitFor(() => {
       const button = screen.queryByTestId('fund-wallet-button');
       expect(button).not.toBeInTheDocument();
@@ -142,7 +170,11 @@ describe('TokenListing', () => {
     mockGetBalancesPromise.mockRejectedValueOnce(
       new Error('Throw an error if there is an error fetching the balances')
     );
-    render(<TokenListing {...props} />);
+    render(
+      <MemoryRouter>
+        <TokenListing {...props} />
+      </MemoryRouter>
+    );
 
     const button = await screen.findByTestId('fund-wallet-button');
     const format = formatToken(9990, 'XRP');

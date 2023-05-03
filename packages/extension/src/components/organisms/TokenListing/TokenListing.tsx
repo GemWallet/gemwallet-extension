@@ -227,7 +227,7 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
       >
         <Button
           variant="contained"
-          onClick={() => navigate(`${ADD_NEW_TRUSTLINE_PATH}?showForm=true`)}
+          onClick={() => navigate(`${ADD_NEW_TRUSTLINE_PATH}?showForm=true&inAppCall=true`)}
           style={{ marginTop: '20px' }}
         >
           Add trustline

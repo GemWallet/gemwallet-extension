@@ -2,18 +2,21 @@ import React, { FC } from 'react';
 
 import ErrorIcon from '@mui/icons-material/Error';
 import { Button, Container, IconButton, Paper, Tooltip, Typography } from '@mui/material';
+import { IssuedCurrencyAmount } from 'xrpl/dist/npm/models/common';
+
+import { Memo, TrustSetFlags } from '@gemwallet/constants';
 
 import { ERROR_RED } from '../../../constants';
-import { formatToken } from '../../../utils';
+import { formatAmount, formatFlags, formatToken } from '../../../utils';
 import { TileLoader } from '../../atoms';
 import { PageWithTitle } from '../../templates';
 
 interface StepConfirmProps {
-  issuer: string | null;
-  currency: string | null;
-  value: string | null;
+  limitAmount: IssuedCurrencyAmount;
   fee: string | null;
-  newtorkFees: string;
+  memos: Memo[];
+  flags: TrustSetFlags | null;
+  estimatedFees: string;
   errorFees: string;
   hasEnoughFunds: boolean;
   defaultFee: string;
@@ -22,11 +25,11 @@ interface StepConfirmProps {
 }
 
 export const StepConfirm: FC<StepConfirmProps> = ({
-  issuer,
-  currency,
-  value,
+  limitAmount,
   fee,
-  newtorkFees,
+  memos,
+  flags,
+  estimatedFees,
   errorFees,
   hasEnoughFunds,
   defaultFee,
@@ -46,33 +49,69 @@ export const StepConfirm: FC<StepConfirmProps> = ({
         </Typography>
       </div>
     ) : null}
-    <Paper elevation={24} style={{ padding: '10px' }}>
+    <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
       <Typography variant="body1">Issuer:</Typography>
-      <Typography variant="body2">{issuer}</Typography>
+      <Typography variant="body2">{limitAmount.issuer}</Typography>
     </Paper>
     <Paper
       elevation={24}
-      style={{ padding: '10px', display: 'flex', justifyContent: 'space-between' }}
+      style={{
+        padding: '10px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        marginBottom: '5px'
+      }}
     >
       <Typography variant="body1">Currency:</Typography>
-      <Typography variant="body1">{currency}</Typography>
+      <Typography variant="body1">{limitAmount.currency}</Typography>
     </Paper>
 
     <Paper
       elevation={24}
-      style={{ padding: '10px', display: 'flex', justifyContent: 'space-between' }}
+      style={{
+        padding: '10px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        marginBottom: '5px'
+      }}
     >
       <Typography variant="body1">Limit:</Typography>
-      <Typography variant="body1">{formatToken(Number(value), currency || undefined)}</Typography>
+      <Typography variant="body1">{formatAmount(limitAmount)}</Typography>
     </Paper>
-    <Paper
-      elevation={24}
-      style={{ padding: '10px', display: 'flex', justifyContent: 'space-between' }}
-    >
-      <Typography variant="body1">Fees:</Typography>
-      <Typography variant="body1">{formatToken(Number(fee))}</Typography>
-    </Paper>
-    <Paper elevation={24} style={{ padding: '10px' }}>
+    {memos.length > 0 ? (
+      <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
+        <Typography variant="body1">Memos:</Typography>
+        {memos.map((memo, index) => (
+          <div
+            key={index}
+            style={{
+              marginBottom: index === memos.length - 1 ? 0 : '8px'
+            }}
+          >
+            <Typography
+              variant="body2"
+              style={{
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                maxWidth: '100%'
+              }}
+            >
+              {memo.memo.memoData}
+            </Typography>
+          </div>
+        ))}
+      </Paper>
+    ) : null}
+    {flags ? (
+      <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
+        <Typography variant="body1">Flags:</Typography>
+        <Typography variant="body2">
+          <pre style={{ margin: 0 }}>{formatFlags(flags)}</pre>
+        </Typography>
+      </Paper>
+    ) : null}
+    <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
       <Typography variant="body1" style={{ display: 'flex', alignItems: 'center' }}>
         <Tooltip title="These are the fees to make the transaction over the network">
           <IconButton size="small">
@@ -86,10 +125,12 @@ export const StepConfirm: FC<StepConfirmProps> = ({
           <Typography variant="caption" style={{ color: ERROR_RED }}>
             {errorFees}
           </Typography>
-        ) : newtorkFees === defaultFee ? (
+        ) : estimatedFees === defaultFee ? (
           <TileLoader secondLineOnly />
+        ) : fee ? (
+          formatToken(Number(fee), 'XRP (manual)', true)
         ) : (
-          formatToken(Number(newtorkFees), 'XRP')
+          formatAmount(estimatedFees)
         )}
       </Typography>
     </Paper>
