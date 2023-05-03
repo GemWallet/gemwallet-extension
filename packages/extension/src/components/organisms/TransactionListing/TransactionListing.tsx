@@ -45,7 +45,7 @@ const formatTransaction = (transaction: AccountTransaction, publicAddress: strin
       // Might need to handle more use case
       const amount =
         typeof transaction.tx.Amount === 'string'
-          ? formatToken(Number(dropsToXrp(transaction.tx.Amount)), 'XRP')
+          ? formatToken(Number(transaction.tx.Amount), 'XRP', true)
           : formatToken(Number(transaction.tx.Amount.value), transaction.tx.Amount.currency);
       if (transaction.tx.Destination === publicAddress) {
         return `Payment received - ${amount}`;

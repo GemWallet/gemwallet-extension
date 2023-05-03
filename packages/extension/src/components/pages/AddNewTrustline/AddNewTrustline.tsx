@@ -379,7 +379,7 @@ export const AddNewTrustline: FC = () => {
         style={{ padding: '10px', display: 'flex', justifyContent: 'space-between' }}
       >
         <Typography variant="body1">Fees:</Typography>
-        <Typography variant="body1">{formatToken(Number(fee))}</Typography>
+        <Typography variant="body1">{formatToken(Number(fee), 'XRP', true)}</Typography>
       </Paper>
       <Paper elevation={24} style={{ padding: '10px' }}>
         <Typography variant="body1" style={{ display: 'flex', alignItems: 'center' }}>
@@ -398,7 +398,7 @@ export const AddNewTrustline: FC = () => {
           ) : fees === DEFAULT_FEES ? (
             <TileLoader secondLineOnly />
           ) : (
-            formatToken(Number(fees), 'XRP')
+            formatToken(Number(fees), 'XRP', true)
           )}
         </Typography>
       </Paper>

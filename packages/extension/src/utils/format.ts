@@ -1,4 +1,10 @@
-export const formatToken = (value: number, currency: string | undefined = 'XRP') => {
+import { dropsToXrp } from 'xrpl';
+
+export const formatToken = (value: number, currency: string | undefined = 'XRP', isDrops: boolean = false) => {
+  if (isDrops) {
+    value = Number(dropsToXrp(value))
+  }
+
   return `${new Intl.NumberFormat(navigator.language, {
     style: 'currency',
     currency: 'XRP',

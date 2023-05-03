@@ -2,7 +2,7 @@ import { useContext, createContext, FC, useCallback } from 'react';
 
 import * as Sentry from '@sentry/react';
 import { sign } from 'ripple-keypairs';
-import { xrpToDrops, dropsToXrp, TransactionMetadata, Payment, Transaction, TrustSet } from 'xrpl';
+import { xrpToDrops, TransactionMetadata, Payment, Transaction, TrustSet } from 'xrpl';
 
 import {
   AccountNFToken,
@@ -44,6 +44,11 @@ const LedgerProvider: FC = ({ children }) => {
   const { client } = useNetwork();
   const { getCurrentWallet } = useWallet();
 
+  /**
+   * Returns the estimated network fees for a transaction, in drops
+   * @param transaction The transaction to estimate the fees for
+   * @returns The estimated fees, in drops
+   */
   const estimateNetworkFees = useCallback(
     async (transaction: Transaction) => {
       const wallet = getCurrentWallet();
@@ -57,7 +62,7 @@ const LedgerProvider: FC = ({ children }) => {
         if (!prepared.Fee) {
           throw new Error("Couldn't calculate the fees, something went wrong");
         } else {
-          return dropsToXrp(prepared.Fee);
+          return prepared.Fee;
         }
       }
     },
@@ -135,7 +140,7 @@ const LedgerProvider: FC = ({ children }) => {
             // Only add the Memos and DestinationTag fields if they are are defined, otherwise it would fail
             ...(memos && { Memos: memos }),
             ...(destinationTag && Number(destinationTag) && { DestinationTag: Number(destinationTag) }),
-            ...(fee && { Fee: xrpToDrops(fee) })
+            ...(fee && { Fee: fee }) // In drops
           });
           // Sign the transaction
           const signed = wallet.wallet.sign(prepared);

@@ -35,7 +35,7 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
   const { getCurrentWallet } = useWallet();
   const { estimateNetworkFees, sendPayment } = useLedger();
   const navigate = useNavigate();
-  const [fees, setFees] = useState<string>('');
+  const [estimatedFees, setEstimatedFees] = useState<string>('');
   const [errorFees, setErrorFees] = useState<string>('');
   const [errorRequestRejection, setErrorRequestRejection] = useState<string>('');
   const [transaction, setTransaction] = useState<TransactionStatus>();
@@ -60,7 +60,7 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
         DestinationTag: destinationTag
       })
         .then((fees) => {
-          setFees(fees);
+          setEstimatedFees(fees);
         })
         .catch((e) => {
           Sentry.captureException(e);
@@ -200,10 +200,10 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
             <Typography variant="caption" style={{ color: ERROR_RED }}>
               {errorFees}
             </Typography>
-          ) : fees === DEFAULT_FEES ? (
+          ) : estimatedFees === DEFAULT_FEES ? (
             <TileLoader secondLineOnly />
           ) : (
-            formatToken(Number(fees), 'XRP')
+            formatToken(Number(estimatedFees), 'XRP', true)
           )}
         </Typography>
       </Paper>

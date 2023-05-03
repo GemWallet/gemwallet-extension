@@ -3,7 +3,7 @@ import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import ErrorIcon from '@mui/icons-material/Error';
 import { Button, Container, IconButton, Paper, Tooltip, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
-import { isValidAddress, xrpToDrops } from 'xrpl';
+import { dropsToXrp, isValidAddress, xrpToDrops } from 'xrpl';
 import { Memo } from 'xrpl/dist/npm/models/common';
 
 import { GEM_WALLET, ReceivePaymentHashBackgroundMessage } from '@gemwallet/constants';
@@ -39,7 +39,7 @@ export const Transaction: FC = () => {
     destinationTag: null,
     fee: null
   });
-  const [fees, setFees] = useState<string>(DEFAULT_FEES);
+  const [estimatedFees, setEstimatedFees] = useState<string>(DEFAULT_FEES);
   const [errorFees, setErrorFees] = useState('');
   const [errorRequestRejection, setErrorRequestRejection] = useState<string>('');
   const [difference, setDifference] = useState<number | undefined>();
@@ -63,7 +63,8 @@ export const Transaction: FC = () => {
     const memosString = urlParams.get('memos');
     const memos = memosString ? JSON.parse(memosString) as Memo[] : null;
     const destinationTag = urlParams.get('destinationTag') ? Number(urlParams.get('destinationTag')) : null;
-    const fee = urlParams.get('fee');
+    let fee = checkFee(urlParams.get('fee'));
+
 
     if (amount === null || destination === null) {
       setIsParamsMissing(true);
@@ -83,7 +84,7 @@ export const Transaction: FC = () => {
 
   useEffect(() => {
     const currentWallet = getCurrentWallet();
-    if (currentWallet && client && params.amount && params.destination && !(params.fee)) {
+    if (currentWallet && client && params.amount && params.destination) {
       estimateNetworkFees({
         TransactionType: 'Payment',
         Account: currentWallet.publicAddress,
@@ -100,7 +101,7 @@ export const Transaction: FC = () => {
         DestinationTag: params.destinationTag ?? undefined
       })
         .then((fees) => {
-          setFees(fees);
+          setEstimatedFees(fees);
         })
         .catch((e) => {
           Sentry.captureException(e);
@@ -209,6 +210,17 @@ export const Transaction: FC = () => {
   const hasEnoughFunds = useMemo(() => {
     return Number(difference) > 0;
   }, [difference]);
+
+  const checkFee = (fee: string | null) => {
+    if (fee) {
+      try {
+        if (Number(fee) && dropsToXrp(fee)) {
+          return fee;
+        }
+      } catch (e) {}
+    }
+    return null;
+  }
 
   if (isParamsMissing) {
     return (
@@ -379,10 +391,10 @@ export const Transaction: FC = () => {
             <Typography variant="caption" style={{ color: ERROR_RED }}>
               {errorFees}
             </Typography>
-          ) : fees === DEFAULT_FEES && !fee ? (
+          ) : estimatedFees === DEFAULT_FEES ? (
             <TileLoader secondLineOnly />
           ) : (
-            fee ? formatToken(Number(fee), 'XRP (manual)') : formatToken(Number(fees), 'XRP')
+            fee ? formatToken(Number(fee), 'XRP (manual)', true) : formatToken(Number(estimatedFees), 'XRP', true)
           )}
         </Typography>
       </Paper>
