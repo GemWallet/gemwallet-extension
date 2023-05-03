@@ -1,5 +1,5 @@
 import { DEFAULT_MEMO_TYPE } from '../constants/payload';
-import { buildDefaultMemos, buildDestinationTag, toHexMemos } from './payment';
+import { buildDefaultMemos, buildDestinationTag } from './payment';
 
 describe('buildRawMemos', () => {
   test('returns undefined when memoData is undefined or an empty string', () => {
@@ -19,7 +19,7 @@ describe('buildRawMemos', () => {
       }
     ];
 
-    expect(toHexMemos(buildDefaultMemos(memoData))).toEqual(expectedResult);
+    expect(buildDefaultMemos(memoData)).toEqual(expectedResult);
   });
 });
 

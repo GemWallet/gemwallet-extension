@@ -11,7 +11,7 @@ import { GEM_WALLET, ReceivePaymentHashBackgroundMessage } from '@gemwallet/cons
 import { DEFAULT_RESERVE, ERROR_RED } from '../../../constants';
 import { useLedger, useNetwork, useServer, useWallet } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
-import { formatToken, toHexMemos } from '../../../utils';
+import { formatToken, fromHexMemos } from '../../../utils';
 import { TileLoader } from '../../atoms';
 import { AsyncTransaction, PageWithSpinner, PageWithTitle } from '../../templates';
 
@@ -180,7 +180,7 @@ export const Transaction: FC = () => {
       destination: params.destination as string,
       currency: params.currency ?? undefined,
       issuer: params.issuer ?? undefined,
-      memos: params.memos ? toHexMemos(params.memos) : undefined,
+      memos: params.memos ?? undefined,
       destinationTag: params.destinationTag ?? undefined,
       fee: params.fee ?? undefined
     })
@@ -325,6 +325,7 @@ export const Transaction: FC = () => {
   }
 
   const { amount, destination, currency, memos, destinationTag, fee } = params;
+  const decodedMemos = fromHexMemos(memos || []);
 
   return (
     <PageWithTitle title="Confirm Transaction">
@@ -340,14 +341,14 @@ export const Transaction: FC = () => {
         <Typography variant="body1">Destination:</Typography>
         <Typography variant="body2">{destination}</Typography>
       </Paper>
-      {memos && memos.length > 0 ? (
+      {decodedMemos && decodedMemos.length > 0 ? (
         <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
           <Typography variant='body1'>Memos:</Typography>
-          {memos.map((memo, index) => (
+          {decodedMemos.map((memo, index) => (
             <div
               key={index}
               style={{
-                marginBottom: index === memos.length - 1 ? 0 : '8px',
+                marginBottom: index === decodedMemos.length - 1 ? 0 : '8px',
               }}
             >
               <Typography

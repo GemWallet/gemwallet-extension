@@ -11,7 +11,7 @@ import { ERROR_RED, HOME_PATH } from '../../../../constants';
 import { useLedger, useWallet } from '../../../../contexts';
 import { TransactionStatus } from '../../../../types';
 import { convertCurrencyString, formatToken } from '../../../../utils';
-import { toHexMemos } from '../../../../utils/payment';
+import { fromHexMemos } from '../../../../utils/payment';
 import { TileLoader } from '../../../atoms';
 import { AsyncTransaction, PageWithReturn } from '../../../templates';
 
@@ -81,7 +81,7 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
       destination: address,
       currency: currency ?? undefined,
       issuer: issuer ?? undefined,
-      memos: toHexMemos(memos),
+      memos: memos,
       destinationTag: destinationTag
     })
       .then(() => {
@@ -140,6 +140,8 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
     );
   }
 
+  const decodedMemos = fromHexMemos(memos);
+
   return (
     <PageWithReturn
       title="Confirm Payment"
@@ -160,7 +162,7 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
         <Typography variant="body1">Destination:</Typography>
         <Typography variant="body2">{address}</Typography>
       </Paper>
-      {memos && memos.length > 0 ? memos.map((memo) => (
+      {decodedMemos && decodedMemos.length > 0 ? decodedMemos.map((memo) => (
         <Paper elevation={24} style={{padding: '10px'}}>
           <Typography variant="body1">Memo:</Typography>
           <Typography

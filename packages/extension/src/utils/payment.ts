@@ -13,15 +13,28 @@ export const buildDefaultMemos = (
   memoData: string | undefined
 ): Memo[] | undefined => {
   if (memoData === undefined || memoData === '') return undefined;
-  return [
+  return toHexMemos([
     {
       Memo: {
         MemoType: DEFAULT_MEMO_TYPE,
         MemoData: memoData,
       }
     }
-  ];
+  ]);
 };
+
+export const fromHexMemos = (memos: Memo[] | undefined): Memo[] | undefined => {
+  if (memos === undefined) return undefined;
+  return memos.map((memo) => {
+    return {
+      Memo: {
+        ...memo.Memo.MemoType ? {MemoType: Buffer.from(memo.Memo.MemoType, 'hex').toString('utf8')} : {},
+        ...memo.Memo.MemoData ? {MemoData: Buffer.from(memo.Memo.MemoData, 'hex').toString('utf8')} : {},
+        ...memo.Memo.MemoFormat ? {MemoFormat: Buffer.from(memo.Memo.MemoFormat, 'hex').toString('utf8')} : {}
+      }
+    };
+  });
+}
 
 export const toHexMemos = (memos: Memo[] | undefined): Memo[] | undefined => {
   if (memos === undefined) return undefined;

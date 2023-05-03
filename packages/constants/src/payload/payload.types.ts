@@ -27,6 +27,7 @@ export interface PaymentRequestPayload {
   // The issuer of the token
   issuer?: string;
   // The memos to attach to the transaction
+  // Each attribute of each memo must be hex encoded.
   memos?: Memo[];
   // The destination tag to attach to the transaction
   destinationTag?: number;
