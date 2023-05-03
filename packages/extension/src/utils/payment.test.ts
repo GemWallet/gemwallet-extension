@@ -1,5 +1,5 @@
 import { DEFAULT_MEMO_TYPE } from '../constants/payload';
-import { buildDefaultMemos, buildDestinationTag } from './payment';
+import { buildDefaultMemos, buildDestinationTag, toXRPLMemos } from './payment';
 
 describe('buildRawMemos', () => {
   test('returns undefined when memoData is undefined or an empty string', () => {
@@ -12,6 +12,17 @@ describe('buildRawMemos', () => {
 
     const expectedResult = [
       {
+        memo: {
+          memoType: Buffer.from(DEFAULT_MEMO_TYPE, 'utf8').toString('hex').toUpperCase(),
+          memoData: Buffer.from(memoData, 'utf8').toString('hex').toUpperCase()
+        }
+      }
+    ];
+
+    expect(buildDefaultMemos(memoData)).toEqual(expectedResult);
+
+    const expectedResultXRPLFormat = [
+      {
         Memo: {
           MemoType: Buffer.from(DEFAULT_MEMO_TYPE, 'utf8').toString('hex').toUpperCase(),
           MemoData: Buffer.from(memoData, 'utf8').toString('hex').toUpperCase()
@@ -19,7 +30,7 @@ describe('buildRawMemos', () => {
       }
     ];
 
-    expect(buildDefaultMemos(memoData)).toEqual(expectedResult);
+    expect(toXRPLMemos(buildDefaultMemos(memoData))).toEqual(expectedResultXRPLFormat);
   });
 });
 

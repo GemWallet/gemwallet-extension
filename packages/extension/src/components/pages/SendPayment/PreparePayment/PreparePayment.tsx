@@ -16,7 +16,8 @@ import {
 import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
 import { isValidAddress } from 'xrpl';
-import { Memo } from 'xrpl/dist/npm/models/common';
+
+import { Memo } from '@gemwallet/constants';
 
 import { HOME_PATH, navigation } from '../../../../constants';
 import { useNetwork, useWallet } from '../../../../contexts';

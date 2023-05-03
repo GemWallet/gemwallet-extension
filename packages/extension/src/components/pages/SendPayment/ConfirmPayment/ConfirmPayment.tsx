@@ -5,12 +5,13 @@ import { Button, Container, IconButton, Paper, Tooltip, Typography } from '@mui/
 import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
 import { xrpToDrops } from 'xrpl';
-import { Memo } from 'xrpl/dist/npm/models/common';
+
+import { Memo } from '@gemwallet/constants';
 
 import { ERROR_RED, HOME_PATH } from '../../../../constants';
 import { useLedger, useWallet } from '../../../../contexts';
 import { TransactionStatus } from '../../../../types';
-import { convertCurrencyString, formatToken } from '../../../../utils';
+import { convertCurrencyString, formatToken, toXRPLMemos } from '../../../../utils';
 import { fromHexMemos } from '../../../../utils/payment';
 import { TileLoader } from '../../../atoms';
 import { AsyncTransaction, PageWithReturn } from '../../../templates';
@@ -56,7 +57,7 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
               }
             : xrpToDrops(amount),
         Destination: address,
-        Memos: memos,
+        Memos: toXRPLMemos(memos),
         DestinationTag: destinationTag
       })
         .then((fees) => {
@@ -173,7 +174,7 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
               textOverflow: 'ellipsis',
               maxWidth: '100%',
             }}
-          >{memo.Memo.MemoData}</Typography>
+          >{memo.memo.memoData}</Typography>
         </Paper>
       )) : null}
       {destinationTag ? (

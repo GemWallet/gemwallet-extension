@@ -4,14 +4,13 @@ import ErrorIcon from '@mui/icons-material/Error';
 import { Button, Container, IconButton, Paper, Tooltip, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
 import { dropsToXrp, isValidAddress, xrpToDrops } from 'xrpl';
-import { Memo } from 'xrpl/dist/npm/models/common';
 
-import { GEM_WALLET, ReceivePaymentHashBackgroundMessage } from '@gemwallet/constants';
+import { GEM_WALLET, Memo, ReceivePaymentHashBackgroundMessage } from '@gemwallet/constants';
 
 import { DEFAULT_RESERVE, ERROR_RED } from '../../../constants';
 import { useLedger, useNetwork, useServer, useWallet } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
-import { formatToken, fromHexMemos } from '../../../utils';
+import { formatToken, fromHexMemos, toXRPLMemos } from '../../../utils';
 import { TileLoader } from '../../atoms';
 import { AsyncTransaction, PageWithSpinner, PageWithTitle } from '../../templates';
 
@@ -97,7 +96,7 @@ export const Transaction: FC = () => {
               }
             : xrpToDrops(params.amount),
         Destination: params.destination,
-        Memos: params.memos ? params.memos : undefined,
+        Memos: params.memos ? toXRPLMemos(params.memos) : undefined,
         DestinationTag: params.destinationTag ?? undefined
       })
         .then((fees) => {
@@ -360,7 +359,7 @@ export const Transaction: FC = () => {
                   maxWidth: '100%',
                 }}
               >
-                {memo.Memo.MemoData}
+                {memo.memo.memoData}
               </Typography>
             </div>
           ))}

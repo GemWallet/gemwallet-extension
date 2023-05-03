@@ -1,5 +1,3 @@
-import { Memo } from 'xrpl/dist/npm/models/common';
-
 import { Network } from '../network/network.constant';
 import { AccountNFToken } from './../xrpl/nft.types';
 
@@ -33,6 +31,14 @@ export interface PaymentRequestPayload {
   destinationTag?: number;
   // Integer amount of XRP, in drops, to be destroyed as a cost for distributing this transaction to the network.
   fee?: string;
+}
+
+export interface Memo {
+  memo: {
+    memoType?: string;
+    memoData?: string;
+    memoFormat?: string;
+  }
 }
 
 export interface TrustlineRequestPayload {

@@ -1,6 +1,6 @@
 import { FC, useCallback, useState } from 'react';
 
-import { Memo } from 'xrpl/dist/npm/models/common';
+import { Memo } from '@gemwallet/constants';
 
 import { ConfirmPayment } from './ConfirmPayment';
 import { PreparePayment } from './PreparePayment';

@@ -1,4 +1,6 @@
-import { Memo } from 'xrpl/dist/npm/models/common';
+import { Memo as XRPLMemo } from 'xrpl/dist/npm/models/common';
+
+import { Memo } from '@gemwallet/constants';
 
 import { DEFAULT_MEMO_TYPE } from '../constants/payload';
 
@@ -15,9 +17,9 @@ export const buildDefaultMemos = (
   if (memoData === undefined || memoData === '') return undefined;
   return toHexMemos([
     {
-      Memo: {
-        MemoType: DEFAULT_MEMO_TYPE,
-        MemoData: memoData,
+      memo: {
+        memoType: DEFAULT_MEMO_TYPE,
+        memoData: memoData,
       }
     }
   ]);
@@ -27,27 +29,40 @@ export const fromHexMemos = (memos: Memo[] | undefined): Memo[] | undefined => {
   if (memos === undefined) return undefined;
   return memos.map((memo) => {
     return {
-      Memo: {
-        ...memo.Memo.MemoType ? {MemoType: Buffer.from(memo.Memo.MemoType, 'hex').toString('utf8')} : {},
-        ...memo.Memo.MemoData ? {MemoData: Buffer.from(memo.Memo.MemoData, 'hex').toString('utf8')} : {},
-        ...memo.Memo.MemoFormat ? {MemoFormat: Buffer.from(memo.Memo.MemoFormat, 'hex').toString('utf8')} : {}
+      memo: {
+        ...memo.memo.memoType ? {memoType: Buffer.from(memo.memo.memoType, 'hex').toString('utf8')} : {},
+        ...memo.memo.memoData ? {memoData: Buffer.from(memo.memo.memoData, 'hex').toString('utf8')} : {},
+        ...memo.memo.memoFormat ? {memoFormat: Buffer.from(memo.memo.memoFormat, 'hex').toString('utf8')} : {}
       }
     };
   });
-}
+};
 
 export const toHexMemos = (memos: Memo[] | undefined): Memo[] | undefined => {
   if (memos === undefined) return undefined;
   return memos.map((memo) => {
     return {
-      Memo: {
-        ...memo.Memo.MemoType ? {MemoType: Buffer.from(memo.Memo.MemoType, 'utf8').toString('hex').toUpperCase()} : {},
-        ...memo.Memo.MemoData ? {MemoData: Buffer.from(memo.Memo.MemoData, 'utf8').toString('hex').toUpperCase()} : {},
-        ...memo.Memo.MemoFormat ? {MemoFormat: Buffer.from(memo.Memo.MemoFormat, 'utf8').toString('hex').toUpperCase()} : {}
+      memo: {
+        ...memo.memo.memoType ? {memoType: Buffer.from(memo.memo.memoType, 'utf8').toString('hex').toUpperCase()} : {},
+        ...memo.memo.memoData ? {memoData: Buffer.from(memo.memo.memoData, 'utf8').toString('hex').toUpperCase()} : {},
+        ...memo.memo.memoFormat ? {memoFormat: Buffer.from(memo.memo.memoFormat, 'utf8').toString('hex').toUpperCase()} : {}
       }
     };
   });
-}
+};
+
+export const toXRPLMemos = (memos: Memo[] | undefined): XRPLMemo[] | undefined => {
+  if (memos === undefined) return undefined;
+  return memos.map((memo) => {
+    return {
+      Memo: {
+        ...memo.memo.memoType ? {MemoType: memo.memo.memoType} : {},
+        ...memo.memo.memoData ? {MemoData: memo.memo.memoData} : {},
+        ...memo.memo.memoFormat ? {MemoFormat: memo.memo.memoFormat} : {}
+      }
+    };
+  });
+};
 
 export const buildDestinationTag = (destinationTag: string | undefined): number | undefined => {
   if (destinationTag === undefined || destinationTag === '') return undefined;
