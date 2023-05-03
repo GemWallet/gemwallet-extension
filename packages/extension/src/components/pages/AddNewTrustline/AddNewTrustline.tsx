@@ -37,7 +37,7 @@ export const AddNewTrustline: FC = () => {
     issuer: null,
     id: 0
   });
-  const [fees, setFees] = useState<string>(DEFAULT_FEES);
+  const [estimatedFees, setEstimatedFees] = useState<string>(DEFAULT_FEES);
   const [errorFees, setErrorFees] = useState('');
   const [difference, setDifference] = useState<number | undefined>();
   const [errorDifference, setErrorDifference] = useState<string>('');
@@ -91,7 +91,7 @@ export const AddNewTrustline: FC = () => {
         }
       })
         .then((fees) => {
-          setFees(fees);
+          setEstimatedFees(fees);
         })
         .catch((e) => {
           Sentry.captureException(e);
@@ -388,10 +388,10 @@ export const AddNewTrustline: FC = () => {
             <Typography variant="caption" style={{ color: ERROR_RED }}>
               {errorFees}
             </Typography>
-          ) : fees === DEFAULT_FEES ? (
+          ) : estimatedFees === DEFAULT_FEES ? (
             <TileLoader secondLineOnly />
           ) : (
-            formatAmount(fees)
+            formatAmount(estimatedFees)
           )}
         </Typography>
       </Paper>
