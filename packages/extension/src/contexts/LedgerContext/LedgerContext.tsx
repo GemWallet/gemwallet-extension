@@ -201,7 +201,7 @@ const LedgerProvider: FC = ({ children }) => {
           const prepared: TrustSet = await client.autofill({
             TransactionType: 'TrustSet',
             Account: wallet.publicAddress,
-            Fee: fee,
+            Fee: fee, // In drops
             LimitAmount: {
               value,
               currency,
