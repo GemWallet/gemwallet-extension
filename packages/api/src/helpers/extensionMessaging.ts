@@ -78,4 +78,4 @@ const serializeMessage = (msg: APIMessages): any => {
   }
 
   return modifiedMsg;
-}
+};
