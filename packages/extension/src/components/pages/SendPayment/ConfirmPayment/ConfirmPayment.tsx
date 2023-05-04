@@ -163,20 +163,31 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
         <Typography variant="body1">Destination:</Typography>
         <Typography variant="body2">{address}</Typography>
       </Paper>
-      {decodedMemos && decodedMemos.length > 0 ? decodedMemos.map((memo) => (
-        <Paper elevation={24} style={{padding: '10px'}}>
-          <Typography variant="body1">Memo:</Typography>
-          <Typography
-            variant="body2"
-            style={{
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              maxWidth: '100%',
-            }}
-          >{memo.memo.memoData}</Typography>
+      {decodedMemos && decodedMemos.length > 0 ? (
+        <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
+          <Typography variant='body1'>Memos:</Typography>
+          {decodedMemos.map((memo, index) => (
+            <div
+              key={index}
+              style={{
+                marginBottom: index === decodedMemos.length - 1 ? 0 : '8px',
+              }}
+            >
+              <Typography
+                variant='body2'
+                style={{
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  maxWidth: '100%',
+                }}
+              >
+                {memo.memo.memoData}
+              </Typography>
+            </div>
+          ))}
         </Paper>
-      )) : null}
+      ) : null}
       {destinationTag ? (
         <Paper elevation={24} style={{ padding: '10px' }}>
           <Typography variant="body1">Destination Tag:</Typography>
