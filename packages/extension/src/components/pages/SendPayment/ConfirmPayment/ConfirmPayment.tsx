@@ -4,14 +4,13 @@ import ErrorIcon from '@mui/icons-material/Error';
 import { Button, Container, IconButton, Paper, Tooltip, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
-import { xrpToDrops } from 'xrpl';
 
 import { Memo } from '@gemwallet/constants';
 
 import { ERROR_RED, HOME_PATH } from '../../../../constants';
 import { useLedger, useWallet } from '../../../../contexts';
 import { TransactionStatus } from '../../../../types';
-import { convertCurrencyString, formatToken, toXRPLMemos } from '../../../../utils';
+import { buildAmount, formatAmount, toXRPLMemos } from '../../../../utils';
 import { fromHexMemos } from '../../../../utils/payment';
 import { TileLoader } from '../../../atoms';
 import { AsyncTransaction, PageWithReturn } from '../../../templates';
@@ -22,7 +21,7 @@ export interface ConfirmPaymentProps {
   payment: {
     address: string;
     token: string;
-    amount: string;
+    value: string;
     memos?: Memo[];
     destinationTag?: number;
   };
@@ -30,13 +29,13 @@ export interface ConfirmPaymentProps {
 }
 
 export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
-  payment: { address, token, amount, memos, destinationTag },
+  payment: { address, token, value, memos, destinationTag },
   onClickBack
 }) => {
   const { getCurrentWallet } = useWallet();
   const { estimateNetworkFees, sendPayment } = useLedger();
   const navigate = useNavigate();
-  const [estimatedFees, setEstimatedFees] = useState<string>('');
+  const [estimatedFees, setEstimatedFees] = useState<string>(DEFAULT_FEES);
   const [errorFees, setErrorFees] = useState<string>('');
   const [errorRequestRejection, setErrorRequestRejection] = useState<string>('');
   const [transaction, setTransaction] = useState<TransactionStatus>();
@@ -48,14 +47,7 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
       estimateNetworkFees({
         TransactionType: 'Payment',
         Account: wallet.publicAddress,
-        Amount:
-          currency && issuer
-            ? {
-                currency,
-                issuer,
-                value: amount
-              }
-            : xrpToDrops(amount),
+        Amount: buildAmount(value, currency, issuer),
         Destination: address,
         Memos: toXRPLMemos(memos),
         DestinationTag: destinationTag
@@ -68,7 +60,7 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
           setErrorFees(e.message);
         });
     }
-  }, [address, amount, destinationTag, estimateNetworkFees, getCurrentWallet, memos, token, wallet]);
+  }, [address, destinationTag, estimateNetworkFees, getCurrentWallet, memos, token, value, wallet]);
 
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);
@@ -78,10 +70,8 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
     const [currency, issuer] = token.split('-');
     setTransaction(TransactionStatus.Pending);
     sendPayment({
-      amount: amount,
+      amount: buildAmount(value, currency, issuer),
       destination: address,
-      currency: currency ?? undefined,
-      issuer: issuer ?? undefined,
       memos: memos,
       destinationTag: destinationTag
     })
@@ -93,7 +83,7 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
         setTransaction(TransactionStatus.Rejected);
         Sentry.captureException(e);
       });
-  }, [address, amount, destinationTag, memos, sendPayment, token]);
+  }, [address, destinationTag, memos, sendPayment, token, value]);
 
   const handleTransactionClick = useCallback(() => {
     navigate(HOME_PATH);
@@ -142,6 +132,7 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
   }
 
   const decodedMemos = fromHexMemos(memos);
+  const [currency, issuer] = token.split('-')
 
   return (
     <PageWithReturn
@@ -197,7 +188,7 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
       <Paper elevation={24} style={{ padding: '10px' }}>
         <Typography variant="body1">Amount:</Typography>
         <Typography variant="h6" component="h1" gutterBottom align="right">
-          {formatToken(Number(amount), convertCurrencyString(token.split('-')[0]) || 'XRP')}
+          {formatAmount(buildAmount(value, currency, issuer))}
         </Typography>
       </Paper>
       <Paper elevation={24} style={{ padding: '10px' }}>
@@ -217,7 +208,7 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
           ) : estimatedFees === DEFAULT_FEES ? (
             <TileLoader secondLineOnly />
           ) : (
-            formatToken(Number(estimatedFees), 'XRP', true)
+            formatAmount(estimatedFees)
           )}
         </Typography>
       </Paper>

@@ -20,15 +20,26 @@
 </html>
 
 <script>
+  function formatAmount(value, currency, issuer) {
+    if (currency && issuer) {
+      return {
+        currency,
+        issuer,
+        value: `${value}`,
+      }
+    }
+
+    // If the currency or issuer is not provided, the amount needs to be in drops
+    return `${value * 1000000}`;
+  }
+
   function handlePayment(currency, issuer) {
     GemWalletApi.isConnected()
       .then((isConnected) => {
         if (isConnected) {
           const payment = {
-            amount: '0.2',
+            amount: formatAmount(0.2, currency, issuer),
             destination: issuer || 'rNvFCZXpDtGeQ3bVas95wGLN6N2stGmA9o',
-            currency,
-            issuer,
             memos: [
               {
                 memo: {

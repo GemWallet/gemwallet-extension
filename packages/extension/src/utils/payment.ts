@@ -1,6 +1,7 @@
+import { xrpToDrops } from 'xrpl';
 import { Memo as XRPLMemo } from 'xrpl/dist/npm/models/common';
 
-import { Memo } from '@gemwallet/constants';
+import { Amount, Memo } from '@gemwallet/constants';
 
 import { DEFAULT_MEMO_TYPE } from '../constants/payload';
 
@@ -67,4 +68,14 @@ export const toXRPLMemos = (memos: Memo[] | undefined): XRPLMemo[] | undefined =
 export const buildDestinationTag = (destinationTag: string | undefined): number | undefined => {
   if (destinationTag === undefined || destinationTag === '') return undefined;
   return Number(destinationTag);
+};
+
+export const buildAmount = (value: string, currency?: string, issuer?: string): Amount | string => {
+  return currency && issuer
+    ? {
+      currency,
+      issuer,
+      value
+    }
+    : xrpToDrops(value);
 };

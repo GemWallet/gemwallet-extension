@@ -3,25 +3,23 @@ import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import ErrorIcon from '@mui/icons-material/Error';
 import { Button, Container, IconButton, Paper, Tooltip, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
-import { dropsToXrp, isValidAddress, xrpToDrops } from 'xrpl';
+import { dropsToXrp, isValidAddress } from 'xrpl';
 
-import { GEM_WALLET, Memo, ReceivePaymentHashBackgroundMessage } from '@gemwallet/constants';
+import { Amount, GEM_WALLET, Memo, ReceivePaymentHashBackgroundMessage } from '@gemwallet/constants';
 
 import { DEFAULT_RESERVE, ERROR_RED } from '../../../constants';
 import { useLedger, useNetwork, useServer, useWallet } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
-import { formatToken, fromHexMemos, toXRPLMemos } from '../../../utils';
+import { formatAmount, fromHexMemos, toXRPLMemos } from '../../../utils';
 import { TileLoader } from '../../atoms';
 import { AsyncTransaction, PageWithSpinner, PageWithTitle } from '../../templates';
 
 const DEFAULT_FEES = 'Loading ...';
 
 interface Params {
-  amount: string | null;
+  amount: Amount | null;
   destination: string | null;
   id: number;
-  currency: string | null;
-  issuer: string | null;
   memos: Memo[] | null;
   destinationTag: number | null;
   fee: string | null;
@@ -32,8 +30,6 @@ export const Transaction: FC = () => {
     amount: null,
     destination: null,
     id: 0,
-    currency: null,
-    issuer: null,
     memos: null,
     destinationTag: null,
     fee: null
@@ -54,11 +50,9 @@ export const Transaction: FC = () => {
   useEffect(() => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
-    const amount = urlParams.get('amount');
+    const amount = parseAmountFromString(urlParams.get('amount'));
     const destination = urlParams.get('destination');
     const id = Number(urlParams.get('id')) || 0;
-    const currency = urlParams.get('currency');
-    const issuer = urlParams.get('issuer');
     const memosString = urlParams.get('memos');
     const memos = memosString ? JSON.parse(memosString) as Memo[] : null;
     const destinationTag = urlParams.get('destinationTag') ? Number(urlParams.get('destinationTag')) : null;
@@ -72,8 +66,6 @@ export const Transaction: FC = () => {
       amount,
       destination,
       id,
-      currency,
-      issuer,
       memos,
       destinationTag,
       fee
@@ -86,14 +78,7 @@ export const Transaction: FC = () => {
       estimateNetworkFees({
         TransactionType: 'Payment',
         Account: currentWallet.publicAddress,
-        Amount:
-          params.currency && params.issuer
-            ? {
-                currency: params.currency,
-                issuer: params.issuer,
-                value: params.amount
-              }
-            : xrpToDrops(params.amount),
+        Amount: params.amount,
         Destination: params.destination,
         Memos: params.memos ? toXRPLMemos(params.memos) : undefined,
         DestinationTag: params.destinationTag ?? undefined
@@ -111,9 +96,7 @@ export const Transaction: FC = () => {
     estimateNetworkFees,
     getCurrentWallet,
     params.amount,
-    params.currency,
     params.destination,
-    params.issuer,
     params.memos,
     params.destinationTag,
     params.fee
@@ -122,13 +105,14 @@ export const Transaction: FC = () => {
   useEffect(() => {
     const currentWallet = getCurrentWallet();
     if (currentWallet && params.amount) {
+      const amount = typeof params.amount === 'string' ? dropsToXrp(params.amount) : params.amount.value;
       client
         ?.getXrpBalance(currentWallet!.publicAddress)
         .then((currentBalance) => {
           const difference =
             Number(currentBalance) -
             Number(serverInfo?.info.validated_ledger?.reserve_base_xrp || DEFAULT_RESERVE) -
-            Number(params.amount);
+            Number(amount);
           setDifference(difference);
         })
         .catch((e) => {
@@ -174,10 +158,8 @@ export const Transaction: FC = () => {
     // Amount and Destination will be present because if not,
     // we won't be able to go to the confirm transaction state
     sendPayment({
-      amount: params.amount as string,
+      amount: params.amount as Amount,
       destination: params.destination as string,
-      currency: params.currency ?? undefined,
-      issuer: params.issuer ?? undefined,
       memos: params.memos ?? undefined,
       destinationTag: params.destinationTag ?? undefined,
       fee: params.fee ?? undefined
@@ -196,9 +178,7 @@ export const Transaction: FC = () => {
   }, [
     createMessage,
     params.amount,
-    params.currency,
     params.destination,
-    params.issuer,
     params.memos,
     params.destinationTag,
     params.fee,
@@ -218,6 +198,26 @@ export const Transaction: FC = () => {
       } catch (e) {}
     }
     return null;
+  }
+
+  const parseAmountFromString = (amountString: string | null) => {
+    if (!amountString) {
+      return null;
+    }
+
+    try {
+      const parsedAmount = JSON.parse(amountString);
+
+      if (typeof parsedAmount === 'object' && parsedAmount !== null && 'value' in parsedAmount && 'issuer' in parsedAmount && 'currency' in parsedAmount) {
+        return parsedAmount as { value: string; issuer: string; currency: string };
+      }
+
+      if (typeof parsedAmount === 'number') {
+        return parsedAmount.toString();
+      }
+    } catch (error) {}
+
+    return amountString;
   }
 
   if (isParamsMissing) {
@@ -322,7 +322,7 @@ export const Transaction: FC = () => {
     );
   }
 
-  const { amount, destination, currency, memos, destinationTag, fee } = params;
+  const { amount, destination, memos, destinationTag, fee } = params;
   const decodedMemos = fromHexMemos(memos || []);
 
   return (
@@ -373,7 +373,7 @@ export const Transaction: FC = () => {
       <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
         <Typography variant="body1">Amount:</Typography>
         <Typography variant="h4" component="h1" gutterBottom align="right">
-          {formatToken(Number(amount), currency || 'XRP')}
+          {amount ? formatAmount(amount) : 'Not found'}
         </Typography>
       </Paper>
       <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
@@ -393,7 +393,7 @@ export const Transaction: FC = () => {
           ) : estimatedFees === DEFAULT_FEES ? (
             <TileLoader secondLineOnly />
           ) : (
-            fee ? formatToken(Number(fee), 'XRP (manual)', true) : formatToken(Number(estimatedFees), 'XRP', true)
+            fee ? formatAmount(fee) : formatAmount(estimatedFees)
           )}
         </Typography>
       </Paper>

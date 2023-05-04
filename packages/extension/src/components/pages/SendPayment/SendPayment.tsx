@@ -9,7 +9,7 @@ export const SendPayment: FC = () => {
   const [payment, setPayment] = useState<{
     address: string;
     token: string;
-    amount: string;
+    value: string;
     memos?: Memo[];
     destinationTag?: number;
   } | null>(null);

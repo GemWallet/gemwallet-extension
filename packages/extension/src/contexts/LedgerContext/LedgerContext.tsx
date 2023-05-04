@@ -2,7 +2,7 @@ import { useContext, createContext, FC, useCallback } from 'react';
 
 import * as Sentry from '@sentry/react';
 import { sign } from 'ripple-keypairs';
-import { xrpToDrops, TransactionMetadata, Payment, Transaction, TrustSet } from 'xrpl';
+import { TransactionMetadata, Payment, Transaction, TrustSet } from 'xrpl';
 
 import {
   AccountNFToken,
@@ -117,7 +117,7 @@ const LedgerProvider: FC = ({ children }) => {
   }, [client, getCurrentWallet]);
 
   const sendPayment = useCallback(
-    async ({ amount, destination, currency, issuer, memos, destinationTag, fee }: PaymentRequestPayload) => {
+    async ({ amount, destination, memos, destinationTag, fee }: PaymentRequestPayload) => {
       const wallet = getCurrentWallet();
       if (!client) {
         throw new Error('You need to be connected to a ledger to make a transaction');
@@ -129,14 +129,7 @@ const LedgerProvider: FC = ({ children }) => {
           const prepared: Payment = await client.autofill({
             TransactionType: 'Payment',
             Account: wallet.publicAddress,
-            Amount:
-              currency && issuer
-                ? {
-                    currency,
-                    issuer,
-                    value: amount
-                  }
-                : xrpToDrops(amount),
+            Amount: amount,
             Destination: destination,
             // Only add the Memos and DestinationTag fields if they are are defined, otherwise it would fail
             ...(memos && { Memos: toXRPLMemos(memos) }), // Each field of each memo is hex encoded

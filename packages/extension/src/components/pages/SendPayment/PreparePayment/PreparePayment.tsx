@@ -35,13 +35,13 @@ export interface PreparePaymentProps {
   onSendPaymentClick: ({
     address,
     token,
-    amount,
+    value,
     memos,
     destinationTag
   }: {
     address: string;
     token: string;
-    amount: string;
+    value: string;
     memos?: Memo[];
     destinationTag?: string;
   }) => void;
@@ -238,7 +238,7 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
         address,
         token:
           tokenRef.current?.value === 'XRP-undefined' ? 'XRP' : tokenRef.current?.value ?? 'XRP',
-        amount,
+        value: amount,
         memos,
         destinationTag
       });

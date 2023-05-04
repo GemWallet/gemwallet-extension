@@ -16,22 +16,32 @@ export interface WebsiteRequestPayload {
 }
 
 export interface PaymentRequestPayload {
-  // 	The amount of currency to deliver (in drops)
-  amount: string;
+  // The amount to deliver, in one of the following formats:
+  // - A string representing the number of XRP to deliver, in drops.
+  // - An object where 'value' is a string representing the number of the token to deliver.
+  amount: Amount;
   // The unique address of the account receiving the payment
   destination: string;
-  // The token that can be used
-  currency?: string;
-  // The issuer of the token
-  issuer?: string;
   // The memos to attach to the transaction
-  // Each attribute of each memo must be hex encoded.
+  // Each attribute of each memo must be hex encoded
   memos?: Memo[];
   // The destination tag to attach to the transaction
   destinationTag?: number;
-  // Integer amount of XRP, in drops, to be destroyed as a cost for distributing this transaction to the network.
+  // Integer amount of XRP, in drops, to be destroyed as a cost for distributing this transaction to the network
   fee?: string;
 }
+
+/**
+ * Ref: https://xrpl.org/basic-data-types.html#specifying-currency-amounts
+ */
+export type Amount = {
+  // The amount to deliver
+  value: string;
+  // The issuer of the token
+  issuer: string;
+  // The token that can be used
+  currency: string;
+} | string;
 
 export interface Memo {
   memo: {
