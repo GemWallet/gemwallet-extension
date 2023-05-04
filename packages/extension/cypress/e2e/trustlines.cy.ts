@@ -92,7 +92,7 @@ describe('Trustline', () => {
     cy.contains('Issuer:').next().should('have.text', DESTINATION_ADDRESS);
     cy.contains('Currency:').next().should('have.text', CURRENCY);
     cy.contains('Limit:').next().should('have.text', `10,000,000 ${CURRENCY}`);
-    cy.contains('No Ripple:').next().should('have.text', NO_RIPPLE);
+    cy.contains('Prevent Rippling:').next().should('have.text', NO_RIPPLE);
 
     // Confirm the trustline
     cy.contains('button', 'Reject').click();
@@ -168,7 +168,7 @@ describe('Trustline', () => {
 
     // Check values in the confirmation page
     cy.contains('Limit:').next().should('have.text', `${newLimit} ${CURRENCY}`);
-    cy.contains('No Ripple:').next().should('have.text', 'No');
+    cy.contains('Prevent Rippling:').next().should('have.text', 'No');
 
     // Confirm
     cy.contains('button', 'Confirm').click();

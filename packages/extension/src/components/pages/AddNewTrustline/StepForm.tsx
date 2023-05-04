@@ -168,7 +168,7 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
                 color="primary"
               />
             }
-            label="No Ripple"
+            label="Prevent Rippling"
             style={{
               marginTop: '5px',
               color: '#bababa'
@@ -185,7 +185,7 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
               marginBottom: '10px'
             }}
           >
-            We recommend to keep No Ripple enabled.
+            Recommended: Enable Prevent Rippling.
           </Typography>
         ) : null}
         <Button
