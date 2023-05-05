@@ -19,7 +19,7 @@ import { useWallet } from '../WalletContext';
 export interface LedgerContextType {
   // Return transaction hash in case of success
   sendPayment: (payload: PaymentRequestPayload) => Promise<string>;
-  addTrustline: (payload: TrustlineRequestPayload) => Promise<string>;
+  setTrustline: (payload: TrustlineRequestPayload) => Promise<string>;
   signMessage: (message: string) => string | undefined;
   estimateNetworkFees: (payload: Transaction) => Promise<string>;
   getNFTs: (payload?: NFTRequestPayload) => Promise<AccountNFToken[]>;
@@ -28,7 +28,7 @@ export interface LedgerContextType {
 
 const LedgerContext = createContext<LedgerContextType>({
   sendPayment: () => new Promise(() => {}),
-  addTrustline: () => new Promise(() => {}),
+  setTrustline: () => new Promise(() => {}),
   signMessage: () => undefined,
   estimateNetworkFees: () =>
     new Promise((resolve) => {
@@ -179,7 +179,7 @@ const LedgerProvider: FC = ({ children }) => {
     [client, getCurrentWallet]
   );
 
-  const addTrustline = useCallback(
+  const setTrustline = useCallback(
     async ({ currency, issuer, fee, value, memos, flags }: TrustlineRequestPayload) => {
       const wallet = getCurrentWallet();
       if (!client) {
@@ -258,7 +258,7 @@ const LedgerProvider: FC = ({ children }) => {
 
   const value: LedgerContextType = {
     sendPayment,
-    addTrustline,
+    setTrustline,
     signMessage,
     estimateNetworkFees,
     getNFTs,

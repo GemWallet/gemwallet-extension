@@ -58,7 +58,7 @@ export const AddNewTrustline: FC = () => {
   const [errorValue, setErrorValue] = useState<string>('');
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
 
-  const { estimateNetworkFees, addTrustline } = useLedger();
+  const { estimateNetworkFees, setTrustline } = useLedger();
   const { client, network } = useNetwork();
   const { getCurrentWallet } = useWallet();
   const { serverInfo } = useServer();
@@ -188,7 +188,7 @@ export const AddNewTrustline: FC = () => {
     if (params.value === null || params.currency === null || params.issuer === null) {
       setIsParamsMissing(true);
     } else {
-      addTrustline({
+      setTrustline({
         currency: params.currency,
         issuer: params.issuer,
         fee: params.fee || undefined,
@@ -208,7 +208,7 @@ export const AddNewTrustline: FC = () => {
           chrome.runtime.sendMessage<ReceiveTrustlineHashBackgroundMessage>(message);
         });
     }
-  }, [addTrustline, createMessage, params.currency, params.fee, params.flags, params.issuer, params.memos, params.value]);
+  }, [setTrustline, createMessage, params.currency, params.fee, params.flags, params.issuer, params.memos, params.value]);
 
   if (isParamsMissing) {
     return (

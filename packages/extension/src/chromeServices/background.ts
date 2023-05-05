@@ -165,7 +165,7 @@ chrome.runtime.onMessage.addListener(
           hash: undefined
         }
       });
-    } else if (type === 'REQUEST_ADD_TRUSTLINE') {
+    } else if (type === 'REQUEST_SET_TRUSTLINE') {
       focusOrCreatePopupWindow({
         payload: message.payload,
         sender,

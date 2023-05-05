@@ -7,7 +7,7 @@ import {
 
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
 
-export const addTrustline = async (payment: TrustlineRequestPayload) => {
+export const setTrustline = async (payment: TrustlineRequestPayload) => {
   /* string: hash of the transaction
    * null: user refused the payment
    * undefined: something went wrong
@@ -16,7 +16,7 @@ export const addTrustline = async (payment: TrustlineRequestPayload) => {
   try {
     const message: RequestTrustlineMessage = {
       app: GEM_WALLET,
-      type: 'REQUEST_ADD_TRUSTLINE',
+      type: 'REQUEST_SET_TRUSTLINE',
       payload: payment
     };
     const { hash }: PaymentResponse = await sendMessageToContentScript(message);
@@ -24,3 +24,10 @@ export const addTrustline = async (payment: TrustlineRequestPayload) => {
   } catch (e) {}
   return response;
 };
+
+/**
+ * @deprecated Use setTrustline instead
+ */
+export const addTrustline = async (payment: TrustlineRequestPayload) => {
+  return setTrustline(payment);
+}

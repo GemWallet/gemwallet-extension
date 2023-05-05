@@ -80,10 +80,10 @@ export interface PaymentEventListener extends MessageEvent<MessageEventData> {
   };
 }
 
-export interface AddTrustlineEventListener extends MessageEvent<MessageEventData> {
+export interface SetTrustlineEventListener extends MessageEvent<MessageEventData> {
   data: {
     app: typeof GEM_WALLET;
-    type: 'REQUEST_ADD_TRUSTLINE';
+    type: 'REQUEST_SET_TRUSTLINE';
     source: 'GEM_WALLET_MSG_REQUEST';
     messageId: number;
     payload: TrustlineRequestPayload;
@@ -96,5 +96,5 @@ export type EventListener =
   | AddressEventListener
   | PublicKeyEventListener
   | PaymentEventListener
-  | AddTrustlineEventListener
+  | SetTrustlineEventListener
   | SignMessageListener;
