@@ -2,7 +2,8 @@ import {
   GEM_WALLET,
   PaymentResponse,
   TrustlineRequestPayload,
-  RequestTrustlineMessage
+  RequestTrustlineMessage,
+  TrustlineRequestPayloadLegacy
 } from '@gemwallet/constants';
 
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
@@ -28,6 +29,21 @@ export const setTrustline = async (payment: TrustlineRequestPayload) => {
 /**
  * @deprecated Use setTrustline instead
  */
-export const addTrustline = async (payment: TrustlineRequestPayload) => {
-  return setTrustline(payment);
+export const addTrustline = async (payment: TrustlineRequestPayloadLegacy) => {
+  return setTrustline(
+    toTrustlineRequestPayload(payment)
+  )
+}
+
+const toTrustlineRequestPayload = (payload: TrustlineRequestPayloadLegacy): TrustlineRequestPayload => {
+  return {
+    limitAmount: {
+      value: payload.value,
+      issuer: payload.issuer,
+      currency: payload.currency
+    },
+    fee: payload.fee,
+    memos: payload.memos,
+    flags: payload.flags
+  }
 }

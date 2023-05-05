@@ -180,7 +180,7 @@ const LedgerProvider: FC = ({ children }) => {
   );
 
   const setTrustline = useCallback(
-    async ({ currency, issuer, fee, value, memos, flags }: TrustlineRequestPayload) => {
+    async ({ limitAmount, fee, memos, flags }: TrustlineRequestPayload) => {
       const wallet = getCurrentWallet();
       if (!client) {
         throw new Error('You need to be connected to a ledger to add a trustline');
@@ -193,11 +193,7 @@ const LedgerProvider: FC = ({ children }) => {
             TransactionType: 'TrustSet',
             Account: wallet.publicAddress,
             Fee: fee, // In drops
-            LimitAmount: {
-              value,
-              currency,
-              issuer
-            },
+            LimitAmount: limitAmount,
             ...(memos && { Memos: toXRPLMemos(memos) }), // Each field of each memo is hex encoded
             ...(flags && { Flags: flags })
           });

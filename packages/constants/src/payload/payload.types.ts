@@ -1,5 +1,5 @@
 import { Network } from '../network/network.constant';
-import { Amount, Memo, PaymentFlags, TrustSetFlags } from '../xrpl/basic.types';
+import { Amount, LimitAmount, Memo, PaymentFlags, TrustSetFlags } from '../xrpl/basic.types';
 import { AccountNFToken } from './../xrpl/nft.types';
 
 /*
@@ -35,6 +35,17 @@ export interface PaymentRequestPayload {
 }
 
 export interface TrustlineRequestPayload {
+  limitAmount: LimitAmount;
+  // Integer amount of XRP, in drops, to be destroyed as a cost for distributing this transaction to the network.
+  // Some transaction types have different minimum requirements.
+  fee?: string;
+  // 	The maximum amount of currency that can be exchanged to the trustline
+  memos?: Memo[];
+  // Flags to set on the transaction
+  flags?: TrustSetFlags;
+}
+
+export interface TrustlineRequestPayloadLegacy {
   // The token to be used
   currency: string;
   // The address of the account owing the token

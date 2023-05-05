@@ -20,8 +20,36 @@ export const parseAmount = (amountString: string | null) => {
   return amountString;
 };
 
+export const parseLimitAmount = (amountString: string | null) => {
+  if (!amountString) {
+    return null;
+  }
+
+  try {
+    const parsedAmount = JSON.parse(amountString);
+
+    if (typeof parsedAmount === 'object' && parsedAmount !== null && 'value' in parsedAmount && 'issuer' in parsedAmount && 'currency' in parsedAmount) {
+      return parsedAmount as { value: string; issuer: string; currency: string };
+    }
+  } catch (error) {}
+
+  return null;
+}
+
 export const parseMemos = (memosString: string | null) => {
-  return memosString ? JSON.parse(memosString) as Memo[] : null;
+  if (!memosString) {
+    return null;
+  }
+
+  try {
+    const parsedMemos = JSON.parse(memosString);
+
+    if (Array.isArray(parsedMemos)) {
+      return parsedMemos as Memo[];
+    }
+  } catch (error) {}
+
+  return null;
 };
 
 export const parsePaymentFlags = (flagsString: string | null) => {
