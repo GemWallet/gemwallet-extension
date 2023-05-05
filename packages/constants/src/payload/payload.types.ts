@@ -1,7 +1,7 @@
-import { PaymentFlagsInterface } from 'xrpl';
 import { Amount } from 'xrpl/dist/npm/models/common';
 
 import { Network } from '../network/network.constant';
+import { Memo, PaymentFlags, TrustSetFlags } from '../xrpl/basic.types';
 import { AccountNFToken } from './../xrpl/nft.types';
 
 /*
@@ -36,16 +36,6 @@ export interface PaymentRequestPayload {
   flags?: PaymentFlags;
 }
 
-export interface Memo {
-  memo: {
-    memoType?: string;
-    memoData?: string;
-    memoFormat?: string;
-  };
-}
-
-export type PaymentFlags = PaymentFlagsInterface | number;
-
 export interface TrustlineRequestPayload {
   // The token to be used
   currency: string;
@@ -56,6 +46,11 @@ export interface TrustlineRequestPayload {
   fee?: string;
   // 	The maximum amount of currency that can be exchanged to the trustline
   value: string;
+  // The memos to attach to the transaction
+  // Each attribute of each memo must be hex encoded
+  memos?: Memo[];
+  // Flags to set on the transaction
+  flags?: TrustSetFlags;
 }
 
 export interface NFTRequestPayload {

@@ -5,6 +5,7 @@ export * from './format';
 export * from './link';
 export * from './network';
 export * from './numbersToSeed';
+export * from './parseFromString';
 export * from './payment';
 export * from './storage';
 export * from './truncateAddress';
