@@ -1,5 +1,5 @@
 import { dropsToXrp } from 'xrpl';
-import { Amount } from 'xrpl/dist/npm/models/common';
+import { Amount, IssuedCurrencyAmount } from 'xrpl/dist/npm/models/common';
 
 import { PaymentFlags, TrustSetFlags } from '@gemwallet/constants';
 
@@ -14,7 +14,7 @@ const formatValue = (value: number) => {
     .replace(/\s?XRP\s?/, '');
 };
 
-export const formatAmount = (amount: Amount) => {
+export const formatAmount = (amount: Amount | IssuedCurrencyAmount) => {
   let value: number;
   let currency: string;
 

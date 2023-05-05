@@ -5,6 +5,7 @@ import WarningIcon from '@mui/icons-material/Warning';
 import { Button, Container, IconButton, Paper, Tooltip, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
 import { isValidAddress } from 'xrpl';
+import { IssuedCurrencyAmount } from 'xrpl/dist/npm/models/common';
 
 import {
   GEM_WALLET,
@@ -22,6 +23,7 @@ import {
   formatFlags,
   formatToken,
   fromHexMemos,
+  parseLimitAmount,
   parseMemos,
   parseTrustSetFlags,
   toXRPLMemos
@@ -34,10 +36,8 @@ const DEFAULT_FEES = 'Loading ...';
 type STEP = 'WARNING' | 'TRANSACTION';
 
 interface Params {
+  limitAmount: IssuedCurrencyAmount | null;
   fee: string | null;
-  value: string | null;
-  currency: string | null;
-  issuer: string | null;
   id: number;
   memos: Memo[] | null;
   flags: TrustSetFlags | null;
@@ -47,10 +47,8 @@ export const AddNewTrustline: FC = () => {
   const [step, setStep] = useState<STEP>('WARNING');
   const [isParamsMissing, setIsParamsMissing] = useState(false);
   const [params, setParams] = useState<Params>({
+    limitAmount: null,
     fee: null,
-    value: null,
-    currency: null,
-    issuer: null,
     id: 0,
     memos: null,
     flags: null
@@ -71,27 +69,23 @@ export const AddNewTrustline: FC = () => {
   useEffect(() => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
+    const limitAmount = parseLimitAmount(urlParams.get('limitAmount'));
     const fee = checkFee(urlParams.get('fee'));
-    const value = urlParams.get('value');
-    const currency = urlParams.get('currency');
-    const issuer = urlParams.get('issuer');
     const id = Number(urlParams.get('id')) || 0;
     const memos = parseMemos(urlParams.get('memos'));
     const flags = parseTrustSetFlags(urlParams.get('flags'));
 
-    if (value === null || currency === null || issuer === null) {
+    if (limitAmount === null) {
       setIsParamsMissing(true);
     }
 
-    if (Number.isNaN(Number(value))) {
+    if (Number.isNaN(Number(limitAmount?.value))) {
       setErrorValue('The value must be a number, the value provided was not a number.');
     }
 
     setParams({
+      limitAmount,
       fee,
-      value,
-      currency,
-      issuer,
       id,
       memos,
       flags
@@ -101,16 +95,12 @@ export const AddNewTrustline: FC = () => {
   useEffect(() => {
     const wallet = getCurrentWallet();
 
-    if (wallet && params.value && params.currency && params.issuer) {
+    if (wallet && params.limitAmount) {
       estimateNetworkFees({
         TransactionType: 'TrustSet',
         Account: wallet.publicAddress,
         Fee: params.fee || undefined,
-        LimitAmount: {
-          value: params.value,
-          currency: params.currency,
-          issuer: params.issuer
-        },
+        LimitAmount: params.limitAmount,
         Memos: params.memos ? toXRPLMemos(params.memos) : undefined,
         Flags: params.flags ?? undefined
       })
@@ -125,17 +115,15 @@ export const AddNewTrustline: FC = () => {
   }, [
     estimateNetworkFees,
     getCurrentWallet,
-    params.currency,
+    params.limitAmount,
     params.fee,
-    params.issuer,
-    params.value,
     params.memos,
     params.flags
   ]);
 
   useEffect(() => {
     const currentWallet = getCurrentWallet();
-    if (currentWallet && params.value) {
+    if (currentWallet && params.limitAmount) {
       client
         ?.getXrpBalance(currentWallet!.publicAddress)
         .then((currentBalance) => {
@@ -154,15 +142,15 @@ export const AddNewTrustline: FC = () => {
     getCurrentWallet,
     serverInfo?.info.validated_ledger?.reserve_base_xrp,
     params.fee,
-    params.value
+    params.limitAmount
   ]);
 
   const isValidIssuer = useMemo(() => {
-    if (params.issuer && isValidAddress(params.issuer)) {
+    if (params.limitAmount && isValidAddress(params.limitAmount?.issuer)) {
       return true;
     }
     return false;
-  }, [params.issuer]);
+  }, [params.limitAmount]);
 
   const hasEnoughFunds = useMemo(() => Number(difference) > 0, [difference]);
 
@@ -190,14 +178,12 @@ export const AddNewTrustline: FC = () => {
     setTransaction(TransactionStatus.Pending);
     // Value, currency and issuer will be present because if not,
     // we won't be able to go to the confirm transaction state
-    if (params.value === null || params.currency === null || params.issuer === null) {
+    if (params.limitAmount === null) {
       setIsParamsMissing(true);
     } else {
       setTrustline({
-        currency: params.currency,
-        issuer: params.issuer,
+        limitAmount: params.limitAmount,
         fee: params.fee || undefined,
-        value: params.value,
         memos: params.memos ?? undefined,
         flags: params.flags ?? undefined
       })
@@ -213,16 +199,7 @@ export const AddNewTrustline: FC = () => {
           chrome.runtime.sendMessage<ReceiveTrustlineHashBackgroundMessage>(message);
         });
     }
-  }, [
-    setTrustline,
-    createMessage,
-    params.currency,
-    params.fee,
-    params.flags,
-    params.issuer,
-    params.memos,
-    params.value
-  ]);
+  }, [setTrustline, createMessage, params.limitAmount, params.fee, params.flags, params.memos]);
 
   if (isParamsMissing) {
     return (
@@ -376,7 +353,7 @@ export const AddNewTrustline: FC = () => {
     );
   }
 
-  const { issuer, currency, value, fee, memos, flags } = params;
+  const { limitAmount, fee, flags, memos } = params;
   const decodedMemos = fromHexMemos(memos || []);
 
   return (
@@ -395,14 +372,14 @@ export const AddNewTrustline: FC = () => {
       ) : null}
       <Paper elevation={24} style={{ padding: '10px' }}>
         <Typography variant="body1">Issuer:</Typography>
-        <Typography variant="body2">{issuer}</Typography>
+        <Typography variant="body2">{limitAmount?.issuer}</Typography>
       </Paper>
       <Paper
         elevation={24}
         style={{ padding: '10px', display: 'flex', justifyContent: 'space-between' }}
       >
         <Typography variant="body1">Currency:</Typography>
-        <Typography variant="body1">{currency}</Typography>
+        <Typography variant="body1">{limitAmount?.currency}</Typography>
       </Paper>
 
       <Paper
@@ -410,7 +387,9 @@ export const AddNewTrustline: FC = () => {
         style={{ padding: '10px', display: 'flex', justifyContent: 'space-between' }}
       >
         <Typography variant="body1">Limit:</Typography>
-        <Typography variant="body1">{formatToken(Number(value), currency || undefined)}</Typography>
+        <Typography variant="body1">
+          {limitAmount ? formatAmount(limitAmount) : undefined}
+        </Typography>
       </Paper>
       {decodedMemos && decodedMemos.length > 0 ? (
         <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>

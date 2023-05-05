@@ -6,6 +6,11 @@ describe('Trustline', () => {
   const CURRENCY = 'USD';
   const DESTINATION_ADDRESS = 'rwtDvu9QDfCskWuyE2TSEt3s56RbiWUKJN';
   const VALUE = '10000000';
+  const AMOUNT = JSON.stringify({
+    currency: CURRENCY,
+    value: VALUE,
+    issuer: DESTINATION_ADDRESS
+  });
 
   beforeEach(() => {
     // Mock the localStorage with a wallet already loaded
@@ -16,17 +21,14 @@ describe('Trustline', () => {
       );
       win.localStorage.setItem('network', 'Testnet');
     });
-    cy.visit(
-      `http://localhost:3000?currency=${CURRENCY}&issuer=${DESTINATION_ADDRESS}&value=${VALUE}&id=93376196&transaction=trustSet`,
-      {
-        onBeforeLoad(win) {
-          (win as any).chrome = (win as any).chrome || {};
-          (win as any).chrome.runtime = {
-            sendMessage(message, cb) {}
-          };
-        }
+    cy.visit(`http://localhost:3000?limitAmount=${AMOUNT}&id=93376196&transaction=trustSet`, {
+      onBeforeLoad(win) {
+        (win as any).chrome = (win as any).chrome || {};
+        (win as any).chrome.runtime = {
+          sendMessage(message, cb) {}
+        };
       }
-    );
+    });
 
     // Login
     cy.get('input[name="password"]').type(PASSWORD);
