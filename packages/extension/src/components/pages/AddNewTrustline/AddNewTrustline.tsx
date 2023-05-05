@@ -370,13 +370,13 @@ export const AddNewTrustline: FC = () => {
           </Typography>
         </div>
       ) : null}
-      <Paper elevation={24} style={{ padding: '10px' }}>
+      <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
         <Typography variant="body1">Issuer:</Typography>
         <Typography variant="body2">{limitAmount?.issuer}</Typography>
       </Paper>
       <Paper
         elevation={24}
-        style={{ padding: '10px', display: 'flex', justifyContent: 'space-between' }}
+        style={{ padding: '10px', display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}
       >
         <Typography variant="body1">Currency:</Typography>
         <Typography variant="body1">{limitAmount?.currency}</Typography>
@@ -384,7 +384,7 @@ export const AddNewTrustline: FC = () => {
 
       <Paper
         elevation={24}
-        style={{ padding: '10px', display: 'flex', justifyContent: 'space-between' }}
+        style={{ padding: '10px', display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}
       >
         <Typography variant="body1">Limit:</Typography>
         <Typography variant="body1">{limitAmount ? formatAmount(limitAmount) : undefined}</Typography>
