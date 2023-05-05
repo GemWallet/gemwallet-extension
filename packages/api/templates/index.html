@@ -50,6 +50,11 @@
             ],
             destinationTag: 12,
             fee: '199',
+            flags: {
+              tfNoDirectRipple: false,
+              tfPartialPayment: false,
+              tfLimitQuality: false
+            },
           };
           GemWalletApi.sendPayment(payment)
             .then((trHash) => {

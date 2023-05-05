@@ -1,3 +1,5 @@
+import { PaymentFlagsInterface } from 'xrpl';
+
 import { Network } from '../network/network.constant';
 import { AccountNFToken } from './../xrpl/nft.types';
 
@@ -29,6 +31,8 @@ export interface PaymentRequestPayload {
   destinationTag?: number;
   // Integer amount of XRP, in drops, to be destroyed as a cost for distributing this transaction to the network
   fee?: string;
+  // Flags to set on the transaction
+  flags?: PaymentFlags;
 }
 
 /**
@@ -50,6 +54,8 @@ export interface Memo {
     memoFormat?: string;
   }
 }
+
+export type PaymentFlags = PaymentFlagsInterface | number;
 
 export interface TrustlineRequestPayload {
   // The token to be used

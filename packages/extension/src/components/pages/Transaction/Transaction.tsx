@@ -5,7 +5,7 @@ import { Button, Container, IconButton, Paper, Tooltip, Typography } from '@mui/
 import * as Sentry from '@sentry/react';
 import { dropsToXrp, isValidAddress } from 'xrpl';
 
-import { Amount, GEM_WALLET, Memo, ReceivePaymentHashBackgroundMessage } from '@gemwallet/constants';
+import { Amount, GEM_WALLET, Memo, PaymentFlags, ReceivePaymentHashBackgroundMessage } from '@gemwallet/constants';
 
 import { DEFAULT_RESERVE, ERROR_RED } from '../../../constants';
 import { useLedger, useNetwork, useServer, useWallet } from '../../../contexts';
@@ -23,6 +23,7 @@ interface Params {
   memos: Memo[] | null;
   destinationTag: number | null;
   fee: string | null;
+  flags: PaymentFlags | null;
 }
 
 export const Transaction: FC = () => {
@@ -32,7 +33,8 @@ export const Transaction: FC = () => {
     id: 0,
     memos: null,
     destinationTag: null,
-    fee: null
+    fee: null,
+    flags: null
   });
   const [estimatedFees, setEstimatedFees] = useState<string>(DEFAULT_FEES);
   const [errorFees, setErrorFees] = useState('');
@@ -57,6 +59,7 @@ export const Transaction: FC = () => {
     const memos = memosString ? JSON.parse(memosString) as Memo[] : null;
     const destinationTag = urlParams.get('destinationTag') ? Number(urlParams.get('destinationTag')) : null;
     const fee = checkFee(urlParams.get('fee'));
+    const flags = parseFlagsFromString(urlParams.get('flags'));
 
     if (amount === null || destination === null) {
       setIsParamsMissing(true);
@@ -68,7 +71,8 @@ export const Transaction: FC = () => {
       id,
       memos,
       destinationTag,
-      fee
+      fee,
+      flags
     });
   }, []);
 
@@ -81,7 +85,8 @@ export const Transaction: FC = () => {
         Amount: params.amount,
         Destination: params.destination,
         Memos: params.memos ? toXRPLMemos(params.memos) : undefined,
-        DestinationTag: params.destinationTag ?? undefined
+        DestinationTag: params.destinationTag ?? undefined,
+        Flags: params.flags ?? undefined
       })
         .then((fees) => {
           setEstimatedFees(fees);
@@ -99,7 +104,8 @@ export const Transaction: FC = () => {
     params.destination,
     params.memos,
     params.destinationTag,
-    params.fee
+    params.fee,
+    params.flags
   ]);
 
   useEffect(() => {
@@ -162,7 +168,8 @@ export const Transaction: FC = () => {
       destination: params.destination as string,
       memos: params.memos ?? undefined,
       destinationTag: params.destinationTag ?? undefined,
-      fee: params.fee ?? undefined
+      fee: params.fee ?? undefined,
+      flags: params.flags ?? undefined
     })
       .then((transactionHash) => {
         setTransaction(TransactionStatus.Success);
@@ -182,6 +189,7 @@ export const Transaction: FC = () => {
     params.memos,
     params.destinationTag,
     params.fee,
+    params.flags,
     sendPayment
   ]);
 
@@ -218,6 +226,30 @@ export const Transaction: FC = () => {
     } catch (error) {}
 
     return amountString;
+  }
+
+  const parseFlagsFromString = (flagsString: string | null) => {
+    if (!flagsString) {
+      return null;
+    }
+
+    if (Number(flagsString)) {
+      return Number(flagsString);
+    }
+
+    try {
+      const parsedFlags = JSON.parse(flagsString);
+
+      if (typeof parsedFlags === 'object' && parsedFlags !== null && ('tfNoDirectRipple' in parsedFlags || 'tfPartialPayment' in parsedFlags || 'tfLimitQuality' in parsedFlags)) {
+        return parsedFlags as {
+          tfNoDirectRipple?: boolean;
+          tfPartialPayment?: boolean;
+          tfLimitQuality?: boolean;
+        }
+      }
+    } catch (error) {}
+
+    return null;
   }
 
   if (isParamsMissing) {
@@ -322,8 +354,18 @@ export const Transaction: FC = () => {
     );
   }
 
-  const { amount, destination, memos, destinationTag, fee } = params;
+  const { amount, destination, memos, destinationTag, fee, flags } = params;
   const decodedMemos = fromHexMemos(memos || []);
+
+  const formatFlags = (flags: PaymentFlags) => {
+    if (typeof flags === "object") {
+      return Object.entries(flags)
+        .map(([key, value]) => `${key}: ${value}`)
+        .join("\n");
+    } else {
+      return flags;
+    }
+  };
 
   return (
     <PageWithTitle title="Confirm Transaction">
@@ -368,6 +410,16 @@ export const Transaction: FC = () => {
         <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
           <Typography variant="body1">Destination Tag:</Typography>
           <Typography variant="body2">{destinationTag}</Typography>
+        </Paper>
+      ) : null}
+      {flags ? (
+        <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
+          <Typography variant="body1">Flags:</Typography>
+          <Typography variant="body2">
+            <pre style={{ margin: 0 }}>
+              {formatFlags(flags)}
+            </pre>
+          </Typography>
         </Paper>
       ) : null}
       <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
