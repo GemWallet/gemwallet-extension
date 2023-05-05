@@ -6,12 +6,21 @@ import { Button, Container, IconButton, Paper, Tooltip, Typography } from '@mui/
 import * as Sentry from '@sentry/react';
 import { isValidAddress } from 'xrpl';
 
-import { GEM_WALLET, ReceiveTrustlineHashBackgroundMessage } from '@gemwallet/constants';
+import { GEM_WALLET, Memo, TrustSetFlags, ReceiveTrustlineHashBackgroundMessage } from '@gemwallet/constants';
 
 import { DEFAULT_RESERVE, ERROR_RED } from '../../../constants';
 import { useLedger, useNetwork, useServer, useWallet } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
-import { checkFee, formatAmount, formatToken } from '../../../utils';
+import {
+  checkFee,
+  formatAmount,
+  formatFlags,
+  formatToken,
+  fromHexMemos,
+  parseMemos,
+  parseTrustSetFlags,
+  toXRPLMemos
+} from '../../../utils';
 import { TileLoader } from '../../atoms';
 import { AsyncTransaction, PageWithSpinner, PageWithTitle } from '../../templates';
 
@@ -25,6 +34,8 @@ interface Params {
   currency: string | null;
   issuer: string | null;
   id: number;
+  memos: Memo[] | null;
+  flags: TrustSetFlags | null;
 }
 
 export const AddNewTrustline: FC = () => {
@@ -35,7 +46,9 @@ export const AddNewTrustline: FC = () => {
     value: null,
     currency: null,
     issuer: null,
-    id: 0
+    id: 0,
+    memos: null,
+    flags: null
   });
   const [estimatedFees, setEstimatedFees] = useState<string>(DEFAULT_FEES);
   const [errorFees, setErrorFees] = useState('');
@@ -58,6 +71,8 @@ export const AddNewTrustline: FC = () => {
     const currency = urlParams.get('currency');
     const issuer = urlParams.get('issuer');
     const id = Number(urlParams.get('id')) || 0;
+    const memos = parseMemos(urlParams.get('memos'));
+    const flags = parseTrustSetFlags(urlParams.get('flags'));
 
     if (value === null || currency === null || issuer === null) {
       setIsParamsMissing(true);
@@ -72,7 +87,9 @@ export const AddNewTrustline: FC = () => {
       value,
       currency,
       issuer,
-      id
+      id,
+      memos,
+      flags
     });
   }, []);
 
@@ -88,7 +105,9 @@ export const AddNewTrustline: FC = () => {
           value: params.value,
           currency: params.currency,
           issuer: params.issuer
-        }
+        },
+        Memos: params.memos ? toXRPLMemos(params.memos) : undefined,
+        Flags: params.flags ?? undefined
       })
         .then((fees) => {
           setEstimatedFees(fees);
@@ -104,7 +123,9 @@ export const AddNewTrustline: FC = () => {
     params.currency,
     params.fee,
     params.issuer,
-    params.value
+    params.value,
+    params.memos,
+    params.flags
   ]);
 
   useEffect(() => {
@@ -171,7 +192,9 @@ export const AddNewTrustline: FC = () => {
         currency: params.currency,
         issuer: params.issuer,
         fee: params.fee || undefined,
-        value: params.value
+        value: params.value,
+        memos: params.memos ?? undefined,
+        flags: params.flags ?? undefined
       })
         .then((transactionHash) => {
           setTransaction(TransactionStatus.Success);
@@ -185,7 +208,7 @@ export const AddNewTrustline: FC = () => {
           chrome.runtime.sendMessage<ReceiveTrustlineHashBackgroundMessage>(message);
         });
     }
-  }, [addTrustline, createMessage, params.currency, params.fee, params.issuer, params.value]);
+  }, [addTrustline, createMessage, params.currency, params.fee, params.flags, params.issuer, params.memos, params.value]);
 
   if (isParamsMissing) {
     return (
@@ -339,7 +362,8 @@ export const AddNewTrustline: FC = () => {
     );
   }
 
-  const { issuer, currency, value, fee } = params;
+  const { issuer, currency, value, fee, memos, flags } = params;
+  const decodedMemos = fromHexMemos(memos || []);
 
   return (
     <PageWithTitle title="Add Trustline - Confirm">
@@ -374,6 +398,41 @@ export const AddNewTrustline: FC = () => {
         <Typography variant="body1">Limit:</Typography>
         <Typography variant="body1">{formatToken(Number(value), currency || undefined)}</Typography>
       </Paper>
+      {decodedMemos && decodedMemos.length > 0 ? (
+        <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
+          <Typography variant='body1'>Memos:</Typography>
+          {decodedMemos.map((memo, index) => (
+            <div
+              key={index}
+              style={{
+                marginBottom: index === decodedMemos.length - 1 ? 0 : '8px',
+              }}
+            >
+              <Typography
+                variant='body2'
+                style={{
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  maxWidth: '100%',
+                }}
+              >
+                {memo.memo.memoData}
+              </Typography>
+            </div>
+          ))}
+        </Paper>
+      ) : null}
+      {flags ? (
+        <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
+          <Typography variant="body1">Flags:</Typography>
+          <Typography variant="body2">
+            <pre style={{ margin: 0 }}>
+              {formatFlags(flags)}
+            </pre>
+          </Typography>
+        </Paper>
+      ) : null}
       <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
         <Typography variant="body1" style={{ display: 'flex', alignItems: 'center' }}>
           <Tooltip title="These are the fees to make the transaction over the network">
