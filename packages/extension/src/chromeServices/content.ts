@@ -1,6 +1,5 @@
 import {
   AddressEventListener,
-  AddTrustlineEventListener,
   EventListener,
   GEM_WALLET,
   NetworkResponse,
@@ -27,6 +26,7 @@ import {
   RequestPublicKeyMessage,
   RequestSignMessageMessage,
   RequestTrustlineMessage,
+  SetTrustlineEventListener,
   SignedMessageResponse,
   SignMessageListener,
   TrustlineResponse
@@ -249,10 +249,10 @@ setTimeout(() => {
             chrome.runtime.onMessage.addListener(messageListener);
           }
         );
-      } else if (type === 'REQUEST_ADD_TRUSTLINE') {
+      } else if (type === 'REQUEST_SET_TRUSTLINE') {
         const {
           data: { payload }
-        } = event as AddTrustlineEventListener;
+        } = event as SetTrustlineEventListener;
         chrome.runtime.sendMessage<RequestTrustlineMessage>(
           {
             app,

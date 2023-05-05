@@ -1,4 +1,4 @@
-export * from './addTrustline';
+export * from './setTrustline';
 export * from './getAddress';
 export * from './getNetwork';
 export * from './getNFT';

@@ -19,12 +19,12 @@ import {
 export type RequestMessage =
   | 'SEND_PAYMENT'
   | 'REQUEST_ADDRESS'
-  | 'REQUEST_ADD_TRUSTLINE'
   | 'REQUEST_CONNECTION'
   | 'REQUEST_GET_NFT/V3'
   | 'REQUEST_NETWORK'
   | 'REQUEST_NFT'
   | 'REQUEST_PUBLIC_KEY'
+  | 'REQUEST_SET_TRUSTLINE'
   | 'REQUEST_SIGN_MESSAGE';
 
 export type ReceiveMessage =
@@ -67,7 +67,7 @@ export interface RequestPaymentMessage {
 
 export interface RequestTrustlineMessage {
   app: typeof GEM_WALLET;
-  type: 'REQUEST_ADD_TRUSTLINE';
+  type: 'REQUEST_SET_TRUSTLINE';
   payload: TrustlineRequestPayload;
 }
 
