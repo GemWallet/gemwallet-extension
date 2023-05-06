@@ -17,6 +17,7 @@ import { useLedger, useNetwork, useServer, useWallet } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
 import {
   checkFee,
+  fromHexMemos,
   parseLimitAmount,
   parseMemos,
   parseTrustSetFlags,
@@ -84,7 +85,7 @@ export const AddNewTrustline: FC = () => {
       setIsParamsMissing(true);
     }
 
-    if (Number.isNaN(Number(limitAmount?.value))) {
+    if (limitAmount && Number.isNaN(Number(limitAmount.value))) {
       setErrorValue('The value must be a number, the value provided was not a number.');
     }
 
@@ -216,7 +217,11 @@ export const AddNewTrustline: FC = () => {
 
   const handleTrustlineSubmit = (issuer: string, token: string, limit: string, showForm: boolean, isParamsMissing: boolean) => {
     setParams({
-      limitAmount: params.limitAmount,
+      limitAmount: {
+        currency: token,
+        issuer: issuer,
+        value: limit,
+      },
       fee: params.fee,
       id: params.id,
       memos: params.memos,
@@ -368,6 +373,8 @@ export const AddNewTrustline: FC = () => {
     <StepConfirm
       limitAmount={params.limitAmount}
       fee={params.fee}
+      memos={fromHexMemos(params.memos ?? undefined) ?? []}
+      flags={params.flags}
       estimatedFees={estimatedFees}
       errorFees={errorFees}
       hasEnoughFunds={hasEnoughFunds}
