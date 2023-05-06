@@ -10,7 +10,7 @@ import { Amount, GEM_WALLET, Memo, PaymentFlags, ReceivePaymentHashBackgroundMes
 import { DEFAULT_RESERVE, ERROR_RED } from '../../../constants';
 import { useLedger, useNetwork, useServer, useWallet } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
-import { formatAmount, fromHexMemos, toXRPLMemos } from '../../../utils';
+import { formatAmount, formatToken, fromHexMemos, toXRPLMemos } from '../../../utils';
 import { TileLoader } from '../../atoms';
 import { AsyncTransaction, PageWithSpinner, PageWithTitle } from '../../templates';
 
@@ -445,7 +445,7 @@ export const Transaction: FC = () => {
           ) : estimatedFees === DEFAULT_FEES ? (
             <TileLoader secondLineOnly />
           ) : (
-            fee ? formatAmount(fee) : formatAmount(estimatedFees)
+            fee ? formatToken(Number(fee), 'XRP (manual)', true) : formatAmount(estimatedFees)
           )}
         </Typography>
       </Paper>
