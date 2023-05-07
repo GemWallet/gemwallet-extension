@@ -11,7 +11,8 @@ import {
   ReceiveSetTrustlineBackgroundMessage,
   ReceiveSetTrustlineBackgroundMessageDeprecated,
   ResponseType,
-  TrustSetFlags
+  TrustSetFlags,
+  TrustSetFlagsBitmask
 } from '@gemwallet/constants';
 
 import {
@@ -45,7 +46,6 @@ interface Params {
   id: number;
   memos: Memo[] | null;
   flags: TrustSetFlags | null;
-  noRipple: boolean;
   inAppCall: boolean;
   showForm: boolean;
 }
@@ -63,7 +63,6 @@ export const AddNewTrustline: FC = () => {
     id: 0,
     memos: null,
     flags: null,
-    noRipple: true,
     inAppCall,
     showForm: false
   });
@@ -135,7 +134,6 @@ export const AddNewTrustline: FC = () => {
     const id = Number(urlParams.get('id')) || 0;
     const memos = parseMemos(urlParams.get('memos'));
     const flags = parseTrustSetFlags(urlParams.get('flags'));
-    const noRipple = urlParams.get('noRipple') === 'true' || false;
     const showForm = urlParams.get('showForm') === 'true' || false;
 
     if (limitAmount === null) {
@@ -152,7 +150,6 @@ export const AddNewTrustline: FC = () => {
       id,
       memos,
       flags,
-      noRipple,
       inAppCall,
       showForm
     });
@@ -244,8 +241,7 @@ export const AddNewTrustline: FC = () => {
         limitAmount: params.limitAmount,
         fee: params.fee || undefined,
         memos: params.memos || undefined,
-        flags: params.flags || undefined,
-        noRipple: params.noRipple
+        flags: params.flags || undefined
       })
         .then((transactionHash) => {
           setTransaction(TransactionStatus.Success);
@@ -277,8 +273,7 @@ export const AddNewTrustline: FC = () => {
     params.fee,
     params.inAppCall,
     params.flags,
-    params.memos,
-    params.noRipple
+    params.memos
   ]);
 
   const handleTrustlineSubmit = (
@@ -289,6 +284,7 @@ export const AddNewTrustline: FC = () => {
     showForm: boolean,
     isParamsMissing: boolean
   ) => {
+    const flags = updateFlags(noRipple);
     setParams({
       limitAmount: {
         currency: token,
@@ -298,8 +294,7 @@ export const AddNewTrustline: FC = () => {
       fee: params.fee,
       id: params.id,
       memos: params.memos,
-      flags: params.flags,
-      noRipple: noRipple,
+      flags: flags,
       showForm: showForm,
       inAppCall: true
     });
@@ -310,12 +305,45 @@ export const AddNewTrustline: FC = () => {
   const buildInitialValues = () => {
     if (!params.limitAmount) return undefined;
 
+    const noRipple = params.flags
+      ? typeof params.flags === 'object'
+        ? params.flags.tfSetNoRipple ?? false
+        : !!(params.flags & TrustSetFlagsBitmask.tfSetNoRipple)
+      : false;
+
     return {
       issuer: params.limitAmount.issuer,
       token: params.limitAmount.currency,
       limit: Number(params.limitAmount.value),
-      noRipple: params.noRipple
+      noRipple
     };
+  };
+
+  const updateFlags = (noRipple: boolean) => {
+    if (!params.flags) {
+      return noRipple ? TrustSetFlagsBitmask.tfSetNoRipple : TrustSetFlagsBitmask.tfClearNoRipple;
+    }
+
+    // No Ripple
+    if (noRipple) {
+      if (typeof params.flags === 'object') {
+        params.flags.tfSetNoRipple = true;
+        params.flags.tfClearNoRipple = false;
+      } else {
+        params.flags |= TrustSetFlagsBitmask.tfSetNoRipple;
+        params.flags &= ~TrustSetFlagsBitmask.tfClearNoRipple;
+      }
+    } else {
+      if (typeof params.flags === 'object') {
+        params.flags.tfClearNoRipple = true;
+        params.flags.tfSetNoRipple = false;
+      } else {
+        params.flags |= TrustSetFlagsBitmask.tfClearNoRipple;
+        params.flags &= ~TrustSetFlagsBitmask.tfSetNoRipple;
+      }
+    }
+
+    return params.flags;
   };
 
   if (params.showForm) {
@@ -505,7 +533,6 @@ export const AddNewTrustline: FC = () => {
       errorFees={errorFees}
       hasEnoughFunds={hasEnoughFunds}
       defaultFee={DEFAULT_FEES}
-      noRipple={params.noRipple}
       onReject={handleReject}
       onConfirm={handleConfirm}
     />

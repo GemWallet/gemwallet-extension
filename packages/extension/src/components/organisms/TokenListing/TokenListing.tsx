@@ -17,6 +17,7 @@ import { useNavigate } from 'react-router-dom';
 import { Trustline } from 'xrpl/dist/npm/models/methods/accountLines';
 
 import { Network } from '@gemwallet/constants';
+import { TrustSetFlagsBitmask } from '@gemwallet/constants';
 
 import { ADD_NEW_TRUSTLINE_PATH, DEFAULT_RESERVE, ERROR_RED } from '../../../constants';
 import { useLedger, useNetwork, useServer } from '../../../contexts';
@@ -207,6 +208,12 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
         const canBeEdited = trustedLine.trustlineDetails || trustedLine.value !== '0';
         const limit = trustedLine.trustlineDetails?.limit || 0;
         const noRipple = trustedLine.trustlineDetails?.noRipple || false;
+        const flags = noRipple ? TrustSetFlagsBitmask.tfSetNoRipple : undefined;
+        const limitAmount = {
+          currency: trustedLine.currency,
+          issuer: trustedLine.issuer,
+          value: limit
+        };
         return (
           <TokenDisplay
             balance={Number(trustedLine.value)}
@@ -221,11 +228,9 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
               canBeEdited
                 ? () =>
                     navigate(
-                      `${ADD_NEW_TRUSTLINE_PATH}?showForm=true&currency=${
-                        trustedLine.currency
-                      }&issuer=${trustedLine.issuer}&value=${limit}${
-                        noRipple === false ? '&noRipple=false' : '&noRipple=true'
-                      }`
+                      `${ADD_NEW_TRUSTLINE_PATH}?showForm=true&limitAmount=${JSON.stringify(
+                        limitAmount
+                      )}&flags=${flags}`
                     )
                 : undefined
             }

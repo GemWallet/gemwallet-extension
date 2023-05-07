@@ -22,7 +22,7 @@ import { convertHexToString, dropsToXrp } from 'xrpl';
 
 import { useWallet } from '../../../contexts';
 import { AccountTransaction, TransactionTypes } from '../../../types';
-import { formatAmount } from '../../../utils';
+import { formatAmount, formatFlagsToNumber } from '../../../utils';
 import { InformationMessage } from '../../molecules';
 import { PageWithSpinner } from '../../templates';
 
@@ -253,18 +253,23 @@ export const TransactionListing: FC<TransactionListingProps> = ({ transactions }
                 <ListItemText primary="Transaction Hash" secondary={transaction.tx?.hash} />
               </ListItem>
               <Divider light />
-              {(transaction.tx && 'DestinationTag' in transaction.tx && transaction.tx?.DestinationTag) ? (
+              {transaction.tx &&
+              'DestinationTag' in transaction.tx &&
+              transaction.tx?.DestinationTag ? (
                 <>
                   <ListItem style={{ padding: '8px 24px' }}>
-                    <ListItemText primary="Destination Tag" secondary={transaction.tx?.DestinationTag} />
+                    <ListItemText
+                      primary="Destination Tag"
+                      secondary={transaction.tx?.DestinationTag}
+                    />
                   </ListItem>
                   <Divider light />
                 </>
               ) : null}
-              {(transaction.tx && 'Flags' in transaction.tx && transaction.tx?.Flags) ? (
+              {transaction.tx && 'Flags' in transaction.tx && transaction.tx?.Flags ? (
                 <>
                   <ListItem style={{ padding: '8px 24px' }}>
-                    <ListItemText primary="Flags" secondary={formatFlags(transaction.tx)} />
+                    <ListItemText primary="Flags" secondary={formatFlagsToNumber(transaction.tx)} />
                   </ListItem>
                   <Divider light />
                 </>
