@@ -1,6 +1,17 @@
 import { dropsToXrp } from 'xrpl';
 import { Amount } from 'xrpl/dist/npm/models/common';
 
+const formatValue = (value: number) => {
+  return new Intl.NumberFormat(navigator.language, {
+    style: 'currency',
+    currency: 'XRP',
+    currencyDisplay: 'narrowSymbol',
+    minimumFractionDigits: value.toString().split('.')[1]?.length || 0
+  })
+    .format(value)
+    .replace(/\s?XRP\s?/, '');
+};
+
 export const formatAmount = (amount: Amount) => {
   let value: number;
   let currency: string;
@@ -13,31 +24,13 @@ export const formatAmount = (amount: Amount) => {
     currency = amount.currency;
   }
 
-  return `${new Intl.NumberFormat(navigator.language, {
-    style: 'currency',
-    currency: 'XRP',
-    currencyDisplay: 'narrowSymbol',
-    minimumFractionDigits: value.toString().split('.')[1]?.length || 0
-  })
-    .format(value)
-    .replace(/\s?XRP\s?/, '')} ${currency.toUpperCase()}`;
+  return `${formatValue(value)} ${currency.toUpperCase()}`;
 };
 
-export const formatToken = (
-  value: number,
-  currency: string | undefined = 'XRP',
-  isDrops: boolean = false
-) => {
+export const formatToken = (value: number, currency: string = 'XRP', isDrops = false) => {
   if (isDrops) {
     value = Number(dropsToXrp(value));
   }
 
-  return `${new Intl.NumberFormat(navigator.language, {
-    style: 'currency',
-    currency: 'XRP',
-    currencyDisplay: 'narrowSymbol',
-    minimumFractionDigits: value.toString().split('.')[1]?.length || 0
-  })
-    .format(value)
-    .replace(/\s?XRP\s?/, '')} ${currency.toUpperCase()}`;
+  return `${formatValue(value)} ${currency.toUpperCase()}`;
 };

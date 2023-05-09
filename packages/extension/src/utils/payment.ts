@@ -26,17 +26,13 @@ export const buildDefaultMemos = (memoData: string | undefined): Memo[] | undefi
 
 export const fromHexMemos = (memos: Memo[] | undefined): Memo[] | undefined => {
   if (memos === undefined) return undefined;
-  return memos.map((memo) => {
+  return memos.map(({ memo }) => {
     return {
       memo: {
-        ...(memo.memo.memoType
-          ? { memoType: Buffer.from(memo.memo.memoType, 'hex').toString('utf8') }
-          : {}),
-        ...(memo.memo.memoData
-          ? { memoData: Buffer.from(memo.memo.memoData, 'hex').toString('utf8') }
-          : {}),
-        ...(memo.memo.memoFormat
-          ? { memoFormat: Buffer.from(memo.memo.memoFormat, 'hex').toString('utf8') }
+        ...(memo.memoType ? { memoType: Buffer.from(memo.memoType, 'hex').toString('utf8') } : {}),
+        ...(memo.memoData ? { memoData: Buffer.from(memo.memoData, 'hex').toString('utf8') } : {}),
+        ...(memo.memoFormat
+          ? { memoFormat: Buffer.from(memo.memoFormat, 'hex').toString('utf8') }
           : {})
       }
     };
@@ -45,17 +41,17 @@ export const fromHexMemos = (memos: Memo[] | undefined): Memo[] | undefined => {
 
 export const toHexMemos = (memos: Memo[] | undefined): Memo[] | undefined => {
   if (memos === undefined) return undefined;
-  return memos.map((memo) => {
+  return memos.map(({ memo }) => {
     return {
       memo: {
-        ...(memo.memo.memoType
-          ? { memoType: Buffer.from(memo.memo.memoType, 'utf8').toString('hex').toUpperCase() }
+        ...(memo.memoType
+          ? { memoType: Buffer.from(memo.memoType, 'utf8').toString('hex').toUpperCase() }
           : {}),
-        ...(memo.memo.memoData
-          ? { memoData: Buffer.from(memo.memo.memoData, 'utf8').toString('hex').toUpperCase() }
+        ...(memo.memoData
+          ? { memoData: Buffer.from(memo.memoData, 'utf8').toString('hex').toUpperCase() }
           : {}),
-        ...(memo.memo.memoFormat
-          ? { memoFormat: Buffer.from(memo.memo.memoFormat, 'utf8').toString('hex').toUpperCase() }
+        ...(memo.memoFormat
+          ? { memoFormat: Buffer.from(memo.memoFormat, 'utf8').toString('hex').toUpperCase() }
           : {})
       }
     };
@@ -64,12 +60,12 @@ export const toHexMemos = (memos: Memo[] | undefined): Memo[] | undefined => {
 
 export const toXRPLMemos = (memos: Memo[] | undefined): XRPLMemo[] | undefined => {
   if (memos === undefined) return undefined;
-  return memos.map((memo) => {
+  return memos.map(({ memo }) => {
     return {
       Memo: {
-        ...(memo.memo.memoType ? { MemoType: memo.memo.memoType } : {}),
-        ...(memo.memo.memoData ? { MemoData: memo.memo.memoData } : {}),
-        ...(memo.memo.memoFormat ? { MemoFormat: memo.memo.memoFormat } : {})
+        ...(memo.memoType ? { MemoType: memo.memoType } : {}),
+        ...(memo.memoData ? { MemoData: memo.memoData } : {}),
+        ...(memo.memoFormat ? { MemoFormat: memo.memoFormat } : {})
       }
     };
   });
@@ -80,7 +76,11 @@ export const buildDestinationTag = (destinationTag: string | undefined): number 
   return Number(destinationTag);
 };
 
-export const buildAmount = (value: string, currency?: string, issuer?: string): Amount | string => {
+export const buildAmount = (
+  value: string,
+  currency: string | undefined,
+  issuer: string | undefined
+): Amount => {
   return currency && issuer
     ? {
         currency,

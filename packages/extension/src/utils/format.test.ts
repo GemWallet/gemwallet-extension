@@ -3,7 +3,7 @@ import { xrpToDrops } from 'xrpl';
 import { formatAmount } from './format';
 
 describe('Format util', () => {
-  describe('formatToken', () => {
+  describe('formatAmount', () => {
     test('should return 1,234,567 XRP', () => {
       const amount = xrpToDrops(1234567);
       expect(formatAmount(amount)).toEqual('1,234,567 XRP');
