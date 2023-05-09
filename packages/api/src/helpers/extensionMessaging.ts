@@ -75,15 +75,15 @@ export const sendMessageToContentScript = (msg: APIMessages): Promise<any> => {
  */
 const serializeMessage = (msg: APIMessages): any => {
   const modifiedMsg: any = { ...msg };
-  if ('payload' in modifiedMsg && 'memos' in modifiedMsg.payload && modifiedMsg.payload.memos) {
+  if (modifiedMsg.payload?.memos) {
     modifiedMsg.payload.memos = JSON.stringify(modifiedMsg.payload.memos);
   }
 
-  if ('payload' in modifiedMsg && 'amount' in modifiedMsg.payload && typeof modifiedMsg.payload.amount === 'object') {
+  if (typeof modifiedMsg.payload?.amount === 'object') {
     modifiedMsg.payload.amount = JSON.stringify(modifiedMsg.payload.amount);
   }
 
-  if ('payload' in modifiedMsg && 'flags' in modifiedMsg.payload && typeof modifiedMsg.payload.flags === 'object') {
+  if (typeof modifiedMsg.payload?.flags === 'object') {
     modifiedMsg.payload.flags = JSON.stringify(modifiedMsg.payload.flags);
   }
 
