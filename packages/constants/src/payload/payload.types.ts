@@ -1,4 +1,5 @@
 import { PaymentFlagsInterface } from 'xrpl';
+import { Amount } from 'xrpl/dist/npm/models/common';
 
 import { Network } from '../network/network.constant';
 import { AccountNFToken } from './../xrpl/nft.types';
@@ -35,24 +36,12 @@ export interface PaymentRequestPayload {
   flags?: PaymentFlags;
 }
 
-/**
- * Ref: https://xrpl.org/basic-data-types.html#specifying-currency-amounts
- */
-export type Amount = {
-  // The amount to deliver
-  value: string;
-  // The issuer of the token
-  issuer: string;
-  // The token that can be used
-  currency: string;
-} | string;
-
 export interface Memo {
   memo: {
     memoType?: string;
     memoData?: string;
     memoFormat?: string;
-  }
+  };
 }
 
 export type PaymentFlags = PaymentFlagsInterface | number;

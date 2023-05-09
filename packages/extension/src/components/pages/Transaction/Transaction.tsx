@@ -4,8 +4,14 @@ import ErrorIcon from '@mui/icons-material/Error';
 import { Button, Container, IconButton, Paper, Tooltip, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
 import { dropsToXrp, isValidAddress } from 'xrpl';
+import { Amount } from 'xrpl/dist/npm/models/common';
 
-import { Amount, GEM_WALLET, Memo, PaymentFlags, ReceivePaymentHashBackgroundMessage } from '@gemwallet/constants';
+import {
+  GEM_WALLET,
+  Memo,
+  PaymentFlags,
+  ReceivePaymentHashBackgroundMessage
+} from '@gemwallet/constants';
 
 import { DEFAULT_RESERVE, ERROR_RED } from '../../../constants';
 import { useLedger, useNetwork, useServer, useWallet } from '../../../contexts';
@@ -56,8 +62,10 @@ export const Transaction: FC = () => {
     const destination = urlParams.get('destination');
     const id = Number(urlParams.get('id')) || 0;
     const memosString = urlParams.get('memos');
-    const memos = memosString ? JSON.parse(memosString) as Memo[] : null;
-    const destinationTag = urlParams.get('destinationTag') ? Number(urlParams.get('destinationTag')) : null;
+    const memos = memosString ? (JSON.parse(memosString) as Memo[]) : null;
+    const destinationTag = urlParams.get('destinationTag')
+      ? Number(urlParams.get('destinationTag'))
+      : null;
     const fee = checkFee(urlParams.get('fee'));
     const flags = parseFlagsFromString(urlParams.get('flags'));
 
@@ -111,7 +119,8 @@ export const Transaction: FC = () => {
   useEffect(() => {
     const currentWallet = getCurrentWallet();
     if (currentWallet && params.amount) {
-      const amount = typeof params.amount === 'string' ? dropsToXrp(params.amount) : params.amount.value;
+      const amount =
+        typeof params.amount === 'string' ? dropsToXrp(params.amount) : params.amount.value;
       client
         ?.getXrpBalance(currentWallet!.publicAddress)
         .then((currentBalance) => {
@@ -206,7 +215,7 @@ export const Transaction: FC = () => {
       } catch (e) {}
     }
     return null;
-  }
+  };
 
   const parseAmountFromString = (amountString: string | null) => {
     if (!amountString) {
@@ -216,7 +225,13 @@ export const Transaction: FC = () => {
     try {
       const parsedAmount = JSON.parse(amountString);
 
-      if (typeof parsedAmount === 'object' && parsedAmount !== null && 'value' in parsedAmount && 'issuer' in parsedAmount && 'currency' in parsedAmount) {
+      if (
+        typeof parsedAmount === 'object' &&
+        parsedAmount !== null &&
+        'value' in parsedAmount &&
+        'issuer' in parsedAmount &&
+        'currency' in parsedAmount
+      ) {
         return parsedAmount as { value: string; issuer: string; currency: string };
       }
 
@@ -226,7 +241,7 @@ export const Transaction: FC = () => {
     } catch (error) {}
 
     return amountString;
-  }
+  };
 
   const parseFlagsFromString = (flagsString: string | null) => {
     if (!flagsString) {
@@ -240,17 +255,23 @@ export const Transaction: FC = () => {
     try {
       const parsedFlags = JSON.parse(flagsString);
 
-      if (typeof parsedFlags === 'object' && parsedFlags !== null && ('tfNoDirectRipple' in parsedFlags || 'tfPartialPayment' in parsedFlags || 'tfLimitQuality' in parsedFlags)) {
+      if (
+        typeof parsedFlags === 'object' &&
+        parsedFlags !== null &&
+        ('tfNoDirectRipple' in parsedFlags ||
+          'tfPartialPayment' in parsedFlags ||
+          'tfLimitQuality' in parsedFlags)
+      ) {
         return parsedFlags as {
           tfNoDirectRipple?: boolean;
           tfPartialPayment?: boolean;
           tfLimitQuality?: boolean;
-        }
+        };
       }
     } catch (error) {}
 
     return null;
-  }
+  };
 
   if (isParamsMissing) {
     return (
@@ -358,10 +379,10 @@ export const Transaction: FC = () => {
   const decodedMemos = fromHexMemos(memos || []);
 
   const formatFlags = (flags: PaymentFlags) => {
-    if (typeof flags === "object") {
+    if (typeof flags === 'object') {
       return Object.entries(flags)
         .map(([key, value]) => `${key}: ${value}`)
-        .join("\n");
+        .join('\n');
     } else {
       return flags;
     }
@@ -383,21 +404,21 @@ export const Transaction: FC = () => {
       </Paper>
       {decodedMemos && decodedMemos.length > 0 ? (
         <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-          <Typography variant='body1'>Memos:</Typography>
+          <Typography variant="body1">Memos:</Typography>
           {decodedMemos.map((memo, index) => (
             <div
               key={index}
               style={{
-                marginBottom: index === decodedMemos.length - 1 ? 0 : '8px',
+                marginBottom: index === decodedMemos.length - 1 ? 0 : '8px'
               }}
             >
               <Typography
-                variant='body2'
+                variant="body2"
                 style={{
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
-                  maxWidth: '100%',
+                  maxWidth: '100%'
                 }}
               >
                 {memo.memo.memoData}
@@ -416,9 +437,7 @@ export const Transaction: FC = () => {
         <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
           <Typography variant="body1">Flags:</Typography>
           <Typography variant="body2">
-            <pre style={{ margin: 0 }}>
-              {formatFlags(flags)}
-            </pre>
+            <pre style={{ margin: 0 }}>{formatFlags(flags)}</pre>
           </Typography>
         </Paper>
       ) : null}
@@ -444,8 +463,10 @@ export const Transaction: FC = () => {
             </Typography>
           ) : estimatedFees === DEFAULT_FEES ? (
             <TileLoader secondLineOnly />
+          ) : fee ? (
+            formatToken(Number(fee), 'XRP (manual)', true)
           ) : (
-            fee ? formatToken(Number(fee), 'XRP (manual)', true) : formatAmount(estimatedFees)
+            formatAmount(estimatedFees)
           )}
         </Typography>
       </Paper>
