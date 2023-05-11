@@ -443,7 +443,7 @@ export const Transaction: FC = () => {
       ) : null}
       <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
         <Typography variant="body1">Amount:</Typography>
-        <Typography variant="h4" component="h1" gutterBottom align="right">
+        <Typography variant="h6" component="h1" align="right">
           {amount ? formatAmount(amount) : 'Not found'}
         </Typography>
       </Paper>

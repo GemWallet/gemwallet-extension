@@ -132,7 +132,7 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
   }
 
   const decodedMemos = fromHexMemos(memos);
-  const [currency, issuer] = token.split('-')
+  const [currency, issuer] = token.split('-');
 
   return (
     <PageWithReturn
@@ -156,21 +156,21 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
       </Paper>
       {decodedMemos && decodedMemos.length > 0 ? (
         <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-          <Typography variant='body1'>Memos:</Typography>
+          <Typography variant="body1">Memos:</Typography>
           {decodedMemos.map((memo, index) => (
             <div
               key={index}
               style={{
-                marginBottom: index === decodedMemos.length - 1 ? 0 : '8px',
+                marginBottom: index === decodedMemos.length - 1 ? 0 : '8px'
               }}
             >
               <Typography
-                variant='body2'
+                variant="body2"
                 style={{
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
-                  maxWidth: '100%',
+                  maxWidth: '100%'
                 }}
               >
                 {memo.memo.memoData}
@@ -187,7 +187,7 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
       ) : null}
       <Paper elevation={24} style={{ padding: '10px' }}>
         <Typography variant="body1">Amount:</Typography>
-        <Typography variant="h6" component="h1" gutterBottom align="right">
+        <Typography variant="h6" component="h1" align="right">
           {formatAmount(buildAmount(value, currency, issuer))}
         </Typography>
       </Paper>
