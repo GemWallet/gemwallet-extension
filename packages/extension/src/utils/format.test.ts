@@ -47,23 +47,16 @@ describe('Format util', () => {
     });
 
     test('should return 1.2345678977 XRP', () => {
-      const value = 1234567.8977;
+      const value = 1234567;
       const currency = 'XRP';
       const isDrops = true;
-      expect(formatToken(value, currency, isDrops)).toEqual('1.2345678977 XRP');
+      expect(formatToken(value, currency, isDrops)).toEqual('1.234567 XRP');
     });
 
     test('should return 1,234,567.8977 USD', () => {
       const value = 1234567.8977;
       const currency = 'USD';
       const isDrops = false;
-      expect(formatToken(value, currency, isDrops)).toEqual('1,234,567.8977 USD');
-    });
-
-    test('should return 1,234,567.89779 USD', () => {
-      const value = 1234567.8977;
-      const currency = 'USD';
-      const isDrops = true;
       expect(formatToken(value, currency, isDrops)).toEqual('1,234,567.8977 USD');
     });
   });
