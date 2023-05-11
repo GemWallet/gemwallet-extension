@@ -31,7 +31,7 @@ export const sendMessageToContentScript = (msg: APIMessages): Promise<any> => {
     {
       source: 'GEM_WALLET_MSG_REQUEST',
       messageId,
-      ...msg
+      ...serializeMessage(msg)
     },
     window.location.origin
   );
@@ -61,4 +61,31 @@ export const sendMessageToContentScript = (msg: APIMessages): Promise<any> => {
     };
     window.addEventListener('message', messageListener, false);
   });
+};
+
+/**
+ * Serializes the message to be sent to the content script.
+ * Fields that are objects are stringified:
+ * - memos
+ * - amount
+ * - flags
+ *
+ * @param msg
+ * @returns The message with each object field stringified.
+ */
+const serializeMessage = (msg: APIMessages): any => {
+  const modifiedMsg: any = { ...msg };
+  if (modifiedMsg.payload?.memos) {
+    modifiedMsg.payload.memos = JSON.stringify(modifiedMsg.payload.memos);
+  }
+
+  if (typeof modifiedMsg.payload?.amount === 'object') {
+    modifiedMsg.payload.amount = JSON.stringify(modifiedMsg.payload.amount);
+  }
+
+  if (typeof modifiedMsg.payload?.flags === 'object') {
+    modifiedMsg.payload.flags = JSON.stringify(modifiedMsg.payload.flags);
+  }
+
+  return modifiedMsg;
 };

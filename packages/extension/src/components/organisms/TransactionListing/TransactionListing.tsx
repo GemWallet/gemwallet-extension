@@ -22,7 +22,7 @@ import { convertHexToString, dropsToXrp } from 'xrpl';
 
 import { useWallet } from '../../../contexts';
 import { AccountTransaction, TransactionTypes } from '../../../types';
-import { formatToken } from '../../../utils';
+import { formatAmount } from '../../../utils';
 import { InformationMessage } from '../../molecules';
 import { PageWithSpinner } from '../../templates';
 
@@ -43,10 +43,7 @@ const formatTransaction = (transaction: AccountTransaction, publicAddress: strin
   switch (transaction.tx?.TransactionType) {
     case TransactionTypes.Payment:
       // Might need to handle more use case
-      const amount =
-        typeof transaction.tx.Amount === 'string'
-          ? formatToken(Number(dropsToXrp(transaction.tx.Amount)), 'XRP')
-          : formatToken(Number(transaction.tx.Amount.value), transaction.tx.Amount.currency);
+      const amount = formatAmount(transaction.tx.Amount);
       if (transaction.tx.Destination === publicAddress) {
         return `Payment received - ${amount}`;
       }

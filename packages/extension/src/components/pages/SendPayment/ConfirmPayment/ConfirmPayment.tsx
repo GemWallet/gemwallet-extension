@@ -4,12 +4,14 @@ import ErrorIcon from '@mui/icons-material/Error';
 import { Button, Container, IconButton, Paper, Tooltip, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
-import { xrpToDrops } from 'xrpl';
+
+import { Memo } from '@gemwallet/constants';
 
 import { ERROR_RED, HOME_PATH } from '../../../../constants';
 import { useLedger, useWallet } from '../../../../contexts';
 import { TransactionStatus } from '../../../../types';
-import { convertCurrencyString, formatToken, buildMemos, buildDestinationTag } from '../../../../utils';
+import { buildAmount, formatAmount, toXRPLMemos } from '../../../../utils';
+import { fromHexMemos } from '../../../../utils/payment';
 import { TileLoader } from '../../../atoms';
 import { AsyncTransaction, PageWithReturn } from '../../../templates';
 
@@ -19,21 +21,21 @@ export interface ConfirmPaymentProps {
   payment: {
     address: string;
     token: string;
-    amount: string;
-    memo?: string;
-    destinationTag?: string;
+    value: string;
+    memos?: Memo[];
+    destinationTag?: number;
   };
   onClickBack: () => void;
 }
 
 export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
-  payment: { address, token, amount, memo, destinationTag },
+  payment: { address, token, value, memos, destinationTag },
   onClickBack
 }) => {
   const { getCurrentWallet } = useWallet();
   const { estimateNetworkFees, sendPayment } = useLedger();
   const navigate = useNavigate();
-  const [fees, setFees] = useState<string>('');
+  const [estimatedFees, setEstimatedFees] = useState<string>(DEFAULT_FEES);
   const [errorFees, setErrorFees] = useState<string>('');
   const [errorRequestRejection, setErrorRequestRejection] = useState<string>('');
   const [transaction, setTransaction] = useState<TransactionStatus>();
@@ -45,27 +47,20 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
       estimateNetworkFees({
         TransactionType: 'Payment',
         Account: wallet.publicAddress,
-        Amount:
-          currency && issuer
-            ? {
-                currency,
-                issuer,
-                value: amount
-              }
-            : xrpToDrops(amount),
+        Amount: buildAmount(value, currency, issuer),
         Destination: address,
-        Memos: buildMemos(memo),
-        DestinationTag: buildDestinationTag(destinationTag)
+        Memos: toXRPLMemos(memos),
+        DestinationTag: destinationTag
       })
         .then((fees) => {
-          setFees(fees);
+          setEstimatedFees(fees);
         })
         .catch((e) => {
           Sentry.captureException(e);
           setErrorFees(e.message);
         });
     }
-  }, [address, amount, destinationTag, estimateNetworkFees, getCurrentWallet, memo, token, wallet]);
+  }, [address, destinationTag, estimateNetworkFees, getCurrentWallet, memos, token, value, wallet]);
 
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);
@@ -75,12 +70,10 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
     const [currency, issuer] = token.split('-');
     setTransaction(TransactionStatus.Pending);
     sendPayment({
-      amount: amount,
+      amount: buildAmount(value, currency, issuer),
       destination: address,
-      currency: currency ?? undefined,
-      issuer: issuer ?? undefined,
-      memo: memo ?? undefined,
-      destinationTag: destinationTag ?? undefined
+      memos: memos,
+      destinationTag: destinationTag
     })
       .then(() => {
         setTransaction(TransactionStatus.Success);
@@ -90,7 +83,7 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
         setTransaction(TransactionStatus.Rejected);
         Sentry.captureException(e);
       });
-  }, [address, amount, destinationTag, memo, sendPayment, token]);
+  }, [address, destinationTag, memos, sendPayment, token, value]);
 
   const handleTransactionClick = useCallback(() => {
     navigate(HOME_PATH);
@@ -138,6 +131,9 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
     );
   }
 
+  const decodedMemos = fromHexMemos(memos);
+  const [currency, issuer] = token.split('-');
+
   return (
     <PageWithReturn
       title="Confirm Payment"
@@ -158,18 +154,29 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
         <Typography variant="body1">Destination:</Typography>
         <Typography variant="body2">{address}</Typography>
       </Paper>
-      {memo ? (
-        <Paper elevation={24} style={{padding: '10px'}}>
-          <Typography variant="body1">Memo:</Typography>
-          <Typography
-            variant="body2"
-            style={{
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              maxWidth: '100%',
-            }}
-          >{memo}</Typography>
+      {decodedMemos && decodedMemos.length > 0 ? (
+        <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
+          <Typography variant="body1">Memos:</Typography>
+          {decodedMemos.map((memo, index) => (
+            <div
+              key={index}
+              style={{
+                marginBottom: index === decodedMemos.length - 1 ? 0 : '8px'
+              }}
+            >
+              <Typography
+                variant="body2"
+                style={{
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  maxWidth: '100%'
+                }}
+              >
+                {memo.memo.memoData}
+              </Typography>
+            </div>
+          ))}
         </Paper>
       ) : null}
       {destinationTag ? (
@@ -180,8 +187,8 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
       ) : null}
       <Paper elevation={24} style={{ padding: '10px' }}>
         <Typography variant="body1">Amount:</Typography>
-        <Typography variant="h6" component="h1" gutterBottom align="right">
-          {formatToken(Number(amount), convertCurrencyString(token.split('-')[0]) || 'XRP')}
+        <Typography variant="h6" component="h1" align="right">
+          {formatAmount(buildAmount(value, currency, issuer))}
         </Typography>
       </Paper>
       <Paper elevation={24} style={{ padding: '10px' }}>
@@ -198,10 +205,10 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
             <Typography variant="caption" style={{ color: ERROR_RED }}>
               {errorFees}
             </Typography>
-          ) : fees === DEFAULT_FEES ? (
+          ) : estimatedFees === DEFAULT_FEES ? (
             <TileLoader secondLineOnly />
           ) : (
-            formatToken(Number(fees), 'XRP')
+            formatAmount(estimatedFees)
           )}
         </Typography>
       </Paper>

@@ -7,4 +7,5 @@ export * from './isConnected';
 export * from './sendPayment';
 export * from './signMessage';
 
-export type { AccountNFToken } from '@gemwallet/constants';
+export type { Amount } from 'xrpl/dist/npm/models/common';
+export type { AccountNFToken, Memo, PaymentFlags } from '@gemwallet/constants';

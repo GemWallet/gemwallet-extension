@@ -1,5 +1,7 @@
 /// <reference types="cypress" />
 
+import { xrpToDrops } from 'xrpl';
+
 describe('Make payment - XRP', () => {
   // deepcode ignore NoHardcodedPasswords: password used for testing purposes
   const PASSWORD = 'SECRET_PASSWORD';
@@ -15,7 +17,7 @@ describe('Make payment - XRP', () => {
       win.localStorage.setItem('network', 'Testnet');
     });
     cy.visit(
-      `http://localhost:3000?amount=${AMOUNT}&destination=${DESTINATION_ADDRESS}&id=93376012&transaction=payment/`,
+      `http://localhost:3000?amount=${xrpToDrops(AMOUNT)}&destination=${DESTINATION_ADDRESS}&id=93376012&transaction=payment/`,
       {
         onBeforeLoad(win) {
           (win as any).chrome = (win as any).chrome || {};
@@ -84,8 +86,13 @@ describe('Make payment - ETH', () => {
   // deepcode ignore NoHardcodedPasswords: password used for testing purposes
   const PASSWORD = 'SECRET_PASSWORD';
   const TOKEN = 'ETH';
-  const AMOUNT = '0.01';
+  const VALUE = '0.01';
   const DESTINATION_ADDRESS = 'rnm76Qgz4G9G4gZBJVuXVvkbt7gVD7szey';
+  const AMOUNT = JSON.stringify({
+    currency: TOKEN,
+    value: VALUE,
+    issuer: DESTINATION_ADDRESS,
+  });
   beforeEach(() => {
     // Mock the localStorage with a wallet already loaded
     cy.window().then((win) => {
@@ -96,7 +103,7 @@ describe('Make payment - ETH', () => {
       win.localStorage.setItem('network', 'Testnet');
     });
     cy.visit(
-      `http://localhost:3000?amount=${AMOUNT}&destination=${DESTINATION_ADDRESS}&currency=${TOKEN}&issuer=${DESTINATION_ADDRESS}&id=93376135&transaction=payment`,
+      `http://localhost:3000?amount=${AMOUNT}&destination=${DESTINATION_ADDRESS}&id=93376135&transaction=payment`,
       {
         onBeforeLoad(win) {
           (win as any).chrome = (win as any).chrome || {};
@@ -122,7 +129,7 @@ describe('Make payment - ETH', () => {
 
     // Should have the proper information
     cy.contains('Destination:').next().should('have.text', DESTINATION_ADDRESS);
-    cy.contains('Amount:').next().should('have.text', `${AMOUNT} ${TOKEN}`);
+    cy.contains('Amount:').next().should('have.text', `${VALUE} ${TOKEN}`);
 
     // Confirm the payment
     cy.contains('button', 'Confirm').click();
@@ -149,7 +156,7 @@ describe('Make payment - ETH', () => {
 
     // Should have the proper information
     cy.contains('Destination:').next().should('have.text', DESTINATION_ADDRESS);
-    cy.contains('Amount:').next().should('have.text', `${AMOUNT} ${TOKEN}`);
+    cy.contains('Amount:').next().should('have.text', `${VALUE} ${TOKEN}`);
 
     // Reject the payment
     cy.contains('button', 'Reject').click();

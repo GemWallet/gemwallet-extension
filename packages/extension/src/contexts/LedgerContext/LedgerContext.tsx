@@ -2,7 +2,7 @@ import { useContext, createContext, FC, useCallback } from 'react';
 
 import * as Sentry from '@sentry/react';
 import { sign } from 'ripple-keypairs';
-import { xrpToDrops, dropsToXrp, TransactionMetadata, Payment, Transaction, TrustSet } from 'xrpl';
+import { TransactionMetadata, Payment, Transaction, TrustSet } from 'xrpl';
 
 import {
   AccountNFToken,
@@ -12,7 +12,7 @@ import {
 } from '@gemwallet/constants';
 
 import { AccountTransaction } from '../../types';
-import { buildDestinationTag, buildMemos } from '../../utils';
+import { toXRPLMemos } from '../../utils';
 import { useNetwork } from '../NetworkContext';
 import { useWallet } from '../WalletContext';
 
@@ -45,6 +45,11 @@ const LedgerProvider: FC = ({ children }) => {
   const { client } = useNetwork();
   const { getCurrentWallet } = useWallet();
 
+  /**
+   * Returns the estimated network fees for a transaction, in drops
+   * @param transaction The transaction to estimate the fees for
+   * @returns The estimated fees, in drops
+   */
   const estimateNetworkFees = useCallback(
     async (transaction: Transaction) => {
       const wallet = getCurrentWallet();
@@ -58,7 +63,7 @@ const LedgerProvider: FC = ({ children }) => {
         if (!prepared.Fee) {
           throw new Error("Couldn't calculate the fees, something went wrong");
         } else {
-          return dropsToXrp(prepared.Fee);
+          return prepared.Fee;
         }
       }
     },
@@ -112,7 +117,7 @@ const LedgerProvider: FC = ({ children }) => {
   }, [client, getCurrentWallet]);
 
   const sendPayment = useCallback(
-    async ({ amount, destination, currency, issuer, memo, destinationTag }: PaymentRequestPayload) => {
+    async ({ amount, destination, memos, destinationTag, fee, flags }: PaymentRequestPayload) => {
       const wallet = getCurrentWallet();
       if (!client) {
         throw new Error('You need to be connected to a ledger to make a transaction');
@@ -121,23 +126,16 @@ const LedgerProvider: FC = ({ children }) => {
       } else {
         // Prepare the transaction
         try {
-          const memos = buildMemos(memo);
-          const parsedDestinationTag = buildDestinationTag(destinationTag);
           const prepared: Payment = await client.autofill({
             TransactionType: 'Payment',
             Account: wallet.publicAddress,
-            Amount:
-              currency && issuer
-                ? {
-                    currency,
-                    issuer,
-                    value: amount
-                  }
-                : xrpToDrops(amount),
+            Amount: amount,
             Destination: destination,
             // Only add the Memos and DestinationTag fields if they are are defined, otherwise it would fail
-            ...(memos && { Memos: memos }),
-            ...(parsedDestinationTag && { DestinationTag: parsedDestinationTag })
+            ...(memos && { Memos: toXRPLMemos(memos) }), // Each field of each memo is hex encoded
+            ...(destinationTag && Number(destinationTag) && { DestinationTag: Number(destinationTag) }),
+            ...(fee && { Fee: fee }), // In drops
+            ...(flags && { Flags: flags })
           });
           // Sign the transaction
           const signed = wallet.wallet.sign(prepared);

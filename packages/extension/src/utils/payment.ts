@@ -1,20 +1,91 @@
+import { xrpToDrops } from 'xrpl';
+import { Amount, Memo as XRPLMemo } from 'xrpl/dist/npm/models/common';
+
+import { Memo } from '@gemwallet/constants';
+
 import { DEFAULT_MEMO_TYPE } from '../constants/payload';
 
-export const buildMemos = (
-  memoData: string | undefined
-): { Memo: { MemoType: string; MemoData: string } }[] | undefined => {
+/**
+ * Build default memos when a single MemoData is provided from the UI.
+ * For display purposes, will need to be converted to hex before sending the transaction.
+ *
+ * Unused by the API.
+ * @param memoData - MemoData string from the UI.
+ */
+export const buildDefaultMemos = (memoData: string | undefined): Memo[] | undefined => {
   if (memoData === undefined || memoData === '') return undefined;
-  return [
+  return toHexMemos([
     {
-      Memo: {
-        MemoType: Buffer.from(DEFAULT_MEMO_TYPE, 'utf8').toString('hex').toUpperCase(),
-        MemoData: Buffer.from(memoData, 'utf8').toString('hex').toUpperCase()
+      memo: {
+        memoType: DEFAULT_MEMO_TYPE,
+        memoData: memoData
       }
     }
-  ];
+  ]);
+};
+
+export const fromHexMemos = (memos: Memo[] | undefined): Memo[] | undefined => {
+  if (memos === undefined) return undefined;
+  return memos.map(({ memo }) => {
+    return {
+      memo: {
+        ...(memo.memoType ? { memoType: Buffer.from(memo.memoType, 'hex').toString('utf8') } : {}),
+        ...(memo.memoData ? { memoData: Buffer.from(memo.memoData, 'hex').toString('utf8') } : {}),
+        ...(memo.memoFormat
+          ? { memoFormat: Buffer.from(memo.memoFormat, 'hex').toString('utf8') }
+          : {})
+      }
+    };
+  });
+};
+
+export const toHexMemos = (memos: Memo[] | undefined): Memo[] | undefined => {
+  if (memos === undefined) return undefined;
+  return memos.map(({ memo }) => {
+    return {
+      memo: {
+        ...(memo.memoType
+          ? { memoType: Buffer.from(memo.memoType, 'utf8').toString('hex').toUpperCase() }
+          : {}),
+        ...(memo.memoData
+          ? { memoData: Buffer.from(memo.memoData, 'utf8').toString('hex').toUpperCase() }
+          : {}),
+        ...(memo.memoFormat
+          ? { memoFormat: Buffer.from(memo.memoFormat, 'utf8').toString('hex').toUpperCase() }
+          : {})
+      }
+    };
+  });
+};
+
+export const toXRPLMemos = (memos: Memo[] | undefined): XRPLMemo[] | undefined => {
+  if (memos === undefined) return undefined;
+  return memos.map(({ memo }) => {
+    return {
+      Memo: {
+        ...(memo.memoType ? { MemoType: memo.memoType } : {}),
+        ...(memo.memoData ? { MemoData: memo.memoData } : {}),
+        ...(memo.memoFormat ? { MemoFormat: memo.memoFormat } : {})
+      }
+    };
+  });
 };
 
 export const buildDestinationTag = (destinationTag: string | undefined): number | undefined => {
   if (destinationTag === undefined || destinationTag === '') return undefined;
   return Number(destinationTag);
+};
+
+export const buildAmount = (
+  value: string,
+  currency: string | undefined,
+  issuer: string | undefined
+): Amount => {
+  return currency && issuer
+    ? {
+        currency,
+        issuer,
+        value
+      }
+    : xrpToDrops(value);
 };

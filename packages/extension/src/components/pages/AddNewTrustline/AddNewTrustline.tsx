@@ -11,7 +11,7 @@ import { GEM_WALLET, ReceiveTrustlineHashBackgroundMessage } from '@gemwallet/co
 import { DEFAULT_RESERVE, ERROR_RED } from '../../../constants';
 import { useLedger, useNetwork, useServer, useWallet } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
-import { formatToken } from '../../../utils';
+import { formatAmount, formatToken } from '../../../utils';
 import { TileLoader } from '../../atoms';
 import { AsyncTransaction, PageWithSpinner, PageWithTitle } from '../../templates';
 
@@ -339,7 +339,7 @@ export const AddNewTrustline: FC = () => {
     );
   }
 
-  const { issuer, currency, value, fee } = params;
+  const { issuer, currency, value } = params;
 
   return (
     <PageWithTitle title="Add Trustline - Confirm">
@@ -374,13 +374,6 @@ export const AddNewTrustline: FC = () => {
         <Typography variant="body1">Limit:</Typography>
         <Typography variant="body1">{formatToken(Number(value), currency || undefined)}</Typography>
       </Paper>
-      <Paper
-        elevation={24}
-        style={{ padding: '10px', display: 'flex', justifyContent: 'space-between' }}
-      >
-        <Typography variant="body1">Fees:</Typography>
-        <Typography variant="body1">{formatToken(Number(fee))}</Typography>
-      </Paper>
       <Paper elevation={24} style={{ padding: '10px' }}>
         <Typography variant="body1" style={{ display: 'flex', alignItems: 'center' }}>
           <Tooltip title="These are the fees to make the transaction over the network">
@@ -398,7 +391,7 @@ export const AddNewTrustline: FC = () => {
           ) : fees === DEFAULT_FEES ? (
             <TileLoader secondLineOnly />
           ) : (
-            formatToken(Number(fees), 'XRP')
+            formatAmount(fees)
           )}
         </Typography>
       </Paper>

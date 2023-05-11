@@ -3,25 +3,33 @@ import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import ErrorIcon from '@mui/icons-material/Error';
 import { Button, Container, IconButton, Paper, Tooltip, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
-import { isValidAddress, xrpToDrops } from 'xrpl';
+import { dropsToXrp, isValidAddress } from 'xrpl';
+import { Amount } from 'xrpl/dist/npm/models/common';
 
-import { GEM_WALLET, ReceivePaymentHashBackgroundMessage } from '@gemwallet/constants';
+import {
+  GEM_WALLET,
+  Memo,
+  PaymentFlags,
+  ReceivePaymentHashBackgroundMessage
+} from '@gemwallet/constants';
 
 import { DEFAULT_RESERVE, ERROR_RED } from '../../../constants';
 import { useLedger, useNetwork, useServer, useWallet } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
-import { formatToken } from '../../../utils';
+import { formatAmount, formatToken, fromHexMemos, toXRPLMemos } from '../../../utils';
 import { TileLoader } from '../../atoms';
 import { AsyncTransaction, PageWithSpinner, PageWithTitle } from '../../templates';
 
 const DEFAULT_FEES = 'Loading ...';
 
 interface Params {
-  amount: string | null;
+  amount: Amount | null;
   destination: string | null;
   id: number;
-  currency: string | null;
-  issuer: string | null;
+  memos: Memo[] | null;
+  destinationTag: number | null;
+  fee: string | null;
+  flags: PaymentFlags | null;
 }
 
 export const Transaction: FC = () => {
@@ -29,10 +37,12 @@ export const Transaction: FC = () => {
     amount: null,
     destination: null,
     id: 0,
-    currency: null,
-    issuer: null
+    memos: null,
+    destinationTag: null,
+    fee: null,
+    flags: null
   });
-  const [fees, setFees] = useState<string>(DEFAULT_FEES);
+  const [estimatedFees, setEstimatedFees] = useState<string>(DEFAULT_FEES);
   const [errorFees, setErrorFees] = useState('');
   const [errorRequestRejection, setErrorRequestRejection] = useState<string>('');
   const [difference, setDifference] = useState<number | undefined>();
@@ -48,11 +58,16 @@ export const Transaction: FC = () => {
   useEffect(() => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
-    const amount = urlParams.get('amount');
+    const amount = parseAmountFromString(urlParams.get('amount'));
     const destination = urlParams.get('destination');
     const id = Number(urlParams.get('id')) || 0;
-    const currency = urlParams.get('currency');
-    const issuer = urlParams.get('issuer');
+    const memosString = urlParams.get('memos');
+    const memos = memosString ? (JSON.parse(memosString) as Memo[]) : null;
+    const destinationTag = urlParams.get('destinationTag')
+      ? Number(urlParams.get('destinationTag'))
+      : null;
+    const fee = checkFee(urlParams.get('fee'));
+    const flags = parseFlagsFromString(urlParams.get('flags'));
 
     if (amount === null || destination === null) {
       setIsParamsMissing(true);
@@ -62,8 +77,10 @@ export const Transaction: FC = () => {
       amount,
       destination,
       id,
-      currency,
-      issuer
+      memos,
+      destinationTag,
+      fee,
+      flags
     });
   }, []);
 
@@ -73,18 +90,14 @@ export const Transaction: FC = () => {
       estimateNetworkFees({
         TransactionType: 'Payment',
         Account: currentWallet.publicAddress,
-        Amount:
-          params.currency && params.issuer
-            ? {
-                currency: params.currency,
-                issuer: params.issuer,
-                value: params.amount
-              }
-            : xrpToDrops(params.amount),
-        Destination: params.destination
+        Amount: params.amount,
+        Destination: params.destination,
+        Memos: params.memos ? toXRPLMemos(params.memos) : undefined,
+        DestinationTag: params.destinationTag ?? undefined,
+        Flags: params.flags ?? undefined
       })
         .then((fees) => {
-          setFees(fees);
+          setEstimatedFees(fees);
         })
         .catch((e) => {
           Sentry.captureException(e);
@@ -96,21 +109,25 @@ export const Transaction: FC = () => {
     estimateNetworkFees,
     getCurrentWallet,
     params.amount,
-    params.currency,
     params.destination,
-    params.issuer
+    params.memos,
+    params.destinationTag,
+    params.fee,
+    params.flags
   ]);
 
   useEffect(() => {
     const currentWallet = getCurrentWallet();
     if (currentWallet && params.amount) {
+      const amount =
+        typeof params.amount === 'string' ? dropsToXrp(params.amount) : params.amount.value;
       client
         ?.getXrpBalance(currentWallet!.publicAddress)
         .then((currentBalance) => {
           const difference =
             Number(currentBalance) -
             Number(serverInfo?.info.validated_ledger?.reserve_base_xrp || DEFAULT_RESERVE) -
-            Number(params.amount);
+            Number(amount);
           setDifference(difference);
         })
         .catch((e) => {
@@ -156,10 +173,12 @@ export const Transaction: FC = () => {
     // Amount and Destination will be present because if not,
     // we won't be able to go to the confirm transaction state
     sendPayment({
-      amount: params.amount as string,
+      amount: params.amount as Amount,
       destination: params.destination as string,
-      currency: params.currency ?? undefined,
-      issuer: params.issuer ?? undefined
+      memos: params.memos ?? undefined,
+      destinationTag: params.destinationTag ?? undefined,
+      fee: params.fee ?? undefined,
+      flags: params.flags ?? undefined
     })
       .then((transactionHash) => {
         setTransaction(TransactionStatus.Success);
@@ -175,15 +194,84 @@ export const Transaction: FC = () => {
   }, [
     createMessage,
     params.amount,
-    params.currency,
     params.destination,
-    params.issuer,
+    params.memos,
+    params.destinationTag,
+    params.fee,
+    params.flags,
     sendPayment
   ]);
 
   const hasEnoughFunds = useMemo(() => {
     return Number(difference) > 0;
   }, [difference]);
+
+  const checkFee = (fee: string | null) => {
+    if (fee) {
+      try {
+        if (Number(fee) && dropsToXrp(fee)) {
+          return fee;
+        }
+      } catch (e) {}
+    }
+    return null;
+  };
+
+  const parseAmountFromString = (amountString: string | null) => {
+    if (!amountString) {
+      return null;
+    }
+
+    try {
+      const parsedAmount = JSON.parse(amountString);
+
+      if (
+        typeof parsedAmount === 'object' &&
+        parsedAmount !== null &&
+        'value' in parsedAmount &&
+        'issuer' in parsedAmount &&
+        'currency' in parsedAmount
+      ) {
+        return parsedAmount as { value: string; issuer: string; currency: string };
+      }
+
+      if (typeof parsedAmount === 'number') {
+        return parsedAmount.toString();
+      }
+    } catch (error) {}
+
+    return amountString;
+  };
+
+  const parseFlagsFromString = (flagsString: string | null) => {
+    if (!flagsString) {
+      return null;
+    }
+
+    if (Number(flagsString)) {
+      return Number(flagsString);
+    }
+
+    try {
+      const parsedFlags = JSON.parse(flagsString);
+
+      if (
+        typeof parsedFlags === 'object' &&
+        parsedFlags !== null &&
+        ('tfNoDirectRipple' in parsedFlags ||
+          'tfPartialPayment' in parsedFlags ||
+          'tfLimitQuality' in parsedFlags)
+      ) {
+        return parsedFlags as {
+          tfNoDirectRipple?: boolean;
+          tfPartialPayment?: boolean;
+          tfLimitQuality?: boolean;
+        };
+      }
+    } catch (error) {}
+
+    return null;
+  };
 
   if (isParamsMissing) {
     return (
@@ -287,7 +375,18 @@ export const Transaction: FC = () => {
     );
   }
 
-  const { amount, destination, currency } = params;
+  const { amount, destination, memos, destinationTag, fee, flags } = params;
+  const decodedMemos = fromHexMemos(memos || []);
+
+  const formatFlags = (flags: PaymentFlags) => {
+    if (typeof flags === 'object') {
+      return Object.entries(flags)
+        .map(([key, value]) => `${key}: ${value}`)
+        .join('\n');
+    } else {
+      return flags;
+    }
+  };
 
   return (
     <PageWithTitle title="Confirm Transaction">
@@ -299,17 +398,56 @@ export const Transaction: FC = () => {
           </Typography>
         </div>
       ) : null}
-      <Paper elevation={24} style={{ padding: '10px' }}>
+      <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
         <Typography variant="body1">Destination:</Typography>
         <Typography variant="body2">{destination}</Typography>
       </Paper>
-      <Paper elevation={24} style={{ padding: '10px' }}>
+      {decodedMemos && decodedMemos.length > 0 ? (
+        <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
+          <Typography variant="body1">Memos:</Typography>
+          {decodedMemos.map((memo, index) => (
+            <div
+              key={index}
+              style={{
+                marginBottom: index === decodedMemos.length - 1 ? 0 : '8px'
+              }}
+            >
+              <Typography
+                variant="body2"
+                style={{
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  maxWidth: '100%'
+                }}
+              >
+                {memo.memo.memoData}
+              </Typography>
+            </div>
+          ))}
+        </Paper>
+      ) : null}
+      {destinationTag ? (
+        <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
+          <Typography variant="body1">Destination Tag:</Typography>
+          <Typography variant="body2">{destinationTag}</Typography>
+        </Paper>
+      ) : null}
+      {flags ? (
+        <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
+          <Typography variant="body1">Flags:</Typography>
+          <Typography variant="body2">
+            <pre style={{ margin: 0 }}>{formatFlags(flags)}</pre>
+          </Typography>
+        </Paper>
+      ) : null}
+      <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
         <Typography variant="body1">Amount:</Typography>
-        <Typography variant="h4" component="h1" gutterBottom align="right">
-          {formatToken(Number(amount), currency || 'XRP')}
+        <Typography variant="h6" component="h1" align="right">
+          {amount ? formatAmount(amount) : 'Not found'}
         </Typography>
       </Paper>
-      <Paper elevation={24} style={{ padding: '10px' }}>
+      <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
         <Typography variant="body1" style={{ display: 'flex', alignItems: 'center' }}>
           <Tooltip title="These are the fees to make the transaction over the network">
             <IconButton size="small">
@@ -323,10 +461,12 @@ export const Transaction: FC = () => {
             <Typography variant="caption" style={{ color: ERROR_RED }}>
               {errorFees}
             </Typography>
-          ) : fees === DEFAULT_FEES ? (
+          ) : estimatedFees === DEFAULT_FEES ? (
             <TileLoader secondLineOnly />
+          ) : fee ? (
+            formatToken(Number(fee), 'XRP (manual)', true)
           ) : (
-            formatToken(Number(fees), 'XRP')
+            formatAmount(estimatedFees)
           )}
         </Typography>
       </Paper>

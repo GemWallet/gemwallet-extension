@@ -1,3 +1,6 @@
+import { PaymentFlagsInterface } from 'xrpl';
+import { Amount } from 'xrpl/dist/npm/models/common';
+
 import { Network } from '../network/network.constant';
 import { AccountNFToken } from './../xrpl/nft.types';
 
@@ -16,19 +19,32 @@ export interface WebsiteRequestPayload {
 }
 
 export interface PaymentRequestPayload {
-  // 	The amount of currency to deliver (in drops)
-  amount: string;
+  // The amount to deliver, in one of the following formats:
+  // - A string representing the number of XRP to deliver, in drops.
+  // - An object where 'value' is a string representing the number of the token to deliver.
+  amount: Amount;
   // The unique address of the account receiving the payment
   destination: string;
-  // The token that can be used
-  currency?: string;
-  // The issuer of the token
-  issuer?: string;
-  // The memo to attach to the transaction
-  memo?: string;
+  // The memos to attach to the transaction
+  // Each attribute of each memo must be hex encoded
+  memos?: Memo[];
   // The destination tag to attach to the transaction
-  destinationTag?: string;
+  destinationTag?: number;
+  // Integer amount of XRP, in drops, to be destroyed as a cost for distributing this transaction to the network
+  fee?: string;
+  // Flags to set on the transaction
+  flags?: PaymentFlags;
 }
+
+export interface Memo {
+  memo: {
+    memoType?: string;
+    memoData?: string;
+    memoFormat?: string;
+  };
+}
+
+export type PaymentFlags = PaymentFlagsInterface | number;
 
 export interface TrustlineRequestPayload {
   // The token to be used
