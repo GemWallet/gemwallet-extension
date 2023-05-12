@@ -25,25 +25,3 @@ export const setTrustline = async (payment: TrustlineRequestPayload) => {
   } catch (e) {}
   return response;
 };
-
-/**
- * @deprecated Use setTrustline instead
- */
-export const addTrustline = async (payment: TrustlineRequestPayloadLegacy) => {
-  return setTrustline(toTrustlineRequestPayload(payment));
-};
-
-const toTrustlineRequestPayload = (
-  payload: TrustlineRequestPayloadLegacy
-): TrustlineRequestPayload => {
-  return {
-    limitAmount: {
-      value: payload.value,
-      issuer: payload.issuer,
-      currency: payload.currency
-    },
-    fee: payload.fee,
-    memos: payload.memos,
-    flags: payload.flags
-  };
-};
