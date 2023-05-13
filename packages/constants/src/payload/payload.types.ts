@@ -112,6 +112,16 @@ export interface TrustlineHashResponsePayload {
   hash: string | null | undefined;
 }
 
+export interface GetNFTResponsePayload {
+  nfts:
+    | {
+        account_nfts: AccountNFToken[];
+        marker?: unknown;
+      }
+    | null
+    | undefined;
+}
+
 export interface NFTResponsePayload {
   nfts: AccountNFToken[] | null | undefined;
 }

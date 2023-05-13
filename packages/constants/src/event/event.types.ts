@@ -50,6 +50,16 @@ export interface PublicKeyEventListener extends MessageEvent<MessageEventData> {
   };
 }
 
+export interface GetNFTEventListener extends MessageEvent<MessageEventData> {
+  data: {
+    app: typeof GEM_WALLET;
+    type: 'REQUEST_GET_NFT/V3';
+    source: 'GEM_WALLET_MSG_REQUEST';
+    messageId: number;
+    payload: WebsiteRequestPayload;
+  };
+}
+
 export interface NFTEventListener extends MessageEvent<MessageEventData> {
   data: {
     app: typeof GEM_WALLET;
@@ -92,6 +102,7 @@ export interface AddTrustlineEventListener extends MessageEvent<MessageEventData
 
 export type EventListener =
   | NetworkEventListener
+  | GetNFTEventListener
   | NFTEventListener
   | AddressEventListener
   | PublicKeyEventListener

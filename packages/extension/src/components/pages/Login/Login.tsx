@@ -105,9 +105,14 @@ export const Login: FC = () => {
           }
         });
       } else if (search.includes(PARAMETER_NFT)) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const type =
+          urlParams.get('requestMessage') === 'REQUEST_GET_NFT/V3'
+            ? 'RECEIVE_GET_NFT/V3'
+            : 'RECEIVE_NFT';
         handleTransaction({
           app: GEM_WALLET,
-          type: 'RECEIVE_NFT',
+          type,
           payload: {
             id: windowId,
             nfts: null

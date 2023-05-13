@@ -2,7 +2,12 @@ import { FC, useCallback, useMemo } from 'react';
 
 import * as Sentry from '@sentry/react';
 
-import { GEM_WALLET, ReceiveNFTBackgroundMessage } from '@gemwallet/constants';
+import {
+  AccountNFToken,
+  GEM_WALLET,
+  ReceiveGetNFTBackgroundMessage,
+  ReceiveNFTBackgroundMessage
+} from '@gemwallet/constants';
 
 import { useBrowser, useLedger, useWallet } from '../../../contexts';
 import { Permission, saveTrustedApp } from '../../../utils';
@@ -26,19 +31,46 @@ export const ShareNFT: FC = () => {
     };
   }, []);
 
+  const receivingMessage = useMemo(() => {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    return urlParams.get('requestMessage') === 'REQUEST_GET_NFT/V3'
+      ? 'RECEIVE_GET_NFT/V3'
+      : 'RECEIVE_NFT';
+  }, []);
+
   const { id, url, limit, marker } = payload;
 
   const handleSendMessage = useCallback(
-    (nfts: any) => {
-      chrome.runtime
-        .sendMessage<ReceiveNFTBackgroundMessage>({
+    (messagePayload: { nfts: AccountNFToken[]; marker?: unknown } | null | undefined) => {
+      let message: ReceiveNFTBackgroundMessage | ReceiveGetNFTBackgroundMessage = {
+        app: GEM_WALLET,
+        type: 'RECEIVE_NFT',
+        payload: {
+          id,
+          nfts: !!messagePayload ? messagePayload.nfts : messagePayload
+        }
+      };
+
+      if (receivingMessage === 'RECEIVE_GET_NFT/V3') {
+        message = {
           app: GEM_WALLET,
-          type: 'RECEIVE_NFT',
+          type: receivingMessage,
           payload: {
             id,
-            nfts
+            nfts: !!messagePayload
+              ? {
+                  account_nfts: messagePayload.nfts,
+                  marker: messagePayload.marker
+                }
+              : messagePayload
           }
-        })
+        };
+      }
+
+      chrome.runtime
+        //TODO: ReceiveNFTBackgroundMessage is deprecated since v3
+        .sendMessage<ReceiveNFTBackgroundMessage | ReceiveGetNFTBackgroundMessage>(message)
         .then(() => {
           if (extensionWindow?.id) {
             closeExtension({ windowId: Number(extensionWindow.id) });
@@ -48,7 +80,7 @@ export const ShareNFT: FC = () => {
           Sentry.captureException(e);
         });
     },
-    [closeExtension, extensionWindow?.id, id]
+    [closeExtension, extensionWindow?.id, id, receivingMessage]
   );
 
   const handleReject = useCallback(() => {
@@ -63,7 +95,7 @@ export const ShareNFT: FC = () => {
     } catch (e) {
       // Returns an empty array if the account is not activated
       if ((e as Error).message === 'Account not found.') {
-        handleSendMessage([]);
+        handleSendMessage({ nfts: [] });
       } else {
         handleSendMessage(undefined);
       }

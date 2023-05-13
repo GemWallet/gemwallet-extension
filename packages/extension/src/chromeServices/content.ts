@@ -12,6 +12,7 @@ import {
   PublicKeyEventListener,
   PublicKeyResponse,
   ReceiveAddressContentMessage,
+  ReceiveGetNFTContentMessage,
   ReceiveNetworkContentMessage,
   ReceiveNFTContentMessage,
   ReceivePaymentHashContentMessage,
@@ -19,6 +20,7 @@ import {
   ReceiveSignMessageContentMessage,
   ReceiveTrustlineHashContentMessage,
   RequestAddressMessage,
+  RequestGetNFTMessage,
   RequestNetworkMessage,
   RequestNFTMessage,
   RequestPaymentMessage,
@@ -147,6 +149,41 @@ setTimeout(() => {
             chrome.runtime.onMessage.addListener(messageListener);
           }
         );
+      } else if (type === 'REQUEST_GET_NFT/V3') {
+        const {
+          data: { payload }
+        } = event as NFTEventListener;
+        chrome.runtime.sendMessage<RequestGetNFTMessage>(
+          {
+            app,
+            type,
+            payload
+          },
+          () => {
+            const messageListener = (
+              message: ReceiveGetNFTContentMessage,
+              sender: chrome.runtime.MessageSender
+            ) => {
+              const { app, type, payload } = message;
+              // We make sure that the message comes from GemWallet
+              if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
+                if (type === 'RECEIVE_GET_NFT/V3') {
+                  window.postMessage(
+                    {
+                      source: 'GEM_WALLET_MSG_RESPONSE',
+                      messagedId,
+                      nfts: payload.nfts
+                    } as NFTResponse,
+                    window.location.origin
+                  );
+                  chrome.runtime.onMessage.removeListener(messageListener);
+                }
+              }
+            };
+            chrome.runtime.onMessage.addListener(messageListener);
+          }
+        );
+        // REQUEST_NFT is deprecated since v3
       } else if (type === 'REQUEST_NFT') {
         const {
           data: { payload }

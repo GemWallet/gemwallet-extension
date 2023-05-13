@@ -11,6 +11,7 @@ import {
   SignMessageRequestPayload,
   WebsiteRequestPayload,
   TrustlineHashResponsePayload,
+  GetNFTResponsePayload,
   NFTResponsePayload,
   NFTRequestPayload
 } from '../payload/payload.types';
@@ -20,6 +21,7 @@ export type RequestMessage =
   | 'REQUEST_ADDRESS'
   | 'REQUEST_ADD_TRUSTLINE'
   | 'REQUEST_CONNECTION'
+  | 'REQUEST_GET_NFT/V3'
   | 'REQUEST_NETWORK'
   | 'REQUEST_NFT'
   | 'REQUEST_PUBLIC_KEY'
@@ -30,6 +32,7 @@ export type ReceiveMessage =
   | 'RECEIVE_ADDRESS'
   | 'RECEIVE_TRUSTLINE_HASH'
   | 'RECEIVE_NETWORK'
+  | 'RECEIVE_GET_NFT/V3'
   | 'RECEIVE_NFT'
   | 'RECEIVE_PUBLIC_KEY'
   | 'RECEIVE_SIGN_MESSAGE';
@@ -66,6 +69,12 @@ export interface RequestTrustlineMessage {
   app: typeof GEM_WALLET;
   type: 'REQUEST_ADD_TRUSTLINE';
   payload: TrustlineRequestPayload;
+}
+
+export interface RequestGetNFTMessage {
+  app: typeof GEM_WALLET;
+  type: 'REQUEST_GET_NFT/V3';
+  payload: NFTRequestPayload & WebsiteRequestPayload;
 }
 
 export interface RequestNFTMessage {
@@ -118,6 +127,12 @@ export interface ReceiveNetworkContentMessage {
   payload: NetworkResponsePayload;
 }
 
+export interface ReceiveGetNFTContentMessage {
+  app: typeof GEM_WALLET;
+  type: 'RECEIVE_GET_NFT/V3';
+  payload: GetNFTResponsePayload;
+}
+
 export interface ReceiveNFTContentMessage {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_NFT';
@@ -154,6 +169,8 @@ export type ReceiveAddressBackgroundMessage = ReceiveAddressContentMessage &
 export type ReceiveNetworkBackgroundMessage = ReceiveNetworkContentMessage &
   BackgroundMessagePayload;
 
+export type ReceiveGetNFTBackgroundMessage = ReceiveGetNFTContentMessage & BackgroundMessagePayload;
+
 export type ReceiveNFTBackgroundMessage = ReceiveNFTContentMessage & BackgroundMessagePayload;
 
 export type ReceivePublicKeyBackgroundMessage = ReceivePublicKeyContentMessage &
@@ -165,6 +182,7 @@ export type ReceiveSignMessageBackgroundMessage = ReceiveSignMessageContentMessa
 export type BackgroundMessage =
   // Inputted messages - DO NOT contain ID within the payloads
   | RequestNetworkMessage
+  | RequestGetNFTMessage
   | RequestNFTMessage
   | RequestAddressMessage
   | RequestPublicKeyMessage
@@ -176,6 +194,7 @@ export type BackgroundMessage =
   | ReceiveTrustlineHashBackgroundMessage
   | ReceiveAddressBackgroundMessage
   | ReceiveNetworkBackgroundMessage
+  | ReceiveGetNFTBackgroundMessage
   | ReceiveNFTBackgroundMessage
   | ReceivePublicKeyBackgroundMessage
   | ReceiveSignMessageBackgroundMessage;
@@ -189,6 +208,8 @@ export interface RequestIsConnectedMessage {
 export type APIMessages =
   | RequestAddressMessage
   | RequestNetworkMessage
+  | RequestGetNFTMessage
+  | RequestGetNFTMessage
   | RequestNFTMessage
   | RequestPublicKeyMessage
   | RequestIsConnectedMessage

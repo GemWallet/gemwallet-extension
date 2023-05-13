@@ -8,7 +8,7 @@ import {
   AccountNFToken,
   NFTRequestPayload,
   PaymentRequestPayload,
-  TrustlineRequestPayload,
+  TrustlineRequestPayload
 } from '@gemwallet/constants';
 
 import { AccountTransaction } from '../../types';
@@ -39,7 +39,10 @@ const LedgerContext = createContext<LedgerContextType>({
     new Promise((resolve) => {
       resolve('0');
     }),
-  getNFTs: () => new Promise(() => {}),
+  getNFTs: () =>
+    new Promise(() => ({
+      account_nfts: []
+    })),
   getTransactions: () =>
     new Promise((resolve) => {
       resolve([]);
@@ -138,7 +141,8 @@ const LedgerProvider: FC = ({ children }) => {
             Destination: destination,
             // Only add the Memos and DestinationTag fields if they are are defined, otherwise it would fail
             ...(memos && { Memos: toXRPLMemos(memos) }), // Each field of each memo is hex encoded
-            ...(destinationTag && Number(destinationTag) && { DestinationTag: Number(destinationTag) }),
+            ...(destinationTag &&
+              Number(destinationTag) && { DestinationTag: Number(destinationTag) }),
             ...(fee && { Fee: fee }), // In drops
             ...(flags && { Flags: flags })
           });
