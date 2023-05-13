@@ -2,6 +2,7 @@ import {
   BackgroundMessage,
   GEM_WALLET,
   ReceiveAddressContentMessage,
+  ReceiveGetNFTContentMessage,
   ReceiveMessage,
   ReceiveNetworkContentMessage,
   ReceiveNFTContentMessage,
@@ -9,6 +10,7 @@ import {
   ReceivePublicKeyContentMessage,
   ReceiveSignMessageContentMessage,
   ReceiveTrustlineHashContentMessage,
+  RequestMessage,
   RequestPayload,
   ResponsePayload
 } from '@gemwallet/constants';
@@ -50,6 +52,7 @@ const focusOrCreatePopupWindow = async ({
   payload,
   sender,
   parameter,
+  requestMessage,
   receivingMessage,
   errorPayload,
   width = NOTIFICATION_WIDTH,
@@ -58,6 +61,8 @@ const focusOrCreatePopupWindow = async ({
   payload: RequestPayload;
   sender: chrome.runtime.MessageSender;
   parameter: string;
+  //TODO: This parameter is optional till we refactor the messaging system
+  requestMessage?: RequestMessage;
   receivingMessage: ReceiveMessage;
   errorPayload: ResponsePayload;
   width?: number;
@@ -75,7 +80,8 @@ const focusOrCreatePopupWindow = async ({
       const currentWindow = await chrome.windows.create({
         url: `../..${MAIN_FILE}${serializeToQueryString({
           ...payload,
-          id: sender.tab?.id
+          id: sender.tab?.id,
+          requestMessage: requestMessage
         })}&${parameter}`,
         type: 'popup',
         width,
@@ -143,6 +149,17 @@ chrome.runtime.onMessage.addListener(
         errorPayload: {
           address: undefined,
           publicKey: undefined
+        }
+      });
+    } else if (type === 'REQUEST_GET_NFT/V3') {
+      focusOrCreatePopupWindow({
+        payload: message.payload,
+        sender,
+        parameter: PARAMETER_NFT,
+        requestMessage: message.type,
+        receivingMessage: 'RECEIVE_GET_NFT/V3',
+        errorPayload: {
+          nfts: undefined
         }
       });
     } else if (type === 'REQUEST_NFT') {
@@ -229,6 +246,16 @@ chrome.runtime.onMessage.addListener(
         payload: {
           address: payload.address,
           publicKey: payload.publicKey
+        }
+      });
+      //TODO: This code is duplicated from RECEIVE_NFT because we will return the error message on API V3
+    } else if (type === 'RECEIVE_GET_NFT/V3') {
+      const { payload } = message;
+      sendMessageToTab<ReceiveGetNFTContentMessage>(payload.id, {
+        app,
+        type: 'RECEIVE_GET_NFT/V3',
+        payload: {
+          nfts: payload.nfts
         }
       });
     } else if (type === 'RECEIVE_NFT') {

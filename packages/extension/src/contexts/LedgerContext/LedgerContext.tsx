@@ -8,7 +8,7 @@ import {
   AccountNFToken,
   NFTRequestPayload,
   PaymentRequestPayload,
-  TrustlineRequestPayload,
+  TrustlineRequestPayload
 } from '@gemwallet/constants';
 
 import { AccountTransaction } from '../../types';
@@ -16,13 +16,18 @@ import { toXRPLMemos } from '../../utils';
 import { useNetwork } from '../NetworkContext';
 import { useWallet } from '../WalletContext';
 
+export interface GetNFTsResponse {
+  account_nfts: AccountNFToken[];
+  marker?: unknown;
+}
+
 export interface LedgerContextType {
   // Return transaction hash in case of success
   sendPayment: (payload: PaymentRequestPayload) => Promise<string>;
   addTrustline: (payload: TrustlineRequestPayload) => Promise<string>;
   signMessage: (message: string) => string | undefined;
   estimateNetworkFees: (payload: Transaction) => Promise<string>;
-  getNFTs: (payload?: NFTRequestPayload) => Promise<AccountNFToken[]>;
+  getNFTs: (payload?: NFTRequestPayload) => Promise<GetNFTsResponse>;
   getTransactions: () => Promise<AccountTransaction[]>;
 }
 
@@ -34,7 +39,10 @@ const LedgerContext = createContext<LedgerContextType>({
     new Promise((resolve) => {
       resolve('0');
     }),
-  getNFTs: () => new Promise(() => []),
+  getNFTs: () =>
+    new Promise(() => ({
+      account_nfts: []
+    })),
   getTransactions: () =>
     new Promise((resolve) => {
       resolve([]);
@@ -89,7 +97,7 @@ const LedgerProvider: FC = ({ children }) => {
         if (!prepared.result?.account_nfts) {
           throw new Error("Couldn't get the NFTs");
         } else {
-          return prepared.result.account_nfts;
+          return { account_nfts: prepared.result.account_nfts, marker: prepared.result.marker };
         }
       }
     },
@@ -133,7 +141,8 @@ const LedgerProvider: FC = ({ children }) => {
             Destination: destination,
             // Only add the Memos and DestinationTag fields if they are are defined, otherwise it would fail
             ...(memos && { Memos: toXRPLMemos(memos) }), // Each field of each memo is hex encoded
-            ...(destinationTag && Number(destinationTag) && { DestinationTag: Number(destinationTag) }),
+            ...(destinationTag &&
+              Number(destinationTag) && { DestinationTag: Number(destinationTag) }),
             ...(fee && { Fee: fee }), // In drops
             ...(flags && { Flags: flags })
           });

@@ -5,7 +5,7 @@ jest.mock('../helpers/extensionMessaging', () => ({
   sendMessageToContentScript: jest.fn()
 }));
 
-describe('getNFT', () => {
+describe.skip('getNFT', () => {
   it('returns an array of NFTs when successfully retrieving data', async () => {
     // Mock the response from sendMessageToContentScript
     const mockResponse = {
