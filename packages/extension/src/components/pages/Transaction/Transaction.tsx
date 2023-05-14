@@ -65,10 +65,23 @@ export const Transaction: FC = () => {
   const { client, network } = useNetwork();
   const { serverInfo } = useServer();
 
+  const messageType = useMemo(() => {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    return urlParams.get('requestMessage') === 'SEND_PAYMENT/V3'
+      ? 'SEND_PAYMENT/V3'
+      : 'SEND_PAYMENT';
+  }, []);
+
   useEffect(() => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
-    const amount = parseAmount(urlParams.get('amount'));
+    const amount = parseAmount(
+      urlParams.get('amount'),
+      urlParams.get('currency'),
+      urlParams.get('issuer'),
+      messageType
+    );
     const destination = urlParams.get('destination');
     const id = Number(urlParams.get('id')) || 0;
     const memos = parseMemos(urlParams.get('memos'));

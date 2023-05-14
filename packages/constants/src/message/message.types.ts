@@ -8,6 +8,7 @@ import {
   NFTRequestPayload,
   PaymentHashResponsePayload,
   PaymentRequestPayload,
+  PaymentRequestPayloadDeprecated,
   PublicKeyResponsePayload,
   SignedMessageResponsePayload,
   SignMessageRequestPayload,
@@ -18,6 +19,7 @@ import {
 } from '../payload/payload.types';
 
 export type RequestMessage =
+  | 'SEND_PAYMENT/V3'
   | 'SEND_PAYMENT'
   | 'REQUEST_ADDRESS'
   | 'REQUEST_ADD_TRUSTLINE'
@@ -63,8 +65,14 @@ export interface RequestPublicKeyMessage {
 
 export interface RequestPaymentMessage {
   app: typeof GEM_WALLET;
-  type: 'SEND_PAYMENT';
+  type: 'SEND_PAYMENT/V3';
   payload: PaymentRequestPayload;
+}
+
+export interface RequestPaymentMessageDeprecated {
+  app: typeof GEM_WALLET;
+  type: 'SEND_PAYMENT';
+  payload: PaymentRequestPayloadDeprecated;
 }
 
 export interface RequestSetTrustlineMessage {
@@ -196,6 +204,7 @@ export type BackgroundMessage =
   | RequestAddressMessage
   | RequestPublicKeyMessage
   | RequestPaymentMessage
+  | RequestPaymentMessageDeprecated
   | RequestSetTrustlineMessage
   | RequestSetTrustlineMessageDeprecated
   | RequestSignMessageMessage
