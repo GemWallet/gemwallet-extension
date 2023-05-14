@@ -37,11 +37,13 @@ export interface PaymentRequestPayload {
 }
 
 export interface SetTrustlineRequestPayload {
+  // The maximum amount of currency that can be exchanged to the trustline
   limitAmount: IssuedCurrencyAmount;
   // Integer amount of XRP, in drops, to be destroyed as a cost for distributing this transaction to the network.
   // Some transaction types have different minimum requirements.
   fee?: string;
-  // 	The maximum amount of currency that can be exchanged to the trustline
+  // The memos to attach to the transaction
+  // Each attribute of each memo must be hex encoded
   memos?: Memo[];
   // Flags to set on the transaction
   flags?: TrustSetFlags;
@@ -57,11 +59,6 @@ export interface SetTrustlineRequestPayloadDeprecated {
   fee?: string;
   // 	The maximum amount of currency that can be exchanged to the trustline
   value: string;
-  // The memos to attach to the transaction
-  // Each attribute of each memo must be hex encoded
-  memos?: Memo[];
-  // Flags to set on the transaction
-  flags?: TrustSetFlags;
 }
 
 export interface NFTRequestPayload {
