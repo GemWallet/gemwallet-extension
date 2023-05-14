@@ -84,19 +84,11 @@ const serializeMessage = (msg: APIMessages): any => {
     modifiedMsg.payload.amount = JSON.stringify(modifiedMsg.payload.amount);
   }
 
-  if (
-    'payload' in modifiedMsg &&
-    'limitAmount' in modifiedMsg.payload &&
-    typeof modifiedMsg.payload.limitAmount === 'object'
-  ) {
+  if (typeof modifiedMsg.payload?.limitAmount === 'object') {
     modifiedMsg.payload.limitAmount = JSON.stringify(modifiedMsg.payload.limitAmount);
   }
 
-  if (
-    'payload' in modifiedMsg &&
-    'flags' in modifiedMsg.payload &&
-    typeof modifiedMsg.payload.flags === 'object'
-  ) {
+  if (typeof modifiedMsg.payload?.flags === 'object') {
     modifiedMsg.payload.flags = JSON.stringify(modifiedMsg.payload.flags);
   }
 
