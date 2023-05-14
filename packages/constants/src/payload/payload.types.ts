@@ -47,7 +47,7 @@ export interface TrustlineRequestPayload {
   flags?: TrustSetFlags;
 }
 
-export interface TrustlineRequestPayloadLegacy {
+export interface TrustlineRequestPayloadDeprecated {
   // The token to be used
   currency: string;
   // The address of the account owing the token
@@ -83,6 +83,7 @@ export type RequestPayload =
   | WebsiteRequestPayload
   | PaymentRequestPayload
   | TrustlineRequestPayload
+  | TrustlineRequestPayloadDeprecated
   | NFTRequestPayload
   | SignMessageRequestPayload;
 

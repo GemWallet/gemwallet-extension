@@ -26,8 +26,21 @@ export const parseAmount = (amountString: string | null) => {
   return amountString;
 };
 
-export const parseLimitAmount = (amountString: string | null) => {
+export const parseLimitAmount = (
+  amountString: string | null,
+  deprecatedAmountString: string | null,
+  deprecatedCurrencyString: string | null,
+  deprecatedIssuerString: string | null
+) => {
   if (!amountString) {
+    if (deprecatedAmountString && deprecatedCurrencyString && deprecatedIssuerString) {
+      return {
+        value: deprecatedAmountString,
+        currency: deprecatedCurrencyString,
+        issuer: deprecatedIssuerString
+      };
+    }
+
     return null;
   }
 

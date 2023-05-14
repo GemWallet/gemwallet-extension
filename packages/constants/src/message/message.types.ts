@@ -1,30 +1,32 @@
 import { GEM_WALLET } from '../global/global.constant';
 import {
   AddressResponsePayload,
+  GetNFTResponsePayload,
+  GetNFTResponsePayloadDeprecated,
   IsConnectedResponsePayload,
   NetworkResponsePayload,
+  NFTRequestPayload,
   PaymentHashResponsePayload,
   PaymentRequestPayload,
-  TrustlineRequestPayload,
   PublicKeyResponsePayload,
   SignedMessageResponsePayload,
   SignMessageRequestPayload,
-  WebsiteRequestPayload,
   TrustlineHashResponsePayload,
-  GetNFTResponsePayload,
-  GetNFTResponsePayloadDeprecated,
-  NFTRequestPayload
+  TrustlineRequestPayload,
+  TrustlineRequestPayloadDeprecated,
+  WebsiteRequestPayload
 } from '../payload/payload.types';
 
 export type RequestMessage =
   | 'SEND_PAYMENT'
   | 'REQUEST_ADDRESS'
+  | 'REQUEST_ADD_TRUSTLINE'
   | 'REQUEST_CONNECTION'
   | 'REQUEST_GET_NFT/V3'
   | 'REQUEST_NETWORK'
   | 'REQUEST_NFT'
   | 'REQUEST_PUBLIC_KEY'
-  | 'REQUEST_SET_TRUSTLINE'
+  | 'REQUEST_SET_TRUSTLINE/V3'
   | 'REQUEST_SIGN_MESSAGE';
 
 export type ReceiveMessage =
@@ -67,8 +69,14 @@ export interface RequestPaymentMessage {
 
 export interface RequestTrustlineMessage {
   app: typeof GEM_WALLET;
-  type: 'REQUEST_SET_TRUSTLINE';
+  type: 'REQUEST_SET_TRUSTLINE/V3';
   payload: TrustlineRequestPayload;
+}
+
+export interface RequestTrustlineMessageDeprecated {
+  app: typeof GEM_WALLET;
+  type: 'REQUEST_ADD_TRUSTLINE';
+  payload: TrustlineRequestPayloadDeprecated;
 }
 
 export interface RequestGetNFTMessage {
@@ -189,6 +197,7 @@ export type BackgroundMessage =
   | RequestPublicKeyMessage
   | RequestPaymentMessage
   | RequestTrustlineMessage
+  | RequestTrustlineMessageDeprecated
   | RequestSignMessageMessage
   // Outputted Messages - DO contain ID within the payloads
   | ReceivePaymentHashBackgroundMessage

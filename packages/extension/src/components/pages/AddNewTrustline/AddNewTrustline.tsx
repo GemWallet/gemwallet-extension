@@ -69,7 +69,12 @@ export const AddNewTrustline: FC = () => {
   useEffect(() => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
-    const limitAmount = parseLimitAmount(urlParams.get('limitAmount'));
+    const limitAmount = parseLimitAmount(
+      urlParams.get('limitAmount'),
+      urlParams.get('value'),
+      urlParams.get('currency'),
+      urlParams.get('issuer')
+    );
     const fee = checkFee(urlParams.get('fee'));
     const id = Number(urlParams.get('id')) || 0;
     const memos = parseMemos(urlParams.get('memos'));

@@ -13,26 +13,26 @@ import {
   PublicKeyResponse,
   ReceiveAddressContentMessage,
   ReceiveGetNFTContentMessage,
-  ReceiveNetworkContentMessage,
   ReceiveGetNFTContentMessageDeprecated,
+  ReceiveNetworkContentMessage,
   ReceivePaymentHashContentMessage,
   ReceivePublicKeyContentMessage,
   ReceiveSignMessageContentMessage,
   ReceiveTrustlineHashContentMessage,
   RequestAddressMessage,
   RequestGetNFTMessage,
-  RequestNetworkMessage,
   RequestGetNFTMessageDeprecated,
+  RequestNetworkMessage,
   RequestPaymentMessage,
   RequestPublicKeyMessage,
   RequestSignMessageMessage,
   RequestTrustlineMessage,
+  RequestTrustlineMessageDeprecated,
   SetTrustlineEventListener,
+  SetTrustlineEventListenerDeprecated,
   SignedMessageResponse,
   SignMessageListener,
-  TrustlineResponse,
-  SetTrustlineEventListenerDeprecated,
-  RequestTrustlineMessageDeprecated
+  TrustlineResponse
 } from '@gemwallet/constants';
 
 /**
@@ -186,8 +186,8 @@ setTimeout(() => {
             chrome.runtime.onMessage.addListener(messageListener);
           }
         );
-        // REQUEST_NFT is deprecated since v3
       } else if (type === 'REQUEST_NFT') {
+        // REQUEST_NFT is deprecated since v3
         const {
           data: { payload }
         } = event as GetNFTEventListenerDeprecated;
@@ -284,6 +284,7 @@ setTimeout(() => {
           }
         );
       } else if (type === 'REQUEST_ADD_TRUSTLINE') {
+        // REQUEST_ADD_TRUSTLINE is deprecated since v3
         const {
           data: { payload }
         } = event as SetTrustlineEventListenerDeprecated;
