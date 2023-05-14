@@ -26,8 +26,8 @@ import {
   RequestPaymentMessage,
   RequestPublicKeyMessage,
   RequestSignMessageMessage,
-  RequestTrustlineMessage,
-  RequestTrustlineMessageDeprecated,
+  RequestSetTrustlineMessage,
+  RequestSetTrustlineMessageDeprecated,
   SetTrustlineEventListener,
   SetTrustlineEventListenerDeprecated,
   SignedMessageResponse,
@@ -256,7 +256,7 @@ setTimeout(() => {
         const {
           data: { payload }
         } = event as SetTrustlineEventListener;
-        chrome.runtime.sendMessage<RequestTrustlineMessage>(
+        chrome.runtime.sendMessage<RequestSetTrustlineMessage>(
           {
             app,
             type,
@@ -288,7 +288,7 @@ setTimeout(() => {
         const {
           data: { payload }
         } = event as SetTrustlineEventListenerDeprecated;
-        chrome.runtime.sendMessage<RequestTrustlineMessageDeprecated>(
+        chrome.runtime.sendMessage<RequestSetTrustlineMessageDeprecated>(
           {
             app,
             type,

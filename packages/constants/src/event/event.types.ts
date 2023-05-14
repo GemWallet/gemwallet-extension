@@ -2,10 +2,10 @@ import { GEM_WALLET } from '../global/global.constant';
 import { RequestMessage } from '../message/message.types';
 import {
   PaymentRequestPayload,
-  TrustlineRequestPayload,
+  SetTrustlineRequestPayload,
+  SetTrustlineRequestPayloadDeprecated,
   SignMessageRequestPayload,
-  WebsiteRequestPayload,
-  TrustlineRequestPayloadDeprecated
+  WebsiteRequestPayload
 } from '../payload/payload.types';
 
 // Event listeners
@@ -16,11 +16,11 @@ interface MessageEventData {
   messageId: number;
   // Not all the MessageEventData have a payload
   payload?:
-    | WebsiteRequestPayload
     | PaymentRequestPayload
-    | TrustlineRequestPayload
-    | TrustlineRequestPayloadDeprecated
-    | SignMessageRequestPayload;
+    | SetTrustlineRequestPayload
+    | SetTrustlineRequestPayloadDeprecated
+    | SignMessageRequestPayload
+    | WebsiteRequestPayload;
 }
 
 export interface NetworkEventListener extends MessageEvent<MessageEventData> {
@@ -98,7 +98,7 @@ export interface SetTrustlineEventListener extends MessageEvent<MessageEventData
     type: 'REQUEST_SET_TRUSTLINE/V3';
     source: 'GEM_WALLET_MSG_REQUEST';
     messageId: number;
-    payload: TrustlineRequestPayload;
+    payload: SetTrustlineRequestPayload;
   };
 }
 
@@ -108,7 +108,7 @@ export interface SetTrustlineEventListenerDeprecated extends MessageEvent<Messag
     type: 'REQUEST_ADD_TRUSTLINE';
     source: 'GEM_WALLET_MSG_REQUEST';
     messageId: number;
-    payload: TrustlineRequestPayloadDeprecated;
+    payload: SetTrustlineRequestPayloadDeprecated;
   };
 }
 

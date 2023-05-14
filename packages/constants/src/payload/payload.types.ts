@@ -36,7 +36,7 @@ export interface PaymentRequestPayload {
   flags?: PaymentFlags;
 }
 
-export interface TrustlineRequestPayload {
+export interface SetTrustlineRequestPayload {
   limitAmount: IssuedCurrencyAmount;
   // Integer amount of XRP, in drops, to be destroyed as a cost for distributing this transaction to the network.
   // Some transaction types have different minimum requirements.
@@ -47,7 +47,7 @@ export interface TrustlineRequestPayload {
   flags?: TrustSetFlags;
 }
 
-export interface TrustlineRequestPayloadDeprecated {
+export interface SetTrustlineRequestPayloadDeprecated {
   // The token to be used
   currency: string;
   // The address of the account owing the token
@@ -82,8 +82,8 @@ export type RequestPayload =
   | NetworkRequestPayload
   | WebsiteRequestPayload
   | PaymentRequestPayload
-  | TrustlineRequestPayload
-  | TrustlineRequestPayloadDeprecated
+  | SetTrustlineRequestPayload
+  | SetTrustlineRequestPayloadDeprecated
   | NFTRequestPayload
   | SignMessageRequestPayload;
 

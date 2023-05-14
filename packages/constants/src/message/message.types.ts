@@ -12,8 +12,8 @@ import {
   SignedMessageResponsePayload,
   SignMessageRequestPayload,
   TrustlineHashResponsePayload,
-  TrustlineRequestPayload,
-  TrustlineRequestPayloadDeprecated,
+  SetTrustlineRequestPayload,
+  SetTrustlineRequestPayloadDeprecated,
   WebsiteRequestPayload
 } from '../payload/payload.types';
 
@@ -67,16 +67,16 @@ export interface RequestPaymentMessage {
   payload: PaymentRequestPayload;
 }
 
-export interface RequestTrustlineMessage {
+export interface RequestSetTrustlineMessage {
   app: typeof GEM_WALLET;
   type: 'REQUEST_SET_TRUSTLINE/V3';
-  payload: TrustlineRequestPayload;
+  payload: SetTrustlineRequestPayload;
 }
 
-export interface RequestTrustlineMessageDeprecated {
+export interface RequestSetTrustlineMessageDeprecated {
   app: typeof GEM_WALLET;
   type: 'REQUEST_ADD_TRUSTLINE';
-  payload: TrustlineRequestPayloadDeprecated;
+  payload: SetTrustlineRequestPayloadDeprecated;
 }
 
 export interface RequestGetNFTMessage {
@@ -196,8 +196,8 @@ export type BackgroundMessage =
   | RequestAddressMessage
   | RequestPublicKeyMessage
   | RequestPaymentMessage
-  | RequestTrustlineMessage
-  | RequestTrustlineMessageDeprecated
+  | RequestSetTrustlineMessage
+  | RequestSetTrustlineMessageDeprecated
   | RequestSignMessageMessage
   // Outputted Messages - DO contain ID within the payloads
   | ReceivePaymentHashBackgroundMessage
@@ -223,5 +223,5 @@ export type APIMessages =
   | RequestPublicKeyMessage
   | RequestIsConnectedMessage
   | RequestPaymentMessage
-  | RequestTrustlineMessage
+  | RequestSetTrustlineMessage
   | RequestSignMessageMessage;

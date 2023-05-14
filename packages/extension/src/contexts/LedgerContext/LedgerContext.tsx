@@ -8,7 +8,7 @@ import {
   AccountNFToken,
   NFTRequestPayload,
   PaymentRequestPayload,
-  TrustlineRequestPayload
+  SetTrustlineRequestPayload
 } from '@gemwallet/constants';
 
 import { AccountTransaction } from '../../types';
@@ -24,7 +24,7 @@ export interface GetNFTsResponse {
 export interface LedgerContextType {
   // Return transaction hash in case of success
   sendPayment: (payload: PaymentRequestPayload) => Promise<string>;
-  setTrustline: (payload: TrustlineRequestPayload) => Promise<string>;
+  setTrustline: (payload: SetTrustlineRequestPayload) => Promise<string>;
   signMessage: (message: string) => string | undefined;
   estimateNetworkFees: (payload: Transaction) => Promise<string>;
   getNFTs: (payload?: NFTRequestPayload) => Promise<GetNFTsResponse>;
@@ -189,7 +189,7 @@ const LedgerProvider: FC = ({ children }) => {
   );
 
   const setTrustline = useCallback(
-    async ({ limitAmount, fee, memos, flags }: TrustlineRequestPayload) => {
+    async ({ limitAmount, fee, memos, flags }: SetTrustlineRequestPayload) => {
       const wallet = getCurrentWallet();
       if (!client) {
         throw new Error('You need to be connected to a ledger to add a trustline');
