@@ -12,7 +12,7 @@ import {
   WebsiteRequestPayload,
   TrustlineHashResponsePayload,
   GetNFTResponsePayload,
-  NFTResponsePayload,
+  GetNFTResponsePayloadDeprecated,
   NFTRequestPayload
 } from '../payload/payload.types';
 
@@ -77,7 +77,7 @@ export interface RequestGetNFTMessage {
   payload: NFTRequestPayload & WebsiteRequestPayload;
 }
 
-export interface RequestNFTMessage {
+export interface RequestGetNFTMessageDeprecated {
   app: typeof GEM_WALLET;
   type: 'REQUEST_NFT';
   payload: NFTRequestPayload & WebsiteRequestPayload;
@@ -133,10 +133,10 @@ export interface ReceiveGetNFTContentMessage {
   payload: GetNFTResponsePayload;
 }
 
-export interface ReceiveNFTContentMessage {
+export interface ReceiveGetNFTContentMessageDeprecated {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_NFT';
-  payload: NFTResponsePayload;
+  payload: GetNFTResponsePayloadDeprecated;
 }
 
 export interface ReceivePublicKeyContentMessage {
@@ -171,7 +171,8 @@ export type ReceiveNetworkBackgroundMessage = ReceiveNetworkContentMessage &
 
 export type ReceiveGetNFTBackgroundMessage = ReceiveGetNFTContentMessage & BackgroundMessagePayload;
 
-export type ReceiveNFTBackgroundMessage = ReceiveNFTContentMessage & BackgroundMessagePayload;
+export type ReceiveGetNFTBackgroundMessageDeprecated = ReceiveGetNFTContentMessageDeprecated &
+  BackgroundMessagePayload;
 
 export type ReceivePublicKeyBackgroundMessage = ReceivePublicKeyContentMessage &
   BackgroundMessagePayload;
@@ -183,7 +184,7 @@ export type BackgroundMessage =
   // Inputted messages - DO NOT contain ID within the payloads
   | RequestNetworkMessage
   | RequestGetNFTMessage
-  | RequestNFTMessage
+  | RequestGetNFTMessageDeprecated
   | RequestAddressMessage
   | RequestPublicKeyMessage
   | RequestPaymentMessage
@@ -195,7 +196,7 @@ export type BackgroundMessage =
   | ReceiveAddressBackgroundMessage
   | ReceiveNetworkBackgroundMessage
   | ReceiveGetNFTBackgroundMessage
-  | ReceiveNFTBackgroundMessage
+  | ReceiveGetNFTBackgroundMessageDeprecated
   | ReceivePublicKeyBackgroundMessage
   | ReceiveSignMessageBackgroundMessage;
 
@@ -209,8 +210,7 @@ export type APIMessages =
   | RequestAddressMessage
   | RequestNetworkMessage
   | RequestGetNFTMessage
-  | RequestGetNFTMessage
-  | RequestNFTMessage
+  | RequestGetNFTMessageDeprecated
   | RequestPublicKeyMessage
   | RequestIsConnectedMessage
   | RequestPaymentMessage

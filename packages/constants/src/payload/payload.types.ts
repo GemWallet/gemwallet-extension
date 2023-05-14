@@ -128,16 +128,17 @@ export interface GetNFTResponsePayload {
     | undefined;
 }
 
-export interface NFTResponsePayload {
+export interface GetNFTResponsePayloadDeprecated {
   nfts: AccountNFToken[] | null | undefined;
 }
 
 export type ResponsePayload =
-  | NetworkResponsePayload
   | AddressResponsePayload
+  | GetNFTResponsePayload
+  | GetNFTResponsePayloadDeprecated
+  | IsConnectedResponsePayload
+  | NetworkResponsePayload
+  | PaymentHashResponsePayload
   | PublicKeyResponsePayload
   | SignedMessageResponsePayload
-  | IsConnectedResponsePayload
-  | PaymentHashResponsePayload
-  | TrustlineHashResponsePayload
-  | NFTResponsePayload;
+  | TrustlineHashResponsePayload;

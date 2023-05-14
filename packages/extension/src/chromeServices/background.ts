@@ -3,9 +3,9 @@ import {
   GEM_WALLET,
   ReceiveAddressContentMessage,
   ReceiveGetNFTContentMessage,
+  ReceiveGetNFTContentMessageDeprecated,
   ReceiveMessage,
   ReceiveNetworkContentMessage,
-  ReceiveNFTContentMessage,
   ReceivePaymentHashContentMessage,
   ReceivePublicKeyContentMessage,
   ReceiveSignMessageContentMessage,
@@ -163,6 +163,7 @@ chrome.runtime.onMessage.addListener(
         }
       });
     } else if (type === 'REQUEST_NFT') {
+      // Deprecated
       focusOrCreatePopupWindow({
         payload: message.payload,
         sender,
@@ -260,7 +261,7 @@ chrome.runtime.onMessage.addListener(
       });
     } else if (type === 'RECEIVE_NFT') {
       const { payload } = message;
-      sendMessageToTab<ReceiveNFTContentMessage>(payload.id, {
+      sendMessageToTab<ReceiveGetNFTContentMessageDeprecated>(payload.id, {
         app,
         type: 'RECEIVE_NFT',
         payload: {

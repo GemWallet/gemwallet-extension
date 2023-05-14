@@ -1,5 +1,5 @@
 import { GEM_WALLET } from '../global/global.constant';
-import { RequestMessage } from '../message/message.types';
+import { RequestIsConnectedMessage, RequestMessage } from '../message/message.types';
 import {
   PaymentRequestPayload,
   TrustlineRequestPayload,
@@ -60,7 +60,7 @@ export interface GetNFTEventListener extends MessageEvent<MessageEventData> {
   };
 }
 
-export interface NFTEventListener extends MessageEvent<MessageEventData> {
+export interface GetNFTEventListenerDeprecated extends MessageEvent<MessageEventData> {
   data: {
     app: typeof GEM_WALLET;
     type: 'REQUEST_NFT';
@@ -93,7 +93,17 @@ export interface PaymentEventListener extends MessageEvent<MessageEventData> {
 export interface SetTrustlineEventListener extends MessageEvent<MessageEventData> {
   data: {
     app: typeof GEM_WALLET;
-    type: 'REQUEST_SET_TRUSTLINE';
+    type: 'REQUEST_SET_TRUSTLINE/V3';
+    source: 'GEM_WALLET_MSG_REQUEST';
+    messageId: number;
+    payload: TrustlineRequestPayload;
+  };
+}
+
+export interface SetTrustlineEventListenerDeprecated extends MessageEvent<MessageEventData> {
+  data: {
+    app: typeof GEM_WALLET;
+    type: 'REQUEST_ADD_TRUSTLINE';
     source: 'GEM_WALLET_MSG_REQUEST';
     messageId: number;
     payload: TrustlineRequestPayload;
@@ -101,11 +111,12 @@ export interface SetTrustlineEventListener extends MessageEvent<MessageEventData
 }
 
 export type EventListener =
-  | NetworkEventListener
-  | GetNFTEventListener
-  | NFTEventListener
   | AddressEventListener
+  | GetNFTEventListener
+  | GetNFTEventListenerDeprecated
+  | NetworkEventListener
   | PublicKeyEventListener
   | PaymentEventListener
   | SetTrustlineEventListener
+  | SetTrustlineEventListenerDeprecated
   | SignMessageListener;

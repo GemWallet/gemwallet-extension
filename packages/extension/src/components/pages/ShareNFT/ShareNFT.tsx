@@ -6,7 +6,7 @@ import {
   AccountNFToken,
   GEM_WALLET,
   ReceiveGetNFTBackgroundMessage,
-  ReceiveNFTBackgroundMessage
+  ReceiveGetNFTBackgroundMessageDeprecated
 } from '@gemwallet/constants';
 
 import { useBrowser, useLedger, useWallet } from '../../../contexts';
@@ -43,7 +43,7 @@ export const ShareNFT: FC = () => {
 
   const handleSendMessage = useCallback(
     (messagePayload: { nfts: AccountNFToken[]; marker?: unknown } | null | undefined) => {
-      let message: ReceiveNFTBackgroundMessage | ReceiveGetNFTBackgroundMessage = {
+      let message: ReceiveGetNFTBackgroundMessageDeprecated | ReceiveGetNFTBackgroundMessage = {
         app: GEM_WALLET,
         type: 'RECEIVE_NFT',
         payload: {
@@ -69,8 +69,9 @@ export const ShareNFT: FC = () => {
       }
 
       chrome.runtime
-        //TODO: ReceiveNFTBackgroundMessage is deprecated since v3
-        .sendMessage<ReceiveNFTBackgroundMessage | ReceiveGetNFTBackgroundMessage>(message)
+        .sendMessage<ReceiveGetNFTBackgroundMessageDeprecated | ReceiveGetNFTBackgroundMessage>(
+          message
+        )
         .then(() => {
           if (extensionWindow?.id) {
             closeExtension({ windowId: Number(extensionWindow.id) });
