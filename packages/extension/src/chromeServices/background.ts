@@ -173,7 +173,7 @@ chrome.runtime.onMessage.addListener(
           nfts: undefined
         }
       });
-    } else if (type === 'SEND_PAYMENT/V3') {
+    } else if (type === 'REQUEST_SEND_PAYMENT/V3') {
       focusOrCreatePopupWindow({
         payload: message.payload,
         sender,

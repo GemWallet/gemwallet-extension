@@ -68,8 +68,8 @@ export const Transaction: FC = () => {
   const messageType = useMemo(() => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
-    return urlParams.get('requestMessage') === 'SEND_PAYMENT/V3'
-      ? 'SEND_PAYMENT/V3'
+    return urlParams.get('requestMessage') === 'REQUEST_SEND_PAYMENT/V3'
+      ? 'REQUEST_SEND_PAYMENT/V3'
       : 'SEND_PAYMENT';
   }, []);
 

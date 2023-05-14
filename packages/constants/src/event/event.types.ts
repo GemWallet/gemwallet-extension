@@ -87,7 +87,7 @@ export interface SignMessageListener extends MessageEvent<MessageEventData> {
 export interface PaymentEventListener extends MessageEvent<MessageEventData> {
   data: {
     app: typeof GEM_WALLET;
-    type: 'SEND_PAYMENT/V3';
+    type: 'REQUEST_SEND_PAYMENT/V3';
     source: 'GEM_WALLET_MSG_REQUEST';
     messageId: number;
     payload: PaymentRequestPayload;

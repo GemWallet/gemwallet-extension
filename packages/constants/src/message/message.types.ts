@@ -19,8 +19,7 @@ import {
 } from '../payload/payload.types';
 
 export type RequestMessage =
-  | 'SEND_PAYMENT/V3'
-  | 'SEND_PAYMENT'
+  | 'REQUEST_SEND_PAYMENT/V3'
   | 'REQUEST_ADDRESS'
   | 'REQUEST_ADD_TRUSTLINE'
   | 'REQUEST_CONNECTION'
@@ -29,7 +28,8 @@ export type RequestMessage =
   | 'REQUEST_NFT'
   | 'REQUEST_PUBLIC_KEY'
   | 'REQUEST_SET_TRUSTLINE/V3'
-  | 'REQUEST_SIGN_MESSAGE';
+  | 'REQUEST_SIGN_MESSAGE'
+  | 'SEND_PAYMENT';
 
 export type ReceiveMessage =
   | 'RECEIVE_PAYMENT_HASH'
@@ -65,7 +65,7 @@ export interface RequestPublicKeyMessage {
 
 export interface RequestPaymentMessage {
   app: typeof GEM_WALLET;
-  type: 'SEND_PAYMENT/V3';
+  type: 'REQUEST_SEND_PAYMENT/V3';
   payload: PaymentRequestPayload;
 }
 

@@ -223,7 +223,7 @@ setTimeout(() => {
             chrome.runtime.onMessage.addListener(messageListener);
           }
         );
-      } else if (type === 'SEND_PAYMENT/V3') {
+      } else if (type === 'REQUEST_SEND_PAYMENT/V3') {
         const {
           data: { payload }
         } = event as PaymentEventListener;
