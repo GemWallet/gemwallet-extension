@@ -8,4 +8,4 @@ export * from './setTrustline';
 export * from './signMessage';
 
 export type { Amount } from 'xrpl/dist/npm/models/common';
-export type { AccountNFToken, Memo, PaymentFlags } from '@gemwallet/constants';
+export type { AccountNFToken, Memo, PaymentFlags, TrustSetFlags } from '@gemwallet/constants';
