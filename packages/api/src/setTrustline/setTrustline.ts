@@ -1,26 +1,31 @@
 import {
   GEM_WALLET,
-  PaymentResponse,
   RequestSetTrustlineMessage,
-  SetTrustlineRequestPayload
+  SetTrustlineRequestPayload,
+  TrustlineResponse
 } from '@gemwallet/constants';
 
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
 
-export const setTrustline = async (payment: SetTrustlineRequestPayload) => {
+export const setTrustline = async (trustlinePayload: SetTrustlineRequestPayload) => {
   /* string: hash of the transaction
    * null: user refused the payment
    * undefined: something went wrong
    */
-  let response: string | null | undefined = undefined;
+  let response:
+    | {
+        hash: string;
+      }
+    | null
+    | undefined = undefined;
   try {
     const message: RequestSetTrustlineMessage = {
       app: GEM_WALLET,
       type: 'REQUEST_SET_TRUSTLINE/V3',
-      payload: payment
+      payload: trustlinePayload
     };
-    const { hash }: PaymentResponse = await sendMessageToContentScript(message);
-    response = hash;
+    const { trustline }: TrustlineResponse = await sendMessageToContentScript(message);
+    response = trustline;
   } catch (e) {}
   return response;
 };
