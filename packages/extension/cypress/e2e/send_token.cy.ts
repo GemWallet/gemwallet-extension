@@ -1,5 +1,8 @@
 /// <reference types="cypress" />
 
+const SRC_ADDRESS = 'rB3JmRd5m292YjCsCr65tc8dwZz2WN7HQu';
+const DEST_ADDRESS = 'rhikRdkFw28csKw9z7fVoBjWncz1HSoQij';
+
 describe('Send Token', () => {
   // deepcode ignore NoHardcodedPasswords: password used for testing purposes
   const PASSWORD = 'SECRET_PASSWORD';
@@ -81,7 +84,7 @@ describe('Send Token', () => {
 
   it('Reject Send XRP', () => {
     // Add receipient address as the sender address
-    cy.get('input[name="recipient-address"]').type('rB3JmRd5m292YjCsCr65tc8dwZz2WN7HQu');
+    cy.get('input[name="recipient-address"]').type(SRC_ADDRESS);
 
     // Expect an error if the user sends to himself
     cy.get('p#recipient-address-helper-text').should(
@@ -144,7 +147,7 @@ describe('Send Token', () => {
     );
 
     //Add a valid amount, a valid receipient address and a valid memo
-    cy.get('input[name="recipient-address"]').clear().type('rheBcnFv4FcQpccJNcQVS3jZKJE4RWcxW3');
+    cy.get('input[name="recipient-address"]').clear().type(DEST_ADDRESS);
     cy.get('input[name="amount"]').clear().type('0.001');
     cy.get('input[name="memo"]').clear().type('This is a memo');
     cy.get('input[name="destination-tag"]').clear().type('123456789');
@@ -166,14 +169,14 @@ describe('Send Token', () => {
 
 const sendXRP = (memo?: string, destinationTag?: string) => {
   // Add receipient address
-  cy.get('input[name="recipient-address"]').type('rheBcnFv4FcQpccJNcQVS3jZKJE4RWcxW3');
+  cy.get('input[name="recipient-address"]').type(DEST_ADDRESS);
 
   handleTransaction(memo, destinationTag);
 };
 
 const sendUSD = (memo?: string, destinationTag?: string) => {
   // Add receipient address
-  cy.get('input[name="recipient-address"]').type('rheBcnFv4FcQpccJNcQVS3jZKJE4RWcxW3');
+  cy.get('input[name="recipient-address"]').type(DEST_ADDRESS);
 
   // Select USD token
   cy.get('#token-select').click();
