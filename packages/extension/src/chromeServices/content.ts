@@ -7,6 +7,7 @@ import {
   NetworkResponse,
   NFTResponse,
   PaymentEventListener,
+  PaymentEventListenerDeprecated,
   PaymentResponse,
   PublicAddressResponse,
   PublicKeyEventListener,
@@ -24,6 +25,7 @@ import {
   RequestGetNFTMessageDeprecated,
   RequestNetworkMessage,
   RequestPaymentMessage,
+  RequestPaymentMessageDeprecated,
   RequestPublicKeyMessage,
   RequestSignMessageMessage,
   RequestSetTrustlineMessage,
@@ -221,11 +223,42 @@ setTimeout(() => {
             chrome.runtime.onMessage.addListener(messageListener);
           }
         );
-      } else if (type === 'SEND_PAYMENT') {
+      } else if (type === 'REQUEST_SEND_PAYMENT/V3') {
         const {
           data: { payload }
         } = event as PaymentEventListener;
         chrome.runtime.sendMessage<RequestPaymentMessage>(
+          {
+            app,
+            type,
+            payload
+          },
+          () => {
+            const messageListener = (
+              message: ReceivePaymentHashContentMessage,
+              sender: chrome.runtime.MessageSender
+            ) => {
+              const { app, type, payload } = message;
+              // We make sure that the message comes from GemWallet
+              if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
+                if (type === 'RECEIVE_PAYMENT_HASH') {
+                  const { hash } = payload;
+                  window.postMessage(
+                    { source: 'GEM_WALLET_MSG_RESPONSE', messagedId, hash } as PaymentResponse,
+                    window.location.origin
+                  );
+                  chrome.runtime.onMessage.removeListener(messageListener);
+                }
+              }
+            };
+            chrome.runtime.onMessage.addListener(messageListener);
+          }
+        );
+      } else if (type === 'SEND_PAYMENT') {
+        const {
+          data: { payload }
+        } = event as PaymentEventListenerDeprecated;
+        chrome.runtime.sendMessage<RequestPaymentMessageDeprecated>(
           {
             app,
             type,

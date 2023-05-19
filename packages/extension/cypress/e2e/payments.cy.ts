@@ -17,7 +17,9 @@ describe('Make payment - XRP', () => {
       win.localStorage.setItem('network', 'Testnet');
     });
     cy.visit(
-      `http://localhost:3000?amount=${xrpToDrops(AMOUNT)}&destination=${DESTINATION_ADDRESS}&id=93376012&transaction=payment/`,
+      `http://localhost:3000?amount=${xrpToDrops(
+        AMOUNT
+      )}&destination=${DESTINATION_ADDRESS}&id=93376012&requestMessage=REQUEST_SEND_PAYMENT%2FV3&transaction=payment`,
       {
         onBeforeLoad(win) {
           (win as any).chrome = (win as any).chrome || {};
@@ -91,7 +93,7 @@ describe('Make payment - ETH', () => {
   const AMOUNT = JSON.stringify({
     currency: TOKEN,
     value: VALUE,
-    issuer: DESTINATION_ADDRESS,
+    issuer: DESTINATION_ADDRESS
   });
   beforeEach(() => {
     // Mock the localStorage with a wallet already loaded
@@ -103,7 +105,7 @@ describe('Make payment - ETH', () => {
       win.localStorage.setItem('network', 'Testnet');
     });
     cy.visit(
-      `http://localhost:3000?amount=${AMOUNT}&destination=${DESTINATION_ADDRESS}&id=93376135&transaction=payment`,
+      `http://localhost:3000?amount=${AMOUNT}&destination=${DESTINATION_ADDRESS}&id=93376135&requestMessage=REQUEST_SEND_PAYMENT%2FV3&transaction=payment`,
       {
         onBeforeLoad(win) {
           (win as any).chrome = (win as any).chrome || {};

@@ -36,6 +36,19 @@ export interface PaymentRequestPayload {
   flags?: PaymentFlags;
 }
 
+export interface PaymentRequestPayloadDeprecated {
+  // The amount of currency to deliver (in currency, not drops)
+  amount: string;
+  // The token that can be used
+  currency?: string;
+  // The issuer of the token
+  issuer?: string;
+  // The memo to attach to the transaction
+  memo?: string;
+  // The destination tag to attach to the transaction
+  destinationTag?: string;
+}
+
 export interface SetTrustlineRequestPayload {
   // The maximum amount of currency that can be exchanged to the trustline
   limitAmount: IssuedCurrencyAmount;
@@ -79,6 +92,7 @@ export type RequestPayload =
   | NetworkRequestPayload
   | WebsiteRequestPayload
   | PaymentRequestPayload
+  | PaymentRequestPayloadDeprecated
   | SetTrustlineRequestPayload
   | SetTrustlineRequestPayloadDeprecated
   | NFTRequestPayload

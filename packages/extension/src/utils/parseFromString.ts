@@ -1,6 +1,13 @@
+import { xrpToDrops } from 'xrpl';
+
 import { Memo } from '@gemwallet/constants';
 
-export const parseAmount = (amountString: string | null) => {
+export const parseAmount = (
+  amountString: string | null,
+  deprecatedCurrencyString: string | null,
+  deprecatedIssuerString: string | null,
+  messageType: string
+) => {
   if (!amountString) {
     return null;
   }
@@ -19,6 +26,20 @@ export const parseAmount = (amountString: string | null) => {
     }
 
     if (typeof parsedAmount === 'number') {
+      if (deprecatedCurrencyString || deprecatedIssuerString) {
+        // Since a deprecated currency or issuer has been provided, we consider the given amount to be a legacy amount
+        // of a Token payment. Hence, we wrap it in an object with the deprecated currency and issuer.
+        return {
+          value: parsedAmount.toString(),
+          currency: deprecatedCurrencyString || '',
+          issuer: deprecatedIssuerString || ''
+        };
+      }
+      if (messageType === 'SEND_PAYMENT') {
+        // Deprecated way of providing a value in currency for an XRP payment.
+        // Hence, we need to convert into drops.
+        return xrpToDrops(parsedAmount.toString());
+      }
       return parsedAmount.toString();
     }
   } catch (error) {}
