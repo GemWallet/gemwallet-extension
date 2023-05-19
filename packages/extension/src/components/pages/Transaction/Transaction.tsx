@@ -104,7 +104,7 @@ export const Transaction: FC = () => {
       fee,
       flags
     });
-  }, []);
+  }, [messageType]);
 
   useEffect(() => {
     const currentWallet = getCurrentWallet();
