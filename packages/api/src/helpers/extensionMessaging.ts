@@ -68,6 +68,7 @@ export const sendMessageToContentScript = (msg: APIMessages): Promise<any> => {
  * Fields that are objects are stringified:
  * - memos
  * - amount
+ * - limitAmount
  * - flags
  *
  * @param msg
@@ -81,6 +82,10 @@ const serializeMessage = (msg: APIMessages): any => {
 
   if (typeof modifiedMsg.payload?.amount === 'object') {
     modifiedMsg.payload.amount = JSON.stringify(modifiedMsg.payload.amount);
+  }
+
+  if (typeof modifiedMsg.payload?.limitAmount === 'object') {
+    modifiedMsg.payload.limitAmount = JSON.stringify(modifiedMsg.payload.limitAmount);
   }
 
   if (typeof modifiedMsg.payload?.flags === 'object') {

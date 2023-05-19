@@ -1,19 +1,20 @@
 import { GEM_WALLET } from '../global/global.constant';
 import {
   AddressResponsePayload,
+  GetNFTResponsePayload,
+  GetNFTResponsePayloadDeprecated,
   IsConnectedResponsePayload,
   NetworkResponsePayload,
+  NFTRequestPayload,
   PaymentHashResponsePayload,
   PaymentRequestPayload,
-  TrustlineRequestPayload,
   PublicKeyResponsePayload,
   SignedMessageResponsePayload,
   SignMessageRequestPayload,
-  WebsiteRequestPayload,
   TrustlineHashResponsePayload,
-  GetNFTResponsePayload,
-  NFTResponsePayload,
-  NFTRequestPayload
+  SetTrustlineRequestPayload,
+  SetTrustlineRequestPayloadDeprecated,
+  WebsiteRequestPayload
 } from '../payload/payload.types';
 
 export type RequestMessage =
@@ -25,6 +26,7 @@ export type RequestMessage =
   | 'REQUEST_NETWORK'
   | 'REQUEST_NFT'
   | 'REQUEST_PUBLIC_KEY'
+  | 'REQUEST_SET_TRUSTLINE/V3'
   | 'REQUEST_SIGN_MESSAGE';
 
 export type ReceiveMessage =
@@ -65,10 +67,16 @@ export interface RequestPaymentMessage {
   payload: PaymentRequestPayload;
 }
 
-export interface RequestTrustlineMessage {
+export interface RequestSetTrustlineMessage {
+  app: typeof GEM_WALLET;
+  type: 'REQUEST_SET_TRUSTLINE/V3';
+  payload: SetTrustlineRequestPayload;
+}
+
+export interface RequestSetTrustlineMessageDeprecated {
   app: typeof GEM_WALLET;
   type: 'REQUEST_ADD_TRUSTLINE';
-  payload: TrustlineRequestPayload;
+  payload: SetTrustlineRequestPayloadDeprecated;
 }
 
 export interface RequestGetNFTMessage {
@@ -77,7 +85,7 @@ export interface RequestGetNFTMessage {
   payload: NFTRequestPayload & WebsiteRequestPayload;
 }
 
-export interface RequestNFTMessage {
+export interface RequestGetNFTMessageDeprecated {
   app: typeof GEM_WALLET;
   type: 'REQUEST_NFT';
   payload: NFTRequestPayload & WebsiteRequestPayload;
@@ -133,10 +141,10 @@ export interface ReceiveGetNFTContentMessage {
   payload: GetNFTResponsePayload;
 }
 
-export interface ReceiveNFTContentMessage {
+export interface ReceiveGetNFTContentMessageDeprecated {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_NFT';
-  payload: NFTResponsePayload;
+  payload: GetNFTResponsePayloadDeprecated;
 }
 
 export interface ReceivePublicKeyContentMessage {
@@ -171,7 +179,8 @@ export type ReceiveNetworkBackgroundMessage = ReceiveNetworkContentMessage &
 
 export type ReceiveGetNFTBackgroundMessage = ReceiveGetNFTContentMessage & BackgroundMessagePayload;
 
-export type ReceiveNFTBackgroundMessage = ReceiveNFTContentMessage & BackgroundMessagePayload;
+export type ReceiveGetNFTBackgroundMessageDeprecated = ReceiveGetNFTContentMessageDeprecated &
+  BackgroundMessagePayload;
 
 export type ReceivePublicKeyBackgroundMessage = ReceivePublicKeyContentMessage &
   BackgroundMessagePayload;
@@ -183,11 +192,12 @@ export type BackgroundMessage =
   // Inputted messages - DO NOT contain ID within the payloads
   | RequestNetworkMessage
   | RequestGetNFTMessage
-  | RequestNFTMessage
+  | RequestGetNFTMessageDeprecated
   | RequestAddressMessage
   | RequestPublicKeyMessage
   | RequestPaymentMessage
-  | RequestTrustlineMessage
+  | RequestSetTrustlineMessage
+  | RequestSetTrustlineMessageDeprecated
   | RequestSignMessageMessage
   // Outputted Messages - DO contain ID within the payloads
   | ReceivePaymentHashBackgroundMessage
@@ -195,7 +205,7 @@ export type BackgroundMessage =
   | ReceiveAddressBackgroundMessage
   | ReceiveNetworkBackgroundMessage
   | ReceiveGetNFTBackgroundMessage
-  | ReceiveNFTBackgroundMessage
+  | ReceiveGetNFTBackgroundMessageDeprecated
   | ReceivePublicKeyBackgroundMessage
   | ReceiveSignMessageBackgroundMessage;
 
@@ -209,10 +219,9 @@ export type APIMessages =
   | RequestAddressMessage
   | RequestNetworkMessage
   | RequestGetNFTMessage
-  | RequestGetNFTMessage
-  | RequestNFTMessage
+  | RequestGetNFTMessageDeprecated
   | RequestPublicKeyMessage
   | RequestIsConnectedMessage
   | RequestPaymentMessage
-  | RequestTrustlineMessage
+  | RequestSetTrustlineMessage
   | RequestSignMessageMessage;

@@ -8,7 +8,7 @@ import {
   AccountNFToken,
   NFTRequestPayload,
   PaymentRequestPayload,
-  TrustlineRequestPayload
+  SetTrustlineRequestPayload
 } from '@gemwallet/constants';
 
 import { AccountTransaction } from '../../types';
@@ -24,7 +24,7 @@ export interface GetNFTsResponse {
 export interface LedgerContextType {
   // Return transaction hash in case of success
   sendPayment: (payload: PaymentRequestPayload) => Promise<string>;
-  addTrustline: (payload: TrustlineRequestPayload) => Promise<string>;
+  setTrustline: (payload: SetTrustlineRequestPayload) => Promise<string>;
   signMessage: (message: string) => string | undefined;
   estimateNetworkFees: (payload: Transaction) => Promise<string>;
   getNFTs: (payload?: NFTRequestPayload) => Promise<GetNFTsResponse>;
@@ -33,7 +33,7 @@ export interface LedgerContextType {
 
 const LedgerContext = createContext<LedgerContextType>({
   sendPayment: () => new Promise(() => {}),
-  addTrustline: () => new Promise(() => {}),
+  setTrustline: () => new Promise(() => {}),
   signMessage: () => undefined,
   estimateNetworkFees: () =>
     new Promise((resolve) => {
@@ -188,8 +188,8 @@ const LedgerProvider: FC = ({ children }) => {
     [client, getCurrentWallet]
   );
 
-  const addTrustline = useCallback(
-    async ({ currency, issuer, fee, value }: TrustlineRequestPayload) => {
+  const setTrustline = useCallback(
+    async ({ limitAmount, fee, memos, flags }: SetTrustlineRequestPayload) => {
       const wallet = getCurrentWallet();
       if (!client) {
         throw new Error('You need to be connected to a ledger to add a trustline');
@@ -201,12 +201,10 @@ const LedgerProvider: FC = ({ children }) => {
           const prepared: TrustSet = await client.autofill({
             TransactionType: 'TrustSet',
             Account: wallet.publicAddress,
-            Fee: fee,
-            LimitAmount: {
-              value,
-              currency,
-              issuer
-            }
+            Fee: fee, // In drops
+            LimitAmount: limitAmount,
+            ...(memos && { Memos: toXRPLMemos(memos) }), // Each field of each memo is hex encoded
+            ...(flags && { Flags: flags })
           });
           // Sign the transaction
           const signed = wallet.wallet.sign(prepared);
@@ -265,7 +263,7 @@ const LedgerProvider: FC = ({ children }) => {
 
   const value: LedgerContextType = {
     sendPayment,
-    addTrustline,
+    setTrustline,
     signMessage,
     estimateNetworkFees,
     getNFTs,

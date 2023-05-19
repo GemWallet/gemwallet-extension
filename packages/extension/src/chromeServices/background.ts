@@ -3,9 +3,9 @@ import {
   GEM_WALLET,
   ReceiveAddressContentMessage,
   ReceiveGetNFTContentMessage,
+  ReceiveGetNFTContentMessageDeprecated,
   ReceiveMessage,
   ReceiveNetworkContentMessage,
-  ReceiveNFTContentMessage,
   ReceivePaymentHashContentMessage,
   ReceivePublicKeyContentMessage,
   ReceiveSignMessageContentMessage,
@@ -163,6 +163,7 @@ chrome.runtime.onMessage.addListener(
         }
       });
     } else if (type === 'REQUEST_NFT') {
+      // Deprecated
       focusOrCreatePopupWindow({
         payload: message.payload,
         sender,
@@ -182,7 +183,18 @@ chrome.runtime.onMessage.addListener(
           hash: undefined
         }
       });
+    } else if (type === 'REQUEST_SET_TRUSTLINE/V3') {
+      focusOrCreatePopupWindow({
+        payload: message.payload,
+        sender,
+        parameter: PARAMETER_TRANSACTION_TRUSTLINE,
+        receivingMessage: 'RECEIVE_TRUSTLINE_HASH',
+        errorPayload: {
+          hash: undefined
+        }
+      });
     } else if (type === 'REQUEST_ADD_TRUSTLINE') {
+      // Deprecated
       focusOrCreatePopupWindow({
         payload: message.payload,
         sender,
@@ -260,7 +272,7 @@ chrome.runtime.onMessage.addListener(
       });
     } else if (type === 'RECEIVE_NFT') {
       const { payload } = message;
-      sendMessageToTab<ReceiveNFTContentMessage>(payload.id, {
+      sendMessageToTab<ReceiveGetNFTContentMessageDeprecated>(payload.id, {
         app,
         type: 'RECEIVE_NFT',
         payload: {

@@ -1,7 +1,7 @@
-import { PaymentFlagsInterface } from 'xrpl';
-import { Amount } from 'xrpl/dist/npm/models/common';
+import { Amount, IssuedCurrencyAmount } from 'xrpl/dist/npm/models/common';
 
 import { Network } from '../network/network.constant';
+import { Memo, PaymentFlags, TrustSetFlags } from '../xrpl/basic.types';
 import { AccountNFToken } from './../xrpl/nft.types';
 
 /*
@@ -36,17 +36,20 @@ export interface PaymentRequestPayload {
   flags?: PaymentFlags;
 }
 
-export interface Memo {
-  memo: {
-    memoType?: string;
-    memoData?: string;
-    memoFormat?: string;
-  };
+export interface SetTrustlineRequestPayload {
+  // The maximum amount of currency that can be exchanged to the trustline
+  limitAmount: IssuedCurrencyAmount;
+  // Integer amount of XRP, in drops, to be destroyed as a cost for distributing this transaction to the network.
+  // Some transaction types have different minimum requirements.
+  fee?: string;
+  // The memos to attach to the transaction
+  // Each attribute of each memo must be hex encoded
+  memos?: Memo[];
+  // Flags to set on the transaction
+  flags?: TrustSetFlags;
 }
 
-export type PaymentFlags = PaymentFlagsInterface | number;
-
-export interface TrustlineRequestPayload {
+export interface SetTrustlineRequestPayloadDeprecated {
   // The token to be used
   currency: string;
   // The address of the account owing the token
@@ -76,7 +79,8 @@ export type RequestPayload =
   | NetworkRequestPayload
   | WebsiteRequestPayload
   | PaymentRequestPayload
-  | TrustlineRequestPayload
+  | SetTrustlineRequestPayload
+  | SetTrustlineRequestPayloadDeprecated
   | NFTRequestPayload
   | SignMessageRequestPayload;
 
@@ -122,16 +126,17 @@ export interface GetNFTResponsePayload {
     | undefined;
 }
 
-export interface NFTResponsePayload {
+export interface GetNFTResponsePayloadDeprecated {
   nfts: AccountNFToken[] | null | undefined;
 }
 
 export type ResponsePayload =
-  | NetworkResponsePayload
   | AddressResponsePayload
+  | GetNFTResponsePayload
+  | GetNFTResponsePayloadDeprecated
+  | IsConnectedResponsePayload
+  | NetworkResponsePayload
+  | PaymentHashResponsePayload
   | PublicKeyResponsePayload
   | SignedMessageResponsePayload
-  | IsConnectedResponsePayload
-  | PaymentHashResponsePayload
-  | TrustlineHashResponsePayload
-  | NFTResponsePayload;
+  | TrustlineHashResponsePayload;

@@ -16,7 +16,17 @@ import {
 import { DEFAULT_RESERVE, ERROR_RED } from '../../../constants';
 import { useLedger, useNetwork, useServer, useWallet } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
-import { formatAmount, formatToken, fromHexMemos, toXRPLMemos } from '../../../utils';
+import {
+  checkFee,
+  formatAmount,
+  formatToken,
+  formatFlags,
+  fromHexMemos,
+  parseAmount,
+  parseMemos,
+  parsePaymentFlags,
+  toXRPLMemos
+} from '../../../utils';
 import { TileLoader } from '../../atoms';
 import { AsyncTransaction, PageWithSpinner, PageWithTitle } from '../../templates';
 
@@ -58,16 +68,15 @@ export const Transaction: FC = () => {
   useEffect(() => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
-    const amount = parseAmountFromString(urlParams.get('amount'));
+    const amount = parseAmount(urlParams.get('amount'));
     const destination = urlParams.get('destination');
     const id = Number(urlParams.get('id')) || 0;
-    const memosString = urlParams.get('memos');
-    const memos = memosString ? (JSON.parse(memosString) as Memo[]) : null;
+    const memos = parseMemos(urlParams.get('memos'));
     const destinationTag = urlParams.get('destinationTag')
       ? Number(urlParams.get('destinationTag'))
       : null;
     const fee = checkFee(urlParams.get('fee'));
-    const flags = parseFlagsFromString(urlParams.get('flags'));
+    const flags = parsePaymentFlags(urlParams.get('flags'));
 
     if (amount === null || destination === null) {
       setIsParamsMissing(true);
@@ -206,73 +215,6 @@ export const Transaction: FC = () => {
     return Number(difference) > 0;
   }, [difference]);
 
-  const checkFee = (fee: string | null) => {
-    if (fee) {
-      try {
-        if (Number(fee) && dropsToXrp(fee)) {
-          return fee;
-        }
-      } catch (e) {}
-    }
-    return null;
-  };
-
-  const parseAmountFromString = (amountString: string | null) => {
-    if (!amountString) {
-      return null;
-    }
-
-    try {
-      const parsedAmount = JSON.parse(amountString);
-
-      if (
-        typeof parsedAmount === 'object' &&
-        parsedAmount !== null &&
-        'value' in parsedAmount &&
-        'issuer' in parsedAmount &&
-        'currency' in parsedAmount
-      ) {
-        return parsedAmount as { value: string; issuer: string; currency: string };
-      }
-
-      if (typeof parsedAmount === 'number') {
-        return parsedAmount.toString();
-      }
-    } catch (error) {}
-
-    return amountString;
-  };
-
-  const parseFlagsFromString = (flagsString: string | null) => {
-    if (!flagsString) {
-      return null;
-    }
-
-    if (Number(flagsString)) {
-      return Number(flagsString);
-    }
-
-    try {
-      const parsedFlags = JSON.parse(flagsString);
-
-      if (
-        typeof parsedFlags === 'object' &&
-        parsedFlags !== null &&
-        ('tfNoDirectRipple' in parsedFlags ||
-          'tfPartialPayment' in parsedFlags ||
-          'tfLimitQuality' in parsedFlags)
-      ) {
-        return parsedFlags as {
-          tfNoDirectRipple?: boolean;
-          tfPartialPayment?: boolean;
-          tfLimitQuality?: boolean;
-        };
-      }
-    } catch (error) {}
-
-    return null;
-  };
-
   if (isParamsMissing) {
     return (
       <AsyncTransaction
@@ -377,16 +319,6 @@ export const Transaction: FC = () => {
 
   const { amount, destination, memos, destinationTag, fee, flags } = params;
   const decodedMemos = fromHexMemos(memos || []);
-
-  const formatFlags = (flags: PaymentFlags) => {
-    if (typeof flags === 'object') {
-      return Object.entries(flags)
-        .map(([key, value]) => `${key}: ${value}`)
-        .join('\n');
-    } else {
-      return flags;
-    }
-  };
 
   return (
     <PageWithTitle title="Confirm Transaction">

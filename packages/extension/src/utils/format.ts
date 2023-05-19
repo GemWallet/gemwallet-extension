@@ -1,5 +1,7 @@
 import { dropsToXrp } from 'xrpl';
-import { Amount } from 'xrpl/dist/npm/models/common';
+import { Amount, IssuedCurrencyAmount } from 'xrpl/dist/npm/models/common';
+
+import { PaymentFlags, TrustSetFlags } from '@gemwallet/constants';
 
 const formatValue = (value: number) => {
   return new Intl.NumberFormat(navigator.language, {
@@ -12,7 +14,7 @@ const formatValue = (value: number) => {
     .replace(/\s?XRP\s?/, '');
 };
 
-export const formatAmount = (amount: Amount) => {
+export const formatAmount = (amount: Amount | IssuedCurrencyAmount) => {
   let value: number;
   let currency: string;
 
@@ -33,4 +35,14 @@ export const formatToken = (value: number, currency: string = 'XRP', isDrops = f
   }
 
   return `${formatValue(value)} ${currency.toUpperCase()}`;
+};
+
+export const formatFlags = (flags: PaymentFlags | TrustSetFlags) => {
+  if (typeof flags === 'object') {
+    return Object.entries(flags)
+      .map(([key, value]) => `${key}: ${value}`)
+      .join('\n');
+  } else {
+    return flags;
+  }
 };

@@ -1,6 +1,6 @@
 import { xrpToDrops } from 'xrpl';
 
-import { formatAmount, formatToken } from './format';
+import { formatAmount, formatFlags, formatToken } from './format';
 
 describe('Format util', () => {
   describe('formatAmount', () => {
@@ -59,5 +59,39 @@ describe('Format util', () => {
       const isDrops = false;
       expect(formatToken(value, currency, isDrops)).toEqual('1,234,567.8977 USD');
     });
+  });
+});
+
+describe('formatFlags', () => {
+  it('should return a number as it is if flags is a number', () => {
+    expect(formatFlags(123456)).toBe(123456);
+  });
+
+  it('should return formatted string if flags is an object', () => {
+    const paymentFlags = {
+      tfNoDirectRipple: true,
+      tfPartialPayment: false,
+      tfLimitQuality: false
+    };
+    let expectedResult = 'tfNoDirectRipple: true\ntfPartialPayment: false\ntfLimitQuality: false';
+    expect(formatFlags(paymentFlags)).toBe(expectedResult);
+
+    const trustSetFlags = {
+      tfSetfAuth: true,
+      tfSetNoRipple: false,
+      tfClearNoRipple: false,
+      tfSetFreeze: false,
+      tfClearFreeze: false
+    };
+
+    expectedResult =
+      'tfSetfAuth: true\ntfSetNoRipple: false\ntfClearNoRipple: false\ntfSetFreeze: false\ntfClearFreeze: false';
+    expect(formatFlags(trustSetFlags)).toBe(expectedResult);
+  });
+
+  it('should return empty string if flags is an empty object', () => {
+    const flags = {};
+    const expectedResult = '';
+    expect(formatFlags(flags)).toBe(expectedResult);
   });
 });

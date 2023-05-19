@@ -1,10 +1,10 @@
 import {
   AddressEventListener,
-  AddTrustlineEventListener,
   EventListener,
   GEM_WALLET,
+  GetNFTEventListener,
+  GetNFTEventListenerDeprecated,
   NetworkResponse,
-  NFTEventListener,
   NFTResponse,
   PaymentEventListener,
   PaymentResponse,
@@ -13,20 +13,23 @@ import {
   PublicKeyResponse,
   ReceiveAddressContentMessage,
   ReceiveGetNFTContentMessage,
+  ReceiveGetNFTContentMessageDeprecated,
   ReceiveNetworkContentMessage,
-  ReceiveNFTContentMessage,
   ReceivePaymentHashContentMessage,
   ReceivePublicKeyContentMessage,
   ReceiveSignMessageContentMessage,
   ReceiveTrustlineHashContentMessage,
   RequestAddressMessage,
   RequestGetNFTMessage,
+  RequestGetNFTMessageDeprecated,
   RequestNetworkMessage,
-  RequestNFTMessage,
   RequestPaymentMessage,
   RequestPublicKeyMessage,
   RequestSignMessageMessage,
-  RequestTrustlineMessage,
+  RequestSetTrustlineMessage,
+  RequestSetTrustlineMessageDeprecated,
+  SetTrustlineEventListener,
+  SetTrustlineEventListenerDeprecated,
   SignedMessageResponse,
   SignMessageListener,
   TrustlineResponse
@@ -152,7 +155,7 @@ setTimeout(() => {
       } else if (type === 'REQUEST_GET_NFT/V3') {
         const {
           data: { payload }
-        } = event as NFTEventListener;
+        } = event as GetNFTEventListener;
         chrome.runtime.sendMessage<RequestGetNFTMessage>(
           {
             app,
@@ -183,12 +186,12 @@ setTimeout(() => {
             chrome.runtime.onMessage.addListener(messageListener);
           }
         );
-        // REQUEST_NFT is deprecated since v3
       } else if (type === 'REQUEST_NFT') {
+        // REQUEST_NFT is deprecated since v3
         const {
           data: { payload }
-        } = event as NFTEventListener;
-        chrome.runtime.sendMessage<RequestNFTMessage>(
+        } = event as GetNFTEventListenerDeprecated;
+        chrome.runtime.sendMessage<RequestGetNFTMessageDeprecated>(
           {
             app,
             type,
@@ -196,7 +199,7 @@ setTimeout(() => {
           },
           () => {
             const messageListener = (
-              message: ReceiveNFTContentMessage,
+              message: ReceiveGetNFTContentMessageDeprecated,
               sender: chrome.runtime.MessageSender
             ) => {
               const { app, type, payload } = message;
@@ -249,11 +252,43 @@ setTimeout(() => {
             chrome.runtime.onMessage.addListener(messageListener);
           }
         );
-      } else if (type === 'REQUEST_ADD_TRUSTLINE') {
+      } else if (type === 'REQUEST_SET_TRUSTLINE/V3') {
         const {
           data: { payload }
-        } = event as AddTrustlineEventListener;
-        chrome.runtime.sendMessage<RequestTrustlineMessage>(
+        } = event as SetTrustlineEventListener;
+        chrome.runtime.sendMessage<RequestSetTrustlineMessage>(
+          {
+            app,
+            type,
+            payload
+          },
+          () => {
+            const messageListener = (
+              message: ReceiveTrustlineHashContentMessage,
+              sender: chrome.runtime.MessageSender
+            ) => {
+              const { app, type, payload } = message;
+              // We make sure that the message comes from GemWallet
+              if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
+                if (type === 'RECEIVE_TRUSTLINE_HASH') {
+                  const { hash } = payload;
+                  window.postMessage(
+                    { source: 'GEM_WALLET_MSG_RESPONSE', messagedId, hash } as TrustlineResponse,
+                    window.location.origin
+                  );
+                  chrome.runtime.onMessage.removeListener(messageListener);
+                }
+              }
+            };
+            chrome.runtime.onMessage.addListener(messageListener);
+          }
+        );
+      } else if (type === 'REQUEST_ADD_TRUSTLINE') {
+        // REQUEST_ADD_TRUSTLINE is deprecated since v3
+        const {
+          data: { payload }
+        } = event as SetTrustlineEventListenerDeprecated;
+        chrome.runtime.sendMessage<RequestSetTrustlineMessageDeprecated>(
           {
             app,
             type,

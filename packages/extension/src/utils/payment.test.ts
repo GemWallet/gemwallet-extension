@@ -5,7 +5,8 @@ import {
   toXRPLMemos,
   buildAmount,
   toHexMemos,
-  fromHexMemos
+  fromHexMemos,
+  checkFee
 } from './payment';
 
 describe('buildDefaultMemos', () => {
@@ -213,5 +214,23 @@ describe('buildAmount', () => {
     const result = buildAmount(value, undefined, undefined);
 
     expect(result).toEqual('10000000');
+  });
+});
+
+describe('checkFee', () => {
+  it('should return null if fee is null', () => {
+    expect(checkFee(null)).toBe(null);
+  });
+
+  it('should return null if fee is an empty string', () => {
+    expect(checkFee('')).toBe(null);
+  });
+
+  it('should return null if fee is not a number string', () => {
+    expect(checkFee('abc')).toBe(null);
+  });
+
+  it('should return the fee if it is a number string and dropsToXrp does not throw an error', () => {
+    expect(checkFee('123')).toBe('123');
   });
 });

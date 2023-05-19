@@ -25,8 +25,8 @@
       return {
         currency,
         issuer,
-        value: `${value}`,
-      }
+        value: `${value}`
+      };
     }
 
     // If the currency or issuer is not provided, the amount needs to be in drops
@@ -44,9 +44,9 @@
               {
                 memo: {
                   memoType: '4465736372697074696f6e',
-                  memoData: '54657374206d656d6f',
-                },
-              },
+                  memoData: '54657374206d656d6f'
+                }
+              }
             ],
             destinationTag: 12,
             fee: '199',
@@ -54,7 +54,7 @@
               tfNoDirectRipple: false,
               tfPartialPayment: false,
               tfLimitQuality: false
-            },
+            }
           };
           GemWalletApi.sendPayment(payment)
             .then((trHash) => {
@@ -78,11 +78,29 @@
       .then((isConnected) => {
         if (isConnected) {
           const transaction = {
-            currency: 'USD',
-            issuer: 'rwtDvu9QDfCskWuyE2TSEt3s56RbiWUKJN',
-            value: '10000000'
+            limitAmount: {
+              currency: 'USD',
+              issuer: 'rwtDvu9QDfCskWuyE2TSEt3s56RbiWUKJN',
+              value: '10000000'
+            },
+            memos: [
+              {
+                memo: {
+                  memoType: '4465736372697074696f6e',
+                  memoData: '54657374206d656d6f'
+                }
+              }
+            ],
+            fee: '199',
+            flags: {
+              tfClearFreeze: false,
+              tfClearNoRipple: false,
+              tfSetFreeze: true,
+              tfSetNoRipple: true,
+              tfSetfAuth: false
+            }
           };
-          GemWalletApi.addTrustline(transaction)
+          GemWalletApi.setTrustline(transaction)
             .then((trHash) => {
               const addressContainer = document.getElementById('address');
               addressContainer.insertAdjacentText(

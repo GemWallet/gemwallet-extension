@@ -2,7 +2,8 @@ import { GEM_WALLET } from '../global/global.constant';
 import { RequestMessage } from '../message/message.types';
 import {
   PaymentRequestPayload,
-  TrustlineRequestPayload,
+  SetTrustlineRequestPayload,
+  SetTrustlineRequestPayloadDeprecated,
   SignMessageRequestPayload,
   WebsiteRequestPayload
 } from '../payload/payload.types';
@@ -15,10 +16,11 @@ interface MessageEventData {
   messageId: number;
   // Not all the MessageEventData have a payload
   payload?:
-    | WebsiteRequestPayload
     | PaymentRequestPayload
-    | TrustlineRequestPayload
-    | SignMessageRequestPayload;
+    | SetTrustlineRequestPayload
+    | SetTrustlineRequestPayloadDeprecated
+    | SignMessageRequestPayload
+    | WebsiteRequestPayload;
 }
 
 export interface NetworkEventListener extends MessageEvent<MessageEventData> {
@@ -60,7 +62,7 @@ export interface GetNFTEventListener extends MessageEvent<MessageEventData> {
   };
 }
 
-export interface NFTEventListener extends MessageEvent<MessageEventData> {
+export interface GetNFTEventListenerDeprecated extends MessageEvent<MessageEventData> {
   data: {
     app: typeof GEM_WALLET;
     type: 'REQUEST_NFT';
@@ -90,22 +92,33 @@ export interface PaymentEventListener extends MessageEvent<MessageEventData> {
   };
 }
 
-export interface AddTrustlineEventListener extends MessageEvent<MessageEventData> {
+export interface SetTrustlineEventListener extends MessageEvent<MessageEventData> {
+  data: {
+    app: typeof GEM_WALLET;
+    type: 'REQUEST_SET_TRUSTLINE/V3';
+    source: 'GEM_WALLET_MSG_REQUEST';
+    messageId: number;
+    payload: SetTrustlineRequestPayload;
+  };
+}
+
+export interface SetTrustlineEventListenerDeprecated extends MessageEvent<MessageEventData> {
   data: {
     app: typeof GEM_WALLET;
     type: 'REQUEST_ADD_TRUSTLINE';
     source: 'GEM_WALLET_MSG_REQUEST';
     messageId: number;
-    payload: TrustlineRequestPayload;
+    payload: SetTrustlineRequestPayloadDeprecated;
   };
 }
 
 export type EventListener =
-  | NetworkEventListener
-  | GetNFTEventListener
-  | NFTEventListener
   | AddressEventListener
+  | GetNFTEventListener
+  | GetNFTEventListenerDeprecated
+  | NetworkEventListener
   | PublicKeyEventListener
   | PaymentEventListener
-  | AddTrustlineEventListener
+  | SetTrustlineEventListener
+  | SetTrustlineEventListenerDeprecated
   | SignMessageListener;
