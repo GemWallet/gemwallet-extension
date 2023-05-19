@@ -189,8 +189,8 @@ export const AddNewTrustline: FC = () => {
       setTrustline({
         limitAmount: params.limitAmount,
         fee: params.fee || undefined,
-        memos: params.memos ?? undefined,
-        flags: params.flags ?? undefined
+        memos: params.memos || undefined,
+        flags: params.flags || undefined
       })
         .then((transactionHash) => {
           setTransaction(TransactionStatus.Success);
@@ -358,8 +358,10 @@ export const AddNewTrustline: FC = () => {
     );
   }
 
-  const { limitAmount, fee, flags, memos } = params;
-  const decodedMemos = fromHexMemos(memos || []);
+  const { fee, flags, memos } = params;
+  const decodedMemos = fromHexMemos(memos || []) || [];
+
+  const limitAmount = params.limitAmount as IssuedCurrencyAmount;
 
   return (
     <PageWithTitle title="Add Trustline - Confirm">
@@ -377,7 +379,7 @@ export const AddNewTrustline: FC = () => {
       ) : null}
       <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
         <Typography variant="body1">Issuer:</Typography>
-        <Typography variant="body2">{limitAmount?.issuer}</Typography>
+        <Typography variant="body2">{limitAmount.issuer}</Typography>
       </Paper>
       <Paper
         elevation={24}
@@ -389,7 +391,7 @@ export const AddNewTrustline: FC = () => {
         }}
       >
         <Typography variant="body1">Currency:</Typography>
-        <Typography variant="body1">{limitAmount?.currency}</Typography>
+        <Typography variant="body1">{limitAmount.currency}</Typography>
       </Paper>
 
       <Paper
@@ -402,11 +404,9 @@ export const AddNewTrustline: FC = () => {
         }}
       >
         <Typography variant="body1">Limit:</Typography>
-        <Typography variant="body1">
-          {limitAmount ? formatAmount(limitAmount) : undefined}
-        </Typography>
+        <Typography variant="body1">{formatAmount(limitAmount)}</Typography>
       </Paper>
-      {decodedMemos && decodedMemos.length > 0 ? (
+      {decodedMemos.length > 0 ? (
         <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
           <Typography variant="body1">Memos:</Typography>
           {decodedMemos.map((memo, index) => (
