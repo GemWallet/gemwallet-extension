@@ -34,7 +34,11 @@ import {
   SetTrustlineEventListenerDeprecated,
   SignedMessageResponse,
   SignMessageListener,
-  TrustlineResponse
+  PaymentResponseDeprecated,
+  ReceivePaymentHashContentMessageDeprecated,
+  ReceiveTrustlineHashContentMessageDeprecated,
+  TrustlineResponse,
+  TrustlineResponseDeprecated
 } from '@gemwallet/constants';
 
 /**
@@ -241,10 +245,14 @@ setTimeout(() => {
               const { app, type, payload } = message;
               // We make sure that the message comes from GemWallet
               if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
-                if (type === 'RECEIVE_PAYMENT_HASH') {
-                  const { hash } = payload;
+                if (type === 'RECEIVE_SEND_PAYMENT/V3') {
+                  const { payment } = payload;
                   window.postMessage(
-                    { source: 'GEM_WALLET_MSG_RESPONSE', messagedId, hash } as PaymentResponse,
+                    {
+                      source: 'GEM_WALLET_MSG_RESPONSE',
+                      messagedId,
+                      payment
+                    } as PaymentResponse,
                     window.location.origin
                   );
                   chrome.runtime.onMessage.removeListener(messageListener);
@@ -255,6 +263,7 @@ setTimeout(() => {
           }
         );
       } else if (type === 'SEND_PAYMENT') {
+        // SEND_PAYMENT is deprecated since v3
         const {
           data: { payload }
         } = event as PaymentEventListenerDeprecated;
@@ -266,7 +275,7 @@ setTimeout(() => {
           },
           () => {
             const messageListener = (
-              message: ReceivePaymentHashContentMessage,
+              message: ReceivePaymentHashContentMessageDeprecated,
               sender: chrome.runtime.MessageSender
             ) => {
               const { app, type, payload } = message;
@@ -275,7 +284,11 @@ setTimeout(() => {
                 if (type === 'RECEIVE_PAYMENT_HASH') {
                   const { hash } = payload;
                   window.postMessage(
-                    { source: 'GEM_WALLET_MSG_RESPONSE', messagedId, hash } as PaymentResponse,
+                    {
+                      source: 'GEM_WALLET_MSG_RESPONSE',
+                      messagedId,
+                      hash
+                    } as PaymentResponseDeprecated,
                     window.location.origin
                   );
                   chrome.runtime.onMessage.removeListener(messageListener);
@@ -303,10 +316,14 @@ setTimeout(() => {
               const { app, type, payload } = message;
               // We make sure that the message comes from GemWallet
               if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
-                if (type === 'RECEIVE_TRUSTLINE_HASH') {
-                  const { hash } = payload;
+                if (type === 'RECEIVE_SET_TRUSTLINE/V3') {
+                  const { trustline } = payload;
                   window.postMessage(
-                    { source: 'GEM_WALLET_MSG_RESPONSE', messagedId, hash } as TrustlineResponse,
+                    {
+                      source: 'GEM_WALLET_MSG_RESPONSE',
+                      messagedId,
+                      trustline
+                    } as TrustlineResponse,
                     window.location.origin
                   );
                   chrome.runtime.onMessage.removeListener(messageListener);
@@ -329,7 +346,7 @@ setTimeout(() => {
           },
           () => {
             const messageListener = (
-              message: ReceiveTrustlineHashContentMessage,
+              message: ReceiveTrustlineHashContentMessageDeprecated,
               sender: chrome.runtime.MessageSender
             ) => {
               const { app, type, payload } = message;
@@ -338,7 +355,11 @@ setTimeout(() => {
                 if (type === 'RECEIVE_TRUSTLINE_HASH') {
                   const { hash } = payload;
                   window.postMessage(
-                    { source: 'GEM_WALLET_MSG_RESPONSE', messagedId, hash } as TrustlineResponse,
+                    {
+                      source: 'GEM_WALLET_MSG_RESPONSE',
+                      messagedId,
+                      hash
+                    } as TrustlineResponseDeprecated,
                     window.location.origin
                   );
                   chrome.runtime.onMessage.removeListener(messageListener);

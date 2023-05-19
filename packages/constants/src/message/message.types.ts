@@ -10,16 +10,17 @@ import {
   PaymentRequestPayload,
   PaymentRequestPayloadDeprecated,
   PublicKeyResponsePayload,
+  SetTrustlineRequestPayload,
+  SetTrustlineRequestPayloadDeprecated,
   SignedMessageResponsePayload,
   SignMessageRequestPayload,
   TrustlineHashResponsePayload,
-  SetTrustlineRequestPayload,
-  SetTrustlineRequestPayloadDeprecated,
+  TrustlineHashResponsePayloadDeprecated,
+  PaymentHashResponsePayloadDeprecated,
   WebsiteRequestPayload
 } from '../payload/payload.types';
 
 export type RequestMessage =
-  | 'REQUEST_SEND_PAYMENT/V3'
   | 'REQUEST_ADDRESS'
   | 'REQUEST_ADD_TRUSTLINE'
   | 'REQUEST_CONNECTION'
@@ -27,18 +28,21 @@ export type RequestMessage =
   | 'REQUEST_NETWORK'
   | 'REQUEST_NFT'
   | 'REQUEST_PUBLIC_KEY'
+  | 'REQUEST_SEND_PAYMENT/V3'
   | 'REQUEST_SET_TRUSTLINE/V3'
   | 'REQUEST_SIGN_MESSAGE'
   | 'SEND_PAYMENT';
 
 export type ReceiveMessage =
-  | 'RECEIVE_PAYMENT_HASH'
   | 'RECEIVE_ADDRESS'
-  | 'RECEIVE_TRUSTLINE_HASH'
-  | 'RECEIVE_NETWORK'
   | 'RECEIVE_GET_NFT/V3'
+  | 'RECEIVE_NETWORK'
   | 'RECEIVE_NFT'
+  | 'RECEIVE_PAYMENT_HASH'
+  | 'RECEIVE_TRUSTLINE_HASH'
   | 'RECEIVE_PUBLIC_KEY'
+  | 'RECEIVE_SEND_PAYMENT/V3'
+  | 'RECEIVE_SET_TRUSTLINE/V3'
   | 'RECEIVE_SIGN_MESSAGE';
 
 export type SourceMessage = 'GEM_WALLET_MSG_REQUEST' | 'GEM_WALLET_MSG_RESPONSE';
@@ -119,18 +123,31 @@ export type PublicKeyResponse = MessagingResponse & PublicKeyResponsePayload;
 export type SignedMessageResponse = MessagingResponse & SignedMessageResponsePayload;
 export type IsConnectedResponse = MessagingResponse & IsConnectedResponsePayload;
 export type PaymentResponse = MessagingResponse & PaymentHashResponsePayload;
+export type PaymentResponseDeprecated = MessagingResponse & PaymentHashResponsePayloadDeprecated;
 export type TrustlineResponse = MessagingResponse & TrustlineHashResponsePayload;
+export type TrustlineResponseDeprecated = MessagingResponse &
+  TrustlineHashResponsePayloadDeprecated;
 
 // Content Script Messages
 export interface ReceivePaymentHashContentMessage {
   app: typeof GEM_WALLET;
-  type: 'RECEIVE_PAYMENT_HASH';
+  type: 'RECEIVE_SEND_PAYMENT/V3';
   payload: PaymentHashResponsePayload;
+}
+export interface ReceivePaymentHashContentMessageDeprecated {
+  app: typeof GEM_WALLET;
+  type: 'RECEIVE_PAYMENT_HASH';
+  payload: PaymentHashResponsePayloadDeprecated;
 }
 export interface ReceiveTrustlineHashContentMessage {
   app: typeof GEM_WALLET;
-  type: 'RECEIVE_TRUSTLINE_HASH';
+  type: 'RECEIVE_SET_TRUSTLINE/V3';
   payload: TrustlineHashResponsePayload;
+}
+export interface ReceiveTrustlineHashContentMessageDeprecated {
+  app: typeof GEM_WALLET;
+  type: 'RECEIVE_TRUSTLINE_HASH';
+  payload: TrustlineHashResponsePayloadDeprecated;
 }
 export interface ReceiveAddressContentMessage {
   app: typeof GEM_WALLET;
@@ -176,8 +193,14 @@ type BackgroundMessagePayload = {
 export type ReceivePaymentHashBackgroundMessage = ReceivePaymentHashContentMessage &
   BackgroundMessagePayload;
 
+export type ReceivePaymentHashBackgroundMessageDeprecated =
+  ReceivePaymentHashContentMessageDeprecated & BackgroundMessagePayload;
+
 export type ReceiveTrustlineHashBackgroundMessage = ReceiveTrustlineHashContentMessage &
   BackgroundMessagePayload;
+
+export type ReceiveTrustlineHashBackgroundMessageDeprecated =
+  ReceiveTrustlineHashContentMessageDeprecated & BackgroundMessagePayload;
 
 export type ReceiveAddressBackgroundMessage = ReceiveAddressContentMessage &
   BackgroundMessagePayload;
@@ -210,7 +233,9 @@ export type BackgroundMessage =
   | RequestSignMessageMessage
   // Outputted Messages - DO contain ID within the payloads
   | ReceivePaymentHashBackgroundMessage
+  | ReceivePaymentHashBackgroundMessageDeprecated
   | ReceiveTrustlineHashBackgroundMessage
+  | ReceiveTrustlineHashBackgroundMessageDeprecated
   | ReceiveAddressBackgroundMessage
   | ReceiveNetworkBackgroundMessage
   | ReceiveGetNFTBackgroundMessage

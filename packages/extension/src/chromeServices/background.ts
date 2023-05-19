@@ -7,9 +7,11 @@ import {
   ReceiveMessage,
   ReceiveNetworkContentMessage,
   ReceivePaymentHashContentMessage,
+  ReceivePaymentHashContentMessageDeprecated,
   ReceivePublicKeyContentMessage,
   ReceiveSignMessageContentMessage,
   ReceiveTrustlineHashContentMessage,
+  ReceiveTrustlineHashContentMessageDeprecated,
   RequestMessage,
   RequestPayload,
   ResponsePayload
@@ -181,7 +183,7 @@ chrome.runtime.onMessage.addListener(
         requestMessage: message.type,
         receivingMessage: 'RECEIVE_PAYMENT_HASH',
         errorPayload: {
-          hash: undefined
+          payment: undefined
         }
       });
     } else if (type === 'SEND_PAYMENT') {
@@ -201,7 +203,7 @@ chrome.runtime.onMessage.addListener(
         parameter: PARAMETER_TRANSACTION_TRUSTLINE,
         receivingMessage: 'RECEIVE_TRUSTLINE_HASH',
         errorPayload: {
-          hash: undefined
+          trustline: undefined
         }
       });
     } else if (type === 'REQUEST_ADD_TRUSTLINE') {
@@ -225,18 +227,32 @@ chrome.runtime.onMessage.addListener(
           signedMessage: undefined
         }
       });
-    } else if (type === 'RECEIVE_PAYMENT_HASH') {
+    } else if (type === 'RECEIVE_SEND_PAYMENT/V3') {
       const { payload } = message;
       sendMessageToTab<ReceivePaymentHashContentMessage>(payload.id, {
+        app,
+        type: 'RECEIVE_SEND_PAYMENT/V3',
+        payment: payload.payment
+      });
+    } else if (type === 'RECEIVE_PAYMENT_HASH') {
+      const { payload } = message;
+      sendMessageToTab<ReceivePaymentHashContentMessageDeprecated>(payload.id, {
         app,
         type: 'RECEIVE_PAYMENT_HASH',
         payload: {
           hash: payload.hash
         }
       });
-    } else if (type === 'RECEIVE_TRUSTLINE_HASH') {
+    } else if (type === 'RECEIVE_SET_TRUSTLINE/V3') {
       const { payload } = message;
       sendMessageToTab<ReceiveTrustlineHashContentMessage>(payload.id, {
+        app,
+        type: 'RECEIVE_SET_TRUSTLINE/V3',
+        trustline: payload.trustline
+      });
+    } else if (type === 'RECEIVE_TRUSTLINE_HASH') {
+      const { payload } = message;
+      sendMessageToTab<ReceiveTrustlineHashContentMessageDeprecated>(payload.id, {
         app,
         type: 'RECEIVE_TRUSTLINE_HASH',
         payload: {

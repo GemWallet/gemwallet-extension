@@ -123,10 +123,28 @@ export interface IsConnectedResponsePayload {
 }
 
 export interface PaymentHashResponsePayload {
+  payment:
+    | {
+        hash: string;
+      }
+    | null
+    | undefined;
+}
+
+export interface PaymentHashResponsePayloadDeprecated {
   hash: string | null | undefined;
 }
 
 export interface TrustlineHashResponsePayload {
+  trustline:
+    | {
+        hash: string;
+      }
+    | null
+    | undefined;
+}
+
+export interface TrustlineHashResponsePayloadDeprecated {
   hash: string | null | undefined;
 }
 
@@ -151,6 +169,8 @@ export type ResponsePayload =
   | IsConnectedResponsePayload
   | NetworkResponsePayload
   | PaymentHashResponsePayload
+  | PaymentHashResponsePayloadDeprecated
   | PublicKeyResponsePayload
   | SignedMessageResponsePayload
-  | TrustlineHashResponsePayload;
+  | TrustlineHashResponsePayload
+  | TrustlineHashResponsePayloadDeprecated;
