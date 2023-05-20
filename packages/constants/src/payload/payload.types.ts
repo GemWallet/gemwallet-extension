@@ -131,7 +131,7 @@ export interface SendPaymentResponse {
     | undefined;
 }
 
-export interface PaymentHashResponsePayloadDeprecated {
+export interface SendPaymentResponseDeprecated {
   hash: string | null | undefined;
 }
 
@@ -144,7 +144,7 @@ export interface SetTrustlineResponse {
     | undefined;
 }
 
-export interface TrustlineHashResponsePayloadDeprecated {
+export interface SetTrustlineResponseDeprecated {
   hash: string | null | undefined;
 }
 
@@ -168,9 +168,9 @@ export type ResponsePayload =
   | GetNFTResponsePayloadDeprecated
   | IsConnectedResponsePayload
   | NetworkResponsePayload
-  | PaymentHashResponsePayloadDeprecated
   | PublicKeyResponsePayload
   | SendPaymentResponse
+  | SendPaymentResponseDeprecated
   | SetTrustlineResponse
-  | SignedMessageResponsePayload
-  | TrustlineHashResponsePayloadDeprecated;
+  | SetTrustlineResponseDeprecated
+  | SignedMessageResponsePayload;

@@ -10,13 +10,13 @@ import {
   PaymentRequestPayloadDeprecated,
   PublicKeyResponsePayload,
   SendPaymentResponse,
+  SendPaymentResponseDeprecated,
   SetTrustlineResponse,
+  SetTrustlineResponseDeprecated,
   SetTrustlineRequestPayload,
   SetTrustlineRequestPayloadDeprecated,
   SignedMessageResponsePayload,
   SignMessageRequestPayload,
-  TrustlineHashResponsePayloadDeprecated,
-  PaymentHashResponsePayloadDeprecated,
   WebsiteRequestPayload
 } from '../payload/payload.types';
 
@@ -123,10 +123,9 @@ export type PublicKeyResponse = MessagingResponse & PublicKeyResponsePayload;
 export type SignedMessageResponse = MessagingResponse & SignedMessageResponsePayload;
 export type IsConnectedResponse = MessagingResponse & IsConnectedResponsePayload;
 export type PaymentResponse = MessagingResponse & SendPaymentResponse;
-export type PaymentResponseDeprecated = MessagingResponse & PaymentHashResponsePayloadDeprecated;
+export type PaymentResponseDeprecated = MessagingResponse & SendPaymentResponseDeprecated;
 export type TrustlineResponse = MessagingResponse & SetTrustlineResponse;
-export type TrustlineResponseDeprecated = MessagingResponse &
-  TrustlineHashResponsePayloadDeprecated;
+export type TrustlineResponseDeprecated = MessagingResponse & SetTrustlineResponseDeprecated;
 
 // Content Script Messages
 export interface ReceivePaymentHashContentMessage {
@@ -137,7 +136,7 @@ export interface ReceivePaymentHashContentMessage {
 export interface ReceivePaymentHashContentMessageDeprecated {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_PAYMENT_HASH';
-  payload: PaymentHashResponsePayloadDeprecated;
+  payload: SendPaymentResponseDeprecated;
 }
 export interface ReceiveTrustlineHashContentMessage {
   app: typeof GEM_WALLET;
@@ -147,7 +146,7 @@ export interface ReceiveTrustlineHashContentMessage {
 export interface ReceiveTrustlineHashContentMessageDeprecated {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_TRUSTLINE_HASH';
-  payload: TrustlineHashResponsePayloadDeprecated;
+  payload: SetTrustlineResponseDeprecated;
 }
 export interface ReceiveAddressContentMessage {
   app: typeof GEM_WALLET;
