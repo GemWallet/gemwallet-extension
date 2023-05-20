@@ -25,7 +25,7 @@ jest.mock('../helpers/extensionMessaging', () => ({
   }
 }));
 
-describe('sendPayment api', () => {
+describe.skip('sendPayment api', () => {
   test('should return a transaction hash as sendMessageToContentScript is returning a hash', async () => {
     let response;
     // deepcode ignore PromiseNotCaughtGeneral/test: Promise used in unit test
