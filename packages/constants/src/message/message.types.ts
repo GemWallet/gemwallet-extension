@@ -128,22 +128,22 @@ export type TrustlineResponse = MessagingResponse & SetTrustlineResponse;
 export type TrustlineResponseDeprecated = MessagingResponse & SetTrustlineResponseDeprecated;
 
 // Content Script Messages
-export interface ReceivePaymentHashContentMessage {
+export interface ReceiveSendPaymentContentMessage {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_SEND_PAYMENT/V3';
   payload: SendPaymentResponse;
 }
-export interface ReceivePaymentHashContentMessageDeprecated {
+export interface ReceiveSendPaymentContentMessageDeprecated {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_PAYMENT_HASH';
   payload: SendPaymentResponseDeprecated;
 }
-export interface ReceiveTrustlineHashContentMessage {
+export interface ReceiveSetTrustlineContentMessage {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_SET_TRUSTLINE/V3';
   payload: SetTrustlineResponse;
 }
-export interface ReceiveTrustlineHashContentMessageDeprecated {
+export interface ReceiveSetTrustlineContentMessageDeprecated {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_TRUSTLINE_HASH';
   payload: SetTrustlineResponseDeprecated;
@@ -189,17 +189,17 @@ type BackgroundMessagePayload = {
   };
 };
 
-export type ReceivePaymentHashBackgroundMessage = ReceivePaymentHashContentMessage &
+export type ReceiveSendPaymentBackgroundMessage = ReceiveSendPaymentContentMessage &
   BackgroundMessagePayload;
 
-export type ReceivePaymentHashBackgroundMessageDeprecated =
-  ReceivePaymentHashContentMessageDeprecated & BackgroundMessagePayload;
+export type ReceiveSendPaymentBackgroundMessageDeprecated =
+  ReceiveSendPaymentContentMessageDeprecated & BackgroundMessagePayload;
 
-export type ReceiveTrustlineHashBackgroundMessage = ReceiveTrustlineHashContentMessage &
+export type ReceiveSetTrustlineBackgroundMessage = ReceiveSetTrustlineContentMessage &
   BackgroundMessagePayload;
 
-export type ReceiveTrustlineHashBackgroundMessageDeprecated =
-  ReceiveTrustlineHashContentMessageDeprecated & BackgroundMessagePayload;
+export type ReceiveSetTrustlineBackgroundMessageDeprecated =
+  ReceiveSetTrustlineContentMessageDeprecated & BackgroundMessagePayload;
 
 export type ReceiveAddressBackgroundMessage = ReceiveAddressContentMessage &
   BackgroundMessagePayload;
@@ -231,15 +231,15 @@ export type BackgroundMessage =
   | RequestSetTrustlineMessageDeprecated
   | RequestSignMessageMessage
   // Outputted Messages - DO contain ID within the payloads
-  | ReceivePaymentHashBackgroundMessage
-  | ReceivePaymentHashBackgroundMessageDeprecated
-  | ReceiveTrustlineHashBackgroundMessage
-  | ReceiveTrustlineHashBackgroundMessageDeprecated
   | ReceiveAddressBackgroundMessage
-  | ReceiveNetworkBackgroundMessage
   | ReceiveGetNFTBackgroundMessage
   | ReceiveGetNFTBackgroundMessageDeprecated
+  | ReceiveNetworkBackgroundMessage
   | ReceivePublicKeyBackgroundMessage
+  | ReceiveSendPaymentBackgroundMessage
+  | ReceiveSendPaymentBackgroundMessageDeprecated
+  | ReceiveSetTrustlineBackgroundMessage
+  | ReceiveSetTrustlineBackgroundMessageDeprecated
   | ReceiveSignMessageBackgroundMessage;
 
 // API Messages

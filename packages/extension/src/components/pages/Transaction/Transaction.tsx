@@ -10,8 +10,8 @@ import {
   GEM_WALLET,
   Memo,
   PaymentFlags,
-  ReceivePaymentHashBackgroundMessage,
-  ReceivePaymentHashBackgroundMessageDeprecated
+  ReceiveSendPaymentBackgroundMessage,
+  ReceiveSendPaymentBackgroundMessageDeprecated
 } from '@gemwallet/constants';
 
 import { DEFAULT_RESERVE, ERROR_RED } from '../../../constants';
@@ -174,7 +174,7 @@ export const Transaction: FC = () => {
   const createMessage = useCallback(
     (
       transactionHash: string | null | undefined
-    ): ReceivePaymentHashBackgroundMessage | ReceivePaymentHashBackgroundMessageDeprecated => {
+    ): ReceiveSendPaymentBackgroundMessage | ReceiveSendPaymentBackgroundMessageDeprecated => {
       if (receivingMessage === 'RECEIVE_GET_NFT/V3') {
         return {
           app: GEM_WALLET,
@@ -202,7 +202,7 @@ export const Transaction: FC = () => {
     setTransaction(TransactionStatus.Rejected);
     const message = createMessage(null);
     chrome.runtime.sendMessage<
-      ReceivePaymentHashBackgroundMessage | ReceivePaymentHashBackgroundMessageDeprecated
+      ReceiveSendPaymentBackgroundMessage | ReceiveSendPaymentBackgroundMessageDeprecated
     >(message);
   }, [createMessage]);
 
@@ -222,7 +222,7 @@ export const Transaction: FC = () => {
         setTransaction(TransactionStatus.Success);
         const message = createMessage(transactionHash);
         chrome.runtime.sendMessage<
-          ReceivePaymentHashBackgroundMessage | ReceivePaymentHashBackgroundMessageDeprecated
+          ReceiveSendPaymentBackgroundMessage | ReceiveSendPaymentBackgroundMessageDeprecated
         >(message);
       })
       .catch((e) => {
@@ -230,7 +230,7 @@ export const Transaction: FC = () => {
         setTransaction(TransactionStatus.Rejected);
         const message = createMessage(undefined);
         chrome.runtime.sendMessage<
-          ReceivePaymentHashBackgroundMessage | ReceivePaymentHashBackgroundMessageDeprecated
+          ReceiveSendPaymentBackgroundMessage | ReceiveSendPaymentBackgroundMessageDeprecated
         >(message);
       });
   }, [

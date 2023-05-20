@@ -6,12 +6,12 @@ import {
   ReceiveGetNFTContentMessageDeprecated,
   ReceiveMessage,
   ReceiveNetworkContentMessage,
-  ReceivePaymentHashContentMessage,
-  ReceivePaymentHashContentMessageDeprecated,
   ReceivePublicKeyContentMessage,
+  ReceiveSendPaymentContentMessage,
+  ReceiveSendPaymentContentMessageDeprecated,
+  ReceiveSetTrustlineContentMessage,
   ReceiveSignMessageContentMessage,
-  ReceiveTrustlineHashContentMessage,
-  ReceiveTrustlineHashContentMessageDeprecated,
+  ReceiveSetTrustlineContentMessageDeprecated,
   RequestMessage,
   RequestPayload,
   ResponsePayload
@@ -229,14 +229,14 @@ chrome.runtime.onMessage.addListener(
       });
     } else if (type === 'RECEIVE_SEND_PAYMENT/V3') {
       const { payload } = message;
-      sendMessageToTab<ReceivePaymentHashContentMessage>(payload.id, {
+      sendMessageToTab<ReceiveSendPaymentContentMessage>(payload.id, {
         app,
         type: 'RECEIVE_SEND_PAYMENT/V3',
         payment: payload.payment
       });
     } else if (type === 'RECEIVE_PAYMENT_HASH') {
       const { payload } = message;
-      sendMessageToTab<ReceivePaymentHashContentMessageDeprecated>(payload.id, {
+      sendMessageToTab<ReceiveSendPaymentContentMessageDeprecated>(payload.id, {
         app,
         type: 'RECEIVE_PAYMENT_HASH',
         payload: {
@@ -245,14 +245,14 @@ chrome.runtime.onMessage.addListener(
       });
     } else if (type === 'RECEIVE_SET_TRUSTLINE/V3') {
       const { payload } = message;
-      sendMessageToTab<ReceiveTrustlineHashContentMessage>(payload.id, {
+      sendMessageToTab<ReceiveSetTrustlineContentMessage>(payload.id, {
         app,
         type: 'RECEIVE_SET_TRUSTLINE/V3',
         trustline: payload.trustline
       });
     } else if (type === 'RECEIVE_TRUSTLINE_HASH') {
       const { payload } = message;
-      sendMessageToTab<ReceiveTrustlineHashContentMessageDeprecated>(payload.id, {
+      sendMessageToTab<ReceiveSetTrustlineContentMessageDeprecated>(payload.id, {
         app,
         type: 'RECEIVE_TRUSTLINE_HASH',
         payload: {

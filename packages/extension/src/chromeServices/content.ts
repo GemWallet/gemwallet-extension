@@ -16,10 +16,11 @@ import {
   ReceiveGetNFTContentMessage,
   ReceiveGetNFTContentMessageDeprecated,
   ReceiveNetworkContentMessage,
-  ReceivePaymentHashContentMessage,
   ReceivePublicKeyContentMessage,
+  ReceiveSendPaymentContentMessage,
+  ReceiveSendPaymentContentMessageDeprecated,
+  ReceiveSetTrustlineContentMessage,
   ReceiveSignMessageContentMessage,
-  ReceiveTrustlineHashContentMessage,
   RequestAddressMessage,
   RequestGetNFTMessage,
   RequestGetNFTMessageDeprecated,
@@ -35,8 +36,7 @@ import {
   SignedMessageResponse,
   SignMessageListener,
   PaymentResponseDeprecated,
-  ReceivePaymentHashContentMessageDeprecated,
-  ReceiveTrustlineHashContentMessageDeprecated,
+  ReceiveSetTrustlineContentMessageDeprecated,
   TrustlineResponse,
   TrustlineResponseDeprecated
 } from '@gemwallet/constants';
@@ -239,7 +239,7 @@ setTimeout(() => {
           },
           () => {
             const messageListener = (
-              message: ReceivePaymentHashContentMessage,
+              message: ReceiveSendPaymentContentMessage,
               sender: chrome.runtime.MessageSender
             ) => {
               const { app, type, payload } = message;
@@ -275,7 +275,7 @@ setTimeout(() => {
           },
           () => {
             const messageListener = (
-              message: ReceivePaymentHashContentMessageDeprecated,
+              message: ReceiveSendPaymentContentMessageDeprecated,
               sender: chrome.runtime.MessageSender
             ) => {
               const { app, type, payload } = message;
@@ -310,7 +310,7 @@ setTimeout(() => {
           },
           () => {
             const messageListener = (
-              message: ReceiveTrustlineHashContentMessage,
+              message: ReceiveSetTrustlineContentMessage,
               sender: chrome.runtime.MessageSender
             ) => {
               const { app, type, payload } = message;
@@ -346,7 +346,7 @@ setTimeout(() => {
           },
           () => {
             const messageListener = (
-              message: ReceiveTrustlineHashContentMessageDeprecated,
+              message: ReceiveSetTrustlineContentMessageDeprecated,
               sender: chrome.runtime.MessageSender
             ) => {
               const { app, type, payload } = message;

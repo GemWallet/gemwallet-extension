@@ -11,8 +11,8 @@ import {
   GEM_WALLET,
   Memo,
   TrustSetFlags,
-  ReceiveTrustlineHashBackgroundMessage,
-  ReceiveTrustlineHashBackgroundMessageDeprecated
+  ReceiveSetTrustlineBackgroundMessage,
+  ReceiveSetTrustlineBackgroundMessageDeprecated
 } from '@gemwallet/constants';
 
 import { DEFAULT_RESERVE, ERROR_RED } from '../../../constants';
@@ -172,7 +172,7 @@ export const AddNewTrustline: FC = () => {
   const createMessage = useCallback(
     (
       transactionHash: string | null | undefined
-    ): ReceiveTrustlineHashBackgroundMessage | ReceiveTrustlineHashBackgroundMessageDeprecated => {
+    ): ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated => {
       if (receivingMessage === 'RECEIVE_SET_TRUSTLINE/V3') {
         return {
           app: GEM_WALLET,
@@ -200,7 +200,7 @@ export const AddNewTrustline: FC = () => {
     setTransaction(TransactionStatus.Rejected);
     const message = createMessage(null);
     chrome.runtime.sendMessage<
-      ReceiveTrustlineHashBackgroundMessage | ReceiveTrustlineHashBackgroundMessageDeprecated
+      ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
     >(message);
   }, [createMessage]);
 
@@ -221,7 +221,7 @@ export const AddNewTrustline: FC = () => {
           setTransaction(TransactionStatus.Success);
           const message = createMessage(transactionHash);
           chrome.runtime.sendMessage<
-            ReceiveTrustlineHashBackgroundMessage | ReceiveTrustlineHashBackgroundMessageDeprecated
+            ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
           >(message);
         })
         .catch((e) => {
@@ -229,7 +229,7 @@ export const AddNewTrustline: FC = () => {
           setTransaction(TransactionStatus.Rejected);
           const message = createMessage(undefined);
           chrome.runtime.sendMessage<
-            ReceiveTrustlineHashBackgroundMessage | ReceiveTrustlineHashBackgroundMessageDeprecated
+            ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
           >(message);
         });
     }
