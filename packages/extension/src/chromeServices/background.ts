@@ -10,8 +10,8 @@ import {
   ReceiveSendPaymentContentMessage,
   ReceiveSendPaymentContentMessageDeprecated,
   ReceiveSetTrustlineContentMessage,
-  ReceiveSignMessageContentMessage,
   ReceiveSetTrustlineContentMessageDeprecated,
+  ReceiveSignMessageContentMessage,
   RequestMessage,
   RequestPayload,
   ResponsePayload
@@ -181,7 +181,7 @@ chrome.runtime.onMessage.addListener(
         sender,
         parameter: PARAMETER_TRANSACTION_PAYMENT,
         requestMessage: message.type,
-        receivingMessage: 'RECEIVE_PAYMENT_HASH',
+        receivingMessage: 'RECEIVE_SEND_PAYMENT/V3',
         errorPayload: {
           payment: undefined
         }
@@ -201,7 +201,7 @@ chrome.runtime.onMessage.addListener(
         payload: message.payload,
         sender,
         parameter: PARAMETER_TRANSACTION_TRUSTLINE,
-        receivingMessage: 'RECEIVE_TRUSTLINE_HASH',
+        receivingMessage: 'RECEIVE_SET_TRUSTLINE/V3',
         errorPayload: {
           trustline: undefined
         }
