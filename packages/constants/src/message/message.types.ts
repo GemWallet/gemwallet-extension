@@ -122,10 +122,12 @@ export type PublicAddressResponse = MessagingResponse & AddressResponsePayload;
 export type PublicKeyResponse = MessagingResponse & PublicKeyResponsePayload;
 export type SignedMessageResponse = MessagingResponse & SignedMessageResponsePayload;
 export type IsConnectedResponse = MessagingResponse & IsConnectedResponsePayload;
-export type PaymentResponse = MessagingResponse & SendPaymentResponse;
-export type PaymentResponseDeprecated = MessagingResponse & SendPaymentResponseDeprecated;
-export type TrustlineResponse = MessagingResponse & SetTrustlineResponse;
-export type TrustlineResponseDeprecated = MessagingResponse & SetTrustlineResponseDeprecated;
+export type SendPaymentMessagingResponse = MessagingResponse & SendPaymentResponse;
+export type SendPaymentMessagingResponseDeprecated = MessagingResponse &
+  SendPaymentResponseDeprecated;
+export type SetTrustlineMessagingResponse = MessagingResponse & SetTrustlineResponse;
+export type SetTrustlineMessagingResponseDeprecated = MessagingResponse &
+  SetTrustlineResponseDeprecated;
 
 // Content Script Messages
 export interface ReceiveSendPaymentContentMessage {

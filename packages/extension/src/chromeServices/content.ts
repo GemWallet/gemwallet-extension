@@ -8,7 +8,6 @@ import {
   NFTResponse,
   PaymentEventListener,
   PaymentEventListenerDeprecated,
-  PaymentResponse,
   PublicAddressResponse,
   PublicKeyEventListener,
   PublicKeyResponse,
@@ -20,6 +19,7 @@ import {
   ReceiveSendPaymentContentMessage,
   ReceiveSendPaymentContentMessageDeprecated,
   ReceiveSetTrustlineContentMessage,
+  ReceiveSetTrustlineContentMessageDeprecated,
   ReceiveSignMessageContentMessage,
   RequestAddressMessage,
   RequestGetNFTMessage,
@@ -31,14 +31,14 @@ import {
   RequestSignMessageMessage,
   RequestSetTrustlineMessage,
   RequestSetTrustlineMessageDeprecated,
+  SendPaymentMessagingResponse,
+  SendPaymentMessagingResponseDeprecated,
   SetTrustlineEventListener,
   SetTrustlineEventListenerDeprecated,
+  SetTrustlineMessagingResponse,
+  SetTrustlineMessagingResponseDeprecated,
   SignedMessageResponse,
-  SignMessageListener,
-  PaymentResponseDeprecated,
-  ReceiveSetTrustlineContentMessageDeprecated,
-  TrustlineResponse,
-  TrustlineResponseDeprecated
+  SignMessageListener
 } from '@gemwallet/constants';
 
 /**
@@ -252,7 +252,7 @@ setTimeout(() => {
                       source: 'GEM_WALLET_MSG_RESPONSE',
                       messagedId,
                       payment
-                    } as PaymentResponse,
+                    } as SendPaymentMessagingResponse,
                     window.location.origin
                   );
                   chrome.runtime.onMessage.removeListener(messageListener);
@@ -288,7 +288,7 @@ setTimeout(() => {
                       source: 'GEM_WALLET_MSG_RESPONSE',
                       messagedId,
                       hash
-                    } as PaymentResponseDeprecated,
+                    } as SendPaymentMessagingResponseDeprecated,
                     window.location.origin
                   );
                   chrome.runtime.onMessage.removeListener(messageListener);
@@ -323,7 +323,7 @@ setTimeout(() => {
                       source: 'GEM_WALLET_MSG_RESPONSE',
                       messagedId,
                       trustline
-                    } as TrustlineResponse,
+                    } as SetTrustlineMessagingResponse,
                     window.location.origin
                   );
                   chrome.runtime.onMessage.removeListener(messageListener);
@@ -359,7 +359,7 @@ setTimeout(() => {
                       source: 'GEM_WALLET_MSG_RESPONSE',
                       messagedId,
                       hash
-                    } as TrustlineResponseDeprecated,
+                    } as SetTrustlineMessagingResponseDeprecated,
                     window.location.origin
                   );
                   chrome.runtime.onMessage.removeListener(messageListener);
