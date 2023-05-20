@@ -122,7 +122,7 @@ export interface IsConnectedResponsePayload {
   isConnected: boolean;
 }
 
-export interface PaymentHashResponsePayload {
+export interface SendPaymentResponse {
   payment:
     | {
         hash: string;
@@ -135,7 +135,7 @@ export interface PaymentHashResponsePayloadDeprecated {
   hash: string | null | undefined;
 }
 
-export interface TrustlineHashResponsePayload {
+export interface SetTrustlineResponse {
   trustline:
     | {
         hash: string;
@@ -168,9 +168,9 @@ export type ResponsePayload =
   | GetNFTResponsePayloadDeprecated
   | IsConnectedResponsePayload
   | NetworkResponsePayload
-  | PaymentHashResponsePayload
   | PaymentHashResponsePayloadDeprecated
   | PublicKeyResponsePayload
+  | SendPaymentResponse
+  | SetTrustlineResponse
   | SignedMessageResponsePayload
-  | TrustlineHashResponsePayload
   | TrustlineHashResponsePayloadDeprecated;

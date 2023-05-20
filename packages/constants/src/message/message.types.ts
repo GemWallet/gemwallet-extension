@@ -6,15 +6,15 @@ import {
   IsConnectedResponsePayload,
   NetworkResponsePayload,
   NFTRequestPayload,
-  PaymentHashResponsePayload,
   PaymentRequestPayload,
   PaymentRequestPayloadDeprecated,
   PublicKeyResponsePayload,
+  SendPaymentResponse,
+  SetTrustlineResponse,
   SetTrustlineRequestPayload,
   SetTrustlineRequestPayloadDeprecated,
   SignedMessageResponsePayload,
   SignMessageRequestPayload,
-  TrustlineHashResponsePayload,
   TrustlineHashResponsePayloadDeprecated,
   PaymentHashResponsePayloadDeprecated,
   WebsiteRequestPayload
@@ -122,9 +122,9 @@ export type PublicAddressResponse = MessagingResponse & AddressResponsePayload;
 export type PublicKeyResponse = MessagingResponse & PublicKeyResponsePayload;
 export type SignedMessageResponse = MessagingResponse & SignedMessageResponsePayload;
 export type IsConnectedResponse = MessagingResponse & IsConnectedResponsePayload;
-export type PaymentResponse = MessagingResponse & PaymentHashResponsePayload;
+export type PaymentResponse = MessagingResponse & SendPaymentResponse;
 export type PaymentResponseDeprecated = MessagingResponse & PaymentHashResponsePayloadDeprecated;
-export type TrustlineResponse = MessagingResponse & TrustlineHashResponsePayload;
+export type TrustlineResponse = MessagingResponse & SetTrustlineResponse;
 export type TrustlineResponseDeprecated = MessagingResponse &
   TrustlineHashResponsePayloadDeprecated;
 
@@ -132,7 +132,7 @@ export type TrustlineResponseDeprecated = MessagingResponse &
 export interface ReceivePaymentHashContentMessage {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_SEND_PAYMENT/V3';
-  payload: PaymentHashResponsePayload;
+  payload: SendPaymentResponse;
 }
 export interface ReceivePaymentHashContentMessageDeprecated {
   app: typeof GEM_WALLET;
@@ -142,7 +142,7 @@ export interface ReceivePaymentHashContentMessageDeprecated {
 export interface ReceiveTrustlineHashContentMessage {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_SET_TRUSTLINE/V3';
-  payload: TrustlineHashResponsePayload;
+  payload: SetTrustlineResponse;
 }
 export interface ReceiveTrustlineHashContentMessageDeprecated {
   app: typeof GEM_WALLET;
