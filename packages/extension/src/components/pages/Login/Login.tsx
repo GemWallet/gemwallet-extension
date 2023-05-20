@@ -59,9 +59,14 @@ export const Login: FC = () => {
     const windowId = Number(urlParams.get('id'));
     if (extensionWindow?.id && windowId) {
       if (search.includes(PARAMETER_TRANSACTION_PAYMENT)) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const type =
+          urlParams.get('requestMessage') === 'RECEIVE_SEND_PAYMENT/V3'
+            ? 'RECEIVE_SEND_PAYMENT/V3'
+            : 'RECEIVE_PAYMENT_HASH';
         handleTransaction({
           app: GEM_WALLET,
-          type: 'RECEIVE_PAYMENT_HASH',
+          type,
           payload: {
             id: windowId,
             hash: null
@@ -96,9 +101,14 @@ export const Login: FC = () => {
           }
         });
       } else if (search.includes(PARAMETER_TRANSACTION_TRUSTLINE)) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const type =
+          urlParams.get('requestMessage') === 'RECEIVE_SET_TRUSTLINE/V3'
+            ? 'RECEIVE_SET_TRUSTLINE/V3'
+            : 'RECEIVE_TRUSTLINE_HASH';
         handleTransaction({
           app: GEM_WALLET,
-          type: 'RECEIVE_TRUSTLINE_HASH',
+          type,
           payload: {
             id: windowId,
             hash: null
