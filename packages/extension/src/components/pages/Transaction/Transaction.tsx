@@ -175,7 +175,7 @@ export const Transaction: FC = () => {
     (
       transactionHash: string | null | undefined
     ): ReceiveSendPaymentBackgroundMessage | ReceiveSendPaymentBackgroundMessageDeprecated => {
-      if (receivingMessage === 'RECEIVE_GET_NFT/V3') {
+      if (receivingMessage === 'RECEIVE_SEND_PAYMENT/V3') {
         return {
           app: GEM_WALLET,
           type: 'RECEIVE_SEND_PAYMENT/V3',
