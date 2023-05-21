@@ -21,7 +21,8 @@ import {
   ReceiveSetTrustlineContentMessage,
   ReceiveSetTrustlineContentMessageDeprecated,
   ReceiveSignMessageContentMessage,
-  RequestAddressMessage,
+  RequestGetAddressMessage,
+  RequestGetAddressMessageDeprecated,
   RequestGetNFTMessage,
   RequestGetNFTMessageDeprecated,
   RequestNetworkMessage,
@@ -89,11 +90,45 @@ setTimeout(() => {
             chrome.runtime.onMessage.addListener(messageListener);
           }
         );
+      } else if (type === 'REQUEST_GET_ADDRESS/V3') {
+        const {
+          data: { payload }
+        } = event as AddressEventListener;
+        chrome.runtime.sendMessage<RequestGetAddressMessage>(
+          {
+            app,
+            type,
+            payload
+          },
+          () => {
+            const messageListener = (
+              message: ReceiveAddressContentMessage,
+              sender: chrome.runtime.MessageSender
+            ) => {
+              const { app, type, payload } = message;
+              // We make sure that the message comes from GemWallet
+              if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
+                if (type === 'RECEIVE_ADDRESS') {
+                  window.postMessage(
+                    {
+                      source: 'GEM_WALLET_MSG_RESPONSE',
+                      messagedId,
+                      publicAddress: payload.publicAddress
+                    } as PublicAddressResponse,
+                    window.location.origin
+                  );
+                  chrome.runtime.onMessage.removeListener(messageListener);
+                }
+              }
+            };
+            chrome.runtime.onMessage.addListener(messageListener);
+          }
+        );
       } else if (type === 'REQUEST_ADDRESS') {
         const {
           data: { payload }
         } = event as AddressEventListener;
-        chrome.runtime.sendMessage<RequestAddressMessage>(
+        chrome.runtime.sendMessage<RequestGetAddressMessageDeprecated>(
           {
             app,
             type,

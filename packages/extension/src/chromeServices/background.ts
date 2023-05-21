@@ -132,6 +132,16 @@ chrome.runtime.onMessage.addListener(
         width: 1,
         height: 1
       });
+    } else if (type === 'REQUEST_GET_ADDRESS/V3') {
+      focusOrCreatePopupWindow({
+        payload: message.payload,
+        sender,
+        parameter: PARAMETER_ADDRESS,
+        receivingMessage: 'RECEIVE_GET_ADDRESS/V3',
+        errorPayload: {
+          publicAddress: undefined
+        }
+      });
     } else if (type === 'REQUEST_ADDRESS') {
       focusOrCreatePopupWindow({
         payload: message.payload,

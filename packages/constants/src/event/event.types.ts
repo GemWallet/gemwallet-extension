@@ -37,6 +37,16 @@ export interface NetworkEventListener extends MessageEvent<MessageEventData> {
 export interface AddressEventListener extends MessageEvent<MessageEventData> {
   data: {
     app: typeof GEM_WALLET;
+    type: 'REQUEST_GET_ADDRESS/V3';
+    source: 'GEM_WALLET_MSG_REQUEST';
+    messageId: number;
+    payload: WebsiteRequestPayload;
+  };
+}
+
+export interface AddressEventListenerDeprecated extends MessageEvent<MessageEventData> {
+  data: {
+    app: typeof GEM_WALLET;
     type: 'REQUEST_ADDRESS';
     source: 'GEM_WALLET_MSG_REQUEST';
     messageId: number;
@@ -126,6 +136,7 @@ export interface SetTrustlineEventListenerDeprecated extends MessageEvent<Messag
 
 export type EventListener =
   | AddressEventListener
+  | AddressEventListenerDeprecated
   | GetNFTEventListener
   | GetNFTEventListenerDeprecated
   | NetworkEventListener

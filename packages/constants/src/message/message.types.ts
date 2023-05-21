@@ -24,6 +24,7 @@ export type RequestMessage =
   | 'REQUEST_ADDRESS'
   | 'REQUEST_ADD_TRUSTLINE'
   | 'REQUEST_CONNECTION'
+  | 'REQUEST_GET_ADDRESS/V3'
   | 'REQUEST_GET_NFT/V3'
   | 'REQUEST_NETWORK'
   | 'REQUEST_NFT'
@@ -35,6 +36,7 @@ export type RequestMessage =
 
 export type ReceiveMessage =
   | 'RECEIVE_ADDRESS'
+  | 'RECEIVE_GET_ADDRESS/V3'
   | 'RECEIVE_GET_NFT/V3'
   | 'RECEIVE_NETWORK'
   | 'RECEIVE_NFT'
@@ -55,7 +57,13 @@ export interface RequestNetworkMessage {
   type: 'REQUEST_NETWORK';
 }
 
-export interface RequestAddressMessage {
+export interface RequestGetAddressMessage {
+  app: typeof GEM_WALLET;
+  type: 'REQUEST_GET_ADDRESS/V3';
+  payload: WebsiteRequestPayload;
+}
+
+export interface RequestGetAddressMessageDeprecated {
   app: typeof GEM_WALLET;
   type: 'REQUEST_ADDRESS';
   payload: WebsiteRequestPayload;
@@ -223,9 +231,10 @@ export type ReceiveSignMessageBackgroundMessage = ReceiveSignMessageContentMessa
 export type BackgroundMessage =
   // Inputted messages - DO NOT contain ID within the payloads
   | RequestNetworkMessage
+  | RequestGetAddressMessage
+  | RequestGetAddressMessageDeprecated
   | RequestGetNFTMessage
   | RequestGetNFTMessageDeprecated
-  | RequestAddressMessage
   | RequestPublicKeyMessage
   | RequestSendPaymentMessage
   | RequestSendPaymentMessageDeprecated
@@ -251,14 +260,11 @@ export interface RequestIsConnectedMessage {
 }
 
 export type APIMessages =
-  | RequestAddressMessage
+  | RequestGetAddressMessage
   | RequestNetworkMessage
   | RequestGetNFTMessage
-  | RequestGetNFTMessageDeprecated
   | RequestPublicKeyMessage
   | RequestIsConnectedMessage
   | RequestSendPaymentMessage
-  | RequestSendPaymentMessageDeprecated
   | RequestSetTrustlineMessage
-  | RequestSetTrustlineMessageDeprecated
   | RequestSignMessageMessage;

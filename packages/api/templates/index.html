@@ -14,6 +14,7 @@
       <button onclick="handleTrustline()">Add trustline</button>
       <button onclick="handleNFTs()">Get NFTs (check the console)</button>
       <button onclick="handlePublicKey()">Get Public Key (check the console)</button>
+      <button onclick="handleGetAddress()">Get Address (check the console)</button>
       <div id="address"></div>
     </div>
   </body>
@@ -153,5 +154,18 @@
       .catch((e) => {
         console.error('GemWallet is not connected: ', e);
       });
+  }
+  function handleGetAddress() {
+    GemWalletApi.isConnected().then((isConnected) => {
+      if (isConnected) {
+        GemWalletApi.getAddress()
+          .then((address) => {
+            console.log('Here is your address: ', address.publicAddress);
+          })
+          .catch((e) => {
+            console.error('Something went wrong: ', e);
+          });
+      }
+    });
   }
 </script>
