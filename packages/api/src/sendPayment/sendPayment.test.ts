@@ -38,7 +38,11 @@ describe('sendPayment api', () => {
     await sendPayment(payload).then((res) => {
       response = res;
     });
-    expect(response).toEqual({ hash });
+    expect(response).toEqual({
+      payment: {
+        hash
+      }
+    });
   });
 
   test('should return an null if the user refused the payment', async () => {
@@ -48,7 +52,7 @@ describe('sendPayment api', () => {
     await sendPayment(payload).then((res) => {
       response = res;
     });
-    expect(response).toEqual(null);
+    expect(response).toEqual({ payment: null });
   });
 
   test('should return an undefined if sendMessageToContentScript failed', async () => {
