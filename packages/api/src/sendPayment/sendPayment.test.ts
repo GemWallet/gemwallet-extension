@@ -15,24 +15,30 @@ jest.mock('../helpers/extensionMessaging', () => ({
   sendMessageToContentScript: async (message: RequestPaymentMessage) => {
     // Mock returning an error if payload destination = error
     if (message.payload.destination === 'refused') {
-      return { hash: null };
+      return {
+        payment: null
+      };
     }
     // Mock throwing an error if payload destination = errorThrow
     if (message.payload.destination === 'errorThrow') {
       throw new Error(errorThrownFromContentScript);
     }
-    return { hash };
+    return {
+      payment: {
+        hash
+      }
+    };
   }
 }));
 
-describe.skip('sendPayment api', () => {
+describe('sendPayment api', () => {
   test('should return a transaction hash as sendMessageToContentScript is returning a hash', async () => {
     let response;
     // deepcode ignore PromiseNotCaughtGeneral/test: Promise used in unit test
     await sendPayment(payload).then((res) => {
       response = res;
     });
-    expect(response).toEqual(hash);
+    expect(response).toEqual({ hash });
   });
 
   test('should return an null if the user refused the payment', async () => {

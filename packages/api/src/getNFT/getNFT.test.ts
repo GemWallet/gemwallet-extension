@@ -5,18 +5,26 @@ jest.mock('../helpers/extensionMessaging', () => ({
   sendMessageToContentScript: jest.fn()
 }));
 
-describe.skip('getNFT', () => {
+describe('getNFT', () => {
   it('returns an array of NFTs when successfully retrieving data', async () => {
     // Mock the response from sendMessageToContentScript
     const mockResponse = {
       nfts: [
         { id: 1, name: 'NFT 1' },
         { id: 2, name: 'NFT 2' }
-      ]
+      ],
+      marker: undefined
+    };
+    const expectedResponse = {
+      account_nfts: [
+        { id: 1, name: 'NFT 1' },
+        { id: 2, name: 'NFT 2' }
+      ],
+      marker: undefined
     };
     (sendMessageToContentScript as jest.Mock).mockResolvedValue(mockResponse);
     const result = await getNFT();
-    expect(result).toEqual(mockResponse.nfts);
+    expect(result).toEqual(expectedResponse);
   });
 
   it('returns null when the user refuses to share their NFTs', async () => {
