@@ -28,6 +28,15 @@ interface MessageEventData {
 export interface NetworkEventListener extends MessageEvent<MessageEventData> {
   data: {
     app: typeof GEM_WALLET;
+    type: 'REQUEST_GET_NETWORK/V3';
+    source: 'GEM_WALLET_MSG_REQUEST';
+    messageId: number;
+  };
+}
+
+export interface NetworkEventListenerDeprecated extends MessageEvent<MessageEventData> {
+  data: {
+    app: typeof GEM_WALLET;
     type: 'REQUEST_NETWORK';
     source: 'GEM_WALLET_MSG_REQUEST';
     messageId: number;
@@ -140,6 +149,7 @@ export type EventListener =
   | GetNFTEventListener
   | GetNFTEventListenerDeprecated
   | NetworkEventListener
+  | NetworkEventListenerDeprecated
   | PublicKeyEventListener
   | PaymentEventListener
   | PaymentEventListenerDeprecated

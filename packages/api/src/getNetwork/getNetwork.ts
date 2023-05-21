@@ -10,13 +10,9 @@ export const getNetwork = async () => {
   try {
     const message: RequestNetworkMessage = {
       app: GEM_WALLET,
-      type: 'REQUEST_NETWORK'
+      type: 'REQUEST_GET_NETWORK/V3'
     };
-    const { network } = await sendMessageToContentScript(message);
-    response = network;
-  } catch (e) {
-    throw e;
-  }
-
+    return await sendMessageToContentScript(message);
+  } catch (e) {}
   return response;
 };

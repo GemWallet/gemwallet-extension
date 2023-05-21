@@ -26,6 +26,7 @@ import {
   RequestGetNFTMessage,
   RequestGetNFTMessageDeprecated,
   RequestNetworkMessage,
+  RequestNetworkMessageDeprecated,
   RequestSendPaymentMessage,
   RequestSendPaymentMessageDeprecated,
   RequestPublicKeyMessage,
@@ -60,8 +61,38 @@ setTimeout(() => {
         data: { app, type }
       } = event;
       // Check if it's an allowed event type to be forwarded
-      if (type === 'REQUEST_NETWORK') {
+      if (type === 'REQUEST_GET_NETWORK/V3') {
         chrome.runtime.sendMessage<RequestNetworkMessage>(
+          {
+            app,
+            type
+          },
+          () => {
+            const messageListener = (
+              message: ReceiveNetworkContentMessage,
+              sender: chrome.runtime.MessageSender
+            ) => {
+              const { app, type, payload } = message;
+              // We make sure that the message comes from GemWallet
+              if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
+                if (type === 'RECEIVE_NETWORK') {
+                  window.postMessage(
+                    {
+                      source: 'GEM_WALLET_MSG_RESPONSE',
+                      messagedId,
+                      network: payload.network
+                    } as NetworkResponse,
+                    window.location.origin
+                  );
+                  chrome.runtime.onMessage.removeListener(messageListener);
+                }
+              }
+            };
+            chrome.runtime.onMessage.addListener(messageListener);
+          }
+        );
+      } else if (type === 'REQUEST_NETWORK') {
+        chrome.runtime.sendMessage<RequestNetworkMessageDeprecated>(
           {
             app,
             type

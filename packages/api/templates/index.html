@@ -15,6 +15,7 @@
       <button onclick="handleNFTs()">Get NFTs (check the console)</button>
       <button onclick="handlePublicKey()">Get Public Key (check the console)</button>
       <button onclick="handleGetAddress()">Get Address (check the console)</button>
+      <button onclick="handleGetNetwork()">Get Network (check the console)</button>
       <div id="address"></div>
     </div>
   </body>
@@ -161,6 +162,19 @@
         GemWalletApi.getAddress()
           .then((address) => {
             console.log('Here is your address: ', address.publicAddress);
+          })
+          .catch((e) => {
+            console.error('Something went wrong: ', e);
+          });
+      }
+    });
+  }
+  function handleGetNetwork() {
+    GemWalletApi.isConnected().then((isConnected) => {
+      if (isConnected) {
+        GemWalletApi.getNetwork()
+          .then((network) => {
+            console.log('Here is your network: ', network.network);
           })
           .catch((e) => {
             console.error('Something went wrong: ', e);

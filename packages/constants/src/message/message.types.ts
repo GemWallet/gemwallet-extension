@@ -25,6 +25,7 @@ export type RequestMessage =
   | 'REQUEST_ADD_TRUSTLINE'
   | 'REQUEST_CONNECTION'
   | 'REQUEST_GET_ADDRESS/V3'
+  | 'REQUEST_GET_NETWORK/V3'
   | 'REQUEST_GET_NFT/V3'
   | 'REQUEST_NETWORK'
   | 'REQUEST_NFT'
@@ -53,6 +54,11 @@ export type SourceMessage = 'GEM_WALLET_MSG_REQUEST' | 'GEM_WALLET_MSG_RESPONSE'
  * Requests
  */
 export interface RequestNetworkMessage {
+  app: typeof GEM_WALLET;
+  type: 'REQUEST_GET_NETWORK/V3';
+}
+
+export interface RequestNetworkMessageDeprecated {
   app: typeof GEM_WALLET;
   type: 'REQUEST_NETWORK';
 }
@@ -231,6 +237,7 @@ export type ReceiveSignMessageBackgroundMessage = ReceiveSignMessageContentMessa
 export type BackgroundMessage =
   // Inputted messages - DO NOT contain ID within the payloads
   | RequestNetworkMessage
+  | RequestNetworkMessageDeprecated
   | RequestGetAddressMessage
   | RequestGetAddressMessageDeprecated
   | RequestGetNFTMessage

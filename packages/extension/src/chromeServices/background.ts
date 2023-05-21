@@ -118,7 +118,21 @@ chrome.runtime.onMessage.addListener(
       return; // exit early if the message is not from gem-wallet or the sender is not the extension itself
     }
 
-    if (type === 'REQUEST_NETWORK') {
+    if (type === 'REQUEST_GET_NETWORK/V3') {
+      focusOrCreatePopupWindow({
+        payload: {
+          id: sender.tab?.id
+        },
+        sender,
+        parameter: PARAMETER_NETWORK,
+        receivingMessage: 'RECEIVE_NETWORK',
+        errorPayload: {
+          network: undefined
+        },
+        width: 1,
+        height: 1
+      });
+    } else if (type === 'REQUEST_NETWORK') {
       focusOrCreatePopupWindow({
         payload: {
           id: sender.tab?.id
