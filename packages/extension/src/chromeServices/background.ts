@@ -201,6 +201,7 @@ chrome.runtime.onMessage.addListener(
         payload: message.payload,
         sender,
         parameter: PARAMETER_TRANSACTION_TRUSTLINE,
+        requestMessage: message.type,
         receivingMessage: 'RECEIVE_SET_TRUSTLINE/V3',
         errorPayload: {
           trustline: undefined
