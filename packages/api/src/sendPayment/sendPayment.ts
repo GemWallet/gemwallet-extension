@@ -1,7 +1,7 @@
 import {
   GEM_WALLET,
   PaymentRequestPayload,
-  RequestPaymentMessage,
+  RequestSendPaymentMessage,
   SendPaymentResponse
 } from '@gemwallet/constants';
 
@@ -14,7 +14,7 @@ export const sendPayment = async (paymentPayload: PaymentRequestPayload) => {
    */
   let response: SendPaymentResponse | null | undefined = undefined;
   try {
-    const message: RequestPaymentMessage = {
+    const message: RequestSendPaymentMessage = {
       app: GEM_WALLET,
       type: 'REQUEST_SEND_PAYMENT/V3',
       payload: paymentPayload

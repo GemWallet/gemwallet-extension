@@ -1,4 +1,4 @@
-import { PaymentRequestPayload, RequestPaymentMessage } from '@gemwallet/constants';
+import { PaymentRequestPayload, RequestSendPaymentMessage } from '@gemwallet/constants';
 
 import { sendPayment } from './sendPayment';
 
@@ -12,7 +12,7 @@ const payload: PaymentRequestPayload = {
 };
 
 jest.mock('../helpers/extensionMessaging', () => ({
-  sendMessageToContentScript: async (message: RequestPaymentMessage) => {
+  sendMessageToContentScript: async (message: RequestSendPaymentMessage) => {
     // Mock returning an error if payload destination = error
     if (message.payload.destination === 'refused') {
       return {

@@ -67,13 +67,13 @@ export interface RequestPublicKeyMessage {
   payload: WebsiteRequestPayload;
 }
 
-export interface RequestPaymentMessage {
+export interface RequestSendPaymentMessage {
   app: typeof GEM_WALLET;
   type: 'REQUEST_SEND_PAYMENT/V3';
   payload: PaymentRequestPayload;
 }
 
-export interface RequestPaymentMessageDeprecated {
+export interface RequestSendPaymentMessageDeprecated {
   app: typeof GEM_WALLET;
   type: 'SEND_PAYMENT';
   payload: PaymentRequestPayloadDeprecated;
@@ -227,8 +227,8 @@ export type BackgroundMessage =
   | RequestGetNFTMessageDeprecated
   | RequestAddressMessage
   | RequestPublicKeyMessage
-  | RequestPaymentMessage
-  | RequestPaymentMessageDeprecated
+  | RequestSendPaymentMessage
+  | RequestSendPaymentMessageDeprecated
   | RequestSetTrustlineMessage
   | RequestSetTrustlineMessageDeprecated
   | RequestSignMessageMessage
@@ -257,6 +257,8 @@ export type APIMessages =
   | RequestGetNFTMessageDeprecated
   | RequestPublicKeyMessage
   | RequestIsConnectedMessage
-  | RequestPaymentMessage
+  | RequestSendPaymentMessage
+  | RequestSendPaymentMessageDeprecated
   | RequestSetTrustlineMessage
+  | RequestSetTrustlineMessageDeprecated
   | RequestSignMessageMessage;

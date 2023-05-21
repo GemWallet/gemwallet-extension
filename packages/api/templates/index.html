@@ -57,11 +57,11 @@
             }
           };
           GemWalletApi.sendPayment(payment)
-            .then((trHash) => {
+            .then((res) => {
               const addressContainer = document.getElementById('address');
               addressContainer.insertAdjacentText(
                 'afterbegin',
-                `Transaction sent with ID: ${trHash}`
+                `Received object: ${JSON.stringify(res)}`
               );
             })
             .catch((e) => {

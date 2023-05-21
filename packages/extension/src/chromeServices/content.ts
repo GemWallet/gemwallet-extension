@@ -25,8 +25,8 @@ import {
   RequestGetNFTMessage,
   RequestGetNFTMessageDeprecated,
   RequestNetworkMessage,
-  RequestPaymentMessage,
-  RequestPaymentMessageDeprecated,
+  RequestSendPaymentMessage,
+  RequestSendPaymentMessageDeprecated,
   RequestPublicKeyMessage,
   RequestSignMessageMessage,
   RequestSetTrustlineMessage,
@@ -231,7 +231,7 @@ setTimeout(() => {
         const {
           data: { payload }
         } = event as PaymentEventListener;
-        chrome.runtime.sendMessage<RequestPaymentMessage>(
+        chrome.runtime.sendMessage<RequestSendPaymentMessage>(
           {
             app,
             type,
@@ -267,7 +267,7 @@ setTimeout(() => {
         const {
           data: { payload }
         } = event as PaymentEventListenerDeprecated;
-        chrome.runtime.sendMessage<RequestPaymentMessageDeprecated>(
+        chrome.runtime.sendMessage<RequestSendPaymentMessageDeprecated>(
           {
             app,
             type,
