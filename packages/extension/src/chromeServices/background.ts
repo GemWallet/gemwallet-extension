@@ -232,7 +232,9 @@ chrome.runtime.onMessage.addListener(
       sendMessageToTab<ReceiveSendPaymentContentMessage>(payload.id, {
         app,
         type: 'RECEIVE_SEND_PAYMENT/V3',
-        payment: payload.payment
+        payload: {
+          payment: payload.payment
+        }
       });
     } else if (type === 'RECEIVE_PAYMENT_HASH') {
       const { payload } = message;
@@ -248,7 +250,9 @@ chrome.runtime.onMessage.addListener(
       sendMessageToTab<ReceiveSetTrustlineContentMessage>(payload.id, {
         app,
         type: 'RECEIVE_SET_TRUSTLINE/V3',
-        trustline: payload.trustline
+        payload: {
+          trustline: payload.trustline
+        }
       });
     } else if (type === 'RECEIVE_TRUSTLINE_HASH') {
       const { payload } = message;
