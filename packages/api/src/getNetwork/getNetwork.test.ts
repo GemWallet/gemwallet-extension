@@ -11,10 +11,10 @@ describe('getNetwork', () => {
   it('should return network response when called', async () => {
     (sendMessageToContentScript as jest.Mock).mockResolvedValue({ network: 'testnet' });
     const network = await getNetwork();
-    expect(network).toEqual('testnet');
+    expect(network).toEqual({ network: 'testnet' });
     expect(sendMessageToContentScript).toHaveBeenCalledWith({
       app: GEM_WALLET,
-      type: 'REQUEST_NETWORK'
+      type: 'REQUEST_GET_NETWORK/V3'
     });
   });
 

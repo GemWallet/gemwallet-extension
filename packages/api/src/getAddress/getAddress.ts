@@ -20,7 +20,10 @@ export const getAddress = async () => {
         favicon
       }
     };
-    return await sendMessageToContentScript(message);
+    const { publicAddress } = await sendMessageToContentScript(message);
+    return {
+      publicAddress
+    };
   } catch (e) {}
   return response;
 };

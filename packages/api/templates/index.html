@@ -161,7 +161,7 @@
       if (isConnected) {
         GemWalletApi.getAddress()
           .then((address) => {
-            console.log('Here is your address: ', address.publicAddress);
+            console.log('Here is your address: ', address);
           })
           .catch((e) => {
             console.error('Something went wrong: ', e);
@@ -174,7 +174,7 @@
       if (isConnected) {
         GemWalletApi.getNetwork()
           .then((network) => {
-            console.log('Here is your network: ', network.network);
+            console.log('Here is your network: ', network);
           })
           .catch((e) => {
             console.error('Something went wrong: ', e);
