@@ -19,7 +19,10 @@ export const sendPayment = async (paymentPayload: PaymentRequestPayload) => {
       type: 'REQUEST_SEND_PAYMENT/V3',
       payload: paymentPayload
     };
-    return await sendMessageToContentScript(message);
+    const response = await sendMessageToContentScript(message);
+    return {
+      payment: response.payment
+    };
   } catch (e) {}
   return response;
 };

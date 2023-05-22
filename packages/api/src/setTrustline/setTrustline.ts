@@ -19,7 +19,10 @@ export const setTrustline = async (trustlinePayload: SetTrustlineRequestPayload)
       type: 'REQUEST_SET_TRUSTLINE/V3',
       payload: trustlinePayload
     };
-    return await sendMessageToContentScript(message);
+    const response = await sendMessageToContentScript(message);
+    return {
+      trustline: response.trustline
+    };
   } catch (e) {}
   return response;
 };
