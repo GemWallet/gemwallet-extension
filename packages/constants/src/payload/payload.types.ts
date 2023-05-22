@@ -123,7 +123,7 @@ export interface IsConnectedResponsePayload {
 }
 
 export interface SendPaymentResponse {
-  payment:
+  result:
     | {
         hash: string;
       }

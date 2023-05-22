@@ -21,7 +21,7 @@ export const sendPayment = async (paymentPayload: PaymentRequestPayload) => {
     };
     const response = await sendMessageToContentScript(message);
     return {
-      payment: response.payment
+      result: response.result
     };
   } catch (e) {}
   return response;

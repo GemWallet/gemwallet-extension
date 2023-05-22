@@ -16,7 +16,7 @@ jest.mock('../helpers/extensionMessaging', () => ({
     // Mock returning an error if payload destination = error
     if (message.payload.destination === 'refused') {
       return {
-        payment: null
+        result: null
       };
     }
     // Mock throwing an error if payload destination = errorThrow
@@ -24,7 +24,7 @@ jest.mock('../helpers/extensionMessaging', () => ({
       throw new Error(errorThrownFromContentScript);
     }
     return {
-      payment: {
+      result: {
         hash
       }
     };
@@ -39,7 +39,7 @@ describe('sendPayment api', () => {
       response = res;
     });
     expect(response).toEqual({
-      payment: {
+      result: {
         hash
       }
     });
@@ -52,7 +52,7 @@ describe('sendPayment api', () => {
     await sendPayment(payload).then((res) => {
       response = res;
     });
-    expect(response).toEqual({ payment: null });
+    expect(response).toEqual({ result: null });
   });
 
   test('should return an undefined if sendMessageToContentScript failed', async () => {
