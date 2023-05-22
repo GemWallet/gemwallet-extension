@@ -21,7 +21,7 @@ export const setTrustline = async (trustlinePayload: SetTrustlineRequestPayload)
     };
     const response = await sendMessageToContentScript(message);
     return {
-      trustline: response.trustline
+      result: response.result
     };
   } catch (e) {}
   return response;

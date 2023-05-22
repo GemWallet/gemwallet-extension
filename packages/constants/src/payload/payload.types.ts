@@ -136,7 +136,7 @@ export interface SendPaymentResponseDeprecated {
 }
 
 export interface SetTrustlineResponse {
-  trustline:
+  result:
     | {
         hash: string;
       }

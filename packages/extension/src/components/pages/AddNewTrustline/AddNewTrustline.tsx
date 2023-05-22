@@ -179,7 +179,7 @@ export const AddNewTrustline: FC = () => {
           type: 'RECEIVE_SET_TRUSTLINE/V3',
           payload: {
             id: params.id,
-            trustline: transactionHash ? { hash: transactionHash } : null
+            result: transactionHash ? { hash: transactionHash } : null
           }
         };
       }

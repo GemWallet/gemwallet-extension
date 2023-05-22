@@ -207,7 +207,7 @@ chrome.runtime.onMessage.addListener(
         requestMessage: message.type,
         receivingMessage: 'RECEIVE_SEND_PAYMENT/V3',
         errorPayload: {
-          payment: undefined
+          result: undefined
         }
       });
     } else if (type === 'SEND_PAYMENT') {
@@ -228,7 +228,7 @@ chrome.runtime.onMessage.addListener(
         requestMessage: message.type,
         receivingMessage: 'RECEIVE_SET_TRUSTLINE/V3',
         errorPayload: {
-          trustline: undefined
+          result: undefined
         }
       });
     } else if (type === 'REQUEST_ADD_TRUSTLINE') {
@@ -258,7 +258,7 @@ chrome.runtime.onMessage.addListener(
         app,
         type: 'RECEIVE_SEND_PAYMENT/V3',
         payload: {
-          payment: payload.payment
+          result: payload.result
         }
       });
     } else if (type === 'RECEIVE_PAYMENT_HASH') {
@@ -276,7 +276,7 @@ chrome.runtime.onMessage.addListener(
         app,
         type: 'RECEIVE_SET_TRUSTLINE/V3',
         payload: {
-          trustline: payload.trustline
+          result: payload.result
         }
       });
     } else if (type === 'RECEIVE_TRUSTLINE_HASH') {

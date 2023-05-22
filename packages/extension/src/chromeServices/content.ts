@@ -312,12 +312,12 @@ setTimeout(() => {
               // We make sure that the message comes from GemWallet
               if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
                 if (type === 'RECEIVE_SEND_PAYMENT/V3') {
-                  const { payment } = payload;
+                  const { result } = payload;
                   window.postMessage(
                     {
                       source: 'GEM_WALLET_MSG_RESPONSE',
                       messagedId,
-                      payment
+                      result
                     } as SendPaymentMessagingResponse,
                     window.location.origin
                   );
@@ -383,12 +383,12 @@ setTimeout(() => {
               // We make sure that the message comes from GemWallet
               if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
                 if (type === 'RECEIVE_SET_TRUSTLINE/V3') {
-                  const { trustline } = payload;
+                  const { result } = payload;
                   window.postMessage(
                     {
                       source: 'GEM_WALLET_MSG_RESPONSE',
                       messagedId,
-                      trustline
+                      result
                     } as SetTrustlineMessagingResponse,
                     window.location.origin
                   );

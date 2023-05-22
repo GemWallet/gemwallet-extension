@@ -181,7 +181,7 @@ export const Transaction: FC = () => {
           type: 'RECEIVE_SEND_PAYMENT/V3',
           payload: {
             id: params.id,
-            payment: transactionHash ? { hash: transactionHash } : null
+            result: transactionHash ? { hash: transactionHash } : null
           }
         };
       }
