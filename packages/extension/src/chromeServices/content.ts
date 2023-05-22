@@ -247,7 +247,7 @@ setTimeout(() => {
                     {
                       source: 'GEM_WALLET_MSG_RESPONSE',
                       messagedId,
-                      nfts: payload.nfts
+                      result: payload.result
                     } as NFTResponse,
                     window.location.origin
                   );

@@ -149,7 +149,7 @@ export interface SetTrustlineResponseDeprecated {
 }
 
 export interface GetNFTResponsePayload {
-  nfts:
+  result:
     | {
         account_nfts: AccountNFToken[];
         marker?: unknown;

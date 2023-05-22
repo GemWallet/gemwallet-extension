@@ -16,11 +16,13 @@ describe('getNFT', () => {
       marker: undefined
     };
     const expectedResponse = {
-      account_nfts: [
-        { id: 1, name: 'NFT 1' },
-        { id: 2, name: 'NFT 2' }
-      ],
-      marker: undefined
+      result: {
+        account_nfts: [
+          { id: 1, name: 'NFT 1' },
+          { id: 2, name: 'NFT 2' }
+        ],
+        marker: undefined
+      }
     };
     (sendMessageToContentScript as jest.Mock).mockResolvedValue(mockResponse);
     const result = await getNFT();

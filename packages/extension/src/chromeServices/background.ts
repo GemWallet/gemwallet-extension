@@ -323,7 +323,7 @@ chrome.runtime.onMessage.addListener(
         app,
         type: 'RECEIVE_GET_NFT/V3',
         payload: {
-          nfts: payload.nfts
+          result: payload.result
         }
       });
     } else if (type === 'RECEIVE_NFT') {
