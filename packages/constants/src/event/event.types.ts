@@ -66,6 +66,16 @@ export interface AddressEventListenerDeprecated extends MessageEvent<MessageEven
 export interface PublicKeyEventListener extends MessageEvent<MessageEventData> {
   data: {
     app: typeof GEM_WALLET;
+    type: 'REQUEST_GET_PUBLIC_KEY/V3';
+    source: 'GEM_WALLET_MSG_REQUEST';
+    messageId: number;
+    payload: WebsiteRequestPayload;
+  };
+}
+
+export interface PublicKeyEventListenerDeprecated extends MessageEvent<MessageEventData> {
+  data: {
+    app: typeof GEM_WALLET;
     type: 'REQUEST_PUBLIC_KEY';
     source: 'GEM_WALLET_MSG_REQUEST';
     messageId: number;
@@ -94,6 +104,16 @@ export interface GetNFTEventListenerDeprecated extends MessageEvent<MessageEvent
 }
 
 export interface SignMessageListener extends MessageEvent<MessageEventData> {
+  data: {
+    app: typeof GEM_WALLET;
+    type: 'REQUEST_SIGN_MESSAGE/V3';
+    source: 'GEM_WALLET_MSG_REQUEST';
+    messageId: number;
+    payload: SignMessageRequestPayload;
+  };
+}
+
+export interface SignMessageListenerDeprecated extends MessageEvent<MessageEventData> {
   data: {
     app: typeof GEM_WALLET;
     type: 'REQUEST_SIGN_MESSAGE';
@@ -151,8 +171,10 @@ export type EventListener =
   | NetworkEventListener
   | NetworkEventListenerDeprecated
   | PublicKeyEventListener
+  | PublicKeyEventListenerDeprecated
   | PaymentEventListener
   | PaymentEventListenerDeprecated
   | SetTrustlineEventListener
   | SetTrustlineEventListenerDeprecated
-  | SignMessageListener;
+  | SignMessageListener
+  | SignMessageListenerDeprecated;

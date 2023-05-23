@@ -102,19 +102,55 @@ export type RequestPayload =
  * Response Payloads
  */
 export interface NetworkResponsePayload {
+  result:
+    | {
+        network: Network;
+      }
+    | undefined;
+}
+
+export interface NetworkResponsePayloadDeprecated {
   network: Network | undefined;
 }
 
 export interface AddressResponsePayload {
+  result:
+    | {
+        publicAddress: string;
+      }
+    | null
+    | undefined;
+}
+
+export interface AddressResponsePayloadDeprecated {
   publicAddress: string | null | undefined;
 }
 
 export interface PublicKeyResponsePayload {
+  result:
+    | {
+        address: string;
+        publicKey: string;
+      }
+    | null
+    | undefined;
+}
+
+export interface PublicKeyResponsePayloadDeprecated {
   address: string | null | undefined;
   publicKey: string | null | undefined;
 }
 
 export interface SignedMessageResponsePayload {
+  result:
+    | {
+        signedMessage: string;
+      }
+    | null
+    | undefined;
+}
+
+export interface SignedMessageResponsePayloadDeprecated {
   signedMessage: string | null | undefined;
 }
 
@@ -164,13 +200,17 @@ export interface GetNFTResponsePayloadDeprecated {
 
 export type ResponsePayload =
   | AddressResponsePayload
+  | AddressResponsePayloadDeprecated
   | GetNFTResponsePayload
   | GetNFTResponsePayloadDeprecated
   | IsConnectedResponsePayload
   | NetworkResponsePayload
+  | NetworkResponsePayloadDeprecated
   | PublicKeyResponsePayload
+  | PublicKeyResponsePayloadDeprecated
   | SendPaymentResponse
   | SendPaymentResponseDeprecated
   | SetTrustlineResponse
   | SetTrustlineResponseDeprecated
-  | SignedMessageResponsePayload;
+  | SignedMessageResponsePayload
+  | SignedMessageResponsePayloadDeprecated;

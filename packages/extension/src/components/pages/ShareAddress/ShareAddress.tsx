@@ -2,7 +2,7 @@ import { FC, useCallback, useMemo } from 'react';
 
 import * as Sentry from '@sentry/react';
 
-import { GEM_WALLET, ReceiveAddressBackgroundMessage } from '@gemwallet/constants';
+import { GEM_WALLET, ReceiveGetAddressBackgroundMessage } from '@gemwallet/constants';
 
 import { useBrowser, useWallet } from '../../../contexts';
 import { saveTrustedApp, Permission } from '../../../utils';
@@ -27,12 +27,12 @@ export const ShareAddress: FC = () => {
 
   const handleReject = useCallback(() => {
     chrome.runtime
-      .sendMessage<ReceiveAddressBackgroundMessage>({
+      .sendMessage<ReceiveGetAddressBackgroundMessage>({
         app: GEM_WALLET,
-        type: 'RECEIVE_ADDRESS',
+        type: 'RECEIVE_GET_ADDRESS/V3',
         payload: {
           id,
-          publicAddress: null
+          result: null
         }
       })
       .then(() => {
@@ -49,12 +49,16 @@ export const ShareAddress: FC = () => {
     saveTrustedApp({ url: String(url), permissions }, selectedWallet);
     const currentWallet = getCurrentWallet();
     chrome.runtime
-      .sendMessage<ReceiveAddressBackgroundMessage>({
+      .sendMessage<ReceiveGetAddressBackgroundMessage>({
         app: GEM_WALLET,
-        type: 'RECEIVE_ADDRESS',
+        type: 'RECEIVE_GET_ADDRESS/V3',
         payload: {
           id,
-          publicAddress: currentWallet?.publicAddress
+          result: currentWallet?.publicAddress
+            ? {
+                publicAddress: currentWallet.publicAddress
+              }
+            : null
         }
       })
       .then(() => {

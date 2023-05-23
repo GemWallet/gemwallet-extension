@@ -49,10 +49,10 @@ export const SignMessage: FC = () => {
     chrome.runtime
       .sendMessage<ReceiveSignMessageBackgroundMessage>({
         app: GEM_WALLET,
-        type: 'RECEIVE_SIGN_MESSAGE',
+        type: 'RECEIVE_SIGN_MESSAGE/V3',
         payload: {
           id,
-          signedMessage: null
+          result: null
         }
       })
       .then(() => {
@@ -70,10 +70,14 @@ export const SignMessage: FC = () => {
     chrome.runtime
       .sendMessage<ReceiveSignMessageBackgroundMessage>({
         app: GEM_WALLET,
-        type: 'RECEIVE_SIGN_MESSAGE',
+        type: 'RECEIVE_SIGN_MESSAGE/V3',
         payload: {
           id,
-          signedMessage: signature
+          result: signature
+            ? {
+                signedMessage: signature
+              }
+            : null
         }
       })
       .then(() => {

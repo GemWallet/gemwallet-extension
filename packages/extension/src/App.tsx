@@ -3,7 +3,7 @@ import { FC, useEffect } from 'react';
 import * as Sentry from '@sentry/react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 
-import { GEM_WALLET, ReceiveNetworkBackgroundMessage } from '@gemwallet/constants';
+import { GEM_WALLET, ReceiveGetNetworkBackgroundMessage } from '@gemwallet/constants';
 
 import { PrivateRoute } from './components/atoms/PrivateRoute';
 import {
@@ -74,12 +74,14 @@ const App: FC = () => {
 
       if (extensionWindow) {
         chrome.runtime
-          .sendMessage<ReceiveNetworkBackgroundMessage>({
+          .sendMessage<ReceiveGetNetworkBackgroundMessage>({
             app: GEM_WALLET,
-            type: 'RECEIVE_NETWORK',
+            type: 'RECEIVE_GET_NETWORK/V3',
             payload: {
               id: Number(urlParams.get('id')) || 0,
-              network: loadNetwork().name
+              result: {
+                network: loadNetwork().name
+              }
             }
           })
           .then(() => {

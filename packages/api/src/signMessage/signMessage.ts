@@ -13,7 +13,7 @@ export const signMessage = async (message: string) => {
     const favicon = getFavicon();
     const messageToContentScript: RequestSignMessageMessage = {
       app: GEM_WALLET,
-      type: 'REQUEST_SIGN_MESSAGE',
+      type: 'REQUEST_SIGN_MESSAGE/V3',
       payload: {
         url: window.location.origin,
         title: document.title,

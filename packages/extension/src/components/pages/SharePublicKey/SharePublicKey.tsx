@@ -29,11 +29,10 @@ export const SharePublicKey: FC = () => {
     chrome.runtime
       .sendMessage<ReceivePublicKeyBackgroundMessage>({
         app: GEM_WALLET,
-        type: 'RECEIVE_PUBLIC_KEY',
+        type: 'RECEIVE_GET_PUBLIC_KEY/V3',
         payload: {
           id,
-          address: null,
-          publicKey: null
+          result: null
         }
       })
       .then(() => {
@@ -52,11 +51,16 @@ export const SharePublicKey: FC = () => {
     chrome.runtime
       .sendMessage<ReceivePublicKeyBackgroundMessage>({
         app: GEM_WALLET,
-        type: 'RECEIVE_PUBLIC_KEY',
+        type: 'RECEIVE_GET_PUBLIC_KEY/V3',
         payload: {
           id,
-          address: currentWallet?.publicAddress,
-          publicKey: currentWallet?.wallet.publicKey
+          result:
+            currentWallet?.publicAddress && currentWallet?.wallet.publicKey
+              ? {
+                  address: currentWallet?.publicAddress,
+                  publicKey: currentWallet?.wallet.publicKey
+                }
+              : null
         }
       })
       .then(() => {
