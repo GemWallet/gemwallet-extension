@@ -14,6 +14,7 @@ export * from './sendPayment';
 export * from './setAccount';
 export * from './setTrustline';
 export * from './signMessage';
+export * from './signTransaction';
 
 export type { Amount } from 'xrpl/dist/npm/models/common';
 export type {

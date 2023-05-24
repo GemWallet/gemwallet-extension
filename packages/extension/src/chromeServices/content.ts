@@ -82,6 +82,10 @@ import {
   SignMessageListener,
   SignMessageMessagingResponse,
   SignMessageMessagingResponseDeprecated,
+  SignTransactionListener,
+  RequestSignTransactionMessage,
+  ReceiveSignTransactionContentMessage,
+  SignedTransactionResponse,
   SetAccountMessagingResponse,
   SetAccountEventListener
 } from '@gemwallet/constants';
@@ -875,6 +879,40 @@ setTimeout(() => {
                       result,
                       error
                     } as CancelOfferMessagingResponse,
+                    window.location.origin
+                  );
+                  chrome.runtime.onMessage.removeListener(messageListener);
+                }
+              }
+            };
+            chrome.runtime.onMessage.addListener(messageListener);
+          }
+        );
+      } else if (type === 'REQUEST_SIGN_TRANSACTION/V3') {
+        const {
+          data: { payload }
+        } = event as SignTransactionListener;
+        chrome.runtime.sendMessage<RequestSignTransactionMessage>(
+          {
+            app,
+            type,
+            payload
+          },
+          () => {
+            const messageListener = (
+              message: ReceiveSignTransactionContentMessage,
+              sender: chrome.runtime.MessageSender
+            ) => {
+              const { app, type, payload } = message;
+              // We make sure that the message comes from GemWallet
+              if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
+                if (type === 'RECEIVE_SIGN_TRANSACTION/V3') {
+                  window.postMessage(
+                    {
+                      source: 'GEM_WALLET_MSG_RESPONSE',
+                      messagedId,
+                      signedMessage: payload.signedMessage
+                    } as SignedTransactionResponse,
                     window.location.origin
                   );
                   chrome.runtime.onMessage.removeListener(messageListener);

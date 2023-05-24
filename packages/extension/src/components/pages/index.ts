@@ -26,6 +26,7 @@ export * from './ShareAddress';
 export * from './ShareNFT';
 export * from './SharePublicKey';
 export * from './SignMessage';
+export * from './SignTransaction';
 export * from './Transaction';
 export * from './TrustedApps';
 export * from './Welcome';
