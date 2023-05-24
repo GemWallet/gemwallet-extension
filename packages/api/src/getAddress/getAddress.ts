@@ -1,9 +1,13 @@
-import { GEM_WALLET, RequestGetAddressMessage } from '@gemwallet/constants';
+import {
+  GetAddressResponsePayload,
+  GEM_WALLET,
+  RequestGetAddressMessage
+} from '@gemwallet/constants';
 
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
 import { getFavicon } from '../helpers/getFavicon';
 
-export const getAddress = async () => {
+export const getAddress = async (): Promise<GetAddressResponsePayload> => {
   /* string: classic address
    * null: user refused the authorization
    * undefined: something went wrong
@@ -19,9 +23,14 @@ export const getAddress = async () => {
         favicon
       }
     };
-    const { publicAddress } = await sendMessageToContentScript(message);
+    const receivedMessage = await sendMessageToContentScript(message);
+    if (!receivedMessage?.result) {
+      return receivedMessage;
+    }
+
+    const { publicAddress } = receivedMessage?.result;
     return {
-      publicAddress
+      result: { publicAddress }
     };
   } catch (e) {
     throw e;

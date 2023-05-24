@@ -34,7 +34,7 @@ describe('getNFT', () => {
     const mockResponse = { nfts: null };
     (sendMessageToContentScript as jest.Mock).mockResolvedValue(mockResponse);
 
-    const result = await getNFT();
+    const { result } = await getNFT();
     expect(result).toBeNull();
   });
 

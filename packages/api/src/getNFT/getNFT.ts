@@ -1,6 +1,6 @@
 import {
-  AccountNFToken,
   GEM_WALLET,
+  GetNFTResponsePayload,
   NFTRequestPayload,
   RequestGetNFTMessage
 } from '@gemwallet/constants';
@@ -8,12 +8,12 @@ import {
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
 import { getFavicon } from '../helpers/getFavicon';
 
-export const getNFT = async (payload?: NFTRequestPayload) => {
+export const getNFT = async (payload?: NFTRequestPayload): Promise<GetNFTResponsePayload> => {
   /* AccountNFToken[]: array of NFTs
    * null: user refused to share his NFTs
    * undefined: something went wrong
    */
-  let response: { account_nfts: AccountNFToken[]; marker?: unknown } | undefined | null = undefined;
+  let response: GetNFTResponsePayload;
   try {
     const favicon = getFavicon();
     const message: RequestGetNFTMessage = {
@@ -29,7 +29,7 @@ export const getNFT = async (payload?: NFTRequestPayload) => {
       }
     };
     const { nfts, marker } = await sendMessageToContentScript(message);
-    response = !!nfts ? { result: { account_nfts: nfts, marker: marker } } : nfts;
+    response = !!nfts ? { result: { account_nfts: nfts, marker: marker } } : { result: null };
   } catch (e) {
     throw e;
   }

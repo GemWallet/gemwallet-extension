@@ -8,13 +8,17 @@ jest.mock('../helpers/extensionMessaging', () => ({
 describe('getPublicKey', () => {
   it('should return address response when called', async () => {
     (sendMessageToContentScript as jest.Mock).mockResolvedValue({
-      publicKey: 'fakeKey',
-      address: 'fakeAddress'
+      result: {
+        publicKey: 'fakeKey',
+        address: 'fakeAddress'
+      }
     });
     const address = await getPublicKey();
     expect(address).toEqual({
-      publicKey: 'fakeKey',
-      address: 'fakeAddress'
+      result: {
+        publicKey: 'fakeKey',
+        address: 'fakeAddress'
+      }
     });
   });
 

@@ -18,7 +18,7 @@ export interface WebsiteRequestPayload {
   favicon: string | null | undefined;
 }
 
-export interface PaymentRequestPayload {
+export interface SendPaymentRequestPayload {
   // The amount to deliver, in one of the following formats:
   // - A string representing the number of XRP to deliver, in drops.
   // - An object where 'value' is a string representing the number of the token to deliver.
@@ -36,7 +36,7 @@ export interface PaymentRequestPayload {
   flags?: PaymentFlags;
 }
 
-export interface PaymentRequestPayloadDeprecated {
+export interface SendPaymentRequestPayloadDeprecated {
   // The amount of currency to deliver (in currency, not drops)
   amount: string;
   // The token that can be used
@@ -91,8 +91,8 @@ export interface SignMessageRequestPayload {
 export type RequestPayload =
   | NetworkRequestPayload
   | WebsiteRequestPayload
-  | PaymentRequestPayload
-  | PaymentRequestPayloadDeprecated
+  | SendPaymentRequestPayload
+  | SendPaymentRequestPayloadDeprecated
   | SetTrustlineRequestPayload
   | SetTrustlineRequestPayloadDeprecated
   | NFTRequestPayload
@@ -101,7 +101,7 @@ export type RequestPayload =
 /*
  * Response Payloads
  */
-export interface NetworkResponsePayload {
+export interface GetNetworkResponsePayload {
   result:
     | {
         network: Network;
@@ -109,11 +109,11 @@ export interface NetworkResponsePayload {
     | undefined;
 }
 
-export interface NetworkResponsePayloadDeprecated {
+export interface GetNetworkResponsePayloadDeprecated {
   network: Network | undefined;
 }
 
-export interface AddressResponsePayload {
+export interface GetAddressResponsePayload {
   result:
     | {
         publicAddress: string;
@@ -122,11 +122,11 @@ export interface AddressResponsePayload {
     | undefined;
 }
 
-export interface AddressResponsePayloadDeprecated {
+export interface GetAddressResponsePayloadDeprecated {
   publicAddress: string | null | undefined;
 }
 
-export interface PublicKeyResponsePayload {
+export interface GetPublicKeyResponsePayload {
   result:
     | {
         address: string;
@@ -136,7 +136,7 @@ export interface PublicKeyResponsePayload {
     | undefined;
 }
 
-export interface PublicKeyResponsePayloadDeprecated {
+export interface GetPublicKeyResponsePayloadDeprecated {
   address: string | null | undefined;
   publicKey: string | null | undefined;
 }
@@ -199,15 +199,15 @@ export interface GetNFTResponsePayloadDeprecated {
 }
 
 export type ResponsePayload =
-  | AddressResponsePayload
-  | AddressResponsePayloadDeprecated
+  | GetAddressResponsePayload
+  | GetAddressResponsePayloadDeprecated
   | GetNFTResponsePayload
   | GetNFTResponsePayloadDeprecated
   | IsConnectedResponsePayload
-  | NetworkResponsePayload
-  | NetworkResponsePayloadDeprecated
-  | PublicKeyResponsePayload
-  | PublicKeyResponsePayloadDeprecated
+  | GetNetworkResponsePayload
+  | GetNetworkResponsePayloadDeprecated
+  | GetPublicKeyResponsePayload
+  | GetPublicKeyResponsePayloadDeprecated
   | SendPaymentResponse
   | SendPaymentResponseDeprecated
   | SetTrustlineResponse

@@ -1,8 +1,8 @@
 import { GEM_WALLET } from '../global/global.constant';
 import { RequestMessage } from '../message/message.types';
 import {
-  PaymentRequestPayload,
-  PaymentRequestPayloadDeprecated,
+  SendPaymentRequestPayload,
+  SendPaymentRequestPayloadDeprecated,
   SetTrustlineRequestPayload,
   SetTrustlineRequestPayloadDeprecated,
   SignMessageRequestPayload,
@@ -17,8 +17,8 @@ interface MessageEventData {
   messageId: number;
   // Not all the MessageEventData have a payload
   payload?:
-    | PaymentRequestPayload
-    | PaymentRequestPayloadDeprecated
+    | SendPaymentRequestPayload
+    | SendPaymentRequestPayloadDeprecated
     | SetTrustlineRequestPayload
     | SetTrustlineRequestPayloadDeprecated
     | SignMessageRequestPayload
@@ -129,7 +129,7 @@ export interface PaymentEventListener extends MessageEvent<MessageEventData> {
     type: 'REQUEST_SEND_PAYMENT/V3';
     source: 'GEM_WALLET_MSG_REQUEST';
     messageId: number;
-    payload: PaymentRequestPayload;
+    payload: SendPaymentRequestPayload;
   };
 }
 
@@ -139,7 +139,7 @@ export interface PaymentEventListenerDeprecated extends MessageEvent<MessageEven
     type: 'SEND_PAYMENT';
     source: 'GEM_WALLET_MSG_REQUEST';
     messageId: number;
-    payload: PaymentRequestPayloadDeprecated;
+    payload: SendPaymentRequestPayloadDeprecated;
   };
 }
 

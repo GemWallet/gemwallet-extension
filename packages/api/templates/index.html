@@ -128,7 +128,7 @@
           };
           GemWalletApi.getNFT(props)
             .then((nfts) => {
-              console.log('Here are your NFTs: ', nfts);
+              console.log('Here are your NFTs: ', nfts.result.account_nfts);
             })
             .catch((e) => {
               console.error('Something went wrong: ', e);
