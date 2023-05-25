@@ -7,17 +7,19 @@ import {
 
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
 
-export const setTrustline = async (trustlinePayload: SetTrustlineRequestPayload) => {
+export const setTrustline = async (
+  payload: SetTrustlineRequestPayload
+): Promise<SetTrustlineResponse> => {
   /* string: hash of the transaction
    * null: user refused the payment
    * undefined: something went wrong
    */
-  let response: SetTrustlineResponse | null | undefined = undefined;
+  let response: SetTrustlineResponse = { result: undefined };
   try {
     const message: RequestSetTrustlineMessage = {
       app: GEM_WALLET,
       type: 'REQUEST_SET_TRUSTLINE/V3',
-      payload: trustlinePayload
+      payload
     };
     const response = await sendMessageToContentScript(message);
     return {

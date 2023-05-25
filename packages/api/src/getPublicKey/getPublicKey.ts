@@ -12,7 +12,7 @@ export const getPublicKey = async (): Promise<GetPublicKeyResponsePayload> => {
    * null: user refused the authorization
    * undefined: something went wrong
    */
-  let response: GetPublicKeyResponsePayload;
+  let response: GetPublicKeyResponsePayload = { result: undefined };
   try {
     const favicon = getFavicon();
     const message: RequestGetPublicKeyMessage = {
@@ -24,13 +24,8 @@ export const getPublicKey = async (): Promise<GetPublicKeyResponsePayload> => {
         favicon
       }
     };
-    const receivedMessage = await sendMessageToContentScript(message);
-    if (receivedMessage?.result.publicKey && receivedMessage?.result.address) {
-      const { publicKey, address } = receivedMessage?.result;
-      response = { result: { publicKey, address } };
-    } else {
-      response = receivedMessage;
-    }
+    const { result } = await sendMessageToContentScript(message);
+    response.result = result;
   } catch (e) {
     throw e;
   }

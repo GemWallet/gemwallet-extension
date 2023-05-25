@@ -128,9 +128,10 @@ chrome.runtime.onMessage.addListener(
         },
         sender,
         parameter: PARAMETER_NETWORK,
-        receivingMessage: 'RECEIVE_NETWORK',
+        requestMessage: message.type,
+        receivingMessage: 'RECEIVE_GET_NETWORK/V3',
         errorPayload: {
-          network: undefined
+          result: undefined
         },
         width: 1,
         height: 1
@@ -155,6 +156,7 @@ chrome.runtime.onMessage.addListener(
         payload: message.payload,
         sender,
         parameter: PARAMETER_ADDRESS,
+        requestMessage: message.type,
         receivingMessage: 'RECEIVE_GET_ADDRESS/V3',
         errorPayload: {
           result: undefined
@@ -176,7 +178,8 @@ chrome.runtime.onMessage.addListener(
         payload: message.payload,
         sender,
         parameter: PARAMETER_PUBLIC_KEY,
-        receivingMessage: 'RECEIVE_PUBLIC_KEY',
+        requestMessage: message.type,
+        receivingMessage: 'RECEIVE_GET_PUBLIC_KEY/V3',
         errorPayload: {
           result: undefined
         }
@@ -264,6 +267,7 @@ chrome.runtime.onMessage.addListener(
         payload: message.payload,
         sender,
         parameter: PARAMETER_SIGN_MESSAGE,
+        requestMessage: message.type,
         receivingMessage: 'RECEIVE_SIGN_MESSAGE/V3',
         errorPayload: {
           result: undefined

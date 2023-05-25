@@ -57,62 +57,96 @@ export const Login: FC = () => {
   useBeforeUnload(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const windowId = Number(urlParams.get('id'));
+    const defaultPayload = {
+      id: windowId,
+      result: null
+    };
     if (extensionWindow?.id && windowId) {
       if (search.includes(PARAMETER_TRANSACTION_PAYMENT)) {
         const urlParams = new URLSearchParams(window.location.search);
         const type =
-          urlParams.get('requestMessage') === 'RECEIVE_SEND_PAYMENT/V3'
+          urlParams.get('requestMessage') === 'REQUEST_SEND_PAYMENT/V3'
             ? 'RECEIVE_SEND_PAYMENT/V3'
             : 'RECEIVE_PAYMENT_HASH';
         handleTransaction({
           app: GEM_WALLET,
           type,
-          payload: {
-            id: windowId,
-            hash: null
-          }
+          payload:
+            type === 'RECEIVE_SEND_PAYMENT/V3'
+              ? defaultPayload
+              : {
+                  id: windowId,
+                  hash: null
+                }
         });
       } else if (search.includes(PARAMETER_ADDRESS)) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const type =
+          urlParams.get('requestMessage') === 'REQUEST_GET_ADDRESS/V3'
+            ? 'RECEIVE_GET_ADDRESS/V3'
+            : 'RECEIVE_ADDRESS';
         handleTransaction({
           app: GEM_WALLET,
-          type: 'RECEIVE_ADDRESS',
-          payload: {
-            id: windowId,
-            publicAddress: null
-          }
+          type,
+          payload:
+            type === 'RECEIVE_GET_ADDRESS/V3'
+              ? defaultPayload
+              : {
+                  id: windowId,
+                  publicAddress: null
+                }
         });
       } else if (search.includes(PARAMETER_PUBLIC_KEY)) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const type =
+          urlParams.get('requestMessage') === 'REQUEST_GET_PUBLIC_KEY/V3'
+            ? 'RECEIVE_GET_PUBLIC_KEY/V3'
+            : 'RECEIVE_PUBLIC_KEY';
         handleTransaction({
           app: GEM_WALLET,
-          type: 'RECEIVE_PUBLIC_KEY',
-          payload: {
-            id: windowId,
-            address: null,
-            publicKey: null
-          }
+          type,
+          payload:
+            type === 'RECEIVE_GET_PUBLIC_KEY/V3'
+              ? defaultPayload
+              : {
+                  id: windowId,
+                  address: null,
+                  publicKey: null
+                }
         });
       } else if (search.includes(PARAMETER_SIGN_MESSAGE)) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const type =
+          urlParams.get('requestMessage') === 'REQUEST_SIGN_MESSAGE/V3'
+            ? 'RECEIVE_SIGN_MESSAGE/V3'
+            : 'RECEIVE_SIGN_MESSAGE';
         handleTransaction({
           app: GEM_WALLET,
-          type: 'RECEIVE_SIGN_MESSAGE',
-          payload: {
-            id: windowId,
-            signedMessage: null
-          }
+          type,
+          payload:
+            type === 'RECEIVE_SIGN_MESSAGE/V3'
+              ? defaultPayload
+              : {
+                  id: windowId,
+                  signedMessage: null
+                }
         });
       } else if (search.includes(PARAMETER_TRANSACTION_TRUSTLINE)) {
         const urlParams = new URLSearchParams(window.location.search);
         const type =
-          urlParams.get('requestMessage') === 'RECEIVE_SET_TRUSTLINE/V3'
+          urlParams.get('requestMessage') === 'REQUEST_SET_TRUSTLINE/V3'
             ? 'RECEIVE_SET_TRUSTLINE/V3'
             : 'RECEIVE_TRUSTLINE_HASH';
         handleTransaction({
           app: GEM_WALLET,
           type,
-          payload: {
-            id: windowId,
-            hash: null
-          }
+          payload:
+            type === 'RECEIVE_SET_TRUSTLINE/V3'
+              ? defaultPayload
+              : {
+                  id: windowId,
+                  hash: null
+                }
         });
       } else if (search.includes(PARAMETER_NFT)) {
         const urlParams = new URLSearchParams(window.location.search);
@@ -123,10 +157,13 @@ export const Login: FC = () => {
         handleTransaction({
           app: GEM_WALLET,
           type,
-          payload: {
-            id: windowId,
-            nfts: null
-          }
+          payload:
+            type === 'RECEIVE_GET_NFT/V3'
+              ? defaultPayload
+              : {
+                  id: windowId,
+                  nfts: null
+                }
         });
       }
     }

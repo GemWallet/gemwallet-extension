@@ -128,7 +128,7 @@
           };
           GemWalletApi.getNFT(props)
             .then((nfts) => {
-              console.log('Here are your NFTs: ', nfts.result.account_nfts);
+              console.log('Here are your NFTs: ', nfts);
             })
             .catch((e) => {
               console.error('Something went wrong: ', e);
@@ -157,17 +157,21 @@
       });
   }
   function handleGetAddress() {
-    GemWalletApi.isConnected().then((isConnected) => {
-      if (isConnected) {
-        GemWalletApi.getAddress()
-          .then((address) => {
-            console.log('Here is your address: ', address);
-          })
-          .catch((e) => {
-            console.error('Something went wrong: ', e);
-          });
-      }
-    });
+    GemWalletApi.isConnected()
+      .then((isConnected) => {
+        if (isConnected) {
+          GemWalletApi.getAddress()
+            .then((address) => {
+              console.log('Here is your address: ', address);
+            })
+            .catch((e) => {
+              console.error('Something went wrong: ', e);
+            });
+        }
+      })
+      .catch((e) => {
+        console.error('GemWallet is not connected: ', e);
+      });
   }
   function handleGetNetwork() {
     GemWalletApi.isConnected().then((isConnected) => {

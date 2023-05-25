@@ -102,11 +102,7 @@ export type RequestPayload =
  * Response Payloads
  */
 export interface GetNetworkResponsePayload {
-  result:
-    | {
-        network: Network;
-      }
-    | undefined;
+  result: { network: Network } | undefined;
 }
 
 export interface GetNetworkResponsePayloadDeprecated {
@@ -114,12 +110,7 @@ export interface GetNetworkResponsePayloadDeprecated {
 }
 
 export interface GetAddressResponsePayload {
-  result:
-    | {
-        publicAddress: string;
-      }
-    | null
-    | undefined;
+  result: { publicAddress: string } | null | undefined;
 }
 
 export interface GetAddressResponsePayloadDeprecated {
@@ -127,13 +118,7 @@ export interface GetAddressResponsePayloadDeprecated {
 }
 
 export interface GetPublicKeyResponsePayload {
-  result:
-    | {
-        address: string;
-        publicKey: string;
-      }
-    | null
-    | undefined;
+  result: { address: string; publicKey: string } | null | undefined;
 }
 
 export interface GetPublicKeyResponsePayloadDeprecated {
@@ -142,12 +127,7 @@ export interface GetPublicKeyResponsePayloadDeprecated {
 }
 
 export interface SignedMessageResponsePayload {
-  result:
-    | {
-        signedMessage: string;
-      }
-    | null
-    | undefined;
+  result: { signedMessage: string } | null | undefined;
 }
 
 export interface SignedMessageResponsePayloadDeprecated {
@@ -159,12 +139,7 @@ export interface IsConnectedResponsePayload {
 }
 
 export interface SendPaymentResponse {
-  result:
-    | {
-        hash: string;
-      }
-    | null
-    | undefined;
+  result: { hash: string } | null | undefined;
 }
 
 export interface SendPaymentResponseDeprecated {
@@ -172,12 +147,7 @@ export interface SendPaymentResponseDeprecated {
 }
 
 export interface SetTrustlineResponse {
-  result:
-    | {
-        hash: string;
-      }
-    | null
-    | undefined;
+  result: { hash: string } | null | undefined;
 }
 
 export interface SetTrustlineResponseDeprecated {
@@ -185,13 +155,7 @@ export interface SetTrustlineResponseDeprecated {
 }
 
 export interface GetNFTResponsePayload {
-  result:
-    | {
-        account_nfts: AccountNFToken[];
-        marker?: unknown;
-      }
-    | null
-    | undefined;
+  result: { account_nfts: AccountNFToken[]; marker?: unknown } | null | undefined;
 }
 
 export interface GetNFTResponsePayloadDeprecated {
