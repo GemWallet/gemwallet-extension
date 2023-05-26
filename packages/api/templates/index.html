@@ -16,6 +16,7 @@
       <button onclick="handlePublicKey()">Get Public Key (check the console)</button>
       <button onclick="handleGetAddress()">Get Address (check the console)</button>
       <button onclick="handleGetNetwork()">Get Network (check the console)</button>
+      <button onclick="handleSignMessage()">Sign message</button>
       <div id="address"></div>
     </div>
   </body>
@@ -185,5 +186,23 @@
           });
       }
     });
+  }
+  function handleSignMessage() {
+    GemWalletApi.isConnected()
+      .then((isConnected) => {
+        if (isConnected) {
+          const message = 'Hello World!';
+          GemWalletApi.signMessage(message)
+            .then((signature) => {
+              console.log('Here is your signature: ', signature);
+            })
+            .catch((e) => {
+              console.error('Something went wrong: ', e);
+            });
+        }
+      })
+      .catch((e) => {
+        console.error('GemWallet is not connected: ', e);
+      });
   }
 </script>
