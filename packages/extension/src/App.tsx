@@ -3,7 +3,13 @@ import { FC, useEffect } from 'react';
 import * as Sentry from '@sentry/react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 
-import { GEM_WALLET, ReceiveGetNetworkBackgroundMessage } from '@gemwallet/constants';
+import {
+  GEM_WALLET,
+  GetNetworkResponse,
+  GetNetworkResponseDeprecated,
+  ReceiveGetNetworkBackgroundMessage,
+  ReceiveGetNetworkBackgroundMessageDeprecated
+} from '@gemwallet/constants';
 
 import { PrivateRoute } from './components/atoms/PrivateRoute';
 import {
@@ -71,19 +77,43 @@ const App: FC = () => {
     if (search.includes(PARAMETER_NETWORK)) {
       const queryString = window.location.search;
       const urlParams = new URLSearchParams(queryString);
+      const type =
+        urlParams.get('requestMessage') === 'REQUEST_GET_NETWORK/V3'
+          ? 'RECEIVE_GET_NETWORK/V3'
+          : 'RECEIVE_NETWORK';
+
+      const id = Number(urlParams.get('id')) || 0;
+      const network = loadNetwork().name;
 
       if (extensionWindow) {
-        chrome.runtime
-          .sendMessage<ReceiveGetNetworkBackgroundMessage>({
+        let message:
+          | ReceiveGetNetworkBackgroundMessage
+          | ReceiveGetNetworkBackgroundMessageDeprecated;
+
+        if (type === 'RECEIVE_GET_NETWORK/V3') {
+          const response: GetNetworkResponse = {
+            result: { network }
+          };
+
+          message = {
             app: GEM_WALLET,
-            type: 'RECEIVE_GET_NETWORK/V3',
-            payload: {
-              id: Number(urlParams.get('id')) || 0,
-              result: {
-                network: loadNetwork().name
-              }
-            }
-          })
+            type,
+            payload: { id, ...response }
+          };
+        } else {
+          const response: GetNetworkResponseDeprecated = { network };
+
+          message = {
+            app: GEM_WALLET,
+            type,
+            payload: { id, ...response }
+          };
+        }
+
+        chrome.runtime
+          .sendMessage<
+            ReceiveGetNetworkBackgroundMessage | ReceiveGetNetworkBackgroundMessageDeprecated
+          >(message)
           .then(() => {
             closeExtension({ windowId: Number(extensionWindow.id) });
           })
