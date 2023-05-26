@@ -6,7 +6,7 @@ import { TransactionMetadata, Payment, Transaction, TrustSet } from 'xrpl';
 
 import {
   AccountNFToken,
-  NFTRequestPayload,
+  GetNFTRequestPayload,
   SendPaymentRequestPayload,
   SetTrustlineRequestPayload
 } from '@gemwallet/constants';
@@ -27,7 +27,7 @@ export interface LedgerContextType {
   setTrustline: (payload: SetTrustlineRequestPayload) => Promise<string>;
   signMessage: (message: string) => string | undefined;
   estimateNetworkFees: (payload: Transaction) => Promise<string>;
-  getNFTs: (payload?: NFTRequestPayload) => Promise<GetNFTsResponse>;
+  getNFTs: (payload?: GetNFTRequestPayload) => Promise<GetNFTsResponse>;
   getTransactions: () => Promise<AccountTransaction[]>;
 }
 
@@ -79,7 +79,7 @@ const LedgerProvider: FC = ({ children }) => {
   );
 
   const getNFTs = useCallback(
-    async (payload?: NFTRequestPayload): Promise<GetNFTsResponse> => {
+    async (payload?: GetNFTRequestPayload): Promise<GetNFTsResponse> => {
       const wallet = getCurrentWallet();
       if (!client) {
         throw new Error('You need to be connected to a ledger to get the NFTs');

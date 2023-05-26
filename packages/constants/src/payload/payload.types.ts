@@ -8,7 +8,7 @@ import { AccountNFToken } from './../xrpl/nft.types';
  * Request Payloads
  */
 
-export interface NetworkRequestPayload {
+export interface GetNetworkRequestPayload {
   id: number | undefined;
 }
 
@@ -74,7 +74,7 @@ export interface SetTrustlineRequestPayloadDeprecated {
   value: string;
 }
 
-export interface NFTRequestPayload {
+export interface GetNFTRequestPayload {
   // Limit the number of NFTokens to retrieve.
   limit?: number;
   // Value from a previous paginated response. Resume retrieving data where that response left off.
@@ -89,13 +89,13 @@ export interface SignMessageRequestPayload {
 }
 
 export type RequestPayload =
-  | NetworkRequestPayload
+  | GetNetworkRequestPayload
+  | GetNFTRequestPayload
   | WebsiteRequestPayload
   | SendPaymentRequestPayload
   | SendPaymentRequestPayloadDeprecated
   | SetTrustlineRequestPayload
   | SetTrustlineRequestPayloadDeprecated
-  | NFTRequestPayload
   | SignMessageRequestPayload;
 
 /*

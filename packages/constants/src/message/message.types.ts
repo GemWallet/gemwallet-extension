@@ -5,7 +5,7 @@ import {
   GetNFTResponsePayloadDeprecated,
   IsConnectedResponsePayload,
   GetNetworkResponsePayload,
-  NFTRequestPayload,
+  GetNFTRequestPayload,
   SendPaymentRequestPayload,
   SendPaymentRequestPayloadDeprecated,
   GetPublicKeyResponsePayload,
@@ -123,13 +123,13 @@ export interface RequestSetTrustlineMessageDeprecated {
 export interface RequestGetNFTMessage {
   app: typeof GEM_WALLET;
   type: 'REQUEST_GET_NFT/V3';
-  payload: NFTRequestPayload & WebsiteRequestPayload;
+  payload: GetNFTRequestPayload & WebsiteRequestPayload;
 }
 
 export interface RequestGetNFTMessageDeprecated {
   app: typeof GEM_WALLET;
   type: 'REQUEST_NFT';
-  payload: NFTRequestPayload & WebsiteRequestPayload;
+  payload: GetNFTRequestPayload & WebsiteRequestPayload;
 }
 
 export interface RequestSignMessageMessage {
@@ -154,7 +154,7 @@ export type MessagingResponse = {
 
 export type NetworkResponse = MessagingResponse & GetNetworkResponsePayload;
 export type NetworkResponseDeprecated = MessagingResponse & GetNetworkResponsePayloadDeprecated;
-export type NFTResponse = MessagingResponse & NFTRequestPayload;
+export type NFTResponse = MessagingResponse & GetNFTRequestPayload;
 export type PublicAddressResponse = MessagingResponse & GetAddressResponsePayload;
 export type PublicAddressResponseDeprecated = MessagingResponse &
   GetAddressResponsePayloadDeprecated;
