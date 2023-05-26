@@ -11,4 +11,12 @@ export type { Amount } from 'xrpl/dist/npm/models/common';
 export type { AccountNFToken, Memo, PaymentFlags, TrustSetFlags } from '@gemwallet/constants';
 
 // API return types
-export type { SendPaymentResponse, SetTrustlineResponse } from '@gemwallet/constants';
+export type {
+  SendPaymentResponse,
+  SetTrustlineResponse,
+  GetAddressResponse,
+  GetPublicKeyResponse,
+  SignedMessageResponse,
+  IsConnectedResponse,
+  GetNFTResponse
+} from '@gemwallet/constants';
