@@ -1,18 +1,14 @@
-import {
-  GEM_WALLET,
-  RequestSignMessageMessage,
-  SignedMessageResponsePayload
-} from '@gemwallet/constants';
+import { GEM_WALLET, RequestSignMessageMessage, SignedMessageResponse } from '@gemwallet/constants';
 
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
 import { getFavicon } from '../helpers/getFavicon';
 
-export const signMessage = async (message: string): Promise<SignedMessageResponsePayload> => {
+export const signMessage = async (message: string): Promise<SignedMessageResponse> => {
   /* string: signed message
    * null: user refused to pass the address
    * undefined: something went wrong
    */
-  let response: SignedMessageResponsePayload = { result: undefined };
+  let response: SignedMessageResponse = { result: undefined };
   try {
     const favicon = getFavicon();
     const messageToContentScript: RequestSignMessageMessage = {

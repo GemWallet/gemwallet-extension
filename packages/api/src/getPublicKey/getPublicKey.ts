@@ -1,18 +1,14 @@
-import {
-  GEM_WALLET,
-  GetPublicKeyResponsePayload,
-  RequestGetPublicKeyMessage
-} from '@gemwallet/constants';
+import { GEM_WALLET, GetPublicKeyResponse, RequestGetPublicKeyMessage } from '@gemwallet/constants';
 
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
 import { getFavicon } from '../helpers/getFavicon';
 
-export const getPublicKey = async (): Promise<GetPublicKeyResponsePayload> => {
+export const getPublicKey = async (): Promise<GetPublicKeyResponse> => {
   /* {publicKey: string, address: string}
    * null: user refused the authorization
    * undefined: something went wrong
    */
-  let response: GetPublicKeyResponsePayload = { result: undefined };
+  let response: GetPublicKeyResponse = { result: undefined };
   try {
     const favicon = getFavicon();
     const message: RequestGetPublicKeyMessage = {

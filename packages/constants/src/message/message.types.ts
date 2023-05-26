@@ -1,27 +1,27 @@
 import { GEM_WALLET } from '../global/global.constant';
 import {
-  GetAddressResponsePayload,
-  GetNFTResponsePayload,
-  GetNFTResponsePayloadDeprecated,
-  IsConnectedResponsePayload,
-  GetNetworkResponsePayload,
-  GetNFTRequestPayload,
-  SendPaymentRequestPayload,
-  SendPaymentRequestPayloadDeprecated,
-  GetPublicKeyResponsePayload,
+  GetAddressResponse,
+  GetNFTResponse,
+  GetNFTResponseDeprecated,
+  IsConnectedResponse,
+  GetNetworkResponse,
+  GetNFTRequest,
+  SendPaymentRequest,
+  SendPaymentRequestDeprecated,
+  GetPublicKeyResponse,
   SendPaymentResponse,
   SendPaymentResponseDeprecated,
   SetTrustlineResponse,
   SetTrustlineResponseDeprecated,
-  SetTrustlineRequestPayload,
-  SetTrustlineRequestPayloadDeprecated,
-  SignedMessageResponsePayload,
-  SignedMessageResponsePayloadDeprecated,
-  SignMessageRequestPayload,
-  WebsiteRequestPayload,
-  GetAddressResponsePayloadDeprecated,
-  GetNetworkResponsePayloadDeprecated,
-  GetPublicKeyResponsePayloadDeprecated
+  SetTrustlineRequest,
+  SetTrustlineRequestDeprecated,
+  SignedMessageResponse,
+  SignedMessageResponseDeprecated,
+  SignMessageRequest,
+  WebsiteRequest,
+  GetAddressResponseDeprecated,
+  GetNetworkResponseDeprecated,
+  GetPublicKeyResponseDeprecated
 } from '../payload/payload.types';
 
 export type RequestMessage =
@@ -75,73 +75,73 @@ export interface RequestGetNetworkMessageDeprecated {
 export interface RequestGetAddressMessage {
   app: typeof GEM_WALLET;
   type: 'REQUEST_GET_ADDRESS/V3';
-  payload: WebsiteRequestPayload;
+  payload: WebsiteRequest;
 }
 
 export interface RequestGetAddressMessageDeprecated {
   app: typeof GEM_WALLET;
   type: 'REQUEST_ADDRESS';
-  payload: WebsiteRequestPayload;
+  payload: WebsiteRequest;
 }
 
 export interface RequestGetPublicKeyMessage {
   app: typeof GEM_WALLET;
   type: 'REQUEST_GET_PUBLIC_KEY/V3';
-  payload: WebsiteRequestPayload;
+  payload: WebsiteRequest;
 }
 
 export interface RequestGetPublicKeyMessageDeprecated {
   app: typeof GEM_WALLET;
   type: 'REQUEST_PUBLIC_KEY';
-  payload: WebsiteRequestPayload;
+  payload: WebsiteRequest;
 }
 
 export interface RequestSendPaymentMessage {
   app: typeof GEM_WALLET;
   type: 'REQUEST_SEND_PAYMENT/V3';
-  payload: SendPaymentRequestPayload;
+  payload: SendPaymentRequest;
 }
 
 export interface RequestSendPaymentMessageDeprecated {
   app: typeof GEM_WALLET;
   type: 'SEND_PAYMENT';
-  payload: SendPaymentRequestPayloadDeprecated;
+  payload: SendPaymentRequestDeprecated;
 }
 
 export interface RequestSetTrustlineMessage {
   app: typeof GEM_WALLET;
   type: 'REQUEST_SET_TRUSTLINE/V3';
-  payload: SetTrustlineRequestPayload;
+  payload: SetTrustlineRequest;
 }
 
 export interface RequestSetTrustlineMessageDeprecated {
   app: typeof GEM_WALLET;
   type: 'REQUEST_ADD_TRUSTLINE';
-  payload: SetTrustlineRequestPayloadDeprecated;
+  payload: SetTrustlineRequestDeprecated;
 }
 
 export interface RequestGetNFTMessage {
   app: typeof GEM_WALLET;
   type: 'REQUEST_GET_NFT/V3';
-  payload: GetNFTRequestPayload & WebsiteRequestPayload;
+  payload: GetNFTRequest & WebsiteRequest;
 }
 
 export interface RequestGetNFTMessageDeprecated {
   app: typeof GEM_WALLET;
   type: 'REQUEST_NFT';
-  payload: GetNFTRequestPayload & WebsiteRequestPayload;
+  payload: GetNFTRequest & WebsiteRequest;
 }
 
 export interface RequestSignMessageMessage {
   app: typeof GEM_WALLET;
   type: 'REQUEST_SIGN_MESSAGE/V3';
-  payload: SignMessageRequestPayload;
+  payload: SignMessageRequest;
 }
 
 export interface RequestSignMessageMessageDeprecated {
   app: typeof GEM_WALLET;
   type: 'REQUEST_SIGN_MESSAGE';
-  payload: SignMessageRequestPayload;
+  payload: SignMessageRequest;
 }
 
 /*
@@ -152,18 +152,19 @@ export type MessagingResponse = {
   messagedId?: number;
 };
 
-export type NetworkResponse = MessagingResponse & GetNetworkResponsePayload;
-export type NetworkResponseDeprecated = MessagingResponse & GetNetworkResponsePayloadDeprecated;
-export type NFTResponse = MessagingResponse & GetNFTRequestPayload;
-export type PublicAddressResponse = MessagingResponse & GetAddressResponsePayload;
-export type PublicAddressResponseDeprecated = MessagingResponse &
-  GetAddressResponsePayloadDeprecated;
-export type PublicKeyResponse = MessagingResponse & GetPublicKeyResponsePayload;
-export type PublicKeyResponseDeprecated = MessagingResponse & GetPublicKeyResponsePayloadDeprecated;
-export type SignedMessageResponse = MessagingResponse & SignedMessageResponsePayload;
-export type SignedMessageResponseDeprecated = MessagingResponse &
-  SignedMessageResponsePayloadDeprecated;
-export type IsConnectedResponse = MessagingResponse & IsConnectedResponsePayload;
+export type NetworkMessagingResponse = MessagingResponse & GetNetworkResponse;
+export type NetworkMessagingResponseDeprecated = MessagingResponse & GetNetworkResponseDeprecated;
+export type NFTMessagingResponse = MessagingResponse & GetNFTRequest;
+export type PublicAddressMessagingResponse = MessagingResponse & GetAddressResponse;
+export type PublicAddressMessagingResponseDeprecated = MessagingResponse &
+  GetAddressResponseDeprecated;
+export type PublicKeyMessagingResponse = MessagingResponse & GetPublicKeyResponse;
+export type PublicKeyMessagingResponseDeprecated = MessagingResponse &
+  GetPublicKeyResponseDeprecated;
+export type SignMessageMessagingResponse = MessagingResponse & SignedMessageResponse;
+export type SignMessageMessagingResponseDeprecated = MessagingResponse &
+  SignedMessageResponseDeprecated;
+export type IsConnectedMessagingResponse = MessagingResponse & IsConnectedResponse;
 export type SendPaymentMessagingResponse = MessagingResponse & SendPaymentResponse;
 export type SendPaymentMessagingResponseDeprecated = MessagingResponse &
   SendPaymentResponseDeprecated;
@@ -196,64 +197,64 @@ export interface ReceiveSetTrustlineContentMessageDeprecated {
   payload: SetTrustlineResponseDeprecated;
 }
 
-export interface ReceiveAddressContentMessage {
+export interface ReceiveGetAddressContentMessage {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_GET_ADDRESS/V3';
-  payload: GetAddressResponsePayload;
+  payload: GetAddressResponse;
 }
 
-export interface ReceiveAddressContentMessageDeprecated {
+export interface ReceiveGetAddressContentMessageDeprecated {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_ADDRESS';
-  payload: GetAddressResponsePayloadDeprecated;
+  payload: GetAddressResponseDeprecated;
 }
 
-export interface ReceiveNetworkContentMessage {
+export interface ReceiveGetNetworkContentMessage {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_GET_NETWORK/V3';
-  payload: GetNetworkResponsePayload;
+  payload: GetNetworkResponse;
 }
 
 export interface ReceiveGetNetworkContentMessageDeprecated {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_NETWORK';
-  payload: GetNetworkResponsePayloadDeprecated;
+  payload: GetNetworkResponseDeprecated;
 }
 
 export interface ReceiveGetNFTContentMessage {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_GET_NFT/V3';
-  payload: GetNFTResponsePayload;
+  payload: GetNFTResponse;
 }
 
 export interface ReceiveGetNFTContentMessageDeprecated {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_NFT';
-  payload: GetNFTResponsePayloadDeprecated;
+  payload: GetNFTResponseDeprecated;
 }
 
-export interface ReceivePublicKeyContentMessage {
+export interface ReceiveGetPublicKeyContentMessage {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_GET_PUBLIC_KEY/V3';
-  payload: GetPublicKeyResponsePayload;
+  payload: GetPublicKeyResponse;
 }
 
-export interface ReceivePublicKeyContentMessageDeprecated {
+export interface ReceiveGetPublicKeyContentMessageDeprecated {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_PUBLIC_KEY';
-  payload: GetPublicKeyResponsePayloadDeprecated;
+  payload: GetPublicKeyResponseDeprecated;
 }
 
 export interface ReceiveSignMessageContentMessage {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_SIGN_MESSAGE/V3';
-  payload: SignedMessageResponsePayload;
+  payload: SignedMessageResponse;
 }
 
 export interface ReceiveSignMessageContentMessageDeprecated {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_SIGN_MESSAGE';
-  payload: SignedMessageResponsePayloadDeprecated;
+  payload: SignedMessageResponseDeprecated;
 }
 
 // Background Script Messages
@@ -275,13 +276,13 @@ export type ReceiveSetTrustlineBackgroundMessage = ReceiveSetTrustlineContentMes
 export type ReceiveSetTrustlineBackgroundMessageDeprecated =
   ReceiveSetTrustlineContentMessageDeprecated & BackgroundMessagePayload;
 
-export type ReceiveGetAddressBackgroundMessage = ReceiveAddressContentMessage &
+export type ReceiveGetAddressBackgroundMessage = ReceiveGetAddressContentMessage &
   BackgroundMessagePayload;
 
-export type ReceiveGetAddressBackgroundMessageDeprecated = ReceiveAddressContentMessageDeprecated &
-  BackgroundMessagePayload;
+export type ReceiveGetAddressBackgroundMessageDeprecated =
+  ReceiveGetAddressContentMessageDeprecated & BackgroundMessagePayload;
 
-export type ReceiveGetNetworkBackgroundMessage = ReceiveNetworkContentMessage &
+export type ReceiveGetNetworkBackgroundMessage = ReceiveGetNetworkContentMessage &
   BackgroundMessagePayload;
 
 export type ReceiveGetNetworkBackgroundMessageDeprecated =
@@ -292,11 +293,11 @@ export type ReceiveGetNFTBackgroundMessage = ReceiveGetNFTContentMessage & Backg
 export type ReceiveGetNFTBackgroundMessageDeprecated = ReceiveGetNFTContentMessageDeprecated &
   BackgroundMessagePayload;
 
-export type ReceivePublicKeyBackgroundMessage = ReceivePublicKeyContentMessage &
+export type ReceivePublicKeyBackgroundMessage = ReceiveGetPublicKeyContentMessage &
   BackgroundMessagePayload;
 
-export type ReceivePublicKeyBackgroundMessageDeprecated = ReceivePublicKeyContentMessageDeprecated &
-  BackgroundMessagePayload;
+export type ReceivePublicKeyBackgroundMessageDeprecated =
+  ReceiveGetPublicKeyContentMessageDeprecated & BackgroundMessagePayload;
 
 export type ReceiveSignMessageBackgroundMessage = ReceiveSignMessageContentMessage &
   BackgroundMessagePayload;

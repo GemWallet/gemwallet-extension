@@ -1,16 +1,12 @@
-import {
-  GEM_WALLET,
-  GetNetworkResponsePayload,
-  RequestGetNetworkMessage
-} from '@gemwallet/constants';
+import { GEM_WALLET, GetNetworkResponse, RequestGetNetworkMessage } from '@gemwallet/constants';
 
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
 
-export const getNetwork = async (): Promise<GetNetworkResponsePayload> => {
+export const getNetwork = async (): Promise<GetNetworkResponse> => {
   /* string: network
    * undefined: something went wrong
    */
-  let response: GetNetworkResponsePayload = { result: undefined };
+  let response: GetNetworkResponse = { result: undefined };
   try {
     const message: RequestGetNetworkMessage = {
       app: GEM_WALLET,

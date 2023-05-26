@@ -1,4 +1,8 @@
-import { GEM_WALLET, IsConnectedResponse, RequestIsConnectedMessage } from '@gemwallet/constants';
+import {
+  GEM_WALLET,
+  IsConnectedMessagingResponse,
+  RequestIsConnectedMessage
+} from '@gemwallet/constants';
 
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
 
@@ -21,7 +25,7 @@ export const isConnected = (): Promise<boolean> => {
           app: GEM_WALLET,
           type: 'REQUEST_CONNECTION'
         };
-        const response: IsConnectedResponse = await sendMessageToContentScript(message);
+        const response: IsConnectedMessagingResponse = await sendMessageToContentScript(message);
         resolve(response.isConnected || false);
       } catch (e) {
         resolve(false);

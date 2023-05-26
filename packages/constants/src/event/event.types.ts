@@ -1,12 +1,12 @@
 import { GEM_WALLET } from '../global/global.constant';
 import { RequestMessage } from '../message/message.types';
 import {
-  SendPaymentRequestPayload,
-  SendPaymentRequestPayloadDeprecated,
-  SetTrustlineRequestPayload,
-  SetTrustlineRequestPayloadDeprecated,
-  SignMessageRequestPayload,
-  WebsiteRequestPayload
+  SendPaymentRequest,
+  SendPaymentRequestDeprecated,
+  SetTrustlineRequest,
+  SetTrustlineRequestDeprecated,
+  SignMessageRequest,
+  WebsiteRequest
 } from '../payload/payload.types';
 
 // Event listeners
@@ -17,12 +17,12 @@ interface MessageEventData {
   messageId: number;
   // Not all the MessageEventData have a payload
   payload?:
-    | SendPaymentRequestPayload
-    | SendPaymentRequestPayloadDeprecated
-    | SetTrustlineRequestPayload
-    | SetTrustlineRequestPayloadDeprecated
-    | SignMessageRequestPayload
-    | WebsiteRequestPayload;
+    | SendPaymentRequest
+    | SendPaymentRequestDeprecated
+    | SetTrustlineRequest
+    | SetTrustlineRequestDeprecated
+    | SignMessageRequest
+    | WebsiteRequest;
 }
 
 export interface NetworkEventListener extends MessageEvent<MessageEventData> {
@@ -49,7 +49,7 @@ export interface AddressEventListener extends MessageEvent<MessageEventData> {
     type: 'REQUEST_GET_ADDRESS/V3';
     source: 'GEM_WALLET_MSG_REQUEST';
     messageId: number;
-    payload: WebsiteRequestPayload;
+    payload: WebsiteRequest;
   };
 }
 
@@ -59,7 +59,7 @@ export interface AddressEventListenerDeprecated extends MessageEvent<MessageEven
     type: 'REQUEST_ADDRESS';
     source: 'GEM_WALLET_MSG_REQUEST';
     messageId: number;
-    payload: WebsiteRequestPayload;
+    payload: WebsiteRequest;
   };
 }
 
@@ -69,7 +69,7 @@ export interface PublicKeyEventListener extends MessageEvent<MessageEventData> {
     type: 'REQUEST_GET_PUBLIC_KEY/V3';
     source: 'GEM_WALLET_MSG_REQUEST';
     messageId: number;
-    payload: WebsiteRequestPayload;
+    payload: WebsiteRequest;
   };
 }
 
@@ -79,7 +79,7 @@ export interface PublicKeyEventListenerDeprecated extends MessageEvent<MessageEv
     type: 'REQUEST_PUBLIC_KEY';
     source: 'GEM_WALLET_MSG_REQUEST';
     messageId: number;
-    payload: WebsiteRequestPayload;
+    payload: WebsiteRequest;
   };
 }
 
@@ -89,7 +89,7 @@ export interface GetNFTEventListener extends MessageEvent<MessageEventData> {
     type: 'REQUEST_GET_NFT/V3';
     source: 'GEM_WALLET_MSG_REQUEST';
     messageId: number;
-    payload: WebsiteRequestPayload;
+    payload: WebsiteRequest;
   };
 }
 
@@ -99,7 +99,7 @@ export interface GetNFTEventListenerDeprecated extends MessageEvent<MessageEvent
     type: 'REQUEST_NFT';
     source: 'GEM_WALLET_MSG_REQUEST';
     messageId: number;
-    payload: WebsiteRequestPayload;
+    payload: WebsiteRequest;
   };
 }
 
@@ -109,7 +109,7 @@ export interface SignMessageListener extends MessageEvent<MessageEventData> {
     type: 'REQUEST_SIGN_MESSAGE/V3';
     source: 'GEM_WALLET_MSG_REQUEST';
     messageId: number;
-    payload: SignMessageRequestPayload;
+    payload: SignMessageRequest;
   };
 }
 
@@ -119,7 +119,7 @@ export interface SignMessageListenerDeprecated extends MessageEvent<MessageEvent
     type: 'REQUEST_SIGN_MESSAGE';
     source: 'GEM_WALLET_MSG_REQUEST';
     messageId: number;
-    payload: SignMessageRequestPayload;
+    payload: SignMessageRequest;
   };
 }
 
@@ -129,7 +129,7 @@ export interface PaymentEventListener extends MessageEvent<MessageEventData> {
     type: 'REQUEST_SEND_PAYMENT/V3';
     source: 'GEM_WALLET_MSG_REQUEST';
     messageId: number;
-    payload: SendPaymentRequestPayload;
+    payload: SendPaymentRequest;
   };
 }
 
@@ -139,7 +139,7 @@ export interface PaymentEventListenerDeprecated extends MessageEvent<MessageEven
     type: 'SEND_PAYMENT';
     source: 'GEM_WALLET_MSG_REQUEST';
     messageId: number;
-    payload: SendPaymentRequestPayloadDeprecated;
+    payload: SendPaymentRequestDeprecated;
   };
 }
 
@@ -149,7 +149,7 @@ export interface SetTrustlineEventListener extends MessageEvent<MessageEventData
     type: 'REQUEST_SET_TRUSTLINE/V3';
     source: 'GEM_WALLET_MSG_REQUEST';
     messageId: number;
-    payload: SetTrustlineRequestPayload;
+    payload: SetTrustlineRequest;
   };
 }
 
@@ -159,7 +159,7 @@ export interface SetTrustlineEventListenerDeprecated extends MessageEvent<Messag
     type: 'REQUEST_ADD_TRUSTLINE';
     source: 'GEM_WALLET_MSG_REQUEST';
     messageId: number;
-    payload: SetTrustlineRequestPayloadDeprecated;
+    payload: SetTrustlineRequestDeprecated;
   };
 }
 

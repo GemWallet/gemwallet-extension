@@ -1,14 +1,15 @@
 import {
   BackgroundMessage,
   GEM_WALLET,
-  ReceiveAddressContentMessage,
-  ReceiveAddressContentMessageDeprecated,
+  ReceiveGetAddressContentMessage,
+  ReceiveGetAddressContentMessageDeprecated,
   ReceiveGetNFTContentMessage,
   ReceiveGetNFTContentMessageDeprecated,
   ReceiveMessage,
-  ReceiveNetworkContentMessage,
+  ReceiveGetNetworkContentMessage,
   ReceiveGetNetworkContentMessageDeprecated,
-  ReceivePublicKeyContentMessage,
+  ReceiveGetPublicKeyContentMessage,
+  ReceiveGetPublicKeyContentMessageDeprecated,
   ReceiveSendPaymentContentMessage,
   ReceiveSendPaymentContentMessageDeprecated,
   ReceiveSetTrustlineContentMessage,
@@ -16,8 +17,7 @@ import {
   ReceiveSignMessageContentMessage,
   RequestMessage,
   RequestPayload,
-  ResponsePayload,
-  ReceivePublicKeyContentMessageDeprecated
+  ResponsePayload
 } from '@gemwallet/constants';
 
 import {
@@ -324,7 +324,7 @@ chrome.runtime.onMessage.addListener(
       });
     } else if (type === 'RECEIVE_GET_ADDRESS/V3') {
       const { payload } = message;
-      sendMessageToTab<ReceiveAddressContentMessage>(payload.id, {
+      sendMessageToTab<ReceiveGetAddressContentMessage>(payload.id, {
         app,
         type: 'RECEIVE_GET_ADDRESS/V3',
         payload: {
@@ -334,7 +334,7 @@ chrome.runtime.onMessage.addListener(
     } else if (type === 'RECEIVE_ADDRESS') {
       // Deprecated
       const { payload } = message;
-      sendMessageToTab<ReceiveAddressContentMessageDeprecated>(payload.id, {
+      sendMessageToTab<ReceiveGetAddressContentMessageDeprecated>(payload.id, {
         app,
         type: 'RECEIVE_ADDRESS',
         payload: {
@@ -343,7 +343,7 @@ chrome.runtime.onMessage.addListener(
       });
     } else if (type === 'RECEIVE_GET_NETWORK/V3') {
       const { payload } = message;
-      sendMessageToTab<ReceiveNetworkContentMessage>(payload.id, {
+      sendMessageToTab<ReceiveGetNetworkContentMessage>(payload.id, {
         app,
         type: 'RECEIVE_GET_NETWORK/V3',
         payload: {
@@ -362,7 +362,7 @@ chrome.runtime.onMessage.addListener(
       });
     } else if (type === 'RECEIVE_GET_PUBLIC_KEY/V3') {
       const { payload } = message;
-      sendMessageToTab<ReceivePublicKeyContentMessage>(payload.id, {
+      sendMessageToTab<ReceiveGetPublicKeyContentMessage>(payload.id, {
         app,
         type: 'RECEIVE_GET_PUBLIC_KEY/V3',
         payload: {
@@ -372,7 +372,7 @@ chrome.runtime.onMessage.addListener(
     } else if (type === 'RECEIVE_PUBLIC_KEY') {
       // Deprecated
       const { payload } = message;
-      sendMessageToTab<ReceivePublicKeyContentMessageDeprecated>(payload.id, {
+      sendMessageToTab<ReceiveGetPublicKeyContentMessageDeprecated>(payload.id, {
         app,
         type: 'RECEIVE_PUBLIC_KEY',
         payload: {

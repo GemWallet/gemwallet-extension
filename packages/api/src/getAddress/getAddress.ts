@@ -1,18 +1,14 @@
-import {
-  GEM_WALLET,
-  GetAddressResponsePayload,
-  RequestGetAddressMessage
-} from '@gemwallet/constants';
+import { GEM_WALLET, GetAddressResponse, RequestGetAddressMessage } from '@gemwallet/constants';
 
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
 import { getFavicon } from '../helpers/getFavicon';
 
-export const getAddress = async (): Promise<GetAddressResponsePayload> => {
+export const getAddress = async (): Promise<GetAddressResponse> => {
   /* string: classic address
    * null: user refused the authorization
    * undefined: something went wrong
    */
-  let response: GetAddressResponsePayload = { result: undefined };
+  let response: GetAddressResponse = { result: undefined };
   try {
     const favicon = getFavicon();
     const message: RequestGetAddressMessage = {
