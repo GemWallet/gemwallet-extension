@@ -1,10 +1,7 @@
 import { useState, useEffect, FC, useCallback, useRef } from 'react';
 
 import { Button, Container, TextField, Typography } from '@mui/material';
-import * as Sentry from '@sentry/react';
 import { useNavigate, useLocation } from 'react-router-dom';
-
-import { GEM_WALLET } from '@gemwallet/constants';
 
 import {
   HOME_PATH,
@@ -24,8 +21,7 @@ import {
   PARAMETER_NFT,
   SHARE_NFT_PATH
 } from '../../../constants';
-import { useBrowser, useWallet } from '../../../contexts';
-import { useBeforeUnload } from '../../../hooks';
+import { useWallet } from '../../../contexts';
 import { useKeyUp } from '../../../hooks/useKeyUp';
 import { loadData } from '../../../utils';
 import { Logo } from '../../atoms/Logo';
@@ -34,140 +30,8 @@ export const Login: FC = () => {
   const [passwordError, setPasswordError] = useState('');
   const navigate = useNavigate();
   const { search } = useLocation();
-  const { window: extensionWindow, closeExtension } = useBrowser();
   const { signIn, wallets, selectedWallet } = useWallet();
   const passwordRef = useRef<HTMLInputElement | null>(null);
-
-  const handleTransaction = useCallback(
-    (payload: unknown) => {
-      chrome.runtime
-        .sendMessage(payload)
-        .then(() => {
-          if (extensionWindow?.id) {
-            closeExtension({ windowId: Number(extensionWindow.id) });
-          }
-        })
-        .catch((e) => {
-          Sentry.captureException(e);
-        });
-    },
-    [closeExtension, extensionWindow?.id]
-  );
-
-  useBeforeUnload(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const windowId = Number(urlParams.get('id'));
-    const defaultPayload = {
-      id: windowId,
-      result: null
-    };
-    if (extensionWindow?.id && windowId) {
-      if (search.includes(PARAMETER_TRANSACTION_PAYMENT)) {
-        const urlParams = new URLSearchParams(window.location.search);
-        const type =
-          urlParams.get('requestMessage') === 'REQUEST_SEND_PAYMENT/V3'
-            ? 'RECEIVE_SEND_PAYMENT/V3'
-            : 'RECEIVE_PAYMENT_HASH';
-        handleTransaction({
-          app: GEM_WALLET,
-          type,
-          payload:
-            type === 'RECEIVE_SEND_PAYMENT/V3'
-              ? defaultPayload
-              : {
-                  id: windowId,
-                  hash: null
-                }
-        });
-      } else if (search.includes(PARAMETER_ADDRESS)) {
-        const urlParams = new URLSearchParams(window.location.search);
-        const type =
-          urlParams.get('requestMessage') === 'REQUEST_GET_ADDRESS/V3'
-            ? 'RECEIVE_GET_ADDRESS/V3'
-            : 'RECEIVE_ADDRESS';
-        handleTransaction({
-          app: GEM_WALLET,
-          type,
-          payload:
-            type === 'RECEIVE_GET_ADDRESS/V3'
-              ? defaultPayload
-              : {
-                  id: windowId,
-                  publicAddress: null
-                }
-        });
-      } else if (search.includes(PARAMETER_PUBLIC_KEY)) {
-        const urlParams = new URLSearchParams(window.location.search);
-        const type =
-          urlParams.get('requestMessage') === 'REQUEST_GET_PUBLIC_KEY/V3'
-            ? 'RECEIVE_GET_PUBLIC_KEY/V3'
-            : 'RECEIVE_PUBLIC_KEY';
-        handleTransaction({
-          app: GEM_WALLET,
-          type,
-          payload:
-            type === 'RECEIVE_GET_PUBLIC_KEY/V3'
-              ? defaultPayload
-              : {
-                  id: windowId,
-                  address: null,
-                  publicKey: null
-                }
-        });
-      } else if (search.includes(PARAMETER_SIGN_MESSAGE)) {
-        const urlParams = new URLSearchParams(window.location.search);
-        const type =
-          urlParams.get('requestMessage') === 'REQUEST_SIGN_MESSAGE/V3'
-            ? 'RECEIVE_SIGN_MESSAGE/V3'
-            : 'RECEIVE_SIGN_MESSAGE';
-        handleTransaction({
-          app: GEM_WALLET,
-          type,
-          payload:
-            type === 'RECEIVE_SIGN_MESSAGE/V3'
-              ? defaultPayload
-              : {
-                  id: windowId,
-                  signedMessage: null
-                }
-        });
-      } else if (search.includes(PARAMETER_TRANSACTION_TRUSTLINE)) {
-        const urlParams = new URLSearchParams(window.location.search);
-        const type =
-          urlParams.get('requestMessage') === 'REQUEST_SET_TRUSTLINE/V3'
-            ? 'RECEIVE_SET_TRUSTLINE/V3'
-            : 'RECEIVE_TRUSTLINE_HASH';
-        handleTransaction({
-          app: GEM_WALLET,
-          type,
-          payload:
-            type === 'RECEIVE_SET_TRUSTLINE/V3'
-              ? defaultPayload
-              : {
-                  id: windowId,
-                  hash: null
-                }
-        });
-      } else if (search.includes(PARAMETER_NFT)) {
-        const urlParams = new URLSearchParams(window.location.search);
-        const type =
-          urlParams.get('requestMessage') === 'REQUEST_GET_NFT/V3'
-            ? 'RECEIVE_GET_NFT/V3'
-            : 'RECEIVE_NFT';
-        handleTransaction({
-          app: GEM_WALLET,
-          type,
-          payload:
-            type === 'RECEIVE_GET_NFT/V3'
-              ? defaultPayload
-              : {
-                  id: windowId,
-                  nfts: null
-                }
-        });
-      }
-    }
-  });
 
   const navigateToPath = useCallback(() => {
     if (search.includes(PARAMETER_TRANSACTION_PAYMENT)) {
