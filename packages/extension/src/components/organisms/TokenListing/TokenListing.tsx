@@ -14,8 +14,10 @@ import {
 import { TransitionProps } from '@mui/material/transitions';
 import * as Sentry from '@sentry/react';
 
+import { Network } from '@gemwallet/constants';
+
 import { DEFAULT_RESERVE } from '../../../constants';
-import { useNetwork, useServer } from '../../../contexts';
+import { useLedger, useNetwork, useServer } from '../../../contexts';
 import { convertCurrencyString } from '../../../utils';
 import { TokenLoader } from '../../atoms';
 import { InformationMessage } from '../../molecules/InformationMessage';
@@ -46,8 +48,9 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
   const [XRPBalance, setXRPBalance] = useState<string>(LOADING_STATE);
   const [trustLineBalances, setTrustLineBalances] = useState<TrustLineBalance[]>([]);
   const [explanationOpen, setExplanationOpen] = useState(false);
-  const { client, reconnectToNetwork } = useNetwork();
+  const { client, reconnectToNetwork, network } = useNetwork();
   const { serverInfo } = useServer();
+  const { fundWallet } = useLedger();
 
   useEffect(() => {
     async function fetchBalance() {
@@ -81,6 +84,13 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
   const handleClose = useCallback(() => {
     setExplanationOpen(false);
   }, []);
+
+  const handleFundWallet = useCallback(async () => {
+    setXRPBalance(LOADING_STATE);
+    fundWallet()
+      .then(({ balance }) => setXRPBalance(balance.toString()))
+      .catch((e) => setXRPBalance(ERROR_STATE));
+  }, [fundWallet]);
 
   if (client === null) {
     return (
@@ -124,6 +134,14 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
         <div style={{ marginTop: '5px' }}>
           Your reserved XRP will not show up within your GemWallet's balance as you cannot spend it.
         </div>
+
+        {network === Network.TESTNET && (
+          <div style={{ margin: '15px 0px', textAlign: 'center' }}>
+            <Button variant="contained" onClick={handleFundWallet} data-testid="fund-wallet-button">
+              Fund Wallet
+            </Button>
+          </div>
+        )}
       </InformationMessage>
     );
   }

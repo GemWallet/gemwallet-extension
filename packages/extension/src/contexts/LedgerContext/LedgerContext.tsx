@@ -2,7 +2,7 @@ import { useContext, createContext, FC, useCallback } from 'react';
 
 import * as Sentry from '@sentry/react';
 import { sign } from 'ripple-keypairs';
-import { TransactionMetadata, Payment, Transaction, TrustSet } from 'xrpl';
+import { TransactionMetadata, Payment, Transaction, TrustSet, Wallet } from 'xrpl';
 
 import {
   AccountNFToken,
@@ -21,6 +21,11 @@ export interface GetNFTsResponse {
   marker?: unknown;
 }
 
+export interface FundWalletResponse {
+  wallet: Wallet;
+  balance: number;
+}
+
 export interface LedgerContextType {
   // Return transaction hash in case of success
   sendPayment: (payload: PaymentRequestPayload) => Promise<string>;
@@ -29,6 +34,7 @@ export interface LedgerContextType {
   estimateNetworkFees: (payload: Transaction) => Promise<string>;
   getNFTs: (payload?: NFTRequestPayload) => Promise<GetNFTsResponse>;
   getTransactions: () => Promise<AccountTransaction[]>;
+  fundWallet: () => Promise<FundWalletResponse>;
 }
 
 const LedgerContext = createContext<LedgerContextType>({
@@ -46,7 +52,8 @@ const LedgerContext = createContext<LedgerContextType>({
   getTransactions: () =>
     new Promise((resolve) => {
       resolve([]);
-    })
+    }),
+  fundWallet: () => new Promise(() => {})
 });
 
 const LedgerProvider: FC = ({ children }) => {
@@ -261,13 +268,31 @@ const LedgerProvider: FC = ({ children }) => {
     [client, getCurrentWallet]
   );
 
+  const fundWallet = useCallback(async () => {
+    const wallet = getCurrentWallet();
+    try {
+      if (!client) throw new Error('You need to be connected to a ledger to get the NFTs');
+      if (!wallet) throw new Error('You need to have a wallet connected to get the NFTs');
+
+      const walletWithAmount = await client.fundWallet(wallet.wallet);
+
+      if (!walletWithAmount) throw new Error("Couldn't get funds");
+
+      return { ...walletWithAmount };
+    } catch (e) {
+      Sentry.captureException(e);
+      throw e;
+    }
+  }, [client, getCurrentWallet]);
+
   const value: LedgerContextType = {
     sendPayment,
     setTrustline,
     signMessage,
     estimateNetworkFees,
     getNFTs,
-    getTransactions
+    getTransactions,
+    fundWallet
   };
 
   return <LedgerContext.Provider value={value}>{children}</LedgerContext.Provider>;
