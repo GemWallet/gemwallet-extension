@@ -11,7 +11,7 @@
     <div id="wrapper">
       <button onclick="handlePayment()">Pay XRP</button>
       <button onclick="handlePayment('ETH', 'rnm76Qgz4G9G4gZBJVuXVvkbt7gVD7szey')">Pay ETH</button>
-      <button onclick="handleTrustline()">Add trustline</button>
+      <button onclick="handleTrustline()">Add trustline (ETH)</button>
       <button onclick="handleNFTs()">Get NFTs (check the console)</button>
       <button onclick="handlePublicKey()">Get Public Key (check the console)</button>
       <button onclick="handleGetAddress()">Get Address (check the console)</button>
@@ -82,8 +82,8 @@
         if (isConnected) {
           const transaction = {
             limitAmount: {
-              currency: 'USD',
-              issuer: 'rwtDvu9QDfCskWuyE2TSEt3s56RbiWUKJN',
+              currency: 'ETH',
+              issuer: 'rnm76Qgz4G9G4gZBJVuXVvkbt7gVD7szey',
               value: '10000000'
             },
             memos: [
