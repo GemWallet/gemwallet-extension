@@ -1,7 +1,7 @@
 # 💎 GemWallet Extension
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-8-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-9-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 ## GemWallet: A crypto wallet & Web3 layer for the XRPL
@@ -128,6 +128,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/florent-uzio"><img src="https://avatars.githubusercontent.com/u/36513774?v=4?s=100" width="100px;" alt="Florent"/><br /><sub><b>Florent</b></sub></a><br /><a href="https://github.com/GemWallet/gemwallet-extension/issues?q=author%3Aflorent-uzio" title="Bug reports">🐛</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/benaor"><img src="https://avatars.githubusercontent.com/u/58249772?v=4?s=100" width="100px;" alt="Benjamin"/><br /><sub><b>Benjamin</b></sub></a><br /><a href="https://github.com/GemWallet/gemwallet-extension/commits?author=benaor" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
