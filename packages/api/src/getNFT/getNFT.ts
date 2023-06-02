@@ -28,8 +28,10 @@ export const getNFT = async (payload?: GetNFTRequest): Promise<GetNFTResponse> =
         marker: payload?.marker ?? undefined
       }
     };
-    const { nfts, marker } = await sendMessageToContentScript(message);
-    response = !!nfts ? { result: { account_nfts: nfts, marker: marker } } : { result: null };
+    const res = await sendMessageToContentScript(message);
+    response = !!res.result?.account_nfts
+      ? { result: { account_nfts: res.result.account_nfts, marker: res.result.marker } }
+      : { result: null };
   } catch (e) {
     throw e;
   }
