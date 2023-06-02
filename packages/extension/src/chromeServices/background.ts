@@ -17,7 +17,8 @@ import {
   ReceiveSignMessageContentMessage,
   RequestMessage,
   RequestPayload,
-  ResponsePayload
+  ResponsePayload,
+  ResponseType
 } from '@gemwallet/constants';
 
 import {
@@ -226,6 +227,7 @@ chrome.runtime.onMessage.addListener(
         requestMessage: message.type,
         receivingMessage: 'RECEIVE_SEND_PAYMENT/V3',
         errorPayload: {
+          type: ResponseType.Reject,
           result: undefined
         }
       });
@@ -290,7 +292,9 @@ chrome.runtime.onMessage.addListener(
         app,
         type: 'RECEIVE_SEND_PAYMENT/V3',
         payload: {
-          result: payload.result
+          type: ResponseType.Response,
+          result: payload.result,
+          error: payload.error
         }
       });
     } else if (type === 'RECEIVE_PAYMENT_HASH') {

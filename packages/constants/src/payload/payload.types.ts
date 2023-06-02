@@ -148,9 +148,7 @@ export interface IsConnectedResponse {
   result: { isConnected: boolean };
 }
 
-export interface SendPaymentResponse {
-  result: { hash: string } | null | undefined;
-}
+export interface SendPaymentResponse extends BaseResponse<{ hash: string }> {}
 
 export interface SendPaymentResponseDeprecated {
   hash: string | null | undefined;

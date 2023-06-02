@@ -150,8 +150,15 @@ export interface RequestSignMessageMessageDeprecated {
 export type MessagingResponse = {
   source?: 'GEM_WALLET_MSG_RESPONSE';
   messagedId?: number;
-  error?: Error;
+  error?: MessagingError;
 };
+
+// Errors
+export interface MessagingError {
+  name: string;
+  message: string;
+  stack?: string;
+}
 
 export type NetworkMessagingResponse = MessagingResponse & GetNetworkResponse;
 export type NetworkMessagingResponseDeprecated = MessagingResponse & GetNetworkResponseDeprecated;
@@ -177,7 +184,7 @@ export type SetTrustlineMessagingResponseDeprecated = MessagingResponse &
 export interface ReceiveSendPaymentContentMessage {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_SEND_PAYMENT/V3';
-  payload: SendPaymentResponse;
+  payload: SendPaymentMessagingResponse;
 }
 
 export interface ReceiveSendPaymentContentMessageDeprecated {

@@ -41,7 +41,8 @@ describe('sendPayment api', () => {
     expect(response).toEqual({
       result: {
         hash
-      }
+      },
+      type: 'response'
     });
   });
 
@@ -52,7 +53,7 @@ describe('sendPayment api', () => {
     await sendPayment(payload).then((res) => {
       response = res;
     });
-    expect(response).toEqual({ result: null });
+    expect(response).toEqual({ result: undefined, type: 'reject' });
   });
 
   test('should return an undefined if sendMessageToContentScript failed', async () => {
@@ -63,6 +64,6 @@ describe('sendPayment api', () => {
       .catch((e) => {
         error = e.message;
       });
-    expect(error).toEqual(undefined);
+    expect(error).toEqual(errorThrownFromContentScript);
   });
 });

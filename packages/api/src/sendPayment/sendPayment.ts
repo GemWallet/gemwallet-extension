@@ -1,9 +1,11 @@
 import {
   GEM_WALLET,
-  SendPaymentRequest,
   RequestSendPaymentMessage,
+  ResponseType,
+  SendPaymentRequest,
   SendPaymentResponse
 } from '@gemwallet/constants';
+import { deserializeError } from '@gemwallet/extension/src/utils/errors';
 
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
 
@@ -12,16 +14,30 @@ export const sendPayment = async (paymentPayload: SendPaymentRequest) => {
    * null: user refused the payment
    * undefined: something went wrong
    */
-  let response: SendPaymentResponse = { result: undefined };
+  let response: SendPaymentResponse = {
+    type: ResponseType.Reject,
+    result: undefined
+  };
+
   try {
     const message: RequestSendPaymentMessage = {
       app: GEM_WALLET,
       type: 'REQUEST_SEND_PAYMENT/V3',
       payload: paymentPayload
     };
-    const { result } = await sendMessageToContentScript(message);
-    response.result = result;
-  } catch (e) {}
+    const { result, error } = await sendMessageToContentScript(message);
+    const parsedError = error ? deserializeError(error) : undefined;
+    if (parsedError) {
+      throw parsedError;
+    }
+
+    if (result) {
+      response.type = ResponseType.Response;
+      response.result = result;
+    }
+  } catch (e) {
+    throw e;
+  }
 
   return response;
 };

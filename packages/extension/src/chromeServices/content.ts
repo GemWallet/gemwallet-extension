@@ -359,12 +359,13 @@ setTimeout(() => {
               // We make sure that the message comes from GemWallet
               if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
                 if (type === 'RECEIVE_SEND_PAYMENT/V3') {
-                  const { result } = payload;
+                  const { result, error } = payload;
                   window.postMessage(
                     {
                       source: 'GEM_WALLET_MSG_RESPONSE',
                       messagedId,
-                      result
+                      result,
+                      error
                     } as SendPaymentMessagingResponse,
                     window.location.origin
                   );
