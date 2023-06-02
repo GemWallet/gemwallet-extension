@@ -271,12 +271,12 @@ const LedgerProvider: FC = ({ children }) => {
   const fundWallet = useCallback(async () => {
     const wallet = getCurrentWallet();
     try {
-      if (!client) throw new Error('You need to be connected to a ledger to get the NFTs');
-      if (!wallet) throw new Error('You need to have a wallet connected to get the NFTs');
+      if (!client) throw new Error('You need to be connected to a ledger to fund the wallet');
+      if (!wallet) throw new Error('You need to have a wallet connected to fund the wallet');
 
       const walletWithAmount = await client.fundWallet(wallet.wallet);
 
-      if (!walletWithAmount) throw new Error("Couldn't get funds");
+      if (!walletWithAmount) throw new Error("Couldn't fund the wallet");
 
       return { ...walletWithAmount };
     } catch (e) {

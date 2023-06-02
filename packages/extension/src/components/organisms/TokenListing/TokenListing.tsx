@@ -16,7 +16,7 @@ import * as Sentry from '@sentry/react';
 
 import { Network } from '@gemwallet/constants';
 
-import { DEFAULT_RESERVE } from '../../../constants';
+import { DEFAULT_RESERVE, ERROR_RED } from '../../../constants';
 import { useLedger, useNetwork, useServer } from '../../../contexts';
 import { convertCurrencyString } from '../../../utils';
 import { TokenLoader } from '../../atoms';
@@ -46,6 +46,7 @@ const Transition = forwardRef(function Transition(
 
 export const TokenListing: FC<TokenListingProps> = ({ address }) => {
   const [XRPBalance, setXRPBalance] = useState<string>(LOADING_STATE);
+  const [errorMessage, setErrorMessage] = useState('');
   const [trustLineBalances, setTrustLineBalances] = useState<TrustLineBalance[]>([]);
   const [explanationOpen, setExplanationOpen] = useState(false);
   const { client, reconnectToNetwork, network } = useNetwork();
@@ -85,11 +86,15 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
     setExplanationOpen(false);
   }, []);
 
-  const handleFundWallet = useCallback(async () => {
+  const handleFundWallet = useCallback(() => {
+    setErrorMessage('');
     setXRPBalance(LOADING_STATE);
     fundWallet()
       .then(({ balance }) => setXRPBalance(balance.toString()))
-      .catch((e) => setXRPBalance(ERROR_STATE));
+      .catch((e) => {
+        setXRPBalance(ERROR_STATE);
+        setErrorMessage(e.message);
+      });
   }, [fundWallet]);
 
   if (client === null) {
@@ -104,9 +109,10 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
           There was an error attempting to retrieve your assets. Please refresh and try again.
         </Typography>
         <div style={{ textAlign: 'center', margin: '10px 0' }}>
-          <Button variant="contained" onClick={reconnectToNetwork}>
+          <Button variant="contained" onClick={reconnectToNetwork} style={{ marginBottom: '10px' }}>
             Refresh
           </Button>
+          {errorMessage && <Typography style={{ color: ERROR_RED }}>{errorMessage}</Typography>}
         </div>
       </InformationMessage>
     );
