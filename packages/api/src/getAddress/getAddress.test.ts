@@ -8,10 +8,10 @@ jest.mock('../helpers/extensionMessaging', () => ({
 describe('getAddress', () => {
   it('should return address response when called', async () => {
     (sendMessageToContentScript as jest.Mock).mockResolvedValue({
-      result: { publicAddress: 'fake' }
+      result: { address: 'fake' }
     });
     const address = await getAddress();
-    expect(address).toEqual({ result: { publicAddress: 'fake' } });
+    expect(address).toEqual({ result: { address: 'fake' } });
   });
 
   it('should throw an error when sendMessageToContentScript throws an error', async () => {

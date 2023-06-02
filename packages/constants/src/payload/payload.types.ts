@@ -110,7 +110,7 @@ export interface GetNetworkResponseDeprecated {
 }
 
 export interface GetAddressResponse {
-  result: { publicAddress: string } | null | undefined;
+  result: { address: string } | null | undefined;
 }
 
 export interface GetAddressResponseDeprecated {

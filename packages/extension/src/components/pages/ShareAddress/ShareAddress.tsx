@@ -57,7 +57,7 @@ export const ShareAddress: FC = () => {
             id,
             result: messagePayload.publicAddress
               ? {
-                  publicAddress: messagePayload.publicAddress
+                  address: messagePayload.publicAddress
                 }
               : messagePayload.publicAddress === null
               ? null
