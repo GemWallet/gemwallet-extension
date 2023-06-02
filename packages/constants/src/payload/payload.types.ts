@@ -101,6 +101,16 @@ export type RequestPayload =
 /*
  * Response Payloads
  */
+export const enum ResponseType {
+  Response = 'response',
+  Reject = 'reject'
+}
+
+interface BaseResponse<T> {
+  type: ResponseType;
+  result?: T;
+}
+
 export interface GetNetworkResponse {
   result: { network: Network } | undefined;
 }

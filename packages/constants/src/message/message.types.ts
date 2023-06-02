@@ -150,6 +150,7 @@ export interface RequestSignMessageMessageDeprecated {
 export type MessagingResponse = {
   source?: 'GEM_WALLET_MSG_RESPONSE';
   messagedId?: number;
+  error?: Error;
 };
 
 export type NetworkMessagingResponse = MessagingResponse & GetNetworkResponse;
