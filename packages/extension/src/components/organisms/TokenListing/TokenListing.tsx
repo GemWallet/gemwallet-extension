@@ -14,8 +14,10 @@ import {
 import { TransitionProps } from '@mui/material/transitions';
 import * as Sentry from '@sentry/react';
 
-import { DEFAULT_RESERVE } from '../../../constants';
-import { useNetwork, useServer } from '../../../contexts';
+import { Network } from '@gemwallet/constants';
+
+import { DEFAULT_RESERVE, ERROR_RED } from '../../../constants';
+import { useLedger, useNetwork, useServer } from '../../../contexts';
 import { convertCurrencyString } from '../../../utils';
 import { TokenLoader } from '../../atoms';
 import { InformationMessage } from '../../molecules/InformationMessage';
@@ -44,10 +46,12 @@ const Transition = forwardRef(function Transition(
 
 export const TokenListing: FC<TokenListingProps> = ({ address }) => {
   const [XRPBalance, setXRPBalance] = useState<string>(LOADING_STATE);
+  const [errorMessage, setErrorMessage] = useState('');
   const [trustLineBalances, setTrustLineBalances] = useState<TrustLineBalance[]>([]);
   const [explanationOpen, setExplanationOpen] = useState(false);
-  const { client, reconnectToNetwork } = useNetwork();
+  const { client, reconnectToNetwork, network } = useNetwork();
   const { serverInfo } = useServer();
+  const { fundWallet } = useLedger();
 
   useEffect(() => {
     async function fetchBalance() {
@@ -82,6 +86,17 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
     setExplanationOpen(false);
   }, []);
 
+  const handleFundWallet = useCallback(() => {
+    setErrorMessage('');
+    setXRPBalance(LOADING_STATE);
+    fundWallet()
+      .then(({ balance }) => setXRPBalance(balance.toString()))
+      .catch((e) => {
+        setXRPBalance(ERROR_STATE);
+        setErrorMessage(e.message);
+      });
+  }, [fundWallet]);
+
   if (client === null) {
     return (
       <InformationMessage
@@ -94,9 +109,10 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
           There was an error attempting to retrieve your assets. Please refresh and try again.
         </Typography>
         <div style={{ textAlign: 'center', margin: '10px 0' }}>
-          <Button variant="contained" onClick={reconnectToNetwork}>
+          <Button variant="contained" onClick={reconnectToNetwork} style={{ marginBottom: '10px' }}>
             Refresh
           </Button>
+          {errorMessage && <Typography style={{ color: ERROR_RED }}>{errorMessage}</Typography>}
         </div>
       </InformationMessage>
     );
@@ -124,6 +140,14 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
         <div style={{ marginTop: '5px' }}>
           Your reserved XRP will not show up within your GemWallet's balance as you cannot spend it.
         </div>
+
+        {network === Network.TESTNET && (
+          <div style={{ margin: '15px 0px', textAlign: 'center' }}>
+            <Button variant="contained" onClick={handleFundWallet} data-testid="fund-wallet-button">
+              Fund Wallet
+            </Button>
+          </div>
+        )}
       </InformationMessage>
     );
   }
