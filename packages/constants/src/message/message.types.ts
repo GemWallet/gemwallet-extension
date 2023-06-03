@@ -15,8 +15,8 @@ import {
   SetTrustlineResponseDeprecated,
   SetTrustlineRequest,
   SetTrustlineRequestDeprecated,
-  SignedMessageResponse,
-  SignedMessageResponseDeprecated,
+  SignMessageResponse,
+  SignMessageResponseDeprecated,
   SignMessageRequest,
   WebsiteRequest,
   GetAddressResponseDeprecated,
@@ -161,9 +161,9 @@ export type PublicAddressMessagingResponseDeprecated = MessagingResponse &
 export type PublicKeyMessagingResponse = MessagingResponse & GetPublicKeyResponse;
 export type PublicKeyMessagingResponseDeprecated = MessagingResponse &
   GetPublicKeyResponseDeprecated;
-export type SignMessageMessagingResponse = MessagingResponse & SignedMessageResponse;
+export type SignMessageMessagingResponse = MessagingResponse & SignMessageResponse;
 export type SignMessageMessagingResponseDeprecated = MessagingResponse &
-  SignedMessageResponseDeprecated;
+  SignMessageResponseDeprecated;
 export type IsConnectedMessagingResponse = MessagingResponse & IsConnectedResponse;
 export type SendPaymentMessagingResponse = MessagingResponse & SendPaymentResponse;
 export type SendPaymentMessagingResponseDeprecated = MessagingResponse &
@@ -248,13 +248,13 @@ export interface ReceiveGetPublicKeyContentMessageDeprecated {
 export interface ReceiveSignMessageContentMessage {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_SIGN_MESSAGE/V3';
-  payload: SignedMessageResponse;
+  payload: SignMessageResponse;
 }
 
 export interface ReceiveSignMessageContentMessageDeprecated {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_SIGN_MESSAGE';
-  payload: SignedMessageResponseDeprecated;
+  payload: SignMessageResponseDeprecated;
 }
 
 // Background Script Messages

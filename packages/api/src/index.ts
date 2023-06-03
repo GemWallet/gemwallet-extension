@@ -12,11 +12,12 @@ export type { AccountNFToken, Memo, PaymentFlags, TrustSetFlags } from '@gemwall
 
 // API return types
 export type {
+  GetAddressResponse,
+  GetNetworkResponse,
+  GetNFTResponse,
+  GetPublicKeyResponse,
+  IsConnectedResponse,
   SendPaymentResponse,
   SetTrustlineResponse,
-  GetAddressResponse,
-  GetPublicKeyResponse,
-  SignedMessageResponse,
-  IsConnectedResponse,
-  GetNFTResponse
+  SignMessageResponse
 } from '@gemwallet/constants';

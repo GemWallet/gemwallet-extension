@@ -126,11 +126,11 @@ export interface GetPublicKeyResponseDeprecated {
   publicKey: string | null | undefined;
 }
 
-export interface SignedMessageResponse {
+export interface SignMessageResponse {
   result: { signedMessage: string } | null | undefined;
 }
 
-export interface SignedMessageResponseDeprecated {
+export interface SignMessageResponseDeprecated {
   signedMessage: string | null | undefined;
 }
 
@@ -176,5 +176,5 @@ export type ResponsePayload =
   | SendPaymentResponseDeprecated
   | SetTrustlineResponse
   | SetTrustlineResponseDeprecated
-  | SignedMessageResponse
-  | SignedMessageResponseDeprecated;
+  | SignMessageResponse
+  | SignMessageResponseDeprecated;
