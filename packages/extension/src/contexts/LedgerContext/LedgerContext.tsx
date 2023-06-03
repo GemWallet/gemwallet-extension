@@ -245,9 +245,7 @@ const LedgerProvider: FC = ({ children }) => {
     (message: string) => {
       const wallet = getCurrentWallet();
       try {
-        if (!client) {
-          throw new Error('You need to be connected to a ledger to sign a message');
-        } else if (!wallet) {
+        if (!wallet) {
           throw new Error('You need to have a wallet connected to sign a message');
         } else {
           const messageHex = Buffer.from(message, 'utf8').toString('hex');
@@ -258,7 +256,7 @@ const LedgerProvider: FC = ({ children }) => {
         throw e;
       }
     },
-    [client, getCurrentWallet]
+    [getCurrentWallet]
   );
 
   const value: LedgerContextType = {
