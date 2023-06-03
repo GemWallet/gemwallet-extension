@@ -38,8 +38,8 @@
 
   function handlePayment(currency, issuer) {
     GemWalletApi.isConnected()
-      .then((isConnected) => {
-        if (isConnected) {
+      .then(({ result }) => {
+        if (result.isConnected) {
           const payment = {
             amount: formatAmount(0.2, currency, issuer),
             destination: issuer || 'rNvFCZXpDtGeQ3bVas95wGLN6N2stGmA9o',
@@ -78,8 +78,8 @@
   }
   function handleTrustline() {
     GemWalletApi.isConnected()
-      .then((isConnected) => {
-        if (isConnected) {
+      .then(({ result }) => {
+        if (result.isConnected) {
           const transaction = {
             limitAmount: {
               currency: 'ETH',
@@ -122,8 +122,8 @@
   }
   function handleNFTs() {
     GemWalletApi.isConnected()
-      .then((isConnected) => {
-        if (isConnected) {
+      .then(({ result }) => {
+        if (result.isConnected) {
           const props = {
             limit: 1
           };
@@ -142,8 +142,8 @@
   }
   function handlePublicKey() {
     GemWalletApi.isConnected()
-      .then((isConnected) => {
-        if (isConnected) {
+      .then(({ result }) => {
+        if (result.isConnected) {
           GemWalletApi.getPublicKey()
             .then((pbk) => {
               console.log('Here is your Public Key: ', pbk);
@@ -159,8 +159,8 @@
   }
   function handleGetAddress() {
     GemWalletApi.isConnected()
-      .then((isConnected) => {
-        if (isConnected) {
+      .then(({ result }) => {
+        if (result.isConnected) {
           GemWalletApi.getAddress()
             .then((address) => {
               console.log('Here is your address: ', address);
@@ -175,8 +175,8 @@
       });
   }
   function handleGetNetwork() {
-    GemWalletApi.isConnected().then((isConnected) => {
-      if (isConnected) {
+    GemWalletApi.isConnected().then(({ result }) => {
+      if (result.isConnected) {
         GemWalletApi.getNetwork()
           .then((network) => {
             console.log('Here is your network: ', network);
@@ -189,8 +189,8 @@
   }
   function handleSignMessage() {
     GemWalletApi.isConnected()
-      .then((isConnected) => {
-        if (isConnected) {
+      .then(({ result }) => {
+        if (result.isConnected) {
           const message = 'Hello World!';
           GemWalletApi.signMessage(message)
             .then((signature) => {

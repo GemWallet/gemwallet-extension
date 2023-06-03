@@ -135,7 +135,7 @@ export interface SignMessageResponseDeprecated {
 }
 
 export interface IsConnectedResponse {
-  isConnected: boolean;
+  result: { isConnected: boolean };
 }
 
 export interface SendPaymentResponse {
