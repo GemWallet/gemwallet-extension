@@ -6,11 +6,13 @@ import {
   AccountNFToken,
   GEM_WALLET,
   ReceiveGetNFTBackgroundMessage,
-  ReceiveGetNFTBackgroundMessageDeprecated
+  ReceiveGetNFTBackgroundMessageDeprecated,
+  ResponseType
 } from '@gemwallet/constants';
 
 import { useBrowser, useLedger, useWallet } from '../../../contexts';
 import { Permission, saveTrustedApp } from '../../../utils';
+import { serializeError } from '../../../utils/errors';
 import { SharingPage } from '../../templates';
 
 const permissions = [Permission.NFTs];
@@ -42,8 +44,14 @@ export const ShareNFT: FC = () => {
   const { id, url, limit, marker } = payload;
 
   const handleSendMessage = useCallback(
-    (messagePayload: { nfts: AccountNFToken[]; marker?: unknown } | null | undefined) => {
-      let message: ReceiveGetNFTBackgroundMessageDeprecated | ReceiveGetNFTBackgroundMessage = {
+    ({
+      messagePayload,
+      error
+    }: {
+      messagePayload?: { nfts: AccountNFToken[]; marker?: unknown };
+      error?: Error;
+    }) => {
+      let message: ReceiveGetNFTBackgroundMessage | ReceiveGetNFTBackgroundMessageDeprecated = {
         app: GEM_WALLET,
         type: 'RECEIVE_NFT',
         payload: {
@@ -58,12 +66,14 @@ export const ShareNFT: FC = () => {
           type: receivingMessage,
           payload: {
             id,
+            type: ResponseType.Response,
             result: !!messagePayload
               ? {
                   account_nfts: messagePayload.nfts,
                   marker: messagePayload.marker
                 }
-              : messagePayload
+              : messagePayload,
+            error: error ? serializeError(error) : undefined
           }
         };
       }
@@ -85,20 +95,20 @@ export const ShareNFT: FC = () => {
   );
 
   const handleReject = useCallback(() => {
-    handleSendMessage(null);
+    handleSendMessage({});
   }, [handleSendMessage]);
 
   const handleShare = useCallback(async () => {
     try {
       saveTrustedApp({ url: String(url), permissions }, selectedWallet);
       const { account_nfts: nfts, marker: newMarker } = await getNFTs({ limit, marker });
-      handleSendMessage({ nfts, marker: newMarker });
+      handleSendMessage({ messagePayload: { nfts, marker: newMarker } });
     } catch (e) {
       // Returns an empty array if the account is not activated
       if ((e as Error).message === 'Account not found.') {
-        handleSendMessage({ nfts: [] });
+        handleSendMessage({ messagePayload: { nfts: [] } });
       } else {
-        handleSendMessage(undefined);
+        handleSendMessage({ messagePayload: undefined, error: e as Error });
       }
       Sentry.captureException(e);
     }

@@ -162,7 +162,8 @@ export interface MessagingError {
 
 export type NetworkMessagingResponse = MessagingResponse & GetNetworkResponse;
 export type NetworkMessagingResponseDeprecated = MessagingResponse & GetNetworkResponseDeprecated;
-export type NFTMessagingResponse = MessagingResponse & GetNFTRequest;
+export type NFTMessagingResponse = MessagingResponse & GetNFTResponse;
+export type NFTMessagingResponseDeprecated = MessagingResponse & GetNFTResponseDeprecated;
 export type PublicAddressMessagingResponse = MessagingResponse & GetAddressResponse;
 export type PublicAddressMessagingResponseDeprecated = MessagingResponse &
   GetAddressResponseDeprecated;
@@ -232,7 +233,7 @@ export interface ReceiveGetNetworkContentMessageDeprecated {
 export interface ReceiveGetNFTContentMessage {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_GET_NFT/V3';
-  payload: GetNFTResponse;
+  payload: NFTMessagingResponse;
 }
 
 export interface ReceiveGetNFTContentMessageDeprecated {

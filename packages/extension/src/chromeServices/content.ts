@@ -50,7 +50,8 @@ import {
   ReceiveGetPublicKeyContentMessageDeprecated,
   PublicKeyMessagingResponseDeprecated,
   RequestSignMessageMessageDeprecated,
-  ReceiveSignMessageContentMessageDeprecated
+  ReceiveSignMessageContentMessageDeprecated,
+  NFTMessagingResponseDeprecated
 } from '@gemwallet/constants';
 
 /**
@@ -330,7 +331,7 @@ setTimeout(() => {
                       source: 'GEM_WALLET_MSG_RESPONSE',
                       messagedId,
                       nfts: payload.nfts
-                    } as NFTMessagingResponse,
+                    } as NFTMessagingResponseDeprecated,
                     window.location.origin
                   );
                   chrome.runtime.onMessage.removeListener(messageListener);

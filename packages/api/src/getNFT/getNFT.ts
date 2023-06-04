@@ -2,8 +2,10 @@ import {
   GEM_WALLET,
   GetNFTResponse,
   GetNFTRequest,
-  RequestGetNFTMessage
+  RequestGetNFTMessage,
+  ResponseType
 } from '@gemwallet/constants';
+import { deserializeError } from '@gemwallet/extension/src/utils/errors';
 
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
 import { getFavicon } from '../helpers/getFavicon';
@@ -13,7 +15,11 @@ export const getNFT = async (payload?: GetNFTRequest): Promise<GetNFTResponse> =
    * null: user refused to share his NFTs
    * undefined: something went wrong
    */
-  let response: GetNFTResponse = { result: undefined };
+  let response: GetNFTResponse = {
+    type: ResponseType.Reject,
+    result: undefined
+  };
+
   try {
     const favicon = getFavicon();
     const message: RequestGetNFTMessage = {
@@ -28,10 +34,16 @@ export const getNFT = async (payload?: GetNFTRequest): Promise<GetNFTResponse> =
         marker: payload?.marker ?? undefined
       }
     };
-    const res = await sendMessageToContentScript(message);
-    response = !!res.result?.account_nfts
-      ? { result: { account_nfts: res.result.account_nfts, marker: res.result.marker } }
-      : { result: null };
+    const { result, error } = await sendMessageToContentScript(message);
+    const parsedError = error ? deserializeError(error) : undefined;
+    if (parsedError) {
+      throw parsedError;
+    }
+
+    if (result) {
+      response.type = ResponseType.Response;
+      response.result = result;
+    }
   } catch (e) {
     throw e;
   }

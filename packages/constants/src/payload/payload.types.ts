@@ -158,9 +158,8 @@ export interface SetTrustlineResponseDeprecated {
   hash: string | null | undefined;
 }
 
-export interface GetNFTResponse {
-  result: { account_nfts: AccountNFToken[]; marker?: unknown } | null | undefined;
-}
+export interface GetNFTResponse
+  extends BaseResponse<{ account_nfts: AccountNFToken[]; marker?: unknown }> {}
 
 export interface GetNFTResponseDeprecated {
   nfts: AccountNFToken[] | null | undefined;
