@@ -220,7 +220,7 @@ export interface ReceiveGetAddressContentMessageDeprecated {
 export interface ReceiveGetNetworkContentMessage {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_GET_NETWORK/V3';
-  payload: GetNetworkResponse;
+  payload: NetworkMessagingResponse;
 }
 
 export interface ReceiveGetNetworkContentMessageDeprecated {

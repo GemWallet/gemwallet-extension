@@ -1,14 +1,15 @@
 import { FC, useCallback, useEffect } from 'react';
 
 import * as Sentry from '@sentry/react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router-dom';
 
 import {
   GEM_WALLET,
   GetNetworkResponse,
   GetNetworkResponseDeprecated,
   ReceiveGetNetworkBackgroundMessage,
-  ReceiveGetNetworkBackgroundMessageDeprecated
+  ReceiveGetNetworkBackgroundMessageDeprecated,
+  ResponseType
 } from '@gemwallet/constants';
 
 import { PrivateRoute } from './components/atoms/PrivateRoute';
@@ -18,6 +19,7 @@ import {
   AddNewWallet,
   CreateWallet,
   EditWallet,
+  History,
   Home,
   ImportMnemonic,
   ImportSecretNumbers,
@@ -26,7 +28,7 @@ import {
   ListWallets,
   Login,
   ResetPassword,
-  History,
+  SendPayment,
   Settings,
   ShareAddress,
   ShareNFT,
@@ -34,40 +36,39 @@ import {
   SignMessage,
   Transaction,
   TrustedApps,
-  Welcome,
-  SendPayment
+  Welcome
 } from './components/pages';
 import { ErrorBoundary } from './components/templates';
 import {
   ABOUT_PATH,
+  ADD_NEW_TRUSTLINE_PATH,
+  ADD_NEW_WALLET_PATH,
   CREATE_NEW_WALLET_PATH,
+  EDIT_WALLET_PATH,
+  HISTORY_PATH,
   HOME_PATH,
+  IMPORT_MNEMONIC_PATH,
+  IMPORT_SECRET_NUMBERS_PATH,
   IMPORT_SEED_PATH,
-  PARAMETER_NETWORK,
   IMPORT_WALLET_PATH,
+  LIST_WALLETS_PATH,
+  PARAMETER_ADDRESS,
+  PARAMETER_NETWORK,
+  PARAMETER_NFT,
+  PARAMETER_PUBLIC_KEY,
+  PARAMETER_SIGN_MESSAGE,
+  PARAMETER_TRANSACTION_PAYMENT,
+  PARAMETER_TRANSACTION_TRUSTLINE,
   RESET_PASSWORD_PATH,
+  SEND_PATH,
   SETTINGS_PATH,
+  SHARE_NFT_PATH,
   SHARE_PUBLIC_ADDRESS_PATH,
   SHARE_PUBLIC_KEY_PATH,
   SIGN_MESSAGE_PATH,
   TRANSACTION_PATH,
   TRUSTED_APPS_PATH,
-  WELCOME_PATH,
-  IMPORT_MNEMONIC_PATH,
-  IMPORT_SECRET_NUMBERS_PATH,
-  LIST_WALLETS_PATH,
-  ADD_NEW_WALLET_PATH,
-  EDIT_WALLET_PATH,
-  ADD_NEW_TRUSTLINE_PATH,
-  HISTORY_PATH,
-  SHARE_NFT_PATH,
-  SEND_PATH,
-  PARAMETER_TRANSACTION_PAYMENT,
-  PARAMETER_ADDRESS,
-  PARAMETER_PUBLIC_KEY,
-  PARAMETER_SIGN_MESSAGE,
-  PARAMETER_TRANSACTION_TRUSTLINE,
-  PARAMETER_NFT
+  WELCOME_PATH
 } from './constants';
 import { useBrowser } from './contexts';
 import { useBeforeUnload } from './hooks';
@@ -230,6 +231,7 @@ const App: FC = () => {
 
         if (type === 'RECEIVE_GET_NETWORK/V3') {
           const response: GetNetworkResponse = {
+            type: ResponseType.Response,
             result: { network }
           };
 

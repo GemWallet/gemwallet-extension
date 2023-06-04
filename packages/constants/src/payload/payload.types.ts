@@ -111,9 +111,7 @@ interface BaseResponse<T> {
   result?: T;
 }
 
-export interface GetNetworkResponse {
-  result: { network: Network } | undefined;
-}
+export interface GetNetworkResponse extends BaseResponse<{ network: Network }> {}
 
 export interface GetNetworkResponseDeprecated {
   network: Network | undefined;
