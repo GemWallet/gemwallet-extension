@@ -119,9 +119,7 @@ export interface GetNetworkResponseDeprecated {
   network: Network | undefined;
 }
 
-export interface GetAddressResponse {
-  result: { address: string } | null | undefined;
-}
+export interface GetAddressResponse extends BaseResponse<{ address: string }> {}
 
 export interface GetAddressResponseDeprecated {
   publicAddress: string | null | undefined;

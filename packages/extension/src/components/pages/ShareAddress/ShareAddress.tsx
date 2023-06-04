@@ -5,11 +5,13 @@ import * as Sentry from '@sentry/react';
 import {
   GEM_WALLET,
   ReceiveGetAddressBackgroundMessage,
-  ReceiveGetAddressBackgroundMessageDeprecated
+  ReceiveGetAddressBackgroundMessageDeprecated,
+  ResponseType
 } from '@gemwallet/constants';
 
 import { useBrowser, useWallet } from '../../../contexts';
-import { saveTrustedApp, Permission } from '../../../utils';
+import { Permission, saveTrustedApp } from '../../../utils';
+import { serializeError } from '../../../utils/errors';
 import { SharingPage } from '../../templates';
 
 const permissions = [Permission.Address];
@@ -37,7 +39,9 @@ export const ShareAddress: FC = () => {
 
   const { id, url } = payload;
   const handleSendMessage = useCallback(
-    (messagePayload: { publicAddress: string | null | undefined }) => {
+    (messagePayload: { publicAddress: string | null | undefined; error?: Error }) => {
+      const { publicAddress, error } = messagePayload;
+
       let message:
         | ReceiveGetAddressBackgroundMessage
         | ReceiveGetAddressBackgroundMessageDeprecated = {
@@ -45,7 +49,7 @@ export const ShareAddress: FC = () => {
         type: 'RECEIVE_ADDRESS',
         payload: {
           id,
-          publicAddress: messagePayload.publicAddress
+          publicAddress: publicAddress
         }
       };
 
@@ -55,13 +59,9 @@ export const ShareAddress: FC = () => {
           type: receivingMessage,
           payload: {
             id,
-            result: messagePayload.publicAddress
-              ? {
-                  address: messagePayload.publicAddress
-                }
-              : messagePayload.publicAddress === null
-              ? null
-              : undefined
+            type: ResponseType.Response,
+            result: publicAddress ? { address: publicAddress } : undefined,
+            error: error ? serializeError(error) : undefined
           }
         };
       }

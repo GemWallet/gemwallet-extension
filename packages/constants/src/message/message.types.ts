@@ -208,7 +208,7 @@ export interface ReceiveSetTrustlineContentMessageDeprecated {
 export interface ReceiveGetAddressContentMessage {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_GET_ADDRESS/V3';
-  payload: GetAddressResponse;
+  payload: PublicAddressMessagingResponse;
 }
 
 export interface ReceiveGetAddressContentMessageDeprecated {
