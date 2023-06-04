@@ -29,7 +29,7 @@ import {
   parsePaymentFlags,
   toXRPLMemos
 } from '../../../utils';
-import { serializeError } from '../../../utils/errors';
+import { serializeError, toUIError } from '../../../utils/errors';
 import { TileLoader } from '../../atoms';
 import { AsyncTransaction, PageWithSpinner, PageWithTitle } from '../../templates';
 
@@ -232,7 +232,8 @@ export const Transaction: FC = () => {
         >(message);
       })
       .catch((e) => {
-        setErrorRequestRejection(e.message);
+        const UIError = toUIError(e);
+        setErrorRequestRejection(UIError.message);
         setTransaction(TransactionStatus.Rejected);
         const message = createMessage({ transactionHash: undefined, error: e });
         chrome.runtime.sendMessage<
