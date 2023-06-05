@@ -245,7 +245,7 @@ export interface ReceiveGetNFTContentMessageDeprecated {
 export interface ReceiveGetPublicKeyContentMessage {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_GET_PUBLIC_KEY/V3';
-  payload: GetPublicKeyResponse;
+  payload: PublicKeyMessagingResponse;
 }
 
 export interface ReceiveGetPublicKeyContentMessageDeprecated {

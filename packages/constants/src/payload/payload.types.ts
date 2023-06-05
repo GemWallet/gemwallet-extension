@@ -123,9 +123,8 @@ export interface GetAddressResponseDeprecated {
   publicAddress: string | null | undefined;
 }
 
-export interface GetPublicKeyResponse {
-  result: { address: string; publicKey: string } | null | undefined;
-}
+export interface GetPublicKeyResponse
+  extends BaseResponse<{ address: string; publicKey: string }> {}
 
 export interface GetPublicKeyResponseDeprecated {
   address: string | null | undefined;

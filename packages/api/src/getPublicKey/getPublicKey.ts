@@ -1,4 +1,10 @@
-import { GEM_WALLET, GetPublicKeyResponse, RequestGetPublicKeyMessage } from '@gemwallet/constants';
+import {
+  GEM_WALLET,
+  GetPublicKeyResponse,
+  RequestGetPublicKeyMessage,
+  ResponseType
+} from '@gemwallet/constants';
+import { deserializeError } from '@gemwallet/extension/src/utils/errors';
 
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
 import { getFavicon } from '../helpers/getFavicon';
@@ -8,7 +14,11 @@ export const getPublicKey = async (): Promise<GetPublicKeyResponse> => {
    * null: user refused the authorization
    * undefined: something went wrong
    */
-  let response: GetPublicKeyResponse = { result: undefined };
+  let response: GetPublicKeyResponse = {
+    type: ResponseType.Reject,
+    result: undefined
+  };
+
   try {
     const favicon = getFavicon();
     const message: RequestGetPublicKeyMessage = {
@@ -20,8 +30,16 @@ export const getPublicKey = async (): Promise<GetPublicKeyResponse> => {
         favicon
       }
     };
-    const { result } = await sendMessageToContentScript(message);
-    response.result = result;
+    const { result, error } = await sendMessageToContentScript(message);
+    const parsedError = error ? deserializeError(error) : undefined;
+    if (parsedError) {
+      throw parsedError;
+    }
+
+    if (result) {
+      response.type = ResponseType.Response;
+      response.result = result;
+    }
   } catch (e) {
     throw e;
   }
