@@ -131,9 +131,7 @@ export interface GetPublicKeyResponseDeprecated {
   publicKey: string | null | undefined;
 }
 
-export interface SignMessageResponse {
-  result: { signedMessage: string } | null | undefined;
-}
+export interface SignMessageResponse extends BaseResponse<{ signedMessage: string }> {}
 
 export interface SignMessageResponseDeprecated {
   signedMessage: string | null | undefined;

@@ -277,6 +277,7 @@ chrome.runtime.onMessage.addListener(
         requestMessage: message.type,
         receivingMessage: 'RECEIVE_SIGN_MESSAGE/V3',
         errorPayload: {
+          type: ResponseType.Reject,
           result: undefined
         }
       });
@@ -424,7 +425,9 @@ chrome.runtime.onMessage.addListener(
         app,
         type: 'RECEIVE_SIGN_MESSAGE/V3',
         payload: {
-          result: payload.result
+          type: ResponseType.Response,
+          result: payload.result,
+          error: payload.error
         }
       });
     } else if (type === 'RECEIVE_SIGN_MESSAGE') {

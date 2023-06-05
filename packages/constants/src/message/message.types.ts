@@ -257,7 +257,7 @@ export interface ReceiveGetPublicKeyContentMessageDeprecated {
 export interface ReceiveSignMessageContentMessage {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_SIGN_MESSAGE/V3';
-  payload: SignMessageResponse;
+  payload: SignMessageMessagingResponse;
 }
 
 export interface ReceiveSignMessageContentMessageDeprecated {
