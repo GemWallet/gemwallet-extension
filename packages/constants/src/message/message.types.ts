@@ -160,15 +160,16 @@ export interface MessagingError {
   stack?: string;
 }
 
-export type NetworkMessagingResponse = MessagingResponse & GetNetworkResponse;
-export type NetworkMessagingResponseDeprecated = MessagingResponse & GetNetworkResponseDeprecated;
-export type NFTMessagingResponse = MessagingResponse & GetNFTResponse;
-export type NFTMessagingResponseDeprecated = MessagingResponse & GetNFTResponseDeprecated;
-export type PublicAddressMessagingResponse = MessagingResponse & GetAddressResponse;
-export type PublicAddressMessagingResponseDeprecated = MessagingResponse &
+export type GetNetworkMessagingResponse = MessagingResponse & GetNetworkResponse;
+export type GetNetworkMessagingResponseDeprecated = MessagingResponse &
+  GetNetworkResponseDeprecated;
+export type GetNFTMessagingResponse = MessagingResponse & GetNFTResponse;
+export type GetNFTMessagingResponseDeprecated = MessagingResponse & GetNFTResponseDeprecated;
+export type GetAddressMessagingResponse = MessagingResponse & GetAddressResponse;
+export type GetAddressMessagingResponseDeprecated = MessagingResponse &
   GetAddressResponseDeprecated;
-export type PublicKeyMessagingResponse = MessagingResponse & GetPublicKeyResponse;
-export type PublicKeyMessagingResponseDeprecated = MessagingResponse &
+export type GetPublicKeyMessagingResponse = MessagingResponse & GetPublicKeyResponse;
+export type GetPublicKeyMessagingResponseDeprecated = MessagingResponse &
   GetPublicKeyResponseDeprecated;
 export type SignMessageMessagingResponse = MessagingResponse & SignMessageResponse;
 export type SignMessageMessagingResponseDeprecated = MessagingResponse &
@@ -209,7 +210,7 @@ export interface ReceiveSetTrustlineContentMessageDeprecated {
 export interface ReceiveGetAddressContentMessage {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_GET_ADDRESS/V3';
-  payload: PublicAddressMessagingResponse;
+  payload: GetAddressMessagingResponse;
 }
 
 export interface ReceiveGetAddressContentMessageDeprecated {
@@ -221,7 +222,7 @@ export interface ReceiveGetAddressContentMessageDeprecated {
 export interface ReceiveGetNetworkContentMessage {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_GET_NETWORK/V3';
-  payload: NetworkMessagingResponse;
+  payload: GetNetworkMessagingResponse;
 }
 
 export interface ReceiveGetNetworkContentMessageDeprecated {
@@ -233,7 +234,7 @@ export interface ReceiveGetNetworkContentMessageDeprecated {
 export interface ReceiveGetNFTContentMessage {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_GET_NFT/V3';
-  payload: NFTMessagingResponse;
+  payload: GetNFTMessagingResponse;
 }
 
 export interface ReceiveGetNFTContentMessageDeprecated {
@@ -245,7 +246,7 @@ export interface ReceiveGetNFTContentMessageDeprecated {
 export interface ReceiveGetPublicKeyContentMessage {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_GET_PUBLIC_KEY/V3';
-  payload: PublicKeyMessagingResponse;
+  payload: GetPublicKeyMessagingResponse;
 }
 
 export interface ReceiveGetPublicKeyContentMessageDeprecated {

@@ -2,25 +2,33 @@ import {
   AddressEventListener,
   EventListener,
   GEM_WALLET,
+  GetAddressMessagingResponse,
+  GetAddressMessagingResponseDeprecated,
+  GetNetworkMessagingResponse,
+  GetNetworkMessagingResponseDeprecated,
   GetNFTEventListener,
   GetNFTEventListenerDeprecated,
-  NetworkMessagingResponse,
-  NFTMessagingResponse,
+  GetNFTMessagingResponse,
+  GetNFTMessagingResponseDeprecated,
+  GetPublicKeyMessagingResponse,
+  GetPublicKeyMessagingResponseDeprecated,
   PaymentEventListener,
   PaymentEventListenerDeprecated,
-  PublicAddressMessagingResponse,
   PublicKeyEventListener,
-  PublicKeyMessagingResponse,
   ReceiveGetAddressContentMessage,
+  ReceiveGetAddressContentMessageDeprecated,
   ReceiveGetNFTContentMessage,
   ReceiveGetNFTContentMessageDeprecated,
   ReceiveGetNetworkContentMessage,
+  ReceiveGetNetworkContentMessageDeprecated,
   ReceiveGetPublicKeyContentMessage,
+  ReceiveGetPublicKeyContentMessageDeprecated,
   ReceiveSendPaymentContentMessage,
   ReceiveSendPaymentContentMessageDeprecated,
   ReceiveSetTrustlineContentMessage,
   ReceiveSetTrustlineContentMessageDeprecated,
   ReceiveSignMessageContentMessage,
+  ReceiveSignMessageContentMessageDeprecated,
   RequestGetAddressMessage,
   RequestGetAddressMessageDeprecated,
   RequestGetNFTMessage,
@@ -33,6 +41,8 @@ import {
   RequestSignMessageMessage,
   RequestSetTrustlineMessage,
   RequestSetTrustlineMessageDeprecated,
+  RequestGetPublicKeyMessageDeprecated,
+  RequestSignMessageMessageDeprecated,
   SendPaymentMessagingResponse,
   SendPaymentMessagingResponseDeprecated,
   SetTrustlineEventListener,
@@ -41,17 +51,7 @@ import {
   SetTrustlineMessagingResponseDeprecated,
   SignMessageListener,
   SignMessageMessagingResponse,
-  SignMessageMessagingResponseDeprecated,
-  ReceiveGetNetworkContentMessageDeprecated,
-  NetworkMessagingResponseDeprecated,
-  PublicAddressMessagingResponseDeprecated,
-  ReceiveGetAddressContentMessageDeprecated,
-  RequestGetPublicKeyMessageDeprecated,
-  ReceiveGetPublicKeyContentMessageDeprecated,
-  PublicKeyMessagingResponseDeprecated,
-  RequestSignMessageMessageDeprecated,
-  ReceiveSignMessageContentMessageDeprecated,
-  NFTMessagingResponseDeprecated
+  SignMessageMessagingResponseDeprecated
 } from '@gemwallet/constants';
 
 /**
@@ -92,7 +92,7 @@ setTimeout(() => {
                       source: 'GEM_WALLET_MSG_RESPONSE',
                       messagedId,
                       result: payload.result
-                    } as NetworkMessagingResponse,
+                    } as GetNetworkMessagingResponse,
                     window.location.origin
                   );
                   chrome.runtime.onMessage.removeListener(messageListener);
@@ -123,7 +123,7 @@ setTimeout(() => {
                       source: 'GEM_WALLET_MSG_RESPONSE',
                       messagedId,
                       network: payload.network
-                    } as NetworkMessagingResponseDeprecated,
+                    } as GetNetworkMessagingResponseDeprecated,
                     window.location.origin
                   );
                   chrome.runtime.onMessage.removeListener(messageListener);
@@ -157,7 +157,7 @@ setTimeout(() => {
                       source: 'GEM_WALLET_MSG_RESPONSE',
                       messagedId,
                       result: payload.result
-                    } as PublicAddressMessagingResponse,
+                    } as GetAddressMessagingResponse,
                     window.location.origin
                   );
                   chrome.runtime.onMessage.removeListener(messageListener);
@@ -192,7 +192,7 @@ setTimeout(() => {
                       source: 'GEM_WALLET_MSG_RESPONSE',
                       messagedId,
                       publicAddress: payload.publicAddress
-                    } as PublicAddressMessagingResponseDeprecated,
+                    } as GetAddressMessagingResponseDeprecated,
                     window.location.origin
                   );
                   chrome.runtime.onMessage.removeListener(messageListener);
@@ -226,7 +226,7 @@ setTimeout(() => {
                       source: 'GEM_WALLET_MSG_RESPONSE',
                       messagedId,
                       result: payload.result
-                    } as PublicKeyMessagingResponse,
+                    } as GetPublicKeyMessagingResponse,
                     window.location.origin
                   );
                   chrome.runtime.onMessage.removeListener(messageListener);
@@ -262,7 +262,7 @@ setTimeout(() => {
                       messagedId,
                       address: payload.address,
                       publicKey: payload.publicKey
-                    } as PublicKeyMessagingResponseDeprecated,
+                    } as GetPublicKeyMessagingResponseDeprecated,
                     window.location.origin
                   );
                   chrome.runtime.onMessage.removeListener(messageListener);
@@ -296,7 +296,7 @@ setTimeout(() => {
                       source: 'GEM_WALLET_MSG_RESPONSE',
                       messagedId,
                       result: payload.result
-                    } as NFTMessagingResponse,
+                    } as GetNFTMessagingResponse,
                     window.location.origin
                   );
                   chrome.runtime.onMessage.removeListener(messageListener);
@@ -331,7 +331,7 @@ setTimeout(() => {
                       source: 'GEM_WALLET_MSG_RESPONSE',
                       messagedId,
                       nfts: payload.nfts
-                    } as NFTMessagingResponseDeprecated,
+                    } as GetNFTMessagingResponseDeprecated,
                     window.location.origin
                   );
                   chrome.runtime.onMessage.removeListener(messageListener);
