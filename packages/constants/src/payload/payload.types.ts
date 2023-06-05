@@ -149,9 +149,7 @@ export interface SendPaymentResponseDeprecated {
   hash: string | null | undefined;
 }
 
-export interface SetTrustlineResponse {
-  result: { hash: string } | null | undefined;
-}
+export interface SetTrustlineResponse extends BaseResponse<{ hash: string }> {}
 
 export interface SetTrustlineResponseDeprecated {
   hash: string | null | undefined;

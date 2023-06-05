@@ -254,6 +254,7 @@ chrome.runtime.onMessage.addListener(
         requestMessage: message.type,
         receivingMessage: 'RECEIVE_SET_TRUSTLINE/V3',
         errorPayload: {
+          type: ResponseType.Reject,
           result: undefined
         }
       });
@@ -317,7 +318,9 @@ chrome.runtime.onMessage.addListener(
         app,
         type: 'RECEIVE_SET_TRUSTLINE/V3',
         payload: {
-          result: payload.result
+          type: ResponseType.Response,
+          result: payload.result,
+          error: payload.error
         }
       });
     } else if (type === 'RECEIVE_TRUSTLINE_HASH') {

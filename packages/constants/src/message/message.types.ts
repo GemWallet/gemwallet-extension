@@ -197,7 +197,7 @@ export interface ReceiveSendPaymentContentMessageDeprecated {
 export interface ReceiveSetTrustlineContentMessage {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_SET_TRUSTLINE/V3';
-  payload: SetTrustlineResponse;
+  payload: SetTrustlineMessagingResponse;
 }
 
 export interface ReceiveSetTrustlineContentMessageDeprecated {
