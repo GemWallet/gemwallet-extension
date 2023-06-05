@@ -37,8 +37,8 @@ describe('getNFT', () => {
     const mockResponse = {};
     (sendMessageToContentScript as jest.Mock).mockResolvedValue(mockResponse);
 
-    const resp = await getNFT();
-    expect(resp).toEqual({
+    const res = await getNFT();
+    expect(res).toEqual({
       type: 'reject',
       result: undefined
     });
