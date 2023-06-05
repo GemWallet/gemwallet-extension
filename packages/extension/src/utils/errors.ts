@@ -15,13 +15,6 @@ export const serializeError = (error: Error): MessagingError => {
   };
 };
 
-export const deserializeError = (error: MessagingError): Error => {
-  const e = new Error(error.message);
-  e.stack = error.stack;
-  e.name = error.name;
-  return e;
-};
-
 export const toUIError = (error: Error): Error => {
   if (
     error.message === 'checksum_invalid' ||

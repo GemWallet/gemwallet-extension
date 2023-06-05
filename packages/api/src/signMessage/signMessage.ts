@@ -4,10 +4,10 @@ import {
   ResponseType,
   SignMessageResponse
 } from '@gemwallet/constants';
-import { deserializeError } from '@gemwallet/extension/src/utils/errors';
 
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
 import { getFavicon } from '../helpers/getFavicon';
+import { deserializeError } from '../utils/errors';
 
 export const signMessage = async (message: string): Promise<SignMessageResponse> => {
   /* string: signed message

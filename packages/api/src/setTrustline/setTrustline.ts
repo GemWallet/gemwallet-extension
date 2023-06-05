@@ -5,9 +5,9 @@ import {
   SetTrustlineRequest,
   SetTrustlineResponse
 } from '@gemwallet/constants';
-import { deserializeError } from '@gemwallet/extension/src/utils/errors';
 
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
+import { deserializeError } from '../utils/errors';
 
 export const setTrustline = async (payload: SetTrustlineRequest): Promise<SetTrustlineResponse> => {
   /* string: hash of the transaction
