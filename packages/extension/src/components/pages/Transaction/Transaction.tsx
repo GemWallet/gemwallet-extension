@@ -10,7 +10,8 @@ import {
   GEM_WALLET,
   Memo,
   PaymentFlags,
-  ReceivePaymentHashBackgroundMessage
+  ReceiveSendPaymentBackgroundMessage,
+  ReceiveSendPaymentBackgroundMessageDeprecated
 } from '@gemwallet/constants';
 
 import { DEFAULT_RESERVE, ERROR_RED } from '../../../constants';
@@ -65,12 +66,12 @@ export const Transaction: FC = () => {
   const { client, network } = useNetwork();
   const { serverInfo } = useServer();
 
-  const messageType = useMemo(() => {
+  const { messageType, receivingMessage } = useMemo(() => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     return urlParams.get('requestMessage') === 'REQUEST_SEND_PAYMENT/V3'
-      ? 'REQUEST_SEND_PAYMENT/V3'
-      : 'SEND_PAYMENT';
+      ? { messageType: 'REQUEST_SEND_PAYMENT/V3', receivingMessage: 'RECEIVE_SEND_PAYMENT/V3' }
+      : { messageType: 'SEND_PAYMENT', receivingMessage: 'RECEIVE_PAYMENT_HASH' };
   }, []);
 
   useEffect(() => {
@@ -171,7 +172,20 @@ export const Transaction: FC = () => {
   }, [params.destination]);
 
   const createMessage = useCallback(
-    (transactionHash: string | null | undefined): ReceivePaymentHashBackgroundMessage => {
+    (
+      transactionHash: string | null | undefined
+    ): ReceiveSendPaymentBackgroundMessage | ReceiveSendPaymentBackgroundMessageDeprecated => {
+      if (receivingMessage === 'RECEIVE_SEND_PAYMENT/V3') {
+        return {
+          app: GEM_WALLET,
+          type: 'RECEIVE_SEND_PAYMENT/V3',
+          payload: {
+            id: params.id,
+            result: transactionHash ? { hash: transactionHash } : null
+          }
+        };
+      }
+
       return {
         app: GEM_WALLET,
         type: 'RECEIVE_PAYMENT_HASH',
@@ -181,13 +195,15 @@ export const Transaction: FC = () => {
         }
       };
     },
-    [params.id]
+    [params.id, receivingMessage]
   );
 
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);
     const message = createMessage(null);
-    chrome.runtime.sendMessage<ReceivePaymentHashBackgroundMessage>(message);
+    chrome.runtime.sendMessage<
+      ReceiveSendPaymentBackgroundMessage | ReceiveSendPaymentBackgroundMessageDeprecated
+    >(message);
   }, [createMessage]);
 
   const handleConfirm = useCallback(() => {
@@ -205,13 +221,17 @@ export const Transaction: FC = () => {
       .then((transactionHash) => {
         setTransaction(TransactionStatus.Success);
         const message = createMessage(transactionHash);
-        chrome.runtime.sendMessage<ReceivePaymentHashBackgroundMessage>(message);
+        chrome.runtime.sendMessage<
+          ReceiveSendPaymentBackgroundMessage | ReceiveSendPaymentBackgroundMessageDeprecated
+        >(message);
       })
       .catch((e) => {
         setErrorRequestRejection(e.message);
         setTransaction(TransactionStatus.Rejected);
         const message = createMessage(undefined);
-        chrome.runtime.sendMessage<ReceivePaymentHashBackgroundMessage>(message);
+        chrome.runtime.sendMessage<
+          ReceiveSendPaymentBackgroundMessage | ReceiveSendPaymentBackgroundMessageDeprecated
+        >(message);
       });
   }, [
     createMessage,

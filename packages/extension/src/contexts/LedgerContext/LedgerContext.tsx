@@ -6,9 +6,9 @@ import { TransactionMetadata, Payment, Transaction, TrustSet, Wallet } from 'xrp
 
 import {
   AccountNFToken,
-  NFTRequestPayload,
-  PaymentRequestPayload,
-  SetTrustlineRequestPayload
+  GetNFTRequest,
+  SendPaymentRequest,
+  SetTrustlineRequest
 } from '@gemwallet/constants';
 
 import { AccountTransaction } from '../../types';
@@ -28,11 +28,11 @@ export interface FundWalletResponse {
 
 export interface LedgerContextType {
   // Return transaction hash in case of success
-  sendPayment: (payload: PaymentRequestPayload) => Promise<string>;
-  setTrustline: (payload: SetTrustlineRequestPayload) => Promise<string>;
+  sendPayment: (payload: SendPaymentRequest) => Promise<string>;
+  setTrustline: (payload: SetTrustlineRequest) => Promise<string>;
   signMessage: (message: string) => string | undefined;
   estimateNetworkFees: (payload: Transaction) => Promise<string>;
-  getNFTs: (payload?: NFTRequestPayload) => Promise<GetNFTsResponse>;
+  getNFTs: (payload?: GetNFTRequest) => Promise<GetNFTsResponse>;
   getTransactions: () => Promise<AccountTransaction[]>;
   fundWallet: () => Promise<FundWalletResponse>;
 }
@@ -86,7 +86,7 @@ const LedgerProvider: FC = ({ children }) => {
   );
 
   const getNFTs = useCallback(
-    async (payload?: NFTRequestPayload) => {
+    async (payload?: GetNFTRequest): Promise<GetNFTsResponse> => {
       const wallet = getCurrentWallet();
       if (!client) {
         throw new Error('You need to be connected to a ledger to get the NFTs');
@@ -132,7 +132,7 @@ const LedgerProvider: FC = ({ children }) => {
   }, [client, getCurrentWallet]);
 
   const sendPayment = useCallback(
-    async ({ amount, destination, memos, destinationTag, fee, flags }: PaymentRequestPayload) => {
+    async ({ amount, destination, memos, destinationTag, fee, flags }: SendPaymentRequest) => {
       const wallet = getCurrentWallet();
       if (!client) {
         throw new Error('You need to be connected to a ledger to make a transaction');
@@ -196,7 +196,7 @@ const LedgerProvider: FC = ({ children }) => {
   );
 
   const setTrustline = useCallback(
-    async ({ limitAmount, fee, memos, flags }: SetTrustlineRequestPayload) => {
+    async ({ limitAmount, fee, memos, flags }: SetTrustlineRequest) => {
       const wallet = getCurrentWallet();
       if (!client) {
         throw new Error('You need to be connected to a ledger to add a trustline');
@@ -252,9 +252,7 @@ const LedgerProvider: FC = ({ children }) => {
     (message: string) => {
       const wallet = getCurrentWallet();
       try {
-        if (!client) {
-          throw new Error('You need to be connected to a ledger to sign a message');
-        } else if (!wallet) {
+        if (!wallet) {
           throw new Error('You need to have a wallet connected to sign a message');
         } else {
           const messageHex = Buffer.from(message, 'utf8').toString('hex');
@@ -265,7 +263,7 @@ const LedgerProvider: FC = ({ children }) => {
         throw e;
       }
     },
-    [client, getCurrentWallet]
+    [getCurrentWallet]
   );
 
   const fundWallet = useCallback(async () => {

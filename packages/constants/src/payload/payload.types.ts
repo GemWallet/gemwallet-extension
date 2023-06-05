@@ -8,17 +8,17 @@ import { AccountNFToken } from './../xrpl/nft.types';
  * Request Payloads
  */
 
-export interface NetworkRequestPayload {
+export interface GetNetworkRequest {
   id: number | undefined;
 }
 
-export interface WebsiteRequestPayload {
+export interface WebsiteRequest {
   url: string;
   title: string;
   favicon: string | null | undefined;
 }
 
-export interface PaymentRequestPayload {
+export interface SendPaymentRequest {
   // The amount to deliver, in one of the following formats:
   // - A string representing the number of XRP to deliver, in drops.
   // - An object where 'value' is a string representing the number of the token to deliver.
@@ -36,7 +36,7 @@ export interface PaymentRequestPayload {
   flags?: PaymentFlags;
 }
 
-export interface PaymentRequestPayloadDeprecated {
+export interface SendPaymentRequestDeprecated {
   // The amount of currency to deliver (in currency, not drops)
   amount: string;
   // The token that can be used
@@ -49,7 +49,7 @@ export interface PaymentRequestPayloadDeprecated {
   destinationTag?: string;
 }
 
-export interface SetTrustlineRequestPayload {
+export interface SetTrustlineRequest {
   // The maximum amount of currency that can be exchanged to the trustline
   limitAmount: IssuedCurrencyAmount;
   // Integer amount of XRP, in drops, to be destroyed as a cost for distributing this transaction to the network.
@@ -62,7 +62,7 @@ export interface SetTrustlineRequestPayload {
   flags?: TrustSetFlags;
 }
 
-export interface SetTrustlineRequestPayloadDeprecated {
+export interface SetTrustlineRequestDeprecated {
   // The token to be used
   currency: string;
   // The address of the account owing the token
@@ -74,14 +74,14 @@ export interface SetTrustlineRequestPayloadDeprecated {
   value: string;
 }
 
-export interface NFTRequestPayload {
+export interface GetNFTRequest {
   // Limit the number of NFTokens to retrieve.
   limit?: number;
   // Value from a previous paginated response. Resume retrieving data where that response left off.
   marker?: unknown;
 }
 
-export interface SignMessageRequestPayload {
+export interface SignMessageRequest {
   url: string;
   title: string;
   favicon: string | null | undefined;
@@ -89,68 +89,92 @@ export interface SignMessageRequestPayload {
 }
 
 export type RequestPayload =
-  | NetworkRequestPayload
-  | WebsiteRequestPayload
-  | PaymentRequestPayload
-  | PaymentRequestPayloadDeprecated
-  | SetTrustlineRequestPayload
-  | SetTrustlineRequestPayloadDeprecated
-  | NFTRequestPayload
-  | SignMessageRequestPayload;
+  | GetNetworkRequest
+  | GetNFTRequest
+  | WebsiteRequest
+  | SendPaymentRequest
+  | SendPaymentRequestDeprecated
+  | SetTrustlineRequest
+  | SetTrustlineRequestDeprecated
+  | SignMessageRequest;
 
 /*
  * Response Payloads
  */
-export interface NetworkResponsePayload {
+export interface GetNetworkResponse {
+  result: { network: Network } | undefined;
+}
+
+export interface GetNetworkResponseDeprecated {
   network: Network | undefined;
 }
 
-export interface AddressResponsePayload {
+export interface GetAddressResponse {
+  result: { address: string } | null | undefined;
+}
+
+export interface GetAddressResponseDeprecated {
   publicAddress: string | null | undefined;
 }
 
-export interface PublicKeyResponsePayload {
+export interface GetPublicKeyResponse {
+  result: { address: string; publicKey: string } | null | undefined;
+}
+
+export interface GetPublicKeyResponseDeprecated {
   address: string | null | undefined;
   publicKey: string | null | undefined;
 }
 
-export interface SignedMessageResponsePayload {
+export interface SignMessageResponse {
+  result: { signedMessage: string } | null | undefined;
+}
+
+export interface SignMessageResponseDeprecated {
   signedMessage: string | null | undefined;
 }
 
-export interface IsConnectedResponsePayload {
-  isConnected: boolean;
+export interface IsConnectedResponse {
+  result: { isConnected: boolean };
 }
 
-export interface PaymentHashResponsePayload {
+export interface SendPaymentResponse {
+  result: { hash: string } | null | undefined;
+}
+
+export interface SendPaymentResponseDeprecated {
   hash: string | null | undefined;
 }
 
-export interface TrustlineHashResponsePayload {
+export interface SetTrustlineResponse {
+  result: { hash: string } | null | undefined;
+}
+
+export interface SetTrustlineResponseDeprecated {
   hash: string | null | undefined;
 }
 
-export interface GetNFTResponsePayload {
-  nfts:
-    | {
-        account_nfts: AccountNFToken[];
-        marker?: unknown;
-      }
-    | null
-    | undefined;
+export interface GetNFTResponse {
+  result: { account_nfts: AccountNFToken[]; marker?: unknown } | null | undefined;
 }
 
-export interface GetNFTResponsePayloadDeprecated {
+export interface GetNFTResponseDeprecated {
   nfts: AccountNFToken[] | null | undefined;
 }
 
 export type ResponsePayload =
-  | AddressResponsePayload
-  | GetNFTResponsePayload
-  | GetNFTResponsePayloadDeprecated
-  | IsConnectedResponsePayload
-  | NetworkResponsePayload
-  | PaymentHashResponsePayload
-  | PublicKeyResponsePayload
-  | SignedMessageResponsePayload
-  | TrustlineHashResponsePayload;
+  | GetAddressResponse
+  | GetAddressResponseDeprecated
+  | GetNFTResponse
+  | GetNFTResponseDeprecated
+  | IsConnectedResponse
+  | GetNetworkResponse
+  | GetNetworkResponseDeprecated
+  | GetPublicKeyResponse
+  | GetPublicKeyResponseDeprecated
+  | SendPaymentResponse
+  | SendPaymentResponseDeprecated
+  | SetTrustlineResponse
+  | SetTrustlineResponseDeprecated
+  | SignMessageResponse
+  | SignMessageResponseDeprecated;

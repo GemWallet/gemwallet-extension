@@ -2,7 +2,11 @@ import { FC, useCallback, useMemo } from 'react';
 
 import * as Sentry from '@sentry/react';
 
-import { GEM_WALLET, ReceiveAddressBackgroundMessage } from '@gemwallet/constants';
+import {
+  GEM_WALLET,
+  ReceiveGetAddressBackgroundMessage,
+  ReceiveGetAddressBackgroundMessageDeprecated
+} from '@gemwallet/constants';
 
 import { useBrowser, useWallet } from '../../../contexts';
 import { saveTrustedApp, Permission } from '../../../utils';
@@ -23,49 +27,68 @@ export const ShareAddress: FC = () => {
     };
   }, []);
 
-  const { id, url } = payload;
+  const receivingMessage = useMemo(() => {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    return urlParams.get('requestMessage') === 'REQUEST_GET_ADDRESS/V3'
+      ? 'RECEIVE_GET_ADDRESS/V3'
+      : 'RECEIVE_ADDRESS';
+  }, []);
 
-  const handleReject = useCallback(() => {
-    chrome.runtime
-      .sendMessage<ReceiveAddressBackgroundMessage>({
+  const { id, url } = payload;
+  const handleSendMessage = useCallback(
+    (messagePayload: { publicAddress: string | null | undefined }) => {
+      let message:
+        | ReceiveGetAddressBackgroundMessage
+        | ReceiveGetAddressBackgroundMessageDeprecated = {
         app: GEM_WALLET,
         type: 'RECEIVE_ADDRESS',
         payload: {
           id,
-          publicAddress: null
+          publicAddress: messagePayload.publicAddress
         }
-      })
-      .then(() => {
-        if (extensionWindow?.id) {
-          closeExtension({ windowId: Number(extensionWindow.id) });
-        }
-      })
-      .catch((e) => {
-        Sentry.captureException(e);
-      });
-  }, [closeExtension, extensionWindow?.id, id]);
+      };
+
+      if (receivingMessage === 'RECEIVE_GET_ADDRESS/V3') {
+        message = {
+          app: GEM_WALLET,
+          type: receivingMessage,
+          payload: {
+            id,
+            result: messagePayload.publicAddress
+              ? {
+                  address: messagePayload.publicAddress
+                }
+              : messagePayload.publicAddress === null
+              ? null
+              : undefined
+          }
+        };
+      }
+
+      chrome.runtime
+        .sendMessage(message)
+        .then(() => {
+          if (extensionWindow?.id) {
+            closeExtension({ windowId: Number(extensionWindow.id) });
+          }
+        })
+        .catch((e) => {
+          Sentry.captureException(e);
+        });
+    },
+    [closeExtension, extensionWindow?.id, id, receivingMessage]
+  );
+
+  const handleReject = useCallback(() => {
+    handleSendMessage({ publicAddress: null });
+  }, [handleSendMessage]);
 
   const handleShare = useCallback(() => {
     saveTrustedApp({ url: String(url), permissions }, selectedWallet);
     const currentWallet = getCurrentWallet();
-    chrome.runtime
-      .sendMessage<ReceiveAddressBackgroundMessage>({
-        app: GEM_WALLET,
-        type: 'RECEIVE_ADDRESS',
-        payload: {
-          id,
-          publicAddress: currentWallet?.publicAddress
-        }
-      })
-      .then(() => {
-        if (extensionWindow?.id) {
-          closeExtension({ windowId: Number(extensionWindow.id) });
-        }
-      })
-      .catch((e) => {
-        Sentry.captureException(e);
-      });
-  }, [closeExtension, extensionWindow?.id, getCurrentWallet, id, selectedWallet, url]);
+    handleSendMessage({ publicAddress: currentWallet?.publicAddress });
+  }, [getCurrentWallet, handleSendMessage, selectedWallet, url]);
 
   return (
     <SharingPage

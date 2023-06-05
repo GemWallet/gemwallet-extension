@@ -58,7 +58,7 @@ export const ShareNFT: FC = () => {
           type: receivingMessage,
           payload: {
             id,
-            nfts: !!messagePayload
+            result: !!messagePayload
               ? {
                   account_nfts: messagePayload.nfts,
                   marker: messagePayload.marker
@@ -69,7 +69,7 @@ export const ShareNFT: FC = () => {
       }
 
       chrome.runtime
-        .sendMessage<ReceiveGetNFTBackgroundMessageDeprecated | ReceiveGetNFTBackgroundMessage>(
+        .sendMessage<ReceiveGetNFTBackgroundMessage | ReceiveGetNFTBackgroundMessageDeprecated>(
           message
         )
         .then(() => {

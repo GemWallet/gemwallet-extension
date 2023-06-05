@@ -2,7 +2,11 @@ import { FC, useCallback, useMemo } from 'react';
 
 import * as Sentry from '@sentry/react';
 
-import { GEM_WALLET, ReceivePublicKeyBackgroundMessage } from '@gemwallet/constants';
+import {
+  GEM_WALLET,
+  ReceivePublicKeyBackgroundMessage,
+  ReceivePublicKeyBackgroundMessageDeprecated
+} from '@gemwallet/constants';
 
 import { useBrowser, useWallet } from '../../../contexts';
 import { saveTrustedApp, Permission } from '../../../utils';
@@ -23,51 +27,77 @@ export const SharePublicKey: FC = () => {
     };
   }, []);
 
+  const receivingMessage = useMemo(() => {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    return urlParams.get('requestMessage') === 'REQUEST_GET_PUBLIC_KEY/V3'
+      ? 'RECEIVE_GET_PUBLIC_KEY/V3'
+      : 'RECEIVE_PUBLIC_KEY';
+  }, []);
+
   const { id, url } = payload;
+  const handleSendMessage = useCallback(
+    (messagePayload: {
+      address: string | null | undefined;
+      publicKey: string | null | undefined;
+    }) => {
+      let message: ReceivePublicKeyBackgroundMessage | ReceivePublicKeyBackgroundMessageDeprecated =
+        {
+          app: GEM_WALLET,
+          type: 'RECEIVE_PUBLIC_KEY',
+          payload: {
+            id,
+            address: messagePayload.address,
+            publicKey: messagePayload.publicKey
+          }
+        };
+
+      if (receivingMessage === 'RECEIVE_GET_PUBLIC_KEY/V3') {
+        message = {
+          app: GEM_WALLET,
+          type: receivingMessage,
+          payload: {
+            id,
+            result:
+              messagePayload.address && messagePayload.publicKey
+                ? {
+                    address: messagePayload.address,
+                    publicKey: messagePayload.publicKey
+                  }
+                : messagePayload.address === null
+                ? null
+                : undefined
+          }
+        };
+      }
+
+      chrome.runtime
+        .sendMessage<
+          ReceivePublicKeyBackgroundMessage | ReceivePublicKeyBackgroundMessageDeprecated
+        >(message)
+        .then(() => {
+          if (extensionWindow?.id) {
+            closeExtension({ windowId: Number(extensionWindow.id) });
+          }
+        })
+        .catch((e) => {
+          Sentry.captureException(e);
+        });
+    },
+    [closeExtension, extensionWindow?.id, id, receivingMessage]
+  );
 
   const handleReject = useCallback(() => {
-    chrome.runtime
-      .sendMessage<ReceivePublicKeyBackgroundMessage>({
-        app: GEM_WALLET,
-        type: 'RECEIVE_PUBLIC_KEY',
-        payload: {
-          id,
-          address: null,
-          publicKey: null
-        }
-      })
-      .then(() => {
-        if (extensionWindow?.id) {
-          closeExtension({ windowId: Number(extensionWindow.id) });
-        }
-      })
-      .catch((e) => {
-        Sentry.captureException(e);
-      });
-  }, [closeExtension, extensionWindow?.id, id]);
+    handleSendMessage({ address: null, publicKey: null });
+  }, [handleSendMessage]);
 
   const handleShare = useCallback(() => {
     saveTrustedApp({ url: String(url), permissions }, selectedWallet);
-    const currentWallet = getCurrentWallet();
-    chrome.runtime
-      .sendMessage<ReceivePublicKeyBackgroundMessage>({
-        app: GEM_WALLET,
-        type: 'RECEIVE_PUBLIC_KEY',
-        payload: {
-          id,
-          address: currentWallet?.publicAddress,
-          publicKey: currentWallet?.wallet.publicKey
-        }
-      })
-      .then(() => {
-        if (extensionWindow?.id) {
-          closeExtension({ windowId: Number(extensionWindow.id) });
-        }
-      })
-      .catch((e) => {
-        Sentry.captureException(e);
-      });
-  }, [closeExtension, extensionWindow?.id, getCurrentWallet, id, selectedWallet, url]);
+    handleSendMessage({
+      address: getCurrentWallet()?.publicAddress,
+      publicKey: getCurrentWallet()?.wallet.publicKey
+    });
+  }, [url, selectedWallet, handleSendMessage, getCurrentWallet]);
 
   return (
     <SharingPage

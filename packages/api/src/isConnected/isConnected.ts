@@ -2,42 +2,42 @@ import { GEM_WALLET, IsConnectedResponse, RequestIsConnectedMessage } from '@gem
 
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
 
-export const isConnected = (): Promise<boolean> => {
+export const isConnected = (): Promise<IsConnectedResponse> => {
   if (window.gemWallet) {
-    return new Promise((resolve) => resolve(true));
+    return Promise.resolve({ result: { isConnected: true } });
   } else {
     // If no answer from the extension after 1 second, then return false
     let timeoutId: NodeJS.Timeout;
-    const abortConnection = new Promise<boolean>((resolve) => {
+    const abortConnection = new Promise<IsConnectedResponse>((resolve) => {
       timeoutId = setTimeout(() => {
-        resolve(false);
+        resolve({ result: { isConnected: false } });
       }, 1000);
     });
 
     // Trying to connect to the extension
-    const connectionToExtension = new Promise<boolean>(async (resolve) => {
+    const connectionToExtension = new Promise<IsConnectedResponse>(async (resolve) => {
       try {
         const message: RequestIsConnectedMessage = {
           app: GEM_WALLET,
           type: 'REQUEST_CONNECTION'
         };
-        const response: IsConnectedResponse = await sendMessageToContentScript(message);
-        resolve(response.isConnected || false);
+        const response = await sendMessageToContentScript(message);
+        resolve({ result: { isConnected: response.isConnected || false } });
       } catch (e) {
-        resolve(false);
+        resolve({ result: { isConnected: false } });
       }
     });
 
     return Promise.race([abortConnection, connectionToExtension])
       .then((res) => {
         clearTimeout(timeoutId);
-        if (res === true) {
+        if (res.result.isConnected === true) {
           window.gemWallet = true;
         }
-        return res;
+        return { result: { isConnected: res.result.isConnected } };
       })
-      .catch((e) => {
-        return false;
+      .catch(() => {
+        return { result: { isConnected: false } };
       });
   }
 };

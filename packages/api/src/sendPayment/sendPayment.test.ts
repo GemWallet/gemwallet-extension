@@ -1,4 +1,4 @@
-import { PaymentRequestPayload, RequestPaymentMessage } from '@gemwallet/constants';
+import { SendPaymentRequest, RequestSendPaymentMessage } from '@gemwallet/constants';
 
 import { sendPayment } from './sendPayment';
 
@@ -6,22 +6,28 @@ const hash = '7CB690AE100B8294C13A2E925B7524B68FA14146382A68820BAEC6907D5267D7';
 
 const errorThrownFromContentScript = 'errorThrownFromContentScript';
 
-const payload: PaymentRequestPayload = {
+const payload: SendPaymentRequest = {
   amount: '10',
   destination: 'rNvFCZXpDtGeQ3bVas95wGLN6N2stGmA9o'
 };
 
 jest.mock('../helpers/extensionMessaging', () => ({
-  sendMessageToContentScript: async (message: RequestPaymentMessage) => {
+  sendMessageToContentScript: async (message: RequestSendPaymentMessage) => {
     // Mock returning an error if payload destination = error
     if (message.payload.destination === 'refused') {
-      return { hash: null };
+      return {
+        result: null
+      };
     }
     // Mock throwing an error if payload destination = errorThrow
     if (message.payload.destination === 'errorThrow') {
       throw new Error(errorThrownFromContentScript);
     }
-    return { hash };
+    return {
+      result: {
+        hash
+      }
+    };
   }
 }));
 
@@ -32,7 +38,11 @@ describe('sendPayment api', () => {
     await sendPayment(payload).then((res) => {
       response = res;
     });
-    expect(response).toEqual(hash);
+    expect(response).toEqual({
+      result: {
+        hash
+      }
+    });
   });
 
   test('should return an null if the user refused the payment', async () => {
@@ -42,7 +52,7 @@ describe('sendPayment api', () => {
     await sendPayment(payload).then((res) => {
       response = res;
     });
-    expect(response).toEqual(null);
+    expect(response).toEqual({ result: null });
   });
 
   test('should return an undefined if sendMessageToContentScript failed', async () => {

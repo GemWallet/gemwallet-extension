@@ -4,37 +4,53 @@ import {
   GEM_WALLET,
   GetNFTEventListener,
   GetNFTEventListenerDeprecated,
-  NetworkResponse,
-  NFTResponse,
+  NetworkMessagingResponse,
+  NFTMessagingResponse,
   PaymentEventListener,
   PaymentEventListenerDeprecated,
-  PaymentResponse,
-  PublicAddressResponse,
+  PublicAddressMessagingResponse,
   PublicKeyEventListener,
-  PublicKeyResponse,
-  ReceiveAddressContentMessage,
+  PublicKeyMessagingResponse,
+  ReceiveGetAddressContentMessage,
   ReceiveGetNFTContentMessage,
   ReceiveGetNFTContentMessageDeprecated,
-  ReceiveNetworkContentMessage,
-  ReceivePaymentHashContentMessage,
-  ReceivePublicKeyContentMessage,
+  ReceiveGetNetworkContentMessage,
+  ReceiveGetPublicKeyContentMessage,
+  ReceiveSendPaymentContentMessage,
+  ReceiveSendPaymentContentMessageDeprecated,
+  ReceiveSetTrustlineContentMessage,
+  ReceiveSetTrustlineContentMessageDeprecated,
   ReceiveSignMessageContentMessage,
-  ReceiveTrustlineHashContentMessage,
-  RequestAddressMessage,
+  RequestGetAddressMessage,
+  RequestGetAddressMessageDeprecated,
   RequestGetNFTMessage,
   RequestGetNFTMessageDeprecated,
-  RequestNetworkMessage,
-  RequestPaymentMessage,
-  RequestPaymentMessageDeprecated,
-  RequestPublicKeyMessage,
+  RequestGetNetworkMessage,
+  RequestGetNetworkMessageDeprecated,
+  RequestSendPaymentMessage,
+  RequestSendPaymentMessageDeprecated,
+  RequestGetPublicKeyMessage,
   RequestSignMessageMessage,
   RequestSetTrustlineMessage,
   RequestSetTrustlineMessageDeprecated,
+  SendPaymentMessagingResponse,
+  SendPaymentMessagingResponseDeprecated,
   SetTrustlineEventListener,
   SetTrustlineEventListenerDeprecated,
-  SignedMessageResponse,
+  SetTrustlineMessagingResponse,
+  SetTrustlineMessagingResponseDeprecated,
   SignMessageListener,
-  TrustlineResponse
+  SignMessageMessagingResponse,
+  SignMessageMessagingResponseDeprecated,
+  ReceiveGetNetworkContentMessageDeprecated,
+  NetworkMessagingResponseDeprecated,
+  PublicAddressMessagingResponseDeprecated,
+  ReceiveGetAddressContentMessageDeprecated,
+  RequestGetPublicKeyMessageDeprecated,
+  ReceiveGetPublicKeyContentMessageDeprecated,
+  PublicKeyMessagingResponseDeprecated,
+  RequestSignMessageMessageDeprecated,
+  ReceiveSignMessageContentMessageDeprecated
 } from '@gemwallet/constants';
 
 /**
@@ -55,15 +71,46 @@ setTimeout(() => {
         data: { app, type }
       } = event;
       // Check if it's an allowed event type to be forwarded
-      if (type === 'REQUEST_NETWORK') {
-        chrome.runtime.sendMessage<RequestNetworkMessage>(
+      if (type === 'REQUEST_GET_NETWORK/V3') {
+        chrome.runtime.sendMessage<RequestGetNetworkMessage>(
           {
             app,
             type
           },
           () => {
             const messageListener = (
-              message: ReceiveNetworkContentMessage,
+              message: ReceiveGetNetworkContentMessage,
+              sender: chrome.runtime.MessageSender
+            ) => {
+              const { app, type, payload } = message;
+              // We make sure that the message comes from GemWallet
+              if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
+                if (type === 'RECEIVE_GET_NETWORK/V3') {
+                  window.postMessage(
+                    {
+                      source: 'GEM_WALLET_MSG_RESPONSE',
+                      messagedId,
+                      result: payload.result
+                    } as NetworkMessagingResponse,
+                    window.location.origin
+                  );
+                  chrome.runtime.onMessage.removeListener(messageListener);
+                }
+              }
+            };
+            chrome.runtime.onMessage.addListener(messageListener);
+          }
+        );
+      } else if (type === 'REQUEST_NETWORK') {
+        // REQUEST_NETWORK is deprecated since v3
+        chrome.runtime.sendMessage<RequestGetNetworkMessageDeprecated>(
+          {
+            app,
+            type
+          },
+          () => {
+            const messageListener = (
+              message: ReceiveGetNetworkContentMessageDeprecated,
               sender: chrome.runtime.MessageSender
             ) => {
               const { app, type, payload } = message;
@@ -75,7 +122,41 @@ setTimeout(() => {
                       source: 'GEM_WALLET_MSG_RESPONSE',
                       messagedId,
                       network: payload.network
-                    } as NetworkResponse,
+                    } as NetworkMessagingResponseDeprecated,
+                    window.location.origin
+                  );
+                  chrome.runtime.onMessage.removeListener(messageListener);
+                }
+              }
+            };
+            chrome.runtime.onMessage.addListener(messageListener);
+          }
+        );
+      } else if (type === 'REQUEST_GET_ADDRESS/V3') {
+        const {
+          data: { payload }
+        } = event as AddressEventListener;
+        chrome.runtime.sendMessage<RequestGetAddressMessage>(
+          {
+            app,
+            type,
+            payload
+          },
+          () => {
+            const messageListener = (
+              message: ReceiveGetAddressContentMessage,
+              sender: chrome.runtime.MessageSender
+            ) => {
+              const { app, type, payload } = message;
+              // We make sure that the message comes from GemWallet
+              if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
+                if (type === 'RECEIVE_GET_ADDRESS/V3') {
+                  window.postMessage(
+                    {
+                      source: 'GEM_WALLET_MSG_RESPONSE',
+                      messagedId,
+                      result: payload.result
+                    } as PublicAddressMessagingResponse,
                     window.location.origin
                   );
                   chrome.runtime.onMessage.removeListener(messageListener);
@@ -86,10 +167,11 @@ setTimeout(() => {
           }
         );
       } else if (type === 'REQUEST_ADDRESS') {
+        // REQUEST_ADDRESS is deprecated since v3
         const {
           data: { payload }
         } = event as AddressEventListener;
-        chrome.runtime.sendMessage<RequestAddressMessage>(
+        chrome.runtime.sendMessage<RequestGetAddressMessageDeprecated>(
           {
             app,
             type,
@@ -97,7 +179,7 @@ setTimeout(() => {
           },
           () => {
             const messageListener = (
-              message: ReceiveAddressContentMessage,
+              message: ReceiveGetAddressContentMessageDeprecated,
               sender: chrome.runtime.MessageSender
             ) => {
               const { app, type, payload } = message;
@@ -109,7 +191,41 @@ setTimeout(() => {
                       source: 'GEM_WALLET_MSG_RESPONSE',
                       messagedId,
                       publicAddress: payload.publicAddress
-                    } as PublicAddressResponse,
+                    } as PublicAddressMessagingResponseDeprecated,
+                    window.location.origin
+                  );
+                  chrome.runtime.onMessage.removeListener(messageListener);
+                }
+              }
+            };
+            chrome.runtime.onMessage.addListener(messageListener);
+          }
+        );
+      } else if (type === 'REQUEST_GET_PUBLIC_KEY/V3') {
+        const {
+          data: { payload }
+        } = event as PublicKeyEventListener;
+        chrome.runtime.sendMessage<RequestGetPublicKeyMessage>(
+          {
+            app,
+            type,
+            payload
+          },
+          () => {
+            const messageListener = (
+              message: ReceiveGetPublicKeyContentMessage,
+              sender: chrome.runtime.MessageSender
+            ) => {
+              const { app, type, payload } = message;
+              // We make sure that the message comes from GemWallet
+              if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
+                if (type === 'RECEIVE_GET_PUBLIC_KEY/V3') {
+                  window.postMessage(
+                    {
+                      source: 'GEM_WALLET_MSG_RESPONSE',
+                      messagedId,
+                      result: payload.result
+                    } as PublicKeyMessagingResponse,
                     window.location.origin
                   );
                   chrome.runtime.onMessage.removeListener(messageListener);
@@ -120,10 +236,11 @@ setTimeout(() => {
           }
         );
       } else if (type === 'REQUEST_PUBLIC_KEY') {
+        // REQUEST_PUBLIC_KEY is deprecated since v3
         const {
           data: { payload }
         } = event as PublicKeyEventListener;
-        chrome.runtime.sendMessage<RequestPublicKeyMessage>(
+        chrome.runtime.sendMessage<RequestGetPublicKeyMessageDeprecated>(
           {
             app,
             type,
@@ -131,7 +248,7 @@ setTimeout(() => {
           },
           () => {
             const messageListener = (
-              message: ReceivePublicKeyContentMessage,
+              message: ReceiveGetPublicKeyContentMessageDeprecated,
               sender: chrome.runtime.MessageSender
             ) => {
               const { app, type, payload } = message;
@@ -144,7 +261,7 @@ setTimeout(() => {
                       messagedId,
                       address: payload.address,
                       publicKey: payload.publicKey
-                    } as PublicKeyResponse,
+                    } as PublicKeyMessagingResponseDeprecated,
                     window.location.origin
                   );
                   chrome.runtime.onMessage.removeListener(messageListener);
@@ -177,8 +294,8 @@ setTimeout(() => {
                     {
                       source: 'GEM_WALLET_MSG_RESPONSE',
                       messagedId,
-                      nfts: payload.nfts
-                    } as NFTResponse,
+                      result: payload.result
+                    } as NFTMessagingResponse,
                     window.location.origin
                   );
                   chrome.runtime.onMessage.removeListener(messageListener);
@@ -213,7 +330,7 @@ setTimeout(() => {
                       source: 'GEM_WALLET_MSG_RESPONSE',
                       messagedId,
                       nfts: payload.nfts
-                    } as NFTResponse,
+                    } as NFTMessagingResponse,
                     window.location.origin
                   );
                   chrome.runtime.onMessage.removeListener(messageListener);
@@ -227,7 +344,7 @@ setTimeout(() => {
         const {
           data: { payload }
         } = event as PaymentEventListener;
-        chrome.runtime.sendMessage<RequestPaymentMessage>(
+        chrome.runtime.sendMessage<RequestSendPaymentMessage>(
           {
             app,
             type,
@@ -235,16 +352,20 @@ setTimeout(() => {
           },
           () => {
             const messageListener = (
-              message: ReceivePaymentHashContentMessage,
+              message: ReceiveSendPaymentContentMessage,
               sender: chrome.runtime.MessageSender
             ) => {
               const { app, type, payload } = message;
               // We make sure that the message comes from GemWallet
               if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
-                if (type === 'RECEIVE_PAYMENT_HASH') {
-                  const { hash } = payload;
+                if (type === 'RECEIVE_SEND_PAYMENT/V3') {
+                  const { result } = payload;
                   window.postMessage(
-                    { source: 'GEM_WALLET_MSG_RESPONSE', messagedId, hash } as PaymentResponse,
+                    {
+                      source: 'GEM_WALLET_MSG_RESPONSE',
+                      messagedId,
+                      result
+                    } as SendPaymentMessagingResponse,
                     window.location.origin
                   );
                   chrome.runtime.onMessage.removeListener(messageListener);
@@ -255,10 +376,11 @@ setTimeout(() => {
           }
         );
       } else if (type === 'SEND_PAYMENT') {
+        // SEND_PAYMENT is deprecated since v3
         const {
           data: { payload }
         } = event as PaymentEventListenerDeprecated;
-        chrome.runtime.sendMessage<RequestPaymentMessageDeprecated>(
+        chrome.runtime.sendMessage<RequestSendPaymentMessageDeprecated>(
           {
             app,
             type,
@@ -266,7 +388,7 @@ setTimeout(() => {
           },
           () => {
             const messageListener = (
-              message: ReceivePaymentHashContentMessage,
+              message: ReceiveSendPaymentContentMessageDeprecated,
               sender: chrome.runtime.MessageSender
             ) => {
               const { app, type, payload } = message;
@@ -275,7 +397,11 @@ setTimeout(() => {
                 if (type === 'RECEIVE_PAYMENT_HASH') {
                   const { hash } = payload;
                   window.postMessage(
-                    { source: 'GEM_WALLET_MSG_RESPONSE', messagedId, hash } as PaymentResponse,
+                    {
+                      source: 'GEM_WALLET_MSG_RESPONSE',
+                      messagedId,
+                      hash
+                    } as SendPaymentMessagingResponseDeprecated,
                     window.location.origin
                   );
                   chrome.runtime.onMessage.removeListener(messageListener);
@@ -297,16 +423,20 @@ setTimeout(() => {
           },
           () => {
             const messageListener = (
-              message: ReceiveTrustlineHashContentMessage,
+              message: ReceiveSetTrustlineContentMessage,
               sender: chrome.runtime.MessageSender
             ) => {
               const { app, type, payload } = message;
               // We make sure that the message comes from GemWallet
               if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
-                if (type === 'RECEIVE_TRUSTLINE_HASH') {
-                  const { hash } = payload;
+                if (type === 'RECEIVE_SET_TRUSTLINE/V3') {
+                  const { result } = payload;
                   window.postMessage(
-                    { source: 'GEM_WALLET_MSG_RESPONSE', messagedId, hash } as TrustlineResponse,
+                    {
+                      source: 'GEM_WALLET_MSG_RESPONSE',
+                      messagedId,
+                      result
+                    } as SetTrustlineMessagingResponse,
                     window.location.origin
                   );
                   chrome.runtime.onMessage.removeListener(messageListener);
@@ -329,7 +459,7 @@ setTimeout(() => {
           },
           () => {
             const messageListener = (
-              message: ReceiveTrustlineHashContentMessage,
+              message: ReceiveSetTrustlineContentMessageDeprecated,
               sender: chrome.runtime.MessageSender
             ) => {
               const { app, type, payload } = message;
@@ -338,7 +468,11 @@ setTimeout(() => {
                 if (type === 'RECEIVE_TRUSTLINE_HASH') {
                   const { hash } = payload;
                   window.postMessage(
-                    { source: 'GEM_WALLET_MSG_RESPONSE', messagedId, hash } as TrustlineResponse,
+                    {
+                      source: 'GEM_WALLET_MSG_RESPONSE',
+                      messagedId,
+                      hash
+                    } as SetTrustlineMessagingResponseDeprecated,
                     window.location.origin
                   );
                   chrome.runtime.onMessage.removeListener(messageListener);
@@ -348,7 +482,7 @@ setTimeout(() => {
             chrome.runtime.onMessage.addListener(messageListener);
           }
         );
-      } else if (type === 'REQUEST_SIGN_MESSAGE') {
+      } else if (type === 'REQUEST_SIGN_MESSAGE/V3') {
         const {
           data: { payload }
         } = event as SignMessageListener;
@@ -366,13 +500,48 @@ setTimeout(() => {
               const { app, type, payload } = message;
               // We make sure that the message comes from GemWallet
               if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
+                if (type === 'RECEIVE_SIGN_MESSAGE/V3') {
+                  window.postMessage(
+                    {
+                      source: 'GEM_WALLET_MSG_RESPONSE',
+                      messagedId,
+                      result: payload.result
+                    } as SignMessageMessagingResponse,
+                    window.location.origin
+                  );
+                  chrome.runtime.onMessage.removeListener(messageListener);
+                }
+              }
+            };
+            chrome.runtime.onMessage.addListener(messageListener);
+          }
+        );
+      } else if (type === 'REQUEST_SIGN_MESSAGE') {
+        // REQUEST_SIGN_MESSAGE is deprecated since v3
+        const {
+          data: { payload }
+        } = event as SignMessageListener;
+        chrome.runtime.sendMessage<RequestSignMessageMessageDeprecated>(
+          {
+            app,
+            type,
+            payload
+          },
+          () => {
+            const messageListener = (
+              message: ReceiveSignMessageContentMessageDeprecated,
+              sender: chrome.runtime.MessageSender
+            ) => {
+              const { app, type, payload } = message;
+              // We make sure that the message comes from GemWallet
+              if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
                 if (type === 'RECEIVE_SIGN_MESSAGE') {
                   window.postMessage(
                     {
                       source: 'GEM_WALLET_MSG_RESPONSE',
                       messagedId,
                       signedMessage: payload.signedMessage
-                    } as SignedMessageResponse,
+                    } as SignMessageMessagingResponseDeprecated,
                     window.location.origin
                   );
                   chrome.runtime.onMessage.removeListener(messageListener);

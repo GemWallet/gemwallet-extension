@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://unpkg.com/@gemwallet/api@2.2.1/umd/gemwallet-api.js"></script>
     <title>GemWallet API</title>
   </head>
 
@@ -33,16 +34,18 @@
     }
 
     // If the currency or issuer is not provided, the amount needs to be in drops
-    return `${value * 1000000}`;
+    return `${value}`;
   }
 
   function handlePayment(currency, issuer) {
     GemWalletApi.isConnected()
-      .then(({ result }) => {
-        if (result.isConnected) {
+      .then((isConnected) => {
+        if (isConnected) {
           const payment = {
-            amount: formatAmount(0.2, currency, issuer),
+            amount: '0.2',
             destination: issuer || 'rNvFCZXpDtGeQ3bVas95wGLN6N2stGmA9o',
+            currency: 'ETH',
+            issuer,
             memos: [
               {
                 memo: {
@@ -78,14 +81,12 @@
   }
   function handleTrustline() {
     GemWalletApi.isConnected()
-      .then(({ result }) => {
-        if (result.isConnected) {
+      .then((isConnected) => {
+        if (isConnected) {
           const transaction = {
-            limitAmount: {
-              currency: 'ETH',
-              issuer: 'rnm76Qgz4G9G4gZBJVuXVvkbt7gVD7szey',
-              value: '10000000'
-            },
+            currency: 'ETH',
+            issuer: 'rnm76Qgz4G9G4gZBJVuXVvkbt7gVD7szey',
+            value: '10',
             memos: [
               {
                 memo: {
@@ -103,7 +104,7 @@
               tfSetfAuth: false
             }
           };
-          GemWalletApi.setTrustline(transaction)
+          GemWalletApi.addTrustline(transaction)
             .then((res) => {
               const addressContainer = document.getElementById('address');
               addressContainer.insertAdjacentText(
@@ -122,8 +123,8 @@
   }
   function handleNFTs() {
     GemWalletApi.isConnected()
-      .then(({ result }) => {
-        if (result.isConnected) {
+      .then((isConnected) => {
+        if (isConnected) {
           const props = {
             limit: 1
           };
@@ -142,8 +143,8 @@
   }
   function handlePublicKey() {
     GemWalletApi.isConnected()
-      .then(({ result }) => {
-        if (result.isConnected) {
+      .then((isConnected) => {
+        if (isConnected) {
           GemWalletApi.getPublicKey()
             .then((pbk) => {
               console.log('Here is your Public Key: ', pbk);
@@ -159,8 +160,8 @@
   }
   function handleGetAddress() {
     GemWalletApi.isConnected()
-      .then(({ result }) => {
-        if (result.isConnected) {
+      .then((isConnected) => {
+        if (isConnected) {
           GemWalletApi.getAddress()
             .then((address) => {
               console.log('Here is your address: ', address);
@@ -175,8 +176,8 @@
       });
   }
   function handleGetNetwork() {
-    GemWalletApi.isConnected().then(({ result }) => {
-      if (result.isConnected) {
+    GemWalletApi.isConnected().then((isConnected) => {
+      if (isConnected) {
         GemWalletApi.getNetwork()
           .then((network) => {
             console.log('Here is your network: ', network);
@@ -189,8 +190,8 @@
   }
   function handleSignMessage() {
     GemWalletApi.isConnected()
-      .then(({ result }) => {
-        if (result.isConnected) {
+      .then((isConnected) => {
+        if (isConnected) {
           const message = 'Hello World!';
           GemWalletApi.signMessage(message)
             .then((signature) => {

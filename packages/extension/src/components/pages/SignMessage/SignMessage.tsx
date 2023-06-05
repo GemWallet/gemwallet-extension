@@ -3,7 +3,11 @@ import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { Container, Typography, Button, Paper, Avatar, Divider } from '@mui/material';
 import * as Sentry from '@sentry/react';
 
-import { GEM_WALLET, ReceiveSignMessageBackgroundMessage } from '@gemwallet/constants';
+import {
+  GEM_WALLET,
+  ReceiveSignMessageBackgroundMessage,
+  ReceiveSignMessageBackgroundMessageDeprecated
+} from '@gemwallet/constants';
 
 import { SECONDARY_GRAY } from '../../../constants';
 import { useBrowser, useLedger } from '../../../contexts';
@@ -43,16 +47,69 @@ export const SignMessage: FC = () => {
     };
   }, []);
 
+  const receivingMessage = useMemo(() => {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    return urlParams.get('requestMessage') === 'REQUEST_SIGN_MESSAGE/V3'
+      ? 'RECEIVE_SIGN_MESSAGE/V3'
+      : 'RECEIVE_SIGN_MESSAGE';
+  }, []);
+
   const { id, url, title, favicon, message } = payload;
+  const handleSendMessage = useCallback(
+    (messagePayload: { signedMessage: string | null | undefined }) => {
+      let message:
+        | ReceiveSignMessageBackgroundMessage
+        | ReceiveSignMessageBackgroundMessageDeprecated = {
+        app: GEM_WALLET,
+        type: 'RECEIVE_SIGN_MESSAGE',
+        payload: {
+          id,
+          signedMessage: messagePayload.signedMessage
+        }
+      };
+
+      if (receivingMessage === 'RECEIVE_SIGN_MESSAGE/V3') {
+        message = {
+          app: GEM_WALLET,
+          type: receivingMessage,
+          payload: {
+            id,
+            result: messagePayload.signedMessage
+              ? {
+                  signedMessage: messagePayload.signedMessage
+                }
+              : messagePayload.signedMessage === null
+              ? null
+              : undefined
+          }
+        };
+      }
+
+      chrome.runtime
+        .sendMessage<
+          ReceiveSignMessageBackgroundMessage | ReceiveSignMessageBackgroundMessageDeprecated
+        >(message)
+        .then(() => {
+          if (extensionWindow?.id) {
+            closeExtension({ windowId: Number(extensionWindow.id) });
+          }
+        })
+        .catch((e) => {
+          Sentry.captureException(e);
+        });
+    },
+    [closeExtension, extensionWindow?.id, id, receivingMessage]
+  );
 
   const handleReject = useCallback(() => {
     chrome.runtime
       .sendMessage<ReceiveSignMessageBackgroundMessage>({
         app: GEM_WALLET,
-        type: 'RECEIVE_SIGN_MESSAGE',
+        type: 'RECEIVE_SIGN_MESSAGE/V3',
         payload: {
           id,
-          signedMessage: null
+          result: null
         }
       })
       .then(() => {
@@ -67,24 +124,8 @@ export const SignMessage: FC = () => {
 
   const handleSign = useCallback(() => {
     const signature = signMessage(message);
-    chrome.runtime
-      .sendMessage<ReceiveSignMessageBackgroundMessage>({
-        app: GEM_WALLET,
-        type: 'RECEIVE_SIGN_MESSAGE',
-        payload: {
-          id,
-          signedMessage: signature
-        }
-      })
-      .then(() => {
-        if (extensionWindow?.id) {
-          closeExtension({ windowId: Number(extensionWindow.id) });
-        }
-      })
-      .catch((e) => {
-        Sentry.captureException(e);
-      });
-  }, [closeExtension, extensionWindow?.id, id, message, signMessage]);
+    handleSendMessage({ signedMessage: signature });
+  }, [handleSendMessage, message, signMessage]);
 
   if (isParamsMissing) {
     return (

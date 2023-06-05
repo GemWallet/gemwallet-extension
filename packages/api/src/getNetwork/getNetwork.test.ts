@@ -9,12 +9,12 @@ jest.mock('../helpers/extensionMessaging', () => ({
 
 describe('getNetwork', () => {
   it('should return network response when called', async () => {
-    (sendMessageToContentScript as jest.Mock).mockResolvedValue({ network: 'testnet' });
+    (sendMessageToContentScript as jest.Mock).mockResolvedValue({ result: { network: 'testnet' } });
     const network = await getNetwork();
-    expect(network).toEqual('testnet');
+    expect(network).toEqual({ result: { network: 'testnet' } });
     expect(sendMessageToContentScript).toHaveBeenCalledWith({
       app: GEM_WALLET,
-      type: 'REQUEST_NETWORK'
+      type: 'REQUEST_GET_NETWORK/V3'
     });
   });
 
