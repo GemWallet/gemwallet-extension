@@ -232,8 +232,7 @@ export const Transaction: FC = () => {
         >(message);
       })
       .catch((e) => {
-        const UIError = toUIError(e);
-        setErrorRequestRejection(UIError.message);
+        setErrorRequestRejection(toUIError(e).message);
         setTransaction(TransactionStatus.Rejected);
         const message = createMessage({ transactionHash: undefined, error: e });
         chrome.runtime.sendMessage<
