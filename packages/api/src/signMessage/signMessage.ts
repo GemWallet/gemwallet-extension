@@ -1,14 +1,33 @@
-import { GEM_WALLET, RequestSignMessageMessage, SignMessageResponse } from '@gemwallet/constants';
+import {
+  GEM_WALLET,
+  RequestSignMessageMessage,
+  ResponseType,
+  SignMessageResponse
+} from '@gemwallet/constants';
 
+import { deserializeError } from '../helpers/errors';
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
 import { getFavicon } from '../helpers/getFavicon';
 
 export const signMessage = async (message: string): Promise<SignMessageResponse> => {
-  /* string: signed message
-   * null: user refused to pass the address
-   * undefined: something went wrong
+  /* response:
+   * if the transaction succeeds:
+   * - type: 'response'
+   * - result:
+   *    - signedMessage: signed message
+   *
+   * if the user rejects the transaction:
+   * - type: 'reject'
+   * - result: undefined
+   *
+   * if the transaction fails:
+   * - throw an error
    */
-  let response: SignMessageResponse = { result: undefined };
+  let response: SignMessageResponse = {
+    type: ResponseType.Reject,
+    result: undefined
+  };
+
   try {
     const favicon = getFavicon();
     const messageToContentScript: RequestSignMessageMessage = {
@@ -21,8 +40,16 @@ export const signMessage = async (message: string): Promise<SignMessageResponse>
         message
       }
     };
-    const { result } = await sendMessageToContentScript(messageToContentScript);
-    response.result = result;
+    const { result, error } = await sendMessageToContentScript(messageToContentScript);
+    const parsedError = error ? deserializeError(error) : undefined;
+    if (parsedError) {
+      throw parsedError;
+    }
+
+    if (result) {
+      response.type = ResponseType.Response;
+      response.result = result;
+    }
   } catch (e) {
     throw e;
   }

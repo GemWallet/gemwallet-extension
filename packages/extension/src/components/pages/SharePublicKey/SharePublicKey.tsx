@@ -5,11 +5,13 @@ import * as Sentry from '@sentry/react';
 import {
   GEM_WALLET,
   ReceivePublicKeyBackgroundMessage,
-  ReceivePublicKeyBackgroundMessageDeprecated
+  ReceivePublicKeyBackgroundMessageDeprecated,
+  ResponseType
 } from '@gemwallet/constants';
 
 import { useBrowser, useWallet } from '../../../contexts';
 import { saveTrustedApp, Permission } from '../../../utils';
+import { serializeError } from '../../../utils/errors';
 import { SharingPage } from '../../templates';
 
 const permissions = [Permission.Address, Permission.PublicKey];
@@ -37,9 +39,12 @@ export const SharePublicKey: FC = () => {
 
   const { id, url } = payload;
   const handleSendMessage = useCallback(
-    (messagePayload: {
-      address: string | null | undefined;
-      publicKey: string | null | undefined;
+    ({
+      messagePayload,
+      error
+    }: {
+      messagePayload: { address: string | null | undefined; publicKey: string | null | undefined };
+      error?: Error;
     }) => {
       let message: ReceivePublicKeyBackgroundMessage | ReceivePublicKeyBackgroundMessageDeprecated =
         {
@@ -58,15 +63,15 @@ export const SharePublicKey: FC = () => {
           type: receivingMessage,
           payload: {
             id,
+            type: ResponseType.Response,
             result:
               messagePayload.address && messagePayload.publicKey
                 ? {
                     address: messagePayload.address,
                     publicKey: messagePayload.publicKey
                   }
-                : messagePayload.address === null
-                ? null
-                : undefined
+                : undefined,
+            error: error ? serializeError(error) : undefined
           }
         };
       }
@@ -88,14 +93,16 @@ export const SharePublicKey: FC = () => {
   );
 
   const handleReject = useCallback(() => {
-    handleSendMessage({ address: null, publicKey: null });
+    handleSendMessage({ messagePayload: { address: null, publicKey: null } });
   }, [handleSendMessage]);
 
   const handleShare = useCallback(() => {
     saveTrustedApp({ url: String(url), permissions }, selectedWallet);
     handleSendMessage({
-      address: getCurrentWallet()?.publicAddress,
-      publicKey: getCurrentWallet()?.wallet.publicKey
+      messagePayload: {
+        address: getCurrentWallet()?.publicAddress,
+        publicKey: getCurrentWallet()?.wallet.publicKey
+      }
     });
   }, [url, selectedWallet, handleSendMessage, getCurrentWallet]);
 

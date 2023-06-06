@@ -59,15 +59,19 @@
               tfLimitQuality: false
             }
           };
+          const addressContainer = document.getElementById('address');
           GemWalletApi.sendPayment(payment)
             .then((res) => {
-              const addressContainer = document.getElementById('address');
               addressContainer.insertAdjacentText(
                 'afterbegin',
                 `Received object: ${JSON.stringify(res)}`
               );
             })
             .catch((e) => {
+              addressContainer.insertAdjacentText(
+                'afterbegin',
+                `Received error: ${e.message} ${e.stack} ${e.name}`
+              );
               console.error('Cannot proceed the payment: ', e);
             });
         }

@@ -11,6 +11,7 @@ import { ERROR_RED, HOME_PATH } from '../../../../constants';
 import { useLedger, useWallet } from '../../../../contexts';
 import { TransactionStatus } from '../../../../types';
 import { buildAmount, formatAmount, toXRPLMemos } from '../../../../utils';
+import { toUIError } from '../../../../utils/errors';
 import { fromHexMemos } from '../../../../utils/payment';
 import { TileLoader } from '../../../atoms';
 import { AsyncTransaction, PageWithReturn } from '../../../templates';
@@ -79,7 +80,7 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
         setTransaction(TransactionStatus.Success);
       })
       .catch((e) => {
-        setErrorRequestRejection(e.message);
+        setErrorRequestRejection(toUIError(e).message);
         setTransaction(TransactionStatus.Rejected);
         Sentry.captureException(e);
       });

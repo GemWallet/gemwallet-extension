@@ -17,7 +17,8 @@ import {
   ReceiveSignMessageContentMessage,
   RequestMessage,
   RequestPayload,
-  ResponsePayload
+  ResponsePayload,
+  ResponseType
 } from '@gemwallet/constants';
 
 import {
@@ -131,6 +132,7 @@ chrome.runtime.onMessage.addListener(
         requestMessage: message.type,
         receivingMessage: 'RECEIVE_GET_NETWORK/V3',
         errorPayload: {
+          type: ResponseType.Reject,
           result: undefined
         },
         width: 1,
@@ -159,6 +161,7 @@ chrome.runtime.onMessage.addListener(
         requestMessage: message.type,
         receivingMessage: 'RECEIVE_GET_ADDRESS/V3',
         errorPayload: {
+          type: ResponseType.Reject,
           result: undefined
         }
       });
@@ -181,6 +184,7 @@ chrome.runtime.onMessage.addListener(
         requestMessage: message.type,
         receivingMessage: 'RECEIVE_GET_PUBLIC_KEY/V3',
         errorPayload: {
+          type: ResponseType.Reject,
           result: undefined
         }
       });
@@ -204,6 +208,7 @@ chrome.runtime.onMessage.addListener(
         requestMessage: message.type,
         receivingMessage: 'RECEIVE_GET_NFT/V3',
         errorPayload: {
+          type: ResponseType.Reject,
           result: undefined
         }
       });
@@ -226,6 +231,7 @@ chrome.runtime.onMessage.addListener(
         requestMessage: message.type,
         receivingMessage: 'RECEIVE_SEND_PAYMENT/V3',
         errorPayload: {
+          type: ResponseType.Reject,
           result: undefined
         }
       });
@@ -248,6 +254,7 @@ chrome.runtime.onMessage.addListener(
         requestMessage: message.type,
         receivingMessage: 'RECEIVE_SET_TRUSTLINE/V3',
         errorPayload: {
+          type: ResponseType.Reject,
           result: undefined
         }
       });
@@ -270,6 +277,7 @@ chrome.runtime.onMessage.addListener(
         requestMessage: message.type,
         receivingMessage: 'RECEIVE_SIGN_MESSAGE/V3',
         errorPayload: {
+          type: ResponseType.Reject,
           result: undefined
         }
       });
@@ -290,7 +298,9 @@ chrome.runtime.onMessage.addListener(
         app,
         type: 'RECEIVE_SEND_PAYMENT/V3',
         payload: {
-          result: payload.result
+          type: ResponseType.Response,
+          result: payload.result,
+          error: payload.error
         }
       });
     } else if (type === 'RECEIVE_PAYMENT_HASH') {
@@ -309,7 +319,9 @@ chrome.runtime.onMessage.addListener(
         app,
         type: 'RECEIVE_SET_TRUSTLINE/V3',
         payload: {
-          result: payload.result
+          type: ResponseType.Response,
+          result: payload.result,
+          error: payload.error
         }
       });
     } else if (type === 'RECEIVE_TRUSTLINE_HASH') {
@@ -328,7 +340,9 @@ chrome.runtime.onMessage.addListener(
         app,
         type: 'RECEIVE_GET_ADDRESS/V3',
         payload: {
-          result: payload.result
+          type: ResponseType.Response,
+          result: payload.result,
+          error: payload.error
         }
       });
     } else if (type === 'RECEIVE_ADDRESS') {
@@ -347,7 +361,9 @@ chrome.runtime.onMessage.addListener(
         app,
         type: 'RECEIVE_GET_NETWORK/V3',
         payload: {
-          result: payload.result
+          type: ResponseType.Response,
+          result: payload.result,
+          error: payload.error
         }
       });
     } else if (type === 'RECEIVE_NETWORK') {
@@ -366,7 +382,9 @@ chrome.runtime.onMessage.addListener(
         app,
         type: 'RECEIVE_GET_PUBLIC_KEY/V3',
         payload: {
-          result: payload.result
+          type: ResponseType.Response,
+          result: payload.result,
+          error: payload.error
         }
       });
     } else if (type === 'RECEIVE_PUBLIC_KEY') {
@@ -386,7 +404,9 @@ chrome.runtime.onMessage.addListener(
         app,
         type: 'RECEIVE_GET_NFT/V3',
         payload: {
-          result: payload.result
+          type: ResponseType.Response,
+          result: payload.result,
+          error: payload.error
         }
       });
     } else if (type === 'RECEIVE_NFT') {
@@ -405,7 +425,9 @@ chrome.runtime.onMessage.addListener(
         app,
         type: 'RECEIVE_SIGN_MESSAGE/V3',
         payload: {
-          result: payload.result
+          type: ResponseType.Response,
+          result: payload.result,
+          error: payload.error
         }
       });
     } else if (type === 'RECEIVE_SIGN_MESSAGE') {

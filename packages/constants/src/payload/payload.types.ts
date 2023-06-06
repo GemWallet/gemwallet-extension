@@ -101,34 +101,37 @@ export type RequestPayload =
 /*
  * Response Payloads
  */
-export interface GetNetworkResponse {
-  result: { network: Network } | undefined;
+export const enum ResponseType {
+  Response = 'response',
+  Reject = 'reject'
 }
+
+interface BaseResponse<T> {
+  type: ResponseType;
+  result?: T;
+}
+
+export interface GetNetworkResponse extends BaseResponse<{ network: Network }> {}
 
 export interface GetNetworkResponseDeprecated {
   network: Network | undefined;
 }
 
-export interface GetAddressResponse {
-  result: { address: string } | null | undefined;
-}
+export interface GetAddressResponse extends BaseResponse<{ address: string }> {}
 
 export interface GetAddressResponseDeprecated {
   publicAddress: string | null | undefined;
 }
 
-export interface GetPublicKeyResponse {
-  result: { address: string; publicKey: string } | null | undefined;
-}
+export interface GetPublicKeyResponse
+  extends BaseResponse<{ address: string; publicKey: string }> {}
 
 export interface GetPublicKeyResponseDeprecated {
   address: string | null | undefined;
   publicKey: string | null | undefined;
 }
 
-export interface SignMessageResponse {
-  result: { signedMessage: string } | null | undefined;
-}
+export interface SignMessageResponse extends BaseResponse<{ signedMessage: string }> {}
 
 export interface SignMessageResponseDeprecated {
   signedMessage: string | null | undefined;
@@ -138,25 +141,20 @@ export interface IsConnectedResponse {
   result: { isConnected: boolean };
 }
 
-export interface SendPaymentResponse {
-  result: { hash: string } | null | undefined;
-}
+export interface SendPaymentResponse extends BaseResponse<{ hash: string }> {}
 
 export interface SendPaymentResponseDeprecated {
   hash: string | null | undefined;
 }
 
-export interface SetTrustlineResponse {
-  result: { hash: string } | null | undefined;
-}
+export interface SetTrustlineResponse extends BaseResponse<{ hash: string }> {}
 
 export interface SetTrustlineResponseDeprecated {
   hash: string | null | undefined;
 }
 
-export interface GetNFTResponse {
-  result: { account_nfts: AccountNFToken[]; marker?: unknown } | null | undefined;
-}
+export interface GetNFTResponse
+  extends BaseResponse<{ account_nfts: AccountNFToken[]; marker?: unknown }> {}
 
 export interface GetNFTResponseDeprecated {
   nfts: AccountNFToken[] | null | undefined;

@@ -15,6 +15,7 @@ describe('getPublicKey', () => {
     });
     const address = await getPublicKey();
     expect(address).toEqual({
+      type: 'response',
       result: {
         publicKey: 'fakeKey',
         address: 'fakeAddress'

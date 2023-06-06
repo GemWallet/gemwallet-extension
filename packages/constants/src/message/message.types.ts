@@ -150,16 +150,26 @@ export interface RequestSignMessageMessageDeprecated {
 export type MessagingResponse = {
   source?: 'GEM_WALLET_MSG_RESPONSE';
   messagedId?: number;
+  error?: MessagingError;
 };
 
-export type NetworkMessagingResponse = MessagingResponse & GetNetworkResponse;
-export type NetworkMessagingResponseDeprecated = MessagingResponse & GetNetworkResponseDeprecated;
-export type NFTMessagingResponse = MessagingResponse & GetNFTRequest;
-export type PublicAddressMessagingResponse = MessagingResponse & GetAddressResponse;
-export type PublicAddressMessagingResponseDeprecated = MessagingResponse &
+// Errors
+export interface MessagingError {
+  name: string;
+  message: string;
+  stack?: string;
+}
+
+export type GetNetworkMessagingResponse = MessagingResponse & GetNetworkResponse;
+export type GetNetworkMessagingResponseDeprecated = MessagingResponse &
+  GetNetworkResponseDeprecated;
+export type GetNFTMessagingResponse = MessagingResponse & GetNFTResponse;
+export type GetNFTMessagingResponseDeprecated = MessagingResponse & GetNFTResponseDeprecated;
+export type GetAddressMessagingResponse = MessagingResponse & GetAddressResponse;
+export type GetAddressMessagingResponseDeprecated = MessagingResponse &
   GetAddressResponseDeprecated;
-export type PublicKeyMessagingResponse = MessagingResponse & GetPublicKeyResponse;
-export type PublicKeyMessagingResponseDeprecated = MessagingResponse &
+export type GetPublicKeyMessagingResponse = MessagingResponse & GetPublicKeyResponse;
+export type GetPublicKeyMessagingResponseDeprecated = MessagingResponse &
   GetPublicKeyResponseDeprecated;
 export type SignMessageMessagingResponse = MessagingResponse & SignMessageResponse;
 export type SignMessageMessagingResponseDeprecated = MessagingResponse &
@@ -176,7 +186,7 @@ export type SetTrustlineMessagingResponseDeprecated = MessagingResponse &
 export interface ReceiveSendPaymentContentMessage {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_SEND_PAYMENT/V3';
-  payload: SendPaymentResponse;
+  payload: SendPaymentMessagingResponse;
 }
 
 export interface ReceiveSendPaymentContentMessageDeprecated {
@@ -188,7 +198,7 @@ export interface ReceiveSendPaymentContentMessageDeprecated {
 export interface ReceiveSetTrustlineContentMessage {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_SET_TRUSTLINE/V3';
-  payload: SetTrustlineResponse;
+  payload: SetTrustlineMessagingResponse;
 }
 
 export interface ReceiveSetTrustlineContentMessageDeprecated {
@@ -200,7 +210,7 @@ export interface ReceiveSetTrustlineContentMessageDeprecated {
 export interface ReceiveGetAddressContentMessage {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_GET_ADDRESS/V3';
-  payload: GetAddressResponse;
+  payload: GetAddressMessagingResponse;
 }
 
 export interface ReceiveGetAddressContentMessageDeprecated {
@@ -212,7 +222,7 @@ export interface ReceiveGetAddressContentMessageDeprecated {
 export interface ReceiveGetNetworkContentMessage {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_GET_NETWORK/V3';
-  payload: GetNetworkResponse;
+  payload: GetNetworkMessagingResponse;
 }
 
 export interface ReceiveGetNetworkContentMessageDeprecated {
@@ -224,7 +234,7 @@ export interface ReceiveGetNetworkContentMessageDeprecated {
 export interface ReceiveGetNFTContentMessage {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_GET_NFT/V3';
-  payload: GetNFTResponse;
+  payload: GetNFTMessagingResponse;
 }
 
 export interface ReceiveGetNFTContentMessageDeprecated {
@@ -236,7 +246,7 @@ export interface ReceiveGetNFTContentMessageDeprecated {
 export interface ReceiveGetPublicKeyContentMessage {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_GET_PUBLIC_KEY/V3';
-  payload: GetPublicKeyResponse;
+  payload: GetPublicKeyMessagingResponse;
 }
 
 export interface ReceiveGetPublicKeyContentMessageDeprecated {
@@ -248,7 +258,7 @@ export interface ReceiveGetPublicKeyContentMessageDeprecated {
 export interface ReceiveSignMessageContentMessage {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_SIGN_MESSAGE/V3';
-  payload: SignMessageResponse;
+  payload: SignMessageMessagingResponse;
 }
 
 export interface ReceiveSignMessageContentMessageDeprecated {

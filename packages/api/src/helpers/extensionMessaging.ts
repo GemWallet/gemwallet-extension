@@ -1,8 +1,8 @@
 import {
   APIMessages,
-  IsConnectedMessagingResponse,
-  NetworkMessagingResponse,
-  PublicAddressMessagingResponse
+  GetAddressMessagingResponse,
+  GetNetworkMessagingResponse,
+  IsConnectedMessagingResponse
 } from '@gemwallet/constants';
 
 declare global {
@@ -48,8 +48,8 @@ export const sendMessageToContentScript = (msg: APIMessages): Promise<any> => {
     const messageListener = (event: {
       source: any;
       data:
-        | NetworkMessagingResponse
-        | PublicAddressMessagingResponse
+        | GetNetworkMessagingResponse
+        | GetAddressMessagingResponse
         | IsConnectedMessagingResponse;
     }) => {
       // We only accept messages from ourselves

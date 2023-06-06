@@ -10,9 +10,10 @@ import { IssuedCurrencyAmount } from 'xrpl/dist/npm/models/common';
 import {
   GEM_WALLET,
   Memo,
-  TrustSetFlags,
   ReceiveSetTrustlineBackgroundMessage,
-  ReceiveSetTrustlineBackgroundMessageDeprecated
+  ReceiveSetTrustlineBackgroundMessageDeprecated,
+  ResponseType,
+  TrustSetFlags
 } from '@gemwallet/constants';
 
 import { DEFAULT_RESERVE, ERROR_RED } from '../../../constants';
@@ -29,6 +30,7 @@ import {
   parseTrustSetFlags,
   toXRPLMemos
 } from '../../../utils';
+import { serializeError } from '../../../utils/errors';
 import { TileLoader } from '../../atoms';
 import { AsyncTransaction, PageWithSpinner, PageWithTitle } from '../../templates';
 
@@ -170,16 +172,21 @@ export const AddNewTrustline: FC = () => {
   const hasEnoughFunds = useMemo(() => Number(difference) > 0, [difference]);
 
   const createMessage = useCallback(
-    (
-      transactionHash: string | null | undefined
-    ): ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated => {
+    (messagePayload: {
+      transactionHash: string | null | undefined;
+      error?: Error;
+    }): ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated => {
+      const { transactionHash, error } = messagePayload;
+
       if (receivingMessage === 'RECEIVE_SET_TRUSTLINE/V3') {
         return {
           app: GEM_WALLET,
           type: 'RECEIVE_SET_TRUSTLINE/V3',
           payload: {
             id: params.id,
-            result: transactionHash ? { hash: transactionHash } : null
+            type: ResponseType.Response,
+            result: transactionHash ? { hash: transactionHash } : undefined,
+            error: error ? serializeError(error) : undefined
           }
         };
       }
@@ -198,7 +205,7 @@ export const AddNewTrustline: FC = () => {
 
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);
-    const message = createMessage(null);
+    const message = createMessage({ transactionHash: null });
     chrome.runtime.sendMessage<
       ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
     >(message);
@@ -219,7 +226,7 @@ export const AddNewTrustline: FC = () => {
       })
         .then((transactionHash) => {
           setTransaction(TransactionStatus.Success);
-          const message = createMessage(transactionHash);
+          const message = createMessage({ transactionHash });
           chrome.runtime.sendMessage<
             ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
           >(message);
@@ -227,7 +234,7 @@ export const AddNewTrustline: FC = () => {
         .catch((e) => {
           setErrorRequestRejection(e.message);
           setTransaction(TransactionStatus.Rejected);
-          const message = createMessage(undefined);
+          const message = createMessage({ transactionHash: undefined, error: e });
           chrome.runtime.sendMessage<
             ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
           >(message);

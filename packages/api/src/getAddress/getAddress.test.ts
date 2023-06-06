@@ -11,7 +11,7 @@ describe('getAddress', () => {
       result: { address: 'fake' }
     });
     const address = await getAddress();
-    expect(address).toEqual({ result: { address: 'fake' } });
+    expect(address).toEqual({ result: { address: 'fake' }, type: 'response' });
   });
 
   it('should throw an error when sendMessageToContentScript throws an error', async () => {

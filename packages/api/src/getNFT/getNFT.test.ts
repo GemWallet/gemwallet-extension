@@ -18,6 +18,7 @@ describe('getNFT', () => {
       marker: undefined
     };
     const expectedResponse = {
+      type: 'response',
       result: {
         account_nfts: [
           { id: 1, name: 'NFT 1' },
@@ -33,16 +34,14 @@ describe('getNFT', () => {
 
   it('returns null when the user refuses to share their NFTs', async () => {
     // Mock the response from sendMessageToContentScript
-    const mockResponse = {
-      result: {
-        account_nfts: null,
-        marker: undefined
-      }
-    };
+    const mockResponse = {};
     (sendMessageToContentScript as jest.Mock).mockResolvedValue(mockResponse);
 
-    const { result } = await getNFT();
-    expect(result).toBeNull();
+    const res = await getNFT();
+    expect(res).toEqual({
+      type: 'reject',
+      result: undefined
+    });
   });
 
   it('throws an error when there is an exception', async () => {

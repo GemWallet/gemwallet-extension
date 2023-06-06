@@ -140,56 +140,29 @@ const LedgerProvider: FC = ({ children }) => {
         throw new Error('You need to have a wallet connected to make a transaction');
       } else {
         // Prepare the transaction
-        try {
-          const prepared: Payment = await client.autofill({
-            TransactionType: 'Payment',
-            Account: wallet.publicAddress,
-            Amount: amount,
-            Destination: destination,
-            // Only add the Memos and DestinationTag fields if they are are defined, otherwise it would fail
-            ...(memos && { Memos: toXRPLMemos(memos) }), // Each field of each memo is hex encoded
-            ...(destinationTag &&
-              Number(destinationTag) && { DestinationTag: Number(destinationTag) }),
-            ...(fee && { Fee: fee }), // In drops
-            ...(flags && { Flags: flags })
-          });
-          // Sign the transaction
-          const signed = wallet.wallet.sign(prepared);
-          // Submit the signed blob
-          const tx = await client.submitAndWait(signed.tx_blob);
-          if ((tx.result.meta! as TransactionMetadata).TransactionResult === 'tesSUCCESS') {
-            return tx.result.hash;
-          }
-          throw new Error(
-            (tx.result.meta as TransactionMetadata)?.TransactionResult ||
-              `Something went wrong, we couldn't submit properly the transaction`
-          );
-        } catch (e) {
-          if (
-            (e as Error).message === 'checksum_invalid' ||
-            (e as Error).message.includes('version_invalid') ||
-            (e as Error).message === 'Non-base58 character'
-          ) {
-            throw new Error('The destination address is incorrect');
-          } else if ((e as Error).message === 'tecUNFUNDED_PAYMENT') {
-            throw new Error('Insufficient funds');
-          } else if ((e as Error).message === 'tecNO_DST_INSUF_XRP') {
-            throw new Error(
-              'The account you are trying to make this transaction to does not exist, and the transaction is not sending enough XRP to create it.'
-            );
-          } else if ((e as Error).message === 'tecPATH_DRY') {
-            throw new Error(
-              'The transaction failed because the provided paths did not have enough liquidity to send anything at all. This could mean that the source and destination accounts are not linked by trust lines.'
-            );
-          } else if ((e as Error).message.includes('temREDUNDANT')) {
-            throw new Error(
-              'The transaction would do nothing; for example, it is sending a payment directly to the sending account, or creating an offer to buy and sell the same currency from the same issuer.'
-            );
-          } else {
-            Sentry.captureException(e);
-            throw e;
-          }
+        const prepared: Payment = await client.autofill({
+          TransactionType: 'Payment',
+          Account: wallet.publicAddress,
+          Amount: amount,
+          Destination: destination,
+          // Only add the Memos and DestinationTag fields if they are are defined, otherwise it would fail
+          ...(memos && { Memos: toXRPLMemos(memos) }), // Each field of each memo is hex encoded
+          ...(destinationTag &&
+            Number(destinationTag) && { DestinationTag: Number(destinationTag) }),
+          ...(fee && { Fee: fee }), // In drops
+          ...(flags && { Flags: flags })
+        });
+        // Sign the transaction
+        const signed = wallet.wallet.sign(prepared);
+        // Submit the signed blob
+        const tx = await client.submitAndWait(signed.tx_blob);
+        if ((tx.result.meta! as TransactionMetadata).TransactionResult === 'tesSUCCESS') {
+          return tx.result.hash;
         }
+        throw new Error(
+          (tx.result.meta as TransactionMetadata)?.TransactionResult ||
+            `Something went wrong, we couldn't submit properly the transaction`
+        );
       }
     },
     [client, getCurrentWallet]

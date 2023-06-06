@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/GemWallet/gemwallet-extension/issues"
   },
-  "homepage": "https://github.com/GemWallet/gemwallet-extension#readme"
+  "homepage": "https://github.com/GemWallet/gemwallet-extension#readme",
+  "peerDependencies": {
+    "xrpl": "^2.7.0"
+  }
 }
