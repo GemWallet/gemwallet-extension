@@ -6,8 +6,8 @@ import {
   SendPaymentResponse
 } from '@gemwallet/constants';
 
+import { deserializeError } from '../helpers/errors';
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
-import { deserializeError } from '../utils/errors';
 
 export const sendPayment = async (paymentPayload: SendPaymentRequest) => {
   /* string: hash of the transaction

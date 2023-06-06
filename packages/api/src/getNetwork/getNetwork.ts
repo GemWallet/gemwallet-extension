@@ -5,8 +5,8 @@ import {
   ResponseType
 } from '@gemwallet/constants';
 
+import { deserializeError } from '../helpers/errors';
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
-import { deserializeError } from '../utils/errors';
 
 export const getNetwork = async (): Promise<GetNetworkResponse> => {
   /* string: network
