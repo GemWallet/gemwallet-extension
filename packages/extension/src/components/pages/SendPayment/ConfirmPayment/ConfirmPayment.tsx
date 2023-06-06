@@ -80,8 +80,7 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
         setTransaction(TransactionStatus.Success);
       })
       .catch((e) => {
-        const UIError = toUIError(e);
-        setErrorRequestRejection(UIError.message);
+        setErrorRequestRejection(toUIError(e).message);
         setTransaction(TransactionStatus.Rejected);
         Sentry.captureException(e);
       });
