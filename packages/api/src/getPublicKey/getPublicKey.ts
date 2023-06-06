@@ -10,9 +10,19 @@ import { sendMessageToContentScript } from '../helpers/extensionMessaging';
 import { getFavicon } from '../helpers/getFavicon';
 
 export const getPublicKey = async (): Promise<GetPublicKeyResponse> => {
-  /* {publicKey: string, address: string}
-   * null: user refused the authorization
-   * undefined: something went wrong
+  /* response:
+   * if the transaction succeeds:
+   * - type: 'response'
+   * - result:
+   *    - address: string
+   *    - publicKey: string
+   *
+   * if the user rejects the transaction:
+   * - type: 'reject'
+   * - result: undefined
+   *
+   * if the transaction fails:
+   * - throw an error
    */
   let response: GetPublicKeyResponse = {
     type: ResponseType.Reject,

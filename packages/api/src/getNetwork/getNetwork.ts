@@ -9,8 +9,18 @@ import { deserializeError } from '../helpers/errors';
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
 
 export const getNetwork = async (): Promise<GetNetworkResponse> => {
-  /* string: network
-   * undefined: something went wrong
+  /* response:
+   * if the transaction succeeds:
+   * - type: 'response'
+   * - result:
+   *    - network: network name
+   *
+   * if the user rejects the transaction:
+   * - type: 'reject'
+   * - result: undefined
+   *
+   * if the transaction fails:
+   * - throw an error
    */
   let response: GetNetworkResponse = {
     type: ResponseType.Reject,

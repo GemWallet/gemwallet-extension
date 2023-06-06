@@ -10,9 +10,18 @@ import { sendMessageToContentScript } from '../helpers/extensionMessaging';
 import { getFavicon } from '../helpers/getFavicon';
 
 export const getAddress = async (): Promise<GetAddressResponse> => {
-  /* string: classic address
-   * null: user refused the authorization
-   * undefined: something went wrong
+  /* response:
+   * if the transaction succeeds:
+   * - type: 'response'
+   * - result:
+   *    - address: classic address
+   *
+   * if the user rejects the transaction:
+   * - type: 'reject'
+   * - result: undefined
+   *
+   * if the transaction fails:
+   * - throw an error
    */
   let response: GetAddressResponse = {
     type: ResponseType.Reject,

@@ -11,9 +11,19 @@ import { sendMessageToContentScript } from '../helpers/extensionMessaging';
 import { getFavicon } from '../helpers/getFavicon';
 
 export const getNFT = async (payload?: GetNFTRequest): Promise<GetNFTResponse> => {
-  /* AccountNFToken[]: array of NFTs
-   * null: user refused to share his NFTs
-   * undefined: something went wrong
+  /* response:
+   * if the transaction succeeds:
+   * - type: 'response'
+   * - result:
+   *    - account_nfts: array of NFTs
+   *    - marker: Value from a previous paginated response. Resume retrieving data where that response left off.
+   *
+   * if the user rejects the transaction:
+   * - type: 'reject'
+   * - result: undefined
+   *
+   * if the transaction fails:
+   * - throw an error
    */
   let response: GetNFTResponse = {
     type: ResponseType.Reject,

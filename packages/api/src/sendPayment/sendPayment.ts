@@ -10,9 +10,18 @@ import { deserializeError } from '../helpers/errors';
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
 
 export const sendPayment = async (paymentPayload: SendPaymentRequest) => {
-  /* string: hash of the transaction
-   * null: user refused the payment
-   * undefined: something went wrong
+  /* response:
+   * if the transaction succeeds:
+   * - type: 'response'
+   * - result:
+   *    - hash: hash of the transaction
+   *
+   * if the user rejects the transaction:
+   * - type: 'reject'
+   * - result: undefined
+   *
+   * if the transaction fails:
+   * - throw an error
    */
   let response: SendPaymentResponse = {
     type: ResponseType.Reject,
