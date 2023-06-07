@@ -5,7 +5,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 import {
   HOME_PATH,
-  PARAMETER_ADDRESS,
+  PARAMETER_SHARE_ADDRESS,
   PARAMETER_SIGN_MESSAGE,
   PARAMETER_TRANSACTION_PAYMENT,
   RESET_PASSWORD_PATH,
@@ -14,11 +14,11 @@ import {
   STORAGE_WALLETS,
   TRANSACTION_PATH,
   WELCOME_PATH,
-  PARAMETER_PUBLIC_KEY,
+  PARAMETER_SHARE_PUBLIC_KEY,
   SHARE_PUBLIC_KEY_PATH,
   ADD_NEW_TRUSTLINE_PATH,
   PARAMETER_TRANSACTION_TRUSTLINE,
-  PARAMETER_NFT,
+  PARAMETER_SHARE_NFT,
   SHARE_NFT_PATH
 } from '../../../constants';
 import { useWallet } from '../../../contexts';
@@ -36,15 +36,15 @@ export const Login: FC = () => {
   const navigateToPath = useCallback(() => {
     if (search.includes(PARAMETER_TRANSACTION_PAYMENT)) {
       navigate(`${TRANSACTION_PATH}${search}`);
-    } else if (search.includes(PARAMETER_ADDRESS)) {
+    } else if (search.includes(PARAMETER_SHARE_ADDRESS)) {
       navigate(`${SHARE_PUBLIC_ADDRESS_PATH}${search}`);
-    } else if (search.includes(PARAMETER_PUBLIC_KEY)) {
+    } else if (search.includes(PARAMETER_SHARE_PUBLIC_KEY)) {
       navigate(`${SHARE_PUBLIC_KEY_PATH}${search}`);
     } else if (search.includes(PARAMETER_SIGN_MESSAGE)) {
       navigate(`${SIGN_MESSAGE_PATH}${search}`);
     } else if (search.includes(PARAMETER_TRANSACTION_TRUSTLINE)) {
       navigate(`${ADD_NEW_TRUSTLINE_PATH}${search}`);
-    } else if (search.includes(PARAMETER_NFT)) {
+    } else if (search.includes(PARAMETER_SHARE_NFT)) {
       navigate(`${SHARE_NFT_PATH}${search}`);
     } else {
       navigate(`${HOME_PATH}${search}`);

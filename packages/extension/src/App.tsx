@@ -52,10 +52,10 @@ import {
   IMPORT_SEED_PATH,
   IMPORT_WALLET_PATH,
   LIST_WALLETS_PATH,
-  PARAMETER_ADDRESS,
-  PARAMETER_NETWORK,
-  PARAMETER_NFT,
-  PARAMETER_PUBLIC_KEY,
+  PARAMETER_SHARE_ADDRESS,
+  PARAMETER_SHARE_NETWORK,
+  PARAMETER_SHARE_NFT,
+  PARAMETER_SHARE_PUBLIC_KEY,
   PARAMETER_SIGN_MESSAGE,
   PARAMETER_TRANSACTION_PAYMENT,
   PARAMETER_TRANSACTION_TRUSTLINE,
@@ -121,7 +121,7 @@ const App: FC = () => {
                   hash: null
                 }
         });
-      } else if (search.includes(PARAMETER_ADDRESS)) {
+      } else if (search.includes(PARAMETER_SHARE_ADDRESS)) {
         const urlParams = new URLSearchParams(window.location.search);
         const type =
           urlParams.get('requestMessage') === 'REQUEST_GET_ADDRESS/V3'
@@ -138,7 +138,7 @@ const App: FC = () => {
                   publicAddress: null
                 }
         });
-      } else if (search.includes(PARAMETER_PUBLIC_KEY)) {
+      } else if (search.includes(PARAMETER_SHARE_PUBLIC_KEY)) {
         const urlParams = new URLSearchParams(window.location.search);
         const type =
           urlParams.get('requestMessage') === 'REQUEST_GET_PUBLIC_KEY/V3'
@@ -190,7 +190,7 @@ const App: FC = () => {
                   hash: null
                 }
         });
-      } else if (search.includes(PARAMETER_NFT)) {
+      } else if (search.includes(PARAMETER_SHARE_NFT)) {
         const urlParams = new URLSearchParams(window.location.search);
         const type =
           urlParams.get('requestMessage') === 'REQUEST_GET_NFT/V3'
@@ -213,7 +213,7 @@ const App: FC = () => {
 
   useEffect(() => {
     // Action which doesn't require to be authenticated
-    if (search.includes(PARAMETER_NETWORK)) {
+    if (search.includes(PARAMETER_SHARE_NETWORK)) {
       const queryString = window.location.search;
       const urlParams = new URLSearchParams(queryString);
       const type =

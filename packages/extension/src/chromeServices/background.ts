@@ -22,10 +22,10 @@ import {
 } from '@gemwallet/constants';
 
 import {
-  PARAMETER_ADDRESS,
-  PARAMETER_NETWORK,
-  PARAMETER_NFT,
-  PARAMETER_PUBLIC_KEY,
+  PARAMETER_SHARE_ADDRESS,
+  PARAMETER_SHARE_NETWORK,
+  PARAMETER_SHARE_NFT,
+  PARAMETER_SHARE_PUBLIC_KEY,
   PARAMETER_SIGN_MESSAGE,
   PARAMETER_TRANSACTION_PAYMENT,
   PARAMETER_TRANSACTION_TRUSTLINE
@@ -128,7 +128,7 @@ chrome.runtime.onMessage.addListener(
           id: sender.tab?.id
         },
         sender,
-        parameter: PARAMETER_NETWORK,
+        parameter: PARAMETER_SHARE_NETWORK,
         requestMessage: message.type,
         receivingMessage: 'RECEIVE_GET_NETWORK/V3',
         errorPayload: {
@@ -145,7 +145,7 @@ chrome.runtime.onMessage.addListener(
           id: sender.tab?.id
         },
         sender,
-        parameter: PARAMETER_NETWORK,
+        parameter: PARAMETER_SHARE_NETWORK,
         receivingMessage: 'RECEIVE_NETWORK',
         errorPayload: {
           network: undefined
@@ -157,7 +157,7 @@ chrome.runtime.onMessage.addListener(
       focusOrCreatePopupWindow({
         payload: message.payload,
         sender,
-        parameter: PARAMETER_ADDRESS,
+        parameter: PARAMETER_SHARE_ADDRESS,
         requestMessage: message.type,
         receivingMessage: 'RECEIVE_GET_ADDRESS/V3',
         errorPayload: {
@@ -170,7 +170,7 @@ chrome.runtime.onMessage.addListener(
       focusOrCreatePopupWindow({
         payload: message.payload,
         sender,
-        parameter: PARAMETER_ADDRESS,
+        parameter: PARAMETER_SHARE_ADDRESS,
         receivingMessage: 'RECEIVE_ADDRESS',
         errorPayload: {
           publicAddress: undefined
@@ -180,7 +180,7 @@ chrome.runtime.onMessage.addListener(
       focusOrCreatePopupWindow({
         payload: message.payload,
         sender,
-        parameter: PARAMETER_PUBLIC_KEY,
+        parameter: PARAMETER_SHARE_PUBLIC_KEY,
         requestMessage: message.type,
         receivingMessage: 'RECEIVE_GET_PUBLIC_KEY/V3',
         errorPayload: {
@@ -193,7 +193,7 @@ chrome.runtime.onMessage.addListener(
       focusOrCreatePopupWindow({
         payload: message.payload,
         sender,
-        parameter: PARAMETER_PUBLIC_KEY,
+        parameter: PARAMETER_SHARE_PUBLIC_KEY,
         receivingMessage: 'RECEIVE_PUBLIC_KEY',
         errorPayload: {
           address: undefined,
@@ -204,7 +204,7 @@ chrome.runtime.onMessage.addListener(
       focusOrCreatePopupWindow({
         payload: message.payload,
         sender,
-        parameter: PARAMETER_NFT,
+        parameter: PARAMETER_SHARE_NFT,
         requestMessage: message.type,
         receivingMessage: 'RECEIVE_GET_NFT/V3',
         errorPayload: {
@@ -217,7 +217,7 @@ chrome.runtime.onMessage.addListener(
       focusOrCreatePopupWindow({
         payload: message.payload,
         sender,
-        parameter: PARAMETER_NFT,
+        parameter: PARAMETER_SHARE_NFT,
         receivingMessage: 'RECEIVE_NFT',
         errorPayload: {
           nfts: undefined
