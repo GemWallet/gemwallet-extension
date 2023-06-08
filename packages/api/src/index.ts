@@ -2,7 +2,7 @@ export * from './getAddress';
 export * from './getNetwork';
 export * from './getNFT';
 export * from './getPublicKey';
-export * from './isConnected';
+export * from './isInstalled';
 export * from './sendPayment';
 export * from './setTrustline';
 export * from './signMessage';
@@ -16,7 +16,7 @@ export type {
   GetNetworkResponse,
   GetNFTResponse,
   GetPublicKeyResponse,
-  IsConnectedResponse,
+  IsInstalledResponse,
   SendPaymentResponse,
   SetTrustlineResponse,
   SignMessageResponse

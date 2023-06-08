@@ -137,8 +137,8 @@ export interface SignMessageResponseDeprecated {
   signedMessage: string | null | undefined;
 }
 
-export interface IsConnectedResponse {
-  result: { isConnected: boolean };
+export interface IsInstalledResponse {
+  result: { isInstalled: boolean };
 }
 
 export interface SendPaymentResponse extends BaseResponse<{ hash: string }> {}
@@ -165,7 +165,7 @@ export type ResponsePayload =
   | GetAddressResponseDeprecated
   | GetNFTResponse
   | GetNFTResponseDeprecated
-  | IsConnectedResponse
+  | IsInstalledResponse
   | GetNetworkResponse
   | GetNetworkResponseDeprecated
   | GetPublicKeyResponse

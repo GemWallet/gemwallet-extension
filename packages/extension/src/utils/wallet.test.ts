@@ -51,7 +51,6 @@ describe('saveWallet', () => {
       name: undefined
     };
     saveWallet(walletWithoutName, password);
-    console.log('[wallet]: ', [wallet]);
     expect(localStorageMock.setItem).toHaveBeenCalledWith(
       STORAGE_WALLETS,
       encrypt(JSON.stringify([wallet]), password)

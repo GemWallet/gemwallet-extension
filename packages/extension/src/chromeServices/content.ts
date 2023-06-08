@@ -569,6 +569,11 @@ setTimeout(() => {
           { source: 'GEM_WALLET_MSG_RESPONSE', messagedId, isConnected: true },
           window.location.origin
         );
+      } else if (type === 'REQUEST_IS_INSTALLED/V3') {
+        window.postMessage(
+          { source: 'GEM_WALLET_MSG_RESPONSE', messagedId, isInstalled: true },
+          window.location.origin
+        );
       }
     },
     false
