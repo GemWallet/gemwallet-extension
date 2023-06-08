@@ -2,7 +2,7 @@ import {
   APIMessages,
   GetAddressMessagingResponse,
   GetNetworkMessagingResponse,
-  IsConnectedMessagingResponse
+  IsInstalledMessagingResponse
 } from '@gemwallet/constants';
 
 declare global {
@@ -37,10 +37,10 @@ export const sendMessageToContentScript = (msg: APIMessages): Promise<any> => {
   );
 
   return new Promise((resolve, reject) => {
-    if (!window.gemWallet && msg.type !== 'REQUEST_CONNECTION') {
+    if (!window.gemWallet && msg.type !== 'REQUEST_IS_INSTALLED/V3') {
       reject(
         new Error(
-          'Please check if GemWallet is connected - GemWallet needs to be installed: https://gemwallet.app'
+          'Please check if GemWallet is installed - GemWallet needs to be installed: https://gemwallet.app'
         )
       );
     }
@@ -50,7 +50,7 @@ export const sendMessageToContentScript = (msg: APIMessages): Promise<any> => {
       data:
         | GetNetworkMessagingResponse
         | GetAddressMessagingResponse
-        | IsConnectedMessagingResponse;
+        | IsInstalledMessagingResponse;
     }) => {
       // We only accept messages from ourselves
       if (event.source !== window) return;

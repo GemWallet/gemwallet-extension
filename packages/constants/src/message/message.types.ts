@@ -3,7 +3,7 @@ import {
   GetAddressResponse,
   GetNFTResponse,
   GetNFTResponseDeprecated,
-  IsConnectedResponse,
+  IsInstalledResponse,
   GetNetworkResponse,
   GetNFTRequest,
   SendPaymentRequest,
@@ -174,7 +174,7 @@ export type GetPublicKeyMessagingResponseDeprecated = MessagingResponse &
 export type SignMessageMessagingResponse = MessagingResponse & SignMessageResponse;
 export type SignMessageMessagingResponseDeprecated = MessagingResponse &
   SignMessageResponseDeprecated;
-export type IsConnectedMessagingResponse = MessagingResponse & IsConnectedResponse;
+export type IsInstalledMessagingResponse = MessagingResponse & IsInstalledResponse;
 export type SendPaymentMessagingResponse = MessagingResponse & SendPaymentResponse;
 export type SendPaymentMessagingResponseDeprecated = MessagingResponse &
   SendPaymentResponseDeprecated;
@@ -348,9 +348,9 @@ export type BackgroundMessage =
   | ReceiveSignMessageBackgroundMessageDeprecated;
 
 // API Messages
-export interface RequestIsConnectedMessage {
+export interface RequestIsInstalledMessage {
   app: typeof GEM_WALLET;
-  type: 'REQUEST_CONNECTION';
+  type: 'REQUEST_IS_INSTALLED/V3';
 }
 
 export type APIMessages =
@@ -358,7 +358,7 @@ export type APIMessages =
   | RequestGetNetworkMessage
   | RequestGetNFTMessage
   | RequestGetPublicKeyMessage
-  | RequestIsConnectedMessage
+  | RequestIsInstalledMessage
   | RequestSendPaymentMessage
   | RequestSetTrustlineMessage
   | RequestSignMessageMessage;
