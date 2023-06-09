@@ -78,6 +78,38 @@ export const AddNewTrustline: FC = () => {
       : 'RECEIVE_TRUSTLINE_HASH';
   }, []);
 
+  const createMessage = useCallback(
+    (messagePayload: {
+      transactionHash: string | null | undefined;
+      error?: Error;
+    }): ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated => {
+      const { transactionHash, error } = messagePayload;
+
+      if (receivingMessage === 'RECEIVE_SET_TRUSTLINE/V3') {
+        return {
+          app: GEM_WALLET,
+          type: 'RECEIVE_SET_TRUSTLINE/V3',
+          payload: {
+            id: params.id,
+            type: ResponseType.Response,
+            result: transactionHash ? { hash: transactionHash } : undefined,
+            error: error ? serializeError(error) : undefined
+          }
+        };
+      }
+
+      return {
+        app: GEM_WALLET,
+        type: 'RECEIVE_TRUSTLINE_HASH',
+        payload: {
+          id: params.id,
+          hash: transactionHash
+        }
+      };
+    },
+    [params.id, receivingMessage]
+  );
+
   useEffect(() => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
@@ -93,10 +125,16 @@ export const AddNewTrustline: FC = () => {
     const flags = parseTrustSetFlags(urlParams.get('flags'));
 
     if (limitAmount === null) {
+      chrome.runtime.sendMessage<
+        ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
+      >(createMessage({ transactionHash: null, error: new Error('gem_BAD_REQUEST') }));
       setIsParamsMissing(true);
     }
 
     if (Number.isNaN(Number(limitAmount?.value))) {
+      chrome.runtime.sendMessage<
+        ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
+      >(createMessage({ transactionHash: null, error: new Error('gem_BAD_REQUEST') }));
       setErrorValue('The value must be a number, the value provided was not a number.');
     }
 
@@ -107,7 +145,7 @@ export const AddNewTrustline: FC = () => {
       memos,
       flags
     });
-  }, []);
+  }, [createMessage]);
 
   useEffect(() => {
     const wallet = getCurrentWallet();
@@ -151,6 +189,9 @@ export const AddNewTrustline: FC = () => {
           setDifference(difference);
         })
         .catch((e) => {
+          chrome.runtime.sendMessage<
+            ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
+          >(createMessage({ transactionHash: null, error: e }));
           setErrorDifference(e.message);
         });
     }
@@ -159,7 +200,8 @@ export const AddNewTrustline: FC = () => {
     getCurrentWallet,
     serverInfo?.info.validated_ledger?.reserve_base_xrp,
     params.fee,
-    params.limitAmount
+    params.limitAmount,
+    createMessage
   ]);
 
   const isValidIssuer = useMemo(() => {
@@ -170,38 +212,6 @@ export const AddNewTrustline: FC = () => {
   }, [params.limitAmount]);
 
   const hasEnoughFunds = useMemo(() => Number(difference) > 0, [difference]);
-
-  const createMessage = useCallback(
-    (messagePayload: {
-      transactionHash: string | null | undefined;
-      error?: Error;
-    }): ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated => {
-      const { transactionHash, error } = messagePayload;
-
-      if (receivingMessage === 'RECEIVE_SET_TRUSTLINE/V3') {
-        return {
-          app: GEM_WALLET,
-          type: 'RECEIVE_SET_TRUSTLINE/V3',
-          payload: {
-            id: params.id,
-            type: ResponseType.Response,
-            result: transactionHash ? { hash: transactionHash } : undefined,
-            error: error ? serializeError(error) : undefined
-          }
-        };
-      }
-
-      return {
-        app: GEM_WALLET,
-        type: 'RECEIVE_TRUSTLINE_HASH',
-        payload: {
-          id: params.id,
-          hash: transactionHash
-        }
-      };
-    },
-    [params.id, receivingMessage]
-  );
 
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);
@@ -258,6 +268,9 @@ export const AddNewTrustline: FC = () => {
   }
 
   if (!isValidIssuer) {
+    chrome.runtime.sendMessage<
+      ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
+    >(createMessage({ transactionHash: null, error: new Error('gem_BAD_ISSUER') }));
     return (
       <AsyncTransaction
         title="Incorrect transaction"
