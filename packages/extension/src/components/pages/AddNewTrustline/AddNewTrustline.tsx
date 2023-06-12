@@ -64,7 +64,7 @@ export const AddNewTrustline: FC = () => {
   const [estimatedFees, setEstimatedFees] = useState<string>(DEFAULT_FEES);
   const [errorFees, setErrorFees] = useState('');
   const [difference, setDifference] = useState<number | undefined>();
-  const [errorDifference, setErrorDifference] = useState<string>('');
+  const [errorDifference, setErrorDifference] = useState<Error | undefined>();
   const [errorRequestRejection, setErrorRequestRejection] = useState<string>('');
   const [errorValue, setErrorValue] = useState<string>('');
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
@@ -130,16 +130,10 @@ export const AddNewTrustline: FC = () => {
     const flags = parseTrustSetFlags(urlParams.get('flags'));
 
     if (limitAmount === null) {
-      chrome.runtime.sendMessage<
-        ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
-      >(createMessage({ transactionHash: null, error: new Error(API_ERROR_BAD_REQUEST) }));
       setIsParamsMissing(true);
     }
 
     if (Number.isNaN(Number(limitAmount?.value))) {
-      chrome.runtime.sendMessage<
-        ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
-      >(createMessage({ transactionHash: null, error: new Error(API_ERROR_BAD_REQUEST) }));
       setErrorValue('The value must be a number, the value provided was not a number.');
     }
 
@@ -194,10 +188,7 @@ export const AddNewTrustline: FC = () => {
           setDifference(difference);
         })
         .catch((e) => {
-          chrome.runtime.sendMessage<
-            ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
-          >(createMessage({ transactionHash: null, error: e }));
-          setErrorDifference(e.message);
+          setErrorDifference(e);
         });
     }
   }, [
@@ -220,10 +211,9 @@ export const AddNewTrustline: FC = () => {
 
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);
-    const message = createMessage({ transactionHash: null });
     chrome.runtime.sendMessage<
       ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
-    >(message);
+    >(createMessage({ transactionHash: null }));
   }, [createMessage]);
 
   const handleConfirm = useCallback(() => {
@@ -241,23 +231,24 @@ export const AddNewTrustline: FC = () => {
       })
         .then((transactionHash) => {
           setTransaction(TransactionStatus.Success);
-          const message = createMessage({ transactionHash });
           chrome.runtime.sendMessage<
             ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
-          >(message);
+          >(createMessage({ transactionHash }));
         })
         .catch((e) => {
           setErrorRequestRejection(e.message);
           setTransaction(TransactionStatus.Rejected);
-          const message = createMessage({ transactionHash: undefined, error: e });
           chrome.runtime.sendMessage<
             ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
-          >(message);
+          >(createMessage({ transactionHash: undefined, error: e }));
         });
     }
   }, [setTrustline, createMessage, params.limitAmount, params.fee, params.flags, params.memos]);
 
   if (isParamsMissing) {
+    chrome.runtime.sendMessage<
+      ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
+    >(createMessage({ transactionHash: null, error: new Error(API_ERROR_BAD_REQUEST) }));
     return (
       <AsyncTransaction
         title="Transaction rejected"
@@ -292,6 +283,9 @@ export const AddNewTrustline: FC = () => {
   }
 
   if (errorValue) {
+    chrome.runtime.sendMessage<
+      ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
+    >(createMessage({ transactionHash: null, error: new Error(API_ERROR_BAD_REQUEST) }));
     return (
       <AsyncTransaction
         title="Incorrect transaction"
@@ -308,7 +302,10 @@ export const AddNewTrustline: FC = () => {
   }
 
   if (errorDifference) {
-    if (errorDifference === 'Account not found.') {
+    chrome.runtime.sendMessage<
+      ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
+    >(createMessage({ transactionHash: null, error: errorDifference }));
+    if (errorDifference.message === 'Account not found.') {
       return (
         <AsyncTransaction
           title="Account not activated"
@@ -323,11 +320,11 @@ export const AddNewTrustline: FC = () => {
         />
       );
     }
-    Sentry.captureException('Transaction failed - errorDifference: ' + errorDifference);
+    Sentry.captureException('Transaction failed - errorDifference: ' + errorDifference.message);
     return (
       <AsyncTransaction
         title="Error"
-        subtitle={errorDifference}
+        subtitle={errorDifference.message}
         transaction={TransactionStatus.Rejected}
       />
     );

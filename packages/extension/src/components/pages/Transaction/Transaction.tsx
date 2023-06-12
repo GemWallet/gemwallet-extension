@@ -64,7 +64,7 @@ export const Transaction: FC = () => {
   const [errorFees, setErrorFees] = useState('');
   const [errorRequestRejection, setErrorRequestRejection] = useState<string>('');
   const [difference, setDifference] = useState<number | undefined>();
-  const [errorDifference, setErrorDifference] = useState<string | undefined>();
+  const [errorDifference, setErrorDifference] = useState<Error | undefined>();
   const [isParamsMissing, setIsParamsMissing] = useState(false);
 
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
@@ -196,10 +196,7 @@ export const Transaction: FC = () => {
           setDifference(difference);
         })
         .catch((e) => {
-          chrome.runtime.sendMessage<
-            ReceiveSendPaymentBackgroundMessage | ReceiveSendPaymentBackgroundMessageDeprecated
-          >(createMessage({ transactionHash: null, error: e }));
-          setErrorDifference(e.message);
+          setErrorDifference(e);
         });
     }
   }, [
@@ -303,7 +300,10 @@ export const Transaction: FC = () => {
   }
 
   if (errorDifference) {
-    if (errorDifference === 'Account not found.') {
+    chrome.runtime.sendMessage<
+      ReceiveSendPaymentBackgroundMessage | ReceiveSendPaymentBackgroundMessageDeprecated
+    >(createMessage({ transactionHash: null, error: errorDifference }));
+    if (errorDifference.message === 'Account not found.') {
       return (
         <AsyncTransaction
           title="Account not activated"
@@ -318,11 +318,11 @@ export const Transaction: FC = () => {
         />
       );
     }
-    Sentry.captureException('Transaction failed - errorDifference: ' + errorDifference);
+    Sentry.captureException('Transaction failed - errorDifference: ' + errorDifference.message);
     return (
       <AsyncTransaction
         title="Error"
-        subtitle={errorDifference}
+        subtitle={errorDifference.message}
         transaction={TransactionStatus.Rejected}
       />
     );
