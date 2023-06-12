@@ -8,7 +8,13 @@ export * from './setTrustline';
 export * from './signMessage';
 
 export type { Amount } from 'xrpl/dist/npm/models/common';
-export type { AccountNFToken, Memo, PaymentFlags, TrustSetFlags } from '@gemwallet/constants';
+export type {
+  AccountNFToken,
+  Memo,
+  Network,
+  PaymentFlags,
+  TrustSetFlags
+} from '@gemwallet/constants';
 
 // API return types
 export type {
