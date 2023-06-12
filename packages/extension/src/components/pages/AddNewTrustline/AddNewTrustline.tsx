@@ -16,7 +16,12 @@ import {
   TrustSetFlags
 } from '@gemwallet/constants';
 
-import { DEFAULT_RESERVE, ERROR_RED } from '../../../constants';
+import {
+  API_ERROR_BAD_ISSUER,
+  API_ERROR_BAD_REQUEST,
+  DEFAULT_RESERVE,
+  ERROR_RED
+} from '../../../constants';
 import { useLedger, useNetwork, useServer, useWallet } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
 import {
@@ -127,14 +132,14 @@ export const AddNewTrustline: FC = () => {
     if (limitAmount === null) {
       chrome.runtime.sendMessage<
         ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
-      >(createMessage({ transactionHash: null, error: new Error('gem_BAD_REQUEST') }));
+      >(createMessage({ transactionHash: null, error: new Error(API_ERROR_BAD_REQUEST) }));
       setIsParamsMissing(true);
     }
 
     if (Number.isNaN(Number(limitAmount?.value))) {
       chrome.runtime.sendMessage<
         ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
-      >(createMessage({ transactionHash: null, error: new Error('gem_BAD_REQUEST') }));
+      >(createMessage({ transactionHash: null, error: new Error(API_ERROR_BAD_REQUEST) }));
       setErrorValue('The value must be a number, the value provided was not a number.');
     }
 
@@ -270,7 +275,7 @@ export const AddNewTrustline: FC = () => {
   if (!isValidIssuer) {
     chrome.runtime.sendMessage<
       ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
-    >(createMessage({ transactionHash: null, error: new Error('gem_BAD_ISSUER') }));
+    >(createMessage({ transactionHash: null, error: new Error(API_ERROR_BAD_ISSUER) }));
     return (
       <AsyncTransaction
         title="Incorrect transaction"

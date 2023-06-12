@@ -10,7 +10,7 @@ import {
   ResponseType
 } from '@gemwallet/constants';
 
-import { SECONDARY_GRAY } from '../../../constants';
+import { API_ERROR_BAD_REQUEST, SECONDARY_GRAY } from '../../../constants';
 import { useBrowser, useLedger } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
 import { serializeError } from '../../../utils/errors';
@@ -125,7 +125,7 @@ export const SignMessage: FC = () => {
       payload: {
         id,
         type: ResponseType.Response,
-        error: serializeError(new Error('gem_BAD_REQUEST'))
+        error: serializeError(new Error(API_ERROR_BAD_REQUEST))
       }
     });
     return (

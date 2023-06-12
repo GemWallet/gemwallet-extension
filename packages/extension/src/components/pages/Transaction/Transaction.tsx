@@ -15,7 +15,12 @@ import {
   ResponseType
 } from '@gemwallet/constants';
 
-import { DEFAULT_RESERVE, ERROR_RED } from '../../../constants';
+import {
+  API_ERROR_BAD_DESTINATION,
+  API_ERROR_BAD_REQUEST,
+  DEFAULT_RESERVE,
+  ERROR_RED
+} from '../../../constants';
 import { useLedger, useNetwork, useServer, useWallet } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
 import {
@@ -262,7 +267,7 @@ export const Transaction: FC = () => {
   if (isParamsMissing) {
     chrome.runtime.sendMessage<
       ReceiveSendPaymentBackgroundMessage | ReceiveSendPaymentBackgroundMessageDeprecated
-    >(createMessage({ transactionHash: null, error: new Error('gem_BAD_REQUEST') }));
+    >(createMessage({ transactionHash: null, error: new Error(API_ERROR_BAD_REQUEST) }));
     return (
       <AsyncTransaction
         title="Transaction rejected"
@@ -281,7 +286,7 @@ export const Transaction: FC = () => {
   if (!isValidDestination) {
     chrome.runtime.sendMessage<
       ReceiveSendPaymentBackgroundMessage | ReceiveSendPaymentBackgroundMessageDeprecated
-    >(createMessage({ transactionHash: undefined, error: new Error('gem_BAD_DESTINATION') }));
+    >(createMessage({ transactionHash: undefined, error: new Error(API_ERROR_BAD_DESTINATION) }));
     return (
       <AsyncTransaction
         title="Incorrect transaction"
