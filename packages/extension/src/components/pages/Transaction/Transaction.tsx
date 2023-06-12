@@ -15,7 +15,12 @@ import {
   ResponseType
 } from '@gemwallet/constants';
 
-import { DEFAULT_RESERVE, ERROR_RED } from '../../../constants';
+import {
+  API_ERROR_BAD_DESTINATION,
+  API_ERROR_BAD_REQUEST,
+  DEFAULT_RESERVE,
+  ERROR_RED
+} from '../../../constants';
 import { useLedger, useNetwork, useServer, useWallet } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
 import {
@@ -59,7 +64,7 @@ export const Transaction: FC = () => {
   const [errorFees, setErrorFees] = useState('');
   const [errorRequestRejection, setErrorRequestRejection] = useState<string>('');
   const [difference, setDifference] = useState<number | undefined>();
-  const [errorDifference, setErrorDifference] = useState<string | undefined>();
+  const [errorDifference, setErrorDifference] = useState<Error | undefined>();
   const [isParamsMissing, setIsParamsMissing] = useState(false);
 
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
@@ -75,6 +80,37 @@ export const Transaction: FC = () => {
       ? { messageType: 'REQUEST_SEND_PAYMENT/V3', receivingMessage: 'RECEIVE_SEND_PAYMENT/V3' }
       : { messageType: 'SEND_PAYMENT', receivingMessage: 'RECEIVE_PAYMENT_HASH' };
   }, []);
+
+  const createMessage = useCallback(
+    (payload: {
+      transactionHash: string | null | undefined;
+      error?: Error;
+    }): ReceiveSendPaymentBackgroundMessage | ReceiveSendPaymentBackgroundMessageDeprecated => {
+      const { transactionHash, error } = payload;
+      if (receivingMessage === 'RECEIVE_SEND_PAYMENT/V3') {
+        return {
+          app: GEM_WALLET,
+          type: 'RECEIVE_SEND_PAYMENT/V3',
+          payload: {
+            id: params.id,
+            type: ResponseType.Response,
+            result: transactionHash ? { hash: transactionHash } : undefined,
+            error: error ? serializeError(error) : undefined
+          }
+        };
+      }
+
+      return {
+        app: GEM_WALLET,
+        type: 'RECEIVE_PAYMENT_HASH',
+        payload: {
+          id: params.id,
+          hash: transactionHash
+        }
+      };
+    },
+    [params.id, receivingMessage]
+  );
 
   useEffect(() => {
     const queryString = window.location.search;
@@ -125,6 +161,9 @@ export const Transaction: FC = () => {
           setEstimatedFees(fees);
         })
         .catch((e) => {
+          chrome.runtime.sendMessage<
+            ReceiveSendPaymentBackgroundMessage | ReceiveSendPaymentBackgroundMessageDeprecated
+          >(createMessage({ transactionHash: null, error: e }));
           Sentry.captureException(e);
           setErrorFees(e.message);
         });
@@ -138,7 +177,8 @@ export const Transaction: FC = () => {
     params.memos,
     params.destinationTag,
     params.fee,
-    params.flags
+    params.flags,
+    createMessage
   ]);
 
   useEffect(() => {
@@ -156,14 +196,15 @@ export const Transaction: FC = () => {
           setDifference(difference);
         })
         .catch((e) => {
-          setErrorDifference(e.message);
+          setErrorDifference(e);
         });
     }
   }, [
     params.amount,
     client,
     getCurrentWallet,
-    serverInfo?.info.validated_ledger?.reserve_base_xrp
+    serverInfo?.info.validated_ledger?.reserve_base_xrp,
+    createMessage
   ]);
 
   const isValidDestination = useMemo(() => {
@@ -173,43 +214,11 @@ export const Transaction: FC = () => {
     return false;
   }, [params.destination]);
 
-  const createMessage = useCallback(
-    (payload: {
-      transactionHash: string | null | undefined;
-      error?: Error;
-    }): ReceiveSendPaymentBackgroundMessage | ReceiveSendPaymentBackgroundMessageDeprecated => {
-      const { transactionHash, error } = payload;
-      if (receivingMessage === 'RECEIVE_SEND_PAYMENT/V3') {
-        return {
-          app: GEM_WALLET,
-          type: 'RECEIVE_SEND_PAYMENT/V3',
-          payload: {
-            id: params.id,
-            type: ResponseType.Response,
-            result: transactionHash ? { hash: transactionHash } : undefined,
-            error: error ? serializeError(error) : undefined
-          }
-        };
-      }
-
-      return {
-        app: GEM_WALLET,
-        type: 'RECEIVE_PAYMENT_HASH',
-        payload: {
-          id: params.id,
-          hash: transactionHash
-        }
-      };
-    },
-    [params.id, receivingMessage]
-  );
-
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);
-    const message = createMessage({ transactionHash: null });
     chrome.runtime.sendMessage<
       ReceiveSendPaymentBackgroundMessage | ReceiveSendPaymentBackgroundMessageDeprecated
-    >(message);
+    >(createMessage({ transactionHash: null }));
   }, [createMessage]);
 
   const handleConfirm = useCallback(() => {
@@ -226,18 +235,16 @@ export const Transaction: FC = () => {
     })
       .then((transactionHash) => {
         setTransaction(TransactionStatus.Success);
-        const message = createMessage({ transactionHash });
         chrome.runtime.sendMessage<
           ReceiveSendPaymentBackgroundMessage | ReceiveSendPaymentBackgroundMessageDeprecated
-        >(message);
+        >(createMessage({ transactionHash }));
       })
       .catch((e) => {
         setErrorRequestRejection(toUIError(e).message);
         setTransaction(TransactionStatus.Rejected);
-        const message = createMessage({ transactionHash: undefined, error: e });
         chrome.runtime.sendMessage<
           ReceiveSendPaymentBackgroundMessage | ReceiveSendPaymentBackgroundMessageDeprecated
-        >(message);
+        >(createMessage({ transactionHash: undefined, error: e }));
       });
   }, [
     createMessage,
@@ -255,6 +262,9 @@ export const Transaction: FC = () => {
   }, [difference]);
 
   if (isParamsMissing) {
+    chrome.runtime.sendMessage<
+      ReceiveSendPaymentBackgroundMessage | ReceiveSendPaymentBackgroundMessageDeprecated
+    >(createMessage({ transactionHash: null, error: new Error(API_ERROR_BAD_REQUEST) }));
     return (
       <AsyncTransaction
         title="Transaction rejected"
@@ -271,6 +281,9 @@ export const Transaction: FC = () => {
   }
 
   if (!isValidDestination) {
+    chrome.runtime.sendMessage<
+      ReceiveSendPaymentBackgroundMessage | ReceiveSendPaymentBackgroundMessageDeprecated
+    >(createMessage({ transactionHash: undefined, error: new Error(API_ERROR_BAD_DESTINATION) }));
     return (
       <AsyncTransaction
         title="Incorrect transaction"
@@ -287,7 +300,10 @@ export const Transaction: FC = () => {
   }
 
   if (errorDifference) {
-    if (errorDifference === 'Account not found.') {
+    chrome.runtime.sendMessage<
+      ReceiveSendPaymentBackgroundMessage | ReceiveSendPaymentBackgroundMessageDeprecated
+    >(createMessage({ transactionHash: null, error: errorDifference }));
+    if (errorDifference.message === 'Account not found.') {
       return (
         <AsyncTransaction
           title="Account not activated"
@@ -302,11 +318,11 @@ export const Transaction: FC = () => {
         />
       );
     }
-    Sentry.captureException('Transaction failed - errorDifference: ' + errorDifference);
+    Sentry.captureException('Transaction failed - errorDifference: ' + errorDifference.message);
     return (
       <AsyncTransaction
         title="Error"
-        subtitle={errorDifference}
+        subtitle={errorDifference.message}
         transaction={TransactionStatus.Rejected}
       />
     );

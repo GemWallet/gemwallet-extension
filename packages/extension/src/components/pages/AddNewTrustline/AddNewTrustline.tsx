@@ -16,7 +16,12 @@ import {
   TrustSetFlags
 } from '@gemwallet/constants';
 
-import { DEFAULT_RESERVE, ERROR_RED } from '../../../constants';
+import {
+  API_ERROR_BAD_ISSUER,
+  API_ERROR_BAD_REQUEST,
+  DEFAULT_RESERVE,
+  ERROR_RED
+} from '../../../constants';
 import { useLedger, useNetwork, useServer, useWallet } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
 import {
@@ -59,7 +64,7 @@ export const AddNewTrustline: FC = () => {
   const [estimatedFees, setEstimatedFees] = useState<string>(DEFAULT_FEES);
   const [errorFees, setErrorFees] = useState('');
   const [difference, setDifference] = useState<number | undefined>();
-  const [errorDifference, setErrorDifference] = useState<string>('');
+  const [errorDifference, setErrorDifference] = useState<Error | undefined>();
   const [errorRequestRejection, setErrorRequestRejection] = useState<string>('');
   const [errorValue, setErrorValue] = useState<string>('');
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
@@ -77,6 +82,38 @@ export const AddNewTrustline: FC = () => {
       ? 'RECEIVE_SET_TRUSTLINE/V3'
       : 'RECEIVE_TRUSTLINE_HASH';
   }, []);
+
+  const createMessage = useCallback(
+    (messagePayload: {
+      transactionHash: string | null | undefined;
+      error?: Error;
+    }): ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated => {
+      const { transactionHash, error } = messagePayload;
+
+      if (receivingMessage === 'RECEIVE_SET_TRUSTLINE/V3') {
+        return {
+          app: GEM_WALLET,
+          type: 'RECEIVE_SET_TRUSTLINE/V3',
+          payload: {
+            id: params.id,
+            type: ResponseType.Response,
+            result: transactionHash ? { hash: transactionHash } : undefined,
+            error: error ? serializeError(error) : undefined
+          }
+        };
+      }
+
+      return {
+        app: GEM_WALLET,
+        type: 'RECEIVE_TRUSTLINE_HASH',
+        payload: {
+          id: params.id,
+          hash: transactionHash
+        }
+      };
+    },
+    [params.id, receivingMessage]
+  );
 
   useEffect(() => {
     const queryString = window.location.search;
@@ -107,7 +144,7 @@ export const AddNewTrustline: FC = () => {
       memos,
       flags
     });
-  }, []);
+  }, [createMessage]);
 
   useEffect(() => {
     const wallet = getCurrentWallet();
@@ -151,7 +188,7 @@ export const AddNewTrustline: FC = () => {
           setDifference(difference);
         })
         .catch((e) => {
-          setErrorDifference(e.message);
+          setErrorDifference(e);
         });
     }
   }, [
@@ -159,7 +196,8 @@ export const AddNewTrustline: FC = () => {
     getCurrentWallet,
     serverInfo?.info.validated_ledger?.reserve_base_xrp,
     params.fee,
-    params.limitAmount
+    params.limitAmount,
+    createMessage
   ]);
 
   const isValidIssuer = useMemo(() => {
@@ -171,44 +209,11 @@ export const AddNewTrustline: FC = () => {
 
   const hasEnoughFunds = useMemo(() => Number(difference) > 0, [difference]);
 
-  const createMessage = useCallback(
-    (messagePayload: {
-      transactionHash: string | null | undefined;
-      error?: Error;
-    }): ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated => {
-      const { transactionHash, error } = messagePayload;
-
-      if (receivingMessage === 'RECEIVE_SET_TRUSTLINE/V3') {
-        return {
-          app: GEM_WALLET,
-          type: 'RECEIVE_SET_TRUSTLINE/V3',
-          payload: {
-            id: params.id,
-            type: ResponseType.Response,
-            result: transactionHash ? { hash: transactionHash } : undefined,
-            error: error ? serializeError(error) : undefined
-          }
-        };
-      }
-
-      return {
-        app: GEM_WALLET,
-        type: 'RECEIVE_TRUSTLINE_HASH',
-        payload: {
-          id: params.id,
-          hash: transactionHash
-        }
-      };
-    },
-    [params.id, receivingMessage]
-  );
-
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);
-    const message = createMessage({ transactionHash: null });
     chrome.runtime.sendMessage<
       ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
-    >(message);
+    >(createMessage({ transactionHash: null }));
   }, [createMessage]);
 
   const handleConfirm = useCallback(() => {
@@ -226,23 +231,24 @@ export const AddNewTrustline: FC = () => {
       })
         .then((transactionHash) => {
           setTransaction(TransactionStatus.Success);
-          const message = createMessage({ transactionHash });
           chrome.runtime.sendMessage<
             ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
-          >(message);
+          >(createMessage({ transactionHash }));
         })
         .catch((e) => {
           setErrorRequestRejection(e.message);
           setTransaction(TransactionStatus.Rejected);
-          const message = createMessage({ transactionHash: undefined, error: e });
           chrome.runtime.sendMessage<
             ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
-          >(message);
+          >(createMessage({ transactionHash: undefined, error: e }));
         });
     }
   }, [setTrustline, createMessage, params.limitAmount, params.fee, params.flags, params.memos]);
 
   if (isParamsMissing) {
+    chrome.runtime.sendMessage<
+      ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
+    >(createMessage({ transactionHash: null, error: new Error(API_ERROR_BAD_REQUEST) }));
     return (
       <AsyncTransaction
         title="Transaction rejected"
@@ -258,6 +264,9 @@ export const AddNewTrustline: FC = () => {
   }
 
   if (!isValidIssuer) {
+    chrome.runtime.sendMessage<
+      ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
+    >(createMessage({ transactionHash: null, error: new Error(API_ERROR_BAD_ISSUER) }));
     return (
       <AsyncTransaction
         title="Incorrect transaction"
@@ -274,6 +283,9 @@ export const AddNewTrustline: FC = () => {
   }
 
   if (errorValue) {
+    chrome.runtime.sendMessage<
+      ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
+    >(createMessage({ transactionHash: null, error: new Error(API_ERROR_BAD_REQUEST) }));
     return (
       <AsyncTransaction
         title="Incorrect transaction"
@@ -290,7 +302,10 @@ export const AddNewTrustline: FC = () => {
   }
 
   if (errorDifference) {
-    if (errorDifference === 'Account not found.') {
+    chrome.runtime.sendMessage<
+      ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
+    >(createMessage({ transactionHash: null, error: errorDifference }));
+    if (errorDifference.message === 'Account not found.') {
       return (
         <AsyncTransaction
           title="Account not activated"
@@ -305,11 +320,11 @@ export const AddNewTrustline: FC = () => {
         />
       );
     }
-    Sentry.captureException('Transaction failed - errorDifference: ' + errorDifference);
+    Sentry.captureException('Transaction failed - errorDifference: ' + errorDifference.message);
     return (
       <AsyncTransaction
         title="Error"
-        subtitle={errorDifference}
+        subtitle={errorDifference.message}
         transaction={TransactionStatus.Rejected}
       />
     );

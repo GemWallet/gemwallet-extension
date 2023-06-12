@@ -10,7 +10,7 @@ import {
   ResponseType
 } from '@gemwallet/constants';
 
-import { SECONDARY_GRAY } from '../../../constants';
+import { API_ERROR_BAD_REQUEST, SECONDARY_GRAY } from '../../../constants';
 import { useBrowser, useLedger } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
 import { serializeError } from '../../../utils/errors';
@@ -58,6 +58,7 @@ export const SignMessage: FC = () => {
   }, []);
 
   const { id, url, title, favicon, message } = payload;
+
   const handleSendMessage = useCallback(
     (messagePayload: { signedMessage: string | null | undefined; error?: Error }) => {
       const { signedMessage, error } = messagePayload;
@@ -116,12 +117,23 @@ export const SignMessage: FC = () => {
   }, [handleSendMessage, message, signMessage]);
 
   if (isParamsMissing) {
+    chrome.runtime.sendMessage<
+      ReceiveSignMessageBackgroundMessage | ReceiveSignMessageBackgroundMessageDeprecated
+    >({
+      app: GEM_WALLET,
+      type: 'RECEIVE_SIGN_MESSAGE/V3',
+      payload: {
+        id,
+        type: ResponseType.Response,
+        error: serializeError(new Error(API_ERROR_BAD_REQUEST))
+      }
+    });
     return (
       <AsyncTransaction
         title="Signature failed"
         subtitle={
           <>
-            A message has not be provided to the extension
+            A message has not been provided to the extension
             <br />
             Please contact the developer of the website
           </>
