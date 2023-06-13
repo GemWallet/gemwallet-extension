@@ -1,6 +1,6 @@
 {
   "name": "@gemwallet/api",
-  "version": "2.2.1",
+  "version": "3.0.0",
   "description": "GemWallet API Utility functions to interact with GemWallet extension",
   "private": true,
   "main": "src/index.js",
