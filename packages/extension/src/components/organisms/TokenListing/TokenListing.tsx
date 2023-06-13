@@ -14,10 +14,10 @@ import {
 import { TransitionProps } from '@mui/material/transitions';
 import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
+import { TrustSetFlags as TrustSetFlagsBitmask } from 'xrpl';
 import { Trustline } from 'xrpl/dist/npm/models/methods/accountLines';
 
 import { Network } from '@gemwallet/constants';
-import { TrustSetFlagsBitmask } from '@gemwallet/constants';
 
 import { ADD_NEW_TRUSTLINE_PATH, DEFAULT_RESERVE, ERROR_RED } from '../../../constants';
 import { useLedger, useNetwork, useServer } from '../../../contexts';

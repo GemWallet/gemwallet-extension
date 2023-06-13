@@ -1,8 +1,4 @@
-import {
-  PaymentFlagsInterface,
-  TrustSetFlagsInterface,
-  TrustSetFlags as TrustSetFlagsXRPL
-} from 'xrpl';
+import { PaymentFlagsInterface, TrustSetFlagsInterface } from 'xrpl';
 
 export interface Memo {
   memo: {
@@ -13,13 +9,5 @@ export interface Memo {
 }
 
 export type TrustSetFlags = TrustSetFlagsInterface | number;
-
-export const TrustSetFlagsBitmask = {
-  tfSetfAuth: TrustSetFlagsXRPL.tfSetfAuth,
-  tfSetNoRipple: TrustSetFlagsXRPL.tfSetNoRipple,
-  tfClearNoRipple: TrustSetFlagsXRPL.tfClearNoRipple,
-  tfSetFreeze: TrustSetFlagsXRPL.tfSetFreeze,
-  tfClearFreeze: TrustSetFlagsXRPL.tfClearFreeze
-};
 
 export type PaymentFlags = PaymentFlagsInterface | number;

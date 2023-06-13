@@ -2,7 +2,7 @@ import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 
 import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
-import { dropsToXrp, isValidAddress } from 'xrpl';
+import { dropsToXrp, isValidAddress, TrustSetFlags as TrustSetFlagsBitmask } from 'xrpl';
 import { IssuedCurrencyAmount } from 'xrpl/dist/npm/models/common';
 
 import {
@@ -11,8 +11,7 @@ import {
   ReceiveSetTrustlineBackgroundMessage,
   ReceiveSetTrustlineBackgroundMessageDeprecated,
   ResponseType,
-  TrustSetFlags,
-  TrustSetFlagsBitmask
+  TrustSetFlags
 } from '@gemwallet/constants';
 
 import {
