@@ -228,7 +228,7 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
               canBeEdited
                 ? () =>
                     navigate(
-                      `${ADD_NEW_TRUSTLINE_PATH}?showForm=true&limitAmount=${JSON.stringify(
+                      `${ADD_NEW_TRUSTLINE_PATH}?showForm=true&inAppCall=true&limitAmount=${JSON.stringify(
                         limitAmount
                       )}&flags=${flags}`
                     )

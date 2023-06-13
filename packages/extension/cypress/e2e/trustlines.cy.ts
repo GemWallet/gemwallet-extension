@@ -11,9 +11,11 @@ describe('Trustline', () => {
     value: VALUE,
     issuer: DESTINATION_ADDRESS
   });
+  const FLAGS = JSON.stringify({
+    tfSetNoRipple: true
+  });
   const HOME_URL = `http://localhost:3000`;
-  const SET_TRUSTLINE_URL = `${HOME_URL}?limitAmount=${AMOUNT}&id=93376196&transaction=trustSet`;
-  const NO_RIPPLE = 'Yes'; // By default, we don't allow rippling
+  const SET_TRUSTLINE_URL = `${HOME_URL}?limitAmount=${AMOUNT}&flags=${FLAGS}&id=93376196&requestMessage=REQUEST_SET_TRUSTLINE/V3&inAppCall=true&transaction=trustSet`;
 
   beforeEach(() => {
     // Mock the localStorage with a wallet already loaded
@@ -60,7 +62,7 @@ describe('Trustline', () => {
       // Continue with the test
       return false;
     });
-    validateTrustlineTx(DESTINATION_ADDRESS, CURRENCY, '10,000,000', ALLOW_RIPPLING);
+    validateTrustlineTx(DESTINATION_ADDRESS, CURRENCY, '10,000,000');
   });
 
   it('Reject the trustline', () => {
@@ -92,7 +94,6 @@ describe('Trustline', () => {
     cy.contains('Issuer:').next().should('have.text', DESTINATION_ADDRESS);
     cy.contains('Currency:').next().should('have.text', CURRENCY);
     cy.contains('Limit:').next().should('have.text', `10,000,000 ${CURRENCY}`);
-    cy.contains('Prevent Rippling:').next().should('have.text', NO_RIPPLE);
 
     // Confirm the trustline
     cy.contains('button', 'Reject').click();
@@ -168,7 +169,6 @@ describe('Trustline', () => {
 
     // Check values in the confirmation page
     cy.contains('Limit:').next().should('have.text', `${newLimit} ${CURRENCY}`);
-    cy.contains('Prevent Rippling:').next().should('have.text', 'No');
 
     // Confirm
     cy.contains('button', 'Confirm').click();
@@ -211,12 +211,7 @@ const navigate = (url: string, password: string) => {
   cy.contains('button', 'Unlock').click();
 };
 
-const validateTrustlineTx = (
-  destinationAddress: string,
-  currency: string,
-  limit: string,
-  ALLOW_RIPPLING?: string
-) => {
+const validateTrustlineTx = (destinationAddress: string, currency: string, limit: string) => {
   // Should be on the Warning Trustline Page
   cy.get('h1[data-testid="page-title"]').should('have.text', 'Add Trustline');
 
@@ -238,9 +233,6 @@ const validateTrustlineTx = (
   cy.contains('Issuer:').next().should('have.text', destinationAddress);
   cy.contains('Currency:').next().should('have.text', currency);
   cy.contains('Limit:').next().should('have.text', `${limit} ${currency}`);
-  if (ALLOW_RIPPLING) {
-    cy.contains('Allow rippling:').next().should('have.text', ALLOW_RIPPLING);
-  }
 
   // Confirm the trustline
   cy.contains('button', 'Confirm').click();
