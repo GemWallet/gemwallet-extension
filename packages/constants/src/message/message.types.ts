@@ -1,16 +1,19 @@
 import { GEM_WALLET } from '../global/global.constant';
 import {
   GetAddressResponse,
+  GetAddressResponseDeprecated,
   GetNFTResponse,
   GetNFTResponseDeprecated,
-  IsInstalledResponse,
   GetNetworkResponse,
+  GetNetworkResponseDeprecated,
   GetNFTRequest,
-  MintNFTRequestPayload,
-  MintNFTResponsePayload,
+  GetPublicKeyResponse,
+  GetPublicKeyResponseDeprecated,
+  IsInstalledResponse,
+  MintNFTRequest,
+  MintNFTResponse,
   SendPaymentRequest,
   SendPaymentRequestDeprecated,
-  GetPublicKeyResponse,
   SendPaymentResponse,
   SendPaymentResponseDeprecated,
   SetTrustlineResponse,
@@ -20,10 +23,7 @@ import {
   SignMessageResponse,
   SignMessageResponseDeprecated,
   SignMessageRequest,
-  WebsiteRequest,
-  GetAddressResponseDeprecated,
-  GetNetworkResponseDeprecated,
-  GetPublicKeyResponseDeprecated
+  WebsiteRequest
 } from '../payload/payload.types';
 
 export type RequestMessage =
@@ -34,7 +34,7 @@ export type RequestMessage =
   | 'REQUEST_GET_NETWORK/V3'
   | 'REQUEST_GET_NFT/V3'
   | 'REQUEST_GET_PUBLIC_KEY/V3'
-  | 'REQUEST_MINT_NFT'
+  | 'REQUEST_MINT_NFT/V3'
   | 'REQUEST_NETWORK'
   | 'REQUEST_NFT'
   | 'REQUEST_PUBLIC_KEY'
@@ -126,8 +126,8 @@ export interface RequestSetTrustlineMessageDeprecated {
 
 export interface RequestMintNFTMessage {
   app: typeof GEM_WALLET;
-  type: 'REQUEST_MINT_NFT';
-  payload: MintNFTRequestPayload;
+  type: 'REQUEST_MINT_NFT/V3';
+  payload: MintNFTRequest;
 }
 
 export interface RequestGetNFTMessage {
@@ -181,6 +181,7 @@ export type GetAddressMessagingResponseDeprecated = MessagingResponse &
 export type GetPublicKeyMessagingResponse = MessagingResponse & GetPublicKeyResponse;
 export type GetPublicKeyMessagingResponseDeprecated = MessagingResponse &
   GetPublicKeyResponseDeprecated;
+export type MintNFTMessagingResponse = MessagingResponse & MintNFTResponse;
 export type SignMessageMessagingResponse = MessagingResponse & SignMessageResponse;
 export type SignMessageMessagingResponseDeprecated = MessagingResponse &
   SignMessageResponseDeprecated;
@@ -191,7 +192,6 @@ export type SendPaymentMessagingResponseDeprecated = MessagingResponse &
 export type SetTrustlineMessagingResponse = MessagingResponse & SetTrustlineResponse;
 export type SetTrustlineMessagingResponseDeprecated = MessagingResponse &
   SetTrustlineResponseDeprecated;
-export type MintNFTResponse = MessagingResponse & MintNFTResponsePayload;
 
 // Content Script Messages
 export interface ReceiveSendPaymentContentMessage {
@@ -281,7 +281,7 @@ export interface ReceiveSignMessageContentMessageDeprecated {
 export interface ReceiveMintNFTContentMessage {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_MINT_NFT';
-  payload: MintNFTResponsePayload;
+  payload: MintNFTResponse;
 }
 
 // Background Script Messages

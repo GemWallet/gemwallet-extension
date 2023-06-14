@@ -13,7 +13,7 @@ import {
   GetPublicKeyMessagingResponse,
   GetPublicKeyMessagingResponseDeprecated,
   MintNFTEventListener,
-  MintNFTResponse,
+  MintNFTMessagingResponse,
   PaymentEventListener,
   PaymentEventListenerDeprecated,
   PublicKeyEventListener,
@@ -461,7 +461,7 @@ setTimeout(() => {
             chrome.runtime.onMessage.addListener(messageListener);
           }
         );
-      } else if (type === 'REQUEST_MINT_NFT') {
+      } else if (type === 'REQUEST_MINT_NFT/V3') {
         const {
           data: { payload }
         } = event as MintNFTEventListener;
@@ -488,7 +488,7 @@ setTimeout(() => {
                       NFTokenID,
                       URI,
                       hash
-                    } as MintNFTResponse,
+                    } as MintNFTMessagingResponse,
                     window.location.origin
                   );
                   chrome.runtime.onMessage.removeListener(messageListener);

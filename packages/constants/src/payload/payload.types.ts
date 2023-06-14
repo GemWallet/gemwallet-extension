@@ -75,7 +75,7 @@ export interface SetTrustlineRequestDeprecated {
   value: string;
 }
 
-export interface MintNFTRequestPayload {
+export interface MintNFTRequest {
   URI: string | null;
   flags: number | NFTokenMintFlagsInterface | null;
   //TODO: Maybe we would need the issuer, maybe we can issue for someone else?
@@ -100,7 +100,7 @@ export interface SignMessageRequest {
 export type RequestPayload =
   | GetNetworkRequest
   | GetNFTRequest
-  | MintNFTRequestPayload
+  | MintNFTRequest
   | WebsiteRequest
   | SendPaymentRequest
   | SendPaymentRequestDeprecated
@@ -170,7 +170,7 @@ export interface GetNFTResponseDeprecated {
   nfts: AccountNFToken[] | null | undefined;
 }
 
-export interface MintNFTResponsePayload {
+export interface MintNFTResponse {
   NFTokenID: string;
   URI: string | undefined;
   hash: string;
@@ -186,7 +186,7 @@ export type ResponsePayload =
   | GetPublicKeyResponse
   | GetPublicKeyResponseDeprecated
   | IsInstalledResponse
-  | MintNFTResponsePayload
+  | MintNFTResponse
   | SendPaymentResponse
   | SendPaymentResponseDeprecated
   | SetTrustlineResponse

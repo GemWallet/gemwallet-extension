@@ -247,7 +247,7 @@ chrome.runtime.onMessage.addListener(
           hash: undefined
         }
       });
-    } else if (type === 'REQUEST_MINT_NFT') {
+    } else if (type === 'REQUEST_MINT_NFT/V3') {
       focusOrCreatePopupWindow({
         payload: message.payload,
         sender,

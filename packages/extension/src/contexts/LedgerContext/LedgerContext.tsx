@@ -2,7 +2,14 @@ import { useContext, createContext, FC, useCallback } from 'react';
 
 import * as Sentry from '@sentry/react';
 import { sign } from 'ripple-keypairs';
-import { TransactionMetadata, Payment, Transaction, TrustSet, Wallet, convertStringToHex } from 'xrpl';
+import {
+  TransactionMetadata,
+  Payment,
+  Transaction,
+  TrustSet,
+  Wallet,
+  convertStringToHex
+} from 'xrpl';
 import {
   CreatedNode,
   DeletedNode,
@@ -12,8 +19,8 @@ import {
 
 import {
   AccountNFToken,
-  MintNFTRequestPayload,
-  MintNFTResponsePayload,
+  MintNFTRequest,
+  MintNFTResponse,
   GetNFTRequest,
   SendPaymentRequest,
   SetTrustlineRequest
@@ -57,7 +64,7 @@ export interface LedgerContextType {
   getNFTs: (payload?: GetNFTRequest) => Promise<GetNFTsResponse>;
   getTransactions: () => Promise<AccountTransaction[]>;
   fundWallet: () => Promise<FundWalletResponse>;
-  mintNFT: (payload: MintNFTRequestPayload) => Promise<MintNFTResponsePayload>;
+  mintNFT: (payload: MintNFTRequest) => Promise<MintNFTResponse>;
 }
 
 const LedgerContext = createContext<LedgerContextType>({
@@ -156,7 +163,7 @@ const LedgerProvider: FC = ({ children }) => {
   }, [client, getCurrentWallet]);
 
   const mintNFT = useCallback(
-    async (payload: MintNFTRequestPayload) => {
+    async (payload: MintNFTRequest) => {
       const wallet = getCurrentWallet();
       if (!client) {
         throw new Error('You need to be connected to a ledger to mint an NFT');
