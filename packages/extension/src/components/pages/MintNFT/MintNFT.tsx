@@ -5,7 +5,7 @@ import { Button, Container, IconButton, Paper, Tooltip, Typography } from '@mui/
 import * as Sentry from '@sentry/react';
 import { NFTokenMintFlagsInterface, convertStringToHex } from 'xrpl';
 
-import { GEM_WALLET, ReceivePaymentHashBackgroundMessage } from '@gemwallet/constants';
+import { GEM_WALLET, ReceiveMintNFTBackgroundMessage } from '@gemwallet/constants';
 
 import { DEFAULT_RESERVE, ERROR_RED } from '../../../constants';
 import { useLedger, useNetwork, useServer, useWallet } from '../../../contexts';
@@ -124,13 +124,16 @@ export const MintNFT: FC = () => {
 
   // TODO: We need to know what we want to return when NFT is minted.
   const createMessage = useCallback(
-    (transactionHash: string | null | undefined): ReceivePaymentHashBackgroundMessage => {
+    (transactionHash: string | null | undefined): ReceiveMintNFTBackgroundMessage => {
       return {
         app: GEM_WALLET,
-        type: 'RECEIVE_PAYMENT_HASH',
+        type: 'RECEIVE_MINT_NFT',
         payload: {
+          //TODO: Return the right values
           id: params.id,
-          hash: transactionHash
+          hash: transactionHash || '',
+          NFTokenID: '',
+          URI: undefined
         }
       };
     },
@@ -140,7 +143,7 @@ export const MintNFT: FC = () => {
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);
     const message = createMessage(null);
-    chrome.runtime.sendMessage<ReceivePaymentHashBackgroundMessage>(message);
+    chrome.runtime.sendMessage<ReceiveMintNFTBackgroundMessage>(message);
   }, [createMessage]);
 
   const handleConfirm = useCallback(() => {
@@ -157,13 +160,13 @@ export const MintNFT: FC = () => {
       .then((transactionHash) => {
         setTransaction(TransactionStatus.Success);
         // const message = createMessage(transactionHash);
-        // chrome.runtime.sendMessage<ReceivePaymentHashBackgroundMessage>(message);
+        // chrome.runtime.sendMessage<ReceiveMintNFTBackgroundMessage>(message);
       })
       .catch((e) => {
         setErrorRequestRejection(e.message);
         setTransaction(TransactionStatus.Rejected);
         const message = createMessage(undefined);
-        chrome.runtime.sendMessage<ReceivePaymentHashBackgroundMessage>(message);
+        chrome.runtime.sendMessage<ReceiveMintNFTBackgroundMessage>(message);
       });
   }, [mintNFT, params.URI, params.flags, params.transferFee, params.NFTokenTaxon, createMessage]);
 

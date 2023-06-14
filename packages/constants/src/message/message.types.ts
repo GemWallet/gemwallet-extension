@@ -280,7 +280,7 @@ export interface ReceiveSignMessageContentMessageDeprecated {
 
 export interface ReceiveMintNFTContentMessage {
   app: typeof GEM_WALLET;
-  type: 'RECEIVE_MINT_NFT_MESSAGE';
+  type: 'RECEIVE_MINT_NFT';
   payload: MintNFTResponsePayload;
 }
 

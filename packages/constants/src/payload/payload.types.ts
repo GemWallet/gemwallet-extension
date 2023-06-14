@@ -181,11 +181,11 @@ export type ResponsePayload =
   | GetAddressResponseDeprecated
   | GetNFTResponse
   | GetNFTResponseDeprecated
-  | IsInstalledResponse
   | GetNetworkResponse
   | GetNetworkResponseDeprecated
   | GetPublicKeyResponse
   | GetPublicKeyResponseDeprecated
+  | IsInstalledResponse
   | MintNFTResponsePayload
   | SendPaymentResponse
   | SendPaymentResponseDeprecated
