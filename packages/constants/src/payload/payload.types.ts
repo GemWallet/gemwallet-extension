@@ -170,11 +170,12 @@ export interface GetNFTResponseDeprecated {
   nfts: AccountNFToken[] | null | undefined;
 }
 
-export interface MintNFTResponse {
-  NFTokenID: string;
-  URI: string | undefined;
-  hash: string;
-}
+export interface MintNFTResponse
+  extends BaseResponse<{
+    NFTokenID: string;
+    URI: string | undefined;
+    hash: string;
+  }> {}
 
 export type ResponsePayload =
   | GetAddressResponse

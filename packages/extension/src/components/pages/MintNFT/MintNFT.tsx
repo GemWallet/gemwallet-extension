@@ -5,12 +5,13 @@ import { Button, Container, IconButton, Paper, Tooltip, Typography } from '@mui/
 import * as Sentry from '@sentry/react';
 import { NFTokenMintFlagsInterface, convertStringToHex } from 'xrpl';
 
-import { GEM_WALLET, ReceiveMintNFTBackgroundMessage } from '@gemwallet/constants';
+import { GEM_WALLET, ReceiveMintNFTBackgroundMessage, ResponseType } from '@gemwallet/constants';
 
 import { DEFAULT_RESERVE, ERROR_RED } from '../../../constants';
 import { useLedger, useNetwork, useServer, useWallet } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
 import { formatToken } from '../../../utils';
+import { serializeError } from '../../../utils/errors';
 import { TileLoader } from '../../atoms';
 import { AsyncTransaction, PageWithSpinner, PageWithTitle } from '../../templates';
 
@@ -124,16 +125,27 @@ export const MintNFT: FC = () => {
 
   // TODO: We need to know what we want to return when NFT is minted.
   const createMessage = useCallback(
-    (transactionHash: string | null | undefined): ReceiveMintNFTBackgroundMessage => {
+    (messagePayload: {
+      hash: string | null | undefined;
+      NFTokenID?: string | null | undefined;
+      URI?: string | null | undefined;
+      error?: Error;
+    }): ReceiveMintNFTBackgroundMessage => {
+      const { hash, NFTokenID, URI, error } = messagePayload;
+
       return {
         app: GEM_WALLET,
-        type: 'RECEIVE_MINT_NFT',
+        type: 'RECEIVE_MINT_NFT/V3',
         payload: {
           //TODO: Return the right values
           id: params.id,
-          hash: transactionHash || '',
-          NFTokenID: '',
-          URI: undefined
+          type: ResponseType.Response,
+          result: {
+            hash: hash || '',
+            NFTokenID: NFTokenID || '',
+            URI: URI || ''
+          },
+          error: error ? serializeError(error) : undefined
         }
       };
     },
@@ -142,7 +154,11 @@ export const MintNFT: FC = () => {
 
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);
-    const message = createMessage(null);
+    const message = createMessage({
+      hash: null,
+      NFTokenID: null,
+      URI: null
+    });
     chrome.runtime.sendMessage<ReceiveMintNFTBackgroundMessage>(message);
   }, [createMessage]);
 
@@ -165,7 +181,12 @@ export const MintNFT: FC = () => {
       .catch((e) => {
         setErrorRequestRejection(e.message);
         setTransaction(TransactionStatus.Rejected);
-        const message = createMessage(undefined);
+        const message = createMessage({
+          hash: undefined,
+          NFTokenID: undefined,
+          URI: undefined,
+          error: e
+        });
         chrome.runtime.sendMessage<ReceiveMintNFTBackgroundMessage>(message);
       });
   }, [mintNFT, params.URI, params.flags, params.transferFee, params.NFTokenTaxon, createMessage]);

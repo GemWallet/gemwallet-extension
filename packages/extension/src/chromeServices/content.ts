@@ -479,15 +479,14 @@ setTimeout(() => {
               const { app, type, payload } = message;
               // We make sure that the message comes from GemWallet
               if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
-                if (type === 'RECEIVE_MINT_NFT') {
-                  const { NFTokenID, URI, hash } = payload;
+                if (type === 'RECEIVE_MINT_NFT/V3') {
+                  const { result, error } = payload;
                   window.postMessage(
                     {
                       source: 'GEM_WALLET_MSG_RESPONSE',
                       messagedId,
-                      NFTokenID,
-                      URI,
-                      hash
+                      result,
+                      error
                     } as MintNFTMessagingResponse,
                     window.location.origin
                   );

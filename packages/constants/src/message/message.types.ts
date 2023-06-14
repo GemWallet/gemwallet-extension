@@ -50,7 +50,7 @@ export type ReceiveMessage =
   | 'RECEIVE_GET_NFT/V3'
   | 'RECEIVE_GET_PUBLIC_KEY/V3'
   | 'RECEIVE_GET_NETWORK/V3'
-  | 'RECEIVE_MINT_NFT'
+  | 'RECEIVE_MINT_NFT/V3'
   | 'RECEIVE_NETWORK'
   | 'RECEIVE_NFT'
   | 'RECEIVE_PAYMENT_HASH'
@@ -280,8 +280,8 @@ export interface ReceiveSignMessageContentMessageDeprecated {
 
 export interface ReceiveMintNFTContentMessage {
   app: typeof GEM_WALLET;
-  type: 'RECEIVE_MINT_NFT';
-  payload: MintNFTResponse;
+  type: 'RECEIVE_MINT_NFT/V3';
+  payload: MintNFTMessagingResponse;
 }
 
 // Background Script Messages

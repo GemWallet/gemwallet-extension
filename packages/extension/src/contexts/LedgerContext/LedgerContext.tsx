@@ -20,7 +20,6 @@ import {
 import {
   AccountNFToken,
   MintNFTRequest,
-  MintNFTResponse,
   GetNFTRequest,
   SendPaymentRequest,
   SetTrustlineRequest
@@ -32,12 +31,18 @@ import { getLastItemFromArray } from '../../utils';
 import { useNetwork } from '../NetworkContext';
 import { useWallet } from '../WalletContext';
 
-export interface GetNFTsResponse {
+interface GetNFTsResponse {
   account_nfts: AccountNFToken[];
   marker?: unknown;
 }
 
-export interface FundWalletResponse {
+interface MintNFTResponse {
+  hash: string;
+  NFTokenID: string;
+  URI: string | undefined;
+}
+
+interface FundWalletResponse {
   wallet: Wallet;
   balance: number;
 }

@@ -252,9 +252,10 @@ chrome.runtime.onMessage.addListener(
         payload: message.payload,
         sender,
         parameter: PARAMETER_TRANSACTION_MINT_NFT,
-        receivingMessage: 'RECEIVE_MINT_NFT',
+        receivingMessage: 'RECEIVE_MINT_NFT/V3',
         errorPayload: {
-          hash: undefined
+          type: ResponseType.Reject,
+          result: undefined
         }
       });
     } else if (type === 'REQUEST_SET_TRUSTLINE/V3') {
