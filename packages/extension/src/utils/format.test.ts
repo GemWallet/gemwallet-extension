@@ -1,6 +1,6 @@
-import { xrpToDrops } from 'xrpl';
+import { TrustSet, xrpToDrops } from 'xrpl';
 
-import { formatAmount, formatFlags, formatToken } from './format';
+import { formatAmount, formatFlags, formatFlagsToNumber, formatToken } from './format';
 
 describe('Format util', () => {
   describe('formatAmount', () => {
@@ -93,5 +93,39 @@ describe('formatFlags', () => {
     const flags = {};
     const expectedResult = '';
     expect(formatFlags(flags)).toBe(expectedResult);
+  });
+});
+
+describe('formatFlagsToNumber', () => {
+  it('should return Flags as is if they are already a number', () => {
+    const tx: TrustSet = {
+      Account: 'fake',
+      LimitAmount: {
+        currency: 'USD',
+        issuer: 'fake',
+        value: '100'
+      },
+      TransactionType: 'TrustSet',
+      Flags: 131072
+    };
+    const result = formatFlagsToNumber(tx);
+    expect(result).toBe(131072);
+  });
+
+  it('should convert Flags from string to number using setTransactionFlagsToNumber function', () => {
+    const tx: TrustSet = {
+      Account: 'fake',
+      LimitAmount: {
+        currency: 'USD',
+        issuer: 'fake',
+        value: '100'
+      },
+      TransactionType: 'TrustSet',
+      Flags: {
+        tfSetNoRipple: true
+      }
+    };
+    const result = formatFlagsToNumber(tx);
+    expect(result).toBe(131072);
   });
 });
