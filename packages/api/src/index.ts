@@ -16,7 +16,16 @@ export type {
   TrustSetFlags
 } from '@gemwallet/constants';
 
-// API return types
+// API request types
+export type {
+  GetNetworkRequest,
+  GetNFTRequest,
+  SendPaymentRequest,
+  SetTrustlineRequest,
+  SignMessageRequest
+} from '@gemwallet/constants';
+
+// API response types
 export type {
   GetAddressResponse,
   GetNetworkResponse,
