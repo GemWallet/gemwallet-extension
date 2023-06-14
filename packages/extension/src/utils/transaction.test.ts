@@ -7,7 +7,7 @@ import {
   toHexMemos,
   fromHexMemos,
   checkFee
-} from './payment';
+} from './transaction';
 
 describe('buildDefaultMemos', () => {
   test('returns undefined when memoData is undefined or an empty string', () => {

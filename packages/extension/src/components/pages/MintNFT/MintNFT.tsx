@@ -167,10 +167,10 @@ export const MintNFT: FC = () => {
     // Amount and Destination will be present because if not,
     // we won't be able to go to the confirm transaction state
     mintNFT({
-      URI: params.URI,
-      flags: params.flags,
-      transferFee: params.transferFee,
-      NFTokenTaxon: params.NFTokenTaxon
+      URI: params.URI || undefined,
+      flags: params.flags || undefined,
+      transferFee: params.transferFee || undefined,
+      NFTokenTaxon: params.NFTokenTaxon || 0
     })
       //TODO: Do something with the transaction
       .then((transactionHash) => {

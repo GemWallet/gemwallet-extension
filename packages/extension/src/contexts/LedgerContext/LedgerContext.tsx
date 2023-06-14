@@ -2,14 +2,7 @@ import { useContext, createContext, FC, useCallback } from 'react';
 
 import * as Sentry from '@sentry/react';
 import { sign } from 'ripple-keypairs';
-import {
-  TransactionMetadata,
-  Payment,
-  Transaction,
-  TrustSet,
-  Wallet,
-  convertStringToHex
-} from 'xrpl';
+import { TransactionMetadata, Payment, Transaction, TrustSet, Wallet } from 'xrpl';
 import {
   CreatedNode,
   DeletedNode,
@@ -26,7 +19,7 @@ import {
 } from '@gemwallet/constants';
 
 import { AccountTransaction } from '../../types';
-import { toXRPLMemos } from '../../utils';
+import { toXRPLMemos, toXRPLSigners } from '../../utils';
 import { getLastItemFromArray } from '../../utils';
 import { useNetwork } from '../NetworkContext';
 import { useWallet } from '../WalletContext';
@@ -177,12 +170,25 @@ const LedgerProvider: FC = ({ children }) => {
       } else {
         const tx = await client.submitAndWait(
           {
-            TransactionType: 'NFTokenMint',
+            // BaseTransaction fields
             Account: wallet.wallet.classicAddress,
-            URI: payload.URI ? convertStringToHex(payload.URI) : undefined,
-            Flags: payload.flags ?? undefined,
-            TransferFee: payload.transferFee ?? undefined,
-            NFTokenTaxon: payload.NFTokenTaxon ?? 0
+            Fee: payload.fee,
+            Sequence: payload.sequence,
+            AccountTxnID: payload.accountTxnID,
+            LastLedgerSequence: payload.lastLedgerSequence,
+            ...(payload.memos && { Memos: toXRPLMemos(payload.memos) }), // Each field of each memo is hex encoded
+            ...(payload.signers && { Signers: toXRPLSigners(payload.signers) }),
+            SourceTag: payload.sourceTag,
+            SigningPubKey: payload.signingPubKey,
+            TicketSequence: payload.ticketSequence,
+            TxnSignature: payload.txnSignature,
+            // NFTokenMint specific fields
+            TransactionType: 'NFTokenMint',
+            NFTokenTaxon: payload.NFTokenTaxon,
+            Issuer: payload.issuer,
+            TransferFee: payload.transferFee,
+            URI: payload.URI, // Must be hex encoded
+            Flags: payload.flags
           },
           { wallet: wallet.wallet }
         );
