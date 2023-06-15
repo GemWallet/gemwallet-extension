@@ -79,17 +79,24 @@ fs.readFile('./package.json', 'utf8', (err, data) => {
       fs.rmSync('../constants/dist', { recursive: true });
     }
 
-    // Replace "@gemwallet/constants" by "../_constants"
-    fromDir(DESTINATION_FOLDER, /\.js$/, (filename) => {
+    // Replace "@gemwallet/constants" by "/_constants"
+    fromDir(DESTINATION_FOLDER, /\.(js|d\.ts)$/, (filename) => {
       fs.readFile(filename, 'utf8', (err, contents) => {
         if (err) {
           console.log('Error while reading the file', err);
           return;
         }
 
-        const replaced = contents.replace(/@gemwallet\/constants/g, '../_constants');
+        const relativePathToConstants = path.relative(
+          path.dirname(filename),
+          `${path.resolve(__dirname)}/dist/_constants`
+        );
+        const replacedImportPath = relativePathToConstants.startsWith('../')
+          ? relativePathToConstants
+          : `./${relativePathToConstants}`;
+        const replacedImport = contents.replace(/@gemwallet\/constants/g, replacedImportPath);
 
-        fs.writeFile(filename, replaced, 'utf-8', (err) => {
+        fs.writeFile(filename, replacedImport, 'utf-8', (err) => {
           if (err) {
             console.log('Error while writing the file', err);
             return;
