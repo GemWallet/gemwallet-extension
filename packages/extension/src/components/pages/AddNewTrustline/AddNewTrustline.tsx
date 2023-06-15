@@ -24,6 +24,7 @@ import { useLedger, useNetwork, useServer, useWallet } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
 import {
   checkFee,
+  currencyToHex,
   fromHexMemos,
   parseLimitAmount,
   parseMemos,
@@ -233,6 +234,9 @@ export const AddNewTrustline: FC = () => {
     if (params.limitAmount === null) {
       setIsParamsMissing(true);
     } else {
+      if (params.limitAmount.currency.length > 3) {
+        params.limitAmount.currency = currencyToHex(params.limitAmount.currency);
+      }
       setTrustline({
         limitAmount: params.limitAmount,
         fee: params.fee || undefined,
