@@ -234,7 +234,7 @@ export const AddNewTrustline: FC = () => {
     if (params.limitAmount === null) {
       setIsParamsMissing(true);
     } else {
-      if (params.limitAmount.currency.length > 3) {
+      if (params.limitAmount.currency.length > 3 && params.limitAmount.currency.length !== 40) {
         params.limitAmount.currency = currencyToHex(params.limitAmount.currency);
       }
       setTrustline({
