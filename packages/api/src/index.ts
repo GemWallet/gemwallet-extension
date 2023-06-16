@@ -7,7 +7,7 @@ export * from './sendPayment';
 export * from './setTrustline';
 export * from './signMessage';
 
-export type { Amount } from 'xrpl/dist/npm/models/common';
+export type { Amount, IssuedCurrencyAmount } from 'xrpl/dist/npm/models/common';
 export type {
   AccountNFToken,
   Memo,
@@ -36,3 +36,7 @@ export type {
   SetTrustlineResponse,
   SignMessageResponse
 } from '@gemwallet/constants';
+
+// Helpers
+export { dropsToXrp, xrpToDrops } from 'xrpl/dist/npm/utils/xrpConversion';
+export { stringToHex, hexToString } from './helpers/crypto';
