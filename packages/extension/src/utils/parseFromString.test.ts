@@ -1,5 +1,7 @@
 import { NFTokenMintFlags, NFTokenMintFlagsInterface } from 'xrpl';
 
+import { Signer } from '@gemwallet/constants';
+
 import {
   mintNFTFlagsToNumber,
   parseAmount,
@@ -7,6 +9,7 @@ import {
   parseMemos,
   parseMintNFTFlags,
   parsePaymentFlags,
+  parseSigners,
   parseTrustSetFlags
 } from './parseFromString';
 
@@ -98,6 +101,45 @@ describe('parseMemos', () => {
         }
       }
     ]);
+  });
+});
+
+describe('parseSigners', () => {
+  it('should return null when input is null', () => {
+    expect(parseSigners(null)).toBeNull();
+  });
+
+  it('should return null when input is an empty string', () => {
+    expect(parseSigners('')).toBeNull();
+  });
+
+  it('should return null when input is not a valid JSON string', () => {
+    expect(parseSigners('invalidJSON')).toBeNull();
+  });
+
+  it('should return null when input is a valid JSON string but not an array', () => {
+    expect(parseSigners('{"key": "value"}')).toBeNull();
+  });
+
+  it('should return parsed signers when input is a valid JSON string of signers array', () => {
+    const signers: Signer[] = [
+      {
+        signer: {
+          account: 'account1',
+          txnSignature: 'txnSignature1',
+          signingPubKey: 'signingPubKey1'
+        }
+      },
+      {
+        signer: {
+          account: 'account2',
+          txnSignature: 'txnSignature2',
+          signingPubKey: 'signingPubKey2'
+        }
+      }
+    ];
+
+    expect(parseSigners(JSON.stringify(signers))).toEqual(signers);
   });
 });
 

@@ -11,37 +11,44 @@ import { DEFAULT_RESERVE, ERROR_RED } from '../../../constants';
 import { useLedger, useNetwork, useServer, useWallet } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
 import {
-  checkFee,
   formatAmount,
   formatFlags,
   formatToken,
+  fromHexMemos,
   mintNFTFlagsToNumber,
   parseMintNFTFlags
 } from '../../../utils';
 import { serializeError } from '../../../utils/errors';
+import {
+  BaseTransactionParams,
+  getBaseFromParams,
+  initialBaseTransactionParams,
+  parseBaseParamsFromURLParams
+} from '../../../utils/parseFromURLParams';
 import { TileLoader } from '../../atoms';
 import { AsyncTransaction, PageWithSpinner, PageWithTitle } from '../../templates';
 
 const DEFAULT_FEES = 'Loading ...';
 
-interface Params {
+interface Params extends BaseTransactionParams {
   id: number;
+  // MintNFT fields
   URI: string | null;
   flags: number | NFTokenMintFlagsInterface | null;
-  //TODO: Maybe we would need the issuer, maybe we can issue for someone else?
   transferFee: number | null;
   NFTokenTaxon: number;
-  fee: string | null;
 }
 
 export const MintNFT: FC = () => {
   const [params, setParams] = useState<Params>({
     id: 0,
+    // BaseTransaction fields
+    ...initialBaseTransactionParams,
+    // MintNFT fields
     URI: null,
     flags: null,
     transferFee: null,
-    NFTokenTaxon: 0,
-    fee: null
+    NFTokenTaxon: 0
   });
   const [estimatedFees, setEstimatedFees] = useState<string>(DEFAULT_FEES);
   const [errorFees, setErrorFees] = useState('');
@@ -92,11 +99,26 @@ export const MintNFT: FC = () => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const id = Number(urlParams.get('id')) || 0;
+
+    // BaseTransaction fields
+    const {
+      fee,
+      sequence,
+      accountTxnID,
+      lastLedgerSequence,
+      memos,
+      signers,
+      sourceTag,
+      signingPubKey,
+      ticketSequence,
+      txnSignature
+    } = parseBaseParamsFromURLParams(urlParams);
+
+    // MintNFT fields
     const URI = urlParams.get('URI');
     const flags = parseMintNFTFlags(urlParams.get('flags'));
     const transferFee = urlParams.get('transferFee') ? Number(urlParams.get('transferFee')) : null;
     const NFTokenTaxon = Number(urlParams.get('NFTokenTaxon')) ?? 0;
-    const fee = checkFee(urlParams.get('fee'));
 
     if (!URI && !flags && !transferFee && !fee) {
       // At least one parameter should be present to mint an NFT
@@ -106,11 +128,22 @@ export const MintNFT: FC = () => {
 
     setParams({
       id,
+      // BaseTransaction fields
+      fee,
+      sequence,
+      accountTxnID,
+      lastLedgerSequence,
+      memos,
+      signers,
+      sourceTag,
+      signingPubKey,
+      ticketSequence,
+      txnSignature,
+      // MintNFT fields
       URI,
       flags,
       transferFee,
-      NFTokenTaxon,
-      fee
+      NFTokenTaxon
     });
   }, []);
 
@@ -187,13 +220,14 @@ export const MintNFT: FC = () => {
     // Amount and Destination will be present because if not,
     // we won't be able to go to the confirm transaction state
     mintNFT({
+      // BaseTransaction fields
+      ...getBaseFromParams(params),
+      // MintNFT fields
       URI: params.URI || undefined,
       flags: formattedFlags || undefined,
       transferFee: params.transferFee || undefined,
-      NFTokenTaxon: params.NFTokenTaxon,
-      fee: params.fee || undefined
+      NFTokenTaxon: params.NFTokenTaxon
     })
-      //TODO: Do something with the transaction
       .then((response) => {
         setTransaction(TransactionStatus.Success);
         chrome.runtime.sendMessage<ReceiveMintNFTBackgroundMessage>(createMessage(response));
@@ -209,15 +243,7 @@ export const MintNFT: FC = () => {
         });
         chrome.runtime.sendMessage<ReceiveMintNFTBackgroundMessage>(message);
       });
-  }, [
-    mintNFT,
-    params.URI,
-    params.flags,
-    params.transferFee,
-    params.NFTokenTaxon,
-    params.fee,
-    createMessage
-  ]);
+  }, [mintNFT, params, createMessage]);
 
   const hasEnoughFunds = useMemo(() => {
     return Number(difference) > 0;
@@ -309,7 +335,18 @@ export const MintNFT: FC = () => {
     );
   }
 
-  const { URI, flags, transferFee, NFTokenTaxon, fee } = params;
+  const {
+    // Base transaction params
+    fee,
+    memos,
+    // Mint NFT params
+    URI,
+    flags,
+    transferFee,
+    NFTokenTaxon
+  } = params;
+
+  const decodedMemos = fromHexMemos(memos || []) || [];
 
   return (
     <PageWithTitle title="Confirm Transaction">
@@ -337,6 +374,31 @@ export const MintNFT: FC = () => {
         <Typography variant="body1">NFT Taxon:</Typography>
         <Typography variant="body2">{NFTokenTaxon}</Typography>
       </Paper>
+      {decodedMemos.length > 0 ? (
+        <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
+          <Typography variant="body1">Memos:</Typography>
+          {decodedMemos.map((memo, index) => (
+            <div
+              key={index}
+              style={{
+                marginBottom: index === decodedMemos.length - 1 ? 0 : '8px'
+              }}
+            >
+              <Typography
+                variant="body2"
+                style={{
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  maxWidth: '100%'
+                }}
+              >
+                {memo.memo.memoData}
+              </Typography>
+            </div>
+          ))}
+        </Paper>
+      ) : null}
       {flags ? (
         <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
           <Typography variant="body1">Flags:</Typography>

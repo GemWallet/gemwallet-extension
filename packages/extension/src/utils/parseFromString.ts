@@ -1,7 +1,7 @@
 import { NFTokenMintFlags, NFTokenMintFlagsInterface, xrpToDrops } from 'xrpl';
 import { Amount, IssuedCurrencyAmount } from 'xrpl/dist/npm/models/common';
 
-import { Memo, MintNFTFlags, PaymentFlags, TrustSetFlags } from '@gemwallet/constants';
+import { Memo, MintNFTFlags, PaymentFlags, Signer, TrustSetFlags } from '@gemwallet/constants';
 
 export const parseAmount = (
   amountString: string | null,
@@ -93,6 +93,22 @@ export const parseMemos = (memosString: string | null): Memo[] | null => {
 
     if (Array.isArray(parsedMemos)) {
       return parsedMemos as Memo[];
+    }
+  } catch (error) {}
+
+  return null;
+};
+
+export const parseSigners = (signersString: string | null): Signer[] | null => {
+  if (!signersString) {
+    return null;
+  }
+
+  try {
+    const parsedSigners = JSON.parse(signersString);
+
+    if (Array.isArray(parsedSigners)) {
+      return parsedSigners as Signer[];
     }
   } catch (error) {}
 

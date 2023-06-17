@@ -228,13 +228,12 @@ const LedgerProvider: FC = ({ children }) => {
             NFTokenID: lastFetchedNFT.NFTokenID
           };
 
-          return (
-            lastNFTFromFetched ||
-            (() => {
-              throw new Error(
-                "Couldn't fetch your NFT from the XRPL but the transaction was successful"
-              );
-            })()
+          if (lastNFTFromFetched) {
+            return lastNFTFromFetched;
+          }
+
+          throw new Error(
+            "Couldn't fetch your NFT from the XRPL but the transaction was successful"
           );
         } catch (e) {
           Sentry.captureException(e);
