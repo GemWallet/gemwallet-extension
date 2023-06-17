@@ -139,17 +139,17 @@ describe('parseMintNFTFlags', () => {
   test('parse flags', () => {
     expect(parseMintNFTFlags('123')).toEqual(123);
   });
+
   test('parse flags object', () => {
     expect(
       parseMintNFTFlags(
-        '{"tfBurnable":false,"tfOnlyXRP":false,"tfClearNoRipple":true,"tfSetFreeze":true,"tfClearFreeze":true}'
+        '{"tfBurnable":false,"tfOnlyXRP":false,"tfTrustLine":true,"tfTransferable":true}'
       )
     ).toEqual({
-      tfSetfAuth: true,
-      tfSetNoRipple: false,
-      tfClearNoRipple: true,
-      tfSetFreeze: true,
-      tfClearFreeze: true
+      tfBurnable: false,
+      tfOnlyXRP: false,
+      tfTrustLine: true,
+      tfTransferable: true
     });
   });
 });
