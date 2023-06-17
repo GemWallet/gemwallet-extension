@@ -18,6 +18,39 @@ export interface WebsiteRequest {
   favicon: string | null | undefined;
 }
 
+export interface BaseTransactionRequest {
+  // Integer amount of XRP, in drops, to be destroyed as a cost for distributing this transaction to the network.
+  // Some transaction types have different minimum requirements.
+  fee?: string;
+  // The sequence number of the account sending the transaction. A transaction is only valid if the Sequence number is
+  // exactly 1 greater than the previous transaction from the same account. The special case 0 means the transaction is
+  // using a Ticket instead.
+  sequence?: number;
+  // Hash value identifying another transaction. If provided, this transaction is only valid if the sending account's
+  // previously-sent transaction matches the provided hash.
+  accountTxnID?: string;
+  // Highest ledger index this transaction can appear in. Specifying this field places a strict upper limit on how long
+  // the transaction can wait to be validated or rejected.
+  lastLedgerSequence?: number;
+  // Additional arbitrary information used to identify this transaction.
+  // Each attribute of each memo must be hex encoded.
+  memos?: Memo[];
+  // Array of objects that represent a multi-signature which authorizes this transaction.
+  signers?: Signer[];
+  // Arbitrary integer used to identify the reason for this payment, or a sender on whose behalf this transaction is
+  // made. Conventionally, a refund should specify the initial payment's SourceTag as the refund payment's
+  // DestinationTag.
+  sourceTag?: number;
+  // Hex representation of the public key that corresponds to the private key used to sign this transaction. If an empty
+  // string, indicates a multi-signature is present in the Signers field instead.
+  signingPubKey?: string;
+  // The sequence number of the ticket to use in place of a Sequence number. If this is provided, Sequence must be 0.
+  // Cannot be used with AccountTxnID.
+  ticketSequence?: number;
+  // The signature that verifies this transaction as originating from the account it says it is from.
+  txnSignature?: string;
+}
+
 export interface SendPaymentRequest {
   // The amount to deliver, in one of the following formats:
   // - A string representing the number of XRP to deliver, in drops.
@@ -74,49 +107,19 @@ export interface SetTrustlineRequestDeprecated {
   value: string;
 }
 
-export interface MintNFTRequest {
-  // Hash value identifying another transaction. If provided, this transaction is only valid if the sending account's
-  // previously-sent transaction matches the provided hash.
-  accountTxnID?: string;
-  // Integer amount of XRP, in drops, to be destroyed as a cost for distributing this transaction to the network.
-  // Some transaction types have different minimum requirements.
-  fee?: string;
+export interface MintNFTRequest extends BaseTransactionRequest {
   flags?: MintNFTFlags;
   // Indicates the issuer of the token.
   // Should only be specified if the account executing the transaction is not the Issuer of the token, e.g. when minting on behalf of another account.
   issuer?: string;
-  // Highest ledger index this transaction can appear in. Specifying this field places a strict upper limit on how long
-  // the transaction can wait to be validated or rejected.
-  lastLedgerSequence?: number;
-  // Additional arbitrary information used to identify this transaction.
-  // Each attribute of each memo must be hex encoded.
-  memos?: Memo[];
   // Indicates the taxon associated with this token. The taxon is generally a value chosen by the minter of the token
   // and a given taxon may be used for multiple tokens. The implementation reserves taxon identifiers greater than or
   // equal to 2147483648 (0x80000000). If you have no use for this field, set it to 0.
   NFTokenTaxon: number;
-  // The sequence number of the account sending the transaction. A transaction is only valid if the Sequence number is
-  // exactly 1 greater than the previous transaction from the same account. The special case 0 means the transaction is
-  // using a Ticket instead.
-  sequence?: number;
-  // Array of objects that represent a multi-signature which authorizes this transaction.
-  signers?: Signer[];
-  // Hex representation of the public key that corresponds to the private key used to sign this transaction. If an empty
-  // string, indicates a multi-signature is present in the Signers field instead.
-  signingPubKey?: string;
-  // Arbitrary integer used to identify the reason for this payment, or a sender on whose behalf this transaction is
-  // made. Conventionally, a refund should specify the initial payment's SourceTag as the refund payment's
-  // DestinationTag.
-  sourceTag?: number;
-  // The sequence number of the ticket to use in place of a Sequence number. If this is provided, Sequence must be 0.
-  // Cannot be used with AccountTxnID.
-  ticketSequence?: number;
   // Specifies the fee charged by the issuer for secondary sales of the Token, if such sales are allowed. Valid values
   // for this field are between 0 and 50000 inclusive, allowing transfer rates between 0.000% and 50.000% in increments
   // of 0.001%. This field must NOT be present if the tfTransferable flag is not set.
   transferFee?: number;
-  // The signature that verifies this transaction as originating from the account it says it is from.
-  txnSignature?: string;
   // URI that points to the data and/or metadata associated with the NFT. This field need not be an HTTP or HTTPS URL;
   // it could be an IPFS URI, a magnet link, immediate data encoded as an RFC2379 "data" URL, or even an opaque
   // issuer-specific encoding. The URI is NOT checked for validity, but the field is limited to a maximum length of
