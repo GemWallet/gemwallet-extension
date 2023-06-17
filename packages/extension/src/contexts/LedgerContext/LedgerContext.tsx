@@ -4,12 +4,6 @@ import * as Sentry from '@sentry/react';
 import { sign } from 'ripple-keypairs';
 import { TransactionMetadata, Payment, Transaction, TrustSet, Wallet, NFTokenMint } from 'xrpl';
 import { BaseTransaction } from 'xrpl/dist/npm/models/transactions/common';
-import {
-  CreatedNode,
-  DeletedNode,
-  ModifiedNode,
-  Node
-} from 'xrpl/dist/npm/models/transactions/metadata';
 
 import {
   AccountNFToken,
@@ -22,7 +16,6 @@ import {
 
 import { AccountTransaction, WalletLedger } from '../../types';
 import { toXRPLMemos, toXRPLSigners } from '../../utils';
-import { getLastItemFromArray } from '../../utils';
 import { useNetwork } from '../NetworkContext';
 import { useWallet } from '../WalletContext';
 
@@ -34,26 +27,12 @@ interface GetNFTsResponse {
 interface MintNFTResponse {
   hash: string;
   NFTokenID: string;
-  URI: string | undefined;
 }
 
 interface FundWalletResponse {
   wallet: Wallet;
   balance: number;
 }
-
-type NFToken = {
-  NFTokenID: string;
-  URI: string | undefined;
-};
-
-const isCreatedNode = (node: Node): node is CreatedNode => {
-  return (node as CreatedNode).CreatedNode !== undefined;
-};
-
-const isModifiedNode = (node: Node): node is ModifiedNode => {
-  return (node as ModifiedNode).ModifiedNode !== undefined;
-};
 
 export interface LedgerContextType {
   // Return transaction hash in case of success
@@ -187,49 +166,16 @@ const LedgerProvider: FC = ({ children }) => {
             throw new Error("Couldn't mint the NFT");
           }
 
-          const nfTokenPagesNode = (tx.result.meta as TransactionMetadata).AffectedNodes.find(
-            (node: CreatedNode | ModifiedNode | DeletedNode) =>
-              // We check only for CreatedNode and ModifiedNode as NFTokenMint won't be using DeletedNode
-              (node as CreatedNode).CreatedNode?.LedgerEntryType === 'NFTokenPage' ||
-              (node as ModifiedNode).ModifiedNode?.LedgerEntryType === 'NFTokenPage'
-          );
+          const NFTokenID =
+            tx.result.meta && typeof tx.result.meta === 'object' && 'nftoken_id' in tx.result.meta
+              ? ((tx.result.meta as any).nftoken_id as string)
+              : undefined;
 
-          const lastNFT =
-            (nfTokenPagesNode &&
-              isCreatedNode(nfTokenPagesNode) &&
-              nfTokenPagesNode.CreatedNode.NewFields.NFTokens &&
-              getLastItemFromArray(
-                nfTokenPagesNode.CreatedNode.NewFields.NFTokens as { NFToken: NFToken }[]
-              )?.NFToken) ||
-            (nfTokenPagesNode &&
-              isModifiedNode(nfTokenPagesNode) &&
-              nfTokenPagesNode.ModifiedNode.PreviousFields?.NFTokens &&
-              getLastItemFromArray(
-                nfTokenPagesNode.ModifiedNode.PreviousFields.NFTokens as { NFToken: NFToken }[]
-              )?.NFToken);
-
-          if (lastNFT) {
+          if (NFTokenID) {
             return {
               hash: tx.result.hash,
-              URI: (lastNFT as NFToken).URI,
-              NFTokenID: (lastNFT as NFToken).NFTokenID
+              NFTokenID
             };
-          }
-
-          const nfts = await client.request({
-            command: 'account_nfts',
-            account: wallet.wallet.classicAddress
-          });
-
-          const lastFetchedNFT = getLastItemFromArray(nfts.result.account_nfts);
-          const lastNFTFromFetched = lastFetchedNFT && {
-            hash: tx.result.hash,
-            URI: lastFetchedNFT.URI,
-            NFTokenID: lastFetchedNFT.NFTokenID
-          };
-
-          if (lastNFTFromFetched) {
-            return lastNFTFromFetched;
           }
 
           throw new Error(

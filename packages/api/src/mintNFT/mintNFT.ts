@@ -15,7 +15,6 @@ export const mintNFT = async (payload: MintNFTRequest): Promise<MintNFTResponse>
    * - type: 'response'
    * - result:
    *    - NFTokenID: ID of the NFT
-   *    - URI: URI of the NFT
    *    - hash: transaction hash
    *
    * if the user rejects the transaction:

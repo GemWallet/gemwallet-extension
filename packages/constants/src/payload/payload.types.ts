@@ -218,7 +218,6 @@ export interface GetNFTResponseDeprecated {
 export interface MintNFTResponse
   extends BaseResponse<{
     NFTokenID: string;
-    URI: string | undefined;
     hash: string;
   }> {}
 

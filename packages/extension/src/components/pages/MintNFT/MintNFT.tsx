@@ -58,29 +58,25 @@ export const MintNFT: FC = () => {
   const { client, network } = useNetwork();
   const { serverInfo } = useServer();
 
-  // TODO: We need to know what we want to return when NFT is minted.
   const createMessage = useCallback(
     (messagePayload: {
       hash: string | null | undefined;
       NFTokenID?: string | null | undefined;
-      URI?: string | null | undefined;
       error?: Error;
     }): ReceiveMintNFTBackgroundMessage => {
-      const { hash, NFTokenID, URI, error } = messagePayload;
+      const { hash, NFTokenID, error } = messagePayload;
 
       return {
         app: GEM_WALLET,
         type: 'RECEIVE_MINT_NFT/V3',
         payload: {
-          //TODO: Return the right values
           id: params.id,
           type: ResponseType.Response,
           result:
             NFTokenID && hash
               ? {
                   hash: hash,
-                  NFTokenID: NFTokenID,
-                  URI: URI ?? undefined
+                  NFTokenID: NFTokenID
                 }
               : undefined,
           error: error ? serializeError(error) : undefined
@@ -202,8 +198,7 @@ export const MintNFT: FC = () => {
     setTransaction(TransactionStatus.Rejected);
     const message = createMessage({
       hash: null,
-      NFTokenID: null,
-      URI: null
+      NFTokenID: null
     });
     chrome.runtime.sendMessage<ReceiveMintNFTBackgroundMessage>(message);
   }, [createMessage]);
@@ -238,7 +233,6 @@ export const MintNFT: FC = () => {
         const message = createMessage({
           hash: undefined,
           NFTokenID: undefined,
-          URI: undefined,
           error: e
         });
         chrome.runtime.sendMessage<ReceiveMintNFTBackgroundMessage>(message);
