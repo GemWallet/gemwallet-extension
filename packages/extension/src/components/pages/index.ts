@@ -1,6 +1,7 @@
 export * from './About';
 export * from './AddNewTrustline';
 export * from './AddNewWallet';
+export * from './BaseTransaction';
 export * from './CreateWallet';
 export * from './EditWallet';
 export * from './History';

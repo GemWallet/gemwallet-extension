@@ -1,7 +1,7 @@
 import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 
 import ErrorIcon from '@mui/icons-material/Error';
-import { Button, Container, IconButton, Paper, Tooltip, Typography } from '@mui/material';
+import { Button, Container, Paper, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
 import { NFTokenMintFlagsInterface, convertHexToString } from 'xrpl';
 
@@ -10,14 +10,7 @@ import { GEM_WALLET, ReceiveMintNFTBackgroundMessage, ResponseType } from '@gemw
 import { DEFAULT_RESERVE, ERROR_RED } from '../../../constants';
 import { useLedger, useNetwork, useServer, useWallet } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
-import {
-  formatAmount,
-  formatFlags,
-  formatToken,
-  fromHexMemos,
-  mintNFTFlagsToNumber,
-  parseMintNFTFlags
-} from '../../../utils';
+import { fromHexMemos, mintNFTFlagsToNumber, parseMintNFTFlags } from '../../../utils';
 import {
   BaseTransactionParams,
   getBaseFromParams,
@@ -25,7 +18,7 @@ import {
   parseBaseParamsFromURLParams
 } from '../../../utils/baseParams';
 import { serializeError } from '../../../utils/errors';
-import { TileLoader } from '../../atoms';
+import { BaseTransaction } from '../../pages';
 import { AsyncTransaction, PageWithSpinner, PageWithTitle } from '../../templates';
 
 const DEFAULT_FEES = 'Loading ...';
@@ -374,62 +367,13 @@ export const MintNFT: FC = () => {
         <Typography variant="body1">NFT Taxon:</Typography>
         <Typography variant="body2">{NFTokenTaxon}</Typography>
       </Paper>
-      {decodedMemos.length > 0 ? (
-        <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-          <Typography variant="body1">Memos:</Typography>
-          {decodedMemos.map((memo, index) => (
-            <div
-              key={index}
-              style={{
-                marginBottom: index === decodedMemos.length - 1 ? 0 : '8px'
-              }}
-            >
-              <Typography
-                variant="body2"
-                style={{
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  maxWidth: '100%'
-                }}
-              >
-                {memo.memo.memoData}
-              </Typography>
-            </div>
-          ))}
-        </Paper>
-      ) : null}
-      {flags ? (
-        <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-          <Typography variant="body1">Flags:</Typography>
-          <Typography variant="body2">
-            <pre style={{ margin: 0 }}>{formatFlags(flags)}</pre>
-          </Typography>
-        </Paper>
-      ) : null}
-      <Paper elevation={24} style={{ padding: '10px' }}>
-        <Typography variant="body1" style={{ display: 'flex', alignItems: 'center' }}>
-          <Tooltip title="These are the fees to make the transaction over the network">
-            <IconButton size="small">
-              <ErrorIcon />
-            </IconButton>
-          </Tooltip>
-          Network fees:
-        </Typography>
-        <Typography variant="body2" gutterBottom align="right">
-          {errorFees ? (
-            <Typography variant="caption" style={{ color: ERROR_RED }}>
-              {errorFees}
-            </Typography>
-          ) : estimatedFees === DEFAULT_FEES ? (
-            <TileLoader secondLineOnly />
-          ) : fee ? (
-            formatToken(Number(fee), 'XRP (manual)', true)
-          ) : (
-            formatAmount(estimatedFees)
-          )}
-        </Typography>
-      </Paper>
+      <BaseTransaction
+        fee={fee ? Number(fee) : null}
+        memos={decodedMemos}
+        flags={flags}
+        errorFees={errorFees}
+        estimatedFees={estimatedFees}
+      />
       <Container style={{ display: 'flex', justifyContent: 'space-evenly' }}>
         <Button variant="contained" color="secondary" onClick={handleReject}>
           Reject
