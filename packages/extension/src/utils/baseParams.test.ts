@@ -1,4 +1,4 @@
-import { parseBaseParamsFromURLParams } from './parseFromURLParams';
+import { parseBaseParamsFromURLParams } from './baseParams';
 
 describe('parseBaseParamsFromURLParams', () => {
   it('should return the parsed base parameters from URL params', () => {

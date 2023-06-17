@@ -18,13 +18,13 @@ import {
   mintNFTFlagsToNumber,
   parseMintNFTFlags
 } from '../../../utils';
-import { serializeError } from '../../../utils/errors';
 import {
   BaseTransactionParams,
   getBaseFromParams,
   initialBaseTransactionParams,
   parseBaseParamsFromURLParams
-} from '../../../utils/parseFromURLParams';
+} from '../../../utils/baseParams';
+import { serializeError } from '../../../utils/errors';
 import { TileLoader } from '../../atoms';
 import { AsyncTransaction, PageWithSpinner, PageWithTitle } from '../../templates';
 
