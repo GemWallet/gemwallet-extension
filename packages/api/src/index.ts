@@ -3,6 +3,7 @@ export * from './getNetwork';
 export * from './getNFT';
 export * from './getPublicKey';
 export * from './isInstalled';
+export * from './mintNFT';
 export * from './sendPayment';
 export * from './setTrustline';
 export * from './signMessage';
@@ -20,6 +21,7 @@ export type {
 export type {
   GetNetworkRequest,
   GetNFTRequest,
+  MintNFTRequest,
   SendPaymentRequest,
   SetTrustlineRequest,
   SignMessageRequest
@@ -32,6 +34,7 @@ export type {
   GetNFTResponse,
   GetPublicKeyResponse,
   IsInstalledResponse,
+  MintNFTResponse,
   SendPaymentResponse,
   SetTrustlineResponse,
   SignMessageResponse
