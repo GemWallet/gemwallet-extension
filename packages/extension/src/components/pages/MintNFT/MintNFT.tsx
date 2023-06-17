@@ -30,6 +30,7 @@ interface Params extends BaseTransactionParams {
   flags: number | NFTokenMintFlagsInterface | null;
   transferFee: number | null;
   NFTokenTaxon: number;
+  issuer: string | null;
 }
 
 export const MintNFT: FC = () => {
@@ -41,7 +42,8 @@ export const MintNFT: FC = () => {
     URI: null,
     flags: null,
     transferFee: null,
-    NFTokenTaxon: 0
+    NFTokenTaxon: 0,
+    issuer: null
   });
   const [estimatedFees, setEstimatedFees] = useState<string>(DEFAULT_FEES);
   const [errorFees, setErrorFees] = useState('');
@@ -112,6 +114,7 @@ export const MintNFT: FC = () => {
     const flags = parseMintNFTFlags(urlParams.get('flags'));
     const transferFee = urlParams.get('transferFee') ? Number(urlParams.get('transferFee')) : null;
     const NFTokenTaxon = Number(urlParams.get('NFTokenTaxon')) ?? 0;
+    const issuer = urlParams.get('issuer');
 
     if (!URI && !flags && !transferFee && !fee) {
       // At least one parameter should be present to mint an NFT
@@ -136,7 +139,8 @@ export const MintNFT: FC = () => {
       URI,
       flags,
       transferFee,
-      NFTokenTaxon
+      NFTokenTaxon,
+      issuer
     });
   }, []);
 
@@ -149,7 +153,8 @@ export const MintNFT: FC = () => {
         ...(params.URI && { URI: params.URI }),
         ...(params.flags && { Flags: params.flags }),
         ...(params.transferFee && { TransferFee: params.transferFee }),
-        NFTokenTaxon: params.NFTokenTaxon
+        NFTokenTaxon: params.NFTokenTaxon,
+        ...(params.issuer && { Issuer: params.issuer })
       })
         .then((fees) => {
           setEstimatedFees(fees);
@@ -166,6 +171,7 @@ export const MintNFT: FC = () => {
     params.NFTokenTaxon,
     params.URI,
     params.flags,
+    params.issuer,
     params.transferFee
   ]);
 
@@ -219,7 +225,8 @@ export const MintNFT: FC = () => {
       URI: params.URI || undefined,
       flags: formattedFlags || undefined,
       transferFee: params.transferFee || undefined,
-      NFTokenTaxon: params.NFTokenTaxon
+      NFTokenTaxon: params.NFTokenTaxon,
+      issuer: params.issuer || undefined
     })
       .then((response) => {
         setTransaction(TransactionStatus.Success);
@@ -336,7 +343,8 @@ export const MintNFT: FC = () => {
     URI,
     flags,
     transferFee,
-    NFTokenTaxon
+    NFTokenTaxon,
+    issuer
   } = params;
 
   const decodedMemos = fromHexMemos(memos || []) || [];
@@ -361,6 +369,12 @@ export const MintNFT: FC = () => {
         <Paper elevation={24} style={{ padding: '10px' }}>
           <Typography variant="body1">Transfer Fee:</Typography>
           <Typography variant="body2">{transferFee}</Typography>
+        </Paper>
+      ) : null}
+      {issuer ? (
+        <Paper elevation={24} style={{ padding: '10px' }}>
+          <Typography variant="body1">Issuer:</Typography>
+          <Typography variant="body2">{issuer}</Typography>
         </Paper>
       ) : null}
       <Paper elevation={24} style={{ padding: '10px' }}>
