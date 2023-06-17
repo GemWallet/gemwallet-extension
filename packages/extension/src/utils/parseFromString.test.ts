@@ -1,20 +1,26 @@
+import { NFTokenMintFlags, NFTokenMintFlagsInterface } from 'xrpl';
+
 import {
+  mintNFTFlagsToNumber,
   parseAmount,
   parseLimitAmount,
   parseMemos,
+  parseMintNFTFlags,
   parsePaymentFlags,
   parseTrustSetFlags
 } from './parseFromString';
 
 describe('parseAmount', () => {
   test('parse amount in drops', () => {
-    expect(parseAmount('123')).toEqual('123');
+    expect(parseAmount('123', null, null, '')).toEqual('123');
   });
   test('parse amount in drops with decimals', () => {
-    expect(parseAmount('123.456')).toEqual('123.456');
+    expect(parseAmount('123.456', null, null, '')).toEqual('123.456');
   });
   test('parse amount object', () => {
-    expect(parseAmount('{"value":"123","issuer":"issuer","currency":"USD"}')).toEqual({
+    expect(
+      parseAmount('{"value":"123","issuer":"issuer","currency":"USD"}', null, null, '')
+    ).toEqual({
       value: '123',
       issuer: 'issuer',
       currency: 'USD'
@@ -126,5 +132,70 @@ describe('parseTrustSetFlags', () => {
       tfSetFreeze: true,
       tfClearFreeze: true
     });
+  });
+});
+
+describe('parseMintNFTFlags', () => {
+  test('parse flags', () => {
+    expect(parseMintNFTFlags('123')).toEqual(123);
+  });
+  test('parse flags object', () => {
+    expect(
+      parseMintNFTFlags(
+        '{"tfBurnable":false,"tfOnlyXRP":false,"tfClearNoRipple":true,"tfSetFreeze":true,"tfClearFreeze":true}'
+      )
+    ).toEqual({
+      tfSetfAuth: true,
+      tfSetNoRipple: false,
+      tfClearNoRipple: true,
+      tfSetFreeze: true,
+      tfClearFreeze: true
+    });
+  });
+});
+
+describe('mintNFTFlagsToNumber', () => {
+  it('should return 0 when all flags are false', () => {
+    const flags: NFTokenMintFlagsInterface = {
+      tfBurnable: false,
+      tfOnlyXRP: false,
+      tfTrustLine: false,
+      tfTransferable: false
+    };
+
+    expect(mintNFTFlagsToNumber(flags)).toBe(0);
+  });
+
+  it('should return correct number when all flags are true', () => {
+    const flags: NFTokenMintFlagsInterface = {
+      tfBurnable: true,
+      tfOnlyXRP: true,
+      tfTrustLine: true,
+      tfTransferable: true
+    };
+
+    const expectedResult =
+      NFTokenMintFlags.tfBurnable |
+      NFTokenMintFlags.tfOnlyXRP |
+      NFTokenMintFlags.tfTrustLine |
+      NFTokenMintFlags.tfTransferable;
+    expect(mintNFTFlagsToNumber(flags)).toBe(expectedResult);
+  });
+
+  it('should return correct number when some flags are true', () => {
+    const flags: NFTokenMintFlagsInterface = {
+      tfBurnable: false,
+      tfOnlyXRP: true,
+      tfTrustLine: false,
+      tfTransferable: true
+    };
+
+    const expectedResult = NFTokenMintFlags.tfOnlyXRP | NFTokenMintFlags.tfTransferable;
+    expect(mintNFTFlagsToNumber(flags)).toBe(expectedResult);
+  });
+
+  it('should return 0 when flags are not provided', () => {
+    const flags: NFTokenMintFlagsInterface = {};
+    expect(mintNFTFlagsToNumber(flags)).toBe(0);
   });
 });

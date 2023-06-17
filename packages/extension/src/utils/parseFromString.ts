@@ -1,13 +1,14 @@
-import { xrpToDrops } from 'xrpl';
+import { NFTokenMintFlags, NFTokenMintFlagsInterface, xrpToDrops } from 'xrpl';
+import { Amount, IssuedCurrencyAmount } from 'xrpl/dist/npm/models/common';
 
-import { Memo } from '@gemwallet/constants';
+import { Memo, MintNFTFlags, PaymentFlags, TrustSetFlags } from '@gemwallet/constants';
 
 export const parseAmount = (
   amountString: string | null,
   deprecatedCurrencyString: string | null,
   deprecatedIssuerString: string | null,
   messageType: string
-) => {
+): Amount | null => {
   if (!amountString) {
     return null;
   }
@@ -52,7 +53,7 @@ export const parseLimitAmount = (
   deprecatedAmountString: string | null,
   deprecatedCurrencyString: string | null,
   deprecatedIssuerString: string | null
-) => {
+): IssuedCurrencyAmount | null => {
   if (!amountString) {
     if (deprecatedAmountString && deprecatedCurrencyString && deprecatedIssuerString) {
       return {
@@ -82,7 +83,7 @@ export const parseLimitAmount = (
   return null;
 };
 
-export const parseMemos = (memosString: string | null) => {
+export const parseMemos = (memosString: string | null): Memo[] | null => {
   if (!memosString) {
     return null;
   }
@@ -98,7 +99,7 @@ export const parseMemos = (memosString: string | null) => {
   return null;
 };
 
-export const parsePaymentFlags = (flagsString: string | null) => {
+export const parsePaymentFlags = (flagsString: string | null): PaymentFlags | null => {
   if (!flagsString) {
     return null;
   }
@@ -128,7 +129,7 @@ export const parsePaymentFlags = (flagsString: string | null) => {
   return null;
 };
 
-export const parseTrustSetFlags = (flagsString: string | null) => {
+export const parseTrustSetFlags = (flagsString: string | null): TrustSetFlags | null => {
   if (!flagsString) {
     return null;
   }
@@ -160,4 +161,54 @@ export const parseTrustSetFlags = (flagsString: string | null) => {
   } catch (error) {}
 
   return null;
+};
+
+export const parseMintNFTFlags = (flagsString: string | null): MintNFTFlags | null => {
+  if (!flagsString) {
+    return null;
+  }
+
+  if (Number(flagsString)) {
+    return Number(flagsString);
+  }
+
+  try {
+    const parsedFlags = JSON.parse(flagsString);
+
+    if (
+      typeof parsedFlags === 'object' &&
+      parsedFlags !== null &&
+      ('tfBurnable' in parsedFlags ||
+        'tfOnlyXRP' in parsedFlags ||
+        'tfTrustLine' in parsedFlags ||
+        'tfTransferable' in parsedFlags)
+    ) {
+      return parsedFlags as {
+        tfBurnable?: boolean;
+        tfOnlyXRP?: boolean;
+        tfTrustLine?: boolean;
+        tfTransferable?: boolean;
+      };
+    }
+  } catch (error) {}
+
+  return null;
+};
+
+export const mintNFTFlagsToNumber = (flags: NFTokenMintFlagsInterface): number => {
+  let result = 0;
+  if (flags.tfBurnable) {
+    result |= NFTokenMintFlags.tfBurnable;
+  }
+  if (flags.tfOnlyXRP) {
+    result |= NFTokenMintFlags.tfOnlyXRP;
+  }
+  if (flags.tfTrustLine) {
+    result |= NFTokenMintFlags.tfTrustLine;
+  }
+  if (flags.tfTransferable) {
+    result |= NFTokenMintFlags.tfTransferable;
+  }
+
+  return result;
 };
