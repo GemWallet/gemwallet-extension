@@ -2,7 +2,8 @@ import { useContext, createContext, FC, useCallback } from 'react';
 
 import * as Sentry from '@sentry/react';
 import { sign } from 'ripple-keypairs';
-import { TransactionMetadata, Payment, Transaction, TrustSet, Wallet } from 'xrpl';
+import { TransactionMetadata, Payment, Transaction, TrustSet, Wallet, NFTokenMint } from 'xrpl';
+import { BaseTransaction } from 'xrpl/dist/npm/models/transactions/common';
 import {
   CreatedNode,
   DeletedNode,
@@ -15,10 +16,11 @@ import {
   MintNFTRequest,
   GetNFTRequest,
   SendPaymentRequest,
-  SetTrustlineRequest
+  SetTrustlineRequest,
+  BaseTransactionRequest
 } from '@gemwallet/constants';
 
-import { AccountTransaction } from '../../types';
+import { AccountTransaction, WalletLedger } from '../../types';
 import { toXRPLMemos, toXRPLSigners } from '../../utils';
 import { getLastItemFromArray } from '../../utils';
 import { useNetwork } from '../NetworkContext';
@@ -168,84 +170,76 @@ const LedgerProvider: FC = ({ children }) => {
       } else if (!wallet) {
         throw new Error('You need to have a wallet connected to mint an NFT');
       } else {
-        const tx = await client.submitAndWait(
-          {
-            // BaseTransaction fields
-            Account: wallet.wallet.classicAddress,
-            Fee: payload.fee,
-            Sequence: payload.sequence,
-            AccountTxnID: payload.accountTxnID,
-            LastLedgerSequence: payload.lastLedgerSequence,
-            ...(payload.memos && { Memos: toXRPLMemos(payload.memos) }), // Each field of each memo is hex encoded
-            ...(payload.signers && { Signers: toXRPLSigners(payload.signers) }),
-            SourceTag: payload.sourceTag,
-            SigningPubKey: payload.signingPubKey,
-            TicketSequence: payload.ticketSequence,
-            TxnSignature: payload.txnSignature,
-            // NFTokenMint specific fields
-            TransactionType: 'NFTokenMint',
-            NFTokenTaxon: payload.NFTokenTaxon,
-            Issuer: payload.issuer,
-            TransferFee: payload.transferFee,
-            URI: payload.URI, // Must be hex encoded
-            Flags: payload.flags
-          },
-          { wallet: wallet.wallet }
-        );
+        try {
+          const tx = await client.submitAndWait(
+            {
+              ...(buildBaseTransaction(payload, wallet, 'NFTokenMint') as NFTokenMint),
+              NFTokenTaxon: payload.NFTokenTaxon,
+              ...(payload.issuer && { Issuer: payload.issuer }),
+              ...(payload.transferFee && { TransferFee: payload.transferFee }),
+              ...(payload.URI && { URI: payload.URI }), // Must be hex encoded
+              ...(payload.flags && { Flags: payload.flags })
+            },
+            { wallet: wallet.wallet }
+          );
 
-        if (!tx.result.hash) {
-          throw new Error("Couldn't mint the NFT");
-        }
+          if (!tx.result.hash) {
+            throw new Error("Couldn't mint the NFT");
+          }
 
-        const nfTokenPagesNode = (tx.result.meta as TransactionMetadata).AffectedNodes.find(
-          (node: CreatedNode | ModifiedNode | DeletedNode) =>
-            // We check only for CreatedNode and ModifiedNode as NFTokenMint won't be using DeletedNode
-            (node as CreatedNode).CreatedNode?.LedgerEntryType === 'NFTokenPage' ||
-            (node as ModifiedNode).ModifiedNode?.LedgerEntryType === 'NFTokenPage'
-        );
+          const nfTokenPagesNode = (tx.result.meta as TransactionMetadata).AffectedNodes.find(
+            (node: CreatedNode | ModifiedNode | DeletedNode) =>
+              // We check only for CreatedNode and ModifiedNode as NFTokenMint won't be using DeletedNode
+              (node as CreatedNode).CreatedNode?.LedgerEntryType === 'NFTokenPage' ||
+              (node as ModifiedNode).ModifiedNode?.LedgerEntryType === 'NFTokenPage'
+          );
 
-        const lastNFT =
-          (nfTokenPagesNode &&
-            isCreatedNode(nfTokenPagesNode) &&
-            nfTokenPagesNode.CreatedNode.NewFields.NFTokens &&
-            getLastItemFromArray(
-              nfTokenPagesNode.CreatedNode.NewFields.NFTokens as { NFToken: NFToken }[]
-            )?.NFToken) ||
-          (nfTokenPagesNode &&
-            isModifiedNode(nfTokenPagesNode) &&
-            nfTokenPagesNode.ModifiedNode.PreviousFields?.NFTokens &&
-            getLastItemFromArray(
-              nfTokenPagesNode.ModifiedNode.PreviousFields.NFTokens as { NFToken: NFToken }[]
-            )?.NFToken);
+          const lastNFT =
+            (nfTokenPagesNode &&
+              isCreatedNode(nfTokenPagesNode) &&
+              nfTokenPagesNode.CreatedNode.NewFields.NFTokens &&
+              getLastItemFromArray(
+                nfTokenPagesNode.CreatedNode.NewFields.NFTokens as { NFToken: NFToken }[]
+              )?.NFToken) ||
+            (nfTokenPagesNode &&
+              isModifiedNode(nfTokenPagesNode) &&
+              nfTokenPagesNode.ModifiedNode.PreviousFields?.NFTokens &&
+              getLastItemFromArray(
+                nfTokenPagesNode.ModifiedNode.PreviousFields.NFTokens as { NFToken: NFToken }[]
+              )?.NFToken);
 
-        if (lastNFT) {
-          return {
+          if (lastNFT) {
+            return {
+              hash: tx.result.hash,
+              URI: (lastNFT as NFToken).URI,
+              NFTokenID: (lastNFT as NFToken).NFTokenID
+            };
+          }
+
+          const nfts = await client.request({
+            command: 'account_nfts',
+            account: wallet.wallet.classicAddress
+          });
+
+          const lastFetchedNFT = getLastItemFromArray(nfts.result.account_nfts);
+          const lastNFTFromFetched = lastFetchedNFT && {
             hash: tx.result.hash,
-            URI: (lastNFT as NFToken).URI,
-            NFTokenID: (lastNFT as NFToken).NFTokenID
+            URI: lastFetchedNFT.URI,
+            NFTokenID: lastFetchedNFT.NFTokenID
           };
+
+          return (
+            lastNFTFromFetched ||
+            (() => {
+              throw new Error(
+                "Couldn't fetch your NFT from the XRPL but the transaction was successful"
+              );
+            })()
+          );
+        } catch (e) {
+          Sentry.captureException(e);
+          throw e;
         }
-
-        const nfts = await client.request({
-          command: 'account_nfts',
-          account: wallet.wallet.classicAddress
-        });
-
-        const lastFetchedNFT = getLastItemFromArray(nfts.result.account_nfts);
-        const lastNFTFromFetched = lastFetchedNFT && {
-          hash: tx.result.hash,
-          URI: lastFetchedNFT.URI,
-          NFTokenID: lastFetchedNFT.NFTokenID
-        };
-
-        return (
-          lastNFTFromFetched ||
-          (() => {
-            throw new Error(
-              "Couldn't fetch your NFT from the XRPL but the transaction was successful"
-            );
-          })()
-        );
       }
     },
     [client, getCurrentWallet]
@@ -375,6 +369,25 @@ const LedgerProvider: FC = ({ children }) => {
       throw e;
     }
   }, [client, getCurrentWallet]);
+
+  const buildBaseTransaction = (
+    payload: BaseTransactionRequest,
+    wallet: WalletLedger,
+    txType: 'NFTokenMint' | 'Payment' | 'TrustSet'
+  ): BaseTransaction => ({
+    TransactionType: txType,
+    Account: wallet.publicAddress,
+    ...(payload.fee && { Fee: payload.fee }),
+    ...(payload.sequence && { Sequence: payload.sequence }),
+    ...(payload.accountTxnID && { AccountTxnID: payload.accountTxnID }),
+    ...(payload.lastLedgerSequence && { LastLedgerSequence: payload.lastLedgerSequence }),
+    ...(payload.memos && { Memos: toXRPLMemos(payload.memos) }), // Each field of each memo is hex encoded
+    ...(payload.signers && { Signers: toXRPLSigners(payload.signers) }),
+    ...(payload.sourceTag && { SourceTag: payload.sourceTag }),
+    ...(payload.signingPubKey && { SigningPubKey: payload.signingPubKey }),
+    ...(payload.ticketSequence && { TicketSequence: payload.ticketSequence }),
+    ...(payload.txnSignature && { TxnSignature: payload.txnSignature })
+  });
 
   const value: LedgerContextType = {
     sendPayment,
