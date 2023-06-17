@@ -21,6 +21,13 @@ describe('stringToHex', () => {
 
     expect(stringToHex(testString)).toEqual(expectedOutput);
   });
+
+  it('should handle non-ascii characters correctly', () => {
+    const testString = '你好';
+    const expectedOutput = 'E4BDA0E5A5BD';
+
+    expect(stringToHex(testString)).toEqual(expectedOutput);
+  });
 });
 
 describe('hexToString', () => {
