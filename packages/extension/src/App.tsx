@@ -59,6 +59,7 @@ import {
   PARAMETER_SHARE_NFT,
   PARAMETER_SHARE_PUBLIC_KEY,
   PARAMETER_SIGN_MESSAGE,
+  PARAMETER_TRANSACTION_MINT_NFT,
   PARAMETER_TRANSACTION_PAYMENT,
   PARAMETER_TRANSACTION_TRUSTLINE,
   RESET_PASSWORD_PATH,
@@ -208,6 +209,12 @@ const App: FC = () => {
                   id: windowId,
                   nfts: null
                 }
+        });
+      } else if (search.includes(PARAMETER_TRANSACTION_MINT_NFT)) {
+        handleTransaction({
+          app: GEM_WALLET,
+          type: 'RECEIVE_MINT_NFT/V3',
+          payload: defaultPayload
         });
       }
     }

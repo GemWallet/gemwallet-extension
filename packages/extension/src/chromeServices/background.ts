@@ -18,7 +18,8 @@ import {
   RequestMessage,
   RequestPayload,
   ResponsePayload,
-  ResponseType
+  ResponseType,
+  ReceiveMintNFTContentMessage
 } from '@gemwallet/constants';
 
 import {
@@ -323,6 +324,17 @@ chrome.runtime.onMessage.addListener(
         type: 'RECEIVE_PAYMENT_HASH',
         payload: {
           hash: payload.hash
+        }
+      });
+    } else if (type === 'RECEIVE_MINT_NFT/V3') {
+      const { payload } = message;
+      sendMessageToTab<ReceiveMintNFTContentMessage>(payload.id, {
+        app,
+        type: 'RECEIVE_MINT_NFT/V3',
+        payload: {
+          type: ResponseType.Response,
+          result: payload.result,
+          error: payload.error
         }
       });
     } else if (type === 'RECEIVE_SET_TRUSTLINE/V3') {
