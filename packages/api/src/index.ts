@@ -39,4 +39,4 @@ export type {
 
 // Helpers
 export { dropsToXrp, xrpToDrops } from 'xrpl/dist/npm/utils/xrpConversion';
-export { stringToHex, hexToString } from './helpers/crypto';
+export { convertStringToHex, convertHexToString } from 'xrpl/dist/npm/utils/stringConversion';
