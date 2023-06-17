@@ -102,25 +102,42 @@ describe('Trustline', () => {
     );
   });
 
-  it('Set a trustline from the UI', () => {
-    navigate(HOME_URL, PASSWORD);
+  const testCases = [
+    {
+      issuer: 'rwtDvu9QDfCskWuyE2TSEt3s56RbiWUKJN',
+      token: 'USD',
+      limit: '10000000',
+      formattedLimit: '10,000,000'
+    },
+    {
+      issuer: 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN',
+      token: 'SOLO',
+      limit: '100000000',
+      formattedLimit: '100,000,000'
+    }
+  ];
 
-    cy.contains('button', 'Add trustline').click();
+  testCases.forEach((testCase) => {
+    it(`Set a trustline from the UI with ${testCase.token}`, () => {
+      navigate(HOME_URL, PASSWORD);
 
-    // Should be on the Add Trustline Page
-    cy.get('p').should('have.text', 'Add trustline');
+      cy.contains('button', 'Add trustline').click();
 
-    // Fill the form
-    cy.get('input[id="issuer"]').type(DESTINATION_ADDRESS);
+      // Should be on the Add Trustline Page
+      cy.get('p').should('have.text', 'Add trustline');
 
-    cy.get('input[name="token"]').type(CURRENCY);
+      // Fill the form
+      cy.get('input[id="issuer"]').type(testCase.issuer);
 
-    cy.get('input[name="limit"]').type(VALUE);
+      cy.get('input[name="token"]').type(testCase.token);
 
-    // Confirm the trustline
-    cy.contains('button', 'Add trustline').click();
+      cy.get('input[name="limit"]').type(testCase.limit);
 
-    validateTrustlineTx(DESTINATION_ADDRESS, CURRENCY, '10,000,000');
+      // Confirm the trustline
+      cy.contains('button', 'Add trustline').click();
+
+      validateTrustlineTx(testCase.issuer, testCase.token, testCase.formattedLimit);
+    });
   });
 });
 
@@ -139,7 +156,7 @@ const navigate = (url: string, password: string) => {
   cy.contains('button', 'Unlock').click();
 };
 
-const validateTrustlineTx = (DESTINATION_ADDRESS: string, CURRENCY: string, LIMIT: string) => {
+const validateTrustlineTx = (destinationAddress: string, currency: string, limit: string) => {
   // Should be on the Warning Trustline Page
   cy.get('h1[data-testid="page-title"]').should('have.text', 'Add Trustline');
 
@@ -158,9 +175,9 @@ const validateTrustlineTx = (DESTINATION_ADDRESS: string, CURRENCY: string, LIMI
   cy.get('h1[data-testid="page-title"]').should('have.text', 'Add Trustline - Confirm');
 
   // Should have the proper information
-  cy.contains('Issuer:').next().should('have.text', DESTINATION_ADDRESS);
-  cy.contains('Currency:').next().should('have.text', CURRENCY);
-  cy.contains('Limit:').next().should('have.text', `${LIMIT} ${CURRENCY}`);
+  cy.contains('Issuer:').next().should('have.text', destinationAddress);
+  cy.contains('Currency:').next().should('have.text', currency);
+  cy.contains('Limit:').next().should('have.text', `${limit} ${currency}`);
 
   // Confirm the trustline
   cy.contains('button', 'Confirm').click();
