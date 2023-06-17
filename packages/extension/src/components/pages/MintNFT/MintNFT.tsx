@@ -10,7 +10,12 @@ import { GEM_WALLET, ReceiveMintNFTBackgroundMessage, ResponseType } from '@gemw
 import { DEFAULT_RESERVE, ERROR_RED } from '../../../constants';
 import { useLedger, useNetwork, useServer, useWallet } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
-import { fromHexMemos, mintNFTFlagsToNumber, parseMintNFTFlags } from '../../../utils';
+import {
+  formatTransferFee,
+  fromHexMemos,
+  mintNFTFlagsToNumber,
+  parseMintNFTFlags
+} from '../../../utils';
 import {
   BaseTransactionParams,
   getBaseFromParams,
@@ -362,7 +367,7 @@ export const MintNFT: FC = () => {
       {transferFee ? (
         <Paper elevation={24} style={{ padding: '10px' }}>
           <Typography variant="body1">Transfer Fee:</Typography>
-          <Typography variant="body2">{transferFee}</Typography>
+          <Typography variant="body2">{`${formatTransferFee(transferFee)}%`}</Typography>
         </Paper>
       ) : null}
       {issuer ? (

@@ -56,3 +56,7 @@ export const formatFlagsToNumber = (tx: Transaction) => {
   setTransactionFlagsToNumber(txCopy);
   return txCopy.Flags;
 };
+
+export const formatTransferFee = (fee: number) => {
+  return fee / 1000;
+};

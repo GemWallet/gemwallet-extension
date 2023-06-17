@@ -16,7 +16,7 @@ describe('Mint', () => {
       win.localStorage.setItem('network', 'Testnet');
     });
     cy.visit(
-      `http://localhost:3000?mint-nft?URI=4d696e746564207468726f7567682047656d57616c6c657421&flags=%7B%22tfOnlyXRP%22%3Atrue%2C%22tfTransferable%22%3Atrue%7D&fee=199&transferFee=3000&NFTokenTaxon=0&memos=%5B%7B%22memo%22%3A%7B%22memoType%22%3A%224465736372697074696f6e%22%2C%22memoData%22%3A%2254657374206d656d6f%22%7D%7D%5D&issuer=rNvFCZXpDtGeQ3bVas95wGLN6N2stGmA9o&id=210324818&requestMessage=undefined&transaction=mintNFT`,
+      `http://localhost:3000?mint-nft?URI=4d696e746564207468726f7567682047656d57616c6c657421&flags=%7B%22tfOnlyXRP%22%3Atrue%2C%22tfTransferable%22%3Atrue%7D&fee=199&transferFee=3000&NFTokenTaxon=0&memos=%5B%7B%22memo%22%3A%7B%22memoType%22%3A%224465736372697074696f6e%22%2C%22memoData%22%3A%2254657374206d656d6f%22%7D%7D%5D&id=210324818&requestMessage=undefined&transaction=mintNFT`,
       {
         onBeforeLoad(win) {
           (win as any).chrome = (win as any).chrome || {};
@@ -35,7 +35,7 @@ describe('Mint', () => {
   it('Mint NFT', () => {
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Confirm Transaction');
 
-    cy.contains('Transfer Fee:').next().should('have.text', '3000');
+    cy.contains('Transfer Fee:').next().should('have.text', '3%');
     cy.contains('NFT Taxon:').next().should('have.text', '0');
     cy.contains('Memos:').next().should('have.text', 'Test memo');
     cy.contains('Flags:')
