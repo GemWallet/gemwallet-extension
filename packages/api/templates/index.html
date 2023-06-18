@@ -14,6 +14,7 @@
       <button onclick="handleTrustline()">Add trustline (ETH)</button>
       <button onclick="handleGetNFT()">Get NFTs (check the console)</button>
       <button onclick="handleMintNFT()">Mint NFTs (check the console)</button>
+      <button onclick="handleCreateNFTOffer()">Create NFT offer (check the console)</button>
       <button onclick="handlePublicKey()">Get Public Key (check the console)</button>
       <button onclick="handleGetAddress()">Get Address (check the console)</button>
       <button onclick="handleGetNetwork()">Get Network (check the console)</button>
@@ -234,6 +235,40 @@
           };
 
           GemWalletApi.mintNFT(transaction)
+            .then((res) => {
+              console.log('Received response: ', res);
+            })
+            .catch((e) => {
+              console.error('Cannot proceed the transaction: ', e);
+            });
+        }
+      })
+      .catch((e) => {
+        console.error('GemWallet is not connected: ', e);
+      });
+  }
+  function handleCreateNFTOffer() {
+    GemWalletApi.isInstalled()
+      .then(({ result }) => {
+        if (result.isInstalled) {
+          const transaction = {
+            NFTokenID: 'Replace me!',
+            amount: 50000000, // 50 XRP
+            fee: '199',
+            flags: {
+              tfSellNFToken: true // If enabled, indicates that the offer is a sell offer. Otherwise, it is a buy offer.
+            },
+            memos: [
+              {
+                memo: {
+                  memoType: '4465736372697074696f6e',
+                  memoData: '54657374206d656d6f'
+                }
+              }
+            ]
+          };
+
+          GemWalletApi.createNFTOffer(transaction)
             .then((res) => {
               console.log('Received response: ', res);
             })
