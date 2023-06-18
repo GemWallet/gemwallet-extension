@@ -158,6 +158,13 @@ export interface CreateNFTOfferRequest extends BaseTransactionRequest {
   flags?: CreateNFTOfferFlags;
 }
 
+export interface CancelNFTOfferRequest extends BaseTransactionRequest {
+  // An array of IDs of the NFTokenOffer objects to cancel (not the IDs of NFToken objects, but the IDs of the
+  // NFTokenOffer objects). Each entry must be a different object ID of an NFTokenOffer object; the transaction is
+  // invalid if the array contains duplicate entries.
+  NFTokenOffers: string[];
+}
+
 export interface GetNFTRequest {
   // Limit the number of NFTokens to retrieve.
   limit?: number;
@@ -173,6 +180,7 @@ export interface SignMessageRequest {
 }
 
 export type RequestPayload =
+  | CancelNFTOfferRequest
   | CreateNFTOfferRequest
   | GetNetworkRequest
   | GetNFTRequest
@@ -257,7 +265,13 @@ export interface CreateNFTOfferResponse
     hash: string;
   }> {}
 
+export interface CancelNFTOfferResponse
+  extends BaseResponse<{
+    hash: string;
+  }> {}
+
 export type ResponsePayload =
+  | CancelNFTOfferResponse
   | CreateNFTOfferResponse
   | GetAddressResponse
   | GetAddressResponseDeprecated
