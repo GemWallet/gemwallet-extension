@@ -47,7 +47,7 @@ describe('Mint', () => {
     cy.get('p[data-testid="transaction-subtitle"]').should('have.text', 'Transaction Successful');
   });
 
-  it('Read the minted NFT ID', () => {
+  it('Read the minted NFT Token ID', () => {
     navigate('localhost:3000', PASSWORD);
 
     // Go to transaction history
@@ -56,8 +56,8 @@ describe('Mint', () => {
     // Find a mint transaction
     cy.contains('Mint NFT').closest('.MuiPaper-root').click();
 
-    // Find the NFT ID in the transaction details and add it to the URL
-    cy.contains('NFT ID')
+    // Find the NFT Token ID in the transaction details and add it to the URL
+    cy.contains('NFT Token ID')
       .next()
       .invoke('text')
       .then((NFTokenID) => {
@@ -72,7 +72,7 @@ describe('Mint', () => {
     // Confirm
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Confirm Transaction');
 
-    cy.contains('NFT ID:').next().should('have.text', this.NFTokenID);
+    cy.contains('NFT Token ID:').next().should('have.text', this.NFTokenID);
     cy.contains('Amount:').next().should('have.text', '50 XRP');
     cy.contains('Memos:').next().should('have.text', 'Test memo');
     cy.contains('Flags:')
