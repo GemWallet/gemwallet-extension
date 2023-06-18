@@ -235,8 +235,10 @@ export const CreateNFTOffer: FC = () => {
             </div>
           ) : null}
           <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-            <Typography variant="body1">NFT ID:</Typography>
-            <Typography variant="body2">{NFTokenID}</Typography>
+            <Typography variant="body1">NFT Token ID:</Typography>
+            <Typography variant="body2" style={{ wordBreak: 'break-word' }}>
+              {NFTokenID}
+            </Typography>
           </Paper>
           <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
             <Typography variant="body1">Amount:</Typography>
