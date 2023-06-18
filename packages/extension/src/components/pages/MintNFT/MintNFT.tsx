@@ -1,8 +1,7 @@
-import { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
 
 import ErrorIcon from '@mui/icons-material/Error';
 import { Button, Container, Paper, Typography } from '@mui/material';
-import * as Sentry from '@sentry/react';
 import { convertHexToString } from 'xrpl';
 
 import {
@@ -12,8 +11,8 @@ import {
   ResponseType
 } from '@gemwallet/constants';
 
-import { DEFAULT_RESERVE, ERROR_RED } from '../../../constants';
-import { useLedger, useNetwork, useServer, useWallet } from '../../../contexts';
+import { ERROR_RED } from '../../../constants';
+import { useLedger, useNetwork } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
 import {
   formatTransferFee,
@@ -29,9 +28,8 @@ import {
 } from '../../../utils/baseParams';
 import { serializeError } from '../../../utils/errors';
 import { BaseTransaction } from '../../organisms';
-import { AsyncTransaction, PageWithSpinner, PageWithTitle } from '../../templates';
-
-const DEFAULT_FEES = 'Loading ...';
+import { useFees, useTransactionStatus } from '../../organisms/BaseTransaction/hooks';
+import { PageWithTitle } from '../../templates';
 
 interface Params extends BaseTransactionParams {
   id: number;
@@ -55,18 +53,31 @@ export const MintNFT: FC = () => {
     NFTokenTaxon: 0,
     issuer: null
   });
-  const [estimatedFees, setEstimatedFees] = useState<string>(DEFAULT_FEES);
-  const [errorFees, setErrorFees] = useState('');
   const [errorRequestRejection, setErrorRequestRejection] = useState<string>('');
-  const [difference, setDifference] = useState<number | undefined>();
-  const [errorDifference, setErrorDifference] = useState<string | undefined>();
   const [isParamsMissing, setIsParamsMissing] = useState(false);
-
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
-  const { estimateNetworkFees, mintNFT } = useLedger();
-  const { getCurrentWallet } = useWallet();
-  const { client, network } = useNetwork();
-  const { serverInfo } = useServer();
+  const { mintNFT } = useLedger();
+  const { network } = useNetwork();
+  const { estimatedFees, errorFees, difference, errorDifference } = useFees(
+    {
+      TransactionType: 'NFTokenMint',
+      Account: '',
+      ...(params.URI && { URI: params.URI }),
+      ...(params.flags && { Flags: params.flags }),
+      ...(params.transferFee && { TransferFee: params.transferFee }),
+      NFTokenTaxon: params.NFTokenTaxon,
+      ...(params.issuer && { Issuer: params.issuer })
+    },
+    params.fee
+  );
+  const { hasEnoughFunds, transactionStatusComponent } = useTransactionStatus({
+    isParamsMissing,
+    errorDifference,
+    network,
+    difference,
+    transaction,
+    errorRequestRejection
+  });
 
   const createMessage = useCallback(
     (messagePayload: {
@@ -150,62 +161,6 @@ export const MintNFT: FC = () => {
     });
   }, []);
 
-  useEffect(() => {
-    const currentWallet = getCurrentWallet();
-    if (currentWallet && client) {
-      estimateNetworkFees({
-        TransactionType: 'NFTokenMint',
-        Account: currentWallet.publicAddress,
-        ...(params.URI && { URI: params.URI }),
-        ...(params.flags && { Flags: params.flags }),
-        ...(params.transferFee && { TransferFee: params.transferFee }),
-        NFTokenTaxon: params.NFTokenTaxon,
-        ...(params.issuer && { Issuer: params.issuer })
-      })
-        .then((fees) => {
-          setEstimatedFees(fees);
-        })
-        .catch((e) => {
-          Sentry.captureException(e);
-          setErrorFees(e.message);
-        });
-    }
-  }, [
-    client,
-    estimateNetworkFees,
-    getCurrentWallet,
-    params.NFTokenTaxon,
-    params.URI,
-    params.flags,
-    params.issuer,
-    params.transferFee
-  ]);
-
-  useEffect(() => {
-    const currentWallet = getCurrentWallet();
-    if (currentWallet) {
-      client
-        ?.getXrpBalance(currentWallet.publicAddress)
-        .then((currentBalance) => {
-          const diffFee = params.fee ? Number(params.fee) : Number(estimatedFees);
-          const difference =
-            Number(currentBalance) -
-            Number(serverInfo?.info.validated_ledger?.reserve_base_xrp || DEFAULT_RESERVE) -
-            Number(diffFee);
-          setDifference(difference);
-        })
-        .catch((e) => {
-          setErrorDifference(e.message);
-        });
-    }
-  }, [
-    client,
-    getCurrentWallet,
-    serverInfo?.info.validated_ledger?.reserve_base_xrp,
-    estimatedFees,
-    params.fee
-  ]);
-
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);
     const message = createMessage({
@@ -251,96 +206,6 @@ export const MintNFT: FC = () => {
       });
   }, [mintNFT, params, createMessage]);
 
-  const hasEnoughFunds = useMemo(() => {
-    return Number(difference) > 0;
-  }, [difference]);
-
-  if (isParamsMissing) {
-    return (
-      <AsyncTransaction
-        title="Transaction rejected"
-        subtitle={
-          <>
-            Your transaction failed, please try again.
-            <br />
-            At least one parameter should be provided to the extension.
-          </>
-        }
-        transaction={TransactionStatus.Rejected}
-      />
-    );
-  }
-
-  if (errorDifference) {
-    if (errorDifference === 'Account not found.') {
-      return (
-        <AsyncTransaction
-          title="Account not activated"
-          subtitle={
-            <>
-              {`Your account is not activated on the ${network} network.`}
-              <br />
-              {'Switch network or activate your account.'}
-            </>
-          }
-          transaction={TransactionStatus.Rejected}
-        />
-      );
-    }
-    Sentry.captureException('Transaction failed - errorDifference: ' + errorDifference);
-    return (
-      <AsyncTransaction
-        title="Error"
-        subtitle={errorDifference}
-        transaction={TransactionStatus.Rejected}
-      />
-    );
-  }
-
-  if (!difference) {
-    return <PageWithSpinner />;
-  }
-
-  if (transaction === TransactionStatus.Success || transaction === TransactionStatus.Pending) {
-    return (
-      <AsyncTransaction
-        title={
-          transaction === TransactionStatus.Success
-            ? 'Transaction accepted'
-            : 'Transaction in progress'
-        }
-        subtitle={
-          transaction === TransactionStatus.Success ? (
-            'Transaction Successful'
-          ) : (
-            <>
-              We are processing your transaction
-              <br />
-              Please wait
-            </>
-          )
-        }
-        transaction={transaction}
-      />
-    );
-  }
-
-  if (transaction === TransactionStatus.Rejected) {
-    return (
-      <AsyncTransaction
-        title="Transaction rejected"
-        subtitle={
-          <>
-            Your transaction failed, please try again.
-            <br />
-            {errorRequestRejection ? errorRequestRejection : 'Something went wrong'}
-          </>
-        }
-        transaction={TransactionStatus.Rejected}
-      />
-    );
-  }
-
   const {
     // Base transaction params
     fee,
@@ -356,69 +221,76 @@ export const MintNFT: FC = () => {
   const decodedMemos = fromHexMemos(memos || []) || [];
 
   return (
-    <PageWithTitle
+    <>
+      {transactionStatusComponent ? (
+        <div>{transactionStatusComponent}</div>
+      ) : (
+        <PageWithTitle
       title="Confirm Transaction"
       styles={{ container: { justifyContent: 'initial' } }}
     >
       <div style={{ marginBottom: '40px' }}>
-        {!hasEnoughFunds ? (
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <ErrorIcon style={{ color: ERROR_RED }} />
-            <Typography variant="body1" style={{ marginLeft: '10px', color: ERROR_RED }}>
-              Insufficient funds.
-            </Typography>
+          {!hasEnoughFunds ? (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              <ErrorIcon style={{ color: ERROR_RED }} />
+              <Typography variant="body1" style={{ marginLeft: '10px', color: ERROR_RED }}>
+                Insufficient funds.
+              </Typography>
+            </div>
+          ) : null}
+          {URI ? (
+            <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
+              <Typography variant="body1">URI:</Typography>
+              <Typography variant="body2">{convertHexToString(URI)}</Typography>
+            </Paper>
+          ) : null}
+          {transferFee ? (
+            <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
+              <Typography variant="body1">Transfer Fee:</Typography>
+              <Typography variant="body2">{`${formatTransferFee(transferFee)}%`}</Typography>
+            </Paper>
+          ) : null}
+          {issuer ? (
+            <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
+              <Typography variant="body1">Issuer:</Typography>
+              <Typography variant="body2">{issuer}</Typography>
+            </Paper>
+          ) : null}
+          <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
+            <Typography variant="body1">NFT Taxon:</Typography>
+            <Typography variant="body2">{NFTokenTaxon}</Typography>
+          </Paper>
+
+            <BaseTransaction
+              fee={fee ? Number(fee) : null}
+              memos={decodedMemos}
+              flags={flags}
+              errorFees={errorFees}
+              estimatedFees={estimatedFees}
+            />
           </div>
-        ) : null}
-        {URI ? (
-          <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-            <Typography variant="body1">URI:</Typography>
-            <Typography variant="body2">{convertHexToString(URI)}</Typography>
-          </Paper>
-        ) : null}
-        {transferFee ? (
-          <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-            <Typography variant="body1">Transfer Fee:</Typography>
-            <Typography variant="body2">{`${formatTransferFee(transferFee)}%`}</Typography>
-          </Paper>
-        ) : null}
-        {issuer ? (
-          <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-            <Typography variant="body1">Issuer:</Typography>
-            <Typography variant="body2">{issuer}</Typography>
-          </Paper>
-        ) : null}
-        <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-          <Typography variant="body1">NFT Taxon:</Typography>
-          <Typography variant="body2">{NFTokenTaxon}</Typography>
-        </Paper>
-        <BaseTransaction
-          fee={fee ? Number(fee) : null}
-          memos={decodedMemos}
-          flags={flags}
-          errorFees={errorFees}
-          estimatedFees={estimatedFees}
-        />
-      </div>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          position: 'fixed',
-          bottom: 5,
-          left: 0,
-          right: 0,
-          backgroundColor: '#1d1d1d'
-        }}
-      >
-        <Container style={{ display: 'flex', justifyContent: 'space-evenly', margin: '10px' }}>
-          <Button variant="contained" color="secondary" onClick={handleReject}>
-            Reject
-          </Button>
-          <Button variant="contained" onClick={handleConfirm} disabled={!hasEnoughFunds}>
-            Confirm
-          </Button>
-        </Container>
-      </div>
-    </PageWithTitle>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              position: 'fixed',
+              bottom: 5,
+              left: 0,
+              right: 0,
+              backgroundColor: '#1d1d1d'
+            }}
+          >
+            <Container style={{ display: 'flex', justifyContent: 'space-evenly', margin: '10px' }}>
+              <Button variant="contained" color="secondary" onClick={handleReject}>
+                Reject
+              </Button>
+              <Button variant="contained" onClick={handleConfirm} disabled={!hasEnoughFunds}>
+                Confirm
+              </Button>
+            </Container>
+          </div>
+        </PageWithTitle>
+      )}
+    </>
   );
 };
