@@ -1,6 +1,7 @@
 import {
   BackgroundMessage,
   GEM_WALLET,
+  ReceiveCancelNFTOfferContentMessage,
   ReceiveCreateNFTOfferContentMessage,
   ReceiveGetAddressContentMessage,
   ReceiveGetAddressContentMessageDeprecated,
@@ -29,6 +30,7 @@ import {
   PARAMETER_SHARE_NFT,
   PARAMETER_SHARE_PUBLIC_KEY,
   PARAMETER_SIGN_MESSAGE,
+  PARAMETER_TRANSACTION_CANCEL_NFT_OFFER,
   PARAMETER_TRANSACTION_CREATE_NFT_OFFER,
   PARAMETER_TRANSACTION_MINT_NFT,
   PARAMETER_TRANSACTION_PAYMENT,
@@ -272,6 +274,17 @@ chrome.runtime.onMessage.addListener(
           result: undefined
         }
       });
+    } else if (type === 'REQUEST_CANCEL_NFT_OFFER/V3') {
+      focusOrCreatePopupWindow({
+        payload: message.payload,
+        sender,
+        parameter: PARAMETER_TRANSACTION_CANCEL_NFT_OFFER,
+        receivingMessage: 'RECEIVE_CANCEL_NFT_OFFER/V3',
+        errorPayload: {
+          type: ResponseType.Reject,
+          result: undefined
+        }
+      });
     } else if (type === 'REQUEST_SET_TRUSTLINE/V3') {
       focusOrCreatePopupWindow({
         payload: message.payload,
@@ -355,6 +368,17 @@ chrome.runtime.onMessage.addListener(
       sendMessageToTab<ReceiveCreateNFTOfferContentMessage>(payload.id, {
         app,
         type: 'RECEIVE_CREATE_NFT_OFFER/V3',
+        payload: {
+          type: ResponseType.Response,
+          result: payload.result,
+          error: payload.error
+        }
+      });
+    } else if (type === 'RECEIVE_CANCEL_NFT_OFFER/V3') {
+      const { payload } = message;
+      sendMessageToTab<ReceiveCancelNFTOfferContentMessage>(payload.id, {
+        app,
+        type: 'RECEIVE_CANCEL_NFT_OFFER/V3',
         payload: {
           type: ResponseType.Response,
           result: payload.result,
