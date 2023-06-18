@@ -3,12 +3,12 @@ import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import ErrorIcon from '@mui/icons-material/Error';
 import { Button, Container, Paper, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
-import { convertHexToString } from 'xrpl';
+import { Amount } from 'xrpl/dist/npm/models/common';
 
 import {
+  CreateNFTOfferFlags,
   GEM_WALLET,
-  MintNFTFlags,
-  ReceiveMintNFTBackgroundMessage,
+  ReceiveCreateNFTOfferBackgroundMessage,
   ResponseType
 } from '@gemwallet/constants';
 
@@ -16,10 +16,10 @@ import { DEFAULT_RESERVE, ERROR_RED } from '../../../constants';
 import { useLedger, useNetwork, useServer, useWallet } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
 import {
-  formatTransferFee,
+  createNFTOfferFlagsToNumber,
+  formatAmount,
   fromHexMemos,
-  mintNFTFlagsToNumber,
-  parseMintNFTFlags
+  parseCreateNFTOfferFlags
 } from '../../../utils';
 import {
   BaseTransactionParams,
@@ -28,32 +28,34 @@ import {
   parseBaseParamsFromURLParams
 } from '../../../utils/baseParams';
 import { serializeError } from '../../../utils/errors';
-import { BaseTransaction } from '../../organisms';
+import { BaseTransaction } from '../../organisms/BaseTransaction/BaseTransaction';
 import { AsyncTransaction, PageWithSpinner, PageWithTitle } from '../../templates';
 
 const DEFAULT_FEES = 'Loading ...';
 
 interface Params extends BaseTransactionParams {
   id: number;
-  // MintNFT fields
-  URI: string | null;
-  flags: MintNFTFlags | null;
-  transferFee: number | null;
-  NFTokenTaxon: number;
-  issuer: string | null;
+  // CreateNFTOffer fields
+  NFTokenID: string | null;
+  amount: Amount | null;
+  owner: string | null;
+  expiration: number | null;
+  destination: string | null;
+  flags: CreateNFTOfferFlags | null;
 }
 
-export const MintNFT: FC = () => {
+export const CreateNFTOffer: FC = () => {
   const [params, setParams] = useState<Params>({
     id: 0,
     // BaseTransaction fields
     ...initialBaseTransactionParams,
-    // MintNFT fields
-    URI: null,
-    flags: null,
-    transferFee: null,
-    NFTokenTaxon: 0,
-    issuer: null
+    // CreateNFTOffer fields
+    NFTokenID: null,
+    amount: null,
+    owner: null,
+    expiration: null,
+    destination: null,
+    flags: null
   });
   const [estimatedFees, setEstimatedFees] = useState<string>(DEFAULT_FEES);
   const [errorFees, setErrorFees] = useState('');
@@ -63,7 +65,8 @@ export const MintNFT: FC = () => {
   const [isParamsMissing, setIsParamsMissing] = useState(false);
 
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
-  const { estimateNetworkFees, mintNFT } = useLedger();
+
+  const { estimateNetworkFees, createNFTOffer } = useLedger();
   const { getCurrentWallet } = useWallet();
   const { client, network } = useNetwork();
   const { serverInfo } = useServer();
@@ -71,24 +74,21 @@ export const MintNFT: FC = () => {
   const createMessage = useCallback(
     (messagePayload: {
       hash: string | null | undefined;
-      NFTokenID?: string | null | undefined;
       error?: Error;
-    }): ReceiveMintNFTBackgroundMessage => {
-      const { hash, NFTokenID, error } = messagePayload;
+    }): ReceiveCreateNFTOfferBackgroundMessage => {
+      const { hash, error } = messagePayload;
 
       return {
         app: GEM_WALLET,
-        type: 'RECEIVE_MINT_NFT/V3',
+        type: 'RECEIVE_CREATE_NFT_OFFER/V3',
         payload: {
           id: params.id,
           type: ResponseType.Response,
-          result:
-            NFTokenID && hash
-              ? {
-                  hash: hash,
-                  NFTokenID: NFTokenID
-                }
-              : undefined,
+          result: hash
+            ? {
+                hash: hash
+              }
+            : undefined,
           error: error ? serializeError(error) : undefined
         }
       };
@@ -115,16 +115,15 @@ export const MintNFT: FC = () => {
       txnSignature
     } = parseBaseParamsFromURLParams(urlParams);
 
-    // MintNFT fields
-    const URI = urlParams.get('URI');
-    const flags = parseMintNFTFlags(urlParams.get('flags'));
-    const transferFee = urlParams.get('transferFee') ? Number(urlParams.get('transferFee')) : null;
-    const NFTokenTaxon = Number(urlParams.get('NFTokenTaxon')) ?? 0;
-    const issuer = urlParams.get('issuer');
+    // CreateNFTOffer fields
+    const NFTokenID = urlParams.get('NFTokenID');
+    const amount = urlParams.get('amount');
+    const owner = urlParams.get('owner');
+    const expiration = urlParams.get('expiration') ? Number(urlParams.get('expiration')) : null;
+    const destination = urlParams.get('destination');
+    const flags = parseCreateNFTOfferFlags(urlParams.get('flags'));
 
-    if (!URI && !flags && !transferFee && !fee) {
-      // At least one parameter should be present to mint an NFT
-      // It would still work, but we assume it's an error from the caller
+    if (!amount || !NFTokenID) {
       setIsParamsMissing(true);
     }
 
@@ -141,26 +140,28 @@ export const MintNFT: FC = () => {
       signingPubKey,
       ticketSequence,
       txnSignature,
-      // MintNFT fields
-      URI,
-      flags,
-      transferFee,
-      NFTokenTaxon,
-      issuer
+      // CreateNFTOffer fields
+      NFTokenID,
+      amount,
+      owner,
+      expiration,
+      destination,
+      flags
     });
   }, []);
 
   useEffect(() => {
     const currentWallet = getCurrentWallet();
-    if (currentWallet && client) {
+    if (currentWallet && client && params.NFTokenID && params.amount) {
       estimateNetworkFees({
-        TransactionType: 'NFTokenMint',
+        TransactionType: 'NFTokenCreateOffer',
         Account: currentWallet.publicAddress,
-        ...(params.URI && { URI: params.URI }),
-        ...(params.flags && { Flags: params.flags }),
-        ...(params.transferFee && { TransferFee: params.transferFee }),
-        NFTokenTaxon: params.NFTokenTaxon,
-        ...(params.issuer && { Issuer: params.issuer })
+        NFTokenID: params.NFTokenID,
+        Amount: params.amount,
+        ...(params.owner && { Owner: params.owner }),
+        ...(params.expiration && { Expiration: params.expiration }),
+        ...(params.destination && { Destination: params.destination }),
+        ...(params.flags && { Flags: params.flags })
       })
         .then((fees) => {
           setEstimatedFees(fees);
@@ -174,11 +175,12 @@ export const MintNFT: FC = () => {
     client,
     estimateNetworkFees,
     getCurrentWallet,
-    params.NFTokenTaxon,
-    params.URI,
+    params.NFTokenID,
+    params.amount,
+    params.destination,
+    params.expiration,
     params.flags,
-    params.issuer,
-    params.transferFee
+    params.owner
   ]);
 
   useEffect(() => {
@@ -209,47 +211,46 @@ export const MintNFT: FC = () => {
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);
     const message = createMessage({
-      hash: null,
-      NFTokenID: null
+      hash: null
     });
-    chrome.runtime.sendMessage<ReceiveMintNFTBackgroundMessage>(message);
+    chrome.runtime.sendMessage<ReceiveCreateNFTOfferBackgroundMessage>(message);
   }, [createMessage]);
 
   const handleConfirm = useCallback(() => {
     // Need to send the flags as number to xrpl.js, otherwise they won't be recognized
     const formattedFlags =
       params.flags && typeof params.flags === 'object'
-        ? mintNFTFlagsToNumber(params.flags)
+        ? createNFTOfferFlagsToNumber(params.flags)
         : params.flags;
 
     setTransaction(TransactionStatus.Pending);
-    // Amount and Destination will be present because if not,
+    // Amount and NFTokenID will be present because if not,
     // we won't be able to go to the confirm transaction state
-    mintNFT({
+    createNFTOffer({
       // BaseTransaction fields
       ...getBaseFromParams(params),
-      // MintNFT fields
-      URI: params.URI || undefined,
-      flags: formattedFlags || undefined,
-      transferFee: params.transferFee || undefined,
-      NFTokenTaxon: params.NFTokenTaxon,
-      issuer: params.issuer || undefined
+      // CreateNFTOffer fields
+      NFTokenID: params.NFTokenID as string,
+      amount: params.amount as Amount,
+      owner: params.owner || undefined,
+      expiration: params.expiration || undefined,
+      destination: params.destination || undefined,
+      flags: formattedFlags || undefined
     })
       .then((response) => {
         setTransaction(TransactionStatus.Success);
-        chrome.runtime.sendMessage<ReceiveMintNFTBackgroundMessage>(createMessage(response));
+        chrome.runtime.sendMessage<ReceiveCreateNFTOfferBackgroundMessage>(createMessage(response));
       })
       .catch((e) => {
         setErrorRequestRejection(e.message);
         setTransaction(TransactionStatus.Rejected);
         const message = createMessage({
           hash: undefined,
-          NFTokenID: undefined,
           error: e
         });
-        chrome.runtime.sendMessage<ReceiveMintNFTBackgroundMessage>(message);
+        chrome.runtime.sendMessage<ReceiveCreateNFTOfferBackgroundMessage>(message);
       });
-  }, [mintNFT, params, createMessage]);
+  }, [createNFTOffer, params, createMessage]);
 
   const hasEnoughFunds = useMemo(() => {
     return Number(difference) > 0;
@@ -345,52 +346,56 @@ export const MintNFT: FC = () => {
     // Base transaction params
     fee,
     memos,
-    // Mint NFT params
-    URI,
-    flags,
-    transferFee,
-    NFTokenTaxon,
-    issuer
+    // CreateNFTOffer params
+    NFTokenID,
+    amount,
+    owner,
+    expiration,
+    destination,
+    flags
   } = params;
 
   const decodedMemos = fromHexMemos(memos || []) || [];
 
   return (
-    <PageWithTitle
-      title="Confirm Transaction"
-      styles={{ container: { justifyContent: 'initial' } }}
-    >
-      <div style={{ marginBottom: '40px' }}>
-        {!hasEnoughFunds ? (
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <ErrorIcon style={{ color: ERROR_RED }} />
-            <Typography variant="body1" style={{ marginLeft: '10px', color: ERROR_RED }}>
-              Insufficient funds.
-            </Typography>
-          </div>
-        ) : null}
-        {URI ? (
-          <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-            <Typography variant="body1">URI:</Typography>
-            <Typography variant="body2">{convertHexToString(URI)}</Typography>
-          </Paper>
-        ) : null}
-        {transferFee ? (
-          <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-            <Typography variant="body1">Transfer Fee:</Typography>
-            <Typography variant="body2">{`${formatTransferFee(transferFee)}%`}</Typography>
-          </Paper>
-        ) : null}
-        {issuer ? (
-          <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-            <Typography variant="body1">Issuer:</Typography>
-            <Typography variant="body2">{issuer}</Typography>
-          </Paper>
-        ) : null}
+    <PageWithTitle title="Confirm Transaction">
+      {!hasEnoughFunds ? (
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <ErrorIcon style={{ color: ERROR_RED }} />
+          <Typography variant="body1" style={{ marginLeft: '10px', color: ERROR_RED }}>
+            Insufficient funds.
+          </Typography>
+        </div>
+      ) : null}
+      <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
+        <Typography variant="body1">NFT ID:</Typography>
+        <Typography variant="body2">{NFTokenID}</Typography>
+      </Paper>
+      <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
+        <Typography variant="body1">Amount:</Typography>
+        <Typography variant="h6" component="h1" align="right">
+          {amount ? formatAmount(amount) : 'Not found'}
+        </Typography>
+      </Paper>
+      {owner ? (
         <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-          <Typography variant="body1">NFT Taxon:</Typography>
-          <Typography variant="body2">{NFTokenTaxon}</Typography>
+          <Typography variant="body1">Owner:</Typography>
+          <Typography variant="body2">{owner}</Typography>
         </Paper>
+      ) : null}
+      {expiration ? (
+        <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
+          <Typography variant="body1">Expiration:</Typography>
+          <Typography variant="body2">{expiration}</Typography>
+        </Paper>
+      ) : null}
+      {destination ? (
+        <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
+          <Typography variant="body1">Destination:</Typography>
+          <Typography variant="body2">{destination}</Typography>
+        </Paper>
+      ) : null}
+      <div style={{ marginBottom: '40px' }}>
         <BaseTransaction
           fee={fee ? Number(fee) : null}
           memos={decodedMemos}

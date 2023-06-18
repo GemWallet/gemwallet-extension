@@ -1,7 +1,20 @@
-import { NFTokenMintFlags, NFTokenMintFlagsInterface, xrpToDrops } from 'xrpl';
+import {
+  NFTokenCreateOfferFlags,
+  NFTokenCreateOfferFlagsInterface,
+  NFTokenMintFlags,
+  NFTokenMintFlagsInterface,
+  xrpToDrops
+} from 'xrpl';
 import { Amount, IssuedCurrencyAmount } from 'xrpl/dist/npm/models/common';
 
-import { Memo, MintNFTFlags, PaymentFlags, Signer, TrustSetFlags } from '@gemwallet/constants';
+import {
+  CreateNFTOfferFlags,
+  Memo,
+  MintNFTFlags,
+  PaymentFlags,
+  Signer,
+  TrustSetFlags
+} from '@gemwallet/constants';
 
 export const parseAmount = (
   amountString: string | null,
@@ -211,6 +224,30 @@ export const parseMintNFTFlags = (flagsString: string | null): MintNFTFlags | nu
   return null;
 };
 
+export const parseCreateNFTOfferFlags = (
+  flagsString: string | null
+): CreateNFTOfferFlags | null => {
+  if (!flagsString) {
+    return null;
+  }
+
+  if (Number(flagsString)) {
+    return Number(flagsString);
+  }
+
+  try {
+    const parsedFlags = JSON.parse(flagsString);
+
+    if (typeof parsedFlags === 'object' && parsedFlags !== null && 'tfSellNFToken' in parsedFlags) {
+      return parsedFlags as {
+        tfSellNFToken?: boolean;
+      };
+    }
+  } catch (error) {}
+
+  return null;
+};
+
 export const mintNFTFlagsToNumber = (flags: NFTokenMintFlagsInterface): number => {
   let result = 0;
   if (flags.tfBurnable) {
@@ -224,6 +261,15 @@ export const mintNFTFlagsToNumber = (flags: NFTokenMintFlagsInterface): number =
   }
   if (flags.tfTransferable) {
     result |= NFTokenMintFlags.tfTransferable;
+  }
+
+  return result;
+};
+
+export const createNFTOfferFlagsToNumber = (flags: NFTokenCreateOfferFlagsInterface): number => {
+  let result = 0;
+  if (flags.tfSellNFToken) {
+    result |= NFTokenCreateOfferFlags.tfSellNFToken;
   }
 
   return result;

@@ -1,8 +1,9 @@
-import { NFTokenMintFlags, NFTokenMintFlagsInterface } from 'xrpl';
+import { NFTokenCreateOfferFlags, NFTokenMintFlags, NFTokenMintFlagsInterface } from 'xrpl';
 
 import { Signer } from '@gemwallet/constants';
 
 import {
+  createNFTOfferFlagsToNumber,
   mintNFTFlagsToNumber,
   parseAmount,
   parseLimitAmount,
@@ -239,5 +240,29 @@ describe('mintNFTFlagsToNumber', () => {
   it('should return 0 when flags are not provided', () => {
     const flags: NFTokenMintFlagsInterface = {};
     expect(mintNFTFlagsToNumber(flags)).toBe(0);
+  });
+});
+
+describe('createNFTOfferFlagsToNumber', () => {
+  test('should return 0 for empty flags', () => {
+    const flags = {};
+    const result = createNFTOfferFlagsToNumber(flags);
+    expect(result).toBe(0);
+  });
+
+  test('should return correct number for tfSellNFToken flag', () => {
+    const flags = {
+      tfSellNFToken: true
+    };
+    const result = createNFTOfferFlagsToNumber(flags);
+    expect(result).toBe(NFTokenCreateOfferFlags.tfSellNFToken);
+  });
+
+  test('should return 0 if flag value is false', () => {
+    const flags = {
+      tfSellNFToken: false
+    };
+    const result = createNFTOfferFlagsToNumber(flags);
+    expect(result).toBe(0);
   });
 });
