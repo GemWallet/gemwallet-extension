@@ -1,7 +1,14 @@
 import { Amount, IssuedCurrencyAmount } from 'xrpl/dist/npm/models/common';
 
 import { Network } from '../network/network.constant';
-import { Memo, MintNFTFlags, PaymentFlags, Signer, TrustSetFlags } from '../xrpl/basic.types';
+import {
+  Memo,
+  MintNFTFlags,
+  PaymentFlags,
+  Signer,
+  TrustSetFlags,
+  CreateNFTOfferFlags
+} from '../xrpl/basic.types';
 import { AccountNFToken } from './../xrpl/nft.types';
 
 /*
@@ -128,6 +135,29 @@ export interface MintNFTRequest extends BaseTransactionRequest {
   URI?: string;
 }
 
+export interface CreateNFTOfferRequest extends BaseTransactionRequest {
+  // Identifies the NFTokenID of the NFToken object that the offer references.
+  NFTokenID: string;
+  // Indicates the amount expected or offered for the Token.
+  // The amount must be non-zero, except when this is a sell offer and the asset is XRP. This would indicate that the
+  // current owner of the token is giving it away free, either to anyone at all, or to the account identified by the
+  // Destination field.
+  amount: Amount;
+  // Indicates the AccountID of the account that owns the corresponding NFToken.
+  // If the offer is to buy a token, this field must be present and it must be different than Account (since an offer
+  // to buy a token one already holds is meaningless).
+  // If the offer is to sell a token, this field must not be present, as the owner is, implicitly, the same as Account
+  // (since an offer to sell a token one doesn't already hold is meaningless).
+  owner?: string;
+  // Indicates the time after which the offer will no longer be valid. The value is the number of seconds since the
+  // Ripple Epoch.
+  expiration?: number;
+  // If present, indicates that this offer may only be accepted by the specified account. Attempts by other accounts to
+  // accept this offer MUST fail.
+  destination?: string;
+  flags?: CreateNFTOfferFlags;
+}
+
 export interface GetNFTRequest {
   // Limit the number of NFTokens to retrieve.
   limit?: number;
@@ -143,6 +173,7 @@ export interface SignMessageRequest {
 }
 
 export type RequestPayload =
+  | CreateNFTOfferRequest
   | GetNetworkRequest
   | GetNFTRequest
   | MintNFTRequest
@@ -221,7 +252,13 @@ export interface MintNFTResponse
     hash: string;
   }> {}
 
+export interface CreateNFTOfferResponse
+  extends BaseResponse<{
+    hash: string;
+  }> {}
+
 export type ResponsePayload =
+  | CreateNFTOfferResponse
   | GetAddressResponse
   | GetAddressResponseDeprecated
   | GetNFTResponse
