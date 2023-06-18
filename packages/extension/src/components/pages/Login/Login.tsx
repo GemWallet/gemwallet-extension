@@ -4,6 +4,7 @@ import { Button, Container, TextField, Typography } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 import {
+  CREATE_NFT_OFFER_PATH,
   HOME_PATH,
   PARAMETER_SHARE_ADDRESS,
   PARAMETER_SIGN_MESSAGE,
@@ -21,7 +22,8 @@ import {
   PARAMETER_SHARE_NFT,
   SHARE_NFT_PATH,
   MINT_NFT_PATH,
-  PARAMETER_TRANSACTION_MINT_NFT
+  PARAMETER_TRANSACTION_MINT_NFT,
+  PARAMETER_TRANSACTION_CREATE_NFT_OFFER
 } from '../../../constants';
 import { useWallet } from '../../../contexts';
 import { useKeyUp } from '../../../hooks/useKeyUp';
@@ -50,6 +52,8 @@ export const Login: FC = () => {
       navigate(`${SHARE_NFT_PATH}${search}`);
     } else if (search.includes(PARAMETER_TRANSACTION_MINT_NFT)) {
       navigate(`${MINT_NFT_PATH}${search}`);
+    } else if (search.includes(PARAMETER_TRANSACTION_CREATE_NFT_OFFER)) {
+      navigate(`${CREATE_NFT_OFFER_PATH}${search}`);
     } else {
       navigate(`${HOME_PATH}${search}`);
     }

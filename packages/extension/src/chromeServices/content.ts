@@ -1,5 +1,7 @@
 import {
   AddressEventListener,
+  CreateNFTOfferEventListener,
+  CreateNFTOfferMessagingResponse,
   EventListener,
   GEM_WALLET,
   GetAddressMessagingResponse,
@@ -17,6 +19,7 @@ import {
   PaymentEventListener,
   PaymentEventListenerDeprecated,
   PublicKeyEventListener,
+  ReceiveCreateNFTOfferContentMessage,
   ReceiveMintNFTContentMessage,
   ReceiveGetAddressContentMessage,
   ReceiveGetAddressContentMessageDeprecated,
@@ -32,6 +35,7 @@ import {
   ReceiveSetTrustlineContentMessageDeprecated,
   ReceiveSignMessageContentMessage,
   ReceiveSignMessageContentMessageDeprecated,
+  RequestCreateNFTOfferMessage,
   RequestMintNFTMessage,
   RequestGetAddressMessage,
   RequestGetAddressMessageDeprecated,
@@ -488,6 +492,42 @@ setTimeout(() => {
                       result,
                       error
                     } as MintNFTMessagingResponse,
+                    window.location.origin
+                  );
+                  chrome.runtime.onMessage.removeListener(messageListener);
+                }
+              }
+            };
+            chrome.runtime.onMessage.addListener(messageListener);
+          }
+        );
+      } else if (type === 'REQUEST_CREATE_NFT_OFFER/V3') {
+        const {
+          data: { payload }
+        } = event as CreateNFTOfferEventListener;
+        chrome.runtime.sendMessage<RequestCreateNFTOfferMessage>(
+          {
+            app,
+            type,
+            payload
+          },
+          () => {
+            const messageListener = (
+              message: ReceiveCreateNFTOfferContentMessage,
+              sender: chrome.runtime.MessageSender
+            ) => {
+              const { app, type, payload } = message;
+              // We make sure that the message comes from GemWallet
+              if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
+                if (type === 'RECEIVE_CREATE_NFT_OFFER/V3') {
+                  const { result, error } = payload;
+                  window.postMessage(
+                    {
+                      source: 'GEM_WALLET_MSG_RESPONSE',
+                      messagedId,
+                      result,
+                      error
+                    } as CreateNFTOfferMessagingResponse,
                     window.location.origin
                   );
                   chrome.runtime.onMessage.removeListener(messageListener);
