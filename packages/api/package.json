@@ -7,8 +7,8 @@
   "module": "src/index.js",
   "types": "src/index.d.ts",
   "scripts": {
-    "build": "webpack --config webpack.prod.js",
-    "build:npm": "yarn build && yarn workspace @gemwallet/constants build && tsc && node releaseNpm.js",
+    "build:cdn": "webpack --config webpack.prod.js",
+    "build:npm": "yarn build:cdn && yarn workspace @gemwallet/constants build && tsc && node releaseNpm.js",
     "clean": "rm -rf build",
     "start": "webpack serve --config webpack.dev.js",
     "test": "jest --coverage"
@@ -32,8 +32,8 @@
     "ts-jest": "^26.5.6",
     "ts-loader": "^9.2.6",
     "typescript": "^4.5.4",
-    "webpack": "^5.76.0",
-    "webpack-cli": "^4.9.1",
+    "webpack": "^5.87.0",
+    "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^4.7.3"
   }
 }
