@@ -262,6 +262,19 @@ export const TransactionListing: FC<TransactionListingProps> = ({ transactions }
                   <Divider light />
                 </>
               ) : null}
+              {transaction.meta &&
+                typeof transaction.meta === 'object' &&
+                'offer_id' in transaction.meta && (
+                  <>
+                    <ListItem style={{ padding: '8px 24px' }}>
+                      <ListItemText
+                        primary="Offer ID"
+                        secondary={(transaction.meta as any).offer_id}
+                      />
+                    </ListItem>
+                    <Divider light />
+                  </>
+                )}
               <ListItem style={{ padding: '8px 24px' }}>
                 <ListItemText primary="Transaction Hash" secondary={transaction.tx?.hash} />
               </ListItem>
