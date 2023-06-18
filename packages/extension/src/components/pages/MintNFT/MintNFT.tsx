@@ -23,7 +23,7 @@ import {
   parseBaseParamsFromURLParams
 } from '../../../utils/baseParams';
 import { serializeError } from '../../../utils/errors';
-import { BaseTransaction } from '../../pages';
+import { BaseTransaction } from '../../organisms';
 import { AsyncTransaction, PageWithSpinner, PageWithTitle } from '../../templates';
 
 const DEFAULT_FEES = 'Loading ...';
