@@ -3,9 +3,14 @@ import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import ErrorIcon from '@mui/icons-material/Error';
 import { Button, Container, Paper, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
-import { NFTokenMintFlagsInterface, convertHexToString } from 'xrpl';
+import { convertHexToString } from 'xrpl';
 
-import { GEM_WALLET, ReceiveMintNFTBackgroundMessage, ResponseType } from '@gemwallet/constants';
+import {
+  GEM_WALLET,
+  MintNFTFlags,
+  ReceiveMintNFTBackgroundMessage,
+  ResponseType
+} from '@gemwallet/constants';
 
 import { DEFAULT_RESERVE, ERROR_RED } from '../../../constants';
 import { useLedger, useNetwork, useServer, useWallet } from '../../../contexts';
@@ -32,7 +37,7 @@ interface Params extends BaseTransactionParams {
   id: number;
   // MintNFT fields
   URI: string | null;
-  flags: number | NFTokenMintFlagsInterface | null;
+  flags: MintNFTFlags | null;
   transferFee: number | null;
   NFTokenTaxon: number;
   issuer: string | null;
