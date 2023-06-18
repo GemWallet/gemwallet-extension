@@ -178,8 +178,15 @@ const LedgerProvider: FC = ({ children }) => {
             };
           }
 
+          if ((tx.result.meta! as TransactionMetadata).TransactionResult === 'tesSUCCESS') {
+            throw new Error(
+              "Couldn't fetch your NFT from the XRPL but the transaction was successful"
+            );
+          }
+
           throw new Error(
-            "Couldn't fetch your NFT from the XRPL but the transaction was successful"
+            (tx.result.meta as TransactionMetadata)?.TransactionResult ||
+              "Something went wrong, we couldn't submit properly the transaction"
           );
         } catch (e) {
           Sentry.captureException(e);
