@@ -25,11 +25,9 @@
     "url": "https://github.com/GemWallet/gemwallet-extension/issues"
   },
   "homepage": "https://github.com/GemWallet/gemwallet-extension#readme",
-  "workspaces": {
-    "packages": [
-      "packages/*"
-    ]
-  },
+  "workspaces": [
+    "packages/*"
+  ],
   "dependencies": {
     "husky": "^7.0.4",
     "lint-staged": "^12.0.2",
