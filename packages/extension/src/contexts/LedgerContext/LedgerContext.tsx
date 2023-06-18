@@ -2,7 +2,15 @@ import { useContext, createContext, FC, useCallback } from 'react';
 
 import * as Sentry from '@sentry/react';
 import { sign } from 'ripple-keypairs';
-import { TransactionMetadata, Payment, Transaction, TrustSet, Wallet, NFTokenMint } from 'xrpl';
+import {
+  TransactionMetadata,
+  Payment,
+  Transaction,
+  TrustSet,
+  Wallet,
+  NFTokenMint,
+  NFTokenCreateOffer
+} from 'xrpl';
 import { BaseTransaction } from 'xrpl/dist/npm/models/transactions/common';
 
 import {
@@ -11,7 +19,8 @@ import {
   GetNFTRequest,
   SendPaymentRequest,
   SetTrustlineRequest,
-  BaseTransactionRequest
+  BaseTransactionRequest,
+  CreateNFTOfferRequest
 } from '@gemwallet/constants';
 
 import { AccountTransaction, WalletLedger } from '../../types';
@@ -34,6 +43,10 @@ interface FundWalletResponse {
   balance: number;
 }
 
+interface CreateNFTOfferResponse {
+  hash: string;
+}
+
 export interface LedgerContextType {
   // Return transaction hash in case of success
   sendPayment: (payload: SendPaymentRequest) => Promise<string>;
@@ -44,6 +57,7 @@ export interface LedgerContextType {
   getTransactions: () => Promise<AccountTransaction[]>;
   fundWallet: () => Promise<FundWalletResponse>;
   mintNFT: (payload: MintNFTRequest) => Promise<MintNFTResponse>;
+  createNFTOffer: (payload: CreateNFTOfferRequest) => Promise<CreateNFTOfferResponse>;
 }
 
 const LedgerContext = createContext<LedgerContextType>({
@@ -63,7 +77,8 @@ const LedgerContext = createContext<LedgerContextType>({
       resolve([]);
     }),
   fundWallet: () => new Promise(() => {}),
-  mintNFT: () => new Promise(() => {})
+  mintNFT: () => new Promise(() => {}),
+  createNFTOffer: () => new Promise(() => {})
 });
 
 const LedgerProvider: FC = ({ children }) => {
@@ -322,10 +337,52 @@ const LedgerProvider: FC = ({ children }) => {
     }
   }, [client, getCurrentWallet]);
 
+  const createNFTOffer = useCallback(
+    async (payload: CreateNFTOfferRequest) => {
+      const wallet = getCurrentWallet();
+      if (!client) {
+        throw new Error('You need to be connected to a ledger to mint an NFT');
+      } else if (!wallet) {
+        throw new Error('You need to have a wallet connected to mint an NFT');
+      } else {
+        try {
+          const tx = await client.submitAndWait(
+            {
+              ...(buildBaseTransaction(
+                payload,
+                wallet,
+                'NFTokenCreateOffer'
+              ) as NFTokenCreateOffer),
+              NFTokenID: payload.NFTokenID,
+              Amount: payload.amount,
+              ...(payload.owner && { Owner: payload.owner }),
+              ...(payload.expiration && { Expiration: payload.expiration }),
+              ...(payload.destination && { Destination: payload.destination }),
+              ...(payload.flags && { Flags: payload.flags })
+            },
+            { wallet: wallet.wallet }
+          );
+
+          if (!tx.result.hash) {
+            throw new Error("Couldn't create the NFT offer");
+          }
+
+          return {
+            hash: tx.result.hash
+          };
+        } catch (e) {
+          Sentry.captureException(e);
+          throw e;
+        }
+      }
+    },
+    [client, getCurrentWallet]
+  );
+
   const buildBaseTransaction = (
     payload: BaseTransactionRequest,
     wallet: WalletLedger,
-    txType: 'NFTokenMint' | 'Payment' | 'TrustSet'
+    txType: 'NFTokenMint' | 'Payment' | 'TrustSet' | 'NFTokenCreateOffer'
   ): BaseTransaction => ({
     TransactionType: txType,
     Account: wallet.publicAddress,
@@ -349,7 +406,8 @@ const LedgerProvider: FC = ({ children }) => {
     getNFTs,
     getTransactions,
     fundWallet,
-    mintNFT
+    mintNFT,
+    createNFTOffer
   };
 
   return <LedgerContext.Provider value={value}>{children}</LedgerContext.Provider>;
