@@ -9,5 +9,6 @@ export const valueLedgerContext: LedgerContextType = {
   getTransactions: jest.fn(),
   fundWallet: jest.fn(),
   mintNFT: jest.fn(),
-  createNFTOffer: jest.fn()
+  createNFTOffer: jest.fn(),
+  cancelNFTOffer: jest.fn()
 };
