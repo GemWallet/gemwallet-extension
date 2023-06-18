@@ -6,6 +6,7 @@ import {
   createNFTOfferFlagsToNumber,
   mintNFTFlagsToNumber,
   parseAmount,
+  parseArray,
   parseLimitAmount,
   parseMemos,
   parseMintNFTFlags,
@@ -264,5 +265,30 @@ describe('createNFTOfferFlagsToNumber', () => {
     };
     const result = createNFTOfferFlagsToNumber(flags);
     expect(result).toBe(0);
+  });
+
+  describe('parseArray', () => {
+    it('should return a string array when input is a valid JSON array', () => {
+      const input = '["element1", "element2"]';
+      const result = parseArray(input);
+      expect(result).toEqual(['element1', 'element2']);
+    });
+
+    it('should return null when input is not a valid JSON', () => {
+      const input = 'not a valid JSON';
+      const result = parseArray(input);
+      expect(result).toBeNull();
+    });
+
+    it('should return null when input is a non-array JSON', () => {
+      const input = '{"key": "value"}';
+      const result = parseArray(input);
+      expect(result).toBeNull();
+    });
+
+    it('should return null when input is null', () => {
+      const result = parseArray(null);
+      expect(result).toBeNull();
+    });
   });
 });

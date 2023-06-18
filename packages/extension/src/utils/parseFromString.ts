@@ -16,6 +16,22 @@ import {
   TrustSetFlags
 } from '@gemwallet/constants';
 
+export const parseArray = (str: string | null): string[] | null => {
+  if (!str) {
+    return null;
+  }
+
+  try {
+    const parsed = JSON.parse(str);
+
+    if (Array.isArray(parsed)) {
+      return parsed as string[];
+    }
+  } catch (error) {}
+
+  return null;
+};
+
 export const parseAmount = (
   amountString: string | null,
   deprecatedCurrencyString: string | null,
