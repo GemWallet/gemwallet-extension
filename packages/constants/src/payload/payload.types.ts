@@ -165,6 +165,18 @@ export interface CancelNFTOfferRequest extends BaseTransactionRequest {
   NFTokenOffers: string[];
 }
 
+export interface AcceptNFTOfferRequest extends BaseTransactionRequest {
+  // Identifies the NFTokenOffer that offers to sell the NFToken.
+  NFTokenSellOffer?: string;
+  // Identifies the NFTokenOffer that offers to buy the NFToken.
+  NFTokenBuyOffer?: string;
+  // This field is only valid in brokered mode, and specifies the amount that the broker keeps as part of their fee for
+  // bringing the two offers together; the remaining amount is sent to the seller of the NFToken being bought.
+  // If specified, the fee must be such that, before applying the transfer fee, the amount that the seller would receive
+  // is at least as much as the amount indicated in the sell offer.
+  NFTokenBrokerFee?: Amount;
+}
+
 export interface GetNFTRequest {
   // Limit the number of NFTokens to retrieve.
   limit?: number;
@@ -180,6 +192,7 @@ export interface SignMessageRequest {
 }
 
 export type RequestPayload =
+  | AcceptNFTOfferRequest
   | CancelNFTOfferRequest
   | CreateNFTOfferRequest
   | GetNetworkRequest
@@ -270,7 +283,13 @@ export interface CancelNFTOfferResponse
     hash: string;
   }> {}
 
+export interface AcceptNFTOfferResponse
+  extends BaseResponse<{
+    hash: string;
+  }> {}
+
 export type ResponsePayload =
+  | AcceptNFTOfferResponse
   | CancelNFTOfferResponse
   | CreateNFTOfferResponse
   | GetAddressResponse
