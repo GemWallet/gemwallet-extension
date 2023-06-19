@@ -15,6 +15,7 @@ import {
 import { PrivateRoute } from './components/atoms/PrivateRoute';
 import {
   About,
+  AcceptNFTOffer,
   AddNewTrustline,
   AddNewWallet,
   CancelNFTOffer,
@@ -44,6 +45,7 @@ import {
 import { ErrorBoundary } from './components/templates';
 import {
   ABOUT_PATH,
+  ACCEPT_NFT_OFFER_PATH,
   ADD_NEW_TRUSTLINE_PATH,
   ADD_NEW_WALLET_PATH,
   CANCEL_NFT_OFFER_PATH,
@@ -63,6 +65,7 @@ import {
   PARAMETER_SHARE_NFT,
   PARAMETER_SHARE_PUBLIC_KEY,
   PARAMETER_SIGN_MESSAGE,
+  PARAMETER_TRANSACTION_ACCEPT_NFT_OFFER,
   PARAMETER_TRANSACTION_CANCEL_NFT_OFFER,
   PARAMETER_TRANSACTION_CREATE_NFT_OFFER,
   PARAMETER_TRANSACTION_MINT_NFT,
@@ -232,6 +235,12 @@ const App: FC = () => {
         handleTransaction({
           app: GEM_WALLET,
           type: 'RECEIVE_CANCEL_NFT_OFFER/V3',
+          payload: defaultPayload
+        });
+      } else if (search.includes(PARAMETER_TRANSACTION_ACCEPT_NFT_OFFER)) {
+        handleTransaction({
+          app: GEM_WALLET,
+          type: 'RECEIVE_ACCEPT_NFT_OFFER/V3',
           payload: defaultPayload
         });
       }
@@ -426,6 +435,14 @@ const App: FC = () => {
           element={
             <PrivateRoute>
               <CancelNFTOffer />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path={ACCEPT_NFT_OFFER_PATH}
+          element={
+            <PrivateRoute>
+              <AcceptNFTOffer />
             </PrivateRoute>
           }
         />
