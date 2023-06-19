@@ -2,6 +2,7 @@ import {
   BackgroundMessage,
   GEM_WALLET,
   ReceiveAcceptNFTOfferContentMessage,
+  ReceiveBurnNFTContentMessage,
   ReceiveCancelNFTOfferContentMessage,
   ReceiveCreateNFTOfferContentMessage,
   ReceiveGetAddressContentMessage,
@@ -32,6 +33,7 @@ import {
   PARAMETER_SHARE_PUBLIC_KEY,
   PARAMETER_SIGN_MESSAGE,
   PARAMETER_TRANSACTION_ACCEPT_NFT_OFFER,
+  PARAMETER_TRANSACTION_BURN_NFT,
   PARAMETER_TRANSACTION_CANCEL_NFT_OFFER,
   PARAMETER_TRANSACTION_CREATE_NFT_OFFER,
   PARAMETER_TRANSACTION_MINT_NFT,
@@ -298,6 +300,17 @@ chrome.runtime.onMessage.addListener(
           result: undefined
         }
       });
+    } else if (type === 'REQUEST_BURN_NFT/V3') {
+      focusOrCreatePopupWindow({
+        payload: message.payload,
+        sender,
+        parameter: PARAMETER_TRANSACTION_BURN_NFT,
+        receivingMessage: 'RECEIVE_BURN_NFT/V3',
+        errorPayload: {
+          type: ResponseType.Reject,
+          result: undefined
+        }
+      });
     } else if (type === 'REQUEST_SET_TRUSTLINE/V3') {
       focusOrCreatePopupWindow({
         payload: message.payload,
@@ -403,6 +416,17 @@ chrome.runtime.onMessage.addListener(
       sendMessageToTab<ReceiveAcceptNFTOfferContentMessage>(payload.id, {
         app,
         type: 'RECEIVE_ACCEPT_NFT_OFFER/V3',
+        payload: {
+          type: ResponseType.Response,
+          result: payload.result,
+          error: payload.error
+        }
+      });
+    } else if (type === 'RECEIVE_BURN_NFT/V3') {
+      const { payload } = message;
+      sendMessageToTab<ReceiveBurnNFTContentMessage>(payload.id, {
+        app,
+        type: 'RECEIVE_BURN_NFT/V3',
         payload: {
           type: ResponseType.Response,
           result: payload.result,

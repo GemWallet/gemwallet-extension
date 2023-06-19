@@ -2,6 +2,8 @@ import {
   AddressEventListener,
   AcceptNFTOfferEventListener,
   AcceptNFTOfferMessagingResponse,
+  BurnNFTEventListener,
+  BurnNFTMessagingResponse,
   CancelNFTOfferEventListener,
   CancelNFTOfferMessagingResponse,
   CreateNFTOfferEventListener,
@@ -24,6 +26,7 @@ import {
   PaymentEventListenerDeprecated,
   PublicKeyEventListener,
   ReceiveAcceptNFTOfferContentMessage,
+  ReceiveBurnNFTContentMessage,
   ReceiveCancelNFTOfferContentMessage,
   ReceiveCreateNFTOfferContentMessage,
   ReceiveMintNFTContentMessage,
@@ -42,6 +45,7 @@ import {
   ReceiveSignMessageContentMessage,
   ReceiveSignMessageContentMessageDeprecated,
   RequestAcceptNFTOfferMessage,
+  RequestBurnNFTMessage,
   RequestCancelNFTOfferMessage,
   RequestCreateNFTOfferMessage,
   RequestMintNFTMessage,
@@ -608,6 +612,42 @@ setTimeout(() => {
                       result,
                       error
                     } as AcceptNFTOfferMessagingResponse,
+                    window.location.origin
+                  );
+                  chrome.runtime.onMessage.removeListener(messageListener);
+                }
+              }
+            };
+            chrome.runtime.onMessage.addListener(messageListener);
+          }
+        );
+      } else if (type === 'REQUEST_BURN_NFT/V3') {
+        const {
+          data: { payload }
+        } = event as BurnNFTEventListener;
+        chrome.runtime.sendMessage<RequestBurnNFTMessage>(
+          {
+            app,
+            type,
+            payload
+          },
+          () => {
+            const messageListener = (
+              message: ReceiveBurnNFTContentMessage,
+              sender: chrome.runtime.MessageSender
+            ) => {
+              const { app, type, payload } = message;
+              // We make sure that the message comes from GemWallet
+              if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
+                if (type === 'RECEIVE_BURN_NFT/V3') {
+                  const { result, error } = payload;
+                  window.postMessage(
+                    {
+                      source: 'GEM_WALLET_MSG_RESPONSE',
+                      messagedId,
+                      result,
+                      error
+                    } as BurnNFTMessagingResponse,
                     window.location.origin
                   );
                   chrome.runtime.onMessage.removeListener(messageListener);
