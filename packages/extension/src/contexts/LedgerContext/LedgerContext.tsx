@@ -10,7 +10,8 @@ import {
   Wallet,
   NFTokenMint,
   NFTokenCreateOffer,
-  NFTokenCancelOffer
+  NFTokenCancelOffer,
+  NFTokenAcceptOffer
 } from 'xrpl';
 import { BaseTransaction } from 'xrpl/dist/npm/models/transactions/common';
 
@@ -22,7 +23,8 @@ import {
   SetTrustlineRequest,
   BaseTransactionRequest,
   CreateNFTOfferRequest,
-  CancelNFTOfferRequest
+  CancelNFTOfferRequest,
+  AcceptNFTOfferRequest
 } from '@gemwallet/constants';
 
 import { AccountTransaction, WalletLedger } from '../../types';
@@ -53,6 +55,10 @@ interface CancelNFTOfferResponse {
   hash: string;
 }
 
+interface AcceptNFTOfferResponse {
+  hash: string;
+}
+
 export interface LedgerContextType {
   // Return transaction hash in case of success
   sendPayment: (payload: SendPaymentRequest) => Promise<string>;
@@ -65,6 +71,7 @@ export interface LedgerContextType {
   mintNFT: (payload: MintNFTRequest) => Promise<MintNFTResponse>;
   createNFTOffer: (payload: CreateNFTOfferRequest) => Promise<CreateNFTOfferResponse>;
   cancelNFTOffer: (payload: CancelNFTOfferRequest) => Promise<CancelNFTOfferResponse>;
+  acceptNFTOffer: (payload: AcceptNFTOfferRequest) => Promise<AcceptNFTOfferResponse>;
 }
 
 const LedgerContext = createContext<LedgerContextType>({
@@ -86,7 +93,8 @@ const LedgerContext = createContext<LedgerContextType>({
   fundWallet: () => new Promise(() => {}),
   mintNFT: () => new Promise(() => {}),
   createNFTOffer: () => new Promise(() => {}),
-  cancelNFTOffer: () => new Promise(() => {})
+  cancelNFTOffer: () => new Promise(() => {}),
+  acceptNFTOffer: () => new Promise(() => {})
 });
 
 const LedgerProvider: FC = ({ children }) => {
@@ -438,10 +446,62 @@ const LedgerProvider: FC = ({ children }) => {
     [client, getCurrentWallet]
   );
 
+  const acceptNFTOffer = useCallback(
+    async (payload: AcceptNFTOfferRequest) => {
+      const wallet = getCurrentWallet();
+      if (!client) {
+        throw new Error('You need to be connected to a ledger to mint an NFT');
+      } else if (!wallet) {
+        throw new Error('You need to have a wallet connected to mint an NFT');
+      } else {
+        try {
+          const tx = await client.submitAndWait(
+            {
+              ...(buildBaseTransaction(
+                payload,
+                wallet,
+                'NFTokenAcceptOffer'
+              ) as NFTokenAcceptOffer),
+              ...(payload.NFTokenSellOffer && { NFTokenSellOffer: payload.NFTokenSellOffer }),
+              ...(payload.NFTokenBuyOffer && { NFTokenBuyOffer: payload.NFTokenBuyOffer }),
+              ...(payload.NFTokenBrokerFee && { NFTokenBrokerFee: payload.NFTokenBrokerFee })
+            },
+            { wallet: wallet.wallet }
+          );
+
+          if (!tx.result.hash) {
+            throw new Error("Couldn't accept the NFT offer");
+          }
+
+          if ((tx.result.meta! as TransactionMetadata).TransactionResult !== 'tesSUCCESS') {
+            throw new Error(
+              (tx.result.meta as TransactionMetadata)?.TransactionResult ||
+                "Couldn't accept the NFT Offer but the transaction was successful"
+            );
+          }
+
+          return {
+            hash: tx.result.hash
+          };
+        } catch (e) {
+          Sentry.captureException(e);
+          throw e;
+        }
+      }
+    },
+    [client, getCurrentWallet]
+  );
+
   const buildBaseTransaction = (
     payload: BaseTransactionRequest,
     wallet: WalletLedger,
-    txType: 'NFTokenMint' | 'Payment' | 'TrustSet' | 'NFTokenCreateOffer' | 'NFTokenCancelOffer'
+    txType:
+      | 'NFTokenMint'
+      | 'Payment'
+      | 'TrustSet'
+      | 'NFTokenCreateOffer'
+      | 'NFTokenCancelOffer'
+      | 'NFTokenAcceptOffer'
   ): BaseTransaction => ({
     TransactionType: txType,
     Account: wallet.publicAddress,
@@ -467,7 +527,8 @@ const LedgerProvider: FC = ({ children }) => {
     fundWallet,
     mintNFT,
     createNFTOffer,
-    cancelNFTOffer
+    cancelNFTOffer,
+    acceptNFTOffer
   };
 
   return <LedgerContext.Provider value={value}>{children}</LedgerContext.Provider>;
