@@ -3,11 +3,9 @@ import { FC, FocusEvent, useCallback, useMemo, useState } from 'react';
 import { Button, TextField } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
-import { HOME_PATH } from '../../../constants';
+import { HOME_PATH, MAX_TOKEN_LENGTH } from '../../../constants';
 import { NumericInput } from '../../atoms';
 import { PageWithReturn } from '../../templates';
-
-const MAX_TOKEN_LENGTH = 30;
 
 interface StepFormProps {
   onTrustlineSubmit: (

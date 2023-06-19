@@ -133,7 +133,6 @@ export const AddNewTrustline: FC = () => {
     const id = Number(urlParams.get('id')) || 0;
     const memos = parseMemos(urlParams.get('memos'));
     const flags = parseTrustSetFlags(urlParams.get('flags'));
-    const inAppCall = urlParams.get('inAppCall') === 'true' || false;
     const showForm = urlParams.get('showForm') === 'true' || false;
 
     if (limitAmount === null) {
@@ -153,7 +152,7 @@ export const AddNewTrustline: FC = () => {
       inAppCall,
       showForm
     });
-  }, [createMessage]);
+  }, [createMessage, inAppCall]);
 
   useEffect(() => {
     const wallet = getCurrentWallet();
@@ -325,7 +324,6 @@ export const AddNewTrustline: FC = () => {
           </>
         }
         transaction={TransactionStatus.Rejected}
-        {...(params.inAppCall ? { onClick: () => navigate(HOME_PATH) } : {})}
       />
     );
   }
@@ -352,7 +350,6 @@ export const AddNewTrustline: FC = () => {
           </>
         }
         transaction={TransactionStatus.Rejected}
-        {...(params.inAppCall ? { onClick: () => navigate(HOME_PATH) } : {})}
       />
     );
   }
@@ -379,7 +376,6 @@ export const AddNewTrustline: FC = () => {
           </>
         }
         transaction={TransactionStatus.Rejected}
-        {...(params.inAppCall ? { onClick: () => navigate(HOME_PATH) } : {})}
       />
     );
   }
@@ -407,7 +403,6 @@ export const AddNewTrustline: FC = () => {
             </>
           }
           transaction={TransactionStatus.Rejected}
-          {...(params.inAppCall ? { onClick: () => navigate(HOME_PATH) } : {})}
         />
       );
     }
