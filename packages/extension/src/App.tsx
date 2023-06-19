@@ -18,6 +18,7 @@ import {
   AcceptNFTOffer,
   AddNewTrustline,
   AddNewWallet,
+  BurnNFT,
   CancelNFTOffer,
   CreateNFTOffer,
   CreateWallet,
@@ -48,6 +49,7 @@ import {
   ACCEPT_NFT_OFFER_PATH,
   ADD_NEW_TRUSTLINE_PATH,
   ADD_NEW_WALLET_PATH,
+  BURN_NFT_PATH,
   CANCEL_NFT_OFFER_PATH,
   CREATE_NEW_WALLET_PATH,
   CREATE_NFT_OFFER_PATH,
@@ -66,6 +68,7 @@ import {
   PARAMETER_SHARE_PUBLIC_KEY,
   PARAMETER_SIGN_MESSAGE,
   PARAMETER_TRANSACTION_ACCEPT_NFT_OFFER,
+  PARAMETER_TRANSACTION_BURN_NFT,
   PARAMETER_TRANSACTION_CANCEL_NFT_OFFER,
   PARAMETER_TRANSACTION_CREATE_NFT_OFFER,
   PARAMETER_TRANSACTION_MINT_NFT,
@@ -241,6 +244,12 @@ const App: FC = () => {
         handleTransaction({
           app: GEM_WALLET,
           type: 'RECEIVE_ACCEPT_NFT_OFFER/V3',
+          payload: defaultPayload
+        });
+      } else if (search.includes(PARAMETER_TRANSACTION_BURN_NFT)) {
+        handleTransaction({
+          app: GEM_WALLET,
+          type: 'RECEIVE_BURN_NFT/V3',
           payload: defaultPayload
         });
       }
@@ -443,6 +452,14 @@ const App: FC = () => {
           element={
             <PrivateRoute>
               <AcceptNFTOffer />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path={BURN_NFT_PATH}
+          element={
+            <PrivateRoute>
+              <BurnNFT />
             </PrivateRoute>
           }
         />
