@@ -1,5 +1,6 @@
 import { CSSProperties, FC } from 'react';
 
+import EditIcon from '@mui/icons-material/Edit';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { Paper, Typography } from '@mui/material';
 
@@ -65,7 +66,7 @@ export const TokenDisplay: FC<TokenDisplayProps> = ({
       ) : null}
       {onTrustlineDetailsClick ? (
         <IconTextButton onClick={onTrustlineDetailsClick}>
-          <InfoOutlinedIcon style={{ color: SECONDARY_GRAY }} fontSize="small" />
+          <EditIcon style={{ color: SECONDARY_GRAY }} fontSize="small" />
           <Typography variant="body2" style={{ color: SECONDARY_GRAY, marginLeft: '3px' }}>
             Edit
           </Typography>
