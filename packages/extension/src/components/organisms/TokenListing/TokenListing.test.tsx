@@ -6,6 +6,7 @@ import { Network } from '@gemwallet/constants';
 import { formatToken } from '../../../utils';
 import { TokenListing, TokenListingProps } from './TokenListing';
 
+jest.mock('react-router-dom');
 jest.mock('@sentry/react', () => {
   return {
     captureException: jest.fn()

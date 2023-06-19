@@ -11,6 +11,8 @@ describe('Trustline', () => {
     value: VALUE,
     issuer: DESTINATION_ADDRESS
   });
+  const HOME_URL = `http://localhost:3000`;
+  const SET_TRUSTLINE_URL = `${HOME_URL}?limitAmount=${AMOUNT}&id=93376196&transaction=trustSet`;
 
   beforeEach(() => {
     // Mock the localStorage with a wallet already loaded
@@ -21,21 +23,11 @@ describe('Trustline', () => {
       );
       win.localStorage.setItem('network', 'Testnet');
     });
-    cy.visit(`http://localhost:3000?limitAmount=${AMOUNT}&id=93376196&transaction=trustSet`, {
-      onBeforeLoad(win) {
-        (win as any).chrome = (win as any).chrome || {};
-        (win as any).chrome.runtime = {
-          sendMessage(message, cb) {}
-        };
-      }
-    });
-
-    // Login
-    cy.get('input[name="password"]').type(PASSWORD);
-    cy.contains('button', 'Unlock').click();
   });
 
   it("Reject the trustline's warning", () => {
+    navigate(SET_TRUSTLINE_URL, PASSWORD);
+
     cy.on('uncaught:exception', (err, runnable) => {
       // Continue with the test
       return false;
@@ -61,48 +53,18 @@ describe('Trustline', () => {
   });
 
   it('Confirm the trustline', () => {
+    navigate(SET_TRUSTLINE_URL, PASSWORD);
+
     cy.on('uncaught:exception', (err, runnable) => {
       // Continue with the test
       return false;
     });
-    // Should be on the Warning Trustline Page
-    cy.get('h1[data-testid="page-title"]').should('have.text', 'Add Trustline');
-
-    // Should have the proper information
-    cy.get('h1[data-testid="page-title"]')
-      .next()
-      .should(
-        'have.text',
-        'WarningGemWallet does not recommend or support any particular token or issuer.It is important to add only the tokens and issuers you trust.Continue at your own risk'
-      );
-
-    // Confirm the trustline warning
-    cy.contains('button', 'Continue').click();
-
-    // Should be on the Add Trustline Page
-    cy.get('h1[data-testid="page-title"]').should('have.text', 'Add Trustline - Confirm');
-
-    // Should have the proper information
-    cy.contains('Issuer:').next().should('have.text', DESTINATION_ADDRESS);
-    cy.contains('Currency:').next().should('have.text', CURRENCY);
-    cy.contains('Limit:').next().should('have.text', `10,000,000 ${CURRENCY}`);
-
-    // Confirm the trustline
-    cy.contains('button', 'Confirm').click();
-
-    cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction in progress');
-    cy.get('p[data-testid="transaction-subtitle"]').should(
-      'have.text',
-      'We are processing your transactionPlease wait'
-    );
-
-    cy.get('h1[data-testid="transaction-title"]').contains('Transaction accepted', {
-      timeout: 10000
-    });
-    cy.get('p[data-testid="transaction-subtitle"]').should('have.text', 'Transaction Successful');
+    validateTrustlineTx(DESTINATION_ADDRESS, CURRENCY, '10,000,000');
   });
 
   it('Reject the trustline', () => {
+    navigate(SET_TRUSTLINE_URL, PASSWORD);
+
     cy.on('uncaught:exception', (err, runnable) => {
       // Continue with the test
       return false;
@@ -139,4 +101,95 @@ describe('Trustline', () => {
       'Your transaction failed, please try again.Something went wrong'
     );
   });
+
+  const testCases = [
+    {
+      issuer: 'rwtDvu9QDfCskWuyE2TSEt3s56RbiWUKJN',
+      token: 'USD',
+      limit: '10000000',
+      formattedLimit: '10,000,000'
+    },
+    {
+      issuer: 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN',
+      token: 'SOLO',
+      limit: '100000000',
+      formattedLimit: '100,000,000'
+    }
+  ];
+
+  testCases.forEach((testCase) => {
+    it(`Set a trustline from the UI with ${testCase.token}`, () => {
+      navigate(HOME_URL, PASSWORD);
+
+      cy.contains('button', 'Add trustline').click();
+
+      // Should be on the Add Trustline Page
+      cy.get('p').should('have.text', 'Add trustline');
+
+      // Fill the form
+      cy.get('input[id="issuer"]').type(testCase.issuer);
+
+      cy.get('input[name="token"]').type(testCase.token);
+
+      cy.get('input[name="limit"]').type(testCase.limit);
+
+      // Confirm the trustline
+      cy.contains('button', 'Add trustline').click();
+
+      validateTrustlineTx(testCase.issuer, testCase.token, testCase.formattedLimit);
+    });
+  });
 });
+
+const navigate = (url: string, password: string) => {
+  cy.visit(url, {
+    onBeforeLoad(win) {
+      (win as any).chrome = (win as any).chrome || {};
+      (win as any).chrome.runtime = {
+        sendMessage(message, cb) {}
+      };
+    }
+  });
+
+  // Login
+  cy.get('input[name="password"]').type(password);
+  cy.contains('button', 'Unlock').click();
+};
+
+const validateTrustlineTx = (destinationAddress: string, currency: string, limit: string) => {
+  // Should be on the Warning Trustline Page
+  cy.get('h1[data-testid="page-title"]').should('have.text', 'Add Trustline');
+
+  // Should have the proper information
+  cy.get('h1[data-testid="page-title"]')
+    .next()
+    .should(
+      'have.text',
+      'WarningGemWallet does not recommend or support any particular token or issuer.It is important to add only the tokens and issuers you trust.Continue at your own risk'
+    );
+
+  // Confirm the trustline warning
+  cy.contains('button', 'Continue').click();
+
+  // Should be on the Add Trustline Page
+  cy.get('h1[data-testid="page-title"]').should('have.text', 'Add Trustline - Confirm');
+
+  // Should have the proper information
+  cy.contains('Issuer:').next().should('have.text', destinationAddress);
+  cy.contains('Currency:').next().should('have.text', currency);
+  cy.contains('Limit:').next().should('have.text', `${limit} ${currency}`);
+
+  // Confirm the trustline
+  cy.contains('button', 'Confirm').click();
+
+  cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction in progress');
+  cy.get('p[data-testid="transaction-subtitle"]').should(
+    'have.text',
+    'We are processing your transactionPlease wait'
+  );
+
+  cy.get('h1[data-testid="transaction-title"]').contains('Transaction accepted', {
+    timeout: 10000
+  });
+  cy.get('p[data-testid="transaction-subtitle"]').should('have.text', 'Transaction Successful');
+};

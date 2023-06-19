@@ -1,10 +1,8 @@
 import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 
-import ErrorIcon from '@mui/icons-material/Error';
-import WarningIcon from '@mui/icons-material/Warning';
-import { Button, Container, IconButton, Paper, Tooltip, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
-import { isValidAddress } from 'xrpl';
+import { useNavigate } from 'react-router-dom';
+import { dropsToXrp, isValidAddress } from 'xrpl';
 import { IssuedCurrencyAmount } from 'xrpl/dist/npm/models/common';
 
 import {
@@ -20,15 +18,13 @@ import {
   API_ERROR_BAD_ISSUER,
   API_ERROR_BAD_REQUEST,
   DEFAULT_RESERVE,
-  ERROR_RED
+  HOME_PATH
 } from '../../../constants';
 import { useLedger, useNetwork, useServer, useWallet } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
 import {
   checkFee,
-  formatAmount,
-  formatFlags,
-  formatToken,
+  currencyToHex,
   fromHexMemos,
   parseLimitAmount,
   parseMemos,
@@ -36,8 +32,8 @@ import {
   toXRPLMemos
 } from '../../../utils';
 import { serializeError } from '../../../utils/errors';
-import { TileLoader } from '../../atoms';
-import { AsyncTransaction, PageWithSpinner, PageWithTitle } from '../../templates';
+import { StepForm, StepWarning, StepConfirm } from '../../pages';
+import { AsyncTransaction, PageWithSpinner } from '../../templates';
 
 const DEFAULT_FEES = 'Loading ...';
 
@@ -49,9 +45,15 @@ interface Params {
   id: number;
   memos: Memo[] | null;
   flags: TrustSetFlags | null;
+  inAppCall: boolean;
+  showForm: boolean;
 }
 
 export const AddNewTrustline: FC = () => {
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  const inAppCall = urlParams.get('inAppCall') === 'true' || false;
+
   const [step, setStep] = useState<STEP>('WARNING');
   const [isParamsMissing, setIsParamsMissing] = useState(false);
   const [params, setParams] = useState<Params>({
@@ -59,7 +61,9 @@ export const AddNewTrustline: FC = () => {
     fee: null,
     id: 0,
     memos: null,
-    flags: null
+    flags: null,
+    inAppCall,
+    showForm: false
   });
   const [estimatedFees, setEstimatedFees] = useState<string>(DEFAULT_FEES);
   const [errorFees, setErrorFees] = useState('');
@@ -73,6 +77,7 @@ export const AddNewTrustline: FC = () => {
   const { client, network } = useNetwork();
   const { getCurrentWallet } = useWallet();
   const { serverInfo } = useServer();
+  const navigate = useNavigate();
 
   const receivingMessage = useMemo(() => {
     const queryString = window.location.search;
@@ -128,12 +133,13 @@ export const AddNewTrustline: FC = () => {
     const id = Number(urlParams.get('id')) || 0;
     const memos = parseMemos(urlParams.get('memos'));
     const flags = parseTrustSetFlags(urlParams.get('flags'));
+    const showForm = urlParams.get('showForm') === 'true' || false;
 
     if (limitAmount === null) {
       setIsParamsMissing(true);
     }
 
-    if (Number.isNaN(Number(limitAmount?.value))) {
+    if (limitAmount && Number.isNaN(Number(limitAmount.value))) {
       setErrorValue('The value must be a number, the value provided was not a number.');
     }
 
@@ -142,9 +148,11 @@ export const AddNewTrustline: FC = () => {
       fee,
       id,
       memos,
-      flags
+      flags,
+      inAppCall,
+      showForm
     });
-  }, [createMessage]);
+  }, [createMessage, inAppCall]);
 
   useEffect(() => {
     const wallet = getCurrentWallet();
@@ -184,7 +192,7 @@ export const AddNewTrustline: FC = () => {
           const difference =
             Number(currentBalance) -
             Number(serverInfo?.info.validated_ledger?.reserve_base_xrp || DEFAULT_RESERVE) -
-            Number(params.fee || 0);
+            (params.fee ? Number(dropsToXrp(params.fee)) : 0);
           setDifference(difference);
         })
         .catch((e) => {
@@ -211,10 +219,12 @@ export const AddNewTrustline: FC = () => {
 
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);
-    chrome.runtime.sendMessage<
-      ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
-    >(createMessage({ transactionHash: null }));
-  }, [createMessage]);
+    if (!params.inAppCall) {
+      chrome.runtime.sendMessage<
+        ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
+      >(createMessage({ transactionHash: null }));
+    }
+  }, [createMessage, params.inAppCall]);
 
   const handleConfirm = useCallback(() => {
     setTransaction(TransactionStatus.Pending);
@@ -223,6 +233,9 @@ export const AddNewTrustline: FC = () => {
     if (params.limitAmount === null) {
       setIsParamsMissing(true);
     } else {
+      if (params.limitAmount.currency.length > 3 && params.limitAmount.currency.length !== 40) {
+        params.limitAmount.currency = currencyToHex(params.limitAmount.currency);
+      }
       setTrustline({
         limitAmount: params.limitAmount,
         fee: params.fee || undefined,
@@ -231,24 +244,76 @@ export const AddNewTrustline: FC = () => {
       })
         .then((transactionHash) => {
           setTransaction(TransactionStatus.Success);
-          chrome.runtime.sendMessage<
-            ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
-          >(createMessage({ transactionHash }));
+          if (!params.inAppCall) {
+            chrome.runtime.sendMessage<
+              ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
+            >(createMessage({ transactionHash }));
+          }
         })
         .catch((e) => {
           setErrorRequestRejection(e.message);
           setTransaction(TransactionStatus.Rejected);
-          chrome.runtime.sendMessage<
-            ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
-          >(createMessage({ transactionHash: undefined, error: e }));
+          if (!params.inAppCall) {
+            chrome.runtime.sendMessage<
+              ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
+            >(
+              createMessage({
+                transactionHash: undefined,
+                error: e
+              })
+            );
+          }
         });
     }
-  }, [setTrustline, createMessage, params.limitAmount, params.fee, params.flags, params.memos]);
+  }, [
+    setTrustline,
+    createMessage,
+    params.limitAmount,
+    params.fee,
+    params.inAppCall,
+    params.flags,
+    params.memos
+  ]);
+
+  const handleTrustlineSubmit = (
+    issuer: string,
+    token: string,
+    limit: string,
+    showForm: boolean,
+    isParamsMissing: boolean
+  ) => {
+    setParams({
+      limitAmount: {
+        currency: token,
+        issuer: issuer,
+        value: limit
+      },
+      fee: params.fee,
+      id: params.id,
+      memos: params.memos,
+      flags: params.flags,
+      showForm: showForm,
+      inAppCall: true
+    });
+
+    setIsParamsMissing(isParamsMissing);
+  };
+
+  if (params.showForm) {
+    return <StepForm onTrustlineSubmit={handleTrustlineSubmit} />;
+  }
 
   if (isParamsMissing) {
-    chrome.runtime.sendMessage<
-      ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
-    >(createMessage({ transactionHash: null, error: new Error(API_ERROR_BAD_REQUEST) }));
+    if (!params.inAppCall) {
+      chrome.runtime.sendMessage<
+        ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
+      >(
+        createMessage({
+          transactionHash: null,
+          error: new Error(API_ERROR_BAD_REQUEST)
+        })
+      );
+    }
     return (
       <AsyncTransaction
         title="Transaction rejected"
@@ -259,14 +324,22 @@ export const AddNewTrustline: FC = () => {
           </>
         }
         transaction={TransactionStatus.Rejected}
+        {...(params.inAppCall ? { onClick: () => navigate(HOME_PATH) } : {})}
       />
     );
   }
 
   if (!isValidIssuer) {
-    chrome.runtime.sendMessage<
-      ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
-    >(createMessage({ transactionHash: null, error: new Error(API_ERROR_BAD_ISSUER) }));
+    if (!params.inAppCall) {
+      chrome.runtime.sendMessage<
+        ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
+      >(
+        createMessage({
+          transactionHash: null,
+          error: new Error(API_ERROR_BAD_ISSUER)
+        })
+      );
+    }
     return (
       <AsyncTransaction
         title="Incorrect transaction"
@@ -278,14 +351,22 @@ export const AddNewTrustline: FC = () => {
           </>
         }
         transaction={TransactionStatus.Rejected}
+        {...(params.inAppCall ? { onClick: () => navigate(HOME_PATH) } : {})}
       />
     );
   }
 
   if (errorValue) {
-    chrome.runtime.sendMessage<
-      ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
-    >(createMessage({ transactionHash: null, error: new Error(API_ERROR_BAD_REQUEST) }));
+    if (!params.inAppCall) {
+      chrome.runtime.sendMessage<
+        ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
+      >(
+        createMessage({
+          transactionHash: null,
+          error: new Error(API_ERROR_BAD_REQUEST)
+        })
+      );
+    }
     return (
       <AsyncTransaction
         title="Incorrect transaction"
@@ -297,14 +378,22 @@ export const AddNewTrustline: FC = () => {
           </>
         }
         transaction={TransactionStatus.Rejected}
+        {...(params.inAppCall ? { onClick: () => navigate(HOME_PATH) } : {})}
       />
     );
   }
 
   if (errorDifference) {
-    chrome.runtime.sendMessage<
-      ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
-    >(createMessage({ transactionHash: null, error: errorDifference }));
+    if (!params.inAppCall) {
+      chrome.runtime.sendMessage<
+        ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
+      >(
+        createMessage({
+          transactionHash: null,
+          error: errorDifference
+        })
+      );
+    }
     if (errorDifference.message === 'Account not found.') {
       return (
         <AsyncTransaction
@@ -317,6 +406,7 @@ export const AddNewTrustline: FC = () => {
             </>
           }
           transaction={TransactionStatus.Rejected}
+          {...(params.inAppCall ? { onClick: () => navigate(HOME_PATH) } : {})}
         />
       );
     }
@@ -326,6 +416,7 @@ export const AddNewTrustline: FC = () => {
         title="Error"
         subtitle={errorDifference.message}
         transaction={TransactionStatus.Rejected}
+        {...(params.inAppCall ? { onClick: () => navigate(HOME_PATH) } : {})}
       />
     );
   }
@@ -354,6 +445,7 @@ export const AddNewTrustline: FC = () => {
           )
         }
         transaction={transaction}
+        {...(params.inAppCall ? { onClick: () => navigate(HOME_PATH) } : {})}
       />
     );
   }
@@ -370,157 +462,30 @@ export const AddNewTrustline: FC = () => {
           </>
         }
         transaction={TransactionStatus.Rejected}
+        {...(params.inAppCall ? { onClick: () => navigate(HOME_PATH) } : {})}
       />
     );
   }
 
   if (step === 'WARNING') {
-    return (
-      <PageWithTitle title="Add Trustline">
-        <div
-          style={{
-            height: '100%',
-            paddingTop: '50px'
-          }}
-        >
-          <div style={{ textAlign: 'center' }}>
-            <WarningIcon color="warning" fontSize="large" />
-            <Typography color="#ffac33">Warning</Typography>
-          </div>
-          <Typography align="center" style={{ marginTop: '2rem' }}>
-            GemWallet does not recommend or support any particular token or issuer.
-          </Typography>
-          <Typography align="center" variant="body2" style={{ marginTop: '1rem' }}>
-            It is important to add only the tokens and issuers you trust.
-          </Typography>
-          <Typography align="center" variant="body2" style={{ marginTop: '1rem' }}>
-            Continue at your own risk
-          </Typography>
-        </div>
-        <Container style={{ display: 'flex', justifyContent: 'space-evenly' }}>
-          <Button variant="contained" color="secondary" onClick={handleReject}>
-            Reject
-          </Button>
-          <Button variant="contained" onClick={() => setStep('TRANSACTION')} disabled={false}>
-            Continue
-          </Button>
-        </Container>
-      </PageWithTitle>
-    );
+    return <StepWarning onReject={handleReject} onContinue={() => setStep('TRANSACTION')} />;
   }
 
-  const { fee, flags, memos } = params;
-  const decodedMemos = fromHexMemos(memos || []) || [];
-
   const limitAmount = params.limitAmount as IssuedCurrencyAmount;
+  const memos = fromHexMemos(params.memos ?? undefined) ?? [];
 
   return (
-    <PageWithTitle title="Add Trustline - Confirm">
-      {!hasEnoughFunds ? (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <Tooltip title="You need more funds on your wallet to proceed">
-            <IconButton size="small">
-              <ErrorIcon style={{ color: ERROR_RED }} />
-            </IconButton>
-          </Tooltip>
-          <Typography variant="body1" style={{ marginLeft: '10px', color: ERROR_RED }}>
-            Insufficient funds.
-          </Typography>
-        </div>
-      ) : null}
-      <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-        <Typography variant="body1">Issuer:</Typography>
-        <Typography variant="body2">{limitAmount.issuer}</Typography>
-      </Paper>
-      <Paper
-        elevation={24}
-        style={{
-          padding: '10px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          marginBottom: '5px'
-        }}
-      >
-        <Typography variant="body1">Currency:</Typography>
-        <Typography variant="body1">{limitAmount.currency}</Typography>
-      </Paper>
-
-      <Paper
-        elevation={24}
-        style={{
-          padding: '10px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          marginBottom: '5px'
-        }}
-      >
-        <Typography variant="body1">Limit:</Typography>
-        <Typography variant="body1">{formatAmount(limitAmount)}</Typography>
-      </Paper>
-      {decodedMemos.length > 0 ? (
-        <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-          <Typography variant="body1">Memos:</Typography>
-          {decodedMemos.map((memo, index) => (
-            <div
-              key={index}
-              style={{
-                marginBottom: index === decodedMemos.length - 1 ? 0 : '8px'
-              }}
-            >
-              <Typography
-                variant="body2"
-                style={{
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  maxWidth: '100%'
-                }}
-              >
-                {memo.memo.memoData}
-              </Typography>
-            </div>
-          ))}
-        </Paper>
-      ) : null}
-      {flags ? (
-        <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-          <Typography variant="body1">Flags:</Typography>
-          <Typography variant="body2">
-            <pre style={{ margin: 0 }}>{formatFlags(flags)}</pre>
-          </Typography>
-        </Paper>
-      ) : null}
-      <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-        <Typography variant="body1" style={{ display: 'flex', alignItems: 'center' }}>
-          <Tooltip title="These are the fees to make the transaction over the network">
-            <IconButton size="small">
-              <ErrorIcon />
-            </IconButton>
-          </Tooltip>
-          Network fees:
-        </Typography>
-        <Typography variant="body2" gutterBottom align="right">
-          {errorFees ? (
-            <Typography variant="caption" style={{ color: ERROR_RED }}>
-              {errorFees}
-            </Typography>
-          ) : estimatedFees === DEFAULT_FEES ? (
-            <TileLoader secondLineOnly />
-          ) : fee ? (
-            formatToken(Number(fee), 'XRP (manual)', true)
-          ) : (
-            formatAmount(estimatedFees)
-          )}
-        </Typography>
-      </Paper>
-      <Container style={{ display: 'flex', justifyContent: 'space-evenly' }}>
-        <Button variant="contained" color="secondary" onClick={handleReject}>
-          Reject
-        </Button>
-        <Button variant="contained" onClick={handleConfirm} disabled={!hasEnoughFunds}>
-          Confirm
-        </Button>
-      </Container>
-    </PageWithTitle>
+    <StepConfirm
+      limitAmount={limitAmount}
+      fee={params.fee}
+      memos={memos}
+      flags={params.flags}
+      estimatedFees={estimatedFees}
+      errorFees={errorFees}
+      hasEnoughFunds={hasEnoughFunds}
+      defaultFee={DEFAULT_FEES}
+      onReject={handleReject}
+      onConfirm={handleConfirm}
+    />
   );
 };

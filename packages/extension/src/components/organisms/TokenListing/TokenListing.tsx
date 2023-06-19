@@ -13,10 +13,11 @@ import {
 } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 import * as Sentry from '@sentry/react';
+import { useNavigate } from 'react-router-dom';
 
 import { Network } from '@gemwallet/constants';
 
-import { DEFAULT_RESERVE, ERROR_RED } from '../../../constants';
+import { ADD_NEW_TRUSTLINE_PATH, DEFAULT_RESERVE, ERROR_RED } from '../../../constants';
 import { useLedger, useNetwork, useServer } from '../../../contexts';
 import { convertCurrencyString } from '../../../utils';
 import { TokenLoader } from '../../atoms';
@@ -52,6 +53,7 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
   const { client, reconnectToNetwork, network } = useNetwork();
   const { serverInfo } = useServer();
   const { fundWallet } = useLedger();
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchBalance() {
@@ -170,6 +172,7 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
           />
         );
       })}
+      <div style={{ height: '60px' }} />
       <Dialog
         fullScreen
         open={explanationOpen}
@@ -211,6 +214,26 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
           <TokenDisplay balance={Number(XRPBalance) - reserve} isXRPToken token="XRP" />
         </div>
       </Dialog>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          position: 'fixed',
+          bottom: 57,
+          left: 0,
+          right: 0,
+          zIndex: 1,
+          backgroundColor: '#1d1d1d'
+        }}
+      >
+        <Button
+          variant="contained"
+          onClick={() => navigate(`${ADD_NEW_TRUSTLINE_PATH}?showForm=true&inAppCall=true`)}
+          style={{ margin: '10px 0' }}
+        >
+          Add trustline
+        </Button>
+      </div>
     </div>
   );
 };
