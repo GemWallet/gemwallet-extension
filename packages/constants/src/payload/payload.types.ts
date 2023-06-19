@@ -177,6 +177,14 @@ export interface AcceptNFTOfferRequest extends BaseTransactionRequest {
   NFTokenBrokerFee?: Amount;
 }
 
+export interface BurnNFTRequest extends BaseTransactionRequest {
+  // The NFToken to be removed by this transaction.
+  NFTokenID: string;
+  // The owner of the NFToken to burn. Only used if that owner is different than the account sending this transaction.
+  // The issuer or authorized minter can use this field to burn NFTs that have the lsfBurnable flag enabled.
+  owner?: string;
+}
+
 export interface GetNFTRequest {
   // Limit the number of NFTokens to retrieve.
   limit?: number;
@@ -193,6 +201,7 @@ export interface SignMessageRequest {
 
 export type RequestPayload =
   | AcceptNFTOfferRequest
+  | BurnNFTRequest
   | CancelNFTOfferRequest
   | CreateNFTOfferRequest
   | GetNetworkRequest
@@ -288,8 +297,14 @@ export interface AcceptNFTOfferResponse
     hash: string;
   }> {}
 
+export interface BurnNFTResponse
+  extends BaseResponse<{
+    hash: string;
+  }> {}
+
 export type ResponsePayload =
   | AcceptNFTOfferResponse
+  | BurnNFTResponse
   | CancelNFTOfferResponse
   | CreateNFTOfferResponse
   | GetAddressResponse
