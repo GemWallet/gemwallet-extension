@@ -210,7 +210,7 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
         const noRipple = trustedLine.trustlineDetails?.noRipple || false;
         const flags = noRipple ? TrustSetFlagsBitmask.tfSetNoRipple : undefined;
         const limitAmount = {
-          currency: trustedLine.currency,
+          currency: convertCurrencyString(trustedLine.currency),
           issuer: trustedLine.issuer,
           value: limit
         };
