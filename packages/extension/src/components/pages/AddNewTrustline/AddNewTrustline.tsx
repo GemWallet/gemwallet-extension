@@ -324,6 +324,7 @@ export const AddNewTrustline: FC = () => {
           </>
         }
         transaction={TransactionStatus.Rejected}
+        {...(params.inAppCall ? { onClick: () => navigate(HOME_PATH) } : {})}
       />
     );
   }
@@ -350,6 +351,7 @@ export const AddNewTrustline: FC = () => {
           </>
         }
         transaction={TransactionStatus.Rejected}
+        {...(params.inAppCall ? { onClick: () => navigate(HOME_PATH) } : {})}
       />
     );
   }
@@ -376,6 +378,7 @@ export const AddNewTrustline: FC = () => {
           </>
         }
         transaction={TransactionStatus.Rejected}
+        {...(params.inAppCall ? { onClick: () => navigate(HOME_PATH) } : {})}
       />
     );
   }
@@ -403,6 +406,7 @@ export const AddNewTrustline: FC = () => {
             </>
           }
           transaction={TransactionStatus.Rejected}
+          {...(params.inAppCall ? { onClick: () => navigate(HOME_PATH) } : {})}
         />
       );
     }
