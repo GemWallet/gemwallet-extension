@@ -17,6 +17,7 @@
       <button onclick="handleCreateNFTOffer()">Create NFT offer (check the console)</button>
       <button onclick="handleAcceptNFTOffer()">Accept NFT offer (check the console)</button>
       <button onclick="handleCancelNFTOffer()">Cancel NFT offer (check the console)</button>
+      <button onclick="handleBurnNFT()">Burn NFT (check the console)</button>
       <button onclick="handlePublicKey()">Get Public Key (check the console)</button>
       <button onclick="handleGetAddress()">Get Address (check the console)</button>
       <button onclick="handleGetNetwork()">Get Network (check the console)</button>
@@ -331,6 +332,36 @@
           };
 
           GemWalletApi.cancelNFTOffer(transaction)
+            .then((res) => {
+              console.log('Received response: ', res);
+            })
+            .catch((e) => {
+              console.error('Cannot proceed the transaction: ', e);
+            });
+        }
+      })
+      .catch((e) => {
+        console.error('GemWallet is not connected: ', e);
+      });
+  }
+  function handleBurnNFT() {
+    GemWalletApi.isInstalled()
+      .then(({ result }) => {
+        if (result.isInstalled) {
+          const transaction = {
+            NFTokenID: 'Replace me!',
+            fee: '199',
+            memos: [
+              {
+                memo: {
+                  memoType: '4465736372697074696f6e',
+                  memoData: '54657374206d656d6f'
+                }
+              }
+            ]
+          };
+
+          GemWalletApi.burnNFT(transaction)
             .then((res) => {
               console.log('Received response: ', res);
             })
