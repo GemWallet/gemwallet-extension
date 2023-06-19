@@ -145,11 +145,6 @@ describe('Trustline', () => {
 
   it('Edit the trustline by disabling No Ripple', () => {
     const newLimit = '5';
-    cy.on('uncaught:exception', (err, runnable) => {
-      // Continue with the test
-      return false;
-    });
-
     navigate(HOME_URL, PASSWORD);
 
     // Find the trustline to edit

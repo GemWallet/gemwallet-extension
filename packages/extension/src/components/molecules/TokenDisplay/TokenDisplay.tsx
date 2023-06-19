@@ -1,8 +1,8 @@
-import { CSSProperties, FC } from 'react';
+import { CSSProperties, FC, useMemo } from 'react';
 
 import EditIcon from '@mui/icons-material/Edit';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import { Paper, Typography } from '@mui/material';
+import { Paper, Tooltip, Typography } from '@mui/material';
 
 import { SECONDARY_GRAY } from '../../../constants';
 import { formatToken } from '../../../utils';
@@ -30,6 +30,12 @@ export const TokenDisplay: FC<TokenDisplayProps> = ({
   onTrustlineDetailsClick,
   style
 }) => {
+  /* We a warning if trustline's limit is 0 or if the noRipple flag is set to false */
+  const isTokenWarning = useMemo(
+    () => trustlineLimit === 0 || trustlineNoRipple === false,
+    [trustlineLimit, trustlineNoRipple]
+  );
+
   return (
     <Paper
       elevation={5}
@@ -45,12 +51,16 @@ export const TokenDisplay: FC<TokenDisplayProps> = ({
       <div style={{ display: 'flex', alignItems: 'center' }}>
         {isXRPToken ? <Xrp /> : <GemWallet />}
         <div style={{ marginLeft: '10px' }}>
-          {/* We display the trustline in brown if its limit is 0 or if the noRipple flag is set to false */}
-          <Typography
-            style={trustlineLimit === 0 || trustlineNoRipple === false ? { color: 'brown' } : {}}
+          <Tooltip
+            title={
+              isTokenWarning ? 'Trustline limit set to 0 or rippling not prevented' : undefined
+            }
+            placement="top"
           >
-            {token}
-          </Typography>
+            <Typography style={isTokenWarning ? { color: 'brown', cursor: 'help' } : undefined}>
+              {token}
+            </Typography>
+          </Tooltip>
           <Typography variant="body2" style={{ color: SECONDARY_GRAY }}>
             {formatToken(balance, token)}
           </Typography>

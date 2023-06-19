@@ -71,7 +71,7 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
       setErrorLimit('');
     }
 
-    if (!isNaN(Number(e.target.value))) {
+    if (!Number.isNaN(Number(e.target.value))) {
       setLimit(e.target.value);
     }
   }, []);
