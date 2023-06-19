@@ -162,6 +162,30 @@ describe('Mint', () => {
     cy.get('p[data-testid="transaction-subtitle"]').should('have.text', 'Transaction Successful');
   });
 
+  it('Burn NFT', function () {
+    const url = `http://localhost:3000?burn-nft&NFTokenID=${this.NFTokenID}&fee=199&memos=%5B%7B%22memo%22%3A%7B%22memoType%22%3A%224465736372697074696f6e%22%2C%22memoData%22%3A%2254657374206d656d6f%22%7D%7D%5D&id=210325959&requestMessage=undefined&transaction=burnNFT`;
+    navigate(url, PASSWORD);
+
+    // Confirm
+    cy.get('h1[data-testid="page-title"]').should('have.text', 'Confirm Transaction');
+
+    cy.contains('NFT Token ID:').next().should('have.text', this.NFTokenID);
+
+    // Confirm
+    cy.contains('button', 'Confirm').click();
+
+    cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction in progress');
+    cy.get('p[data-testid="transaction-subtitle"]').should(
+      'have.text',
+      'We are processing your transactionPlease wait'
+    );
+
+    cy.get('h1[data-testid="transaction-title"]').contains('Transaction accepted', {
+      timeout: 10000
+    });
+    cy.get('p[data-testid="transaction-subtitle"]').should('have.text', 'Transaction Successful');
+  });
+
   const navigate = (url: string, password: string) => {
     cy.visit(url, {
       onBeforeLoad(win) {
