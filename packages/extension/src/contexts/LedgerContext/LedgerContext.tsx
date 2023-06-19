@@ -367,6 +367,13 @@ const LedgerProvider: FC = ({ children }) => {
             throw new Error("Couldn't create the NFT offer");
           }
 
+          if ((tx.result.meta! as TransactionMetadata).TransactionResult !== 'tesSUCCESS') {
+            throw new Error(
+              (tx.result.meta as TransactionMetadata)?.TransactionResult ||
+                "Couldn't create the NFT offer but the transaction was successful"
+            );
+          }
+
           return {
             hash: tx.result.hash
           };
