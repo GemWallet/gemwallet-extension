@@ -7,8 +7,10 @@ module.exports = {
   mode: 'production',
   output: {
     filename: 'gemwallet-api.js',
-    library: 'GemWalletApi',
-    libraryTarget: 'umd',
+    library: {
+      name: 'GemWalletApi',
+      type: 'umd'
+    },
     path: path.resolve(__dirname, '../..', 'dist')
   }
 };

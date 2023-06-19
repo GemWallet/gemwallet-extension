@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "build": "yarn workspace @gemwallet/extension build",
-    "build:api:cdn": "yarn workspace @gemwallet/api build",
+    "build:api:cdn": "yarn workspace @gemwallet/api build:cdn",
     "build:api:npm": "yarn workspace @gemwallet/api build:npm",
     "cypress": "yarn workspace @gemwallet/extension cypress:e2e",
     "lint": "eslint --cache --quiet --fix",
