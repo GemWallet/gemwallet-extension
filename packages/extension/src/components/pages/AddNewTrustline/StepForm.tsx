@@ -2,6 +2,7 @@ import { FC, FocusEvent, useCallback, useMemo, useState } from 'react';
 
 import { Button, TextField } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { isValidAddress } from 'xrpl';
 
 import { HOME_PATH, MAX_TOKEN_LENGTH } from '../../../constants';
 import { NumericInput } from '../../atoms';
@@ -37,6 +38,12 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit }) => {
       setErrorToken('');
     }
     setToken(e.target.value);
+  }, []);
+
+  const handleIssuerBlur = useCallback((e: FocusEvent<HTMLInputElement>) => {
+    if (e.target.value !== '') {
+      setErrorIssuer(!isValidAddress(e.target.value) ? 'Your issuer address is invalid' : '');
+    }
   }, []);
 
   const handleIssuerChange = useCallback((e: FocusEvent<HTMLInputElement>) => {
@@ -91,6 +98,7 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit }) => {
           error={!!errorIssuer}
           helperText={errorIssuer}
           onChange={handleIssuerChange}
+          onBlur={handleIssuerBlur}
           style={{ marginTop: '20px', marginBottom: '10px' }}
           autoComplete="off"
         />
