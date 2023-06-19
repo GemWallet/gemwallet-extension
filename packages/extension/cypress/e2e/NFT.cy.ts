@@ -112,6 +112,32 @@ describe('Mint', () => {
       });
   });
 
+  it('Accept NFT Offer', function () {
+    const url = `http://localhost:3000?accept-nft-offer&NFTokenSellOffer=${this.OfferID}&fee=199&memos=%5B%7B%22memo%22%3A%7B%22memoType%22%3A%224465736372697074696f6e%22%2C%22memoData%22%3A%2254657374206d656d6f%22%7D%7D%5D&id=210325959&requestMessage=undefined&transaction=acceptNFTOffer`;
+
+    navigate(url, PASSWORD);
+
+    // Confirm
+    cy.get('h1[data-testid="page-title"]').should('have.text', 'Confirm Transaction');
+
+    cy.contains('NFT Token Sell Offer:').next().should('have.text', this.OfferID);
+
+    // Confirm
+    cy.contains('button', 'Confirm').click();
+
+    cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction in progress');
+    cy.get('p[data-testid="transaction-subtitle"]').should(
+      'have.text',
+      'We are processing your transactionPlease wait'
+    );
+
+    // Since we are trying to accept our own offer, we should get an error
+    // But this means that the transaction was submitted successfully
+    cy.contains('tecCANT_ACCEPT_OWN_NFTOKEN_OFFER', {
+      timeout: 10000
+    });
+  });
+
   it('Cancel NFT Offer', function () {
     const url = `http://localhost:3000?cancel-nft-offer&NFTokenOffers=%5B%22${this.OfferID}%22%5D&fee=199&memos=%5B%7B%22memo%22%3A%7B%22memoType%22%3A%224465736372697074696f6e%22%2C%22memoData%22%3A%2254657374206d656d6f%22%7D%7D%5D&id=210325959&requestMessage=undefined&transaction=cancelNFTOffer`;
     navigate(url, PASSWORD);
