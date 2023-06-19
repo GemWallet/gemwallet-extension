@@ -139,7 +139,12 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
     return destinationTag.length <= MAX_DESTINATION_TAG_LENGTH;
   }, []);
 
-  const handleAddressChange = useCallback(
+  const handleAddressChange = useCallback((e: FocusEvent<HTMLInputElement>) => {
+    setErrorAddress('');
+    setAddress(e.target.value);
+  }, []);
+
+  const handleAddressBlur = useCallback(
     (e: FocusEvent<HTMLInputElement>) => {
       const currentWallet = getCurrentWallet();
       if (e.target.value === currentWallet?.publicAddress) {
@@ -149,7 +154,6 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
           !isValidAddress(e.target.value) ? 'Your destination address is invalid' : ''
         );
       }
-      setAddress(e.target.value);
     },
     [getCurrentWallet]
   );
@@ -318,6 +322,7 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
           error={!!errorAddress}
           helperText={errorAddress}
           onChange={handleAddressChange}
+          onBlur={handleAddressBlur}
           style={{ marginTop: '20px', marginBottom: errorAddress === '' ? '33px' : '10px' }}
           autoComplete="off"
         />
