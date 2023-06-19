@@ -1,3 +1,4 @@
+export * from './acceptNFTOffer';
 export * from './cancelNFTOffer';
 export * from './createNFTOffer';
 export * from './getAddress';
@@ -21,6 +22,7 @@ export type {
 
 // API request types
 export type {
+  AcceptNFTOfferRequest,
   CancelNFTOfferRequest,
   CreateNFTOfferRequest,
   GetNetworkRequest,
@@ -33,6 +35,7 @@ export type {
 
 // API response types
 export type {
+  AcceptNFTOfferResponse,
   CancelNFTOfferResponse,
   CreateNFTOfferResponse,
   GetAddressResponse,
