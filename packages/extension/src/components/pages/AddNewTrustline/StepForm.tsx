@@ -32,9 +32,7 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
   const [issuer, setIssuer] = useState<string>(initialValues?.issuer || '');
   const [token, setToken] = useState<string>(initialValues?.token || '');
   const [limit, setLimit] = useState<string>(initialValues?.limit.toString() || '');
-  const [noRipple, setNoRipple] = useState<boolean>(
-    initialValues?.noRipple === undefined ? true : initialValues?.noRipple
-  );
+  const [noRipple, setNoRipple] = useState<boolean>(initialValues?.noRipple ?? true);
   const [errorIssuer, setErrorIssuer] = useState<string>('');
   const [errorToken, setErrorToken] = useState<string>('');
   const [errorLimit, setErrorLimit] = useState<string>('');

@@ -301,7 +301,7 @@ export const AddNewTrustline: FC = () => {
     setIsParamsMissing(isParamsMissing);
   };
 
-  const buildInitialValues = () => {
+  const formInitialValues = useMemo(() => {
     if (!params.limitAmount) return undefined;
 
     const noRipple = params.flags
@@ -316,39 +316,40 @@ export const AddNewTrustline: FC = () => {
       limit: Number(params.limitAmount.value),
       noRipple
     };
-  };
+  }, [params.limitAmount, params.flags]);
 
-  const updateFlags = (noRipple: boolean) => {
-    if (!params.flags) {
-      return noRipple ? TrustSetFlagsBitmask.tfSetNoRipple : TrustSetFlagsBitmask.tfClearNoRipple;
-    }
-
-    // No Ripple
-    if (noRipple) {
-      if (typeof params.flags === 'object') {
-        params.flags.tfSetNoRipple = true;
-        params.flags.tfClearNoRipple = false;
-      } else {
-        params.flags |= TrustSetFlagsBitmask.tfSetNoRipple;
-        params.flags &= ~TrustSetFlagsBitmask.tfClearNoRipple;
+  const updateFlags = useCallback(
+    (noRipple: boolean) => {
+      if (!params.flags) {
+        return noRipple ? TrustSetFlagsBitmask.tfSetNoRipple : TrustSetFlagsBitmask.tfClearNoRipple;
       }
-    } else {
-      if (typeof params.flags === 'object') {
-        params.flags.tfClearNoRipple = true;
-        params.flags.tfSetNoRipple = false;
-      } else {
-        params.flags |= TrustSetFlagsBitmask.tfClearNoRipple;
-        params.flags &= ~TrustSetFlagsBitmask.tfSetNoRipple;
-      }
-    }
 
-    return params.flags;
-  };
+      // No Ripple
+      if (noRipple) {
+        if (typeof params.flags === 'object') {
+          params.flags.tfSetNoRipple = true;
+          params.flags.tfClearNoRipple = false;
+        } else {
+          params.flags |= TrustSetFlagsBitmask.tfSetNoRipple;
+          params.flags &= ~TrustSetFlagsBitmask.tfClearNoRipple;
+        }
+      } else {
+        if (typeof params.flags === 'object') {
+          params.flags.tfClearNoRipple = true;
+          params.flags.tfSetNoRipple = false;
+        } else {
+          params.flags |= TrustSetFlagsBitmask.tfClearNoRipple;
+          params.flags &= ~TrustSetFlagsBitmask.tfSetNoRipple;
+        }
+      }
+
+      return params.flags;
+    },
+    [params]
+  );
 
   if (params.showForm) {
-    return (
-      <StepForm onTrustlineSubmit={handleTrustlineSubmit} initialValues={buildInitialValues()} />
-    );
+    return <StepForm onTrustlineSubmit={handleTrustlineSubmit} initialValues={formInitialValues} />;
   }
 
   if (isParamsMissing) {
