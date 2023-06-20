@@ -31,10 +31,18 @@ export const TokenDisplay: FC<TokenDisplayProps> = ({
   style
 }) => {
   /* We a warning if trustline's limit is 0 or if the noRipple flag is set to false */
-  const isTokenWarning = useMemo(
-    () => trustlineLimit === 0 || trustlineNoRipple === false,
-    [trustlineLimit, trustlineNoRipple]
-  );
+  const tokenWarningMessage = useMemo(() => {
+    if (trustlineLimit === 0 && trustlineNoRipple === false) {
+      return 'Trustline limit set to 0 or rippling not prevented';
+    }
+    if (trustlineLimit === 0) {
+      return 'Trustline limit set to 0';
+    }
+    if (trustlineNoRipple === false) {
+      return 'Rippling not prevented';
+    }
+    return undefined;
+  }, [trustlineLimit, trustlineNoRipple]);
 
   return (
     <Paper
@@ -51,13 +59,10 @@ export const TokenDisplay: FC<TokenDisplayProps> = ({
       <div style={{ display: 'flex', alignItems: 'center' }}>
         {isXRPToken ? <Xrp /> : <GemWallet />}
         <div style={{ marginLeft: '10px' }}>
-          <Tooltip
-            title={
-              isTokenWarning ? 'Trustline limit set to 0 or rippling not prevented' : undefined
-            }
-            placement="top"
-          >
-            <Typography style={isTokenWarning ? { color: 'brown', cursor: 'help' } : undefined}>
+          <Tooltip title={tokenWarningMessage} placement="top">
+            <Typography
+              style={tokenWarningMessage ? { color: 'brown', cursor: 'help' } : undefined}
+            >
               {token}
             </Typography>
           </Tooltip>
