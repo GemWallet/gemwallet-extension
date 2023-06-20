@@ -504,9 +504,9 @@ const LedgerProvider: FC = ({ children }) => {
     async (payload: BurnNFTRequest) => {
       const wallet = getCurrentWallet();
       if (!client) {
-        throw new Error('You need to be connected to a ledger to mint an NFT');
+        throw new Error('You need to be connected to a ledger');
       } else if (!wallet) {
-        throw new Error('You need to have a wallet connected to mint an NFT');
+        throw new Error('You need to have a wallet connected');
       } else {
         try {
           const tx = await client.submitAndWait(
@@ -525,7 +525,7 @@ const LedgerProvider: FC = ({ children }) => {
           if ((tx.result.meta! as TransactionMetadata).TransactionResult !== 'tesSUCCESS') {
             throw new Error(
               (tx.result.meta as TransactionMetadata)?.TransactionResult ||
-                "Couldn't burn the NFT Offer but the transaction was successful"
+                "Couldn't burn the NFT but the transaction was successful"
             );
           }
 
