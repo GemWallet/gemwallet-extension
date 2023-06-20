@@ -398,9 +398,9 @@ const LedgerProvider: FC = ({ children }) => {
     async (payload: CancelNFTOfferRequest) => {
       const wallet = getCurrentWallet();
       if (!client) {
-        throw new Error('You need to be connected to a ledger to mint an NFT');
+        throw new Error('You need to be connected to a ledger');
       } else if (!wallet) {
-        throw new Error('You need to have a wallet connected to mint an NFT');
+        throw new Error('You need to have a wallet connected');
       } else {
         try {
           const tx = await client.submitAndWait(
