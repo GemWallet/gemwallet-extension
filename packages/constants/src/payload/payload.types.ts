@@ -201,7 +201,7 @@ export interface SignMessageRequest {
   message: string;
 }
 
-export interface SetAccountRequest {
+export interface SetAccountRequest extends BaseTransactionRequest {
   flags?: SetAccountFlags;
   // Unique identifier of a flag to disable for this account.
   clearFlag?: number;
