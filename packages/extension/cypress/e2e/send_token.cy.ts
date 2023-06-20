@@ -86,6 +86,9 @@ describe('Send Token', () => {
     // Add receipient address as the sender address
     cy.get('input[name="recipient-address"]').type(SRC_ADDRESS);
 
+    // Blur the input to trigger the validation
+    cy.get('input[name="recipient-address"]').blur();
+
     // Expect an error if the user sends to himself
     cy.get('p#recipient-address-helper-text').should(
       'have.text',
@@ -94,6 +97,9 @@ describe('Send Token', () => {
 
     // Add receipient address as a wrong address
     cy.get('input[name="recipient-address"]').clear().type('ABCD');
+
+    // Blur the input to trigger the validation
+    cy.get('input[name="recipient-address"]').blur();
 
     // Expect an error if the user sends to himself
     cy.get('p#recipient-address-helper-text').should(
