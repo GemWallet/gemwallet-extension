@@ -17,6 +17,7 @@ import {
   ReceiveGetPublicKeyContentMessageDeprecated,
   ReceiveSendPaymentContentMessage,
   ReceiveSendPaymentContentMessageDeprecated,
+  ReceiveSetAccountContentMessage,
   ReceiveSetTrustlineContentMessage,
   ReceiveSetTrustlineContentMessageDeprecated,
   ReceiveSignMessageContentMessage,
@@ -38,7 +39,8 @@ import {
   PARAMETER_TRANSACTION_CREATE_NFT_OFFER,
   PARAMETER_TRANSACTION_MINT_NFT,
   PARAMETER_TRANSACTION_PAYMENT,
-  PARAMETER_TRANSACTION_TRUSTLINE
+  PARAMETER_TRANSACTION_TRUSTLINE,
+  PARAMETER_TRANSACTION_SET_ACCOUNT
 } from './../constants/parameters';
 import { MAIN_FILE } from './../constants/routes';
 
@@ -311,6 +313,17 @@ chrome.runtime.onMessage.addListener(
           result: undefined
         }
       });
+    } else if (type === 'REQUEST_SET_ACCOUNT/V3') {
+      focusOrCreatePopupWindow({
+        payload: message.payload,
+        sender,
+        parameter: PARAMETER_TRANSACTION_SET_ACCOUNT,
+        receivingMessage: 'RECEIVE_SET_ACCOUNT/V3',
+        errorPayload: {
+          type: ResponseType.Reject,
+          result: undefined
+        }
+      });
     } else if (type === 'REQUEST_SET_TRUSTLINE/V3') {
       focusOrCreatePopupWindow({
         payload: message.payload,
@@ -427,6 +440,17 @@ chrome.runtime.onMessage.addListener(
       sendMessageToTab<ReceiveBurnNFTContentMessage>(payload.id, {
         app,
         type: 'RECEIVE_BURN_NFT/V3',
+        payload: {
+          type: ResponseType.Response,
+          result: payload.result,
+          error: payload.error
+        }
+      });
+    } else if (type === 'RECEIVE_SET_ACCOUNT/V3') {
+      const { payload } = message;
+      sendMessageToTab<ReceiveSetAccountContentMessage>(payload.id, {
+        app,
+        type: 'RECEIVE_SET_ACCOUNT/V3',
         payload: {
           type: ResponseType.Response,
           result: payload.result,

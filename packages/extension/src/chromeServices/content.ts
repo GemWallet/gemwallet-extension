@@ -40,6 +40,7 @@ import {
   ReceiveGetPublicKeyContentMessageDeprecated,
   ReceiveSendPaymentContentMessage,
   ReceiveSendPaymentContentMessageDeprecated,
+  ReceiveSetAccountContentMessage,
   ReceiveSetTrustlineContentMessage,
   ReceiveSetTrustlineContentMessageDeprecated,
   ReceiveSignMessageContentMessage,
@@ -59,6 +60,7 @@ import {
   RequestGetPublicKeyMessageDeprecated,
   RequestSendPaymentMessage,
   RequestSendPaymentMessageDeprecated,
+  RequestSetAccountMessage,
   RequestSetTrustlineMessage,
   RequestSetTrustlineMessageDeprecated,
   RequestSignMessageMessage,
@@ -71,7 +73,9 @@ import {
   SetTrustlineMessagingResponseDeprecated,
   SignMessageListener,
   SignMessageMessagingResponse,
-  SignMessageMessagingResponseDeprecated
+  SignMessageMessagingResponseDeprecated,
+  SetAccountMessagingResponse,
+  SetAccountEventListener
 } from '@gemwallet/constants';
 
 /**
@@ -755,6 +759,42 @@ setTimeout(() => {
                       messagedId,
                       signedMessage: payload.signedMessage
                     } as SignMessageMessagingResponseDeprecated,
+                    window.location.origin
+                  );
+                  chrome.runtime.onMessage.removeListener(messageListener);
+                }
+              }
+            };
+            chrome.runtime.onMessage.addListener(messageListener);
+          }
+        );
+      } else if (type === 'REQUEST_SET_ACCOUNT/V3') {
+        const {
+          data: { payload }
+        } = event as SetAccountEventListener;
+        chrome.runtime.sendMessage<RequestSetAccountMessage>(
+          {
+            app,
+            type,
+            payload
+          },
+          () => {
+            const messageListener = (
+              message: ReceiveSetAccountContentMessage,
+              sender: chrome.runtime.MessageSender
+            ) => {
+              const { app, type, payload } = message;
+              // We make sure that the message comes from GemWallet
+              if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
+                if (type === 'RECEIVE_SET_ACCOUNT/V3') {
+                  const { result, error } = payload;
+                  window.postMessage(
+                    {
+                      source: 'GEM_WALLET_MSG_RESPONSE',
+                      messagedId,
+                      result,
+                      error
+                    } as SetAccountMessagingResponse,
                     window.location.origin
                   );
                   chrome.runtime.onMessage.removeListener(messageListener);

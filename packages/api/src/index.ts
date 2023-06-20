@@ -9,6 +9,7 @@ export * from './getPublicKey';
 export * from './isInstalled';
 export * from './mintNFT';
 export * from './sendPayment';
+export * from './setAccount';
 export * from './setTrustline';
 export * from './signMessage';
 
@@ -31,6 +32,7 @@ export type {
   GetNFTRequest,
   MintNFTRequest,
   SendPaymentRequest,
+  SetAccountRequest,
   SetTrustlineRequest,
   SignMessageRequest
 } from '@gemwallet/constants';
@@ -48,6 +50,7 @@ export type {
   IsInstalledResponse,
   MintNFTResponse,
   SendPaymentResponse,
+  SetAccountResponse,
   SetTrustlineResponse,
   SignMessageResponse
 } from '@gemwallet/constants';
