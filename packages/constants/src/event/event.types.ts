@@ -8,6 +8,7 @@ import {
   MintNFTRequest,
   SendPaymentRequest,
   SendPaymentRequestDeprecated,
+  SetAccountRequest,
   SetTrustlineRequest,
   SetTrustlineRequestDeprecated,
   SignMessageRequest,
@@ -29,6 +30,7 @@ interface MessageEventData {
     | MintNFTRequest
     | SendPaymentRequest
     | SendPaymentRequestDeprecated
+    | SetAccountRequest
     | SetTrustlineRequest
     | SetTrustlineRequestDeprecated
     | SignMessageRequest
@@ -223,6 +225,16 @@ export interface SetTrustlineEventListenerDeprecated extends MessageEvent<Messag
   };
 }
 
+export interface SetAccountEventListener extends MessageEvent<MessageEventData> {
+  data: {
+    app: typeof GEM_WALLET;
+    type: 'REQUEST_SET_ACCOUNT/V3';
+    source: 'GEM_WALLET_MSG_REQUEST';
+    messageId: number;
+    payload: SetAccountRequest;
+  };
+}
+
 export type EventListener =
   | AcceptNFTOfferEventListener
   | AddressEventListener
@@ -239,6 +251,7 @@ export type EventListener =
   | PublicKeyEventListenerDeprecated
   | PaymentEventListener
   | PaymentEventListenerDeprecated
+  | SetAccountEventListener
   | SetTrustlineEventListener
   | SetTrustlineEventListenerDeprecated
   | SignMessageListener
