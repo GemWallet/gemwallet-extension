@@ -52,6 +52,7 @@ export const formatFlagsToNumber = (tx: Transaction) => {
     return tx.Flags;
   }
 
-  setTransactionFlagsToNumber(tx);
-  return tx.Flags;
+  const txCopy = { ...tx };
+  setTransactionFlagsToNumber(txCopy);
+  return txCopy.Flags;
 };
