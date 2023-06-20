@@ -107,8 +107,8 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
       }}
     >
       {initialValues ? (
-        <div style={{ margin: '20px' }}>
-          <div style={{ margin: '20px' }}>
+        <div style={{ margin: '15px' }}>
+          <div>
             <Typography variant="body2" color="textSecondary">
               Tip: To remove a trustline, set the limit to 0.
             </Typography>
@@ -128,7 +128,7 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
           helperText={errorIssuer}
           onChange={handleIssuerChange}
           onBlur={handleIssuerBlur}
-          style={{ marginTop: '20px', marginBottom: '10px' }}
+          style={{ marginTop: '5px', marginBottom: '10px' }}
           autoComplete="off"
           value={issuer}
           disabled={!!initialValues}
@@ -170,7 +170,7 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
             }
             label="Allow rippling"
             style={{
-              marginTop: '20px',
+              marginTop: '5px',
               color: '#bababa'
             }}
           />
