@@ -65,7 +65,6 @@ export const StepConfirm: FC<StepConfirmProps> = ({
       <Typography variant="body1">Currency:</Typography>
       <Typography variant="body1">{limitAmount.currency}</Typography>
     </Paper>
-
     <Paper
       elevation={24}
       style={{
@@ -106,7 +105,7 @@ export const StepConfirm: FC<StepConfirmProps> = ({
     {flags ? (
       <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
         <Typography variant="body1">Flags:</Typography>
-        <Typography variant="body2">
+        <Typography variant="body2" component="div">
           <pre style={{ margin: 0 }}>{formatFlags(flags)}</pre>
         </Typography>
       </Paper>

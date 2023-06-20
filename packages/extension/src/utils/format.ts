@@ -1,4 +1,4 @@
-import { dropsToXrp } from 'xrpl';
+import { dropsToXrp, setTransactionFlagsToNumber, Transaction } from 'xrpl';
 import { Amount, IssuedCurrencyAmount } from 'xrpl/dist/npm/models/common';
 
 import { PaymentFlags, TrustSetFlags } from '@gemwallet/constants';
@@ -45,4 +45,14 @@ export const formatFlags = (flags: PaymentFlags | TrustSetFlags) => {
   } else {
     return flags;
   }
+};
+
+export const formatFlagsToNumber = (tx: Transaction) => {
+  if (typeof tx.Flags === 'number') {
+    return tx.Flags;
+  }
+
+  const txCopy = { ...tx };
+  setTransactionFlagsToNumber(txCopy);
+  return txCopy.Flags;
 };

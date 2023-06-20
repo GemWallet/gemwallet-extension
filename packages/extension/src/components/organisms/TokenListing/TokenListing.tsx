@@ -14,6 +14,8 @@ import {
 import { TransitionProps } from '@mui/material/transitions';
 import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
+import { TrustSetFlags as TrustSetFlagsBitmask } from 'xrpl';
+import { Trustline } from 'xrpl/dist/npm/models/methods/accountLines';
 
 import { Network } from '@gemwallet/constants';
 
@@ -31,6 +33,11 @@ interface TrustLineBalance {
   value: string;
   currency: string;
   issuer: string;
+  trustlineDetails?: {
+    // Details need to be fetched with a separate call
+    limit: number;
+    noRipple: boolean;
+  };
 }
 export interface TokenListingProps {
   address: string;
@@ -58,11 +65,45 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
   useEffect(() => {
     async function fetchBalance() {
       try {
+        // Retrieve balances without trustlines details
         const balances = await client?.getBalances(address);
         const XRPBalance = balances?.find((balance) => balance.issuer === undefined);
-        const trustLineBalances = balances?.filter(
+        let trustLineBalances = balances?.filter(
           (balance) => balance.issuer !== undefined
         ) as TrustLineBalance[];
+
+        // Retrieve trustlines details
+        const accountLines = await client?.request({
+          command: 'account_lines',
+          account: address
+        });
+
+        if (accountLines?.result?.lines) {
+          trustLineBalances = trustLineBalances
+            .map((trustlineBalance) => {
+              const trustlineDetails = accountLines.result.lines.find((line: Trustline) => {
+                return (
+                  line.currency === trustlineBalance.currency &&
+                  line.account === trustlineBalance.issuer
+                );
+              });
+              return {
+                ...trustlineBalance,
+                trustlineDetails:
+                  trustlineDetails && Number(trustlineDetails.limit)
+                    ? {
+                        limit: Number(trustlineDetails.limit),
+                        noRipple: trustlineDetails.no_ripple === true
+                      }
+                    : undefined
+              };
+            })
+            .filter(
+              (trustlineBalance) =>
+                trustlineBalance.trustlineDetails || trustlineBalance.value !== '0'
+            ); // Hide revoked trustlines with a balance of 0
+        }
+
         if (XRPBalance) {
           setXRPBalance(XRPBalance.value);
         }
@@ -164,11 +205,35 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
       />
       {trustLineBalances.map((trustedLine) => {
         const currencyToDisplay = convertCurrencyString(trustedLine.currency);
+        const canBeEdited = trustedLine.trustlineDetails || trustedLine.value !== '0';
+        const limit = trustedLine.trustlineDetails?.limit || 0;
+        const noRipple = trustedLine.trustlineDetails?.noRipple || false;
+        const flags = noRipple ? TrustSetFlagsBitmask.tfSetNoRipple : undefined;
+        const limitAmount = {
+          currency: convertCurrencyString(trustedLine.currency),
+          issuer: trustedLine.issuer,
+          value: limit
+        };
         return (
           <TokenDisplay
             balance={Number(trustedLine.value)}
             token={currencyToDisplay}
             key={`${trustedLine.issuer}|${currencyToDisplay}`}
+            trustlineLimit={
+              trustedLine.trustlineDetails?.limit ? trustedLine.trustlineDetails?.limit : 0
+            }
+            trustlineNoRipple={noRipple}
+            // Show the Edit Trustline button if the trustline is not revoked or if the trustline has a non-zero balance
+            onTrustlineDetailsClick={
+              canBeEdited
+                ? () =>
+                    navigate(
+                      `${ADD_NEW_TRUSTLINE_PATH}?showForm=true&inAppCall=true&limitAmount=${JSON.stringify(
+                        limitAmount
+                      )}&flags=${flags}`
+                    )
+                : undefined
+            }
           />
         );
       })}

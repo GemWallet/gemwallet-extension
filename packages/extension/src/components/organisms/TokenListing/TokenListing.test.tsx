@@ -15,15 +15,23 @@ jest.mock('@sentry/react', () => {
 
 let mockGetBalancesPromise = jest.fn();
 let mockFundWalletPromise = jest.fn();
+let mockRequestPromise = jest.fn();
 
 let mockNetwork = Network.TESTNET;
-let mockClient: { getBalances: jest.Mock } | null = {
-  getBalances: mockGetBalancesPromise
+let mockClient: { getBalances: jest.Mock; request: jest.Mock } | null = {
+  getBalances: mockGetBalancesPromise,
+  request: mockRequestPromise
 };
 
 mockGetBalancesPromise.mockResolvedValueOnce([
   { value: '100', currency: 'XRP', issuer: undefined }
 ]);
+
+mockRequestPromise.mockResolvedValueOnce({
+  result: {
+    lines: []
+  }
+});
 
 jest.mock('../../../contexts', () => {
   return {
@@ -51,7 +59,8 @@ describe('TokenListing', () => {
   let props: TokenListingProps;
   beforeEach(() => {
     mockClient = {
-      getBalances: mockGetBalancesPromise
+      getBalances: mockGetBalancesPromise,
+      request: mockRequestPromise
     };
     props = {
       address: 'r123'

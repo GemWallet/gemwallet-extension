@@ -22,7 +22,7 @@ import { convertHexToString, dropsToXrp } from 'xrpl';
 
 import { useWallet } from '../../../contexts';
 import { AccountTransaction, TransactionTypes } from '../../../types';
-import { formatAmount } from '../../../utils';
+import { formatAmount, formatFlagsToNumber } from '../../../utils';
 import { InformationMessage } from '../../molecules';
 import { PageWithSpinner } from '../../templates';
 
@@ -238,7 +238,7 @@ export const TransactionListing: FC<TransactionListingProps> = ({ transactions }
                 />
               </ListItem>
               <Divider light />
-              {transaction.tx?.Memos?.[0]?.Memo?.MemoData && (
+              {transaction.tx?.Memos?.[0]?.Memo?.MemoData ? (
                 <>
                   <ListItem style={{ padding: '8px 24px' }}>
                     <ListItemText
@@ -248,11 +248,32 @@ export const TransactionListing: FC<TransactionListingProps> = ({ transactions }
                   </ListItem>
                   <Divider light />
                 </>
-              )}
+              ) : null}
               <ListItem style={{ padding: '8px 24px' }}>
                 <ListItemText primary="Transaction Hash" secondary={transaction.tx?.hash} />
               </ListItem>
               <Divider light />
+              {transaction.tx &&
+              'DestinationTag' in transaction.tx &&
+              transaction.tx?.DestinationTag ? (
+                <>
+                  <ListItem style={{ padding: '8px 24px' }}>
+                    <ListItemText
+                      primary="Destination Tag"
+                      secondary={transaction.tx?.DestinationTag}
+                    />
+                  </ListItem>
+                  <Divider light />
+                </>
+              ) : null}
+              {transaction.tx && 'Flags' in transaction.tx && transaction.tx?.Flags ? (
+                <>
+                  <ListItem style={{ padding: '8px 24px' }}>
+                    <ListItemText primary="Flags" secondary={formatFlagsToNumber(transaction.tx)} />
+                  </ListItem>
+                  <Divider light />
+                </>
+              ) : null}
               <ListItem style={{ padding: '8px 24px' }}>
                 <ListItemText primary="Ledger Index" secondary={transaction.tx?.ledger_index} />
               </ListItem>

@@ -11,8 +11,11 @@ describe('Trustline', () => {
     value: VALUE,
     issuer: DESTINATION_ADDRESS
   });
+  const FLAGS = JSON.stringify({
+    tfSetNoRipple: true
+  });
   const HOME_URL = `http://localhost:3000`;
-  const SET_TRUSTLINE_URL = `${HOME_URL}?limitAmount=${AMOUNT}&id=93376196&transaction=trustSet`;
+  const SET_TRUSTLINE_URL = `${HOME_URL}?limitAmount=${AMOUNT}&flags=${FLAGS}&id=93376196&requestMessage=REQUEST_SET_TRUSTLINE/V3&inAppCall=true&transaction=trustSet`;
 
   beforeEach(() => {
     // Mock the localStorage with a wallet already loaded
@@ -138,6 +141,53 @@ describe('Trustline', () => {
 
       validateTrustlineTx(testCase.issuer, testCase.token, testCase.formattedLimit);
     });
+  });
+
+  it('Edit the trustline by disabling No Ripple', () => {
+    const newLimit = '5';
+    navigate(HOME_URL, PASSWORD);
+
+    // Find the trustline to edit
+    cy.contains(CURRENCY).closest('.MuiPaper-root').find('button').contains('Edit').click();
+
+    // Change the limit
+    cy.get('input[name="limit"]').clear();
+    cy.get('input[name="limit"]').type(newLimit);
+
+    // Change the rippling
+    cy.get('input[name="noRipple"]').should('be.checked'); // No Ripple is initially true
+    cy.get('input[name="noRipple"]').uncheck();
+
+    // Confirm the trustline
+    cy.contains('button', 'Edit trustline').click();
+    cy.contains('button', 'Continue').click();
+
+    // Check values in the confirmation page
+    cy.contains('Limit:').next().should('have.text', `${newLimit} ${CURRENCY}`);
+
+    // Confirm
+    cy.contains('button', 'Confirm').click();
+
+    cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction in progress');
+
+    cy.get('p[data-testid="transaction-subtitle"]').should(
+      'have.text',
+      'We are processing your transactionPlease wait'
+    );
+
+    cy.get('h1[data-testid="transaction-title"]').contains('Transaction accepted', {
+      timeout: 10000
+    });
+    cy.get('p[data-testid="transaction-subtitle"]').should('have.text', 'Transaction Successful');
+
+    // Close
+    cy.contains('button', 'Close').click();
+
+    // Check that the trustline was updated
+    cy.contains(CURRENCY).closest('.MuiPaper-root').find('button').contains('Edit').click();
+
+    cy.get('input[name="limit"]').should('have.value', '5');
+    cy.get('input[name="noRipple"]').should('not.be.checked');
   });
 });
 

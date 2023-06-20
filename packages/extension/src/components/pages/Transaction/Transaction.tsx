@@ -423,7 +423,7 @@ export const Transaction: FC = () => {
       {flags ? (
         <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
           <Typography variant="body1">Flags:</Typography>
-          <Typography variant="body2">
+          <Typography variant="body2" component="div">
             <pre style={{ margin: 0 }}>{formatFlags(flags)}</pre>
           </Typography>
         </Paper>

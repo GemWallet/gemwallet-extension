@@ -2,7 +2,7 @@ import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 
 import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
-import { dropsToXrp, isValidAddress } from 'xrpl';
+import { dropsToXrp, isValidAddress, TrustSetFlags as TrustSetFlagsBitmask } from 'xrpl';
 import { IssuedCurrencyAmount } from 'xrpl/dist/npm/models/common';
 
 import {
@@ -279,9 +279,11 @@ export const AddNewTrustline: FC = () => {
     issuer: string,
     token: string,
     limit: string,
+    noRipple: boolean,
     showForm: boolean,
     isParamsMissing: boolean
   ) => {
+    const flags = updateFlags(noRipple);
     setParams({
       limitAmount: {
         currency: token,
@@ -291,7 +293,7 @@ export const AddNewTrustline: FC = () => {
       fee: params.fee,
       id: params.id,
       memos: params.memos,
-      flags: params.flags,
+      flags: flags,
       showForm: showForm,
       inAppCall: true
     });
@@ -299,8 +301,55 @@ export const AddNewTrustline: FC = () => {
     setIsParamsMissing(isParamsMissing);
   };
 
+  const formInitialValues = useMemo(() => {
+    if (!params.limitAmount) return undefined;
+
+    const noRipple = params.flags
+      ? typeof params.flags === 'object'
+        ? params.flags.tfSetNoRipple ?? false
+        : !!(params.flags & TrustSetFlagsBitmask.tfSetNoRipple)
+      : false;
+
+    return {
+      issuer: params.limitAmount.issuer,
+      token: params.limitAmount.currency,
+      limit: Number(params.limitAmount.value),
+      noRipple
+    };
+  }, [params.limitAmount, params.flags]);
+
+  const updateFlags = useCallback(
+    (noRipple: boolean) => {
+      if (!params.flags) {
+        return noRipple ? TrustSetFlagsBitmask.tfSetNoRipple : TrustSetFlagsBitmask.tfClearNoRipple;
+      }
+
+      // No Ripple
+      if (noRipple) {
+        if (typeof params.flags === 'object') {
+          params.flags.tfSetNoRipple = true;
+          params.flags.tfClearNoRipple = false;
+        } else {
+          params.flags |= TrustSetFlagsBitmask.tfSetNoRipple;
+          params.flags &= ~TrustSetFlagsBitmask.tfClearNoRipple;
+        }
+      } else {
+        if (typeof params.flags === 'object') {
+          params.flags.tfClearNoRipple = true;
+          params.flags.tfSetNoRipple = false;
+        } else {
+          params.flags |= TrustSetFlagsBitmask.tfClearNoRipple;
+          params.flags &= ~TrustSetFlagsBitmask.tfSetNoRipple;
+        }
+      }
+
+      return params.flags;
+    },
+    [params]
+  );
+
   if (params.showForm) {
-    return <StepForm onTrustlineSubmit={handleTrustlineSubmit} />;
+    return <StepForm onTrustlineSubmit={handleTrustlineSubmit} initialValues={formInitialValues} />;
   }
 
   if (isParamsMissing) {
