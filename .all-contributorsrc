@@ -90,6 +90,16 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "rikublock",
+      "name": "Riku",
+      "avatar_url": "https://avatars.githubusercontent.com/u/46352032?v=4",
+      "profile": "https://github.com/rikublock",
+      "contributions": [
+        "bug",
+        "ideas"
+      ]
     }
   ],
   "contributorsPerLine": 7,
