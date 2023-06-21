@@ -1,4 +1,8 @@
-import { parseBaseParamsFromURLParams } from './baseParams';
+import {
+  getBaseFromParams,
+  initialBaseTransactionParams,
+  parseBaseParamsFromURLParams
+} from './baseParams';
 
 describe('parseBaseParamsFromURLParams', () => {
   it('should return the parsed base parameters from URL params', () => {
@@ -32,5 +36,53 @@ describe('parseBaseParamsFromURLParams', () => {
     };
 
     expect(parseBaseParamsFromURLParams(params)).toEqual(result);
+  });
+
+  test('should handle null or undefined URL parameters', () => {
+    const urlParams = new URLSearchParams();
+
+    const result = parseBaseParamsFromURLParams(urlParams);
+
+    expect(result).toEqual(initialBaseTransactionParams);
+  });
+});
+
+describe('getBaseFromParams', () => {
+  test('should get base transaction parameters from an object', () => {
+    const params = {
+      fee: '10',
+      sequence: 1,
+      accountTxnID: '123',
+      lastLedgerSequence: 100,
+      memos: ['memo1', 'memo2'],
+      signers: ['signer1', 'signer2'],
+      sourceTag: 2,
+      signingPubKey: 'publicKey',
+      ticketSequence: 3,
+      txnSignature: 'signature'
+    };
+
+    const result = getBaseFromParams(params);
+
+    expect(result).toEqual(params);
+  });
+
+  test('should handle undefined parameters', () => {
+    const params = {};
+
+    const result = getBaseFromParams(params);
+
+    expect(result).toEqual({
+      fee: undefined,
+      sequence: undefined,
+      accountTxnID: undefined,
+      lastLedgerSequence: undefined,
+      memos: undefined,
+      signers: undefined,
+      sourceTag: undefined,
+      signingPubKey: undefined,
+      ticketSequence: undefined,
+      txnSignature: undefined
+    });
   });
 });
