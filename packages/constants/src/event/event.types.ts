@@ -5,6 +5,7 @@ import {
   BurnNFTRequest,
   CancelNFTOfferRequest,
   CreateNFTOfferRequest,
+  CreateOfferRequest,
   MintNFTRequest,
   SendPaymentRequest,
   SendPaymentRequestDeprecated,
@@ -27,6 +28,7 @@ interface MessageEventData {
     | BurnNFTRequest
     | CancelNFTOfferRequest
     | CreateNFTOfferRequest
+    | CreateOfferRequest
     | MintNFTRequest
     | SendPaymentRequest
     | SendPaymentRequestDeprecated
@@ -235,6 +237,16 @@ export interface SetAccountEventListener extends MessageEvent<MessageEventData> 
   };
 }
 
+export interface CreateOfferEventListener extends MessageEvent<MessageEventData> {
+  data: {
+    app: typeof GEM_WALLET;
+    type: 'REQUEST_CREATE_OFFER/V3';
+    source: 'GEM_WALLET_MSG_REQUEST';
+    messageId: number;
+    payload: CreateOfferRequest;
+  };
+}
+
 export type EventListener =
   | AcceptNFTOfferEventListener
   | AddressEventListener
@@ -242,6 +254,7 @@ export type EventListener =
   | BurnNFTEventListener
   | CancelNFTOfferEventListener
   | CreateNFTOfferEventListener
+  | CreateOfferEventListener
   | GetNFTEventListener
   | GetNFTEventListenerDeprecated
   | MintNFTEventListener

@@ -9,7 +9,8 @@ import {
   Signer,
   TrustSetFlags,
   CreateNFTOfferFlags,
-  SetAccountFlags
+  SetAccountFlags,
+  CreateOfferFlags
 } from '../xrpl/basic.types';
 import { AccountNFToken } from './../xrpl/nft.types';
 
@@ -227,11 +228,24 @@ export interface SetAccountRequest extends BaseTransactionRequest {
   tickSize?: number;
 }
 
+export interface CreateOfferRequest extends BaseTransactionRequest {
+  flags?: CreateOfferFlags;
+  // Time after which the Offer is no longer active, in seconds since the Ripple Epoch.
+  expiration?: number;
+  // An Offer to delete first, specified in the same way as OfferCancel.
+  offerSequence?: number;
+  // The amount and type of currency being sold.
+  takerGets: Amount;
+  // The amount and type of currency being bought.
+  takerPays: Amount;
+}
+
 export type RequestPayload =
   | AcceptNFTOfferRequest
   | BurnNFTRequest
   | CancelNFTOfferRequest
   | CreateNFTOfferRequest
+  | CreateOfferRequest
   | GetNetworkRequest
   | GetNFTRequest
   | MintNFTRequest
@@ -336,11 +350,17 @@ export interface SetAccountResponse
     hash: string;
   }> {}
 
+export interface CreateOfferResponse
+  extends BaseResponse<{
+    hash: string;
+  }> {}
+
 export type ResponsePayload =
   | AcceptNFTOfferResponse
   | BurnNFTResponse
   | CancelNFTOfferResponse
   | CreateNFTOfferResponse
+  | CreateOfferResponse
   | GetAddressResponse
   | GetAddressResponseDeprecated
   | GetNFTResponse
