@@ -12,7 +12,7 @@ import { useLedger, useWallet } from '../../../../contexts';
 import { TransactionStatus } from '../../../../types';
 import { buildAmount, formatAmount, toXRPLMemos } from '../../../../utils';
 import { toUIError } from '../../../../utils/errors';
-import { fromHexMemos } from '../../../../utils/payment';
+import { fromHexMemos } from '../../../../utils/transaction';
 import { TileLoader } from '../../../atoms';
 import { AsyncTransaction, PageWithReturn } from '../../../templates';
 

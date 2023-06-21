@@ -5,3 +5,4 @@ export const PARAMETER_SHARE_NFT = 'share=nft';
 export const PARAMETER_SIGN_MESSAGE = 'sign=true';
 export const PARAMETER_TRANSACTION_PAYMENT = 'transaction=payment';
 export const PARAMETER_TRANSACTION_TRUSTLINE = 'transaction=trustSet';
+export const PARAMETER_TRANSACTION_MINT_NFT = 'transaction=mintNFT';

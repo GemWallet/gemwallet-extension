@@ -1,4 +1,4 @@
-import { PaymentFlagsInterface, TrustSetFlagsInterface } from 'xrpl';
+import { NFTokenMintFlagsInterface, PaymentFlagsInterface, TrustSetFlagsInterface } from 'xrpl';
 
 export interface Memo {
   memo: {
@@ -8,6 +8,16 @@ export interface Memo {
   };
 }
 
+export interface Signer {
+  signer: {
+    account: string;
+    txnSignature: string;
+    signingPubKey: string;
+  };
+}
+
 export type TrustSetFlags = TrustSetFlagsInterface | number;
 
 export type PaymentFlags = PaymentFlagsInterface | number;
+
+export type MintNFTFlags = NFTokenMintFlagsInterface | number;

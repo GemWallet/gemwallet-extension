@@ -83,6 +83,10 @@ const serializeMessage = (msg: APIMessages): any => {
     modifiedMsg.payload.memos = JSON.stringify(modifiedMsg.payload.memos);
   }
 
+  if (modifiedMsg.payload?.signers) {
+    modifiedMsg.payload.signers = JSON.stringify(modifiedMsg.payload.signers);
+  }
+
   if (typeof modifiedMsg.payload?.amount === 'object') {
     modifiedMsg.payload.amount = JSON.stringify(modifiedMsg.payload.amount);
   }

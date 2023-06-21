@@ -4,9 +4,12 @@ import { Container, Typography } from '@mui/material';
 
 export interface PageWithTitleProps {
   title: string;
+  styles?: {
+    container?: React.CSSProperties;
+  };
 }
 
-export const PageWithTitle: FC<PageWithTitleProps> = ({ title, children }) => {
+export const PageWithTitle: FC<PageWithTitleProps> = ({ title, children, styles }) => {
   return (
     <Container
       component="main"
@@ -16,7 +19,8 @@ export const PageWithTitle: FC<PageWithTitleProps> = ({ title, children }) => {
         justifyContent: 'space-between',
         height: '100vh',
         padding: '20px 16px',
-        overflowY: 'auto'
+        overflowY: 'auto',
+        ...styles?.container
       }}
     >
       <Typography

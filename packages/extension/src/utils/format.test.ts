@@ -1,6 +1,6 @@
 import { TrustSet, xrpToDrops } from 'xrpl';
 
-import { formatAmount, formatFlags, formatFlagsToNumber, formatToken } from './format';
+import { formatAmount, formatFlags, formatFlagsToNumber, formatToken, formatTransferFee } from './format';
 
 describe('Format util', () => {
   describe('formatAmount', () => {
@@ -127,5 +127,12 @@ describe('formatFlagsToNumber', () => {
     };
     const result = formatFlagsToNumber(tx);
     expect(result).toBe(131072);
+  });
+});
+
+describe('formatTransferFee', () => {
+  it('should format transfer fee', () => {
+    const fee = 3000;
+    expect(formatTransferFee(fee)).toBe(3);
   });
 });

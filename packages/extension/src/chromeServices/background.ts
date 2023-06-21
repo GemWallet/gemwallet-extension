@@ -18,7 +18,8 @@ import {
   RequestMessage,
   RequestPayload,
   ResponsePayload,
-  ResponseType
+  ResponseType,
+  ReceiveMintNFTContentMessage
 } from '@gemwallet/constants';
 
 import {
@@ -27,6 +28,7 @@ import {
   PARAMETER_SHARE_NFT,
   PARAMETER_SHARE_PUBLIC_KEY,
   PARAMETER_SIGN_MESSAGE,
+  PARAMETER_TRANSACTION_MINT_NFT,
   PARAMETER_TRANSACTION_PAYMENT,
   PARAMETER_TRANSACTION_TRUSTLINE
 } from './../constants/parameters';
@@ -246,6 +248,17 @@ chrome.runtime.onMessage.addListener(
           hash: undefined
         }
       });
+    } else if (type === 'REQUEST_MINT_NFT/V3') {
+      focusOrCreatePopupWindow({
+        payload: message.payload,
+        sender,
+        parameter: PARAMETER_TRANSACTION_MINT_NFT,
+        receivingMessage: 'RECEIVE_MINT_NFT/V3',
+        errorPayload: {
+          type: ResponseType.Reject,
+          result: undefined
+        }
+      });
     } else if (type === 'REQUEST_SET_TRUSTLINE/V3') {
       focusOrCreatePopupWindow({
         payload: message.payload,
@@ -311,6 +324,17 @@ chrome.runtime.onMessage.addListener(
         type: 'RECEIVE_PAYMENT_HASH',
         payload: {
           hash: payload.hash
+        }
+      });
+    } else if (type === 'RECEIVE_MINT_NFT/V3') {
+      const { payload } = message;
+      sendMessageToTab<ReceiveMintNFTContentMessage>(payload.id, {
+        app,
+        type: 'RECEIVE_MINT_NFT/V3',
+        payload: {
+          type: ResponseType.Response,
+          result: payload.result,
+          error: payload.error
         }
       });
     } else if (type === 'RECEIVE_SET_TRUSTLINE/V3') {

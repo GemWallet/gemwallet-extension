@@ -1,6 +1,7 @@
 import { GEM_WALLET } from '../global/global.constant';
 import { RequestMessage } from '../message/message.types';
 import {
+  MintNFTRequest,
   SendPaymentRequest,
   SendPaymentRequestDeprecated,
   SetTrustlineRequest,
@@ -17,6 +18,7 @@ interface MessageEventData {
   messageId: number;
   // Not all the MessageEventData have a payload
   payload?:
+    | MintNFTRequest
     | SendPaymentRequest
     | SendPaymentRequestDeprecated
     | SetTrustlineRequest
@@ -143,6 +145,16 @@ export interface PaymentEventListenerDeprecated extends MessageEvent<MessageEven
   };
 }
 
+export interface MintNFTEventListener extends MessageEvent<MessageEventData> {
+  data: {
+    app: typeof GEM_WALLET;
+    type: 'REQUEST_MINT_NFT/V3';
+    source: 'GEM_WALLET_MSG_REQUEST';
+    messageId: number;
+    payload: MintNFTRequest;
+  };
+}
+
 export interface SetTrustlineEventListener extends MessageEvent<MessageEventData> {
   data: {
     app: typeof GEM_WALLET;
@@ -168,6 +180,7 @@ export type EventListener =
   | AddressEventListenerDeprecated
   | GetNFTEventListener
   | GetNFTEventListenerDeprecated
+  | MintNFTEventListener
   | NetworkEventListener
   | NetworkEventListenerDeprecated
   | PublicKeyEventListener

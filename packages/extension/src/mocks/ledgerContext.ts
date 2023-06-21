@@ -7,5 +7,6 @@ export const valueLedgerContext: LedgerContextType = {
   estimateNetworkFees: jest.fn(),
   getNFTs: jest.fn(),
   getTransactions: jest.fn(),
-  fundWallet: jest.fn()
+  fundWallet: jest.fn(),
+  mintNFT: jest.fn()
 };

@@ -1,7 +1,7 @@
 import { dropsToXrp, xrpToDrops } from 'xrpl';
-import { Amount, Memo as XRPLMemo } from 'xrpl/dist/npm/models/common';
+import { Amount, Memo as XRPLMemo, Signer as XRPLSigner } from 'xrpl/dist/npm/models/common';
 
-import { Memo } from '@gemwallet/constants';
+import { Memo, Signer } from '@gemwallet/constants';
 
 import { DEFAULT_MEMO_TYPE } from '../constants/payload';
 
@@ -66,6 +66,19 @@ export const toXRPLMemos = (memos: Memo[] | undefined): XRPLMemo[] | undefined =
         ...(memo.memoType ? { MemoType: memo.memoType } : {}),
         ...(memo.memoData ? { MemoData: memo.memoData } : {}),
         ...(memo.memoFormat ? { MemoFormat: memo.memoFormat } : {})
+      }
+    };
+  });
+};
+
+export const toXRPLSigners = (signers: Signer[] | undefined): XRPLSigner[] | undefined => {
+  if (signers === undefined) return undefined;
+  return signers.map(({ signer }) => {
+    return {
+      Signer: {
+        Account: signer.account,
+        SigningPubKey: signer.signingPubKey,
+        TxnSignature: signer.txnSignature
       }
     };
   });

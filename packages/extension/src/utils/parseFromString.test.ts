@@ -1,20 +1,29 @@
+import { NFTokenMintFlags, NFTokenMintFlagsInterface } from 'xrpl';
+
+import { Signer } from '@gemwallet/constants';
+
 import {
+  mintNFTFlagsToNumber,
   parseAmount,
   parseLimitAmount,
   parseMemos,
+  parseMintNFTFlags,
   parsePaymentFlags,
+  parseSigners,
   parseTrustSetFlags
 } from './parseFromString';
 
 describe('parseAmount', () => {
   test('parse amount in drops', () => {
-    expect(parseAmount('123')).toEqual('123');
+    expect(parseAmount('123', null, null, '')).toEqual('123');
   });
   test('parse amount in drops with decimals', () => {
-    expect(parseAmount('123.456')).toEqual('123.456');
+    expect(parseAmount('123.456', null, null, '')).toEqual('123.456');
   });
   test('parse amount object', () => {
-    expect(parseAmount('{"value":"123","issuer":"issuer","currency":"USD"}')).toEqual({
+    expect(
+      parseAmount('{"value":"123","issuer":"issuer","currency":"USD"}', null, null, '')
+    ).toEqual({
       value: '123',
       issuer: 'issuer',
       currency: 'USD'
@@ -95,6 +104,45 @@ describe('parseMemos', () => {
   });
 });
 
+describe('parseSigners', () => {
+  it('should return null when input is null', () => {
+    expect(parseSigners(null)).toBeNull();
+  });
+
+  it('should return null when input is an empty string', () => {
+    expect(parseSigners('')).toBeNull();
+  });
+
+  it('should return null when input is not a valid JSON string', () => {
+    expect(parseSigners('invalidJSON')).toBeNull();
+  });
+
+  it('should return null when input is a valid JSON string but not an array', () => {
+    expect(parseSigners('{"key": "value"}')).toBeNull();
+  });
+
+  it('should return parsed signers when input is a valid JSON string of signers array', () => {
+    const signers: Signer[] = [
+      {
+        signer: {
+          account: 'account1',
+          txnSignature: 'txnSignature1',
+          signingPubKey: 'signingPubKey1'
+        }
+      },
+      {
+        signer: {
+          account: 'account2',
+          txnSignature: 'txnSignature2',
+          signingPubKey: 'signingPubKey2'
+        }
+      }
+    ];
+
+    expect(parseSigners(JSON.stringify(signers))).toEqual(signers);
+  });
+});
+
 describe('parsePaymentFlags', () => {
   test('parse flags', () => {
     expect(parsePaymentFlags('123')).toEqual(123);
@@ -126,5 +174,70 @@ describe('parseTrustSetFlags', () => {
       tfSetFreeze: true,
       tfClearFreeze: true
     });
+  });
+});
+
+describe('parseMintNFTFlags', () => {
+  test('parse flags', () => {
+    expect(parseMintNFTFlags('123')).toEqual(123);
+  });
+
+  test('parse flags object', () => {
+    expect(
+      parseMintNFTFlags(
+        '{"tfBurnable":false,"tfOnlyXRP":false,"tfTrustLine":true,"tfTransferable":true}'
+      )
+    ).toEqual({
+      tfBurnable: false,
+      tfOnlyXRP: false,
+      tfTrustLine: true,
+      tfTransferable: true
+    });
+  });
+});
+
+describe('mintNFTFlagsToNumber', () => {
+  it('should return 0 when all flags are false', () => {
+    const flags: NFTokenMintFlagsInterface = {
+      tfBurnable: false,
+      tfOnlyXRP: false,
+      tfTrustLine: false,
+      tfTransferable: false
+    };
+
+    expect(mintNFTFlagsToNumber(flags)).toBe(0);
+  });
+
+  it('should return correct number when all flags are true', () => {
+    const flags: NFTokenMintFlagsInterface = {
+      tfBurnable: true,
+      tfOnlyXRP: true,
+      tfTrustLine: true,
+      tfTransferable: true
+    };
+
+    const expectedResult =
+      NFTokenMintFlags.tfBurnable |
+      NFTokenMintFlags.tfOnlyXRP |
+      NFTokenMintFlags.tfTrustLine |
+      NFTokenMintFlags.tfTransferable;
+    expect(mintNFTFlagsToNumber(flags)).toBe(expectedResult);
+  });
+
+  it('should return correct number when some flags are true', () => {
+    const flags: NFTokenMintFlagsInterface = {
+      tfBurnable: false,
+      tfOnlyXRP: true,
+      tfTrustLine: false,
+      tfTransferable: true
+    };
+
+    const expectedResult = NFTokenMintFlags.tfOnlyXRP | NFTokenMintFlags.tfTransferable;
+    expect(mintNFTFlagsToNumber(flags)).toBe(expectedResult);
+  });
+
+  it('should return 0 when flags are not provided', () => {
+    const flags: NFTokenMintFlagsInterface = {};
+    expect(mintNFTFlagsToNumber(flags)).toBe(0);
   });
 });

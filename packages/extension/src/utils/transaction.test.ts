@@ -1,3 +1,5 @@
+import { Signer } from '@gemwallet/constants';
+
 import { DEFAULT_MEMO_TYPE } from '../constants/payload';
 import {
   buildDefaultMemos,
@@ -6,8 +8,9 @@ import {
   buildAmount,
   toHexMemos,
   fromHexMemos,
-  checkFee
-} from './payment';
+  checkFee,
+  toXRPLSigners
+} from './transaction';
 
 describe('buildDefaultMemos', () => {
   test('returns undefined when memoData is undefined or an empty string', () => {
@@ -234,3 +237,61 @@ describe('checkFee', () => {
     expect(checkFee('123')).toBe('123');
   });
 });
+
+describe('toXRPLSigners', () => {
+  test('should convert signers to XRPLSigner format', () => {
+    const signers = [
+      {
+        signer: {
+          account: 'r1234567890',
+          signingPubKey: 'publicKey1',
+          txnSignature: 'signature1'
+        }
+      },
+      {
+        signer: {
+          account: 'r0987654321',
+          signingPubKey: 'publicKey2',
+          txnSignature: 'signature2'
+        }
+      }
+    ];
+
+    const result = toXRPLSigners(signers);
+
+    expect(result).toEqual([
+      {
+        Signer: {
+          Account: 'r1234567890',
+          SigningPubKey: 'publicKey1',
+          TxnSignature: 'signature1'
+        }
+      },
+      {
+        Signer: {
+          Account: 'r0987654321',
+          SigningPubKey: 'publicKey2',
+          TxnSignature: 'signature2'
+        }
+      }
+    ]);
+  });
+
+  test('should handle undefined signers', () => {
+    const signers = undefined;
+
+    const result = toXRPLSigners(signers);
+
+    expect(result).toBeUndefined();
+  });
+
+  test('should return an empty array if signers array is empty', () => {
+    const signers: Signer[] = [];
+
+    const result = toXRPLSigners(signers);
+
+    expect(result).toEqual([]);
+  });
+});
+
+// Add more unit tests if needed

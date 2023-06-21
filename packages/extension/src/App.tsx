@@ -27,6 +27,7 @@ import {
   ImportWallet,
   ListWallets,
   Login,
+  MintNFT,
   ResetPassword,
   SendPayment,
   Settings,
@@ -52,11 +53,13 @@ import {
   IMPORT_SEED_PATH,
   IMPORT_WALLET_PATH,
   LIST_WALLETS_PATH,
+  MINT_NFT_PATH,
   PARAMETER_SHARE_ADDRESS,
   PARAMETER_SHARE_NETWORK,
   PARAMETER_SHARE_NFT,
   PARAMETER_SHARE_PUBLIC_KEY,
   PARAMETER_SIGN_MESSAGE,
+  PARAMETER_TRANSACTION_MINT_NFT,
   PARAMETER_TRANSACTION_PAYMENT,
   PARAMETER_TRANSACTION_TRUSTLINE,
   RESET_PASSWORD_PATH,
@@ -206,6 +209,12 @@ const App: FC = () => {
                   id: windowId,
                   nfts: null
                 }
+        });
+      } else if (search.includes(PARAMETER_TRANSACTION_MINT_NFT)) {
+        handleTransaction({
+          app: GEM_WALLET,
+          type: 'RECEIVE_MINT_NFT/V3',
+          payload: defaultPayload
         });
       }
     }
@@ -375,6 +384,14 @@ const App: FC = () => {
           element={
             <PrivateRoute>
               <SharePublicKey />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path={MINT_NFT_PATH}
+          element={
+            <PrivateRoute>
+              <MintNFT />
             </PrivateRoute>
           }
         />

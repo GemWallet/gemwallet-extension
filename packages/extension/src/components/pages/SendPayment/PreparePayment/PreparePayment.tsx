@@ -22,7 +22,7 @@ import { Memo } from '@gemwallet/constants';
 import { HOME_PATH, navigation } from '../../../../constants';
 import { useNetwork, useWallet } from '../../../../contexts';
 import { convertCurrencyString } from '../../../../utils';
-import { buildDefaultMemos } from '../../../../utils/payment';
+import { buildDefaultMemos } from '../../../../utils/transaction';
 import { NumericInput } from '../../../atoms';
 import { InformationMessage } from '../../../molecules';
 import { PageWithNavMenu, PageWithReturn, PageWithSpinner } from '../../../templates';

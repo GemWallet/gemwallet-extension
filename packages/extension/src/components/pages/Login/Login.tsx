@@ -19,7 +19,9 @@ import {
   ADD_NEW_TRUSTLINE_PATH,
   PARAMETER_TRANSACTION_TRUSTLINE,
   PARAMETER_SHARE_NFT,
-  SHARE_NFT_PATH
+  SHARE_NFT_PATH,
+  MINT_NFT_PATH,
+  PARAMETER_TRANSACTION_MINT_NFT
 } from '../../../constants';
 import { useWallet } from '../../../contexts';
 import { useKeyUp } from '../../../hooks/useKeyUp';
@@ -46,6 +48,8 @@ export const Login: FC = () => {
       navigate(`${ADD_NEW_TRUSTLINE_PATH}${search}`);
     } else if (search.includes(PARAMETER_SHARE_NFT)) {
       navigate(`${SHARE_NFT_PATH}${search}`);
+    } else if (search.includes(PARAMETER_TRANSACTION_MINT_NFT)) {
+      navigate(`${MINT_NFT_PATH}${search}`);
     } else {
       navigate(`${HOME_PATH}${search}`);
     }
