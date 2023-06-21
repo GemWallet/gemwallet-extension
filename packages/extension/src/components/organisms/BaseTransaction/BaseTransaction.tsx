@@ -5,6 +5,7 @@ import { IconButton, Paper, Tooltip, Typography } from '@mui/material';
 
 import {
   CreateNFTOfferFlags,
+  CreateOfferFlags,
   Memo,
   MintNFTFlags,
   PaymentFlags,
@@ -21,7 +22,14 @@ const DEFAULT_FEES = 'Loading ...';
 type BaseTransactionProps = {
   fee: number | null;
   memos: Memo[] | null;
-  flags: TrustSetFlags | PaymentFlags | MintNFTFlags | CreateNFTOfferFlags | SetAccountFlags | null;
+  flags:
+    | TrustSetFlags
+    | PaymentFlags
+    | MintNFTFlags
+    | CreateNFTOfferFlags
+    | CreateOfferFlags
+    | SetAccountFlags
+    | null;
   errorFees: string | null;
   estimatedFees: string;
 };

@@ -9,6 +9,7 @@ import { Amount, IssuedCurrencyAmount } from 'xrpl/dist/npm/models/common';
 
 import {
   CreateNFTOfferFlags,
+  CreateOfferFlags,
   Memo,
   MintNFTFlags,
   PaymentFlags,
@@ -294,6 +295,38 @@ export const parseCreateNFTOfferFlags = (
     if (typeof parsedFlags === 'object' && parsedFlags !== null && 'tfSellNFToken' in parsedFlags) {
       return parsedFlags as {
         tfSellNFToken?: boolean;
+      };
+    }
+  } catch (error) {}
+
+  return null;
+};
+
+export const parseCreateOfferFlags = (flagsString: string | null): CreateOfferFlags | null => {
+  if (!flagsString) {
+    return null;
+  }
+
+  if (Number(flagsString)) {
+    return Number(flagsString);
+  }
+
+  try {
+    const parsedFlags = JSON.parse(flagsString);
+
+    if (
+      typeof parsedFlags === 'object' &&
+      parsedFlags !== null &&
+      ('tfPassive' in parsedFlags ||
+        'tfImmediateOrCancel' in parsedFlags ||
+        'tfFillOrKill' in parsedFlags ||
+        'tfSell' in parsedFlags)
+    ) {
+      return parsedFlags as {
+        tfPassive?: boolean;
+        tfImmediateOrCancel?: boolean;
+        tfFillOrKill?: boolean;
+        tfSell?: boolean;
       };
     }
   } catch (error) {}

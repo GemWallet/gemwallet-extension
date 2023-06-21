@@ -5,6 +5,7 @@ export * from './AddNewWallet';
 export * from './BurnNFT';
 export * from './CancelNFTOffer';
 export * from './CreateNFTOffer';
+export * from './CreateOffer';
 export * from './CreateWallet';
 export * from './EditWallet';
 export * from './History';
