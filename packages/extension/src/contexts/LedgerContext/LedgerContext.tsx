@@ -13,7 +13,8 @@ import {
   NFTokenCancelOffer,
   NFTokenAcceptOffer,
   NFTokenBurn,
-  AccountSet
+  AccountSet,
+  OfferCreate
 } from 'xrpl';
 import { BaseTransaction } from 'xrpl/dist/npm/models/transactions/common';
 
@@ -25,6 +26,7 @@ import {
   SetTrustlineRequest,
   BaseTransactionRequest,
   CreateNFTOfferRequest,
+  CreateOfferRequest,
   CancelNFTOfferRequest,
   AcceptNFTOfferRequest,
   BurnNFTRequest,
@@ -71,6 +73,10 @@ interface SetAccountResponse {
   hash: string;
 }
 
+interface CreateOfferResponse {
+  hash: string;
+}
+
 export interface LedgerContextType {
   // Return transaction hash in case of success
   sendPayment: (payload: SendPaymentRequest) => Promise<string>;
@@ -86,6 +92,7 @@ export interface LedgerContextType {
   acceptNFTOffer: (payload: AcceptNFTOfferRequest) => Promise<AcceptNFTOfferResponse>;
   burnNFT: (payload: BurnNFTRequest) => Promise<BurnNFTResponse>;
   setAccount: (payload: SetAccountRequest) => Promise<SetAccountResponse>;
+  createOffer: (payload: CreateOfferRequest) => Promise<CreateOfferResponse>;
 }
 
 const LedgerContext = createContext<LedgerContextType>({
@@ -110,7 +117,8 @@ const LedgerContext = createContext<LedgerContextType>({
   cancelNFTOffer: () => new Promise(() => {}),
   acceptNFTOffer: () => new Promise(() => {}),
   burnNFT: () => new Promise(() => {}),
-  setAccount: () => new Promise(() => {})
+  setAccount: () => new Promise(() => {}),
+  createOffer: () => new Promise(() => {})
 });
 
 const LedgerProvider: FC = ({ children }) => {
@@ -597,6 +605,50 @@ const LedgerProvider: FC = ({ children }) => {
     [client, getCurrentWallet]
   );
 
+  const createOffer = useCallback(
+    async (payload: CreateOfferRequest) => {
+      const wallet = getCurrentWallet();
+      if (!client) {
+        throw new Error('You need to be connected to a ledger');
+      } else if (!wallet) {
+        throw new Error('You need to have a wallet connected');
+      } else {
+        try {
+          const tx = await client.submitAndWait(
+            {
+              ...(buildBaseTransaction(payload, wallet, 'OfferCreate') as OfferCreate),
+              ...(payload.flags && { Flags: payload.flags }),
+              ...(payload.expiration && { Expiration: payload.expiration }),
+              ...(payload.offerSequence && { OfferSequence: payload.offerSequence }),
+              TakerGets: payload.takerGets,
+              TakerPays: payload.takerPays
+            },
+            { wallet: wallet.wallet }
+          );
+
+          if (!tx.result.hash) {
+            throw new Error("Couldn't create the offer");
+          }
+
+          if ((tx.result.meta! as TransactionMetadata).TransactionResult !== 'tesSUCCESS') {
+            throw new Error(
+              (tx.result.meta as TransactionMetadata)?.TransactionResult ||
+                "Couldn't create the offer but the transaction was successful"
+            );
+          }
+
+          return {
+            hash: tx.result.hash
+          };
+        } catch (e) {
+          Sentry.captureException(e);
+          throw e;
+        }
+      }
+    },
+    [client, getCurrentWallet]
+  );
+
   const buildBaseTransaction = (
     payload: BaseTransactionRequest,
     wallet: WalletLedger,
@@ -609,6 +661,7 @@ const LedgerProvider: FC = ({ children }) => {
       | 'NFTokenAcceptOffer'
       | 'NFTokenBurn'
       | 'AccountSet'
+      | 'OfferCreate'
   ): BaseTransaction => ({
     TransactionType: txType,
     Account: wallet.publicAddress,
@@ -637,7 +690,8 @@ const LedgerProvider: FC = ({ children }) => {
     cancelNFTOffer,
     acceptNFTOffer,
     burnNFT,
-    setAccount
+    setAccount,
+    createOffer
   };
 
   return <LedgerContext.Provider value={value}>{children}</LedgerContext.Provider>;

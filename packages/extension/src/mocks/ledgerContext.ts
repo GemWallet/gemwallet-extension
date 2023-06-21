@@ -13,5 +13,6 @@ export const valueLedgerContext: LedgerContextType = {
   cancelNFTOffer: jest.fn(),
   acceptNFTOffer: jest.fn(),
   burnNFT: jest.fn(),
-  setAccount: jest.fn()
+  setAccount: jest.fn(),
+  createOffer: jest.fn()
 };
