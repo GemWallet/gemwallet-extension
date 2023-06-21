@@ -5,6 +5,7 @@ import {
   ReceiveBurnNFTContentMessage,
   ReceiveCancelNFTOfferContentMessage,
   ReceiveCreateNFTOfferContentMessage,
+  ReceiveCreateOfferContentMessage,
   ReceiveGetAddressContentMessage,
   ReceiveGetAddressContentMessageDeprecated,
   ReceiveGetNFTContentMessage,
@@ -37,6 +38,7 @@ import {
   PARAMETER_TRANSACTION_BURN_NFT,
   PARAMETER_TRANSACTION_CANCEL_NFT_OFFER,
   PARAMETER_TRANSACTION_CREATE_NFT_OFFER,
+  PARAMETER_TRANSACTION_CREATE_OFFER,
   PARAMETER_TRANSACTION_MINT_NFT,
   PARAMETER_TRANSACTION_PAYMENT,
   PARAMETER_TRANSACTION_TRUSTLINE,
@@ -324,6 +326,17 @@ chrome.runtime.onMessage.addListener(
           result: undefined
         }
       });
+    } else if (type === 'REQUEST_CREATE_OFFER/V3') {
+      focusOrCreatePopupWindow({
+        payload: message.payload,
+        sender,
+        parameter: PARAMETER_TRANSACTION_CREATE_OFFER,
+        receivingMessage: 'RECEIVE_CREATE_OFFER/V3',
+        errorPayload: {
+          type: ResponseType.Reject,
+          result: undefined
+        }
+      });
     } else if (type === 'REQUEST_SET_TRUSTLINE/V3') {
       focusOrCreatePopupWindow({
         payload: message.payload,
@@ -451,6 +464,17 @@ chrome.runtime.onMessage.addListener(
       sendMessageToTab<ReceiveSetAccountContentMessage>(payload.id, {
         app,
         type: 'RECEIVE_SET_ACCOUNT/V3',
+        payload: {
+          type: ResponseType.Response,
+          result: payload.result,
+          error: payload.error
+        }
+      });
+    } else if (type === 'RECEIVE_CREATE_OFFER/V3') {
+      const { payload } = message;
+      sendMessageToTab<ReceiveCreateOfferContentMessage>(payload.id, {
+        app,
+        type: 'RECEIVE_CREATE_OFFER/V3',
         payload: {
           type: ResponseType.Response,
           result: payload.result,

@@ -92,8 +92,12 @@ const serializeMessage = (msg: APIMessages): any => {
     modifiedMsg.payload.amount = JSON.stringify(modifiedMsg.payload.amount);
   }
 
-  if (typeof modifiedMsg.payload?.limitAmount === 'object') {
-    modifiedMsg.payload.limitAmount = JSON.stringify(modifiedMsg.payload.limitAmount);
+  if (typeof modifiedMsg.payload?.takerGets === 'object') {
+    modifiedMsg.payload.takerGets = JSON.stringify(modifiedMsg.payload.takerGets);
+  }
+
+  if (typeof modifiedMsg.payload?.takerPays === 'object') {
+    modifiedMsg.payload.takerPays = JSON.stringify(modifiedMsg.payload.takerPays);
   }
 
   if (typeof modifiedMsg.payload?.flags === 'object') {
