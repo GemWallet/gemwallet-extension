@@ -1,2 +1,2 @@
-export * from './fees';
-export * from './transactionStatus';
+export * from './useFees';
+export * from './useTransactionStatus';
