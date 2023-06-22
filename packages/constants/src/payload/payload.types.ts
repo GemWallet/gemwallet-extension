@@ -240,10 +240,18 @@ export interface CreateOfferRequest extends BaseTransactionRequest {
   takerPays: Amount;
 }
 
+export interface CancelOfferRequest extends BaseTransactionRequest {
+  // The sequence number (or Ticket number) of a previous OfferCreate transaction. If specified, cancel any offer object
+  // in the ledger that was created by that transaction. It is not considered an error if the offer specified does not
+  // exist.
+  offerSequence: number;
+}
+
 export type RequestPayload =
   | AcceptNFTOfferRequest
   | BurnNFTRequest
   | CancelNFTOfferRequest
+  | CancelOfferRequest
   | CreateNFTOfferRequest
   | CreateOfferRequest
   | GetNetworkRequest
@@ -355,10 +363,16 @@ export interface CreateOfferResponse
     hash: string;
   }> {}
 
+export interface CancelOfferResponse
+  extends BaseResponse<{
+    hash: string;
+  }> {}
+
 export type ResponsePayload =
   | AcceptNFTOfferResponse
   | BurnNFTResponse
   | CancelNFTOfferResponse
+  | CancelOfferResponse
   | CreateNFTOfferResponse
   | CreateOfferResponse
   | GetAddressResponse
