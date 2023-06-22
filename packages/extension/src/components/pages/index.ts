@@ -4,6 +4,7 @@ export * from './AddNewTrustline';
 export * from './AddNewWallet';
 export * from './BurnNFT';
 export * from './CancelNFTOffer';
+export * from './CancelOffer';
 export * from './CreateNFTOffer';
 export * from './CreateOffer';
 export * from './CreateWallet';
