@@ -15,7 +15,8 @@ import {
   NFTokenBurn,
   AccountSet,
   OfferCreate,
-  OfferCancel
+  OfferCancel,
+  validate
 } from 'xrpl';
 import { BaseTransaction } from 'xrpl/dist/npm/models/transactions/common';
 
@@ -708,16 +709,25 @@ const LedgerProvider: FC = ({ children }) => {
   const signTransaction = useCallback(
     async (payload: SignTransactionRequest) => {
       const wallet = getCurrentWallet();
-      try {
-        if (!client) {
-          throw new Error('You need to be connected to a ledger');
-        }
-        if (!wallet) {
-          throw new Error('You need to have a wallet connected');
-        } else {
-          await client.autofill(payload.transaction);
-          const { tx_blob: signedTxBlob, hash } = await wallet.wallet.sign(payload.transaction);
-          const tx = await client.submitAndWait(signedTxBlob);
+      if (!client) {
+        throw new Error('You need to be connected to a ledger');
+      }
+      if (!wallet) {
+        throw new Error('You need to have a wallet connected');
+      } else {
+        try {
+          if (!payload.transaction.Account || payload.transaction.Account === '') {
+            payload.transaction.Account = wallet.publicAddress;
+          }
+
+          // Validate the transaction
+          validate(payload.transaction as unknown as Record<string, unknown>);
+          // Prepare the transaction
+          const prepared: Transaction = await client.autofill(payload.transaction);
+          // Sign the transaction
+          const signed = wallet.wallet.sign(prepared);
+          // Submit the signed blob
+          const tx = await client.submitAndWait(signed.tx_blob);
 
           if (!tx.result.hash) {
             throw new Error("Couldn't submit the transaction");
@@ -732,12 +742,12 @@ const LedgerProvider: FC = ({ children }) => {
 
           return {
             hash: tx.result.hash,
-            signedTransaction: signedTxBlob
+            signedTransaction: signed.tx_blob
           };
+        } catch (e) {
+          Sentry.captureException(e);
+          throw e;
         }
-      } catch (e) {
-        Sentry.captureException(e);
-        throw e;
       }
     },
     [client, getCurrentWallet]

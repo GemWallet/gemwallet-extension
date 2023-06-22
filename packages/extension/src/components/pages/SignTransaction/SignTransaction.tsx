@@ -14,7 +14,6 @@ import { ERROR_RED } from '../../../constants';
 import { useLedger, useNetwork } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
 import { formatTx, parseTransactionParam } from '../../../utils';
-import { getBaseFromParams } from '../../../utils/baseParams';
 import { serializeError } from '../../../utils/errors';
 import { Fee } from '../../organisms';
 import { useFees, useTransactionStatus } from '../../organisms/BaseTransaction/hooks';
@@ -37,17 +36,14 @@ export const SignTransaction: FC = () => {
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
   const { signTransaction } = useLedger();
   const { network } = useNetwork();
-
-  const queryString = window.location.search;
-  const urlParams = new URLSearchParams(queryString);
-  const txParam = parseTransactionParam(urlParams.get('transaction'));
-  if (!txParam) {
-    setIsParamsMissing(true);
-  }
-
   const { estimatedFees, errorFees, difference, errorDifference } = useFees(
-    txParam as Transaction,
-    txParam?.Fee ?? null
+    params.txParam ?? {
+      TransactionType: 'Payment',
+      Account: '',
+      Destination: '',
+      Amount: ''
+    },
+    params.txParam?.Fee ?? null
   );
   const { hasEnoughFunds, transactionStatusComponent } = useTransactionStatus({
     isParamsMissing,
@@ -90,13 +86,17 @@ export const SignTransaction: FC = () => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const id = Number(urlParams.get('id')) || 0;
+    const txParam = parseTransactionParam(urlParams.get('transaction'));
+
+    if (!txParam) {
+      setIsParamsMissing(true);
+    }
 
     setParams({
       id,
-      // SignTransaction fields
       txParam
     });
-  }, [txParam]);
+  }, []);
 
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);
@@ -112,8 +112,6 @@ export const SignTransaction: FC = () => {
     // txParam will be present because if not,
     // we won't be able to go to the confirm transaction state
     signTransaction({
-      // BaseTransaction fields
-      ...getBaseFromParams(params),
       // SignTransaction fields
       transaction: params.txParam as Transaction
     })
@@ -134,6 +132,8 @@ export const SignTransaction: FC = () => {
         chrome.runtime.sendMessage<ReceiveSignTransactionBackgroundMessage>(message);
       });
   }, [signTransaction, params, createMessage]);
+
+  const { txParam } = params;
 
   return (
     <>
