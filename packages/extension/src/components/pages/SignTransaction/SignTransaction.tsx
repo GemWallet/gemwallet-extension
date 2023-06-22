@@ -153,20 +153,29 @@ export const SignTransaction: FC = () => {
                 </Typography>
               </div>
             ) : null}
+            {txParam ? (
+              <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
+                <Typography variant="body1">Transaction:</Typography>
+                <Typography variant="body2">
+                  <pre
+                    style={{
+                      margin: 0,
+                      whiteSpace: 'pre-wrap',
+                      overflowWrap: 'break-word',
+                      fontSize: '0.8rem'
+                    }}
+                  >
+                    {formatTx(txParam)}
+                  </pre>
+                </Typography>
+              </Paper>
+            ) : null}
+            <Fee
+              errorFees={errorFees}
+              estimatedFees={estimatedFees}
+              fee={txParam?.Fee ? Number(txParam?.Fee) : null}
+            />
           </div>
-          {txParam && (
-            <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-              <Typography variant="body1">Transaction:</Typography>
-              <Typography variant="body2">
-                <pre style={{ margin: 0 }}>{formatTx(txParam) ? formatTx(txParam) : ''}</pre>
-              </Typography>
-            </Paper>
-          )}
-          <Fee
-            errorFees={errorFees}
-            estimatedFees={estimatedFees}
-            fee={txParam?.Fee ? Number(txParam?.Fee) : null}
-          />
           <div
             style={{
               display: 'flex',
