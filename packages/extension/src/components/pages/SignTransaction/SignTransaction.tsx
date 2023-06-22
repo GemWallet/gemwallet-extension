@@ -1,145 +1,194 @@
-import { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
 
-import { Container, Typography, Button, Paper, Avatar, Divider } from '@mui/material';
-import * as Sentry from '@sentry/react';
+import ErrorIcon from '@mui/icons-material/Error';
+import { Button, Container, Paper, Typography } from '@mui/material';
+import { Transaction } from 'xrpl';
 
-import { GEM_WALLET, ReceiveSignTransactionBackgroundMessage } from '@gemwallet/constants';
+import {
+  GEM_WALLET,
+  ReceiveSignTransactionBackgroundMessage,
+  ResponseType
+} from '@gemwallet/constants';
 
-import { SECONDARY_GRAY } from '../../../constants';
-import { useBrowser, useLedger } from '../../../contexts';
+import { ERROR_RED } from '../../../constants';
+import { useLedger, useNetwork } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
-import { PageWithTitle, AsyncTransaction } from '../../templates';
+import { formatTx, parseTransactionParam } from '../../../utils';
+import { getBaseFromParams } from '../../../utils/baseParams';
+import { serializeError } from '../../../utils/errors';
+import { Fee } from '../../organisms';
+import { useFees, useTransactionStatus } from '../../organisms/BaseTransaction/hooks';
+import { PageWithTitle } from '../../templates';
+
+interface Params {
+  id: number;
+  // SignTransaction fields
+  txParam: Transaction | null;
+}
 
 export const SignTransaction: FC = () => {
-  const { signMessage } = useLedger();
-  const { window: extensionWindow, closeExtension } = useBrowser();
+  const [params, setParams] = useState<Params>({
+    id: 0,
+    // SignTransaction fields
+    txParam: null
+  });
+  const [errorRequestRejection, setErrorRequestRejection] = useState<string>('');
   const [isParamsMissing, setIsParamsMissing] = useState(false);
+  const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
+  const { signTransaction } = useLedger();
+  const { network } = useNetwork();
 
-  useEffect(() => {
-    if (isParamsMissing) {
-      Sentry.captureMessage('Params are missing');
-    }
-  }, [isParamsMissing]);
-
-  const payload = useMemo(() => {
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
-
-    const url = urlParams.get('url');
-    const title = urlParams.get('title');
-    const favicon = urlParams.get('favicon');
-    const message = urlParams.get('message');
-
-    if (message === null) {
-      setIsParamsMissing(true);
-    }
-
-    return {
-      id: Number(urlParams.get('id')) || 0,
-      url,
-      title,
-      favicon: favicon || undefined,
-      message: message || ''
-    };
-  }, []);
-
-  const { id, url, title, favicon, message } = payload;
-
-  const handleReject = useCallback(() => {
-    chrome.runtime
-      .sendMessage<ReceiveSignTransactionBackgroundMessage>({
-        app: GEM_WALLET,
-        type: 'RECEIVE_SIGN_TRANSACTION/V3',
-        payload: {
-          id,
-          signedMessage: null
-        }
-      })
-      .then(() => {
-        if (extensionWindow?.id) {
-          closeExtension({ windowId: Number(extensionWindow.id) });
-        }
-      })
-      .catch((e) => {
-        Sentry.captureException(e);
-      });
-  }, [closeExtension, extensionWindow?.id, id]);
-
-  const handleSign = useCallback(() => {
-    const signature = signMessage(message);
-    chrome.runtime
-      .sendMessage<ReceiveSignTransactionBackgroundMessage>({
-        app: GEM_WALLET,
-        type: 'RECEIVE_SIGN_TRANSACTION/V3',
-        payload: {
-          id,
-          signedMessage: signature
-        }
-      })
-      .then(() => {
-        if (extensionWindow?.id) {
-          closeExtension({ windowId: Number(extensionWindow.id) });
-        }
-      })
-      .catch((e) => {
-        Sentry.captureException(e);
-      });
-  }, [closeExtension, extensionWindow?.id, id, message, signMessage]);
-
-  if (isParamsMissing) {
-    return (
-      <AsyncTransaction
-        title="Signature failed"
-        subtitle={
-          <>
-            A message has not be provided to the extension
-            <br />
-            Please contact the developer of the website
-          </>
-        }
-        transaction={TransactionStatus.Rejected}
-      />
-    );
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  const txParam = parseTransactionParam(urlParams.get('transaction'));
+  if (!txParam) {
+    setIsParamsMissing(true);
   }
 
+  const { estimatedFees, errorFees, difference, errorDifference } = useFees(
+    txParam as Transaction,
+    txParam?.Fee ?? null
+  );
+  const { hasEnoughFunds, transactionStatusComponent } = useTransactionStatus({
+    isParamsMissing,
+    errorDifference,
+    network,
+    difference,
+    transaction,
+    errorRequestRejection
+  });
+
+  const createMessage = useCallback(
+    (messagePayload: {
+      hash: string | null | undefined;
+      signedTransaction: string | null | undefined;
+      error?: Error;
+    }): ReceiveSignTransactionBackgroundMessage => {
+      const { hash, signedTransaction, error } = messagePayload;
+
+      return {
+        app: GEM_WALLET,
+        type: 'RECEIVE_SIGN_TRANSACTION/V3',
+        payload: {
+          id: params.id,
+          type: ResponseType.Response,
+          result:
+            signedTransaction && hash
+              ? {
+                  hash: hash,
+                  signedTransaction: signedTransaction
+                }
+              : undefined,
+          error: error ? serializeError(error) : undefined
+        }
+      };
+    },
+    [params.id]
+  );
+
+  useEffect(() => {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const id = Number(urlParams.get('id')) || 0;
+
+    setParams({
+      id,
+      // SignTransaction fields
+      txParam
+    });
+  }, [txParam]);
+
+  const handleReject = useCallback(() => {
+    setTransaction(TransactionStatus.Rejected);
+    const message = createMessage({
+      hash: null,
+      signedTransaction: null
+    });
+    chrome.runtime.sendMessage<ReceiveSignTransactionBackgroundMessage>(message);
+  }, [createMessage]);
+
+  const handleConfirm = useCallback(() => {
+    setTransaction(TransactionStatus.Pending);
+    // txParam will be present because if not,
+    // we won't be able to go to the confirm transaction state
+    signTransaction({
+      // BaseTransaction fields
+      ...getBaseFromParams(params),
+      // SignTransaction fields
+      transaction: params.txParam as Transaction
+    })
+      .then((response) => {
+        setTransaction(TransactionStatus.Success);
+        chrome.runtime.sendMessage<ReceiveSignTransactionBackgroundMessage>(
+          createMessage(response)
+        );
+      })
+      .catch((e) => {
+        setErrorRequestRejection(e.message);
+        setTransaction(TransactionStatus.Rejected);
+        const message = createMessage({
+          hash: undefined,
+          signedTransaction: undefined,
+          error: e
+        });
+        chrome.runtime.sendMessage<ReceiveSignTransactionBackgroundMessage>(message);
+      });
+  }, [signTransaction, params, createMessage]);
+
   return (
-    <PageWithTitle title="Sign Transaction">
-      <Paper
-        elevation={24}
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          padding: '10px'
-        }}
-      >
-        <Avatar src={favicon} variant="rounded" />
-        <Typography variant="h6">{title}</Typography>
-        <Typography style={{ color: SECONDARY_GRAY }}>{url}</Typography>
-      </Paper>
-
-      <Paper elevation={24} style={{ padding: '10px' }}>
-        <Typography variant="body1">You are signing:</Typography>
-        <Divider style={{ margin: '10px 0' }} />
-        <div style={{ overflowY: 'scroll', height: '200px' }}>
-          <Typography variant="body2" style={{ color: SECONDARY_GRAY }}>
-            {message}
-          </Typography>
-        </div>
-      </Paper>
-
-      <div style={{ display: 'flex', justifyContent: 'center', color: SECONDARY_GRAY }}>
-        <Typography>Only sign messages with a website you trust</Typography>
-      </div>
-
-      <Container style={{ display: 'flex', justifyContent: 'space-evenly' }}>
-        <Button variant="contained" color="secondary" onClick={handleReject}>
-          Reject
-        </Button>
-        <Button variant="contained" onClick={handleSign}>
-          Sign
-        </Button>
-      </Container>
-    </PageWithTitle>
+    <>
+      {transactionStatusComponent ? (
+        <div>{transactionStatusComponent}</div>
+      ) : (
+        <PageWithTitle
+          title="Confirm Transaction"
+          styles={{ container: { justifyContent: 'initial' } }}
+        >
+          <div style={{ marginBottom: '40px' }}>
+            {!hasEnoughFunds ? (
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <ErrorIcon style={{ color: ERROR_RED }} />
+                <Typography variant="body1" style={{ marginLeft: '10px', color: ERROR_RED }}>
+                  Insufficient funds.
+                </Typography>
+              </div>
+            ) : null}
+          </div>
+          {txParam && (
+            <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
+              <Typography variant="body1">Transaction:</Typography>
+              <Typography variant="body2">
+                <pre style={{ margin: 0 }}>{formatTx(txParam) ? formatTx(txParam) : ''}</pre>
+              </Typography>
+            </Paper>
+          )}
+          <Fee
+            errorFees={errorFees}
+            estimatedFees={estimatedFees}
+            fee={txParam?.Fee ? Number(txParam?.Fee) : null}
+          />
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              position: 'fixed',
+              bottom: 5,
+              left: 0,
+              right: 0,
+              backgroundColor: '#1d1d1d'
+            }}
+          >
+            <Container style={{ display: 'flex', justifyContent: 'space-evenly', margin: '10px' }}>
+              <Button variant="contained" color="secondary" onClick={handleReject}>
+                Reject
+              </Button>
+              <Button variant="contained" onClick={handleConfirm} disabled={!hasEnoughFunds}>
+                Confirm
+              </Button>
+            </Container>
+          </div>
+        </PageWithTitle>
+      )}
+    </>
   );
 };

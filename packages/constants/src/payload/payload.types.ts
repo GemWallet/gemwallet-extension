@@ -248,9 +248,6 @@ export interface CancelOfferRequest extends BaseTransactionRequest {
 }
 
 export interface SignTransactionRequest {
-  url: string;
-  title: string;
-  favicon: string | null | undefined;
   transaction: Transaction;
 }
 

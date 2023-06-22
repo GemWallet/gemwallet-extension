@@ -75,3 +75,11 @@ export const formatFlagsToNumber = (tx: Transaction) => {
 export const formatTransferFee = (fee: number) => {
   return fee / 1000;
 };
+
+export const formatTx = (tx: Transaction | null): string | null => {
+  if (!tx) {
+    return null;
+  }
+
+  return JSON.stringify(tx, null, 2);
+};

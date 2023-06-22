@@ -17,7 +17,7 @@ import { ERROR_RED } from '../../../constants';
 import { formatAmount, formatFlags, formatToken } from '../../../utils';
 import { TileLoader } from '../../atoms';
 
-const DEFAULT_FEES = 'Loading ...';
+export const DEFAULT_FEES = 'Loading ...';
 
 type BaseTransactionProps = {
   fee: number | null;
@@ -30,6 +30,12 @@ type BaseTransactionProps = {
     | CreateOfferFlags
     | SetAccountFlags
     | null;
+  errorFees: string | null;
+  estimatedFees: string;
+};
+
+type FeeProps = {
+  fee: number | null;
   errorFees: string | null;
   estimatedFees: string;
 };
@@ -70,6 +76,12 @@ export const BaseTransaction: FC<BaseTransactionProps> = ({
         </Typography>
       </Paper>
     ) : null}
+    <Fee errorFees={errorFees} estimatedFees={estimatedFees} fee={fee} />
+  </>
+);
+
+export const Fee: FC<FeeProps> = ({ errorFees, estimatedFees, fee }) => (
+  <>
     <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
       <Typography variant="body1" style={{ display: 'flex', alignItems: 'center' }}>
         <Tooltip title="These are the fees to make the transaction over the network">

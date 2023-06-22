@@ -204,9 +204,7 @@ const App: FC = () => {
         handleTransaction({
           app: GEM_WALLET,
           type: 'RECEIVE_SIGN_TRANSACTION/V3',
-          payload: {
-            defaultPayload
-          }
+          payload: defaultPayload
         });
       } else if (search.includes(PARAMETER_TRANSACTION_TRUSTLINE)) {
         const urlParams = new URLSearchParams(window.location.search);
