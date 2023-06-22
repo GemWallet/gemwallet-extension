@@ -271,7 +271,7 @@ export type MintNFTMessagingResponse = MessagingResponse & MintNFTResponse;
 export type SignMessageMessagingResponse = MessagingResponse & SignMessageResponse;
 export type SignMessageMessagingResponseDeprecated = MessagingResponse &
   SignMessageResponseDeprecated;
-export type SignedTransactionResponse = MessagingResponse & SignTransactionResponse;
+export type SignTransactionMessagingResponse = MessagingResponse & SignTransactionResponse;
 export type IsInstalledMessagingResponse = MessagingResponse & IsInstalledResponse;
 export type SendPaymentMessagingResponse = MessagingResponse & SendPaymentResponse;
 export type SendPaymentMessagingResponseDeprecated = MessagingResponse &
@@ -417,7 +417,7 @@ export interface ReceiveCancelOfferContentMessage {
 export interface ReceiveSignTransactionContentMessage {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_SIGN_TRANSACTION/V3';
-  payload: SignTransactionResponse;
+  payload: SignTransactionMessagingResponse;
 }
 
 // Background Script Messages
@@ -567,4 +567,5 @@ export type APIMessages =
   | RequestSendPaymentMessage
   | RequestSetAccountMessage
   | RequestSetTrustlineMessage
-  | RequestSignMessageMessage;
+  | RequestSignMessageMessage
+  | RequestSignTransactionMessage;

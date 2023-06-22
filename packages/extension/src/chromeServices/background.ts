@@ -398,6 +398,17 @@ chrome.runtime.onMessage.addListener(
           signedMessage: undefined
         }
       });
+    } else if (type === 'REQUEST_SIGN_TRANSACTION/V3') {
+      focusOrCreatePopupWindow({
+        payload: message.payload,
+        sender,
+        parameter: PARAMETER_SIGN_TRANSACTION,
+        receivingMessage: 'RECEIVE_SIGN_TRANSACTION/V3',
+        errorPayload: {
+          type: ResponseType.Reject,
+          result: undefined
+        }
+      });
     } else if (type === 'RECEIVE_SEND_PAYMENT/V3') {
       const { payload } = message;
       sendMessageToTab<ReceiveSendPaymentContentMessage>(payload.id, {
@@ -407,16 +418,6 @@ chrome.runtime.onMessage.addListener(
           type: ResponseType.Response,
           result: payload.result,
           error: payload.error
-        }
-      });
-    } else if (type === 'REQUEST_SIGN_TRANSACTION/V3') {
-      focusOrCreatePopupWindow({
-        payload: message.payload,
-        sender,
-        parameter: PARAMETER_SIGN_TRANSACTION,
-        receivingMessage: 'RECEIVE_SIGN_TRANSACTION/V3',
-        errorPayload: {
-          signedMessage: undefined
         }
       });
     } else if (type === 'RECEIVE_PAYMENT_HASH') {
@@ -649,7 +650,9 @@ chrome.runtime.onMessage.addListener(
         app,
         type: 'RECEIVE_SIGN_TRANSACTION/V3',
         payload: {
-          signedMessage: payload.signedMessage
+          type: ResponseType.Response,
+          result: payload.result,
+          error: payload.error
         }
       });
     }

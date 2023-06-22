@@ -141,16 +141,6 @@ export interface SignMessageListenerDeprecated extends MessageEvent<MessageEvent
   };
 }
 
-export interface SignTransactionListener extends MessageEvent<MessageEventData> {
-  data: {
-    app: typeof GEM_WALLET;
-    type: 'REQUEST_SIGN_TRANSACTION/V3';
-    source: 'GEM_WALLET_MSG_REQUEST';
-    messageId: number;
-    payload: SignTransactionRequest;
-  };
-}
-
 export interface PaymentEventListener extends MessageEvent<MessageEventData> {
   data: {
     app: typeof GEM_WALLET;
@@ -241,6 +231,16 @@ export interface SetTrustlineEventListenerDeprecated extends MessageEvent<Messag
   };
 }
 
+export interface SignTransactionEventListener extends MessageEvent<MessageEventData> {
+  data: {
+    app: typeof GEM_WALLET;
+    type: 'REQUEST_SIGN_TRANSACTION/V3';
+    source: 'GEM_WALLET_MSG_REQUEST';
+    messageId: number;
+    payload: SignTransactionRequest;
+  };
+}
+
 export interface SetAccountEventListener extends MessageEvent<MessageEventData> {
   data: {
     app: typeof GEM_WALLET;
@@ -294,4 +294,4 @@ export type EventListener =
   | SetTrustlineEventListenerDeprecated
   | SignMessageListener
   | SignMessageListenerDeprecated
-  | SignTransactionListener;
+  | SignTransactionEventListener;

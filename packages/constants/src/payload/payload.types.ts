@@ -270,7 +270,8 @@ export type RequestPayload =
   | SetAccountRequest
   | SetTrustlineRequest
   | SetTrustlineRequestDeprecated
-  | SignMessageRequest;
+  | SignMessageRequest
+  | SignTransactionRequest;
 
 /*
  * Response Payloads
@@ -311,9 +312,10 @@ export interface SignMessageResponseDeprecated {
   signedMessage: string | null | undefined;
 }
 
-export interface SignTransactionResponse {
-  signedMessage: string | null | undefined;
-}
+export interface SignTransactionResponse
+  extends BaseResponse<{
+    signedTransaction: string;
+  }> {}
 
 export interface IsInstalledResponse {
   result: { isInstalled: boolean };
@@ -402,4 +404,5 @@ export type ResponsePayload =
   | SetTrustlineResponse
   | SetTrustlineResponseDeprecated
   | SignMessageResponse
-  | SignMessageResponseDeprecated;
+  | SignMessageResponseDeprecated
+  | SignTransactionResponse;

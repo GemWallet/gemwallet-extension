@@ -55,6 +55,7 @@ import {
   RequestBurnNFTMessage,
   RequestCancelNFTOfferMessage,
   RequestCancelOfferMessage,
+  ReceiveSignTransactionContentMessage,
   RequestCreateNFTOfferMessage,
   RequestCreateOfferMessage,
   RequestMintNFTMessage,
@@ -73,6 +74,7 @@ import {
   RequestSetTrustlineMessageDeprecated,
   RequestSignMessageMessage,
   RequestSignMessageMessageDeprecated,
+  RequestSignTransactionMessage,
   SendPaymentMessagingResponse,
   SendPaymentMessagingResponseDeprecated,
   SetTrustlineEventListener,
@@ -82,12 +84,10 @@ import {
   SignMessageListener,
   SignMessageMessagingResponse,
   SignMessageMessagingResponseDeprecated,
-  SignTransactionListener,
-  RequestSignTransactionMessage,
-  ReceiveSignTransactionContentMessage,
-  SignedTransactionResponse,
   SetAccountMessagingResponse,
-  SetAccountEventListener
+  SetAccountEventListener,
+  SignTransactionEventListener,
+  SignTransactionMessagingResponse
 } from '@gemwallet/constants';
 
 /**
@@ -891,7 +891,7 @@ setTimeout(() => {
       } else if (type === 'REQUEST_SIGN_TRANSACTION/V3') {
         const {
           data: { payload }
-        } = event as SignTransactionListener;
+        } = event as SignTransactionEventListener;
         chrome.runtime.sendMessage<RequestSignTransactionMessage>(
           {
             app,
@@ -907,12 +907,14 @@ setTimeout(() => {
               // We make sure that the message comes from GemWallet
               if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
                 if (type === 'RECEIVE_SIGN_TRANSACTION/V3') {
+                  const { result, error } = payload;
                   window.postMessage(
                     {
                       source: 'GEM_WALLET_MSG_RESPONSE',
                       messagedId,
-                      signedMessage: payload.signedMessage
-                    } as SignedTransactionResponse,
+                      result,
+                      error
+                    } as SignTransactionMessagingResponse,
                     window.location.origin
                   );
                   chrome.runtime.onMessage.removeListener(messageListener);
