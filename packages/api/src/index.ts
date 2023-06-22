@@ -1,6 +1,7 @@
 export * from './acceptNFTOffer';
 export * from './burnNFT';
 export * from './cancelNFTOffer';
+export * from './cancelOffer';
 export * from './createNFTOffer';
 export * from './createOffer';
 export * from './getAddress';
@@ -28,6 +29,7 @@ export type {
   AcceptNFTOfferRequest,
   BurnNFTRequest,
   CancelNFTOfferRequest,
+  CancelOfferRequest,
   CreateNFTOfferRequest,
   CreateOfferRequest,
   GetNetworkRequest,
@@ -44,6 +46,7 @@ export type {
   AcceptNFTOfferResponse,
   BurnNFTResponse,
   CancelNFTOfferResponse,
+  CancelOfferResponse,
   CreateNFTOfferResponse,
   CreateOfferResponse,
   GetAddressResponse,
