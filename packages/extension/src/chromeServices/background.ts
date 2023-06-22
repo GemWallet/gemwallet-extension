@@ -1,11 +1,13 @@
 import {
   BackgroundMessage,
   GEM_WALLET,
+  ReceiveCreateNFTOfferContentMessage,
   ReceiveGetAddressContentMessage,
   ReceiveGetAddressContentMessageDeprecated,
   ReceiveGetNFTContentMessage,
   ReceiveGetNFTContentMessageDeprecated,
   ReceiveMessage,
+  ReceiveMintNFTContentMessage,
   ReceiveGetNetworkContentMessage,
   ReceiveGetNetworkContentMessageDeprecated,
   ReceiveGetPublicKeyContentMessage,
@@ -18,8 +20,7 @@ import {
   RequestMessage,
   RequestPayload,
   ResponsePayload,
-  ResponseType,
-  ReceiveMintNFTContentMessage
+  ResponseType
 } from '@gemwallet/constants';
 
 import {
@@ -28,6 +29,7 @@ import {
   PARAMETER_SHARE_NFT,
   PARAMETER_SHARE_PUBLIC_KEY,
   PARAMETER_SIGN_MESSAGE,
+  PARAMETER_TRANSACTION_CREATE_NFT_OFFER,
   PARAMETER_TRANSACTION_MINT_NFT,
   PARAMETER_TRANSACTION_PAYMENT,
   PARAMETER_TRANSACTION_TRUSTLINE
@@ -259,6 +261,17 @@ chrome.runtime.onMessage.addListener(
           result: undefined
         }
       });
+    } else if (type === 'REQUEST_CREATE_NFT_OFFER/V3') {
+      focusOrCreatePopupWindow({
+        payload: message.payload,
+        sender,
+        parameter: PARAMETER_TRANSACTION_CREATE_NFT_OFFER,
+        receivingMessage: 'RECEIVE_CREATE_NFT_OFFER/V3',
+        errorPayload: {
+          type: ResponseType.Reject,
+          result: undefined
+        }
+      });
     } else if (type === 'REQUEST_SET_TRUSTLINE/V3') {
       focusOrCreatePopupWindow({
         payload: message.payload,
@@ -331,6 +344,17 @@ chrome.runtime.onMessage.addListener(
       sendMessageToTab<ReceiveMintNFTContentMessage>(payload.id, {
         app,
         type: 'RECEIVE_MINT_NFT/V3',
+        payload: {
+          type: ResponseType.Response,
+          result: payload.result,
+          error: payload.error
+        }
+      });
+    } else if (type === 'RECEIVE_CREATE_NFT_OFFER/V3') {
+      const { payload } = message;
+      sendMessageToTab<ReceiveCreateNFTOfferContentMessage>(payload.id, {
+        app,
+        type: 'RECEIVE_CREATE_NFT_OFFER/V3',
         payload: {
           type: ResponseType.Response,
           result: payload.result,

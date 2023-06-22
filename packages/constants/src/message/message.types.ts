@@ -1,5 +1,7 @@
 import { GEM_WALLET } from '../global/global.constant';
 import {
+  CreateNFTOfferRequest,
+  CreateNFTOfferResponse,
   GetAddressResponse,
   GetAddressResponseDeprecated,
   GetNFTResponse,
@@ -30,6 +32,7 @@ export type RequestMessage =
   | 'REQUEST_ADDRESS'
   | 'REQUEST_ADD_TRUSTLINE'
   | 'REQUEST_CONNECTION'
+  | 'REQUEST_CREATE_NFT_OFFER/V3'
   | 'REQUEST_GET_ADDRESS/V3'
   | 'REQUEST_GET_NETWORK/V3'
   | 'REQUEST_GET_NFT/V3'
@@ -46,6 +49,7 @@ export type RequestMessage =
 
 export type ReceiveMessage =
   | 'RECEIVE_ADDRESS'
+  | 'RECEIVE_CREATE_NFT_OFFER/V3'
   | 'RECEIVE_GET_ADDRESS/V3'
   | 'RECEIVE_GET_NFT/V3'
   | 'RECEIVE_GET_PUBLIC_KEY/V3'
@@ -130,6 +134,12 @@ export interface RequestMintNFTMessage {
   payload: MintNFTRequest;
 }
 
+export interface RequestCreateNFTOfferMessage {
+  app: typeof GEM_WALLET;
+  type: 'REQUEST_CREATE_NFT_OFFER/V3';
+  payload: CreateNFTOfferRequest;
+}
+
 export interface RequestGetNFTMessage {
   app: typeof GEM_WALLET;
   type: 'REQUEST_GET_NFT/V3';
@@ -170,6 +180,7 @@ export interface MessagingError {
   stack?: string;
 }
 
+export type CreateNFTOfferMessagingResponse = MessagingResponse & CreateNFTOfferResponse;
 export type GetNetworkMessagingResponse = MessagingResponse & GetNetworkResponse;
 export type GetNetworkMessagingResponseDeprecated = MessagingResponse &
   GetNetworkResponseDeprecated;
@@ -284,6 +295,12 @@ export interface ReceiveMintNFTContentMessage {
   payload: MintNFTMessagingResponse;
 }
 
+export interface ReceiveCreateNFTOfferContentMessage {
+  app: typeof GEM_WALLET;
+  type: 'RECEIVE_CREATE_NFT_OFFER/V3';
+  payload: CreateNFTOfferMessagingResponse;
+}
+
 // Background Script Messages
 type BackgroundMessagePayload = {
   payload: {
@@ -335,8 +352,12 @@ export type ReceiveSignMessageBackgroundMessageDeprecated =
 export type ReceiveMintNFTBackgroundMessage = ReceiveMintNFTContentMessage &
   BackgroundMessagePayload;
 
+export type ReceiveCreateNFTOfferBackgroundMessage = ReceiveCreateNFTOfferContentMessage &
+  BackgroundMessagePayload;
+
 export type BackgroundMessage =
   // Inputted messages - DO NOT contain ID within the payloads
+  | RequestCreateNFTOfferMessage
   | RequestGetAddressMessage
   | RequestGetAddressMessageDeprecated
   | RequestGetNetworkMessage
@@ -353,6 +374,7 @@ export type BackgroundMessage =
   | RequestSignMessageMessage
   | RequestSignMessageMessageDeprecated
   // Outputted Messages - DO contain ID within the payloads
+  | ReceiveCreateNFTOfferBackgroundMessage
   | ReceiveGetAddressBackgroundMessage
   | ReceiveGetAddressBackgroundMessageDeprecated
   | ReceiveGetNetworkBackgroundMessage
@@ -376,6 +398,7 @@ export interface RequestIsInstalledMessage {
 }
 
 export type APIMessages =
+  | RequestCreateNFTOfferMessage
   | RequestGetAddressMessage
   | RequestGetNetworkMessage
   | RequestGetNFTMessage

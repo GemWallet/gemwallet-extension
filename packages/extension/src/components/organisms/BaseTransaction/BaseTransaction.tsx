@@ -3,7 +3,13 @@ import { FC } from 'react';
 import ErrorIcon from '@mui/icons-material/Error';
 import { IconButton, Paper, Tooltip, Typography } from '@mui/material';
 
-import { Memo, MintNFTFlags, PaymentFlags, TrustSetFlags } from '@gemwallet/constants';
+import {
+  CreateNFTOfferFlags,
+  Memo,
+  MintNFTFlags,
+  PaymentFlags,
+  TrustSetFlags
+} from '@gemwallet/constants';
 
 import { ERROR_RED } from '../../../constants';
 import { formatAmount, formatFlags, formatToken } from '../../../utils';
@@ -14,7 +20,7 @@ const DEFAULT_FEES = 'Loading ...';
 type BaseTransactionProps = {
   fee: number | null;
   memos: Memo[] | null;
-  flags: TrustSetFlags | PaymentFlags | MintNFTFlags | null;
+  flags: TrustSetFlags | PaymentFlags | MintNFTFlags | CreateNFTOfferFlags | null;
   errorFees: string | null;
   estimatedFees: string;
 };
@@ -27,7 +33,7 @@ export const BaseTransaction: FC<BaseTransactionProps> = ({
   estimatedFees
 }) => (
   <>
-    {memos && memos.length > 0 && (
+    {memos && memos.length > 0 ? (
       <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
         <Typography variant="body1">Memos:</Typography>
         {memos.map((memo, index) => (
@@ -46,15 +52,15 @@ export const BaseTransaction: FC<BaseTransactionProps> = ({
           </div>
         ))}
       </Paper>
-    )}
-    {flags && (
+    ) : null}
+    {flags ? (
       <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
         <Typography variant="body1">Flags:</Typography>
         <Typography variant="body2">
-          <pre style={{ margin: 0 }}>{formatFlags ? formatFlags(flags) : ''}</pre>
+          <pre style={{ margin: 0 }}>{formatFlags(flags)}</pre>
         </Typography>
       </Paper>
-    )}
+    ) : null}
     <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
       <Typography variant="body1" style={{ display: 'flex', alignItems: 'center' }}>
         <Tooltip title="These are the fees to make the transaction over the network">
@@ -72,15 +78,9 @@ export const BaseTransaction: FC<BaseTransactionProps> = ({
         ) : estimatedFees === DEFAULT_FEES ? (
           <TileLoader secondLineOnly />
         ) : fee ? (
-          formatToken ? (
-            formatToken(fee, 'XRP (manual)', true)
-          ) : (
-            ''
-          )
-        ) : formatAmount ? (
-          formatAmount(estimatedFees)
+          formatToken(fee, 'XRP (manual)', true)
         ) : (
-          ''
+          formatAmount(estimatedFees)
         )}
       </Typography>
     </Paper>

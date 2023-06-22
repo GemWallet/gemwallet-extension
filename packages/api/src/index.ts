@@ -1,3 +1,4 @@
+export * from './createNFTOffer';
 export * from './getAddress';
 export * from './getNetwork';
 export * from './getNFT';
@@ -19,6 +20,7 @@ export type {
 
 // API request types
 export type {
+  CreateNFTOfferRequest,
   GetNetworkRequest,
   GetNFTRequest,
   MintNFTRequest,
@@ -29,6 +31,7 @@ export type {
 
 // API response types
 export type {
+  CreateNFTOfferResponse,
   GetAddressResponse,
   GetNetworkResponse,
   GetNFTResponse,
