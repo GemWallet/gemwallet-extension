@@ -166,12 +166,6 @@ export const CreateOffer: FC = () => {
   }, [createMessage]);
 
   const handleConfirm = useCallback(() => {
-    // // Need to send the flags as number to xrpl.js, otherwise they won't be recognized
-    // const formattedFlags =
-    //   params.flags && typeof params.flags === 'object'
-    //     ? createNFTOfferFlagsToNumber(params.flags)
-    //     : params.flags;
-
     setTransaction(TransactionStatus.Pending);
     // takerGets and takenPays will be present because if not,
     // we won't be able to go to the confirm transaction state
