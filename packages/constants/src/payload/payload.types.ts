@@ -314,6 +314,7 @@ export interface SignMessageResponseDeprecated {
 
 export interface SignTransactionResponse
   extends BaseResponse<{
+    hash: string;
     signedTransaction: string;
   }> {}
 
