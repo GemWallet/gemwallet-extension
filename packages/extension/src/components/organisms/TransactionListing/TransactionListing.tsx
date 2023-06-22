@@ -250,18 +250,18 @@ export const TransactionListing: FC<TransactionListingProps> = ({ transactions }
                 </>
               ) : null}
               {transaction.meta &&
-                typeof transaction.meta === 'object' &&
-                'nftoken_id' in transaction.meta && (
-                  <>
-                    <ListItem style={{ padding: '8px 24px' }}>
-                      <ListItemText
-                        primary="NFT Token ID"
-                        secondary={(transaction.meta as any).nftoken_id}
-                      />
-                    </ListItem>
-                    <Divider light />
-                  </>
-                )}
+              typeof transaction.meta === 'object' &&
+              'nftoken_id' in transaction.meta ? (
+                <>
+                  <ListItem style={{ padding: '8px 24px' }}>
+                    <ListItemText
+                      primary="NFT Token ID"
+                      secondary={(transaction.meta as any).nftoken_id}
+                    />
+                  </ListItem>
+                  <Divider light />
+                </>
+              ) : null}
               <ListItem style={{ padding: '8px 24px' }}>
                 <ListItemText primary="Transaction Hash" secondary={transaction.tx?.hash} />
               </ListItem>
