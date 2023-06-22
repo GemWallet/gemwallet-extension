@@ -486,10 +486,18 @@
           const tx = {
             TransactionType: 'Payment',
             Destination: 'rhikRdkFw28csKw9z7fVoBjWncz1HSoQij',
-            Amount: '100000'
+            Amount: '100000',
+            Memos: [
+              {
+                Memo: {
+                  MemoData: '54657374206D656D6F',
+                  MemoType: '4465736372697074696F6E'
+                }
+              }
+            ]
           };
           const payload = {
-            transaction: JSON.stringify(tx)
+            transaction: tx
           };
           GemWalletApi.signTransaction(payload)
             .then((res) => {
