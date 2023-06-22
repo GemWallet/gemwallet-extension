@@ -281,7 +281,7 @@ export const CreateNFTOffer: FC = () => {
               display: 'flex',
               justifyContent: 'center',
               position: 'fixed',
-              bottom: 5,
+              bottom: 0,
               left: 0,
               right: 0,
               backgroundColor: '#1d1d1d'

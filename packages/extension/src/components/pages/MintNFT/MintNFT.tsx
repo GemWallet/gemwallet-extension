@@ -226,40 +226,40 @@ export const MintNFT: FC = () => {
         <div>{transactionStatusComponent}</div>
       ) : (
         <PageWithTitle
-      title="Confirm Transaction"
-      styles={{ container: { justifyContent: 'initial' } }}
-    >
-      <div style={{ marginBottom: '40px' }}>
-          {!hasEnoughFunds ? (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              <ErrorIcon style={{ color: ERROR_RED }} />
-              <Typography variant="body1" style={{ marginLeft: '10px', color: ERROR_RED }}>
-                Insufficient funds.
-              </Typography>
-            </div>
-          ) : null}
-          {URI ? (
+          title="Confirm Transaction"
+          styles={{ container: { justifyContent: 'initial' } }}
+        >
+          <div style={{ marginBottom: '40px' }}>
+            {!hasEnoughFunds ? (
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <ErrorIcon style={{ color: ERROR_RED }} />
+                <Typography variant="body1" style={{ marginLeft: '10px', color: ERROR_RED }}>
+                  Insufficient funds.
+                </Typography>
+              </div>
+            ) : null}
+            {URI ? (
+              <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
+                <Typography variant="body1">URI:</Typography>
+                <Typography variant="body2">{convertHexToString(URI)}</Typography>
+              </Paper>
+            ) : null}
+            {transferFee ? (
+              <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
+                <Typography variant="body1">Transfer Fee:</Typography>
+                <Typography variant="body2">{`${formatTransferFee(transferFee)}%`}</Typography>
+              </Paper>
+            ) : null}
+            {issuer ? (
+              <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
+                <Typography variant="body1">Issuer:</Typography>
+                <Typography variant="body2">{issuer}</Typography>
+              </Paper>
+            ) : null}
             <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-              <Typography variant="body1">URI:</Typography>
-              <Typography variant="body2">{convertHexToString(URI)}</Typography>
+              <Typography variant="body1">NFT Taxon:</Typography>
+              <Typography variant="body2">{NFTokenTaxon}</Typography>
             </Paper>
-          ) : null}
-          {transferFee ? (
-            <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-              <Typography variant="body1">Transfer Fee:</Typography>
-              <Typography variant="body2">{`${formatTransferFee(transferFee)}%`}</Typography>
-            </Paper>
-          ) : null}
-          {issuer ? (
-            <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-              <Typography variant="body1">Issuer:</Typography>
-              <Typography variant="body2">{issuer}</Typography>
-            </Paper>
-          ) : null}
-          <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-            <Typography variant="body1">NFT Taxon:</Typography>
-            <Typography variant="body2">{NFTokenTaxon}</Typography>
-          </Paper>
 
             <BaseTransaction
               fee={fee ? Number(fee) : null}
@@ -274,7 +274,7 @@ export const MintNFT: FC = () => {
               display: 'flex',
               justifyContent: 'center',
               position: 'fixed',
-              bottom: 5,
+              bottom: 0,
               left: 0,
               right: 0,
               backgroundColor: '#1d1d1d'
