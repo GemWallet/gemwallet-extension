@@ -1,6 +1,7 @@
 import { GEM_WALLET } from '../global/global.constant';
 import { RequestMessage } from '../message/message.types';
 import {
+  CancelNFTOfferRequest,
   CreateNFTOfferRequest,
   MintNFTRequest,
   SendPaymentRequest,
@@ -19,6 +20,7 @@ interface MessageEventData {
   messageId: number;
   // Not all the MessageEventData have a payload
   payload?:
+    | CancelNFTOfferRequest
     | CreateNFTOfferRequest
     | MintNFTRequest
     | SendPaymentRequest
@@ -177,6 +179,16 @@ export interface CreateNFTOfferEventListener extends MessageEvent<MessageEventDa
   };
 }
 
+export interface CancelNFTOfferEventListener extends MessageEvent<MessageEventData> {
+  data: {
+    app: typeof GEM_WALLET;
+    type: 'REQUEST_CANCEL_NFT_OFFER/V3';
+    source: 'GEM_WALLET_MSG_REQUEST';
+    messageId: number;
+    payload: CancelNFTOfferRequest;
+  };
+}
+
 export interface SetTrustlineEventListenerDeprecated extends MessageEvent<MessageEventData> {
   data: {
     app: typeof GEM_WALLET;
@@ -190,6 +202,7 @@ export interface SetTrustlineEventListenerDeprecated extends MessageEvent<Messag
 export type EventListener =
   | AddressEventListener
   | AddressEventListenerDeprecated
+  | CancelNFTOfferEventListener
   | CreateNFTOfferEventListener
   | GetNFTEventListener
   | GetNFTEventListenerDeprecated

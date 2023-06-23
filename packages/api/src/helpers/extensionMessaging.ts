@@ -73,6 +73,7 @@ export const sendMessageToContentScript = (msg: APIMessages): Promise<any> => {
  * - amount
  * - limitAmount
  * - flags
+ * ...
  *
  * @param msg
  * @returns The message with each object field stringified.
@@ -97,6 +98,10 @@ const serializeMessage = (msg: APIMessages): any => {
 
   if (typeof modifiedMsg.payload?.flags === 'object') {
     modifiedMsg.payload.flags = JSON.stringify(modifiedMsg.payload.flags);
+  }
+
+  if (modifiedMsg.payload?.NFTokenOffers) {
+    modifiedMsg.payload.NFTokenOffers = JSON.stringify(modifiedMsg.payload.NFTokenOffers);
   }
 
   return modifiedMsg;

@@ -94,6 +94,48 @@ describe('Mint', () => {
     cy.get('p[data-testid="transaction-subtitle"]').should('have.text', 'Transaction Successful');
   });
 
+  it('Read the Offer ID', () => {
+    navigate('localhost:3000', PASSWORD);
+
+    // Go to transaction history
+    cy.contains('button', 'History').click();
+
+    // Find a mint transaction
+    cy.contains('Create NFT offer').closest('.MuiPaper-root').click();
+
+    // Find the Offer ID in the transaction details and add it to the URL
+    cy.contains('Offer ID')
+      .next()
+      .invoke('text')
+      .then((OfferID) => {
+        cy.wrap(OfferID).as('OfferID');
+      });
+  });
+
+  it('Cancel NFT Offer', function () {
+    const url = `http://localhost:3000?cancel-nft-offer&NFTokenOffers=%5B%22${this.OfferID}%22%5D&fee=199&memos=%5B%7B%22memo%22%3A%7B%22memoType%22%3A%224465736372697074696f6e%22%2C%22memoData%22%3A%2254657374206d656d6f%22%7D%7D%5D&id=210325959&requestMessage=undefined&transaction=cancelNFTOffer`;
+    navigate(url, PASSWORD);
+
+    // Confirm
+    cy.get('h1[data-testid="page-title"]').should('have.text', 'Confirm Transaction');
+
+    cy.contains('Offer IDs:').next().should('have.text', this.OfferID);
+
+    // Confirm
+    cy.contains('button', 'Confirm').click();
+
+    cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction in progress');
+    cy.get('p[data-testid="transaction-subtitle"]').should(
+      'have.text',
+      'We are processing your transactionPlease wait'
+    );
+
+    cy.get('h1[data-testid="transaction-title"]').contains('Transaction accepted', {
+      timeout: 10000
+    });
+    cy.get('p[data-testid="transaction-subtitle"]').should('have.text', 'Transaction Successful');
+  });
+
   const navigate = (url: string, password: string) => {
     cy.visit(url, {
       onBeforeLoad(win) {

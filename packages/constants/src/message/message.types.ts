@@ -1,5 +1,7 @@
 import { GEM_WALLET } from '../global/global.constant';
 import {
+  CancelNFTOfferRequest,
+  CancelNFTOfferResponse,
   CreateNFTOfferRequest,
   CreateNFTOfferResponse,
   GetAddressResponse,
@@ -32,6 +34,7 @@ export type RequestMessage =
   | 'REQUEST_ADDRESS'
   | 'REQUEST_ADD_TRUSTLINE'
   | 'REQUEST_CONNECTION'
+  | 'REQUEST_CANCEL_NFT_OFFER/V3'
   | 'REQUEST_CREATE_NFT_OFFER/V3'
   | 'REQUEST_GET_ADDRESS/V3'
   | 'REQUEST_GET_NETWORK/V3'
@@ -49,6 +52,7 @@ export type RequestMessage =
 
 export type ReceiveMessage =
   | 'RECEIVE_ADDRESS'
+  | 'RECEIVE_CANCEL_NFT_OFFER/V3'
   | 'RECEIVE_CREATE_NFT_OFFER/V3'
   | 'RECEIVE_GET_ADDRESS/V3'
   | 'RECEIVE_GET_NFT/V3'
@@ -140,6 +144,12 @@ export interface RequestCreateNFTOfferMessage {
   payload: CreateNFTOfferRequest;
 }
 
+export interface RequestCancelNFTOfferMessage {
+  app: typeof GEM_WALLET;
+  type: 'REQUEST_CANCEL_NFT_OFFER/V3';
+  payload: CancelNFTOfferRequest;
+}
+
 export interface RequestGetNFTMessage {
   app: typeof GEM_WALLET;
   type: 'REQUEST_GET_NFT/V3';
@@ -180,6 +190,7 @@ export interface MessagingError {
   stack?: string;
 }
 
+export type CancelNFTOfferMessagingResponse = MessagingResponse & CancelNFTOfferResponse;
 export type CreateNFTOfferMessagingResponse = MessagingResponse & CreateNFTOfferResponse;
 export type GetNetworkMessagingResponse = MessagingResponse & GetNetworkResponse;
 export type GetNetworkMessagingResponseDeprecated = MessagingResponse &
@@ -301,6 +312,12 @@ export interface ReceiveCreateNFTOfferContentMessage {
   payload: CreateNFTOfferMessagingResponse;
 }
 
+export interface ReceiveCancelNFTOfferContentMessage {
+  app: typeof GEM_WALLET;
+  type: 'RECEIVE_CANCEL_NFT_OFFER/V3';
+  payload: CancelNFTOfferMessagingResponse;
+}
+
 // Background Script Messages
 type BackgroundMessagePayload = {
   payload: {
@@ -355,8 +372,12 @@ export type ReceiveMintNFTBackgroundMessage = ReceiveMintNFTContentMessage &
 export type ReceiveCreateNFTOfferBackgroundMessage = ReceiveCreateNFTOfferContentMessage &
   BackgroundMessagePayload;
 
+export type ReceiveCancelNFTOfferBackgroundMessage = ReceiveCancelNFTOfferContentMessage &
+  BackgroundMessagePayload;
+
 export type BackgroundMessage =
   // Inputted messages - DO NOT contain ID within the payloads
+  | RequestCancelNFTOfferMessage
   | RequestCreateNFTOfferMessage
   | RequestGetAddressMessage
   | RequestGetAddressMessageDeprecated
@@ -374,6 +395,7 @@ export type BackgroundMessage =
   | RequestSignMessageMessage
   | RequestSignMessageMessageDeprecated
   // Outputted Messages - DO contain ID within the payloads
+  | ReceiveCancelNFTOfferBackgroundMessage
   | ReceiveCreateNFTOfferBackgroundMessage
   | ReceiveGetAddressBackgroundMessage
   | ReceiveGetAddressBackgroundMessageDeprecated
@@ -398,6 +420,7 @@ export interface RequestIsInstalledMessage {
 }
 
 export type APIMessages =
+  | RequestCancelNFTOfferMessage
   | RequestCreateNFTOfferMessage
   | RequestGetAddressMessage
   | RequestGetNetworkMessage

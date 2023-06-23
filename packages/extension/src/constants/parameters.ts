@@ -6,4 +6,5 @@ export const PARAMETER_SIGN_MESSAGE = 'sign=true';
 export const PARAMETER_TRANSACTION_PAYMENT = 'transaction=payment';
 export const PARAMETER_TRANSACTION_TRUSTLINE = 'transaction=trustSet';
 export const PARAMETER_TRANSACTION_MINT_NFT = 'transaction=mintNFT';
+export const PARAMETER_TRANSACTION_CANCEL_NFT_OFFER = 'transaction=cancelNFTOffer';
 export const PARAMETER_TRANSACTION_CREATE_NFT_OFFER = 'transaction=createNFTOffer';
