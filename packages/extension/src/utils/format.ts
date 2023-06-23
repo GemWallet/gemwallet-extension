@@ -3,6 +3,7 @@ import { Amount, IssuedCurrencyAmount } from 'xrpl/dist/npm/models/common';
 
 import {
   CreateNFTOfferFlags,
+  CreateOfferFlags,
   MintNFTFlags,
   PaymentFlags,
   SetAccountFlags,
@@ -44,7 +45,13 @@ export const formatToken = (value: number, currency: string = 'XRP', isDrops = f
 };
 
 export const formatFlags = (
-  flags: PaymentFlags | TrustSetFlags | MintNFTFlags | CreateNFTOfferFlags | SetAccountFlags
+  flags:
+    | PaymentFlags
+    | TrustSetFlags
+    | MintNFTFlags
+    | CreateNFTOfferFlags
+    | SetAccountFlags
+    | CreateOfferFlags
 ) => {
   if (typeof flags === 'object') {
     return Object.entries(flags)

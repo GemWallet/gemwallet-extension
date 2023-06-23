@@ -7,6 +7,7 @@ import {
   mintNFTFlagsToNumber,
   parseAmount,
   parseArray,
+  parseCreateOfferFlags,
   parseLimitAmount,
   parseMemos,
   parseMintNFTFlags,
@@ -196,6 +197,35 @@ describe('parseMintNFTFlags', () => {
       tfTrustLine: true,
       tfTransferable: true
     });
+  });
+});
+
+describe('parseCreateOfferFlags', () => {
+  test('should return null when flagsString is null', () => {
+    const result = parseCreateOfferFlags(null);
+    expect(result).toBeNull();
+  });
+
+  test('should return a number when flagsString is a numeric string', () => {
+    const result = parseCreateOfferFlags('123');
+    expect(result).toBe(123);
+  });
+
+  test('should return parsed object when flagsString is valid json', () => {
+    const result = parseCreateOfferFlags(
+      JSON.stringify({ tfPassive: true, tfImmediateOrCancel: false })
+    );
+    expect(result).toEqual({ tfPassive: true, tfImmediateOrCancel: false });
+  });
+
+  test('should return null when flagsString is invalid json', () => {
+    const result = parseCreateOfferFlags('{ tfPassive: true, tfImmediateOrCancel: false }');
+    expect(result).toBeNull();
+  });
+
+  test('should return null when flagsString does not contain any expected keys', () => {
+    const result = parseCreateOfferFlags(JSON.stringify({ tfUnknownKey: true }));
+    expect(result).toBeNull();
   });
 });
 

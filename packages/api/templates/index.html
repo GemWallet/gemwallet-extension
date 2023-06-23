@@ -23,6 +23,7 @@
       <button onclick="handleGetNetwork()">Get Network (check the console)</button>
       <button onclick="handleSignMessage()">Sign message</button>
       <button onclick="handleSetAccount()">Set Account (check the console)</button>
+      <button onclick="handleCreateOffer()">Create Offer (check the console)</button>
       <div id="address"></div>
     </div>
   </body>
@@ -396,6 +397,44 @@
           };
 
           GemWalletApi.setAccount(transaction)
+            .then((res) => {
+              console.log('Received response: ', res);
+            })
+            .catch((e) => {
+              console.error('Cannot proceed the transaction: ', e);
+            });
+        }
+      })
+      .catch((e) => {
+        console.error('GemWallet is not connected: ', e);
+      });
+  }
+  function handleCreateOffer() {
+    GemWalletApi.isInstalled()
+      .then(({ result }) => {
+        if (result.isInstalled) {
+          const transaction = {
+            takerGets: '10000000', // 10 XRP
+            takerPays: {
+              currency: 'ETH',
+              issuer: 'rnm76Qgz4G9G4gZBJVuXVvkbt7gVD7szey',
+              value: '0.1'
+            },
+            flags: {
+              tfPassive: true
+            },
+            fee: '199',
+            memos: [
+              {
+                memo: {
+                  memoType: '4465736372697074696f6e',
+                  memoData: '54657374206d656d6f'
+                }
+              }
+            ]
+          };
+
+          GemWalletApi.createOffer(transaction)
             .then((res) => {
               console.log('Received response: ', res);
             })

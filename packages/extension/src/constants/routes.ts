@@ -7,6 +7,7 @@ export const ADD_NEW_TRUSTLINE_PATH = '/add-new-trustline';
 export const CREATE_NEW_WALLET_PATH = '/create-new-wallet';
 export const CANCEL_NFT_OFFER_PATH = '/cancel-nft-offer';
 export const CREATE_NFT_OFFER_PATH = '/create-nft-offer';
+export const CREATE_OFFER_PATH = '/create-offer';
 export const EDIT_WALLET_PATH = '/edit-wallet';
 export const HISTORY_PATH = '/history';
 export const HOME_PATH = '/home';

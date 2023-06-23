@@ -42,7 +42,8 @@ import {
   SignMessage,
   Transaction,
   TrustedApps,
-  Welcome
+  Welcome,
+  CreateOffer
 } from './components/pages';
 import { ErrorBoundary } from './components/templates';
 import {
@@ -54,6 +55,7 @@ import {
   CANCEL_NFT_OFFER_PATH,
   CREATE_NEW_WALLET_PATH,
   CREATE_NFT_OFFER_PATH,
+  CREATE_OFFER_PATH,
   EDIT_WALLET_PATH,
   HISTORY_PATH,
   HOME_PATH,
@@ -72,6 +74,7 @@ import {
   PARAMETER_TRANSACTION_BURN_NFT,
   PARAMETER_TRANSACTION_CANCEL_NFT_OFFER,
   PARAMETER_TRANSACTION_CREATE_NFT_OFFER,
+  PARAMETER_TRANSACTION_CREATE_OFFER,
   PARAMETER_TRANSACTION_MINT_NFT,
   PARAMETER_TRANSACTION_PAYMENT,
   PARAMETER_TRANSACTION_SET_ACCOUNT,
@@ -259,6 +262,12 @@ const App: FC = () => {
         handleTransaction({
           app: GEM_WALLET,
           type: 'RECEIVE_SET_ACCOUNT/V3',
+          payload: defaultPayload
+        });
+      } else if (search.includes(PARAMETER_TRANSACTION_CREATE_OFFER)) {
+        handleTransaction({
+          app: GEM_WALLET,
+          type: 'RECEIVE_CREATE_OFFER/V3',
           payload: defaultPayload
         });
       }
@@ -477,6 +486,14 @@ const App: FC = () => {
           element={
             <PrivateRoute>
               <SetAccount />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path={CREATE_OFFER_PATH}
+          element={
+            <PrivateRoute>
+              <CreateOffer />
             </PrivateRoute>
           }
         />
