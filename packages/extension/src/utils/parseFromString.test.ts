@@ -11,6 +11,7 @@ import {
   parseMemos,
   parseMintNFTFlags,
   parsePaymentFlags,
+  parseSetAccountFlags,
   parseSigners,
   parseTrustSetFlags
 } from './parseFromString';
@@ -288,6 +289,38 @@ describe('createNFTOfferFlagsToNumber', () => {
 
     it('should return null when input is null', () => {
       const result = parseArray(null);
+      expect(result).toBeNull();
+    });
+  });
+
+  describe('parseSetAccountFlags', () => {
+    it('returns null if input is null', () => {
+      const result = parseSetAccountFlags(null);
+      expect(result).toBeNull();
+    });
+
+    it('returns a number if input is a numeric string', () => {
+      const result = parseSetAccountFlags('12345');
+      expect(result).toBe(12345);
+    });
+
+    it('returns parsed flags object if input is a valid flags JSON string', () => {
+      const validFlags = '{"tfRequireDestTag": true, "tfAllowXRP": false}';
+      const result = parseSetAccountFlags(validFlags);
+      expect(result).toEqual({
+        tfRequireDestTag: true,
+        tfAllowXRP: false
+      });
+    });
+
+    it('returns null if input is an invalid flags JSON string', () => {
+      const invalidFlags = '{"invalidFlag": true}';
+      const result = parseSetAccountFlags(invalidFlags);
+      expect(result).toBeNull();
+    });
+
+    it('returns null if input is a non-JSON string', () => {
+      const result = parseSetAccountFlags('nonJsonString');
       expect(result).toBeNull();
     });
   });

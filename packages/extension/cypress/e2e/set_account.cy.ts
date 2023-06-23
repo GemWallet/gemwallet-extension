@@ -14,7 +14,7 @@ describe('Set Account', () => {
 
   it('Set Account', () => {
     cy.visit(
-      `http://localhost:3000?set-account&emailHash=1D1382344586ECFF844DACFF698C2EFB&fee=199&memos=%5B%7B%22memo%22%3A%7B%22memoType%22%3A%224465736372697074696f6e%22%2C%22memoData%22%3A%2254657374206d656d6f%22%7D%7D%5D&id=210327555&requestMessage=undefined&transaction=setAccount`,
+      `http://localhost:3000?set-account&emailHash=1D1382344586ECFF844DACFF698C2EFB&fee=199&flags=%7B%22tfAllowXRP%22%3Atrue%7D&memos=%5B%7B%22memo%22%3A%7B%22memoType%22%3A%224465736372697074696f6e%22%2C%22memoData%22%3A%2254657374206d656d6f%22%7D%7D%5D&id=210327555&requestMessage=undefined&transaction=setAccount`,
       {
         onBeforeLoad(win) {
           (win as any).chrome = (win as any).chrome || {};
@@ -32,7 +32,9 @@ describe('Set Account', () => {
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Confirm Transaction');
 
     cy.contains('Email hash:').next().should('have.text', '1D1382344586ECFF844DACFF698C2EFB');
-
+    cy.contains('Network fees:').next().should('have.text', '0.000199 XRP (MANUAL)');
+    cy.contains('Memos:').next().should('have.text', 'Test memo');
+    cy.contains('Flags:').next().should('have.text', 'tfAllowXRP: true');
     // Confirm
     cy.contains('button', 'Confirm').click();
 

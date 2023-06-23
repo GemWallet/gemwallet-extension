@@ -8,6 +8,7 @@ import {
   Memo,
   MintNFTFlags,
   PaymentFlags,
+  SetAccountFlags,
   TrustSetFlags
 } from '@gemwallet/constants';
 
@@ -20,7 +21,7 @@ const DEFAULT_FEES = 'Loading ...';
 type BaseTransactionProps = {
   fee: number | null;
   memos: Memo[] | null;
-  flags: TrustSetFlags | PaymentFlags | MintNFTFlags | CreateNFTOfferFlags | null;
+  flags: TrustSetFlags | PaymentFlags | MintNFTFlags | CreateNFTOfferFlags | SetAccountFlags | null;
   errorFees: string | null;
   estimatedFees: string;
 };

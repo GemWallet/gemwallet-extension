@@ -14,7 +14,7 @@ import {
 import { ERROR_RED } from '../../../constants';
 import { useLedger, useNetwork } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
-import { formatFlags, fromHexMemos } from '../../../utils';
+import { fromHexMemos, parseSetAccountFlags } from '../../../utils';
 import {
   BaseTransactionParams,
   getBaseFromParams,
@@ -131,7 +131,7 @@ export const SetAccount: FC = () => {
     } = parseBaseParamsFromURLParams(urlParams);
 
     // SetAccount fields
-    const flags = urlParams.get('flags') as SetAccountFlags | null;
+    const flags = parseSetAccountFlags(urlParams.get('flags'));
     const clearFlag = Number(urlParams.get('clearFlag')) || null;
     const domain = urlParams.get('domain');
     const emailHash = urlParams.get('emailHash');
@@ -258,14 +258,6 @@ export const SetAccount: FC = () => {
               </Typography>
             </div>
           ) : null}
-          {flags ? (
-            <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-              <Typography variant="body1">Flags:</Typography>
-              <Typography variant="body2">
-                <pre style={{ margin: 0 }}>{formatFlags(flags)}</pre>
-              </Typography>
-            </Paper>
-          ) : null}
           {clearFlag ? (
             <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
               <Typography variant="body1">Flag to be cleared:</Typography>
@@ -325,7 +317,7 @@ export const SetAccount: FC = () => {
             <BaseTransaction
               fee={fee ? Number(fee) : null}
               memos={decodedMemos}
-              flags={null}
+              flags={flags}
               errorFees={errorFees}
               estimatedFees={estimatedFees}
             />
