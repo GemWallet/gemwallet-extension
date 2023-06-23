@@ -5,6 +5,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 import {
   ACCEPT_NFT_OFFER_PATH,
+  BURN_NFT_PATH,
   CANCEL_NFT_OFFER_PATH,
   CREATE_NFT_OFFER_PATH,
   HOME_PATH,
@@ -25,6 +26,7 @@ import {
   SHARE_NFT_PATH,
   MINT_NFT_PATH,
   PARAMETER_TRANSACTION_ACCEPT_NFT_OFFER,
+  PARAMETER_TRANSACTION_BURN_NFT,
   PARAMETER_TRANSACTION_MINT_NFT,
   PARAMETER_TRANSACTION_CANCEL_NFT_OFFER,
   PARAMETER_TRANSACTION_CREATE_NFT_OFFER
@@ -62,6 +64,8 @@ export const Login: FC = () => {
       navigate(`${CANCEL_NFT_OFFER_PATH}${search}`);
     } else if (search.includes(PARAMETER_TRANSACTION_ACCEPT_NFT_OFFER)) {
       navigate(`${ACCEPT_NFT_OFFER_PATH}${search}`);
+    } else if (search.includes(PARAMETER_TRANSACTION_BURN_NFT)) {
+      navigate(`${BURN_NFT_PATH}${search}`);
     } else {
       navigate(`${HOME_PATH}${search}`);
     }

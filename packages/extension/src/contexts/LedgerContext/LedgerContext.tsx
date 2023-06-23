@@ -11,7 +11,8 @@ import {
   NFTokenMint,
   NFTokenCreateOffer,
   NFTokenCancelOffer,
-  NFTokenAcceptOffer
+  NFTokenAcceptOffer,
+  NFTokenBurn
 } from 'xrpl';
 import { BaseTransaction } from 'xrpl/dist/npm/models/transactions/common';
 
@@ -24,7 +25,8 @@ import {
   BaseTransactionRequest,
   CreateNFTOfferRequest,
   CancelNFTOfferRequest,
-  AcceptNFTOfferRequest
+  AcceptNFTOfferRequest,
+  BurnNFTRequest
 } from '@gemwallet/constants';
 
 import { AccountTransaction, WalletLedger } from '../../types';
@@ -59,6 +61,10 @@ interface AcceptNFTOfferResponse {
   hash: string;
 }
 
+interface BurnNFTResponse {
+  hash: string;
+}
+
 export interface LedgerContextType {
   // Return transaction hash in case of success
   sendPayment: (payload: SendPaymentRequest) => Promise<string>;
@@ -72,6 +78,7 @@ export interface LedgerContextType {
   createNFTOffer: (payload: CreateNFTOfferRequest) => Promise<CreateNFTOfferResponse>;
   cancelNFTOffer: (payload: CancelNFTOfferRequest) => Promise<CancelNFTOfferResponse>;
   acceptNFTOffer: (payload: AcceptNFTOfferRequest) => Promise<AcceptNFTOfferResponse>;
+  burnNFT: (payload: BurnNFTRequest) => Promise<BurnNFTResponse>;
 }
 
 const LedgerContext = createContext<LedgerContextType>({
@@ -94,7 +101,8 @@ const LedgerContext = createContext<LedgerContextType>({
   mintNFT: () => new Promise(() => {}),
   createNFTOffer: () => new Promise(() => {}),
   cancelNFTOffer: () => new Promise(() => {}),
-  acceptNFTOffer: () => new Promise(() => {})
+  acceptNFTOffer: () => new Promise(() => {}),
+  burnNFT: () => new Promise(() => {})
 });
 
 const LedgerProvider: FC = ({ children }) => {
@@ -492,6 +500,47 @@ const LedgerProvider: FC = ({ children }) => {
     [client, getCurrentWallet]
   );
 
+  const burnNFT = useCallback(
+    async (payload: BurnNFTRequest) => {
+      const wallet = getCurrentWallet();
+      if (!client) {
+        throw new Error('You need to be connected to a ledger');
+      } else if (!wallet) {
+        throw new Error('You need to have a wallet connected');
+      } else {
+        try {
+          const tx = await client.submitAndWait(
+            {
+              ...(buildBaseTransaction(payload, wallet, 'NFTokenBurn') as NFTokenBurn),
+              NFTokenID: payload.NFTokenID,
+              ...(payload.owner && { Owner: payload.owner })
+            },
+            { wallet: wallet.wallet }
+          );
+
+          if (!tx.result.hash) {
+            throw new Error("Couldn't burn the NFT");
+          }
+
+          if ((tx.result.meta! as TransactionMetadata).TransactionResult !== 'tesSUCCESS') {
+            throw new Error(
+              (tx.result.meta as TransactionMetadata)?.TransactionResult ||
+                "Couldn't burn the NFT but the transaction was successful"
+            );
+          }
+
+          return {
+            hash: tx.result.hash
+          };
+        } catch (e) {
+          Sentry.captureException(e);
+          throw e;
+        }
+      }
+    },
+    [client, getCurrentWallet]
+  );
+
   const buildBaseTransaction = (
     payload: BaseTransactionRequest,
     wallet: WalletLedger,
@@ -502,6 +551,7 @@ const LedgerProvider: FC = ({ children }) => {
       | 'NFTokenCreateOffer'
       | 'NFTokenCancelOffer'
       | 'NFTokenAcceptOffer'
+      | 'NFTokenBurn'
   ): BaseTransaction => ({
     TransactionType: txType,
     Account: wallet.publicAddress,
@@ -528,7 +578,8 @@ const LedgerProvider: FC = ({ children }) => {
     mintNFT,
     createNFTOffer,
     cancelNFTOffer,
-    acceptNFTOffer
+    acceptNFTOffer,
+    burnNFT
   };
 
   return <LedgerContext.Provider value={value}>{children}</LedgerContext.Provider>;

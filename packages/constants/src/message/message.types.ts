@@ -2,6 +2,8 @@ import { GEM_WALLET } from '../global/global.constant';
 import {
   AcceptNFTOfferResponse,
   AcceptNFTOfferRequest,
+  BurnNFTRequest,
+  BurnNFTResponse,
   CancelNFTOfferRequest,
   CancelNFTOfferResponse,
   CreateNFTOfferRequest,
@@ -36,6 +38,7 @@ export type RequestMessage =
   | 'REQUEST_ACCEPT_NFT_OFFER/V3'
   | 'REQUEST_ADDRESS'
   | 'REQUEST_ADD_TRUSTLINE'
+  | 'REQUEST_BURN_NFT/V3'
   | 'REQUEST_CONNECTION'
   | 'REQUEST_CANCEL_NFT_OFFER/V3'
   | 'REQUEST_CREATE_NFT_OFFER/V3'
@@ -56,6 +59,7 @@ export type RequestMessage =
 export type ReceiveMessage =
   | 'RECEIVE_ACCEPT_NFT_OFFER/V3'
   | 'RECEIVE_ADDRESS'
+  | 'RECEIVE_BURN_NFT/V3'
   | 'RECEIVE_CANCEL_NFT_OFFER/V3'
   | 'RECEIVE_CREATE_NFT_OFFER/V3'
   | 'RECEIVE_GET_ADDRESS/V3'
@@ -160,6 +164,12 @@ export interface RequestAcceptNFTOfferMessage {
   payload: AcceptNFTOfferRequest;
 }
 
+export interface RequestBurnNFTMessage {
+  app: typeof GEM_WALLET;
+  type: 'REQUEST_BURN_NFT/V3';
+  payload: BurnNFTRequest;
+}
+
 export interface RequestGetNFTMessage {
   app: typeof GEM_WALLET;
   type: 'REQUEST_GET_NFT/V3';
@@ -201,6 +211,7 @@ export interface MessagingError {
 }
 
 export type AcceptNFTOfferMessagingResponse = MessagingResponse & AcceptNFTOfferResponse;
+export type BurnNFTMessagingResponse = MessagingResponse & BurnNFTResponse;
 export type CancelNFTOfferMessagingResponse = MessagingResponse & CancelNFTOfferResponse;
 export type CreateNFTOfferMessagingResponse = MessagingResponse & CreateNFTOfferResponse;
 export type GetNetworkMessagingResponse = MessagingResponse & GetNetworkResponse;
@@ -335,6 +346,12 @@ export interface ReceiveAcceptNFTOfferContentMessage {
   payload: AcceptNFTOfferMessagingResponse;
 }
 
+export interface ReceiveBurnNFTContentMessage {
+  app: typeof GEM_WALLET;
+  type: 'RECEIVE_BURN_NFT/V3';
+  payload: BurnNFTMessagingResponse;
+}
+
 // Background Script Messages
 type BackgroundMessagePayload = {
   payload: {
@@ -395,9 +412,13 @@ export type ReceiveCancelNFTOfferBackgroundMessage = ReceiveCancelNFTOfferConten
 export type ReceiveAcceptNFTOfferBackgroundMessage = ReceiveAcceptNFTOfferContentMessage &
   BackgroundMessagePayload;
 
+export type ReceiveBurnNFTBackgroundMessage = ReceiveBurnNFTContentMessage &
+  BackgroundMessagePayload;
+
 export type BackgroundMessage =
   // Inputted messages - DO NOT contain ID within the payloads
   | RequestAcceptNFTOfferMessage
+  | RequestBurnNFTMessage
   | RequestCancelNFTOfferMessage
   | RequestCreateNFTOfferMessage
   | RequestGetAddressMessage
@@ -417,6 +438,7 @@ export type BackgroundMessage =
   | RequestSignMessageMessageDeprecated
   // Outputted Messages - DO contain ID within the payloads
   | ReceiveAcceptNFTOfferBackgroundMessage
+  | ReceiveBurnNFTBackgroundMessage
   | ReceiveCancelNFTOfferBackgroundMessage
   | ReceiveCreateNFTOfferBackgroundMessage
   | ReceiveGetAddressBackgroundMessage
@@ -443,6 +465,7 @@ export interface RequestIsInstalledMessage {
 
 export type APIMessages =
   | RequestAcceptNFTOfferMessage
+  | RequestBurnNFTMessage
   | RequestCancelNFTOfferMessage
   | RequestCreateNFTOfferMessage
   | RequestGetAddressMessage

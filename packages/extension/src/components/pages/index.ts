@@ -2,6 +2,7 @@ export * from './About';
 export * from './AcceptNFTOffer';
 export * from './AddNewTrustline';
 export * from './AddNewWallet';
+export * from './BurnNFT';
 export * from './CancelNFTOffer';
 export * from './CreateNFTOffer';
 export * from './CreateWallet';
