@@ -213,7 +213,10 @@ export const CreateOffer: FC = () => {
       {transactionStatusComponent ? (
         <div>{transactionStatusComponent}</div>
       ) : (
-        <PageWithTitle title="Confirm Transaction">
+        <PageWithTitle
+          title="Confirm Transaction"
+          styles={{ container: { justifyContent: 'initial' } }}
+        >
           {!hasEnoughFunds ? (
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
               <ErrorIcon style={{ color: ERROR_RED }} />
@@ -260,7 +263,7 @@ export const CreateOffer: FC = () => {
               display: 'flex',
               justifyContent: 'center',
               position: 'fixed',
-              bottom: 5,
+              bottom: 0,
               left: 0,
               right: 0,
               backgroundColor: '#1d1d1d'
