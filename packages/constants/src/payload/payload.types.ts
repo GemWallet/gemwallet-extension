@@ -1,3 +1,4 @@
+import { AccountSetAsfFlags } from 'xrpl';
 import { Amount, IssuedCurrencyAmount } from 'xrpl/dist/npm/models/common';
 
 import { Network } from '../network/network.constant';
@@ -7,7 +8,8 @@ import {
   PaymentFlags,
   Signer,
   TrustSetFlags,
-  CreateNFTOfferFlags
+  CreateNFTOfferFlags,
+  SetAccountFlags
 } from '../xrpl/basic.types';
 import { AccountNFToken } from './../xrpl/nft.types';
 
@@ -199,6 +201,32 @@ export interface SignMessageRequest {
   message: string;
 }
 
+export interface SetAccountRequest extends BaseTransactionRequest {
+  flags?: SetAccountFlags;
+  // Unique identifier of a flag to disable for this account.
+  clearFlag?: number;
+  // The domain that owns this account, as a string of hex representing the ASCII for the domain in lowercase.
+  // Cannot be more than 256 bytes in length.
+  domain?: string;
+  // An arbitrary 128-bit value. Conventionally, clients treat this as the md5 hash of an email address to use for
+  // displaying a Gravatar image.
+  emailHash?: string;
+  // Public key for sending encrypted messages to this account. To set the key, it must be exactly 33 bytes, with the
+  // first byte indicating the key type: 0x02 or 0x03 for secp256k1 keys, 0xED for Ed25519 keys. To remove the key, use
+  // an empty value.
+  messageKey?: string;
+  // Another account that can mint NFTokens for you.
+  NFTokenMinter?: string;
+  // Integer flag to enable for this account.
+  setFlag?: AccountSetAsfFlags;
+  // The fee to charge when users transfer this account's tokens, represented as billionths of a unit. Cannot be more
+  // than 2000000000 or less than 1000000000, except for the special case 0 meaning no fee.
+  transferRate?: number;
+  // Tick size to use for offers involving a currency issued by this address. The exchange rates of those offers is
+  // rounded to this many significant digits. Valid values are 3 to 15 inclusive, or 0 to disable.
+  tickSize?: number;
+}
+
 export type RequestPayload =
   | AcceptNFTOfferRequest
   | BurnNFTRequest
@@ -210,6 +238,7 @@ export type RequestPayload =
   | WebsiteRequest
   | SendPaymentRequest
   | SendPaymentRequestDeprecated
+  | SetAccountRequest
   | SetTrustlineRequest
   | SetTrustlineRequestDeprecated
   | SignMessageRequest;
@@ -302,6 +331,11 @@ export interface BurnNFTResponse
     hash: string;
   }> {}
 
+export interface SetAccountResponse
+  extends BaseResponse<{
+    hash: string;
+  }> {}
+
 export type ResponsePayload =
   | AcceptNFTOfferResponse
   | BurnNFTResponse
@@ -319,6 +353,7 @@ export type ResponsePayload =
   | MintNFTResponse
   | SendPaymentResponse
   | SendPaymentResponseDeprecated
+  | SetAccountResponse
   | SetTrustlineResponse
   | SetTrustlineResponseDeprecated
   | SignMessageResponse

@@ -25,11 +25,13 @@ import {
   PARAMETER_SHARE_NFT,
   SHARE_NFT_PATH,
   MINT_NFT_PATH,
+  SET_ACCOUNT_PATH,
   PARAMETER_TRANSACTION_ACCEPT_NFT_OFFER,
   PARAMETER_TRANSACTION_BURN_NFT,
   PARAMETER_TRANSACTION_MINT_NFT,
   PARAMETER_TRANSACTION_CANCEL_NFT_OFFER,
-  PARAMETER_TRANSACTION_CREATE_NFT_OFFER
+  PARAMETER_TRANSACTION_CREATE_NFT_OFFER,
+  PARAMETER_TRANSACTION_SET_ACCOUNT
 } from '../../../constants';
 import { useWallet } from '../../../contexts';
 import { useKeyUp } from '../../../hooks/useKeyUp';
@@ -66,6 +68,8 @@ export const Login: FC = () => {
       navigate(`${ACCEPT_NFT_OFFER_PATH}${search}`);
     } else if (search.includes(PARAMETER_TRANSACTION_BURN_NFT)) {
       navigate(`${BURN_NFT_PATH}${search}`);
+    } else if (search.includes(PARAMETER_TRANSACTION_SET_ACCOUNT)) {
+      navigate(`${SET_ACCOUNT_PATH}${search}`);
     } else {
       navigate(`${HOME_PATH}${search}`);
     }

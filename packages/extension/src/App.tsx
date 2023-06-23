@@ -33,6 +33,7 @@ import {
   Login,
   MintNFT,
   ResetPassword,
+  SetAccount,
   SendPayment,
   Settings,
   ShareAddress,
@@ -73,9 +74,11 @@ import {
   PARAMETER_TRANSACTION_CREATE_NFT_OFFER,
   PARAMETER_TRANSACTION_MINT_NFT,
   PARAMETER_TRANSACTION_PAYMENT,
+  PARAMETER_TRANSACTION_SET_ACCOUNT,
   PARAMETER_TRANSACTION_TRUSTLINE,
   RESET_PASSWORD_PATH,
   SEND_PATH,
+  SET_ACCOUNT_PATH,
   SETTINGS_PATH,
   SHARE_NFT_PATH,
   SHARE_PUBLIC_ADDRESS_PATH,
@@ -250,6 +253,12 @@ const App: FC = () => {
         handleTransaction({
           app: GEM_WALLET,
           type: 'RECEIVE_BURN_NFT/V3',
+          payload: defaultPayload
+        });
+      } else if (search.includes(PARAMETER_TRANSACTION_SET_ACCOUNT)) {
+        handleTransaction({
+          app: GEM_WALLET,
+          type: 'RECEIVE_SET_ACCOUNT/V3',
           payload: defaultPayload
         });
       }
@@ -460,6 +469,14 @@ const App: FC = () => {
           element={
             <PrivateRoute>
               <BurnNFT />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path={SET_ACCOUNT_PATH}
+          element={
+            <PrivateRoute>
+              <SetAccount />
             </PrivateRoute>
           }
         />

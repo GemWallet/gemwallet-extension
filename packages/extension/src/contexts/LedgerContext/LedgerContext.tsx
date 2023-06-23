@@ -12,7 +12,8 @@ import {
   NFTokenCreateOffer,
   NFTokenCancelOffer,
   NFTokenAcceptOffer,
-  NFTokenBurn
+  NFTokenBurn,
+  AccountSet
 } from 'xrpl';
 import { BaseTransaction } from 'xrpl/dist/npm/models/transactions/common';
 
@@ -26,7 +27,8 @@ import {
   CreateNFTOfferRequest,
   CancelNFTOfferRequest,
   AcceptNFTOfferRequest,
-  BurnNFTRequest
+  BurnNFTRequest,
+  SetAccountRequest
 } from '@gemwallet/constants';
 
 import { AccountTransaction, WalletLedger } from '../../types';
@@ -65,6 +67,10 @@ interface BurnNFTResponse {
   hash: string;
 }
 
+interface SetAccountResponse {
+  hash: string;
+}
+
 export interface LedgerContextType {
   // Return transaction hash in case of success
   sendPayment: (payload: SendPaymentRequest) => Promise<string>;
@@ -79,6 +85,7 @@ export interface LedgerContextType {
   cancelNFTOffer: (payload: CancelNFTOfferRequest) => Promise<CancelNFTOfferResponse>;
   acceptNFTOffer: (payload: AcceptNFTOfferRequest) => Promise<AcceptNFTOfferResponse>;
   burnNFT: (payload: BurnNFTRequest) => Promise<BurnNFTResponse>;
+  setAccount: (payload: SetAccountRequest) => Promise<SetAccountResponse>;
 }
 
 const LedgerContext = createContext<LedgerContextType>({
@@ -102,7 +109,8 @@ const LedgerContext = createContext<LedgerContextType>({
   createNFTOffer: () => new Promise(() => {}),
   cancelNFTOffer: () => new Promise(() => {}),
   acceptNFTOffer: () => new Promise(() => {}),
-  burnNFT: () => new Promise(() => {})
+  burnNFT: () => new Promise(() => {}),
+  setAccount: () => new Promise(() => {})
 });
 
 const LedgerProvider: FC = ({ children }) => {
@@ -541,6 +549,54 @@ const LedgerProvider: FC = ({ children }) => {
     [client, getCurrentWallet]
   );
 
+  const setAccount = useCallback(
+    async (payload: SetAccountRequest) => {
+      const wallet = getCurrentWallet();
+      if (!client) {
+        throw new Error('You need to be connected to a ledger');
+      } else if (!wallet) {
+        throw new Error('You need to have a wallet connected');
+      } else {
+        try {
+          const tx = await client.submitAndWait(
+            {
+              ...(buildBaseTransaction(payload, wallet, 'AccountSet') as AccountSet),
+              ...(payload.flags && { Flags: payload.flags }),
+              ...(payload.clearFlag && { ClearFlag: payload.clearFlag }),
+              ...(payload.domain && { Domain: payload.domain }),
+              ...(payload.emailHash && { EmailHash: payload.emailHash }),
+              ...(payload.messageKey && { MessageKey: payload.messageKey }),
+              ...(payload.NFTokenMinter && { NFTokenMinter: payload.NFTokenMinter }),
+              ...(payload.setFlag && { SetFlag: payload.setFlag }),
+              ...(payload.transferRate && { TransferRate: payload.transferRate }),
+              ...(payload.tickSize && { TickSize: payload.tickSize })
+            },
+            { wallet: wallet.wallet }
+          );
+
+          if (!tx.result.hash) {
+            throw new Error("Couldn't set the account");
+          }
+
+          if ((tx.result.meta! as TransactionMetadata).TransactionResult !== 'tesSUCCESS') {
+            throw new Error(
+              (tx.result.meta as TransactionMetadata)?.TransactionResult ||
+                "Couldn't set the account but the transaction was successful"
+            );
+          }
+
+          return {
+            hash: tx.result.hash
+          };
+        } catch (e) {
+          Sentry.captureException(e);
+          throw e;
+        }
+      }
+    },
+    [client, getCurrentWallet]
+  );
+
   const buildBaseTransaction = (
     payload: BaseTransactionRequest,
     wallet: WalletLedger,
@@ -552,6 +608,7 @@ const LedgerProvider: FC = ({ children }) => {
       | 'NFTokenCancelOffer'
       | 'NFTokenAcceptOffer'
       | 'NFTokenBurn'
+      | 'AccountSet'
   ): BaseTransaction => ({
     TransactionType: txType,
     Account: wallet.publicAddress,
@@ -579,7 +636,8 @@ const LedgerProvider: FC = ({ children }) => {
     createNFTOffer,
     cancelNFTOffer,
     acceptNFTOffer,
-    burnNFT
+    burnNFT,
+    setAccount
   };
 
   return <LedgerContext.Provider value={value}>{children}</LedgerContext.Provider>;

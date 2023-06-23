@@ -12,6 +12,7 @@ import {
   Memo,
   MintNFTFlags,
   PaymentFlags,
+  SetAccountFlags,
   Signer,
   TrustSetFlags
 } from '@gemwallet/constants';
@@ -201,6 +202,42 @@ export const parseTrustSetFlags = (flagsString: string | null): TrustSetFlags | 
         tfClearNoRipple?: boolean;
         tfSetFreeze?: boolean;
         tfClearFreeze?: boolean;
+      };
+    }
+  } catch (error) {}
+
+  return null;
+};
+
+export const parseSetAccountFlags = (flagsString: string | null): SetAccountFlags | null => {
+  if (!flagsString) {
+    return null;
+  }
+
+  if (Number(flagsString)) {
+    return Number(flagsString);
+  }
+
+  try {
+    const parsedFlags = JSON.parse(flagsString);
+
+    if (
+      typeof parsedFlags === 'object' &&
+      parsedFlags !== null &&
+      ('tfRequireDestTag' in parsedFlags ||
+        'tfOptionalDestTag' in parsedFlags ||
+        'tfRequireAuth' in parsedFlags ||
+        'tfOptionalAuth' in parsedFlags ||
+        'tfDisallowXRP' in parsedFlags ||
+        'tfAllowXRP' in parsedFlags)
+    ) {
+      return parsedFlags as {
+        tfRequireDestTag?: boolean;
+        tfOptionalDestTag?: boolean;
+        tfRequireAuth?: boolean;
+        tfOptionalAuth?: boolean;
+        tfDisallowXRP?: boolean;
+        tfAllowXRP?: boolean;
       };
     }
   } catch (error) {}

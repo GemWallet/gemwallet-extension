@@ -24,6 +24,8 @@ import {
   SendPaymentRequestDeprecated,
   SendPaymentResponse,
   SendPaymentResponseDeprecated,
+  SetAccountResponse,
+  SetAccountRequest,
   SetTrustlineResponse,
   SetTrustlineResponseDeprecated,
   SetTrustlineRequest,
@@ -51,6 +53,7 @@ export type RequestMessage =
   | 'REQUEST_NFT'
   | 'REQUEST_PUBLIC_KEY'
   | 'REQUEST_SEND_PAYMENT/V3'
+  | 'REQUEST_SET_ACCOUNT/V3'
   | 'REQUEST_SET_TRUSTLINE/V3'
   | 'REQUEST_SIGN_MESSAGE'
   | 'REQUEST_SIGN_MESSAGE/V3'
@@ -73,6 +76,7 @@ export type ReceiveMessage =
   | 'RECEIVE_TRUSTLINE_HASH'
   | 'RECEIVE_PUBLIC_KEY'
   | 'RECEIVE_SEND_PAYMENT/V3'
+  | 'RECEIVE_SET_ACCOUNT/V3'
   | 'RECEIVE_SET_TRUSTLINE/V3'
   | 'RECEIVE_SIGN_MESSAGE'
   | 'RECEIVE_SIGN_MESSAGE/V3';
@@ -194,6 +198,12 @@ export interface RequestSignMessageMessageDeprecated {
   payload: SignMessageRequest;
 }
 
+export interface RequestSetAccountMessage {
+  app: typeof GEM_WALLET;
+  type: 'REQUEST_SET_ACCOUNT/V3';
+  payload: SetAccountRequest;
+}
+
 /*
  * Responses
  */
@@ -233,6 +243,7 @@ export type IsInstalledMessagingResponse = MessagingResponse & IsInstalledRespon
 export type SendPaymentMessagingResponse = MessagingResponse & SendPaymentResponse;
 export type SendPaymentMessagingResponseDeprecated = MessagingResponse &
   SendPaymentResponseDeprecated;
+export type SetAccountMessagingResponse = MessagingResponse & SetAccountResponse;
 export type SetTrustlineMessagingResponse = MessagingResponse & SetTrustlineResponse;
 export type SetTrustlineMessagingResponseDeprecated = MessagingResponse &
   SetTrustlineResponseDeprecated;
@@ -352,6 +363,12 @@ export interface ReceiveBurnNFTContentMessage {
   payload: BurnNFTMessagingResponse;
 }
 
+export interface ReceiveSetAccountContentMessage {
+  app: typeof GEM_WALLET;
+  type: 'RECEIVE_SET_ACCOUNT/V3';
+  payload: SetAccountMessagingResponse;
+}
+
 // Background Script Messages
 type BackgroundMessagePayload = {
   payload: {
@@ -415,6 +432,9 @@ export type ReceiveAcceptNFTOfferBackgroundMessage = ReceiveAcceptNFTOfferConten
 export type ReceiveBurnNFTBackgroundMessage = ReceiveBurnNFTContentMessage &
   BackgroundMessagePayload;
 
+export type ReceiveSetAccountBackgroundMessage = ReceiveSetAccountContentMessage &
+  BackgroundMessagePayload;
+
 export type BackgroundMessage =
   // Inputted messages - DO NOT contain ID within the payloads
   | RequestAcceptNFTOfferMessage
@@ -432,6 +452,7 @@ export type BackgroundMessage =
   | RequestMintNFTMessage
   | RequestSendPaymentMessage
   | RequestSendPaymentMessageDeprecated
+  | RequestSetAccountMessage
   | RequestSetTrustlineMessage
   | RequestSetTrustlineMessageDeprecated
   | RequestSignMessageMessage
@@ -450,6 +471,7 @@ export type BackgroundMessage =
   | ReceiveMintNFTBackgroundMessage
   | ReceivePublicKeyBackgroundMessage
   | ReceivePublicKeyBackgroundMessageDeprecated
+  | ReceiveSetAccountBackgroundMessage
   | ReceiveSendPaymentBackgroundMessage
   | ReceiveSendPaymentBackgroundMessageDeprecated
   | ReceiveSetTrustlineBackgroundMessage
@@ -475,5 +497,6 @@ export type APIMessages =
   | RequestMintNFTMessage
   | RequestIsInstalledMessage
   | RequestSendPaymentMessage
+  | RequestSetAccountMessage
   | RequestSetTrustlineMessage
   | RequestSignMessageMessage;

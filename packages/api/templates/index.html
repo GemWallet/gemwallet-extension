@@ -22,6 +22,7 @@
       <button onclick="handleGetAddress()">Get Address (check the console)</button>
       <button onclick="handleGetNetwork()">Get Network (check the console)</button>
       <button onclick="handleSignMessage()">Sign message</button>
+      <button onclick="handleSetAccount()">Set Account (check the console)</button>
       <div id="address"></div>
     </div>
   </body>
@@ -362,6 +363,39 @@
           };
 
           GemWalletApi.burnNFT(transaction)
+            .then((res) => {
+              console.log('Received response: ', res);
+            })
+            .catch((e) => {
+              console.error('Cannot proceed the transaction: ', e);
+            });
+        }
+      })
+      .catch((e) => {
+        console.error('GemWallet is not connected: ', e);
+      });
+  }
+  function handleSetAccount() {
+    GemWalletApi.isInstalled()
+      .then(({ result }) => {
+        if (result.isInstalled) {
+          const transaction = {
+            emailHash: '1D1382344586ECFF844DACFF698C2EFB',
+            fee: '199',
+            flags: {
+              tfAllowXRP: true
+            },
+            memos: [
+              {
+                memo: {
+                  memoType: '4465736372697074696f6e',
+                  memoData: '54657374206d656d6f'
+                }
+              }
+            ]
+          };
+
+          GemWalletApi.setAccount(transaction)
             .then((res) => {
               console.log('Received response: ', res);
             })

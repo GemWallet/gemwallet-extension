@@ -5,6 +5,7 @@ import {
   CreateNFTOfferFlags,
   MintNFTFlags,
   PaymentFlags,
+  SetAccountFlags,
   TrustSetFlags
 } from '@gemwallet/constants';
 
@@ -43,7 +44,7 @@ export const formatToken = (value: number, currency: string = 'XRP', isDrops = f
 };
 
 export const formatFlags = (
-  flags: PaymentFlags | TrustSetFlags | MintNFTFlags | CreateNFTOfferFlags
+  flags: PaymentFlags | TrustSetFlags | MintNFTFlags | CreateNFTOfferFlags | SetAccountFlags
 ) => {
   if (typeof flags === 'object') {
     return Object.entries(flags)
