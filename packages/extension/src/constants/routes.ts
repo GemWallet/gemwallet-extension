@@ -1,5 +1,6 @@
 export const MAIN_FILE = '/index.html';
 export const ABOUT_PATH = '/about';
+export const ACCEPT_NFT_OFFER_PATH = '/accept-nft-offer';
 export const ADD_NEW_WALLET_PATH = '/add-new-wallet';
 export const ADD_NEW_TRUSTLINE_PATH = '/add-new-trustline';
 export const CREATE_NEW_WALLET_PATH = '/create-new-wallet';

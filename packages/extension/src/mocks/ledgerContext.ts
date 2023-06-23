@@ -10,5 +10,6 @@ export const valueLedgerContext: LedgerContextType = {
   fundWallet: jest.fn(),
   mintNFT: jest.fn(),
   createNFTOffer: jest.fn(),
-  cancelNFTOffer: jest.fn()
+  cancelNFTOffer: jest.fn(),
+  acceptNFTOffer: jest.fn()
 };
