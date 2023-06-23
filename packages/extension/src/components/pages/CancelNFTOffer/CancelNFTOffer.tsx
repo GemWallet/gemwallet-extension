@@ -178,7 +178,10 @@ export const CancelNFTOffer: FC = () => {
       {transactionStatusComponent ? (
         <div>{transactionStatusComponent}</div>
       ) : (
-        <PageWithTitle title="Confirm Transaction">
+        <PageWithTitle
+          title="Confirm Transaction"
+          styles={{ container: { justifyContent: 'initial' } }}
+        >
           {!hasEnoughFunds ? (
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
               <ErrorIcon style={{ color: ERROR_RED }} />
