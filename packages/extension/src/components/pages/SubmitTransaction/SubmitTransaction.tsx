@@ -6,7 +6,7 @@ import { Transaction } from 'xrpl';
 
 import {
   GEM_WALLET,
-  ReceiveSignTransactionBackgroundMessage,
+  ReceiveSubmitTransactionBackgroundMessage,
   ResponseType
 } from '@gemwallet/constants';
 
@@ -21,20 +21,20 @@ import { PageWithTitle } from '../../templates';
 
 interface Params {
   id: number;
-  // SignTransaction fields
+  // SubmitTransaction fields
   txParam: Transaction | null;
 }
 
-export const SignTransaction: FC = () => {
+export const SubmitTransaction: FC = () => {
   const [params, setParams] = useState<Params>({
     id: 0,
-    // SignTransaction fields
+    // SubmitTransaction fields
     txParam: null
   });
   const [errorRequestRejection, setErrorRequestRejection] = useState<string>('');
   const [isParamsMissing, setIsParamsMissing] = useState(false);
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
-  const { signTransaction } = useLedger();
+  const { submitTransaction } = useLedger();
   const { network } = useNetwork();
   const { estimatedFees, errorFees, difference, errorDifference } = useFees(
     params.txParam ?? {
@@ -57,24 +57,21 @@ export const SignTransaction: FC = () => {
   const createMessage = useCallback(
     (messagePayload: {
       hash: string | null | undefined;
-      signedTransaction: string | null | undefined;
       error?: Error;
-    }): ReceiveSignTransactionBackgroundMessage => {
-      const { hash, signedTransaction, error } = messagePayload;
+    }): ReceiveSubmitTransactionBackgroundMessage => {
+      const { hash, error } = messagePayload;
 
       return {
         app: GEM_WALLET,
-        type: 'RECEIVE_SIGN_TRANSACTION/V3',
+        type: 'RECEIVE_SUBMIT_TRANSACTION/V3',
         payload: {
           id: params.id,
           type: ResponseType.Response,
-          result:
-            signedTransaction && hash
-              ? {
-                  hash: hash,
-                  signedTransaction: signedTransaction
-                }
-              : undefined,
+          result: hash
+            ? {
+                hash: hash
+              }
+            : undefined,
           error: error ? serializeError(error) : undefined
         }
       };
@@ -101,23 +98,22 @@ export const SignTransaction: FC = () => {
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);
     const message = createMessage({
-      hash: null,
-      signedTransaction: null
+      hash: null
     });
-    chrome.runtime.sendMessage<ReceiveSignTransactionBackgroundMessage>(message);
+    chrome.runtime.sendMessage<ReceiveSubmitTransactionBackgroundMessage>(message);
   }, [createMessage]);
 
   const handleConfirm = useCallback(() => {
     setTransaction(TransactionStatus.Pending);
     // txParam will be present because if not,
     // we won't be able to go to the confirm transaction state
-    signTransaction({
-      // SignTransaction fields
+    submitTransaction({
+      // SubmitTransaction fields
       transaction: params.txParam as Transaction
     })
       .then((response) => {
         setTransaction(TransactionStatus.Success);
-        chrome.runtime.sendMessage<ReceiveSignTransactionBackgroundMessage>(
+        chrome.runtime.sendMessage<ReceiveSubmitTransactionBackgroundMessage>(
           createMessage(response)
         );
       })
@@ -126,12 +122,11 @@ export const SignTransaction: FC = () => {
         setTransaction(TransactionStatus.Rejected);
         const message = createMessage({
           hash: undefined,
-          signedTransaction: undefined,
           error: e
         });
-        chrome.runtime.sendMessage<ReceiveSignTransactionBackgroundMessage>(message);
+        chrome.runtime.sendMessage<ReceiveSubmitTransactionBackgroundMessage>(message);
       });
-  }, [signTransaction, params, createMessage]);
+  }, [submitTransaction, params, createMessage]);
 
   const { txParam } = params;
 

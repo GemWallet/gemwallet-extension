@@ -247,7 +247,7 @@ export interface CancelOfferRequest extends BaseTransactionRequest {
   offerSequence: number;
 }
 
-export interface SignTransactionRequest {
+export interface SubmitTransactionRequest {
   transaction: Transaction;
 }
 
@@ -268,7 +268,7 @@ export type RequestPayload =
   | SetTrustlineRequest
   | SetTrustlineRequestDeprecated
   | SignMessageRequest
-  | SignTransactionRequest;
+  | SubmitTransactionRequest;
 
 /*
  * Response Payloads
@@ -309,10 +309,9 @@ export interface SignMessageResponseDeprecated {
   signedMessage: string | null | undefined;
 }
 
-export interface SignTransactionResponse
+export interface SubmitTransactionResponse
   extends BaseResponse<{
     hash: string;
-    signedTransaction: string;
   }> {}
 
 export interface IsInstalledResponse {
@@ -403,4 +402,4 @@ export type ResponsePayload =
   | SetTrustlineResponseDeprecated
   | SignMessageResponse
   | SignMessageResponseDeprecated
-  | SignTransactionResponse;
+  | SubmitTransactionResponse;

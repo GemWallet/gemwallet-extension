@@ -29,8 +29,8 @@ import {
   PARAMETER_TRANSACTION_ACCEPT_NFT_OFFER,
   PARAMETER_TRANSACTION_BURN_NFT,
   PARAMETER_TRANSACTION_MINT_NFT,
-  PARAMETER_SIGN_TRANSACTION,
-  SIGN_TRANSACTION_PATH,
+  PARAMETER_SUBMIT_TRANSACTION,
+  SUBMIT_TRANSACTION_PATH,
   PARAMETER_TRANSACTION_CANCEL_NFT_OFFER,
   PARAMETER_TRANSACTION_CANCEL_OFFER,
   PARAMETER_TRANSACTION_CREATE_NFT_OFFER,
@@ -60,8 +60,8 @@ export const Login: FC = () => {
       navigate(`${SHARE_PUBLIC_KEY_PATH}${search}`);
     } else if (search.includes(PARAMETER_SIGN_MESSAGE)) {
       navigate(`${SIGN_MESSAGE_PATH}${search}`);
-    } else if (search.includes(PARAMETER_SIGN_TRANSACTION)) {
-      navigate(`${SIGN_TRANSACTION_PATH}${search}`);
+    } else if (search.includes(PARAMETER_SUBMIT_TRANSACTION)) {
+      navigate(`${SUBMIT_TRANSACTION_PATH}${search}`);
     } else if (search.includes(PARAMETER_TRANSACTION_TRUSTLINE)) {
       navigate(`${ADD_NEW_TRUSTLINE_PATH}${search}`);
     } else if (search.includes(PARAMETER_SHARE_NFT)) {

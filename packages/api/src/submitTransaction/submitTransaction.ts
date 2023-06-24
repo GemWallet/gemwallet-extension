@@ -1,22 +1,22 @@
 import {
   GEM_WALLET,
-  SignTransactionResponse,
-  RequestSignTransactionMessage,
+  SubmitTransactionResponse,
+  RequestSubmitTransactionMessage,
   ResponseType,
-  SignTransactionRequest
+  SubmitTransactionRequest
 } from '@gemwallet/constants';
 
 import { deserializeError } from '../helpers/errors';
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
 
-export const signTransaction = async (
-  payload: SignTransactionRequest
-): Promise<SignTransactionResponse> => {
+export const submitTransaction = async (
+  payload: SubmitTransactionRequest
+): Promise<SubmitTransactionResponse> => {
   /* response:
    * if the transaction succeeds:
    * - type: 'response'
    * - result:
-   *    - signedTransaction: signed transaction
+   *    - hash: transaction hash
    *
    * if the user rejects the transaction:
    * - type: 'reject'
@@ -25,15 +25,15 @@ export const signTransaction = async (
    * if the transaction fails:
    * - throw an error
    */
-  let response: SignTransactionResponse = {
+  let response: SubmitTransactionResponse = {
     type: ResponseType.Reject,
     result: undefined
   };
 
   try {
-    const message: RequestSignTransactionMessage = {
+    const message: RequestSubmitTransactionMessage = {
       app: GEM_WALLET,
-      type: 'REQUEST_SIGN_TRANSACTION/V3',
+      type: 'REQUEST_SUBMIT_TRANSACTION/V3',
       payload
     };
     const { result, error } = await sendMessageToContentScript(message);

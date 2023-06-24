@@ -34,7 +34,7 @@ import {
   BurnNFTRequest,
   SetAccountRequest,
   CancelOfferRequest,
-  SignTransactionRequest
+  SubmitTransactionRequest
 } from '@gemwallet/constants';
 
 import { AccountTransaction, WalletLedger } from '../../types';
@@ -85,9 +85,8 @@ interface CancelOfferResponse {
   hash: string;
 }
 
-interface SignTransactionResponse {
+interface SubmitTransactionResponse {
   hash: string;
-  signedTransaction: string;
 }
 
 export interface LedgerContextType {
@@ -107,7 +106,7 @@ export interface LedgerContextType {
   setAccount: (payload: SetAccountRequest) => Promise<SetAccountResponse>;
   createOffer: (payload: CreateOfferRequest) => Promise<CreateOfferResponse>;
   cancelOffer: (payload: CancelOfferRequest) => Promise<CancelOfferResponse>;
-  signTransaction: (payload: SignTransactionRequest) => Promise<SignTransactionResponse>;
+  submitTransaction: (payload: SubmitTransactionRequest) => Promise<SubmitTransactionResponse>;
 }
 
 const LedgerContext = createContext<LedgerContextType>({
@@ -135,7 +134,7 @@ const LedgerContext = createContext<LedgerContextType>({
   setAccount: () => new Promise(() => {}),
   createOffer: () => new Promise(() => {}),
   cancelOffer: () => new Promise(() => {}),
-  signTransaction: () => new Promise(() => {})
+  submitTransaction: () => new Promise(() => {})
 });
 
 const LedgerProvider: FC = ({ children }) => {
@@ -706,8 +705,8 @@ const LedgerProvider: FC = ({ children }) => {
     [client, getCurrentWallet]
   );
 
-  const signTransaction = useCallback(
-    async (payload: SignTransactionRequest) => {
+  const submitTransaction = useCallback(
+    async (payload: SubmitTransactionRequest) => {
       const wallet = getCurrentWallet();
       if (!client) {
         throw new Error('You need to be connected to a ledger');
@@ -741,8 +740,7 @@ const LedgerProvider: FC = ({ children }) => {
           }
 
           return {
-            hash: tx.result.hash,
-            signedTransaction: signed.tx_blob
+            hash: tx.result.hash
           };
         } catch (e) {
           Sentry.captureException(e);
@@ -798,7 +796,7 @@ const LedgerProvider: FC = ({ children }) => {
     setAccount,
     createOffer,
     cancelOffer,
-    signTransaction
+    submitTransaction
   };
 
   return <LedgerContext.Provider value={value}>{children}</LedgerContext.Provider>;

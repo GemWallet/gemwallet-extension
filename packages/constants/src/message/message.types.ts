@@ -37,8 +37,8 @@ import {
   SignMessageResponse,
   SignMessageResponseDeprecated,
   SignMessageRequest,
-  SignTransactionResponse,
-  SignTransactionRequest,
+  SubmitTransactionResponse,
+  SubmitTransactionRequest,
   WebsiteRequest
 } from '../payload/payload.types';
 
@@ -65,7 +65,7 @@ export type RequestMessage =
   | 'REQUEST_SET_TRUSTLINE/V3'
   | 'REQUEST_SIGN_MESSAGE'
   | 'REQUEST_SIGN_MESSAGE/V3'
-  | 'REQUEST_SIGN_TRANSACTION/V3'
+  | 'REQUEST_SUBMIT_TRANSACTION/V3'
   | 'SEND_PAYMENT';
 
 export type ReceiveMessage =
@@ -91,7 +91,7 @@ export type ReceiveMessage =
   | 'RECEIVE_SET_TRUSTLINE/V3'
   | 'RECEIVE_SIGN_MESSAGE'
   | 'RECEIVE_SIGN_MESSAGE/V3'
-  | 'RECEIVE_SIGN_TRANSACTION/V3';
+  | 'RECEIVE_SUBMIT_TRANSACTION/V3';
 
 export type SourceMessage = 'GEM_WALLET_MSG_REQUEST' | 'GEM_WALLET_MSG_RESPONSE';
 
@@ -228,10 +228,10 @@ export interface RequestCancelOfferMessage {
   payload: CancelOfferRequest;
 }
 
-export interface RequestSignTransactionMessage {
+export interface RequestSubmitTransactionMessage {
   app: typeof GEM_WALLET;
-  type: 'REQUEST_SIGN_TRANSACTION/V3';
-  payload: SignTransactionRequest;
+  type: 'REQUEST_SUBMIT_TRANSACTION/V3';
+  payload: SubmitTransactionRequest;
 }
 
 /*
@@ -271,7 +271,7 @@ export type MintNFTMessagingResponse = MessagingResponse & MintNFTResponse;
 export type SignMessageMessagingResponse = MessagingResponse & SignMessageResponse;
 export type SignMessageMessagingResponseDeprecated = MessagingResponse &
   SignMessageResponseDeprecated;
-export type SignTransactionMessagingResponse = MessagingResponse & SignTransactionResponse;
+export type SubmitTransactionMessagingResponse = MessagingResponse & SubmitTransactionResponse;
 export type IsInstalledMessagingResponse = MessagingResponse & IsInstalledResponse;
 export type SendPaymentMessagingResponse = MessagingResponse & SendPaymentResponse;
 export type SendPaymentMessagingResponseDeprecated = MessagingResponse &
@@ -414,10 +414,10 @@ export interface ReceiveCancelOfferContentMessage {
   payload: CancelOfferMessagingResponse;
 }
 
-export interface ReceiveSignTransactionContentMessage {
+export interface ReceiveSubmitTransactionContentMessage {
   app: typeof GEM_WALLET;
-  type: 'RECEIVE_SIGN_TRANSACTION/V3';
-  payload: SignTransactionMessagingResponse;
+  type: 'RECEIVE_SUBMIT_TRANSACTION/V3';
+  payload: SubmitTransactionMessagingResponse;
 }
 
 // Background Script Messages
@@ -492,7 +492,7 @@ export type ReceiveCreateOfferBackgroundMessage = ReceiveCreateOfferContentMessa
 export type ReceiveCancelOfferBackgroundMessage = ReceiveCancelOfferContentMessage &
   BackgroundMessagePayload;
 
-export type ReceiveSignTransactionBackgroundMessage = ReceiveSignTransactionContentMessage &
+export type ReceiveSubmitTransactionBackgroundMessage = ReceiveSubmitTransactionContentMessage &
   BackgroundMessagePayload;
 
 export type BackgroundMessage =
@@ -519,7 +519,7 @@ export type BackgroundMessage =
   | RequestSetTrustlineMessageDeprecated
   | RequestSignMessageMessage
   | RequestSignMessageMessageDeprecated
-  | RequestSignTransactionMessage
+  | RequestSubmitTransactionMessage
   // Outputted Messages - DO contain ID within the payloads
   | ReceiveAcceptNFTOfferBackgroundMessage
   | ReceiveBurnNFTBackgroundMessage
@@ -543,7 +543,7 @@ export type BackgroundMessage =
   | ReceiveSetTrustlineBackgroundMessageDeprecated
   | ReceiveSignMessageBackgroundMessage
   | ReceiveSignMessageBackgroundMessageDeprecated
-  | ReceiveSignTransactionBackgroundMessage;
+  | ReceiveSubmitTransactionBackgroundMessage;
 
 // API Messages
 export interface RequestIsInstalledMessage {
@@ -568,4 +568,4 @@ export type APIMessages =
   | RequestSetAccountMessage
   | RequestSetTrustlineMessage
   | RequestSignMessageMessage
-  | RequestSignTransactionMessage;
+  | RequestSubmitTransactionMessage;

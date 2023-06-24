@@ -1,4 +1,4 @@
-describe('Sign Transaction', () => {
+describe('Submit Transaction', () => {
   // deepcode ignore NoHardcodedPasswords: password used for testing purposes
   const PASSWORD = 'SECRET_PASSWORD';
 
@@ -13,8 +13,8 @@ describe('Sign Transaction', () => {
     });
   });
 
-  it('Sign Transaction', () => {
-    const url = `http://localhost:3000?sign-transaction&transaction=%7B%22TransactionType%22%3A%22Payment%22%2C%22Account%22%3A%22rwxXLNSXjSXfvAu7AgDVaD3gWWYJpmNXdc%22%2C%22Destination%22%3A%22rhikRdkFw28csKw9z7fVoBjWncz1HSoQij%22%2C%22Amount%22%3A%22100000%22%7D&id=210329246&requestMessage=undefined&sign=transaction`;
+  it('Submit Transaction', () => {
+    const url = `http://localhost:3000?submit-transaction&transaction=%7B%22TransactionType%22%3A%22Payment%22%2C%22Account%22%3A%22rwxXLNSXjSXfvAu7AgDVaD3gWWYJpmNXdc%22%2C%22Destination%22%3A%22rhikRdkFw28csKw9z7fVoBjWncz1HSoQij%22%2C%22Amount%22%3A%22100000%22%7D&id=210329246&requestMessage=undefined&submit=transaction`;
     navigate(url, PASSWORD);
 
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Confirm Transaction');
