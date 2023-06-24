@@ -30,10 +30,12 @@ import {
   PARAMETER_TRANSACTION_BURN_NFT,
   PARAMETER_TRANSACTION_MINT_NFT,
   PARAMETER_TRANSACTION_CANCEL_NFT_OFFER,
+  PARAMETER_TRANSACTION_CANCEL_OFFER,
   PARAMETER_TRANSACTION_CREATE_NFT_OFFER,
   PARAMETER_TRANSACTION_CREATE_OFFER,
   PARAMETER_TRANSACTION_SET_ACCOUNT,
-  CREATE_OFFER_PATH
+  CREATE_OFFER_PATH,
+  CANCEL_OFFER_PATH
 } from '../../../constants';
 import { useWallet } from '../../../contexts';
 import { useKeyUp } from '../../../hooks/useKeyUp';
@@ -74,6 +76,8 @@ export const Login: FC = () => {
       navigate(`${SET_ACCOUNT_PATH}${search}`);
     } else if (search.includes(PARAMETER_TRANSACTION_CREATE_OFFER)) {
       navigate(`${CREATE_OFFER_PATH}${search}`);
+    } else if (search.includes(PARAMETER_TRANSACTION_CANCEL_OFFER)) {
+      navigate(`${CANCEL_OFFER_PATH}${search}`);
     } else {
       navigate(`${HOME_PATH}${search}`);
     }

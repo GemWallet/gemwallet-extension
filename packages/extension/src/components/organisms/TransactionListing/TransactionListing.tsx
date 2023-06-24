@@ -303,6 +303,9 @@ export const TransactionListing: FC<TransactionListingProps> = ({ transactions }
               <ListItem style={{ padding: '8px 24px' }}>
                 <ListItemText primary="Ledger Index" secondary={transaction.tx?.ledger_index} />
               </ListItem>
+              <ListItem style={{ padding: '8px 24px' }}>
+                <ListItemText primary="Sequence" secondary={transaction.tx?.Sequence} />
+              </ListItem>
             </List>
           </Dialog>
         </div>

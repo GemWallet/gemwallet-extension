@@ -6,6 +6,8 @@ import {
   BurnNFTResponse,
   CancelNFTOfferRequest,
   CancelNFTOfferResponse,
+  CancelOfferRequest,
+  CancelOfferResponse,
   CreateNFTOfferRequest,
   CreateNFTOfferResponse,
   CreateOfferRequest,
@@ -45,6 +47,7 @@ export type RequestMessage =
   | 'REQUEST_BURN_NFT/V3'
   | 'REQUEST_CONNECTION'
   | 'REQUEST_CANCEL_NFT_OFFER/V3'
+  | 'REQUEST_CANCEL_OFFER/V3'
   | 'REQUEST_CREATE_NFT_OFFER/V3'
   | 'REQUEST_CREATE_OFFER/V3'
   | 'REQUEST_GET_ADDRESS/V3'
@@ -67,6 +70,7 @@ export type ReceiveMessage =
   | 'RECEIVE_ADDRESS'
   | 'RECEIVE_BURN_NFT/V3'
   | 'RECEIVE_CANCEL_NFT_OFFER/V3'
+  | 'RECEIVE_CANCEL_OFFER/V3'
   | 'RECEIVE_CREATE_NFT_OFFER/V3'
   | 'RECEIVE_CREATE_OFFER/V3'
   | 'RECEIVE_GET_ADDRESS/V3'
@@ -214,6 +218,12 @@ export interface RequestCreateOfferMessage {
   payload: CreateOfferRequest;
 }
 
+export interface RequestCancelOfferMessage {
+  app: typeof GEM_WALLET;
+  type: 'REQUEST_CANCEL_OFFER/V3';
+  payload: CancelOfferRequest;
+}
+
 /*
  * Responses
  */
@@ -233,6 +243,7 @@ export interface MessagingError {
 export type AcceptNFTOfferMessagingResponse = MessagingResponse & AcceptNFTOfferResponse;
 export type BurnNFTMessagingResponse = MessagingResponse & BurnNFTResponse;
 export type CancelNFTOfferMessagingResponse = MessagingResponse & CancelNFTOfferResponse;
+export type CancelOfferMessagingResponse = MessagingResponse & CancelOfferResponse;
 export type CreateNFTOfferMessagingResponse = MessagingResponse & CreateNFTOfferResponse;
 export type CreateOfferMessagingResponse = MessagingResponse & CreateOfferResponse;
 export type GetNetworkMessagingResponse = MessagingResponse & GetNetworkResponse;
@@ -386,6 +397,12 @@ export interface ReceiveCreateOfferContentMessage {
   payload: CreateOfferMessagingResponse;
 }
 
+export interface ReceiveCancelOfferContentMessage {
+  app: typeof GEM_WALLET;
+  type: 'RECEIVE_CANCEL_OFFER/V3';
+  payload: CancelOfferMessagingResponse;
+}
+
 // Background Script Messages
 type BackgroundMessagePayload = {
   payload: {
@@ -455,11 +472,15 @@ export type ReceiveSetAccountBackgroundMessage = ReceiveSetAccountContentMessage
 export type ReceiveCreateOfferBackgroundMessage = ReceiveCreateOfferContentMessage &
   BackgroundMessagePayload;
 
+export type ReceiveCancelOfferBackgroundMessage = ReceiveCancelOfferContentMessage &
+  BackgroundMessagePayload;
+
 export type BackgroundMessage =
   // Inputted messages - DO NOT contain ID within the payloads
   | RequestAcceptNFTOfferMessage
   | RequestBurnNFTMessage
   | RequestCancelNFTOfferMessage
+  | RequestCancelOfferMessage
   | RequestCreateNFTOfferMessage
   | RequestCreateOfferMessage
   | RequestGetAddressMessage
@@ -482,6 +503,7 @@ export type BackgroundMessage =
   | ReceiveAcceptNFTOfferBackgroundMessage
   | ReceiveBurnNFTBackgroundMessage
   | ReceiveCancelNFTOfferBackgroundMessage
+  | ReceiveCancelOfferBackgroundMessage
   | ReceiveCreateNFTOfferBackgroundMessage
   | ReceiveCreateOfferBackgroundMessage
   | ReceiveGetAddressBackgroundMessage
@@ -511,6 +533,7 @@ export type APIMessages =
   | RequestAcceptNFTOfferMessage
   | RequestBurnNFTMessage
   | RequestCancelNFTOfferMessage
+  | RequestCancelOfferMessage
   | RequestCreateNFTOfferMessage
   | RequestCreateOfferMessage
   | RequestGetAddressMessage

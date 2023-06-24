@@ -6,6 +6,8 @@ import {
   BurnNFTMessagingResponse,
   CancelNFTOfferEventListener,
   CancelNFTOfferMessagingResponse,
+  CancelOfferEventListener,
+  CancelOfferMessagingResponse,
   CreateNFTOfferEventListener,
   CreateNFTOfferMessagingResponse,
   CreateOfferMessagingResponse,
@@ -30,6 +32,7 @@ import {
   ReceiveAcceptNFTOfferContentMessage,
   ReceiveBurnNFTContentMessage,
   ReceiveCancelNFTOfferContentMessage,
+  ReceiveCancelOfferContentMessage,
   ReceiveCreateNFTOfferContentMessage,
   ReceiveCreateOfferContentMessage,
   ReceiveMintNFTContentMessage,
@@ -51,6 +54,7 @@ import {
   RequestAcceptNFTOfferMessage,
   RequestBurnNFTMessage,
   RequestCancelNFTOfferMessage,
+  RequestCancelOfferMessage,
   RequestCreateNFTOfferMessage,
   RequestCreateOfferMessage,
   RequestMintNFTMessage,
@@ -835,6 +839,42 @@ setTimeout(() => {
                       result,
                       error
                     } as CreateOfferMessagingResponse,
+                    window.location.origin
+                  );
+                  chrome.runtime.onMessage.removeListener(messageListener);
+                }
+              }
+            };
+            chrome.runtime.onMessage.addListener(messageListener);
+          }
+        );
+      } else if (type === 'REQUEST_CANCEL_OFFER/V3') {
+        const {
+          data: { payload }
+        } = event as CancelOfferEventListener;
+        chrome.runtime.sendMessage<RequestCancelOfferMessage>(
+          {
+            app,
+            type,
+            payload
+          },
+          () => {
+            const messageListener = (
+              message: ReceiveCancelOfferContentMessage,
+              sender: chrome.runtime.MessageSender
+            ) => {
+              const { app, type, payload } = message;
+              // We make sure that the message comes from GemWallet
+              if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
+                if (type === 'RECEIVE_CANCEL_OFFER/V3') {
+                  const { result, error } = payload;
+                  window.postMessage(
+                    {
+                      source: 'GEM_WALLET_MSG_RESPONSE',
+                      messagedId,
+                      result,
+                      error
+                    } as CancelOfferMessagingResponse,
                     window.location.origin
                   );
                   chrome.runtime.onMessage.removeListener(messageListener);
