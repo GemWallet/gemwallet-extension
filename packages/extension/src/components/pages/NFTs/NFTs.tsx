@@ -3,7 +3,7 @@ import { FC, useContext, useEffect, useState } from 'react';
 import { AccountNFTokenResponse } from '@gemwallet/constants';
 
 import { LedgerContext } from '../../../contexts';
-import { NFTListing } from '../../organisms/NFTListing';
+import { NFTListing } from '../../organisms';
 import { PageWithHeader } from '../../templates';
 
 export const MAX_FETCHED_NFTS = 20;

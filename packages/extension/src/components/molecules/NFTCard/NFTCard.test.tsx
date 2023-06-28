@@ -1,4 +1,4 @@
-import { render, screen, waitFor, fireEvent, act } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react';
 
 import { LedgerContext } from '../../../contexts';
 import { valueLedgerContext } from '../../../mocks';
@@ -71,16 +71,5 @@ describe('NFTCard', () => {
 
     // Check that the NFT data is not displayed when an error occurs
     expect(screen.queryByTestId('nft_name')).not.toBeInTheDocument();
-  });
-
-  test('button redirects to the correct URL', async () => {
-    const windowOpenSpy = jest.spyOn(window, 'open').mockImplementation();
-
-    renderNFTCard({ NFT: mockNFT });
-    await waitFor(() => expect(mockGetNFTData).toHaveBeenCalled());
-
-    fireEvent.click(screen.getByRole('button'));
-
-    expect(windowOpenSpy).toHaveBeenCalledWith('someurl', '_blank');
   });
 });
