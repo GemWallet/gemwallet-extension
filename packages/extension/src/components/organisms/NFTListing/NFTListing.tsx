@@ -6,14 +6,14 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import { AccountNFTokenResponse } from '@gemwallet/constants';
 
 import { InformationMessage } from '../../molecules';
-import { NftCard } from '../../molecules/NftCard';
+import { NFTCard } from '../../molecules/NFTCard';
 
-export interface NftListingProps extends AccountNFTokenResponse {
+export interface NFTListingProps extends AccountNFTokenResponse {
   onLoadMoreClick: () => void;
   loading: boolean;
 }
 
-export const NftListing: FC<NftListingProps> = ({ loading, account_nfts, onLoadMoreClick }) => {
+export const NFTListing: FC<NFTListingProps> = ({ loading, account_nfts, onLoadMoreClick }) => {
   if (account_nfts.length === 0 && !loading) {
     return (
       <InformationMessage title="No NFTs to show">
@@ -32,7 +32,7 @@ export const NftListing: FC<NftListingProps> = ({ loading, account_nfts, onLoadM
     >
       <List dense>
         {account_nfts.map((nft) => (
-          <NftCard key={nft.NFTokenID} nft={nft} />
+          <NFTCard key={nft.NFTokenID} nft={nft} />
         ))}
       </List>
     </InfiniteScroll>

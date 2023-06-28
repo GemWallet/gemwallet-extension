@@ -1,7 +1,7 @@
 import { render, screen, waitFor, fireEvent, act } from '@testing-library/react';
 
 import { LedgerContext, LedgerContextType } from '../../../contexts';
-import { NftCard, NftCardProps } from './NftCard';
+import { NFTCard, NftCardProps } from './NftCard';
 
 const mockNft = {
   Flags: 11,
@@ -40,7 +40,7 @@ const renderNftCard = (props: NftCardProps) => {
   act(() => {
     render(
       <LedgerContext.Provider value={mockContext}>
-        <NftCard {...props} />
+        <NFTCard {...props} />
       </LedgerContext.Provider>
     );
   });

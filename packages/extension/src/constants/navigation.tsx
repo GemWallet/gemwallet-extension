@@ -17,7 +17,7 @@ export const navigation = [
     icon: <HistoryIcon />
   },
   {
-    label: 'Nfts',
+    label: 'NFTs',
     pathname: NFTS_PATH,
     icon: <PhotoCameraBackIcon />
   },

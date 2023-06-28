@@ -12,7 +12,7 @@ export interface NftCardProps {
   nft: AccountNFToken;
 }
 
-export const NftCard: FC<NftCardProps> = ({ nft }) => {
+export const NFTCard: FC<NftCardProps> = ({ nft }) => {
   const { getNFTData } = useContext(LedgerContext);
   const [nftData, setNftData] = useState<NFTData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -21,7 +21,7 @@ export const NftCard: FC<NftCardProps> = ({ nft }) => {
     const fetchNftImg = async () => {
       try {
         setLoading(true);
-        const nftData = await getNFTData({ nft });
+        const nftData = await getNFTData({ NFT: nft });
         setNftData(nftData);
       } catch (error) {
         setNftData(null);

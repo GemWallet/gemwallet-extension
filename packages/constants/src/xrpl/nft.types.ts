@@ -9,7 +9,7 @@ export interface AccountNFToken {
 
 export interface AccountNFTokenResponse {
   account_nfts: AccountNFToken[];
-  marker: unknown;
+  marker?: unknown;
 }
 
 export interface NFTData {

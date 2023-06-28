@@ -3,7 +3,7 @@ import { FC, useContext, useEffect, useState } from 'react';
 import { AccountNFTokenResponse } from '@gemwallet/constants';
 
 import { LedgerContext } from '../../../contexts';
-import { NftListing } from '../../organisms/NftListing';
+import { NFTListing } from '../../organisms/NFTListing';
 import { PageWithHeader } from '../../templates';
 
 const initalState = {
@@ -12,44 +12,49 @@ const initalState = {
   loading: false
 };
 
-interface NftsProps extends AccountNFTokenResponse {
+interface NFTsProps extends AccountNFTokenResponse {
   loading: boolean;
 }
 
-export const Nfts: FC = () => {
+export const NFTs: FC = () => {
   const { getNFTs } = useContext(LedgerContext);
 
-  const [nfts, setNfts] = useState<NftsProps>(initalState);
+  const [NFTs, setNFTs] = useState<NFTsProps>(initalState);
 
-  const fetchNfts = async () => {
+  const fetchNFTs = async () => {
     try {
       const payload = {
         limit: 20,
-        marker: nfts.marker ?? undefined
+        marker: NFTs.marker ?? undefined
       };
 
-      setNfts({ ...nfts, loading: true });
+      setNFTs({ ...NFTs, loading: true });
 
       const response = await getNFTs(payload);
 
-      setNfts({
+      setNFTs({
         marker: response.marker,
-        account_nfts: nfts.account_nfts.concat(response.account_nfts),
+        account_nfts: NFTs.account_nfts.concat(response.account_nfts),
         loading: false
       });
     } catch (error) {
-      setNfts(initalState);
+      setNFTs(initalState);
     }
   };
 
   useEffect(() => {
-    fetchNfts();
+    fetchNFTs();
     // eslint-disable-next-line react-hooks/exhaustive-deps -- we only want to fetch once
   }, []);
 
   return (
     <PageWithHeader>
-      <NftListing {...{ ...nfts, onLoadMoreClick: fetchNfts }} />
+      <NFTListing
+        {...{
+          ...NFTs,
+          onLoadMoreClick: fetchNFTs
+        }}
+      />
     </PageWithHeader>
   );
 };

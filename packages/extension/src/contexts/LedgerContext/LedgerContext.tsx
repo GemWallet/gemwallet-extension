@@ -34,7 +34,6 @@ import {
   GetNFTRequest,
   MintNFTRequest,
   NFTData,
-  NftImageRequestPayload,
   SendPaymentRequest,
   SetAccountRequest,
   SetTrustlineRequest,
@@ -93,8 +92,8 @@ interface SubmitTransactionResponse {
   hash: string;
 }
 
-export interface NftImageRequestPayload {
-  nft: AccountNFToken;
+interface NFTImageRequest {
+  NFT: AccountNFToken;
 }
 
 export const LEDGER_CONNECTION_ERROR = 'You need to be connected to a ledger to make a transaction';
@@ -118,7 +117,7 @@ export interface LedgerContextType {
   cancelOffer: (payload: CancelOfferRequest) => Promise<CancelOfferResponse>;
   submitTransaction: (payload: SubmitTransactionRequest) => Promise<SubmitTransactionResponse>;
   getAccountInfo: () => Promise<AccountInfoResponse>;
-  getNFTData: (payload: NftImageRequestPayload) => Promise<NFTData>;
+  getNFTData: (payload: NFTImageRequest) => Promise<NFTData>;
 }
 
 const LedgerContext = createContext<LedgerContextType>({
@@ -804,27 +803,27 @@ const LedgerProvider: FC = ({ children }) => {
     ...(payload.txnSignature && { TxnSignature: payload.txnSignature })
   });
 
-  const getNFTData = useCallback(async ({ nft }: NftImageRequestPayload) => {
+  const getNFTData = useCallback(async ({ NFT }: NFTImageRequest) => {
     try {
-      const { URI } = nft;
-      let url = URI ? await convertHexToString(String(URI)) : '';
+      const { URI } = NFT;
+      let URL = URI ? await convertHexToString(String(URI)) : '';
 
-      if (url.length === 0) {
+      if (URL.length === 0) {
         throw new Error('URI is empty');
       }
 
-      url = url.replace('ipfs://', 'https://ipfs.io/ipfs/');
-      const nftData = await fetch(url)
+      URL = URL.replace('ipfs://', 'https://ipfs.io/ipfs/');
+      const NFTData = await fetch(URL)
         .then((res) => res.json())
         .catch(() => ({
           name: '-',
           description: '-',
           image: null
         }));
-      nftData.image = nftData.image
-        ? nftData.image.replace('ipfs://', 'https://ipfs.io/ipfs/')
-        : url.replace('.json', '.png');
-      return nftData;
+      NFTData.image = NFTData.image
+        ? NFTData.image.replace('ipfs://', 'https://ipfs.io/ipfs/')
+        : URL.replace('.json', '.png');
+      return NFTData;
     } catch (e) {
       Sentry.captureException(e);
       throw e;
