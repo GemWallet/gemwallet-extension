@@ -1,12 +1,13 @@
 import { FC, useContext, useEffect, useState } from 'react';
 
 import { OpenInNewOutlined } from '@mui/icons-material';
-import { Button, CircularProgress, ListItem, Paper } from '@mui/material';
+import { Button, CircularProgress, ListItem, Paper, Tooltip } from '@mui/material';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 import { AccountNFToken, NFTData } from '@gemwallet/constants';
 
 import { LedgerContext } from '../../../contexts';
+import { GemWallet } from '../../atoms';
 
 export interface NFTCardProps {
   NFT: AccountNFToken;
@@ -14,26 +15,30 @@ export interface NFTCardProps {
 
 export const NFTCard: FC<NFTCardProps> = ({ NFT }) => {
   const { getNFTData } = useContext(LedgerContext);
-  const [nftData, setNftData] = useState<NFTData | null>(null);
+  const [NFTData, setNFTData] = useState<NFTData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const fetchNftImg = async () => {
+    const fetchNFTImg = async () => {
       try {
         setLoading(true);
         const nftData = await getNFTData({ NFT });
-        setNftData(nftData);
+        setNFTData(nftData);
       } catch (error) {
-        setNftData(null);
+        setNFTData(null);
       } finally {
         setLoading(false);
       }
     };
-    fetchNftImg();
+    fetchNFTImg();
   }, [getNFTData, NFT]);
 
-  const handleViewNftClick = () => {
+  const handleViewNFTClick = () => {
     window.open('someurl', '_blank'); // TODO: Add redirection url (Potential collaboration with NFT marketplace)?
+  };
+
+  const handleTokenIdClick = (tokenId: string) => {
+    navigator.clipboard.writeText(tokenId);
   };
 
   return (
@@ -55,34 +60,46 @@ export const NFTCard: FC<NFTCardProps> = ({ NFT }) => {
       >
         {loading ? (
           <CircularProgress data-testid="progressbar" />
-        ) : (
+        ) : NFTData?.image ? (
           <LazyLoadImage
             alt="nft"
             height={150}
             style={{ borderRadius: '4px', boxShadow: '4px 4px 0px black' }}
             beforeLoad={() => <CircularProgress />}
             effect="blur"
-            src={nftData?.image}
+            src={NFTData?.image}
             width={150}
           />
+        ) : (
+          <GemWallet />
         )}
-        {nftData && (
-          <>
+        {NFTData ? (
+          <Tooltip title={NFTData.NFTokenID}>
             <div
-              style={{ fontSize: '16px', color: 'white', marginTop: '10px' }}
-              data-testid="nft_name"
+              style={{ fontSize: '14px', color: 'grey', marginTop: '10px', cursor: 'pointer' }}
+              onClick={() => handleTokenIdClick(NFTData.NFTokenID)}
             >
-              {nftData.name}
+              {NFTData.NFTokenID.substring(0, 10) + '...'}
             </div>
-            <div style={{ fontSize: '14px', color: 'grey', marginTop: '10px' }}>
-              {nftData.description}
-            </div>
-          </>
-        )}
+          </Tooltip>
+        ) : null}
+        {NFTData?.name ? (
+          <div
+            style={{ fontSize: '16px', color: 'white', marginTop: '10px' }}
+            data-testid="nft_name"
+          >
+            {NFTData.name}
+          </div>
+        ) : null}
+        {NFTData ? (
+          <div style={{ fontSize: '14px', color: 'grey', marginTop: '10px' }}>
+            {NFTData.description}
+          </div>
+        ) : null}
         <Button
           variant="outlined"
           style={{ marginTop: '10px', fontSize: '14px', gap: '10px' }}
-          onClick={handleViewNftClick}
+          onClick={handleViewNFTClick}
         >
           View <OpenInNewOutlined style={{ fontSize: '16px' }} />
         </Button>

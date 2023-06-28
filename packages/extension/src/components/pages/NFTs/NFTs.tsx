@@ -6,6 +6,8 @@ import { LedgerContext } from '../../../contexts';
 import { NFTListing } from '../../organisms/NFTListing';
 import { PageWithHeader } from '../../templates';
 
+export const MAX_FETCHED_NFTS = 20;
+
 const initalState = {
   account_nfts: [],
   marker: null,
@@ -24,7 +26,7 @@ export const NFTs: FC = () => {
   const fetchNFTs = async () => {
     try {
       const payload = {
-        limit: 20,
+        limit: MAX_FETCHED_NFTS,
         marker: NFTs.marker ?? undefined
       };
 

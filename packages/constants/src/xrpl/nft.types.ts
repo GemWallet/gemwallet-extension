@@ -13,8 +13,9 @@ export interface AccountNFTokenResponse {
 }
 
 export interface NFTData {
-  schema: string;
-  nftType: string;
+  NFTokenID: string;
+  NFType?: string;
+  schema?: string;
   name?: string;
   description?: string;
   image?: string;

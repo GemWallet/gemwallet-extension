@@ -7,6 +7,7 @@ import { AccountNFTokenResponse } from '@gemwallet/constants';
 
 import { InformationMessage } from '../../molecules';
 import { NFTCard } from '../../molecules/NFTCard';
+import { MAX_FETCHED_NFTS } from '../../pages';
 
 export interface NFTListingProps extends AccountNFTokenResponse {
   onLoadMoreClick: () => void;
@@ -26,14 +27,16 @@ export const NFTListing: FC<NFTListingProps> = ({ loading, account_nfts, onLoadM
     <InfiniteScroll
       dataLength={account_nfts.length}
       next={onLoadMoreClick}
-      hasMore={true}
+      hasMore={account_nfts.length >= MAX_FETCHED_NFTS}
       height={450}
       loader={<h4>Loading...</h4>}
     >
       <List dense>
-        {account_nfts.map((nft) => (
-          <NFTCard key={nft.NFTokenID} NFT={nft} />
-        ))}
+        {account_nfts
+          .filter((NFT) => NFT.URI) // Do not display NFTs without URI
+          .map((NFT) => (
+            <NFTCard key={NFT.NFTokenID} NFT={NFT} />
+          ))}
       </List>
     </InfiniteScroll>
   );

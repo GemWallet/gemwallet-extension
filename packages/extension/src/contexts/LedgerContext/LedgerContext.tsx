@@ -805,7 +805,7 @@ const LedgerProvider: FC = ({ children }) => {
 
   const getNFTData = useCallback(async ({ NFT }: NFTImageRequest) => {
     try {
-      const { URI } = NFT;
+      const { NFTokenID, URI } = NFT;
       let URL = URI ? await convertHexToString(String(URI)) : '';
 
       if (URL.length === 0) {
@@ -813,17 +813,31 @@ const LedgerProvider: FC = ({ children }) => {
       }
 
       URL = URL.replace('ipfs://', 'https://ipfs.io/ipfs/');
-      const NFTData = await fetch(URL)
-        .then((res) => res.json())
-        .catch(() => ({
-          name: '-',
-          description: '-',
-          image: null
-        }));
-      NFTData.image = NFTData.image
-        ? NFTData.image.replace('ipfs://', 'https://ipfs.io/ipfs/')
-        : URL.replace('.json', '.png');
-      return NFTData;
+
+      if (URL.includes('.json')) {
+        // Parse the JSON, in order to display the NFT in the UI
+        const NFTData = await fetch(URL)
+          .then((res) => res.json())
+          .catch(() => {
+            throw new Error('Error fetching NFT data');
+          });
+
+        const image = NFTData.image
+          ? NFTData.image.replace('ipfs://', 'https://ipfs.io/ipfs/')
+          : URL.replace('.json', '.png');
+
+        return {
+          ...NFTData,
+          NFTokenID,
+          image
+        };
+      } else {
+        // No JSON to parse, just display the raw NFT attributes
+        return {
+          NFTokenID,
+          description: URL
+        };
+      }
     } catch (e) {
       Sentry.captureException(e);
       throw e;
