@@ -8,11 +8,11 @@ import { AccountNFToken, NFTData } from '@gemwallet/constants';
 
 import { LedgerContext } from '../../../contexts';
 
-export interface NftCardProps {
-  nft: AccountNFToken;
+export interface NFTCardProps {
+  NFT: AccountNFToken;
 }
 
-export const NFTCard: FC<NftCardProps> = ({ nft }) => {
+export const NFTCard: FC<NFTCardProps> = ({ NFT }) => {
   const { getNFTData } = useContext(LedgerContext);
   const [nftData, setNftData] = useState<NFTData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -21,7 +21,7 @@ export const NFTCard: FC<NftCardProps> = ({ nft }) => {
     const fetchNftImg = async () => {
       try {
         setLoading(true);
-        const nftData = await getNFTData({ NFT: nft });
+        const nftData = await getNFTData({ NFT });
         setNftData(nftData);
       } catch (error) {
         setNftData(null);
@@ -30,7 +30,7 @@ export const NFTCard: FC<NftCardProps> = ({ nft }) => {
       }
     };
     fetchNftImg();
-  }, [getNFTData, nft]);
+  }, [getNFTData, NFT]);
 
   const handleViewNftClick = () => {
     window.open('someurl', '_blank'); // TODO: Add redirection url (Potential collaboration with NFT marketplace)?

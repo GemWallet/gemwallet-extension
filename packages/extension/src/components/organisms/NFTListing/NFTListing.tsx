@@ -32,7 +32,7 @@ export const NFTListing: FC<NFTListingProps> = ({ loading, account_nfts, onLoadM
     >
       <List dense>
         {account_nfts.map((nft) => (
-          <NFTCard key={nft.NFTokenID} nft={nft} />
+          <NFTCard key={nft.NFTokenID} NFT={nft} />
         ))}
       </List>
     </InfiniteScroll>

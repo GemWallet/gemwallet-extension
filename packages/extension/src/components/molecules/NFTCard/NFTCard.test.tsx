@@ -1,9 +1,10 @@
 import { render, screen, waitFor, fireEvent, act } from '@testing-library/react';
 
-import { LedgerContext, LedgerContextType } from '../../../contexts';
-import { NFTCard, NftCardProps } from './NftCard';
+import { LedgerContext } from '../../../contexts';
+import { valueLedgerContext } from '../../../mocks';
+import { NFTCard, NFTCardProps } from './NFTCard';
 
-const mockNft = {
+const mockNFT = {
   Flags: 11,
   Issuer: 'rDGh681kc6V1GKkQB378XhiM1tzkYrnFwQ',
   NFTokenID: '000B0000867AD7165A812436FBFA175555413C26162BCF380000099A00000000',
@@ -25,18 +26,12 @@ const mockNFTData = {
 };
 
 const mockGetNFTData = jest.fn(async () => mockNFTData);
-
-const mockContext: LedgerContextType = {
-  getNFTData: mockGetNFTData,
-  sendPayment: jest.fn(),
-  addTrustline: jest.fn(),
-  signMessage: jest.fn(),
-  estimateNetworkFees: jest.fn(),
-  getNFTs: jest.fn(),
-  getTransactions: jest.fn()
+const mockContext = {
+  ...valueLedgerContext,
+  getNFTData: mockGetNFTData
 };
 
-const renderNftCard = (props: NftCardProps) => {
+const renderNFTCard = (props: NFTCardProps) => {
   act(() => {
     render(
       <LedgerContext.Provider value={mockContext}>
@@ -46,20 +41,20 @@ const renderNftCard = (props: NftCardProps) => {
   });
 };
 
-describe('NftCard', () => {
+describe('NFTCard', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  test('renders NftCard component correctly', async () => {
-    renderNftCard({ nft: mockNft });
+  test('renders NFTCard component correctly', async () => {
+    renderNFTCard({ NFT: mockNFT });
 
     await waitFor(() => expect(mockGetNFTData).toHaveBeenCalled());
     expect(screen.getByTestId('OpenInNewOutlinedIcon')).toBeInTheDocument();
   });
 
   test('displays CircularProgress while fetching data', () => {
-    renderNftCard({ nft: mockNft });
+    renderNFTCard({ NFT: mockNFT });
     expect(screen.getByTestId('progressbar')).toBeInTheDocument();
   });
 
@@ -69,7 +64,7 @@ describe('NftCard', () => {
       throw new Error('Failed to fetch NFT data');
     });
 
-    renderNftCard({ nft: mockNft });
+    renderNFTCard({ NFT: mockNFT });
 
     await waitFor(() => expect(mockGetNFTData).toHaveBeenCalled());
 
@@ -80,7 +75,7 @@ describe('NftCard', () => {
   test('button redirects to the correct URL', async () => {
     const windowOpenSpy = jest.spyOn(window, 'open').mockImplementation();
 
-    renderNftCard({ nft: mockNft });
+    renderNFTCard({ NFT: mockNFT });
     await waitFor(() => expect(mockGetNFTData).toHaveBeenCalled());
 
     fireEvent.click(screen.getByRole('button'));
