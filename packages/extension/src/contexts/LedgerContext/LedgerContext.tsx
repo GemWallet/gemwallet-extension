@@ -40,6 +40,11 @@ import { toXRPLMemos, toXRPLSigners } from '../../utils';
 import { useNetwork } from '../NetworkContext';
 import { useWallet } from '../WalletContext';
 
+interface SignMessageResponse {
+  signature: string;
+  signingPubKey: string;
+}
+
 interface GetNFTsResponse {
   account_nfts: AccountNFToken[];
   marker?: unknown;
@@ -87,7 +92,7 @@ export interface LedgerContextType {
   // Return transaction hash in case of success
   sendPayment: (payload: SendPaymentRequest) => Promise<string>;
   setTrustline: (payload: SetTrustlineRequest) => Promise<string>;
-  signMessage: (message: string) => string | undefined;
+  signMessage: (message: string) => SignMessageResponse | undefined;
   estimateNetworkFees: (payload: Transaction) => Promise<string>;
   getNFTs: (payload?: GetNFTRequest) => Promise<GetNFTsResponse>;
   getTransactions: () => Promise<AccountTransaction[]>;
@@ -358,7 +363,10 @@ const LedgerProvider: FC = ({ children }) => {
           throw new Error('You need to have a wallet connected to sign a message');
         } else {
           const messageHex = Buffer.from(message, 'utf8').toString('hex');
-          return sign(messageHex, wallet.wallet.privateKey);
+          return {
+            signature: sign(messageHex, wallet.wallet.privateKey),
+            signingPubKey: wallet.wallet.publicKey
+          };
         }
       } catch (e) {
         Sentry.captureException(e);

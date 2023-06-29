@@ -15,6 +15,7 @@ export const signMessage = async (message: string): Promise<SignMessageResponse>
    * - type: 'response'
    * - result:
    *    - signedMessage: signed message
+   *    - signingPubKey: signer public key
    *
    * if the user rejects the transaction:
    * - type: 'reject'

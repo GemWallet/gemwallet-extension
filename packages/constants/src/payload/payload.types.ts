@@ -298,7 +298,8 @@ export interface GetPublicKeyResponseDeprecated {
   publicKey: string | null | undefined;
 }
 
-export interface SignMessageResponse extends BaseResponse<{ signedMessage: string }> {}
+export interface SignMessageResponse
+  extends BaseResponse<{ signedMessage: string; signingPubKey: string }> {}
 
 export interface SignMessageResponseDeprecated {
   signedMessage: string | null | undefined;

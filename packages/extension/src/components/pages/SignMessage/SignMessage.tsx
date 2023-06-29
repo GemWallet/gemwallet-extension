@@ -60,8 +60,12 @@ export const SignMessage: FC = () => {
   const { id, url, title, favicon, message } = payload;
 
   const handleSendMessage = useCallback(
-    (messagePayload: { signedMessage: string | null | undefined; error?: Error }) => {
-      const { signedMessage, error } = messagePayload;
+    (messagePayload: {
+      signedMessage: string | null | undefined;
+      signingPubKey?: string;
+      error?: Error;
+    }) => {
+      const { signedMessage, signingPubKey, error } = messagePayload;
 
       let message:
         | ReceiveSignMessageBackgroundMessage
@@ -81,7 +85,10 @@ export const SignMessage: FC = () => {
           payload: {
             id,
             type: ResponseType.Response,
-            result: signedMessage ? { signedMessage: signedMessage } : undefined,
+            result:
+              signedMessage && signingPubKey
+                ? { signedMessage: signedMessage, signingPubKey: signingPubKey }
+                : undefined,
             error: error ? serializeError(error) : undefined
           }
         };
@@ -109,10 +116,13 @@ export const SignMessage: FC = () => {
 
   const handleSign = useCallback(() => {
     try {
-      const signature = signMessage(message);
-      handleSendMessage({ signedMessage: signature });
+      const response = signMessage(message);
+      handleSendMessage({
+        signedMessage: response?.signature,
+        signingPubKey: response?.signingPubKey
+      });
     } catch (e) {
-      handleSendMessage({ signedMessage: undefined, error: e as Error });
+      handleSendMessage({ signedMessage: undefined, signingPubKey: undefined, error: e as Error });
     }
   }, [handleSendMessage, message, signMessage]);
 
