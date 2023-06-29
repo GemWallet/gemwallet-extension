@@ -32,11 +32,9 @@ export const NFTListing: FC<NFTListingProps> = ({ loading, account_nfts, onLoadM
       loader={<h4>Loading...</h4>}
     >
       <List dense>
-        {account_nfts
-          .filter((NFT) => NFT.URI) // Do not display NFTs without URI
-          .map((NFT) => (
-            <NFTCard key={NFT.NFTokenID} NFT={NFT} />
-          ))}
+        {account_nfts.map((NFT) => (
+          <NFTCard key={NFT.NFTokenID} NFT={NFT} />
+        ))}
       </List>
     </InfiniteScroll>
   );

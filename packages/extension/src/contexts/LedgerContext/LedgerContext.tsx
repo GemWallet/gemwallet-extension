@@ -809,7 +809,10 @@ const LedgerProvider: FC = ({ children }) => {
       let URL = URI ? await convertHexToString(String(URI)) : '';
 
       if (URL.length === 0) {
-        throw new Error('URI is empty');
+        return {
+          NFTokenID,
+          description: 'No data'
+        };
       }
 
       URL = URL.replace('ipfs://', 'https://ipfs.io/ipfs/');
