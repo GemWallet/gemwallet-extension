@@ -7,7 +7,7 @@ import { formatFlags } from '../../src/utils';
 describe('Mint', () => {
   // deepcode ignore NoHardcodedPasswords: password used for testing purposes
   const PASSWORD = 'SECRET_PASSWORD';
-  const MINT_NFT_URL = `http://localhost:3000?mint-nft?URI=4d696e746564207468726f7567682047656d57616c6c657421&flags=%7B%22tfOnlyXRP%22%3Afalse%2C%22tfTransferable%22%3Atrue%7D&fee=199&transferFee=3000&NFTokenTaxon=0&memos=%5B%7B%22memo%22%3A%7B%22memoType%22%3A%224465736372697074696f6e%22%2C%22memoData%22%3A%2254657374206d656d6f%22%7D%7D%5D&id=210324818&requestMessage=undefined&transaction=mintNFT`;
+  const MINT_NFT_URL = `http://localhost:3000?mint-nft&URI=4d696e746564207468726f7567682047656d57616c6c657421&flags=%7B%22tfOnlyXRP%22%3Afalse%2C%22tfTransferable%22%3Atrue%7D&fee=199&transferFee=3000&NFTokenTaxon=0&memos=%5B%7B%22memo%22%3A%7B%22memoType%22%3A%224465736372697074696f6e%22%2C%22memoData%22%3A%2254657374206d656d6f%22%7D%7D%5D&id=210324818&requestMessage=undefined&transaction=mintNFT`;
 
   beforeEach(() => {
     // Mock the localStorage with a wallet already loaded
@@ -54,7 +54,22 @@ describe('Mint', () => {
     cy.get('p[data-testid="transaction-subtitle"]').should('have.text', 'Transaction Successful');
   });
 
-  it('Read the minted NFT Token ID', () => {
+  it('View a NFT in the NFT Viewer', () => {
+    navigate('localhost:3000', PASSWORD);
+
+    // Go to NFT Viewer
+    cy.contains('button', 'NFTs').click();
+
+    // Find a NFT and open the details
+    cy.get('[data-testid="OpenInNewOutlinedIcon"]').parent('button').first().click();
+
+    // Check that the details view is open
+    cy.contains('NFT Details');
+    cy.contains('Token ID');
+    cy.contains('Description');
+  });
+
+  it('Read the minted NFT Token ID from the transaction history', () => {
     navigate('localhost:3000', PASSWORD);
 
     // Wait for the wallet to load
