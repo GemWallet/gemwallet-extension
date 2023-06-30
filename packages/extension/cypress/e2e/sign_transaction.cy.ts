@@ -23,12 +23,7 @@ describe('Submit Transaction', () => {
       .next()
       .should(
         'have.text',
-        '{\n' +
-          '  "TransactionType": "Payment",\n' +
-          '  "Account": "rB3JmRd5m292YjCsCr65tc8dwZz2WN7HQu",\n' +
-          '  "Destination": "rhikRdkFw28csKw9z7fVoBjWncz1HSoQij",\n' +
-          '  "Amount": "100000"\n' +
-          '}'
+        '{"TransactionType":"Payment""Account":"rB3JmRd5m292YjCsCr65tc8dwZz2WN7HQu""Destination":"rhikRdkFw28csKw9z7fVoBjWncz1HSoQij""Amount":"100000"}'
       );
 
     // Confirm

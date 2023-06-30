@@ -2,6 +2,7 @@ import { FC, useCallback, useEffect, useState } from 'react';
 
 import ErrorIcon from '@mui/icons-material/Error';
 import { Button, Container, Paper, Typography } from '@mui/material';
+import ReactJson from 'react-json-view';
 import { Transaction } from 'xrpl';
 
 import {
@@ -13,7 +14,7 @@ import {
 import { ERROR_RED } from '../../../constants';
 import { useLedger, useNetwork } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
-import { formatTx, parseTransactionParam } from '../../../utils';
+import { parseTransactionParam } from '../../../utils';
 import { serializeError } from '../../../utils/errors';
 import { Fee } from '../../organisms';
 import { useFees, useTransactionStatus } from '../../organisms/BaseTransaction/hooks';
@@ -151,18 +152,19 @@ export const SubmitTransaction: FC = () => {
             {txParam ? (
               <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
                 <Typography variant="body1">Transaction:</Typography>
-                <Typography variant="body2">
-                  <pre
-                    style={{
-                      margin: 0,
-                      whiteSpace: 'pre-wrap',
-                      overflowWrap: 'break-word',
-                      fontSize: '0.8rem'
-                    }}
-                  >
-                    {formatTx(txParam)}
-                  </pre>
-                </Typography>
+                <ReactJson
+                  src={txParam}
+                  theme="summerfruit"
+                  name={null}
+                  enableClipboard={false}
+                  collapsed={false}
+                  onEdit={false}
+                  onAdd={false}
+                  onDelete={false}
+                  displayDataTypes={false}
+                  displayObjectSize={false}
+                  indentWidth={2}
+                />
               </Paper>
             ) : null}
             <Fee

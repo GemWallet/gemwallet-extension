@@ -1,12 +1,11 @@
-import { Payment, TrustSet, xrpToDrops } from 'xrpl';
+import { TrustSet, xrpToDrops } from 'xrpl';
 
 import {
   formatAmount,
   formatFlags,
   formatFlagsToNumber,
   formatToken,
-  formatTransferFee,
-  formatTx
+  formatTransferFee
 } from './format';
 
 describe('Format util', () => {
@@ -141,36 +140,5 @@ describe('formatTransferFee', () => {
   it('should format transfer fee', () => {
     const fee = 3000;
     expect(formatTransferFee(fee)).toBe(3);
-  });
-});
-
-describe('formatTx', () => {
-  it('should return null if the input is null', () => {
-    expect(formatTx(null)).toBe(null);
-  });
-
-  it('should return a formatted JSON string if the input is a transaction object', () => {
-    const transaction = {
-      TransactionType: 'Payment',
-      Account: 'fake',
-      Destination: 'fake',
-      Amount: {
-        currency: 'USD',
-        issuer: 'fake',
-        value: '0.001'
-      }
-    };
-    const expectedOutput = `{
-  "TransactionType": "Payment",
-  "Account": "fake",
-  "Destination": "fake",
-  "Amount": {
-    "currency": "USD",
-    "issuer": "fake",
-    "value": "0.001"
-  }
-}`;
-
-    expect(formatTx(transaction as Payment)).toBe(expectedOutput);
   });
 });
