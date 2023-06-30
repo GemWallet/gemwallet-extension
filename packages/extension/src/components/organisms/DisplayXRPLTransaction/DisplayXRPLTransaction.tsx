@@ -1,6 +1,6 @@
 import { FC } from 'react';
 
-import { Paper, Typography } from '@mui/material';
+import { Paper, Tooltip, Typography } from '@mui/material';
 import { convertHexToString, Transaction } from 'xrpl';
 import { Amount, Memo } from 'xrpl/dist/npm/models/common';
 import { GlobalFlags } from 'xrpl/dist/npm/models/transactions/common';
@@ -27,7 +27,7 @@ export const DisplayXRPLTransaction: FC<XRPLTxProps> = ({ tx }) => {
     NFTokenBuyOffer: (value) => renderSimpleText('NFT Token Buy Offer', value),
     NFTokenBrokerFee: (value) => renderAmount('NFT Token Broker Fee', value as Amount),
     NFTokenMinter: (value) => renderSimpleText('NFT Token Minter', value),
-    URI: (value) => renderSimpleText('URI', value ? convertHexToString(value as string) : ''),
+    URI: (value) => renderSimpleText('URI', value ? convertHexToString(value as string) : '', true),
     Fee: () => <></>, // Fee is rendered in the BaseTransaction component
     TakerGets: (value) => renderAmount('Taker Gets', value as Amount),
     TakerPays: (value) => renderAmount('Taker Pays', value as Amount),
@@ -35,9 +35,9 @@ export const DisplayXRPLTransaction: FC<XRPLTxProps> = ({ tx }) => {
       renderSimpleText('Transfer Fee', value ? `${formatTransferFee(value as number)}%` : '')
   };
 
-  const renderSimpleText = (title: string, value: unknown) => (
-    <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-      <Typography variant="body1">{title}:</Typography>
+  const renderSimpleText = (title: string, value: unknown, tooltip?: boolean) => {
+    const strValue = String(value);
+    const typo = (
       <Typography
         variant="body2"
         style={{
@@ -47,10 +47,16 @@ export const DisplayXRPLTransaction: FC<XRPLTxProps> = ({ tx }) => {
           maxWidth: '100%'
         }}
       >
-        <pre style={{ margin: 0 }}>{String(value)}</pre>
+        <pre style={{ margin: 0 }}>{strValue}</pre>
       </Typography>
-    </Paper>
-  );
+    );
+    return (
+      <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
+        <Typography variant="body1">{title}:</Typography>
+        {tooltip ? <Tooltip title={strValue}>{typo}</Tooltip> : typo}
+      </Paper>
+    );
+  };
 
   const renderAmount = (title: string, value: Amount) => (
     <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
