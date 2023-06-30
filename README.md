@@ -129,7 +129,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/florent-uzio"><img src="https://avatars.githubusercontent.com/u/36513774?v=4?s=100" width="100px;" alt="Florent"/><br /><sub><b>Florent</b></sub></a><br /><a href="https://github.com/GemWallet/gemwallet-extension/issues?q=author%3Aflorent-uzio" title="Bug reports">🐛</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/benaor"><img src="https://avatars.githubusercontent.com/u/58249772?v=4?s=100" width="100px;" alt="Benjamin"/><br /><sub><b>Benjamin</b></sub></a><br /><a href="https://github.com/GemWallet/gemwallet-extension/commits?author=benaor" title="Code">💻</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/rikublock"><img src="https://avatars.githubusercontent.com/u/46352032?v=4?s=100" width="100px;" alt="Riku"/><br /><sub><b>Riku</b></sub></a><br /><a href="https://github.com/GemWallet/gemwallet-extension/issues?q=author%3Arikublock" title="Bug reports">🐛</a> <a href="#ideas-rikublock" title="Ideas, Planning, & Feedback">🤔</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/rikublock"><img src="https://avatars.githubusercontent.com/u/46352032?v=4?s=100" width="100px;" alt="Riku"/><br /><sub><b>Riku</b></sub></a><br /><a href="https://github.com/GemWallet/gemwallet-extension/issues?q=author%3Arikublock" title="Bug reports">🐛</a> <a href="#ideas-rikublock" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/GemWallet/gemwallet-extension/commits?author=rikublock" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
