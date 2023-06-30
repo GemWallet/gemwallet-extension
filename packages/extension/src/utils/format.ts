@@ -1,5 +1,6 @@
 import { dropsToXrp, setTransactionFlagsToNumber, Transaction } from 'xrpl';
 import { Amount, IssuedCurrencyAmount } from 'xrpl/dist/npm/models/common';
+import { GlobalFlags } from 'xrpl/dist/npm/models/transactions/common';
 
 import {
   CreateNFTOfferFlags,
@@ -52,6 +53,7 @@ export const formatFlags = (
     | CreateNFTOfferFlags
     | SetAccountFlags
     | CreateOfferFlags
+    | GlobalFlags
 ) => {
   if (typeof flags === 'object') {
     return Object.entries(flags)

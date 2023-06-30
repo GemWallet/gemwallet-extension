@@ -18,6 +18,7 @@ import { parseTransactionParam } from '../../../utils';
 import { serializeError } from '../../../utils/errors';
 import { Fee } from '../../organisms';
 import { useFees, useTransactionStatus } from '../../organisms/BaseTransaction/hooks';
+import DisplayXRPLTransaction from '../../organisms/DisplayXRPLTransaction/DisplayXRPLTransaction';
 import { PageWithTitle } from '../../templates';
 
 interface Params {
@@ -150,14 +151,25 @@ export const SubmitTransaction: FC = () => {
               </div>
             ) : null}
             {txParam ? (
+              <div style={{ marginTop: '5px', marginBottom: '15px' }}>
+                <Typography variant="body2" color="textSecondary">
+                  Warning: This transaction has been submitted to GemWallet as a raw XRPL
+                  transaction.
+                </Typography>
+                <Typography variant="body2" color="textSecondary" style={{ marginTop: '15px' }}>
+                  Always submit raw transactions from third-party services that you trust.
+                </Typography>
+              </div>
+            ) : null}
+            {txParam ? (
               <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-                <Typography variant="body1">Transaction:</Typography>
+                <Typography variant="body1">Raw Transaction:</Typography>
                 <ReactJson
                   src={txParam}
                   theme="summerfruit"
                   name={null}
                   enableClipboard={false}
-                  collapsed={false}
+                  collapsed={true}
                   onEdit={false}
                   onAdd={false}
                   onDelete={false}
@@ -167,6 +179,7 @@ export const SubmitTransaction: FC = () => {
                 />
               </Paper>
             ) : null}
+            {txParam ? <DisplayXRPLTransaction tx={txParam} /> : null}
             <Fee
               errorFees={errorFees}
               estimatedFees={estimatedFees}
@@ -178,7 +191,7 @@ export const SubmitTransaction: FC = () => {
               display: 'flex',
               justifyContent: 'center',
               position: 'fixed',
-              bottom: 5,
+              bottom: 0,
               left: 0,
               right: 0,
               backgroundColor: '#1d1d1d'
