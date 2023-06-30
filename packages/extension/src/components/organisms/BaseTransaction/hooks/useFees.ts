@@ -22,7 +22,7 @@ export const useFees = (tx: Transaction, fee: string | null) => {
   useEffect(() => {
     const currentWallet = getCurrentWallet();
     if (currentWallet && client) {
-      tx.Account = currentWallet.publicAddress;
+      if (!tx.Account || tx.Account === '') tx.Account = currentWallet.publicAddress;
       estimateNetworkFees(tx)
         .then((fees) => {
           setEstimatedFees(fees);
