@@ -19,10 +19,12 @@ describe('Submit Transaction', () => {
 
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Confirm Transaction');
 
-    cy.contains('Transaction:').next().should(
-      'have.text',
-      '{...}' // Collapsed
-    );
+    cy.contains('Transaction:')
+      .next()
+      .should(
+        'have.text',
+        '{"TransactionType":"Payment""Destination":"rhikRdkFw28csKw9z7fVoBjWncz1HSoQij""Amount":"100000""Account":"rB3JmRd5m292YjCsCr65tc8dwZz2WN7HQu"}'
+      );
 
     // Confirm
     cy.contains('button', 'Confirm').click();
