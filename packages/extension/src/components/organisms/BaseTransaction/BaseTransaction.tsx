@@ -17,7 +17,7 @@ import { ERROR_RED } from '../../../constants';
 import { formatAmount, formatFlags, formatToken } from '../../../utils';
 import { TileLoader } from '../../atoms';
 
-export const DEFAULT_FEES = 'Loading ...';
+const DEFAULT_FEES = 'Loading ...';
 
 type BaseTransactionProps = {
   fee: number | null;
