@@ -161,6 +161,12 @@ export const SubmitTransaction: FC = () => {
                 </Typography>
               </div>
             ) : null}
+            {txParam ? <DisplayXRPLTransaction tx={txParam} /> : null}
+            <Fee
+              errorFees={errorFees}
+              estimatedFees={estimatedFees}
+              fee={txParam?.Fee ? Number(txParam?.Fee) : null}
+            />
             {txParam ? (
               <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
                 <Typography variant="body1">Raw Transaction:</Typography>
@@ -169,7 +175,8 @@ export const SubmitTransaction: FC = () => {
                   theme="summerfruit"
                   name={null}
                   enableClipboard={false}
-                  collapsed={true}
+                  collapsed={false}
+                  shouldCollapse={false}
                   onEdit={false}
                   onAdd={false}
                   onDelete={false}
@@ -179,12 +186,6 @@ export const SubmitTransaction: FC = () => {
                 />
               </Paper>
             ) : null}
-            {txParam ? <DisplayXRPLTransaction tx={txParam} /> : null}
-            <Fee
-              errorFees={errorFees}
-              estimatedFees={estimatedFees}
-              fee={txParam?.Fee ? Number(txParam?.Fee) : null}
-            />
           </div>
           <div
             style={{
