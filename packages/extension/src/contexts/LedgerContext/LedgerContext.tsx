@@ -15,7 +15,8 @@ import {
   NFTokenBurn,
   AccountSet,
   OfferCreate,
-  OfferCancel
+  OfferCancel,
+  validate
 } from 'xrpl';
 import { BaseTransaction } from 'xrpl/dist/npm/models/transactions/common';
 
@@ -32,7 +33,8 @@ import {
   AcceptNFTOfferRequest,
   BurnNFTRequest,
   SetAccountRequest,
-  CancelOfferRequest
+  CancelOfferRequest,
+  SubmitTransactionRequest
 } from '@gemwallet/constants';
 
 import { AccountTransaction, WalletLedger } from '../../types';
@@ -83,6 +85,10 @@ interface CancelOfferResponse {
   hash: string;
 }
 
+interface SubmitTransactionResponse {
+  hash: string;
+}
+
 export interface LedgerContextType {
   // Return transaction hash in case of success
   sendPayment: (payload: SendPaymentRequest) => Promise<string>;
@@ -100,6 +106,7 @@ export interface LedgerContextType {
   setAccount: (payload: SetAccountRequest) => Promise<SetAccountResponse>;
   createOffer: (payload: CreateOfferRequest) => Promise<CreateOfferResponse>;
   cancelOffer: (payload: CancelOfferRequest) => Promise<CancelOfferResponse>;
+  submitTransaction: (payload: SubmitTransactionRequest) => Promise<SubmitTransactionResponse>;
 }
 
 const LedgerContext = createContext<LedgerContextType>({
@@ -126,7 +133,8 @@ const LedgerContext = createContext<LedgerContextType>({
   burnNFT: () => new Promise(() => {}),
   setAccount: () => new Promise(() => {}),
   createOffer: () => new Promise(() => {}),
-  cancelOffer: () => new Promise(() => {})
+  cancelOffer: () => new Promise(() => {}),
+  submitTransaction: () => new Promise(() => {})
 });
 
 const LedgerProvider: FC = ({ children }) => {
@@ -697,6 +705,52 @@ const LedgerProvider: FC = ({ children }) => {
     [client, getCurrentWallet]
   );
 
+  const submitTransaction = useCallback(
+    async (payload: SubmitTransactionRequest) => {
+      const wallet = getCurrentWallet();
+      if (!client) {
+        throw new Error('You need to be connected to a ledger');
+      }
+      if (!wallet) {
+        throw new Error('You need to have a wallet connected');
+      } else {
+        try {
+          if (!payload.transaction.Account || payload.transaction.Account === '') {
+            payload.transaction.Account = wallet.publicAddress;
+          }
+
+          // Validate the transaction
+          validate(payload.transaction as unknown as Record<string, unknown>);
+          // Prepare the transaction
+          const prepared: Transaction = await client.autofill(payload.transaction);
+          // Sign the transaction
+          const signed = wallet.wallet.sign(prepared);
+          // Submit the signed blob
+          const tx = await client.submitAndWait(signed.tx_blob);
+
+          if (!tx.result.hash) {
+            throw new Error("Couldn't submit the transaction");
+          }
+
+          if ((tx.result.meta! as TransactionMetadata).TransactionResult !== 'tesSUCCESS') {
+            throw new Error(
+              (tx.result.meta as TransactionMetadata)?.TransactionResult ||
+                "Couldn't submit the signed transaction but the transaction was successful"
+            );
+          }
+
+          return {
+            hash: tx.result.hash
+          };
+        } catch (e) {
+          Sentry.captureException(e);
+          throw e;
+        }
+      }
+    },
+    [client, getCurrentWallet]
+  );
+
   const buildBaseTransaction = (
     payload: BaseTransactionRequest,
     wallet: WalletLedger,
@@ -741,7 +795,8 @@ const LedgerProvider: FC = ({ children }) => {
     burnNFT,
     setAccount,
     createOffer,
-    cancelOffer
+    cancelOffer,
+    submitTransaction
   };
 
   return <LedgerContext.Provider value={value}>{children}</LedgerContext.Provider>;

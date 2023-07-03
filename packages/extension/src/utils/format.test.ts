@@ -1,6 +1,12 @@
 import { TrustSet, xrpToDrops } from 'xrpl';
 
-import { formatAmount, formatFlags, formatFlagsToNumber, formatToken, formatTransferFee } from './format';
+import {
+  formatAmount,
+  formatFlags,
+  formatFlagsToNumber,
+  formatToken,
+  formatTransferFee
+} from './format';
 
 describe('Format util', () => {
   describe('formatAmount', () => {

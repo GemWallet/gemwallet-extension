@@ -14,6 +14,7 @@ import {
   parsePaymentFlags,
   parseSetAccountFlags,
   parseSigners,
+  parseTransactionParam,
   parseTrustSetFlags
 } from './parseFromString';
 
@@ -353,5 +354,32 @@ describe('createNFTOfferFlagsToNumber', () => {
       const result = parseSetAccountFlags('nonJsonString');
       expect(result).toBeNull();
     });
+  });
+});
+
+describe('parseTransactionParam', () => {
+  it('should return null if the input is null', () => {
+    expect(parseTransactionParam(null)).toBe(null);
+  });
+
+  it('should return null if the input is an empty string', () => {
+    expect(parseTransactionParam('')).toBe(null);
+  });
+
+  it('should return null if the input is not valid JSON', () => {
+    expect(parseTransactionParam('This is not a JSON string')).toBe(null);
+  });
+
+  it('should return a Transaction object if the input is a valid JSON string representing a Transaction', () => {
+    const transactionJson = '{"id": "123", "amount": 456}';
+    const expectedTransaction = { id: '123', amount: 456 };
+
+    expect(parseTransactionParam(transactionJson)).toEqual(expectedTransaction);
+  });
+
+  it('should return null if the input is a JSON string representing a non-object value', () => {
+    const notAnObject = '"This is a JSON string, but not an object"';
+
+    expect(parseTransactionParam(notAnObject)).toBe(null);
   });
 });

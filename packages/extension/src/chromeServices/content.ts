@@ -51,6 +51,7 @@ import {
   ReceiveSetTrustlineContentMessageDeprecated,
   ReceiveSignMessageContentMessage,
   ReceiveSignMessageContentMessageDeprecated,
+  ReceiveSubmitTransactionContentMessage,
   RequestAcceptNFTOfferMessage,
   RequestBurnNFTMessage,
   RequestCancelNFTOfferMessage,
@@ -73,6 +74,7 @@ import {
   RequestSetTrustlineMessageDeprecated,
   RequestSignMessageMessage,
   RequestSignMessageMessageDeprecated,
+  RequestSubmitTransactionMessage,
   SendPaymentMessagingResponse,
   SendPaymentMessagingResponseDeprecated,
   SetTrustlineEventListener,
@@ -83,7 +85,9 @@ import {
   SignMessageMessagingResponse,
   SignMessageMessagingResponseDeprecated,
   SetAccountMessagingResponse,
-  SetAccountEventListener
+  SetAccountEventListener,
+  SubmitTransactionEventListener,
+  SubmitTransactionMessagingResponse
 } from '@gemwallet/constants';
 
 /**
@@ -875,6 +879,42 @@ setTimeout(() => {
                       result,
                       error
                     } as CancelOfferMessagingResponse,
+                    window.location.origin
+                  );
+                  chrome.runtime.onMessage.removeListener(messageListener);
+                }
+              }
+            };
+            chrome.runtime.onMessage.addListener(messageListener);
+          }
+        );
+      } else if (type === 'REQUEST_SUBMIT_TRANSACTION/V3') {
+        const {
+          data: { payload }
+        } = event as SubmitTransactionEventListener;
+        chrome.runtime.sendMessage<RequestSubmitTransactionMessage>(
+          {
+            app,
+            type,
+            payload
+          },
+          () => {
+            const messageListener = (
+              message: ReceiveSubmitTransactionContentMessage,
+              sender: chrome.runtime.MessageSender
+            ) => {
+              const { app, type, payload } = message;
+              // We make sure that the message comes from GemWallet
+              if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
+                if (type === 'RECEIVE_SUBMIT_TRANSACTION/V3') {
+                  const { result, error } = payload;
+                  window.postMessage(
+                    {
+                      source: 'GEM_WALLET_MSG_RESPONSE',
+                      messagedId,
+                      result,
+                      error
+                    } as SubmitTransactionMessagingResponse,
                     window.location.origin
                   );
                   chrome.runtime.onMessage.removeListener(messageListener);

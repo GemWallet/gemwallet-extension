@@ -1,7 +1,7 @@
 import { FC, useCallback, useEffect, useState } from 'react';
 
 import ErrorIcon from '@mui/icons-material/Error';
-import { Button, Container, Paper, Typography } from '@mui/material';
+import { Button, Container, Paper, Tooltip, Typography } from '@mui/material';
 import { convertHexToString } from 'xrpl';
 
 import {
@@ -241,7 +241,19 @@ export const MintNFT: FC = () => {
             {URI ? (
               <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
                 <Typography variant="body1">URI:</Typography>
-                <Typography variant="body2">{convertHexToString(URI)}</Typography>
+                <Tooltip title={convertHexToString(URI)}>
+                  <Typography
+                    variant="body2"
+                    style={{
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      maxWidth: '100%'
+                    }}
+                  >
+                    <pre style={{ margin: 0 }}>{convertHexToString(URI)}</pre>
+                  </Typography>
+                </Tooltip>
               </Paper>
             ) : null}
             {transferFee ? (

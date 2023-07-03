@@ -23,6 +23,7 @@ export const SEND_PATH = '/send';
 export const SETTINGS_PATH = '/settings';
 export const SET_ACCOUNT_PATH = '/set-account';
 export const SIGN_MESSAGE_PATH = '/sign-message';
+export const SUBMIT_TRANSACTION_PATH = '/submit-transaction';
 export const SHARE_NFT_PATH = '/share-nft';
 export const SHARE_PUBLIC_ADDRESS_PATH = '/share-public-address';
 export const SHARE_PUBLIC_KEY_PATH = '/share-public-key';

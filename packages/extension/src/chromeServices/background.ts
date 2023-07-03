@@ -23,6 +23,7 @@ import {
   ReceiveSetTrustlineContentMessage,
   ReceiveSetTrustlineContentMessageDeprecated,
   ReceiveSignMessageContentMessage,
+  ReceiveSubmitTransactionContentMessage,
   RequestMessage,
   RequestPayload,
   ResponsePayload,
@@ -42,6 +43,7 @@ import {
   PARAMETER_TRANSACTION_CREATE_NFT_OFFER,
   PARAMETER_TRANSACTION_CREATE_OFFER,
   PARAMETER_TRANSACTION_MINT_NFT,
+  PARAMETER_SUBMIT_TRANSACTION,
   PARAMETER_TRANSACTION_PAYMENT,
   PARAMETER_TRANSACTION_TRUSTLINE,
   PARAMETER_TRANSACTION_SET_ACCOUNT
@@ -396,6 +398,17 @@ chrome.runtime.onMessage.addListener(
           signedMessage: undefined
         }
       });
+    } else if (type === 'REQUEST_SUBMIT_TRANSACTION/V3') {
+      focusOrCreatePopupWindow({
+        payload: message.payload,
+        sender,
+        parameter: PARAMETER_SUBMIT_TRANSACTION,
+        receivingMessage: 'RECEIVE_SUBMIT_TRANSACTION/V3',
+        errorPayload: {
+          type: ResponseType.Reject,
+          result: undefined
+        }
+      });
     } else if (type === 'RECEIVE_SEND_PAYMENT/V3') {
       const { payload } = message;
       sendMessageToTab<ReceiveSendPaymentContentMessage>(payload.id, {
@@ -629,6 +642,17 @@ chrome.runtime.onMessage.addListener(
         type: 'RECEIVE_SIGN_MESSAGE',
         payload: {
           signedMessage: payload.signedMessage
+        }
+      });
+    } else if (type === 'RECEIVE_SUBMIT_TRANSACTION/V3') {
+      const { payload } = message;
+      sendMessageToTab<ReceiveSubmitTransactionContentMessage>(payload.id, {
+        app,
+        type: 'RECEIVE_SUBMIT_TRANSACTION/V3',
+        payload: {
+          type: ResponseType.Response,
+          result: payload.result,
+          error: payload.error
         }
       });
     }

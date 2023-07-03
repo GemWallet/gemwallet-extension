@@ -3,6 +3,7 @@ import {
   NFTokenCreateOfferFlagsInterface,
   NFTokenMintFlags,
   NFTokenMintFlagsInterface,
+  Transaction,
   xrpToDrops
 } from 'xrpl';
 import { Amount, IssuedCurrencyAmount } from 'xrpl/dist/npm/models/common';
@@ -359,4 +360,22 @@ export const createNFTOfferFlagsToNumber = (flags: NFTokenCreateOfferFlagsInterf
   }
 
   return result;
+};
+
+export const parseTransactionParam = (str: string | null): Transaction | null => {
+  if (!str) {
+    return null;
+  }
+
+  try {
+    const parsedTransaction = JSON.parse(str);
+
+    if (typeof parsedTransaction === 'object' && parsedTransaction !== null) {
+      return parsedTransaction as Transaction;
+    }
+  } catch (error) {
+    return null;
+  }
+
+  return null;
 };

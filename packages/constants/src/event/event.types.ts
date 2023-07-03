@@ -14,6 +14,7 @@ import {
   SetTrustlineRequest,
   SetTrustlineRequestDeprecated,
   SignMessageRequest,
+  SubmitTransactionRequest,
   WebsiteRequest
 } from '../payload/payload.types';
 
@@ -38,6 +39,7 @@ interface MessageEventData {
     | SetTrustlineRequest
     | SetTrustlineRequestDeprecated
     | SignMessageRequest
+    | SubmitTransactionRequest
     | WebsiteRequest;
 }
 
@@ -229,6 +231,16 @@ export interface SetTrustlineEventListenerDeprecated extends MessageEvent<Messag
   };
 }
 
+export interface SubmitTransactionEventListener extends MessageEvent<MessageEventData> {
+  data: {
+    app: typeof GEM_WALLET;
+    type: 'REQUEST_SUBMIT_TRANSACTION/V3';
+    source: 'GEM_WALLET_MSG_REQUEST';
+    messageId: number;
+    payload: SubmitTransactionRequest;
+  };
+}
+
 export interface SetAccountEventListener extends MessageEvent<MessageEventData> {
   data: {
     app: typeof GEM_WALLET;
@@ -281,4 +293,5 @@ export type EventListener =
   | SetTrustlineEventListener
   | SetTrustlineEventListenerDeprecated
   | SignMessageListener
-  | SignMessageListenerDeprecated;
+  | SignMessageListenerDeprecated
+  | SubmitTransactionEventListener;

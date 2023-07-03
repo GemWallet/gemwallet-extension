@@ -41,6 +41,7 @@ import {
   ShareNFT,
   SharePublicKey,
   SignMessage,
+  SubmitTransaction,
   Transaction,
   TrustedApps,
   Welcome,
@@ -72,6 +73,7 @@ import {
   PARAMETER_SHARE_NFT,
   PARAMETER_SHARE_PUBLIC_KEY,
   PARAMETER_SIGN_MESSAGE,
+  PARAMETER_SUBMIT_TRANSACTION,
   PARAMETER_TRANSACTION_ACCEPT_NFT_OFFER,
   PARAMETER_TRANSACTION_BURN_NFT,
   PARAMETER_TRANSACTION_CANCEL_NFT_OFFER,
@@ -90,6 +92,7 @@ import {
   SHARE_PUBLIC_ADDRESS_PATH,
   SHARE_PUBLIC_KEY_PATH,
   SIGN_MESSAGE_PATH,
+  SUBMIT_TRANSACTION_PATH,
   TRANSACTION_PATH,
   TRUSTED_APPS_PATH,
   WELCOME_PATH
@@ -196,6 +199,12 @@ const App: FC = () => {
                   id: windowId,
                   signedMessage: null
                 }
+        });
+      } else if (search.includes(PARAMETER_SUBMIT_TRANSACTION)) {
+        handleTransaction({
+          app: GEM_WALLET,
+          type: 'RECEIVE_SUBMIT_TRANSACTION/V3',
+          payload: defaultPayload
         });
       } else if (search.includes(PARAMETER_TRANSACTION_TRUSTLINE)) {
         const urlParams = new URLSearchParams(window.location.search);
@@ -423,6 +432,14 @@ const App: FC = () => {
           element={
             <PrivateRoute>
               <SignMessage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path={SUBMIT_TRANSACTION_PATH}
+          element={
+            <PrivateRoute>
+              <SubmitTransaction />
             </PrivateRoute>
           }
         />

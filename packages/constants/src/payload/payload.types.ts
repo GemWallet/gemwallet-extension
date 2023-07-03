@@ -1,4 +1,4 @@
-import { AccountSetAsfFlags } from 'xrpl';
+import { AccountSetAsfFlags, Transaction } from 'xrpl';
 import { Amount, IssuedCurrencyAmount } from 'xrpl/dist/npm/models/common';
 
 import { Network } from '../network/network.constant';
@@ -247,6 +247,10 @@ export interface CancelOfferRequest extends BaseTransactionRequest {
   offerSequence: number;
 }
 
+export interface SubmitTransactionRequest {
+  transaction: Transaction;
+}
+
 export type RequestPayload =
   | AcceptNFTOfferRequest
   | BurnNFTRequest
@@ -263,7 +267,8 @@ export type RequestPayload =
   | SetAccountRequest
   | SetTrustlineRequest
   | SetTrustlineRequestDeprecated
-  | SignMessageRequest;
+  | SignMessageRequest
+  | SubmitTransactionRequest;
 
 /*
  * Response Payloads
@@ -303,6 +308,11 @@ export interface SignMessageResponse extends BaseResponse<{ signedMessage: strin
 export interface SignMessageResponseDeprecated {
   signedMessage: string | null | undefined;
 }
+
+export interface SubmitTransactionResponse
+  extends BaseResponse<{
+    hash: string;
+  }> {}
 
 export interface IsInstalledResponse {
   result: { isInstalled: boolean };
@@ -391,4 +401,5 @@ export type ResponsePayload =
   | SetTrustlineResponse
   | SetTrustlineResponseDeprecated
   | SignMessageResponse
-  | SignMessageResponseDeprecated;
+  | SignMessageResponseDeprecated
+  | SubmitTransactionResponse;
