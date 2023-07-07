@@ -1,7 +1,7 @@
 # 💎 GemWallet Extension
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-10-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-11-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 ## GemWallet: A crypto wallet & Web3 layer for the XRPL
@@ -130,6 +130,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/florent-uzio"><img src="https://avatars.githubusercontent.com/u/36513774?v=4?s=100" width="100px;" alt="Florent"/><br /><sub><b>Florent</b></sub></a><br /><a href="https://github.com/GemWallet/gemwallet-extension/issues?q=author%3Aflorent-uzio" title="Bug reports">🐛</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/benaor"><img src="https://avatars.githubusercontent.com/u/58249772?v=4?s=100" width="100px;" alt="Benjamin"/><br /><sub><b>Benjamin</b></sub></a><br /><a href="https://github.com/GemWallet/gemwallet-extension/commits?author=benaor" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/rikublock"><img src="https://avatars.githubusercontent.com/u/46352032?v=4?s=100" width="100px;" alt="Riku"/><br /><sub><b>Riku</b></sub></a><br /><a href="https://github.com/GemWallet/gemwallet-extension/issues?q=author%3Arikublock" title="Bug reports">🐛</a> <a href="#ideas-rikublock" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/GemWallet/gemwallet-extension/commits?author=rikublock" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/tfevre"><img src="https://avatars.githubusercontent.com/u/114390906?v=4?s=100" width="100px;" alt="tfevre"/><br /><sub><b>tfevre</b></sub></a><br /><a href="https://github.com/GemWallet/gemwallet-extension/issues?q=author%3Atfevre" title="Bug reports">🐛</a></td>
     </tr>
   </tbody>
 </table>
