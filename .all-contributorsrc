@@ -101,6 +101,15 @@
         "ideas",
         "code"
       ]
+    },
+    {
+      "login": "tfevre",
+      "name": "tfevre",
+      "avatar_url": "https://avatars.githubusercontent.com/u/114390906?v=4",
+      "profile": "https://github.com/tfevre",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
