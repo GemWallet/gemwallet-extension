@@ -16,7 +16,7 @@ import {
 } from '../../../constants';
 import { useTimeout } from '../../../hooks';
 import { WalletLedger } from '../../../types';
-import { truncateAddress } from '../../../utils';
+import { truncateAddress, truncateWalletName } from '../../../utils';
 import { WalletIcon } from '../../atoms';
 import { NetworkIndicator } from '../../molecules';
 
@@ -78,7 +78,7 @@ export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => 
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div>
               <Typography variant="body2" style={{ marginTop: '10px' }}>
-                {name}
+                {truncateWalletName(name, 22)}
               </Typography>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Typography variant="body2" style={{ margin: '3px 0', color: SECONDARY_GRAY }}>

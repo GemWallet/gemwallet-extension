@@ -11,5 +11,6 @@ export * from './parseFromString';
 export * from './storage';
 export * from './transaction';
 export * from './truncateAddress';
+export * from './truncateWalletName';
 export * from './trustedApps';
 export * from './wallet';
