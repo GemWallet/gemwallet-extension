@@ -12,6 +12,7 @@ import {
   CreateNFTOfferResponse,
   CreateOfferRequest,
   CreateOfferResponse,
+  EventNetworkChangedResponse,
   GetAddressResponse,
   GetAddressResponseDeprecated,
   GetNFTResponse,
@@ -98,6 +99,8 @@ export type ReceiveMessage =
   | 'RECEIVE_SIGN_MESSAGE'
   | 'RECEIVE_SIGN_MESSAGE/V3'
   | 'RECEIVE_SUBMIT_TRANSACTION/V3';
+
+export type EventMessage = 'EVENT_NETWORK_CHANGED';
 
 export type SourceMessage = 'GEM_WALLET_MSG_REQUEST' | 'GEM_WALLET_MSG_RESPONSE';
 
@@ -304,6 +307,9 @@ export type SetTrustlineMessagingResponseDeprecated = MessagingResponse &
 export type PasswordInternalMessagingResponse = InternalMessagingResponse &
   PasswordInternalResponse;
 
+// Event Responses
+export type EventNetworkChangedMessagingResponse = MessagingResponse & EventNetworkChangedResponse;
+
 /*
  * Content Script Messages
  */
@@ -457,6 +463,13 @@ export interface InternalReceiveSignOutContentMessage {
   type: typeof MSG_INTERNAL_RECEIVE_SIGN_OUT;
 }
 
+// Event Messages
+export interface EventNetworkChangedContentMessage {
+  app: typeof GEM_WALLET;
+  type: 'EVENT_NETWORK_CHANGED';
+  payload: EventNetworkChangedMessagingResponse;
+}
+
 /*
  * Background Script Messages
  */
@@ -540,6 +553,9 @@ export type InternalReceivePasswordBackgroundMessage = InternalReceivePasswordCo
 export type InternalReceiveSignedOutBackgroundMessage = InternalReceiveSignOutContentMessage &
   BackgroundMessagePayload;
 
+export type EventNetworkChangedBackgroundMessage = EventNetworkChangedContentMessage &
+  BackgroundMessagePayload;
+
 export type BackgroundMessage =
   //
   // API requests and responses messages
@@ -569,6 +585,7 @@ export type BackgroundMessage =
   | RequestSignMessageMessageDeprecated
   | RequestSubmitTransactionMessage
   // Outputted Messages - DO contain ID within the payloads
+  | EventNetworkChangedBackgroundMessage
   | ReceiveAcceptNFTOfferBackgroundMessage
   | ReceiveBurnNFTBackgroundMessage
   | ReceiveCancelNFTOfferBackgroundMessage

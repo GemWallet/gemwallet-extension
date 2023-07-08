@@ -1,5 +1,6 @@
 import {
   BackgroundMessage,
+  EventNetworkChangedContentMessage,
   GEM_WALLET,
   InternalReceivePasswordContentMessage,
   MSG_INTERNAL_RECEIVE_PASSWORD,
@@ -609,6 +610,23 @@ chrome.runtime.onMessage.addListener(
           type: ResponseType.Response,
           result: payload.result,
           error: payload.error
+        }
+      });
+      /*
+       * Events
+       */
+    } else if (type === 'EVENT_NETWORK_CHANGED') {
+      const { payload } = message;
+      chrome.tabs.query({}, function (tabs) {
+        for (let i = 0; i < tabs.length; ++i) {
+          if (tabs[i].id === undefined) continue;
+          chrome.tabs.sendMessage<EventNetworkChangedContentMessage>(tabs[i].id as number, {
+            app,
+            type: 'EVENT_NETWORK_CHANGED',
+            payload: {
+              result: payload.result
+            }
+          });
         }
       });
     }

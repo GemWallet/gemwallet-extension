@@ -13,6 +13,7 @@ import {
   CreateOfferMessagingResponse,
   CreateOfferEventListener,
   EventListener,
+  EventNetworkChangedContentMessage,
   GEM_WALLET,
   GetAddressMessagingResponse,
   GetAddressMessagingResponseDeprecated,
@@ -104,6 +105,7 @@ setTimeout(() => {
       if (!event.data.source || event.data.source !== 'GEM_WALLET_MSG_REQUEST') return;
       const messagedId = event.data.messageId;
 
+      // Requests
       const {
         data: { app, type }
       } = event;
@@ -938,4 +940,17 @@ setTimeout(() => {
     },
     false
   );
-}, 0);
+
+  // Events
+  chrome.runtime.onMessage.addListener((message: EventNetworkChangedContentMessage) => {
+    if (message.type === 'EVENT_NETWORK_CHANGED') {
+      window.postMessage(
+        {
+          type: 'networkChanged',
+          payload: message.payload
+        },
+        window.location.origin
+      );
+    }
+  });
+});

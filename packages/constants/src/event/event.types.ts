@@ -1,5 +1,5 @@
 import { GEM_WALLET } from '../global/global.constant';
-import { RequestMessage } from '../message/message.types';
+import { EventMessage, RequestMessage } from '../message/message.types';
 import {
   AcceptNFTOfferRequest,
   BurnNFTRequest,
@@ -7,6 +7,7 @@ import {
   CancelOfferRequest,
   CreateNFTOfferRequest,
   CreateOfferRequest,
+  EventNetworkChangedResponse,
   MintNFTRequest,
   SendPaymentRequest,
   SendPaymentRequestDeprecated,
@@ -295,3 +296,22 @@ export type EventListener =
   | SignMessageListener
   | SignMessageListenerDeprecated
   | SubmitTransactionEventListener;
+
+// Events
+interface EventEventData {
+  app: typeof GEM_WALLET;
+  type: EventMessage;
+  source: 'GEM_WALLET_MSG_REQUEST';
+  messageId: number;
+  payload?: EventNetworkChangedResponse;
+}
+
+export interface EventNetworkChangedEventListener extends MessageEvent<EventEventData> {
+  data: {
+    app: typeof GEM_WALLET;
+    type: 'EVENT_NETWORK_CHANGED';
+    source: 'GEM_WALLET_MSG_REQUEST';
+    messageId: number;
+    payload: EventNetworkChangedResponse;
+  };
+}
