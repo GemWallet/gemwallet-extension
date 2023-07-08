@@ -37,7 +37,16 @@ export const Wallet: FC<WalletProps> = ({ publicAddress, name, isSelected = fals
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <WalletIcon publicAddress={publicAddress} />
         <div style={{ marginLeft: '10px' }}>
-          <Typography>{name}</Typography>
+          <Typography
+            style={{
+              width: '190px',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis'
+            }}
+          >
+            {name}
+          </Typography>
           <Typography variant="body2" style={{ color: SECONDARY_GRAY }}>
             {truncatedAddress}
           </Typography>

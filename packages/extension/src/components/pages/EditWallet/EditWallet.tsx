@@ -7,6 +7,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { LIST_WALLETS_PATH } from '../../../constants';
 import { useWallet } from '../../../contexts';
 import { WalletLedger } from '../../../types';
+import { truncateWalletName } from '../../../utils';
 import { WalletIcon } from '../../atoms';
 import { PageWithReturn, PageWithSpinner } from '../../templates';
 import { RemoveWallet } from './RemoveWallet';
@@ -44,7 +45,7 @@ export const EditWallet: FC = () => {
     () => [
       {
         name: 'Wallet Name',
-        value: wallet?.name,
+        value: wallet?.name ? truncateWalletName(wallet.name, 14) : 'Wallet 1',
         onClick: () => setMenu('walletName')
       },
       {
