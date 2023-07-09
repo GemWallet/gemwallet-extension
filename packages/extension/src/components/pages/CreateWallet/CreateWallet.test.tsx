@@ -28,9 +28,9 @@ describe('CreateWallet Page', () => {
     const backButton = screen.getByRole('button', { name: 'Back' });
     await user.click(backButton);
 
-    const titleElement = screen.getByRole('heading', { name: 'Secret Seed' });
+    const titleElement = screen.getByRole('heading', { name: 'Create a password' });
     const subTitleElement = screen.getByRole('heading', {
-      name: 'This is the only way you will be able to recover your account. Please store it somewhere safe!'
+      name: 'You will use this password to unlock your wallet'
     });
     expect(titleElement).toBeVisible();
     expect(subTitleElement).toBeVisible();
