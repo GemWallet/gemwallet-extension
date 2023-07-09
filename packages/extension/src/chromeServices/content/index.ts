@@ -951,6 +951,14 @@ setTimeout(() => {
         },
         window.location.origin
       );
+    } else if (message.type === 'EVENT_WALLET_CHANGED') {
+      window.postMessage(
+        {
+          type: 'walletChanged',
+          payload: message.payload
+        },
+        window.location.origin
+      );
     }
   });
 });

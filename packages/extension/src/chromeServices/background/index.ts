@@ -1,6 +1,7 @@
 import {
   BackgroundMessage,
   EventNetworkChangedContentMessage,
+  EventWalletChangedContentMessage,
   GEM_WALLET,
   InternalReceivePasswordContentMessage,
   MSG_INTERNAL_RECEIVE_PASSWORD,
@@ -621,6 +622,17 @@ chrome.runtime.onMessage.addListener(
         chrome.tabs.sendMessage<EventNetworkChangedContentMessage>(tabId, {
           app,
           type: 'EVENT_NETWORK_CHANGED',
+          payload: {
+            result: payload.result
+          }
+        });
+      });
+    } else if (type === 'EVENT_WALLET_CHANGED') {
+      const { payload } = message;
+      activeTabs.forEach((tabId) => {
+        chrome.tabs.sendMessage<EventWalletChangedContentMessage>(tabId, {
+          app,
+          type: 'EVENT_WALLET_CHANGED',
           payload: {
             result: payload.result
           }

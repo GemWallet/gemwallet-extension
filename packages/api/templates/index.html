@@ -26,7 +26,7 @@
       <button onclick="handleCreateOffer()">Create Offer (check the console)</button>
       <button onclick="handleCancelOffer()">Cancel Offer (check the console)</button>
       <button onclick="handleSubmitTransaction()">Submit transaction (check the console)</button>
-      <button onclick="handleOnNetworkChange()">On Network Change (check the console)</button>
+      <button onclick="handleEvents()">Activate events (check the console)</button>
       <div id="address"></div>
     </div>
   </body>
@@ -513,12 +513,15 @@
         console.error('GemWallet is not connected: ', e);
       });
   }
-  function handleOnNetworkChange() {
+  function handleEvents() {
     GemWalletApi.isInstalled()
       .then(({ result }) => {
         if (result.isInstalled) {
           GemWalletApi.on('networkChanged', (network) => {
             console.log('New network: ', network);
+          });
+          GemWalletApi.on('walletChanged', (wallet) => {
+            console.log('New wallet: ', wallet);
           });
         }
       })
