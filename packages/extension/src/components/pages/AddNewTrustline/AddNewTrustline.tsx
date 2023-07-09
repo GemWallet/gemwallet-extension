@@ -1,50 +1,40 @@
 import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 
-import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
-import { dropsToXrp, isValidAddress, TrustSetFlags as TrustSetFlagsBitmask } from 'xrpl';
+import { isValidAddress, TrustSetFlags as TrustSetFlagsBitmask } from 'xrpl';
 import { IssuedCurrencyAmount } from 'xrpl/dist/npm/models/common';
 
 import {
   GEM_WALLET,
-  Memo,
   ReceiveSetTrustlineBackgroundMessage,
   ReceiveSetTrustlineBackgroundMessageDeprecated,
   ResponseType,
   TrustSetFlags
 } from '@gemwallet/constants';
 
-import {
-  API_ERROR_BAD_ISSUER,
-  API_ERROR_BAD_REQUEST,
-  DEFAULT_RESERVE,
-  HOME_PATH
-} from '../../../constants';
-import { useLedger, useNetwork, useServer, useWallet } from '../../../contexts';
+import { API_ERROR_BAD_ISSUER, API_ERROR_BAD_REQUEST, HOME_PATH } from '../../../constants';
+import { useLedger, useNetwork } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
+import { currencyToHex, parseLimitAmount, parseTrustSetFlags, toXRPLMemos } from '../../../utils';
 import {
-  checkFee,
-  currencyToHex,
-  fromHexMemos,
-  parseLimitAmount,
-  parseMemos,
-  parseTrustSetFlags,
-  toXRPLMemos
-} from '../../../utils';
+  BaseTransactionParams,
+  getBaseFromParams,
+  initialBaseTransactionParams,
+  parseBaseParamsFromURLParams
+} from '../../../utils/baseParams';
 import { serializeError } from '../../../utils/errors';
+import { useFees, useTransactionStatus } from '../../organisms/BaseTransaction/hooks';
 import { StepForm, StepWarning, StepConfirm } from '../../pages';
-import { AsyncTransaction, PageWithSpinner } from '../../templates';
-
-const DEFAULT_FEES = 'Loading ...';
+import { AsyncTransaction } from '../../templates';
 
 type STEP = 'WARNING' | 'TRANSACTION';
 
-interface Params {
-  limitAmount: IssuedCurrencyAmount | null;
-  fee: string | null;
+export interface Params extends BaseTransactionParams {
   id: number;
-  memos: Memo[] | null;
+  // SetTrustline fields
+  limitAmount: IssuedCurrencyAmount | null;
   flags: TrustSetFlags | null;
+  // UI specific fields
   inAppCall: boolean;
   showForm: boolean;
 }
@@ -54,30 +44,39 @@ export const AddNewTrustline: FC = () => {
   const urlParams = new URLSearchParams(queryString);
   const inAppCall = urlParams.get('inAppCall') === 'true' || false;
 
-  const [step, setStep] = useState<STEP>('WARNING');
-  const [isParamsMissing, setIsParamsMissing] = useState(false);
   const [params, setParams] = useState<Params>({
-    limitAmount: null,
-    fee: null,
     id: 0,
-    memos: null,
+    // BaseTransaction fields
+    ...initialBaseTransactionParams,
+    // SetTrustline fields
+    limitAmount: null,
     flags: null,
+    // UI specific fields
     inAppCall,
     showForm: false
   });
-  const [estimatedFees, setEstimatedFees] = useState<string>(DEFAULT_FEES);
-  const [errorFees, setErrorFees] = useState('');
-  const [difference, setDifference] = useState<number | undefined>();
-  const [errorDifference, setErrorDifference] = useState<Error | undefined>();
   const [errorRequestRejection, setErrorRequestRejection] = useState<string>('');
-  const [errorValue, setErrorValue] = useState<string>('');
+  const [isParamsMissing, setIsParamsMissing] = useState(false);
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
-
-  const { estimateNetworkFees, setTrustline } = useLedger();
-  const { client, network } = useNetwork();
-  const { getCurrentWallet } = useWallet();
-  const { serverInfo } = useServer();
-  const navigate = useNavigate();
+  const [step, setStep] = useState<STEP>('WARNING');
+  const [errorValue, setErrorValue] = useState<string>('');
+  const { setTrustline } = useLedger();
+  const { network } = useNetwork();
+  const { estimatedFees, errorFees, difference, errorDifference } = useFees(
+    {
+      TransactionType: 'TrustSet',
+      Account: '',
+      Fee: params.fee || undefined,
+      LimitAmount: params.limitAmount || {
+        currency: '',
+        issuer: '',
+        value: '0'
+      },
+      Memos: params.memos ? toXRPLMemos(params.memos) : undefined,
+      Flags: params.flags ?? undefined
+    },
+    params.fee
+  );
 
   const receivingMessage = useMemo(() => {
     const queryString = window.location.search;
@@ -120,19 +119,67 @@ export const AddNewTrustline: FC = () => {
     [params.id, receivingMessage]
   );
 
+  const createBadRequestCallback = (
+    createMessage: (messagePayload: {
+      transactionHash: string | null | undefined;
+      error?: Error;
+    }) => ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
+  ) => {
+    return () => {
+      chrome.runtime.sendMessage<
+        ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
+      >(
+        createMessage({
+          transactionHash: null,
+          error: new Error(API_ERROR_BAD_REQUEST)
+        })
+      );
+    };
+  };
+
+  const badRequestCallback = createBadRequestCallback(createMessage);
+  const navigate = useNavigate();
+  const { hasEnoughFunds, transactionStatusComponent } = useTransactionStatus({
+    isParamsMissing,
+    errorDifference,
+    network,
+    difference,
+    transaction,
+    errorRequestRejection,
+    errorValue,
+    badRequestCallback: !params.inAppCall ? badRequestCallback : undefined,
+    onClick: params.inAppCall ? () => navigate(HOME_PATH) : undefined
+  });
+
   useEffect(() => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
+    const id = Number(urlParams.get('id')) || 0;
+
+    // BaseTransaction fields
+    const {
+      fee,
+      sequence,
+      accountTxnID,
+      lastLedgerSequence,
+      memos,
+      signers,
+      sourceTag,
+      signingPubKey,
+      ticketSequence,
+      txnSignature
+    } = parseBaseParamsFromURLParams(urlParams);
+
+    // SetTrustline fields
     const limitAmount = parseLimitAmount(
       urlParams.get('limitAmount'),
       urlParams.get('value'),
       urlParams.get('currency'),
       urlParams.get('issuer')
     );
-    const fee = checkFee(urlParams.get('fee'));
-    const id = Number(urlParams.get('id')) || 0;
-    const memos = parseMemos(urlParams.get('memos'));
     const flags = parseTrustSetFlags(urlParams.get('flags'));
+
+    // UI specific fields
     const showForm = urlParams.get('showForm') === 'true' || false;
 
     if (limitAmount === null) {
@@ -144,69 +191,26 @@ export const AddNewTrustline: FC = () => {
     }
 
     setParams({
-      limitAmount,
-      fee,
       id,
+      // BaseTransaction fields
+      fee,
+      sequence,
+      accountTxnID,
+      lastLedgerSequence,
       memos,
+      signers,
+      sourceTag,
+      signingPubKey,
+      ticketSequence,
+      txnSignature,
+      // SetTrustline fields
+      limitAmount,
       flags,
+      // UI specific fields
       inAppCall,
       showForm
     });
   }, [createMessage, inAppCall]);
-
-  useEffect(() => {
-    const wallet = getCurrentWallet();
-
-    if (wallet && params.limitAmount) {
-      estimateNetworkFees({
-        TransactionType: 'TrustSet',
-        Account: wallet.publicAddress,
-        Fee: params.fee || undefined,
-        LimitAmount: params.limitAmount,
-        Memos: params.memos ? toXRPLMemos(params.memos) : undefined,
-        Flags: params.flags ?? undefined
-      })
-        .then((fees) => {
-          setEstimatedFees(fees);
-        })
-        .catch((e) => {
-          Sentry.captureException(e);
-          setErrorFees(e.message);
-        });
-    }
-  }, [
-    estimateNetworkFees,
-    getCurrentWallet,
-    params.limitAmount,
-    params.fee,
-    params.memos,
-    params.flags
-  ]);
-
-  useEffect(() => {
-    const currentWallet = getCurrentWallet();
-    if (currentWallet && params.limitAmount) {
-      client
-        ?.getXrpBalance(currentWallet!.publicAddress)
-        .then((currentBalance) => {
-          const difference =
-            Number(currentBalance) -
-            Number(serverInfo?.info.validated_ledger?.reserve_base_xrp || DEFAULT_RESERVE) -
-            (params.fee ? Number(dropsToXrp(params.fee)) : 0);
-          setDifference(difference);
-        })
-        .catch((e) => {
-          setErrorDifference(e);
-        });
-    }
-  }, [
-    client,
-    getCurrentWallet,
-    serverInfo?.info.validated_ledger?.reserve_base_xrp,
-    params.fee,
-    params.limitAmount,
-    createMessage
-  ]);
 
   const isValidIssuer = useMemo(() => {
     if (params.limitAmount && isValidAddress(params.limitAmount?.issuer)) {
@@ -214,8 +218,6 @@ export const AddNewTrustline: FC = () => {
     }
     return false;
   }, [params.limitAmount]);
-
-  const hasEnoughFunds = useMemo(() => Number(difference) > 0, [difference]);
 
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);
@@ -237,9 +239,10 @@ export const AddNewTrustline: FC = () => {
         params.limitAmount.currency = currencyToHex(params.limitAmount.currency);
       }
       setTrustline({
+        // BaseTransaction fields
+        ...getBaseFromParams(params),
+        // SetTrustline fields
         limitAmount: params.limitAmount,
-        fee: params.fee || undefined,
-        memos: params.memos || undefined,
         flags: params.flags || undefined
       })
         .then((transactionHash) => {
@@ -265,15 +268,7 @@ export const AddNewTrustline: FC = () => {
           }
         });
     }
-  }, [
-    setTrustline,
-    createMessage,
-    params.limitAmount,
-    params.fee,
-    params.inAppCall,
-    params.flags,
-    params.memos
-  ]);
+  }, [params, setTrustline, createMessage]);
 
   const handleTrustlineSubmit = (
     issuer: string,
@@ -285,15 +280,26 @@ export const AddNewTrustline: FC = () => {
   ) => {
     const flags = updateFlags(noRipple);
     setParams({
+      id: params.id,
+      // BaseTransaction fields
+      fee: null,
+      sequence: null,
+      accountTxnID: null,
+      lastLedgerSequence: null,
+      memos: null,
+      signers: null,
+      sourceTag: null,
+      signingPubKey: null,
+      ticketSequence: null,
+      txnSignature: null,
+      // SetTrustline fields
       limitAmount: {
         currency: token,
         issuer: issuer,
         value: limit
       },
-      fee: params.fee,
-      id: params.id,
-      memos: params.memos,
       flags: flags,
+      // UI specific fields
       showForm: showForm,
       inAppCall: true
     });
@@ -352,32 +358,6 @@ export const AddNewTrustline: FC = () => {
     return <StepForm onTrustlineSubmit={handleTrustlineSubmit} initialValues={formInitialValues} />;
   }
 
-  if (isParamsMissing) {
-    if (!params.inAppCall) {
-      chrome.runtime.sendMessage<
-        ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
-      >(
-        createMessage({
-          transactionHash: null,
-          error: new Error(API_ERROR_BAD_REQUEST)
-        })
-      );
-    }
-    return (
-      <AsyncTransaction
-        title="Transaction rejected"
-        subtitle={
-          <>
-            Your transaction failed, please try again.
-            <br />A value, currency and issuer need to be provided to the extension.
-          </>
-        }
-        transaction={TransactionStatus.Rejected}
-        {...(params.inAppCall ? { onClick: () => navigate(HOME_PATH) } : {})}
-      />
-    );
-  }
-
   if (!isValidIssuer) {
     if (!params.inAppCall) {
       chrome.runtime.sendMessage<
@@ -405,136 +385,32 @@ export const AddNewTrustline: FC = () => {
     );
   }
 
-  if (errorValue) {
-    if (!params.inAppCall) {
-      chrome.runtime.sendMessage<
-        ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
-      >(
-        createMessage({
-          transactionHash: null,
-          error: new Error(API_ERROR_BAD_REQUEST)
-        })
-      );
-    }
-    return (
-      <AsyncTransaction
-        title="Incorrect transaction"
-        subtitle={
-          <>
-            {errorValue}
-            <br />
-            {'Please try again with a correct transaction'}
-          </>
-        }
-        transaction={TransactionStatus.Rejected}
-        {...(params.inAppCall ? { onClick: () => navigate(HOME_PATH) } : {})}
-      />
-    );
-  }
-
-  if (errorDifference) {
-    if (!params.inAppCall) {
-      chrome.runtime.sendMessage<
-        ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
-      >(
-        createMessage({
-          transactionHash: null,
-          error: errorDifference
-        })
-      );
-    }
-    if (errorDifference.message === 'Account not found.') {
-      return (
-        <AsyncTransaction
-          title="Account not activated"
-          subtitle={
-            <>
-              {`Your account is not activated on the ${network} network.`}
-              <br />
-              {'Switch network or activate your account.'}
-            </>
-          }
-          transaction={TransactionStatus.Rejected}
-          {...(params.inAppCall ? { onClick: () => navigate(HOME_PATH) } : {})}
-        />
-      );
-    }
-    Sentry.captureException('Transaction failed - errorDifference: ' + errorDifference.message);
-    return (
-      <AsyncTransaction
-        title="Error"
-        subtitle={errorDifference.message}
-        transaction={TransactionStatus.Rejected}
-        {...(params.inAppCall ? { onClick: () => navigate(HOME_PATH) } : {})}
-      />
-    );
-  }
-
-  if (!difference) {
-    return <PageWithSpinner />;
-  }
-
-  if (transaction === TransactionStatus.Success || transaction === TransactionStatus.Pending) {
-    return (
-      <AsyncTransaction
-        title={
-          transaction === TransactionStatus.Success
-            ? 'Transaction accepted'
-            : 'Transaction in progress'
-        }
-        subtitle={
-          transaction === TransactionStatus.Success ? (
-            'Transaction Successful'
-          ) : (
-            <>
-              We are processing your transaction
-              <br />
-              Please wait
-            </>
-          )
-        }
-        transaction={transaction}
-        {...(params.inAppCall ? { onClick: () => navigate(HOME_PATH) } : {})}
-      />
-    );
-  }
-
-  if (transaction === TransactionStatus.Rejected) {
-    return (
-      <AsyncTransaction
-        title="Transaction rejected"
-        subtitle={
-          <>
-            Your transaction failed, please try again.
-            <br />
-            {errorRequestRejection ? errorRequestRejection : 'Something went wrong'}
-          </>
-        }
-        transaction={TransactionStatus.Rejected}
-        {...(params.inAppCall ? { onClick: () => navigate(HOME_PATH) } : {})}
-      />
-    );
-  }
-
   if (step === 'WARNING') {
-    return <StepWarning onReject={handleReject} onContinue={() => setStep('TRANSACTION')} />;
+    return (
+      <>
+        {transactionStatusComponent ? (
+          transactionStatusComponent
+        ) : (
+          <StepWarning onReject={handleReject} onContinue={() => setStep('TRANSACTION')} />
+        )}
+      </>
+    );
   }
-
-  const limitAmount = params.limitAmount as IssuedCurrencyAmount;
-  const memos = fromHexMemos(params.memos ?? undefined) ?? [];
 
   return (
-    <StepConfirm
-      limitAmount={limitAmount}
-      fee={params.fee}
-      memos={memos}
-      flags={params.flags}
-      estimatedFees={estimatedFees}
-      errorFees={errorFees}
-      hasEnoughFunds={hasEnoughFunds}
-      defaultFee={DEFAULT_FEES}
-      onReject={handleReject}
-      onConfirm={handleConfirm}
-    />
+    <>
+      {transactionStatusComponent ? (
+        transactionStatusComponent
+      ) : (
+        <StepConfirm
+          params={params}
+          estimatedFees={estimatedFees}
+          errorFees={errorFees}
+          hasEnoughFunds={hasEnoughFunds}
+          onReject={handleReject}
+          onConfirm={handleConfirm}
+        />
+      )}
+    </>
   );
 };
