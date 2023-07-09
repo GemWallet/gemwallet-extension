@@ -29,6 +29,24 @@ import { AsyncTransaction } from '../../templates';
 
 type STEP = 'WARNING' | 'TRANSACTION';
 
+const createBadRequestCallback = (
+  createMessage: (messagePayload: {
+    transactionHash: string | null | undefined;
+    error?: Error;
+  }) => ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
+) => {
+  return () => {
+    chrome.runtime.sendMessage<
+      ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
+    >(
+      createMessage({
+        transactionHash: null,
+        error: new Error(API_ERROR_BAD_REQUEST)
+      })
+    );
+  };
+};
+
 export interface Params extends BaseTransactionParams {
   id: number;
   // SetTrustline fields
@@ -119,26 +137,11 @@ export const AddNewTrustline: FC = () => {
     [params.id, receivingMessage]
   );
 
-  const createBadRequestCallback = (
-    createMessage: (messagePayload: {
-      transactionHash: string | null | undefined;
-      error?: Error;
-    }) => ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
-  ) => {
-    return () => {
-      chrome.runtime.sendMessage<
-        ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
-      >(
-        createMessage({
-          transactionHash: null,
-          error: new Error(API_ERROR_BAD_REQUEST)
-        })
-      );
-    };
-  };
-
-  const badRequestCallback = createBadRequestCallback(createMessage);
   const navigate = useNavigate();
+  const badRequestCallback = useCallback(
+    () => createBadRequestCallback(createMessage),
+    [createMessage]
+  );
   const { hasEnoughFunds, transactionStatusComponent } = useTransactionStatus({
     isParamsMissing,
     errorDifference,
