@@ -1,5 +1,6 @@
 import {
   BackgroundMessage,
+  EventLoginContentMessage,
   EventNetworkChangedContentMessage,
   EventWalletChangedContentMessage,
   GEM_WALLET,
@@ -633,6 +634,17 @@ chrome.runtime.onMessage.addListener(
         chrome.tabs.sendMessage<EventWalletChangedContentMessage>(tabId, {
           app,
           type: 'EVENT_WALLET_CHANGED',
+          payload: {
+            result: payload.result
+          }
+        });
+      });
+    } else if (type === 'EVENT_LOGIN') {
+      const { payload } = message;
+      activeTabs.forEach((tabId) => {
+        chrome.tabs.sendMessage<EventLoginContentMessage>(tabId, {
+          app,
+          type: 'EVENT_LOGIN',
           payload: {
             result: payload.result
           }

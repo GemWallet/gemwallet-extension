@@ -523,6 +523,9 @@
           GemWalletApi.on('walletChanged', (wallet) => {
             console.log('New wallet: ', wallet);
           });
+          GemWalletApi.on('login', (login) => {
+            console.log('Login: ', login);
+          });
         }
       })
       .catch((e) => {

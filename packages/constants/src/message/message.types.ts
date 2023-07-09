@@ -12,6 +12,7 @@ import {
   CreateNFTOfferResponse,
   CreateOfferRequest,
   CreateOfferResponse,
+  EventLoginResponse,
   EventNetworkChangedResponse,
   EventWalletChangedResponse,
   GetAddressResponse,
@@ -101,7 +102,7 @@ export type ReceiveMessage =
   | 'RECEIVE_SIGN_MESSAGE/V3'
   | 'RECEIVE_SUBMIT_TRANSACTION/V3';
 
-export type EventMessage = 'EVENT_NETWORK_CHANGED' | 'EVENT_WALLET_CHANGED';
+export type EventMessage = 'EVENT_NETWORK_CHANGED' | 'EVENT_WALLET_CHANGED' | 'EVENT_LOGIN';
 
 export type SourceMessage = 'GEM_WALLET_MSG_REQUEST' | 'GEM_WALLET_MSG_RESPONSE';
 
@@ -311,6 +312,7 @@ export type PasswordInternalMessagingResponse = InternalMessagingResponse &
 // Event Responses
 export type EventNetworkChangedMessagingResponse = MessagingResponse & EventNetworkChangedResponse;
 export type EventWalletChangedMessagingResponse = MessagingResponse & EventWalletChangedResponse;
+export type EventLoginMessagingResponse = MessagingResponse & EventLoginResponse;
 
 /*
  * Content Script Messages
@@ -478,9 +480,16 @@ export interface EventWalletChangedContentMessage {
   payload: EventWalletChangedMessagingResponse;
 }
 
+export interface EventLoginContentMessage {
+  app: typeof GEM_WALLET;
+  type: 'EVENT_LOGIN';
+  payload: EventLoginMessagingResponse;
+}
+
 export type EventContentMessage =
   | EventNetworkChangedContentMessage
-  | EventWalletChangedContentMessage;
+  | EventWalletChangedContentMessage
+  | EventLoginContentMessage;
 
 /*
  * Background Script Messages
@@ -571,6 +580,8 @@ export type EventNetworkChangedBackgroundMessage = EventNetworkChangedContentMes
 export type EventWalletChangedBackgroundMessage = EventWalletChangedContentMessage &
   BackgroundMessagePayload;
 
+export type EventLoginBackgroundMessage = EventLoginContentMessage & BackgroundMessagePayload;
+
 export type BackgroundMessage =
   //
   // API requests and responses messages
@@ -600,6 +611,7 @@ export type BackgroundMessage =
   | RequestSignMessageMessageDeprecated
   | RequestSubmitTransactionMessage
   // Outputted Messages - DO contain ID within the payloads
+  | EventLoginBackgroundMessage
   | EventNetworkChangedBackgroundMessage
   | EventWalletChangedBackgroundMessage
   | ReceiveAcceptNFTOfferBackgroundMessage

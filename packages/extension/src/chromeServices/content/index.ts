@@ -959,6 +959,14 @@ setTimeout(() => {
         },
         window.location.origin
       );
+    } else if (message.type === 'EVENT_LOGIN') {
+      window.postMessage(
+        {
+          type: 'login',
+          payload: message.payload
+        },
+        window.location.origin
+      );
     }
   });
 });
