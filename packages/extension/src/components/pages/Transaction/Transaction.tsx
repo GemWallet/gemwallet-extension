@@ -33,6 +33,24 @@ import { BaseTransaction } from '../../organisms/BaseTransaction/BaseTransaction
 import { useFees, useTransactionStatus } from '../../organisms/BaseTransaction/hooks';
 import { AsyncTransaction, PageWithTitle } from '../../templates';
 
+const createBadRequestCallback = (
+  createMessage: (messagePayload: {
+    transactionHash: string | null | undefined;
+    error?: Error;
+  }) => ReceiveSendPaymentBackgroundMessage | ReceiveSendPaymentBackgroundMessageDeprecated
+) => {
+  return () => {
+    chrome.runtime.sendMessage<
+      ReceiveSendPaymentBackgroundMessage | ReceiveSendPaymentBackgroundMessageDeprecated
+    >(
+      createMessage({
+        transactionHash: null,
+        error: new Error(API_ERROR_BAD_REQUEST)
+      })
+    );
+  };
+};
+
 interface Params extends BaseTransactionParams {
   id: number;
   // SendPayment fields
@@ -110,25 +128,9 @@ export const Transaction: FC = () => {
     [params.id, receivingMessage]
   );
 
-  const createBadRequestCallback = (
-    createMessage: (messagePayload: {
-      transactionHash: string | null | undefined;
-      error?: Error;
-    }) => ReceiveSendPaymentBackgroundMessage | ReceiveSendPaymentBackgroundMessageDeprecated
-  ) => {
-    return () => {
-      chrome.runtime.sendMessage<
-        ReceiveSendPaymentBackgroundMessage | ReceiveSendPaymentBackgroundMessageDeprecated
-      >(
-        createMessage({
-          transactionHash: null,
-          error: new Error(API_ERROR_BAD_REQUEST)
-        })
-      );
-    };
-  };
-
-  const badRequestCallback = createBadRequestCallback(createMessage);
+  const badRequestCallback = useCallback(() => {
+    createBadRequestCallback(createMessage);
+  }, [createMessage]);
 
   const { hasEnoughFunds, transactionStatusComponent } = useTransactionStatus({
     isParamsMissing,
