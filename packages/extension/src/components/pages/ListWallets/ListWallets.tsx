@@ -4,7 +4,7 @@ import AddIcon from '@mui/icons-material/Add';
 import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
 
-import { GEM_WALLET } from '@gemwallet/constants';
+import { EventWalletChangedBackgroundMessage, GEM_WALLET } from '@gemwallet/constants';
 
 import { ADD_NEW_WALLET_PATH, HOME_PATH } from '../../../constants';
 import { useWallet } from '../../../contexts';
@@ -29,10 +29,11 @@ export const ListWallets: FC = () => {
       selectWallet(index);
 
       chrome.runtime
-        .sendMessage({
+        .sendMessage<EventWalletChangedBackgroundMessage>({
           app: GEM_WALLET,
           type: 'EVENT_WALLET_CHANGED',
           payload: {
+            id: 0,
             result: {
               publicAddress: publicAddress
             }

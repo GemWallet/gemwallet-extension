@@ -3,7 +3,12 @@ import { useContext, useState, useEffect, createContext, FC, useCallback } from 
 import * as Sentry from '@sentry/react';
 import { Client } from 'xrpl';
 
-import { GEM_WALLET, NETWORK, Network } from '@gemwallet/constants';
+import {
+  EventNetworkChangedBackgroundMessage,
+  GEM_WALLET,
+  NETWORK,
+  Network
+} from '@gemwallet/constants';
 import { NetworkData } from '@gemwallet/constants/src/network/network.types';
 
 import { loadNetwork, removeNetwork, saveCustomNetwork, saveNetwork } from '../../utils';
@@ -95,10 +100,11 @@ const NetworkProvider: FC = ({ children }) => {
         setClient(ws);
 
         chrome.runtime
-          .sendMessage({
+          .sendMessage<EventNetworkChangedBackgroundMessage>({
             app: GEM_WALLET,
             type: 'EVENT_NETWORK_CHANGED',
             payload: {
+              id: 0,
               result: {
                 network
               }

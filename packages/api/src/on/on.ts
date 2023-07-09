@@ -1,9 +1,9 @@
 import * as Sentry from '@sentry/react';
 
-import { EventNetworkChangedEventListener } from '@gemwallet/constants';
+import { EventEventListener } from '@gemwallet/constants';
 
 export const on = (eventType: string, callback: (payload: any) => void) => {
-  window.addEventListener('message', (event: EventNetworkChangedEventListener) => {
+  window.addEventListener('message', (event: EventEventListener) => {
     try {
       // We only accept messages from ourselves
       if (event.source !== window) return;

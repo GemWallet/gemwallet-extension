@@ -478,6 +478,10 @@ export interface EventWalletChangedContentMessage {
   payload: EventWalletChangedMessagingResponse;
 }
 
+export type EventContentMessage =
+  | EventNetworkChangedContentMessage
+  | EventWalletChangedContentMessage;
+
 /*
  * Background Script Messages
  */

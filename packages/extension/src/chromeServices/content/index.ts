@@ -12,8 +12,8 @@ import {
   CreateNFTOfferMessagingResponse,
   CreateOfferMessagingResponse,
   CreateOfferEventListener,
+  EventContentMessage,
   EventListener,
-  EventNetworkChangedContentMessage,
   GEM_WALLET,
   GetAddressMessagingResponse,
   GetAddressMessagingResponseDeprecated,
@@ -942,7 +942,7 @@ setTimeout(() => {
   );
 
   // Events
-  chrome.runtime.onMessage.addListener((message: EventNetworkChangedContentMessage) => {
+  chrome.runtime.onMessage.addListener((message: EventContentMessage) => {
     if (message.type === 'EVENT_NETWORK_CHANGED') {
       window.postMessage(
         {

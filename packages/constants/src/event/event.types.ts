@@ -8,6 +8,7 @@ import {
   CreateNFTOfferRequest,
   CreateOfferRequest,
   EventNetworkChangedResponse,
+  EventWalletChangedResponse,
   MintNFTRequest,
   SendPaymentRequest,
   SendPaymentRequestDeprecated,
@@ -303,7 +304,7 @@ interface EventEventData {
   type: EventMessage;
   source: 'GEM_WALLET_MSG_REQUEST';
   messageId: number;
-  payload?: EventNetworkChangedResponse;
+  payload?: EventNetworkChangedResponse | EventWalletChangedResponse;
 }
 
 export interface EventNetworkChangedEventListener extends MessageEvent<EventEventData> {
@@ -315,3 +316,15 @@ export interface EventNetworkChangedEventListener extends MessageEvent<EventEven
     payload: EventNetworkChangedResponse;
   };
 }
+
+export interface EventWalletChangedEventListener extends MessageEvent<EventEventData> {
+  data: {
+    app: typeof GEM_WALLET;
+    type: 'EVENT_WALLET_CHANGED';
+    source: 'GEM_WALLET_MSG_REQUEST';
+    messageId: number;
+    payload: EventWalletChangedResponse;
+  };
+}
+
+export type EventEventListener = EventNetworkChangedEventListener | EventWalletChangedEventListener;
