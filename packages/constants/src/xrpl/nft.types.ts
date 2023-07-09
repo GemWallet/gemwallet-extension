@@ -12,6 +12,11 @@ export interface AccountNFTokenResponse {
   marker?: unknown;
 }
 
+export interface NFTokenIDResponse {
+  hash: string;
+  NFTokenID: string;
+}
+
 export interface NFTData {
   NFTokenID: string;
   NFType?: string;

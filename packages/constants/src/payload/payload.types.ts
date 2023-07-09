@@ -12,7 +12,7 @@ import {
   SetAccountFlags,
   CreateOfferFlags
 } from '../xrpl/basic.types';
-import { AccountNFToken, AccountNFTokenResponse } from './../xrpl/nft.types';
+import { AccountNFToken, AccountNFTokenResponse, NFTokenIDResponse } from './../xrpl/nft.types';
 
 /*
  * Request Payloads
@@ -240,10 +240,6 @@ export interface SubmitTransactionRequest {
   transaction: Transaction;
 }
 
-export interface NftImageRequestPayload {
-  nft: AccountNFToken;
-}
-
 export type RequestPayload =
   | AcceptNFTOfferRequest
   | BurnNFTRequest
@@ -333,11 +329,7 @@ export interface GetNFTResponseDeprecated {
   nfts: AccountNFToken[] | null | undefined;
 }
 
-export interface MintNFTResponse
-  extends BaseResponse<{
-    NFTokenID: string;
-    hash: string;
-  }> {}
+export interface MintNFTResponse extends BaseResponse<NFTokenIDResponse> {}
 
 export interface CreateNFTOfferResponse
   extends BaseResponse<{

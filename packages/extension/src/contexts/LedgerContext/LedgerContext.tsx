@@ -25,6 +25,7 @@ import { BaseTransaction } from 'xrpl/dist/npm/models/transactions/common';
 import {
   AcceptNFTOfferRequest,
   AccountNFToken,
+  AccountNFTokenResponse,
   BaseTransactionRequest,
   BurnNFTRequest,
   CancelNFTOfferRequest,
@@ -34,6 +35,7 @@ import {
   GetNFTRequest,
   MintNFTRequest,
   NFTData,
+  NFTokenIDResponse,
   SendPaymentRequest,
   SetAccountRequest,
   SetTrustlineRequest,
@@ -44,16 +46,6 @@ import { AccountTransaction, WalletLedger } from '../../types';
 import { toXRPLMemos, toXRPLSigners } from '../../utils';
 import { useNetwork } from '../NetworkContext';
 import { useWallet } from '../WalletContext';
-
-interface GetNFTsResponse {
-  account_nfts: AccountNFToken[];
-  marker?: unknown;
-}
-
-interface MintNFTResponse {
-  hash: string;
-  NFTokenID: string;
-}
 
 interface FundWalletResponse {
   wallet: Wallet;
@@ -104,10 +96,10 @@ export interface LedgerContextType {
   setTrustline: (payload: SetTrustlineRequest) => Promise<string>;
   signMessage: (message: string) => string | undefined;
   estimateNetworkFees: (payload: Transaction) => Promise<string>;
-  getNFTs: (payload?: GetNFTRequest) => Promise<GetNFTsResponse>;
+  getNFTs: (payload?: GetNFTRequest) => Promise<AccountNFTokenResponse>;
   getTransactions: () => Promise<AccountTransaction[]>;
   fundWallet: () => Promise<FundWalletResponse>;
-  mintNFT: (payload: MintNFTRequest) => Promise<MintNFTResponse>;
+  mintNFT: (payload: MintNFTRequest) => Promise<NFTokenIDResponse>;
   createNFTOffer: (payload: CreateNFTOfferRequest) => Promise<CreateNFTOfferResponse>;
   cancelNFTOffer: (payload: CancelNFTOfferRequest) => Promise<CancelNFTOfferResponse>;
   acceptNFTOffer: (payload: AcceptNFTOfferRequest) => Promise<AcceptNFTOfferResponse>;
