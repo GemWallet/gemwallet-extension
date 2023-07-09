@@ -25,7 +25,7 @@ const SECRET_TYPES = [
   },
   {
     name: 'Secret numbers',
-    description: '8 rows of 6 digits',
+    description: '8 rows of 6 digits (XUMM import)',
     link: IMPORT_SECRET_NUMBERS_PATH
   }
 ];
