@@ -13,7 +13,7 @@ import {
   ResponseType
 } from '@gemwallet/constants';
 
-import { API_ERROR_BAD_DESTINATION, ERROR_RED } from '../../../constants';
+import { API_ERROR_BAD_DESTINATION, API_ERROR_BAD_REQUEST, ERROR_RED } from '../../../constants';
 import { useLedger, useNetwork } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
 import {
@@ -70,14 +70,6 @@ export const Transaction: FC = () => {
     },
     params.fee
   );
-  const { hasEnoughFunds, transactionStatusComponent } = useTransactionStatus({
-    isParamsMissing,
-    errorDifference,
-    network,
-    difference,
-    transaction,
-    errorRequestRejection
-  });
 
   const { messageType, receivingMessage } = useMemo(() => {
     const queryString = window.location.search;
@@ -117,6 +109,36 @@ export const Transaction: FC = () => {
     },
     [params.id, receivingMessage]
   );
+
+  const createBadRequestCallback = (
+    createMessage: (messagePayload: {
+      transactionHash: string | null | undefined;
+      error?: Error;
+    }) => ReceiveSendPaymentBackgroundMessage | ReceiveSendPaymentBackgroundMessageDeprecated
+  ) => {
+    return () => {
+      chrome.runtime.sendMessage<
+        ReceiveSendPaymentBackgroundMessage | ReceiveSendPaymentBackgroundMessageDeprecated
+      >(
+        createMessage({
+          transactionHash: null,
+          error: new Error(API_ERROR_BAD_REQUEST)
+        })
+      );
+    };
+  };
+
+  const badRequestCallback = createBadRequestCallback(createMessage);
+
+  const { hasEnoughFunds, transactionStatusComponent } = useTransactionStatus({
+    isParamsMissing,
+    errorDifference,
+    network,
+    difference,
+    transaction,
+    errorRequestRejection,
+    badRequestCallback
+  });
 
   useEffect(() => {
     const queryString = window.location.search;
