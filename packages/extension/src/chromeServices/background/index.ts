@@ -47,8 +47,8 @@ import {
   PARAMETER_TRANSACTION_PAYMENT,
   PARAMETER_TRANSACTION_TRUSTLINE,
   PARAMETER_TRANSACTION_SET_ACCOUNT
-} from './../constants/parameters';
-import { MAIN_FILE } from './../constants/routes';
+} from '../../constants/parameters';
+import { MAIN_FILE } from '../../constants/routes';
 
 const NOTIFICATION_HEIGHT = 620;
 const NOTIFICATION_WIDTH = 360;
