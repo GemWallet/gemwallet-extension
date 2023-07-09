@@ -13,6 +13,7 @@ import {
   CreateOfferRequest,
   CreateOfferResponse,
   EventLoginResponse,
+  EventLogoutResponse,
   EventNetworkChangedResponse,
   EventWalletChangedResponse,
   GetAddressResponse,
@@ -102,7 +103,11 @@ export type ReceiveMessage =
   | 'RECEIVE_SIGN_MESSAGE/V3'
   | 'RECEIVE_SUBMIT_TRANSACTION/V3';
 
-export type EventMessage = 'EVENT_NETWORK_CHANGED' | 'EVENT_WALLET_CHANGED' | 'EVENT_LOGIN';
+export type EventMessage =
+  | 'EVENT_NETWORK_CHANGED'
+  | 'EVENT_WALLET_CHANGED'
+  | 'EVENT_LOGIN'
+  | 'EVENT_LOGOUT';
 
 export type SourceMessage = 'GEM_WALLET_MSG_REQUEST' | 'GEM_WALLET_MSG_RESPONSE';
 
@@ -313,6 +318,7 @@ export type PasswordInternalMessagingResponse = InternalMessagingResponse &
 export type EventNetworkChangedMessagingResponse = MessagingResponse & EventNetworkChangedResponse;
 export type EventWalletChangedMessagingResponse = MessagingResponse & EventWalletChangedResponse;
 export type EventLoginMessagingResponse = MessagingResponse & EventLoginResponse;
+export type EventLogoutMessagingResponse = MessagingResponse & EventLogoutResponse;
 
 /*
  * Content Script Messages
@@ -486,10 +492,17 @@ export interface EventLoginContentMessage {
   payload: EventLoginMessagingResponse;
 }
 
+export interface EventLogoutContentMessage {
+  app: typeof GEM_WALLET;
+  type: 'EVENT_LOGOUT';
+  payload: EventLogoutMessagingResponse;
+}
+
 export type EventContentMessage =
   | EventNetworkChangedContentMessage
   | EventWalletChangedContentMessage
-  | EventLoginContentMessage;
+  | EventLoginContentMessage
+  | EventLogoutContentMessage;
 
 /*
  * Background Script Messages
@@ -582,6 +595,8 @@ export type EventWalletChangedBackgroundMessage = EventWalletChangedContentMessa
 
 export type EventLoginBackgroundMessage = EventLoginContentMessage & BackgroundMessagePayload;
 
+export type EventLogoutBackgroundMessage = EventLogoutContentMessage & BackgroundMessagePayload;
+
 export type BackgroundMessage =
   //
   // API requests and responses messages
@@ -612,6 +627,7 @@ export type BackgroundMessage =
   | RequestSubmitTransactionMessage
   // Outputted Messages - DO contain ID within the payloads
   | EventLoginBackgroundMessage
+  | EventLogoutBackgroundMessage
   | EventNetworkChangedBackgroundMessage
   | EventWalletChangedBackgroundMessage
   | ReceiveAcceptNFTOfferBackgroundMessage

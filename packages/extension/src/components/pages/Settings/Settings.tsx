@@ -10,7 +10,10 @@ import {
   ListItemText,
   Typography
 } from '@mui/material';
+import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
+
+import { EventLogoutBackgroundMessage, GEM_WALLET } from '@gemwallet/constants';
 
 import {
   ABOUT_PATH,
@@ -30,6 +33,21 @@ export const Settings: FC = () => {
 
   const handleLock = useCallback(() => {
     signOut();
+
+    chrome.runtime
+      .sendMessage<EventLogoutBackgroundMessage>({
+        app: GEM_WALLET,
+        type: 'EVENT_LOGOUT',
+        payload: {
+          id: 0,
+          result: {
+            loggedIn: false
+          }
+        }
+      })
+      .catch((e) => {
+        Sentry.captureException(e);
+      });
   }, [signOut]);
 
   const items = useMemo(

@@ -967,6 +967,14 @@ setTimeout(() => {
         },
         window.location.origin
       );
+    } else if (message.type === 'EVENT_LOGOUT') {
+      window.postMessage(
+        {
+          type: 'logout',
+          payload: message.payload
+        },
+        window.location.origin
+      );
     }
   });
 });

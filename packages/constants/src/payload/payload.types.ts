@@ -416,3 +416,5 @@ export interface EventNetworkChangedResponse extends BaseEventResponse<{ network
 export interface EventWalletChangedResponse extends BaseEventResponse<{ publicAddress: string }> {}
 
 export interface EventLoginResponse extends BaseEventResponse<{ loggedIn: boolean }> {}
+
+export interface EventLogoutResponse extends BaseEventResponse<{ loggedIn: boolean }> {}

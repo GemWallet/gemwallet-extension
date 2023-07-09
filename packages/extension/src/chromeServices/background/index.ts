@@ -1,6 +1,7 @@
 import {
   BackgroundMessage,
   EventLoginContentMessage,
+  EventLogoutContentMessage,
   EventNetworkChangedContentMessage,
   EventWalletChangedContentMessage,
   GEM_WALLET,
@@ -645,6 +646,17 @@ chrome.runtime.onMessage.addListener(
         chrome.tabs.sendMessage<EventLoginContentMessage>(tabId, {
           app,
           type: 'EVENT_LOGIN',
+          payload: {
+            result: payload.result
+          }
+        });
+      });
+    } else if (type === 'EVENT_LOGOUT') {
+      const { payload } = message;
+      activeTabs.forEach((tabId) => {
+        chrome.tabs.sendMessage<EventLogoutContentMessage>(tabId, {
+          app,
+          type: 'EVENT_LOGOUT',
           payload: {
             result: payload.result
           }

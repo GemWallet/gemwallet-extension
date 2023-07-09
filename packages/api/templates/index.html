@@ -526,6 +526,9 @@
           GemWalletApi.on('login', (login) => {
             console.log('Login: ', login);
           });
+          GemWalletApi.on('logout', (login) => {
+            console.log('Logout: ', login);
+          });
         }
       })
       .catch((e) => {
