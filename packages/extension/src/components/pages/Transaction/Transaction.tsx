@@ -1,77 +1,83 @@
 import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 
 import ErrorIcon from '@mui/icons-material/Error';
-import { Button, Container, IconButton, Paper, Tooltip, Typography } from '@mui/material';
-import * as Sentry from '@sentry/react';
-import { dropsToXrp, isValidAddress } from 'xrpl';
+import { Button, Container, Paper, Typography } from '@mui/material';
+import { isValidAddress } from 'xrpl';
 import { Amount } from 'xrpl/dist/npm/models/common';
 
 import {
   GEM_WALLET,
-  Memo,
   PaymentFlags,
   ReceiveSendPaymentBackgroundMessage,
   ReceiveSendPaymentBackgroundMessageDeprecated,
   ResponseType
 } from '@gemwallet/constants';
 
-import {
-  API_ERROR_BAD_DESTINATION,
-  API_ERROR_BAD_REQUEST,
-  DEFAULT_RESERVE,
-  ERROR_RED
-} from '../../../constants';
-import { useLedger, useNetwork, useServer, useWallet } from '../../../contexts';
+import { API_ERROR_BAD_DESTINATION, ERROR_RED } from '../../../constants';
+import { useLedger, useNetwork } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
 import {
-  checkFee,
   formatAmount,
-  formatFlags,
-  formatToken,
   fromHexMemos,
   parseAmount,
-  parseMemos,
   parsePaymentFlags,
   toXRPLMemos
 } from '../../../utils';
+import {
+  BaseTransactionParams,
+  initialBaseTransactionParams,
+  parseBaseParamsFromURLParams
+} from '../../../utils/baseParams';
 import { serializeError, toUIError } from '../../../utils/errors';
-import { TileLoader } from '../../atoms';
-import { AsyncTransaction, PageWithSpinner, PageWithTitle } from '../../templates';
+import { BaseTransaction } from '../../organisms/BaseTransaction/BaseTransaction';
+import { useFees, useTransactionStatus } from '../../organisms/BaseTransaction/hooks';
+import { AsyncTransaction, PageWithTitle } from '../../templates';
 
-const DEFAULT_FEES = 'Loading ...';
-
-interface Params {
+interface Params extends BaseTransactionParams {
+  id: number;
+  // SendPayment fields
   amount: Amount | null;
   destination: string | null;
-  id: number;
-  memos: Memo[] | null;
   destinationTag: number | null;
-  fee: string | null;
   flags: PaymentFlags | null;
 }
 
 export const Transaction: FC = () => {
   const [params, setParams] = useState<Params>({
+    id: 0,
+    // BaseTransaction fields
+    ...initialBaseTransactionParams,
+    // SendPayment fields
     amount: null,
     destination: null,
-    id: 0,
-    memos: null,
     destinationTag: null,
-    fee: null,
     flags: null
   });
-  const [estimatedFees, setEstimatedFees] = useState<string>(DEFAULT_FEES);
-  const [errorFees, setErrorFees] = useState('');
   const [errorRequestRejection, setErrorRequestRejection] = useState<string>('');
-  const [difference, setDifference] = useState<number | undefined>();
-  const [errorDifference, setErrorDifference] = useState<Error | undefined>();
   const [isParamsMissing, setIsParamsMissing] = useState(false);
-
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
-  const { estimateNetworkFees, sendPayment } = useLedger();
-  const { getCurrentWallet } = useWallet();
-  const { client, network } = useNetwork();
-  const { serverInfo } = useServer();
+  const { sendPayment } = useLedger();
+  const { network } = useNetwork();
+  const { estimatedFees, errorFees, difference, errorDifference } = useFees(
+    {
+      TransactionType: 'Payment',
+      Account: '',
+      Amount: params.amount ?? '',
+      Destination: params.destination ?? '',
+      Memos: params.memos ? toXRPLMemos(params.memos) : undefined,
+      DestinationTag: params.destinationTag ?? undefined,
+      Flags: params.flags ?? undefined
+    },
+    params.fee
+  );
+  const { hasEnoughFunds, transactionStatusComponent } = useTransactionStatus({
+    isParamsMissing,
+    errorDifference,
+    network,
+    difference,
+    transaction,
+    errorRequestRejection
+  });
 
   const { messageType, receivingMessage } = useMemo(() => {
     const queryString = window.location.search;
@@ -115,6 +121,23 @@ export const Transaction: FC = () => {
   useEffect(() => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
+    const id = Number(urlParams.get('id')) || 0;
+
+    // BaseTransaction fields
+    const {
+      fee,
+      sequence,
+      accountTxnID,
+      lastLedgerSequence,
+      memos,
+      signers,
+      sourceTag,
+      signingPubKey,
+      ticketSequence,
+      txnSignature
+    } = parseBaseParamsFromURLParams(urlParams);
+
+    // SendPayment fields
     const amount = parseAmount(
       urlParams.get('amount'),
       urlParams.get('currency'),
@@ -122,12 +145,9 @@ export const Transaction: FC = () => {
       messageType
     );
     const destination = urlParams.get('destination');
-    const id = Number(urlParams.get('id')) || 0;
-    const memos = parseMemos(urlParams.get('memos'));
     const destinationTag = urlParams.get('destinationTag')
       ? Number(urlParams.get('destinationTag'))
       : null;
-    const fee = checkFee(urlParams.get('fee'));
     const flags = parsePaymentFlags(urlParams.get('flags'));
 
     if (amount === null || destination === null) {
@@ -135,77 +155,25 @@ export const Transaction: FC = () => {
     }
 
     setParams({
+      id,
+      // BaseTransaction fields
+      fee,
+      sequence,
+      accountTxnID,
+      lastLedgerSequence,
+      memos,
+      signers,
+      sourceTag,
+      signingPubKey,
+      ticketSequence,
+      txnSignature,
+      // SendPayment fields
       amount,
       destination,
-      id,
-      memos,
       destinationTag,
-      fee,
       flags
     });
   }, [messageType]);
-
-  useEffect(() => {
-    const currentWallet = getCurrentWallet();
-    if (currentWallet && client && params.amount && params.destination) {
-      estimateNetworkFees({
-        TransactionType: 'Payment',
-        Account: currentWallet.publicAddress,
-        Amount: params.amount,
-        Destination: params.destination,
-        Memos: params.memos ? toXRPLMemos(params.memos) : undefined,
-        DestinationTag: params.destinationTag ?? undefined,
-        Flags: params.flags ?? undefined
-      })
-        .then((fees) => {
-          setEstimatedFees(fees);
-        })
-        .catch((e) => {
-          chrome.runtime.sendMessage<
-            ReceiveSendPaymentBackgroundMessage | ReceiveSendPaymentBackgroundMessageDeprecated
-          >(createMessage({ transactionHash: null, error: e }));
-          Sentry.captureException(e);
-          setErrorFees(e.message);
-        });
-    }
-  }, [
-    client,
-    estimateNetworkFees,
-    getCurrentWallet,
-    params.amount,
-    params.destination,
-    params.memos,
-    params.destinationTag,
-    params.fee,
-    params.flags,
-    createMessage
-  ]);
-
-  useEffect(() => {
-    const currentWallet = getCurrentWallet();
-    if (currentWallet && params.amount) {
-      const amount =
-        typeof params.amount === 'string' ? dropsToXrp(params.amount) : params.amount.value;
-      client
-        ?.getXrpBalance(currentWallet!.publicAddress)
-        .then((currentBalance) => {
-          const difference =
-            Number(currentBalance) -
-            Number(serverInfo?.info.validated_ledger?.reserve_base_xrp || DEFAULT_RESERVE) -
-            Number(amount);
-          setDifference(difference);
-        })
-        .catch((e) => {
-          setErrorDifference(e);
-        });
-    }
-  }, [
-    params.amount,
-    client,
-    getCurrentWallet,
-    serverInfo?.info.validated_ledger?.reserve_base_xrp,
-    createMessage
-  ]);
 
   const isValidDestination = useMemo(() => {
     if (params.destination && isValidAddress(params.destination)) {
@@ -257,29 +225,6 @@ export const Transaction: FC = () => {
     sendPayment
   ]);
 
-  const hasEnoughFunds = useMemo(() => {
-    return Number(difference) > 0;
-  }, [difference]);
-
-  if (isParamsMissing) {
-    chrome.runtime.sendMessage<
-      ReceiveSendPaymentBackgroundMessage | ReceiveSendPaymentBackgroundMessageDeprecated
-    >(createMessage({ transactionHash: null, error: new Error(API_ERROR_BAD_REQUEST) }));
-    return (
-      <AsyncTransaction
-        title="Transaction rejected"
-        subtitle={
-          <>
-            Your transaction failed, please try again.
-            <br />
-            An amount and a destination have not been provided to the extension.
-          </>
-        }
-        transaction={TransactionStatus.Rejected}
-      />
-    );
-  }
-
   if (!isValidDestination) {
     chrome.runtime.sendMessage<
       ReceiveSendPaymentBackgroundMessage | ReceiveSendPaymentBackgroundMessageDeprecated
@@ -299,172 +244,80 @@ export const Transaction: FC = () => {
     );
   }
 
-  if (errorDifference) {
-    chrome.runtime.sendMessage<
-      ReceiveSendPaymentBackgroundMessage | ReceiveSendPaymentBackgroundMessageDeprecated
-    >(createMessage({ transactionHash: null, error: errorDifference }));
-    if (errorDifference.message === 'Account not found.') {
-      return (
-        <AsyncTransaction
-          title="Account not activated"
-          subtitle={
-            <>
-              {`Your account is not activated on the ${network} network.`}
-              <br />
-              {'Switch network or activate your account.'}
-            </>
-          }
-          transaction={TransactionStatus.Rejected}
-        />
-      );
-    }
-    Sentry.captureException('Transaction failed - errorDifference: ' + errorDifference.message);
-    return (
-      <AsyncTransaction
-        title="Error"
-        subtitle={errorDifference.message}
-        transaction={TransactionStatus.Rejected}
-      />
-    );
-  }
+  const {
+    // BaseTransaction fields
+    fee,
+    memos,
+    // SendPayment fields
+    amount,
+    destination,
+    destinationTag,
+    flags
+  } = params;
 
-  if (!difference) {
-    return <PageWithSpinner />;
-  }
-
-  if (transaction === TransactionStatus.Success || transaction === TransactionStatus.Pending) {
-    return (
-      <AsyncTransaction
-        title={
-          transaction === TransactionStatus.Success
-            ? 'Transaction accepted'
-            : 'Transaction in progress'
-        }
-        subtitle={
-          transaction === TransactionStatus.Success ? (
-            'Transaction Successful'
-          ) : (
-            <>
-              We are processing your transaction
-              <br />
-              Please wait
-            </>
-          )
-        }
-        transaction={transaction}
-      />
-    );
-  }
-
-  if (transaction === TransactionStatus.Rejected) {
-    return (
-      <AsyncTransaction
-        title="Transaction rejected"
-        subtitle={
-          <>
-            Your transaction failed, please try again.
-            <br />
-            {errorRequestRejection ? errorRequestRejection : 'Something went wrong'}
-          </>
-        }
-        transaction={TransactionStatus.Rejected}
-      />
-    );
-  }
-
-  const { amount, destination, memos, destinationTag, fee, flags } = params;
-  const decodedMemos = fromHexMemos(memos || []);
+  const decodedMemos = fromHexMemos(memos || []) || [];
 
   return (
-    <PageWithTitle title="Confirm Transaction">
-      {!hasEnoughFunds ? (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <ErrorIcon style={{ color: ERROR_RED }} />
-          <Typography variant="body1" style={{ marginLeft: '10px', color: ERROR_RED }}>
-            Insufficient funds.
-          </Typography>
-        </div>
-      ) : null}
-      <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-        <Typography variant="body1">Destination:</Typography>
-        <Typography variant="body2">{destination}</Typography>
-      </Paper>
-      {decodedMemos && decodedMemos.length > 0 ? (
-        <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-          <Typography variant="body1">Memos:</Typography>
-          {decodedMemos.map((memo, index) => (
-            <div
-              key={index}
-              style={{
-                marginBottom: index === decodedMemos.length - 1 ? 0 : '8px'
-              }}
-            >
-              <Typography
-                variant="body2"
-                style={{
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  maxWidth: '100%'
-                }}
-              >
-                {memo.memo.memoData}
+    <>
+      {transactionStatusComponent ? (
+        <div>{transactionStatusComponent}</div>
+      ) : (
+        <PageWithTitle title="Confirm Transaction">
+          {!hasEnoughFunds ? (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              <ErrorIcon style={{ color: ERROR_RED }} />
+              <Typography variant="body1" style={{ marginLeft: '10px', color: ERROR_RED }}>
+                Insufficient funds.
               </Typography>
             </div>
-          ))}
-        </Paper>
-      ) : null}
-      {destinationTag ? (
-        <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-          <Typography variant="body1">Destination Tag:</Typography>
-          <Typography variant="body2">{destinationTag}</Typography>
-        </Paper>
-      ) : null}
-      {flags ? (
-        <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-          <Typography variant="body1">Flags:</Typography>
-          <Typography variant="body2" component="div">
-            <pre style={{ margin: 0 }}>{formatFlags(flags)}</pre>
-          </Typography>
-        </Paper>
-      ) : null}
-      <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-        <Typography variant="body1">Amount:</Typography>
-        <Typography variant="h6" component="h1" align="right">
-          {amount ? formatAmount(amount) : 'Not found'}
-        </Typography>
-      </Paper>
-      <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-        <Typography variant="body1" style={{ display: 'flex', alignItems: 'center' }}>
-          <Tooltip title="These are the fees to make the transaction over the network">
-            <IconButton size="small">
-              <ErrorIcon />
-            </IconButton>
-          </Tooltip>
-          Network fees:
-        </Typography>
-        <Typography variant="body2" gutterBottom align="right">
-          {errorFees ? (
-            <Typography variant="caption" style={{ color: ERROR_RED }}>
-              {errorFees}
+          ) : null}
+          <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
+            <Typography variant="body1">Destination:</Typography>
+            <Typography variant="body2">{destination}</Typography>
+          </Paper>
+          {destinationTag ? (
+            <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
+              <Typography variant="body1">Destination Tag:</Typography>
+              <Typography variant="body2">{destinationTag}</Typography>
+            </Paper>
+          ) : null}
+          <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
+            <Typography variant="body1">Amount:</Typography>
+            <Typography variant="h6" component="h1" align="right">
+              {amount ? formatAmount(amount) : 'Not found'}
             </Typography>
-          ) : estimatedFees === DEFAULT_FEES ? (
-            <TileLoader secondLineOnly />
-          ) : fee ? (
-            formatToken(Number(fee), 'XRP (manual)', true)
-          ) : (
-            formatAmount(estimatedFees)
-          )}
-        </Typography>
-      </Paper>
-      <Container style={{ display: 'flex', justifyContent: 'space-evenly' }}>
-        <Button variant="contained" color="secondary" onClick={handleReject}>
-          Reject
-        </Button>
-        <Button variant="contained" onClick={handleConfirm} disabled={!hasEnoughFunds}>
-          Confirm
-        </Button>
-      </Container>
-    </PageWithTitle>
+          </Paper>
+          <div style={{ marginBottom: '40px' }}>
+            <BaseTransaction
+              fee={fee ? Number(fee) : null}
+              memos={decodedMemos}
+              flags={flags}
+              errorFees={errorFees}
+              estimatedFees={estimatedFees}
+            />
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              position: 'fixed',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              backgroundColor: '#1d1d1d'
+            }}
+          >
+            <Container style={{ display: 'flex', justifyContent: 'space-evenly', margin: '10px' }}>
+              <Button variant="contained" color="secondary" onClick={handleReject}>
+                Reject
+              </Button>
+              <Button variant="contained" onClick={handleConfirm} disabled={!hasEnoughFunds}>
+                Confirm
+              </Button>
+            </Container>
+          </div>
+        </PageWithTitle>
+      )}
+    </>
   );
 };

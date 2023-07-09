@@ -37,7 +37,7 @@ export const useTransactionStatus = ({
             <>
               Your transaction failed, please try again.
               <br />
-              At least one parameter should be provided to the extension.
+              Some mandatory fields have not been provided.
             </>
           }
           transaction={TransactionStatus.Rejected}
