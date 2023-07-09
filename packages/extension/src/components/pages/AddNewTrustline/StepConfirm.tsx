@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 
 import ErrorIcon from '@mui/icons-material/Error';
 import { Button, Container, IconButton, Paper, Tooltip, Typography } from '@mui/material';
@@ -28,7 +28,7 @@ export const StepConfirm: FC<StepConfirmProps> = ({
   onConfirm
 }) => {
   const limitAmount = params.limitAmount as IssuedCurrencyAmount;
-  const memos = fromHexMemos(params.memos ?? undefined) ?? [];
+  const memos = useMemo(() => fromHexMemos(params.memos ?? undefined) ?? [], [params.memos]);
 
   return (
     <PageWithTitle title="Add Trustline - Confirm">
