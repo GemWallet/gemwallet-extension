@@ -269,7 +269,7 @@ const LedgerProvider: FC = ({ children }) => {
   );
 
   const sendPayment = useCallback(
-    async ({ amount, destination, memos, destinationTag, fee, flags }: SendPaymentRequest) => {
+    async (payload: SendPaymentRequest) => {
       const wallet = getCurrentWallet();
       if (!client) {
         throw new Error('You need to be connected to a ledger to make a transaction');
@@ -278,16 +278,12 @@ const LedgerProvider: FC = ({ children }) => {
       } else {
         // Prepare the transaction
         const prepared: Payment = await client.autofill({
-          TransactionType: 'Payment',
-          Account: wallet.publicAddress,
-          Amount: amount,
-          Destination: destination,
-          // Only add the Memos and DestinationTag fields if they are are defined, otherwise it would fail
-          ...(memos && { Memos: toXRPLMemos(memos) }), // Each field of each memo is hex encoded
-          ...(destinationTag &&
-            Number(destinationTag) && { DestinationTag: Number(destinationTag) }),
-          ...(fee && { Fee: fee }), // In drops
-          ...(flags && { Flags: flags })
+          ...(buildBaseTransaction(payload, wallet, 'Payment') as Payment),
+          Amount: payload.amount,
+          Destination: payload.destination,
+          ...(payload.destinationTag &&
+            Number(payload.destinationTag) && { DestinationTag: Number(payload.destinationTag) }),
+          ...(payload.flags && { Flags: payload.flags })
         });
         // Sign the transaction
         const signed = wallet.wallet.sign(prepared);
@@ -306,7 +302,7 @@ const LedgerProvider: FC = ({ children }) => {
   );
 
   const setTrustline = useCallback(
-    async ({ limitAmount, fee, memos, flags }: SetTrustlineRequest) => {
+    async (payload: SetTrustlineRequest) => {
       const wallet = getCurrentWallet();
       if (!client) {
         throw new Error('You need to be connected to a ledger to add a trustline');
@@ -316,12 +312,9 @@ const LedgerProvider: FC = ({ children }) => {
         // Prepare the transaction
         try {
           const prepared: TrustSet = await client.autofill({
-            TransactionType: 'TrustSet',
-            Account: wallet.publicAddress,
-            Fee: fee, // In drops
-            LimitAmount: limitAmount,
-            ...(memos && { Memos: toXRPLMemos(memos) }), // Each field of each memo is hex encoded
-            ...(flags && { Flags: flags })
+            ...(buildBaseTransaction(payload, wallet, 'TrustSet') as TrustSet),
+            LimitAmount: payload.limitAmount,
+            ...(payload.flags && { Flags: payload.flags })
           });
           // Sign the transaction
           const signed = wallet.wallet.sign(prepared);

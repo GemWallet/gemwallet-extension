@@ -14,6 +14,9 @@ interface TransactionStatusProps {
   difference: number | undefined;
   transaction: TransactionStatus;
   errorRequestRejection: string;
+  errorValue?: string;
+  badRequestCallback?: () => void;
+  onClick?: () => void;
 }
 
 export const useTransactionStatus = ({
@@ -22,7 +25,10 @@ export const useTransactionStatus = ({
   network,
   difference,
   transaction,
-  errorRequestRejection
+  errorRequestRejection,
+  errorValue,
+  badRequestCallback,
+  onClick
 }: TransactionStatusProps) => {
   const hasEnoughFunds = useMemo(() => {
     return Number(difference) > 0;
@@ -30,6 +36,9 @@ export const useTransactionStatus = ({
 
   const transactionStatusComponent = useMemo(() => {
     if (isParamsMissing) {
+      if (badRequestCallback) {
+        badRequestCallback();
+      }
       return (
         <AsyncTransaction
           title="Transaction rejected"
@@ -37,10 +46,11 @@ export const useTransactionStatus = ({
             <>
               Your transaction failed, please try again.
               <br />
-              At least one parameter should be provided to the extension.
+              Some mandatory fields have not been provided.
             </>
           }
           transaction={TransactionStatus.Rejected}
+          {...(onClick && { onClick })}
         />
       );
     }
@@ -54,10 +64,11 @@ export const useTransactionStatus = ({
               <>
                 {`Your account is not activated on the ${network} network.`}
                 <br />
-                {'Switch network or activate your account.'}
+                Switch network or activate your account.
               </>
             }
             transaction={TransactionStatus.Rejected}
+            {...(onClick && { onClick })}
           />
         );
       }
@@ -73,6 +84,26 @@ export const useTransactionStatus = ({
 
     if (!difference) {
       return <PageWithSpinner />;
+    }
+
+    if (errorValue) {
+      if (badRequestCallback) {
+        badRequestCallback();
+      }
+      return (
+        <AsyncTransaction
+          title="Incorrect transaction"
+          subtitle={
+            <>
+              {errorValue}
+              <br />
+              Please try again with a correct transaction
+            </>
+          }
+          transaction={TransactionStatus.Rejected}
+          {...(onClick && { onClick })}
+        />
+      );
     }
 
     if (transaction === TransactionStatus.Success || transaction === TransactionStatus.Pending) {
@@ -95,6 +126,7 @@ export const useTransactionStatus = ({
             )
           }
           transaction={transaction}
+          {...(onClick && { onClick })}
         />
       );
     }
@@ -111,10 +143,21 @@ export const useTransactionStatus = ({
             </>
           }
           transaction={TransactionStatus.Rejected}
+          {...(onClick && { onClick })}
         />
       );
     }
-  }, [isParamsMissing, errorDifference, network, difference, transaction, errorRequestRejection]);
+  }, [
+    isParamsMissing,
+    errorDifference,
+    difference,
+    errorValue,
+    transaction,
+    badRequestCallback,
+    onClick,
+    network,
+    errorRequestRejection
+  ]);
 
   return { hasEnoughFunds, transactionStatusComponent };
 };
