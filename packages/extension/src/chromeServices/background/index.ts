@@ -617,18 +617,30 @@ chrome.runtime.onMessage.addListener(
        */
     } else if (type === 'EVENT_NETWORK_CHANGED') {
       const { payload } = message;
-      chrome.tabs.query({}, function (tabs) {
-        for (let i = 0; i < tabs.length; ++i) {
-          if (tabs[i].id === undefined) continue;
-          chrome.tabs.sendMessage<EventNetworkChangedContentMessage>(tabs[i].id as number, {
-            app,
-            type: 'EVENT_NETWORK_CHANGED',
-            payload: {
-              result: payload.result
-            }
-          });
-        }
+      activeTabs.forEach((tabId) => {
+        chrome.tabs.sendMessage<EventNetworkChangedContentMessage>(tabId, {
+          app,
+          type: 'EVENT_NETWORK_CHANGED',
+          payload: {
+            result: payload.result
+          }
+        });
       });
     }
   }
 );
+
+/*
+ * Tabs management
+ */
+let activeTabs = new Set<number>();
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (sender.tab?.id !== undefined) {
+    if (request.type === 'CONTENT_SCRIPT_LOADED') {
+      activeTabs.add(sender.tab.id);
+    } else if (request.type === 'CONTENT_SCRIPT_UNLOADED') {
+      activeTabs.delete(sender.tab.id);
+    }
+  }
+});

@@ -954,3 +954,18 @@ setTimeout(() => {
     }
   });
 });
+
+/*
+ * Tabs management
+ */
+// When the content script is loaded, we send a message to the background script to add the tab to the list of tabs
+chrome.runtime.sendMessage({
+  type: 'CONTENT_SCRIPT_LOADED'
+});
+
+// When the content script is unloaded, we send a message to the background script to remove the tab from the list of tabs
+window.onbeforeunload = () => {
+  chrome.runtime.sendMessage({
+    type: 'CONTENT_SCRIPT_UNLOADED'
+  });
+};
