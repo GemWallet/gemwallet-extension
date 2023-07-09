@@ -64,7 +64,7 @@ export const useTransactionStatus = ({
               <>
                 {`Your account is not activated on the ${network} network.`}
                 <br />
-                {'Switch network or activate your account.'}
+                Switch network or activate your account.
               </>
             }
             transaction={TransactionStatus.Rejected}
@@ -97,7 +97,7 @@ export const useTransactionStatus = ({
             <>
               {errorValue}
               <br />
-              {'Please try again with a correct transaction'}
+              Please try again with a correct transaction
             </>
           }
           transaction={TransactionStatus.Rejected}
