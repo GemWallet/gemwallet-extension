@@ -420,7 +420,12 @@ export interface EventNetworkChangedResponse
     };
   }> {}
 
-export interface EventWalletChangedResponse extends BaseEventResponse<{ publicAddress: string }> {}
+export interface EventWalletChangedResponse
+  extends BaseEventResponse<{
+    wallet: {
+      publicAddress: string;
+    };
+  }> {}
 
 export interface EventLoginResponse extends BaseEventResponse<{ loggedIn: boolean }> {}
 

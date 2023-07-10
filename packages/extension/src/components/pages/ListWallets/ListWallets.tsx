@@ -35,7 +35,9 @@ export const ListWallets: FC = () => {
           payload: {
             id: 0,
             result: {
-              publicAddress: publicAddress
+              wallet: {
+                publicAddress: publicAddress
+              }
             }
           }
         })
