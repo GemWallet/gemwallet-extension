@@ -172,7 +172,7 @@ const LedgerProvider: FC = ({ children }) => {
   );
 
   const getNFTs = useCallback(
-    async (payload?: GetNFTRequest): Promise<GetNFTsResponse> => {
+    async (payload?: GetNFTRequest): Promise<AccountNFTokenResponse> => {
       const wallet = getCurrentWallet();
       if (!client) {
         throw new Error('You need to be connected to a ledger to get the NFTs');
