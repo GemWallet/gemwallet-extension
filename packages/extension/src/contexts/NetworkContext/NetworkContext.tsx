@@ -106,7 +106,11 @@ const NetworkProvider: FC = ({ children }) => {
             payload: {
               id: 0,
               result: {
-                network
+                network: {
+                  name: NETWORK[network].name.toLowerCase(),
+                  server: NETWORK[network].server,
+                  description: NETWORK[network].description
+                }
               }
             }
           })
