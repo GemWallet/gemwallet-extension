@@ -1,5 +1,6 @@
 import { FC, useCallback, useEffect } from 'react';
 
+import { CircularProgress, Container, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
 import { Route, Routes, useLocation } from 'react-router-dom';
 
@@ -7,6 +8,9 @@ import {
   GEM_WALLET,
   GetNetworkResponse,
   GetNetworkResponseDeprecated,
+  InternalReceivePasswordContentMessage,
+  MSG_INTERNAL_RECEIVE_PASSWORD,
+  MSG_INTERNAL_REQUEST_PASSWORD,
   NETWORK,
   Network,
   ReceiveGetNetworkBackgroundMessage,
@@ -14,6 +18,7 @@ import {
   ResponseType
 } from '@gemwallet/constants';
 
+import { Logo } from './components/atoms';
 import { PrivateRoute } from './components/atoms/PrivateRoute';
 import {
   About,
@@ -99,7 +104,7 @@ import {
   TRUSTED_APPS_PATH,
   WELCOME_PATH
 } from './constants';
-import { useBrowser } from './contexts';
+import { useBrowser, useNetwork, useWallet } from './contexts';
 import { useBeforeUnload } from './hooks';
 import { loadNetwork } from './utils';
 
@@ -108,19 +113,23 @@ const SentryRoutes = Sentry.withSentryReactRouterV6Routing(Routes);
 const App: FC = () => {
   const { window: extensionWindow, closeExtension } = useBrowser();
   const { search } = useLocation();
+  const { signIn } = useWallet();
+  const { client } = useNetwork();
 
   const handleTransaction = useCallback(
     (payload: unknown) => {
-      chrome.runtime
-        .sendMessage(payload)
-        .then(() => {
-          if (extensionWindow?.id) {
-            closeExtension({ windowId: Number(extensionWindow.id) });
-          }
-        })
-        .catch((e) => {
-          Sentry.captureException(e);
-        });
+      if (process.env.NODE_ENV === 'production') {
+        chrome.runtime
+          .sendMessage(payload)
+          .then(() => {
+            if (extensionWindow?.id) {
+              closeExtension({ windowId: Number(extensionWindow.id) });
+            }
+          })
+          .catch((e) => {
+            Sentry.captureException(e);
+          });
+      }
     },
     [closeExtension, extensionWindow?.id]
   );
@@ -356,6 +365,68 @@ const App: FC = () => {
       }
     }
   }, [closeExtension, extensionWindow, search]);
+
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'production') {
+      chrome.runtime
+        .sendMessage({
+          app: GEM_WALLET,
+          type: MSG_INTERNAL_REQUEST_PASSWORD
+        })
+        .catch((e) => {
+          Sentry.captureException(e);
+        });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'production') {
+      const messageListener = (message: any, sender: chrome.runtime.MessageSender) => {
+        if (message.app !== GEM_WALLET || sender.id !== chrome.runtime.id) {
+          return; // exit early if the message is not from gem-wallet or the sender is not the extension itself
+        }
+
+        if (
+          message.type === MSG_INTERNAL_RECEIVE_PASSWORD &&
+          (message as InternalReceivePasswordContentMessage).payload.password
+        ) {
+          signIn((message as InternalReceivePasswordContentMessage).payload.password);
+        }
+      };
+
+      chrome.runtime.onMessage.addListener(messageListener);
+
+      return () => {
+        chrome.runtime.onMessage.removeListener(messageListener);
+      };
+    }
+  }, [signIn]);
+
+  if (client === undefined) {
+    return (
+      <Container
+        component="main"
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          height: '100%',
+          padding: '30px 16px'
+        }}
+      >
+        <Container style={{ textAlign: 'center', marginTop: '30%' }}>
+          <Logo isAnimated style={{ transform: 'scale(2)' }} />
+          <Typography variant="h4" component="h1" style={{ marginTop: '30px' }}>
+            GemWallet
+          </Typography>
+          <Typography variant="h6" component="h2" style={{ marginTop: '30px' }}>
+            Your gateway to the XRPL
+          </Typography>
+          <CircularProgress size={50} style={{ marginTop: '60px' }} />
+        </Container>
+      </Container>
+    );
+  }
 
   return (
     <ErrorBoundary>

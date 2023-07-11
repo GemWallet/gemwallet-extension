@@ -24,6 +24,7 @@ import {
   IsInstalledResponse,
   MintNFTRequest,
   MintNFTResponse,
+  PasswordInternalResponse,
   SendPaymentRequest,
   SendPaymentRequestDeprecated,
   SendPaymentResponse,
@@ -41,6 +42,11 @@ import {
   SubmitTransactionRequest,
   WebsiteRequest
 } from '../payload/payload.types';
+import {
+  MSG_INTERNAL_RECEIVE_PASSWORD,
+  MSG_INTERNAL_RECEIVE_SIGN_OUT,
+  MSG_INTERNAL_REQUEST_PASSWORD
+} from './message.constant';
 
 export type RequestMessage =
   | 'REQUEST_ACCEPT_NFT_OFFER/V3'
@@ -234,11 +240,24 @@ export interface RequestSubmitTransactionMessage {
   payload: SubmitTransactionRequest;
 }
 
+// Internal
+export interface InternalRequestPasswordMessage {
+  app: typeof GEM_WALLET;
+  type: typeof MSG_INTERNAL_REQUEST_PASSWORD;
+}
+
 /*
  * Responses
  */
 export type MessagingResponse = {
   source?: 'GEM_WALLET_MSG_RESPONSE';
+  messagedId?: number;
+  error?: MessagingError;
+};
+
+// Internal
+export type InternalMessagingResponse = {
+  source?: 'INTERNAL_RESPONSE';
   messagedId?: number;
   error?: MessagingError;
 };
@@ -281,7 +300,13 @@ export type SetTrustlineMessagingResponse = MessagingResponse & SetTrustlineResp
 export type SetTrustlineMessagingResponseDeprecated = MessagingResponse &
   SetTrustlineResponseDeprecated;
 
-// Content Script Messages
+// Internal
+export type PasswordInternalMessagingResponse = InternalMessagingResponse &
+  PasswordInternalResponse;
+
+/*
+ * Content Script Messages
+ */
 export interface ReceiveSendPaymentContentMessage {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_SEND_PAYMENT/V3';
@@ -420,7 +445,21 @@ export interface ReceiveSubmitTransactionContentMessage {
   payload: SubmitTransactionMessagingResponse;
 }
 
-// Background Script Messages
+// Internal
+export interface InternalReceivePasswordContentMessage {
+  app: typeof GEM_WALLET;
+  type: typeof MSG_INTERNAL_RECEIVE_PASSWORD;
+  payload: PasswordInternalMessagingResponse;
+}
+
+export interface InternalReceiveSignOutContentMessage {
+  app: typeof GEM_WALLET;
+  type: typeof MSG_INTERNAL_RECEIVE_SIGN_OUT;
+}
+
+/*
+ * Background Script Messages
+ */
 type BackgroundMessagePayload = {
   payload: {
     id: number;
@@ -495,7 +534,16 @@ export type ReceiveCancelOfferBackgroundMessage = ReceiveCancelOfferContentMessa
 export type ReceiveSubmitTransactionBackgroundMessage = ReceiveSubmitTransactionContentMessage &
   BackgroundMessagePayload;
 
+export type InternalReceivePasswordBackgroundMessage = InternalReceivePasswordContentMessage &
+  BackgroundMessagePayload;
+
+export type InternalReceiveSignedOutBackgroundMessage = InternalReceiveSignOutContentMessage &
+  BackgroundMessagePayload;
+
 export type BackgroundMessage =
+  //
+  // API requests and responses messages
+  //
   // Inputted messages - DO NOT contain ID within the payloads
   | RequestAcceptNFTOfferMessage
   | RequestBurnNFTMessage
@@ -543,7 +591,15 @@ export type BackgroundMessage =
   | ReceiveSetTrustlineBackgroundMessageDeprecated
   | ReceiveSignMessageBackgroundMessage
   | ReceiveSignMessageBackgroundMessageDeprecated
-  | ReceiveSubmitTransactionBackgroundMessage;
+  | ReceiveSubmitTransactionBackgroundMessage
+  //
+  // Internal message - Messages between the extension and the background script
+  //
+  // Inputted
+  | InternalRequestPasswordMessage
+  // Outputted
+  | InternalReceivePasswordBackgroundMessage
+  | InternalReceiveSignedOutBackgroundMessage;
 
 // API Messages
 export interface RequestIsInstalledMessage {

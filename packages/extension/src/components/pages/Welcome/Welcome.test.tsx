@@ -4,9 +4,21 @@ import { BrowserRouter, MemoryRouter } from 'react-router-dom';
 
 import App from '../../../App';
 import { CREATE_NEW_WALLET_PATH, IMPORT_WALLET_PATH, WELCOME_PATH } from '../../../constants';
+import { generateWalletContext } from '../../../mocks';
 import { Welcome } from './Welcome';
 
 const mockedUsedNavigate = jest.fn();
+const mockNetworkContext = {
+  client: null
+};
+const mockBrowserContext = jest.fn();
+const mockWalletContext = generateWalletContext();
+
+jest.mock('../../../contexts', () => ({
+  useNetwork: () => mockNetworkContext,
+  useBrowser: () => mockBrowserContext,
+  useWallet: () => mockWalletContext
+}));
 
 jest.mock('react-router-dom', () => ({
   ...(jest.requireActual('react-router-dom') as object),

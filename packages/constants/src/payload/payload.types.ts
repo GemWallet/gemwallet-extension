@@ -396,3 +396,10 @@ export type ResponsePayload =
   | SignMessageResponse
   | SignMessageResponseDeprecated
   | SubmitTransactionResponse;
+
+/*
+ * Internal Messages Payloads
+ */
+export interface PasswordInternalResponse {
+  password: string;
+}

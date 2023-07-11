@@ -23,7 +23,8 @@ module.exports = {
         entry: {
           main: [paths.appIndexJs].filter(Boolean),
           content: './src/chromeServices/content/index.ts',
-          background: './src/chromeServices/background/index.ts'
+          background: './src/chromeServices/background/index.ts',
+          offscreen: './src/chromeServices/offscreen/index.ts'
         },
         output: {
           ...webpackConfig.output,

@@ -4,6 +4,14 @@ import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
 import { Wallet } from 'xrpl';
 
+import {
+  GEM_WALLET,
+  InternalReceivePasswordContentMessage,
+  InternalReceiveSignOutContentMessage,
+  MSG_INTERNAL_RECEIVE_PASSWORD,
+  MSG_INTERNAL_RECEIVE_SIGN_OUT
+} from '@gemwallet/constants';
+
 import { HOME_PATH, STORAGE_WALLETS } from '../../constants';
 import { Wallet as WalletToSaveType } from '../../types';
 import { WalletLedger } from '../../types';
@@ -20,7 +28,7 @@ import {
 } from '../../utils';
 
 export interface WalletContextType {
-  signIn: (password: string) => boolean;
+  signIn: (password: string, rememberSession?: boolean) => boolean;
   signOut: () => void;
   generateWallet: (walletName?: string) => Wallet;
   selectWallet: (index: number) => void;
@@ -65,9 +73,19 @@ const WalletProvider: FC = ({ children }) => {
   const [selectedWallet, setSelectedWallet] = useState<number>(loadSelectedWallet());
   const [password, setPassword] = useState<string | null>(null);
 
-  const signIn = useCallback((password: string) => {
+  const signIn = useCallback((password: string, rememberSession?: boolean) => {
     const wallets = loadWallets(password);
     if (wallets.length) {
+      if (process.env.NODE_ENV === 'production' && rememberSession === true) {
+        chrome.runtime.sendMessage<InternalReceivePasswordContentMessage>({
+          app: GEM_WALLET,
+          type: MSG_INTERNAL_RECEIVE_PASSWORD,
+          payload: {
+            password
+          }
+        });
+      }
+
       const _wallets = wallets.map(({ name, publicAddress, seed, mnemonic }) => {
         if (seed) {
           return {
@@ -93,6 +111,12 @@ const WalletProvider: FC = ({ children }) => {
 
   const signOut = useCallback(() => {
     setWallets([]);
+    if (process.env.NODE_ENV === 'production') {
+      chrome.runtime.sendMessage<InternalReceiveSignOutContentMessage>({
+        app: GEM_WALLET,
+        type: MSG_INTERNAL_RECEIVE_SIGN_OUT
+      });
+    }
     navigate(HOME_PATH);
   }, [navigate]);
 
