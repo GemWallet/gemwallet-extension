@@ -1,7 +1,6 @@
 import { FC, useCallback, useEffect, useState } from 'react';
 
 import ErrorIcon from '@mui/icons-material/Error';
-import WarningIcon from '@mui/icons-material/Warning';
 import { Button, Container, Paper, Typography } from '@mui/material';
 import ReactJson from 'react-json-view';
 import { Transaction } from 'xrpl';
@@ -153,17 +152,8 @@ export const SubmitTransaction: FC = () => {
             ) : null}
             {txParam ? (
               <div style={{ marginTop: '5px', marginBottom: '15px' }}>
-                <div style={{ display: 'flex' }}>
-                  <WarningIcon color="warning" fontSize="small" />
-                  <Typography variant="body2" color="textSecondary">
-                    Warning:
-                  </Typography>
-                </div>
                 <Typography variant="body2" color="textSecondary" style={{ marginTop: '5px' }}>
-                  This transaction has been submitted to GemWallet as a raw XRPL transaction.
-                </Typography>
-                <Typography variant="body2" color="textSecondary">
-                  Always submit raw transactions from third-party services that you trust.
+                  Please review the transaction below.
                 </Typography>
               </div>
             ) : null}
