@@ -2,6 +2,7 @@ import { TrustSet, xrpToDrops } from 'xrpl';
 
 import {
   formatAmount,
+  formatCurrencyName,
   formatFlags,
   formatFlagsToNumber,
   formatToken,
@@ -140,5 +141,23 @@ describe('formatTransferFee', () => {
   it('should format transfer fee', () => {
     const fee = 3000;
     expect(formatTransferFee(fee)).toBe(3);
+  });
+});
+
+describe('formatCurrencyName', () => {
+  it('should convert hex to currency and make it uppercase when currency length is equal to 40', () => {
+    const currency = '534F4C4F00000000000000000000000000000000';
+
+    const formattedCurrency = formatCurrencyName(currency);
+
+    expect(formattedCurrency).toEqual('SOLO');
+  });
+
+  it('should just make the currency uppercase when currency length is not equal to 40', () => {
+    const currency = 'Eth'; // Not in hex, should just be made uppercase
+
+    const formattedCurrency = formatCurrencyName(currency);
+
+    expect(formattedCurrency).toEqual('ETH');
   });
 });

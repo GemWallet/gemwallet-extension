@@ -1,4 +1,4 @@
-import { convertCurrencyString } from './convertCurrencyString';
+import { convertCurrencyString, handleAmountHexCurrency } from './convertCurrencyString';
 
 describe('convertCurrencyString', () => {
   it('should convert a currency string with 40 characters into its corresponding characters', () => {
@@ -61,5 +61,43 @@ describe('convertCurrencyString', () => {
     const expected2 = '&*()<>(){}[]';
     expect(convertCurrencyString(currency2)).toMatch(expected2);
     //
+  });
+});
+
+describe('handleAmountHexCurrency', () => {
+  it('should convert currency to hex when currency length is greater than 3 and not equal to 40', () => {
+    const issuedCurrencyAmount = {
+      currency: 'SOLO', // length 4, so it should be converted
+      value: '10',
+      issuer: ''
+    };
+
+    handleAmountHexCurrency(issuedCurrencyAmount);
+
+    expect(issuedCurrencyAmount.currency).toEqual('534F4C4F00000000000000000000000000000000');
+  });
+
+  it('should not convert currency to hex when currency length is not greater than 3', () => {
+    const issuedCurrencyAmount = {
+      currency: 'TE', // length 2, so it should not be converted
+      value: '20',
+      issuer: ''
+    };
+
+    handleAmountHexCurrency(issuedCurrencyAmount);
+
+    expect(issuedCurrencyAmount.currency).toEqual('TE');
+  });
+
+  it('should not convert currency to hex when currency length is equal to 40', () => {
+    const issuedCurrencyAmount = {
+      currency: '1234567890123456789012345678901234567890', // length 40, so it should not be converted
+      value: '30',
+      issuer: ''
+    };
+
+    handleAmountHexCurrency(issuedCurrencyAmount);
+
+    expect(issuedCurrencyAmount.currency).toEqual('1234567890123456789012345678901234567890');
   });
 });
