@@ -105,6 +105,38 @@ describe('Trustline', () => {
     );
   });
 
+  it('Confirm SOLO (non hex)', () => {
+    const amount = JSON.stringify({
+      currency: 'SOLO',
+      value: '10000000',
+      issuer: 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN'
+    });
+    const url = `${HOME_URL}?limitAmount=${amount}&flags=${FLAGS}&id=93376196&requestMessage=REQUEST_SET_TRUSTLINE/V3&inAppCall=true&transaction=trustSet`;
+    navigate(url, PASSWORD);
+
+    cy.on('uncaught:exception', (err, runnable) => {
+      // Continue with the test
+      return false;
+    });
+    validateTrustlineTx('rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN', 'SOLO', '10,000,000');
+  });
+
+  it('Confirm SOLO (hex)', () => {
+    const amount = JSON.stringify({
+      currency: '534F4C4F00000000000000000000000000000000',
+      value: '10000000',
+      issuer: 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN'
+    });
+    const url = `${HOME_URL}?limitAmount=${amount}&flags=${FLAGS}&id=93376196&requestMessage=REQUEST_SET_TRUSTLINE/V3&inAppCall=true&transaction=trustSet`;
+    navigate(url, PASSWORD);
+
+    cy.on('uncaught:exception', (err, runnable) => {
+      // Continue with the test
+      return false;
+    });
+    validateTrustlineTx('rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN', 'SOLO', '10,000,000');
+  });
+
   const testCases = [
     {
       issuer: 'rwtDvu9QDfCskWuyE2TSEt3s56RbiWUKJN',

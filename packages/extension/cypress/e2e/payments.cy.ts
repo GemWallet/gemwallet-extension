@@ -169,3 +169,94 @@ describe('Make payment - ETH', () => {
     );
   });
 });
+
+describe('Make payment - SOLO', () => {
+  // deepcode ignore NoHardcodedPasswords: password used for testing purposes
+  const PASSWORD = 'SECRET_PASSWORD';
+  beforeEach(() => {
+    // Mock the localStorage with a wallet already loaded
+    cy.window().then((win) => {
+      win.localStorage.setItem(
+        'wallets',
+        'U2FsdGVkX19VA07d7tVhAAtUbt+YVbw0xQY7OZMykOW4YI4nRZK9iZ7LT3+xHvrj4kwlPKEcRg0S1GjbIWSFaMzg3Mw8fklZrZLL9QZvnbF821SeDB5lBBj/F9PBg8A07uZhYz1p4sTDsWAOFvrnKJjmlWIqXzN5MFFbWBb3os2xGtAGTslFVUXuTp6eM9X9'
+      );
+      win.localStorage.setItem('network', 'Testnet');
+    });
+  });
+
+  it('Check the payment information (non hex)', () => {
+    const TOKEN = 'SOLO';
+    const VALUE = '0.01';
+    const DESTINATION_ADDRESS = 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN';
+    const AMOUNT = JSON.stringify({
+      currency: TOKEN,
+      value: VALUE,
+      issuer: DESTINATION_ADDRESS
+    });
+
+    cy.visit(
+      `http://localhost:3000?amount=${AMOUNT}&destination=${DESTINATION_ADDRESS}&id=93376135&requestMessage=REQUEST_SEND_PAYMENT%2FV3&transaction=payment`,
+      {
+        onBeforeLoad(win) {
+          (win as any).chrome = (win as any).chrome || {};
+          (win as any).chrome.runtime = {
+            sendMessage(message, cb) {}
+          };
+        }
+      }
+    );
+
+    // Login
+    cy.get('input[name="password"]').type(PASSWORD);
+    cy.contains('button', 'Unlock').click();
+
+    cy.on('uncaught:exception', (err, runnable) => {
+      // Continue with the test
+      return false;
+    });
+    // Should be on the Confirm Transaction Page
+    cy.get('h1[data-testid="page-title"]').should('have.text', 'Confirm Transaction');
+
+    // Should have the proper information
+    cy.contains('Destination:').next().should('have.text', DESTINATION_ADDRESS);
+    cy.contains('Amount:').next().should('have.text', `${VALUE} ${TOKEN}`);
+  });
+
+  it('Check the payment information (hex)', () => {
+    const TOKEN = '534F4C4F00000000000000000000000000000000';
+    const VALUE = '0.01';
+    const DESTINATION_ADDRESS = 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN';
+    const AMOUNT = JSON.stringify({
+      currency: TOKEN,
+      value: VALUE,
+      issuer: DESTINATION_ADDRESS
+    });
+
+    cy.visit(
+      `http://localhost:3000?amount=${AMOUNT}&destination=${DESTINATION_ADDRESS}&id=93376135&requestMessage=REQUEST_SEND_PAYMENT%2FV3&transaction=payment`,
+      {
+        onBeforeLoad(win) {
+          (win as any).chrome = (win as any).chrome || {};
+          (win as any).chrome.runtime = {
+            sendMessage(message, cb) {}
+          };
+        }
+      }
+    );
+
+    // Login
+    cy.get('input[name="password"]').type(PASSWORD);
+    cy.contains('button', 'Unlock').click();
+
+    cy.on('uncaught:exception', (err, runnable) => {
+      // Continue with the test
+      return false;
+    });
+    // Should be on the Confirm Transaction Page
+    cy.get('h1[data-testid="page-title"]').should('have.text', 'Confirm Transaction');
+
+    // Should have the proper information
+    cy.contains('Destination:').next().should('have.text', DESTINATION_ADDRESS);
+    cy.contains('Amount:').next().should('have.text', `${VALUE} SOLO`);
+  });
+});
