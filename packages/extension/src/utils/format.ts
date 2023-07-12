@@ -11,6 +11,8 @@ import {
   TrustSetFlags
 } from '@gemwallet/constants';
 
+import { hexToCurrency } from './hexConverter';
+
 const formatValue = (value: number) => {
   return new Intl.NumberFormat(navigator.language, {
     style: 'currency',
@@ -30,8 +32,13 @@ export const formatAmount = (amount: Amount | IssuedCurrencyAmount) => {
     value = Number(dropsToXrp(amount));
     currency = 'XRP';
   } else {
+    if (amount.currency.length === 40) {
+      // Hex representation of currency
+      currency = hexToCurrency(amount.currency);
+    } else {
+      currency = amount.currency;
+    }
     value = Number(amount.value);
-    currency = amount.currency;
   }
 
   return `${formatValue(value)} ${currency.toUpperCase()}`;
