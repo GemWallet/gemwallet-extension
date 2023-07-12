@@ -19,6 +19,7 @@ import { TransactionStatus } from '../../../types';
 import {
   formatAmount,
   fromHexMemos,
+  handleAmountHexCurrency,
   parseAmount,
   parsePaymentFlags,
   toXRPLMemos
@@ -217,6 +218,7 @@ export const Transaction: FC = () => {
     setTransaction(TransactionStatus.Pending);
     // Amount and Destination will be present because if not,
     // we won't be able to go to the confirm transaction state
+    handleAmountHexCurrency(params.amount as Amount);
     sendPayment({
       amount: params.amount as Amount,
       destination: params.destination as string,
