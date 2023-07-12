@@ -5,7 +5,7 @@ import { Button, Container, IconButton, Paper, Tooltip, Typography } from '@mui/
 import { IssuedCurrencyAmount } from 'xrpl/dist/npm/models/common';
 
 import { ERROR_RED } from '../../../constants';
-import { formatAmount, fromHexMemos } from '../../../utils';
+import { formatAmount, formatCurrencyName, fromHexMemos } from '../../../utils';
 import { BaseTransaction } from '../../organisms/BaseTransaction/BaseTransaction';
 import { PageWithTitle } from '../../templates';
 import { Params } from './AddNewTrustline';
@@ -58,7 +58,7 @@ export const StepConfirm: FC<StepConfirmProps> = ({
         }}
       >
         <Typography variant="body1">Currency:</Typography>
-        <Typography variant="body1">{limitAmount.currency}</Typography>
+        <Typography variant="body1">{formatCurrencyName(limitAmount.currency)}</Typography>
       </Paper>
       <Paper
         elevation={24}

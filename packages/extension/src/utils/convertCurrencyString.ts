@@ -1,3 +1,7 @@
+import { Amount, IssuedCurrencyAmount } from 'xrpl/dist/npm/models/common';
+
+import { currencyToHex } from './hexConverter';
+
 export const convertCurrencyString = (currency: string): string => {
   if (currency.length !== 40) {
     return currency;
@@ -8,4 +12,15 @@ export const convertCurrencyString = (currency: string): string => {
     return currency;
   }
   return currencyChars.map((charCode) => String.fromCharCode(parseInt(charCode, 16))).join('');
+};
+
+export const handleAmountHexCurrency = (amount: Amount | IssuedCurrencyAmount) => {
+  if (
+    amount &&
+    typeof amount === 'object' &&
+    amount.currency.length > 3 &&
+    amount.currency.length !== 40
+  ) {
+    amount.currency = currencyToHex(amount.currency);
+  }
 };

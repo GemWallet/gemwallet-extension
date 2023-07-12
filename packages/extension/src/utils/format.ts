@@ -24,6 +24,15 @@ const formatValue = (value: number) => {
     .replace(/\s?XRP\s?/, '');
 };
 
+export const formatCurrencyName = (currency: string) => {
+  if (currency.length === 40) {
+    // Hex representation of currency
+    currency = hexToCurrency(currency);
+  }
+
+  return currency.toUpperCase();
+};
+
 export const formatAmount = (amount: Amount | IssuedCurrencyAmount) => {
   let value: number;
   let currency: string;
