@@ -14,7 +14,13 @@ import {
 import { ERROR_RED } from '../../../constants';
 import { useLedger, useNetwork } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
-import { formatAmount, fromHexMemos, parseAmount, parseCreateOfferFlags } from '../../../utils';
+import {
+  currencyToHex,
+  formatAmount,
+  fromHexMemos,
+  parseAmount,
+  parseCreateOfferFlags
+} from '../../../utils';
 import {
   BaseTransactionParams,
   getBaseFromParams,
@@ -99,6 +105,19 @@ export const CreateOffer: FC = () => {
     [params.id]
   );
 
+  const handleAmountHexCurrency = (amount: Amount) => {
+    if (
+      amount &&
+      typeof amount === 'object' &&
+      amount.currency.length > 3 &&
+      amount.currency.length !== 40
+    ) {
+      amount.currency = currencyToHex(amount.currency);
+    }
+
+    return amount;
+  };
+
   useEffect(() => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
@@ -169,6 +188,8 @@ export const CreateOffer: FC = () => {
     setTransaction(TransactionStatus.Pending);
     // takerGets and takenPays will be present because if not,
     // we won't be able to go to the confirm transaction state
+    params.takerGets = handleAmountHexCurrency(params.takerGets as Amount);
+    params.takerPays = handleAmountHexCurrency(params.takerPays as Amount);
     createOffer({
       // BaseTransaction fields
       ...getBaseFromParams(params),
