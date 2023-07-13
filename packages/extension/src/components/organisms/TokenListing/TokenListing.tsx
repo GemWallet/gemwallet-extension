@@ -19,7 +19,12 @@ import { Trustline } from 'xrpl/dist/npm/models/methods/accountLines';
 
 import { Network } from '@gemwallet/constants';
 
-import { ADD_NEW_TRUSTLINE_PATH, DEFAULT_RESERVE, ERROR_RED } from '../../../constants';
+import {
+  ADD_NEW_TRUSTLINE_PATH,
+  DEFAULT_RESERVE,
+  ERROR_RED,
+  RESERVE_PER_OWNER
+} from '../../../constants';
 import { useLedger, useNetwork, useServer } from '../../../contexts';
 import { convertCurrencyString } from '../../../utils';
 import { TokenLoader } from '../../atoms';
@@ -54,12 +59,14 @@ const Transition = forwardRef(function Transition(
 
 export const TokenListing: FC<TokenListingProps> = ({ address }) => {
   const [XRPBalance, setXRPBalance] = useState<string>(LOADING_STATE);
+  const [reserve, setReserve] = useState<number>(DEFAULT_RESERVE);
+  const [ownerReserve, setOwnerReserve] = useState<number>(0);
   const [errorMessage, setErrorMessage] = useState('');
   const [trustLineBalances, setTrustLineBalances] = useState<TrustLineBalance[]>([]);
   const [explanationOpen, setExplanationOpen] = useState(false);
   const { client, reconnectToNetwork, network } = useNetwork();
   const { serverInfo } = useServer();
-  const { fundWallet } = useLedger();
+  const { fundWallet, getAccountInfo } = useLedger();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -164,7 +171,16 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
   if (XRPBalance === LOADING_STATE) {
     return <TokenLoader />;
   }
-  const reserve = serverInfo?.info.validated_ledger?.reserve_base_xrp || DEFAULT_RESERVE;
+  const baseReserve = serverInfo?.info.validated_ledger?.reserve_base_xrp || DEFAULT_RESERVE;
+  getAccountInfo()
+    .then((accountInfo) => {
+      setOwnerReserve(accountInfo.result.account_data.OwnerCount * RESERVE_PER_OWNER);
+      setReserve(accountInfo.result.account_data.OwnerCount * RESERVE_PER_OWNER + baseReserve);
+    })
+    .catch((e) => {
+      setOwnerReserve(0);
+      setReserve(DEFAULT_RESERVE);
+    });
 
   if (XRPBalance === ERROR_STATE) {
     return (
@@ -262,8 +278,8 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
             }}
           >
             <Typography style={{ marginBottom: '5px' }}>
-              To create this account to the XRP ledger, you will have to make a first deposit of a
-              minimum {reserve} XRP.
+              The activation of this XRP ledger account was made through a minimum deposit of{' '}
+              {baseReserve} XRP.
             </Typography>
             <Link
               href="https://xrpl.org/reserves.html?utm_source=gemwallet.app"
@@ -277,6 +293,10 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
           <TokenDisplay balance={Number(XRPBalance)} isXRPToken token="XRP" />
           <Typography style={{ margin: '20px 0 10px 0' }}>Amount that can be spent</Typography>
           <TokenDisplay balance={Number(XRPBalance) - reserve} isXRPToken token="XRP" />
+          <Typography style={{ margin: '20px 0 10px 0' }}>Base reserve</Typography>
+          <TokenDisplay balance={baseReserve} isXRPToken token="XRP" />
+          <Typography style={{ margin: '20px 0 10px 0' }}>Owner reserve</Typography>
+          <TokenDisplay balance={ownerReserve} isXRPToken token="XRP" />
         </div>
       </Dialog>
       <div

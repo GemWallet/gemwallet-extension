@@ -1,39 +1,40 @@
-import { useContext, createContext, FC, useCallback } from 'react';
+import { createContext, FC, useCallback, useContext } from 'react';
 
 import * as Sentry from '@sentry/react';
 import { sign } from 'ripple-keypairs';
 import {
-  TransactionMetadata,
-  Payment,
-  Transaction,
-  TrustSet,
-  Wallet,
-  NFTokenMint,
-  NFTokenCreateOffer,
-  NFTokenCancelOffer,
+  AccountSet,
   NFTokenAcceptOffer,
   NFTokenBurn,
-  AccountSet,
-  OfferCreate,
+  NFTokenCancelOffer,
+  NFTokenCreateOffer,
+  NFTokenMint,
   OfferCancel,
-  validate
+  OfferCreate,
+  Payment,
+  Transaction,
+  TransactionMetadata,
+  TrustSet,
+  validate,
+  Wallet
 } from 'xrpl';
+import { AccountInfoResponse } from 'xrpl/dist/npm/models/methods/accountInfo';
 import { BaseTransaction } from 'xrpl/dist/npm/models/transactions/common';
 
 import {
+  AcceptNFTOfferRequest,
   AccountNFToken,
-  MintNFTRequest,
-  GetNFTRequest,
-  SendPaymentRequest,
-  SetTrustlineRequest,
   BaseTransactionRequest,
+  BurnNFTRequest,
+  CancelNFTOfferRequest,
+  CancelOfferRequest,
   CreateNFTOfferRequest,
   CreateOfferRequest,
-  CancelNFTOfferRequest,
-  AcceptNFTOfferRequest,
-  BurnNFTRequest,
+  GetNFTRequest,
+  MintNFTRequest,
+  SendPaymentRequest,
   SetAccountRequest,
-  CancelOfferRequest,
+  SetTrustlineRequest,
   SubmitTransactionRequest
 } from '@gemwallet/constants';
 
@@ -107,6 +108,7 @@ export interface LedgerContextType {
   createOffer: (payload: CreateOfferRequest) => Promise<CreateOfferResponse>;
   cancelOffer: (payload: CancelOfferRequest) => Promise<CancelOfferResponse>;
   submitTransaction: (payload: SubmitTransactionRequest) => Promise<SubmitTransactionResponse>;
+  getAccountInfo: () => Promise<AccountInfoResponse>;
 }
 
 const LedgerContext = createContext<LedgerContextType>({
@@ -134,7 +136,8 @@ const LedgerContext = createContext<LedgerContextType>({
   setAccount: () => new Promise(() => {}),
   createOffer: () => new Promise(() => {}),
   cancelOffer: () => new Promise(() => {}),
-  submitTransaction: () => new Promise(() => {})
+  submitTransaction: () => new Promise(() => {}),
+  getAccountInfo: () => new Promise(() => {})
 });
 
 const LedgerProvider: FC = ({ children }) => {
@@ -744,6 +747,23 @@ const LedgerProvider: FC = ({ children }) => {
     [client, getCurrentWallet]
   );
 
+  const getAccountInfo = useCallback(async (): Promise<AccountInfoResponse> => {
+    const wallet = getCurrentWallet();
+
+    if (!client) throw new Error('You need to be connected to a ledger');
+    if (!wallet) throw new Error('You need to have a wallet connected to fund the wallet');
+    try {
+      return await client.request({
+        command: 'account_info',
+        account: wallet.publicAddress,
+        ledger_index: 'current'
+      });
+    } catch (e) {
+      Sentry.captureException(e);
+      throw e;
+    }
+  }, [client, getCurrentWallet]);
+
   const buildBaseTransaction = (
     payload: BaseTransactionRequest,
     wallet: WalletLedger,
@@ -789,7 +809,8 @@ const LedgerProvider: FC = ({ children }) => {
     setAccount,
     createOffer,
     cancelOffer,
-    submitTransaction
+    submitTransaction,
+    getAccountInfo
   };
 
   return <LedgerContext.Provider value={value}>{children}</LedgerContext.Provider>;
