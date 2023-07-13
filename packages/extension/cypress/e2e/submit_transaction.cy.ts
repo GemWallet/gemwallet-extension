@@ -41,7 +41,7 @@ describe('Submit Transaction', () => {
     cy.get('p[data-testid="transaction-subtitle"]').should('have.text', 'Transaction Successful');
   });
 
-  it('Submit Transaction (Set Trustline SOLO 1000000)', () => {
+  it.only('Submit Transaction (Set Trustline SOLO 1000000)', () => {
     const transaction = JSON.stringify({
       TransactionType: 'TrustSet',
       LimitAmount: {
@@ -57,7 +57,7 @@ describe('Submit Transaction', () => {
           }
         }
       ],
-      fee: '199'
+      Fee: '199'
     });
     const url = `http://localhost:3000?submit-transaction&transaction=${transaction}&requestMessage=undefined&submit=transaction`;
     navigate(url, PASSWORD);
@@ -68,8 +68,14 @@ describe('Submit Transaction', () => {
       .next()
       .should(
         'have.text',
-        '{"TransactionType":"TrustSet""LimitAmount":{"currency":"534F4C4F00000000000000000000000000000000""issuer":"rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN""value":"10000000"}"Memos":[0:{"Memo":{"MemoType":"4465736372697074696f6e""MemoData":"54657374206d656d6f"}}]"fee":"199""Account":"rB3JmRd5m292YjCsCr65tc8dwZz2WN7HQu"}'
+        '{"TransactionType":"TrustSet""LimitAmount":{"currency":"534F4C4F00000000000000000000000000000000""issuer":"rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN""value":"10000000"}"Memos":[0:{"Memo":{"MemoType":"4465736372697074696f6e""MemoData":"54657374206d656d6f"}}]"Fee":"199""Account":"rB3JmRd5m292YjCsCr65tc8dwZz2WN7HQu"}'
       );
+
+    cy.contains('Transaction Type:').next().should('have.text', 'TrustSet');
+    cy.contains('Account:').next().should('have.text', 'rB3JmRd5m292YjCsCr65tc8dwZz2WN7HQu');
+    cy.contains('Limit Amount:').next().should('have.text', '10,000,000 SOLO');
+    cy.contains('Memos:').next().should('have.text', 'Test memo');
+    cy.contains('Network fees:').next().should('have.text', '0.000199 XRP (MANUAL)');
 
     // Confirm
     cy.contains('button', 'Confirm').click();
