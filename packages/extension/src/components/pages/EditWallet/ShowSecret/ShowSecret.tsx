@@ -22,7 +22,7 @@ export const ShowSecret: FC<ShowSecretProps> = ({ seed, mnemonic, onBackButton }
   const [passwordError, setPasswordError] = useState<string>('');
   const [step, setStep] = useState<'password' | 'showSecret'>('password');
   const [isCopied, setIsCopied] = useState(false);
-  const { password } = useWallet();
+  const { isPasswordCorrect } = useWallet();
   const setTimeout = useTimeout(2000);
   const passwordRef = useRef<HTMLInputElement | null>(null);
   const secretType: Secret = useMemo(() => (seed ? 'seed' : 'mnemonic'), [seed]);
@@ -32,12 +32,11 @@ export const ShowSecret: FC<ShowSecretProps> = ({ seed, mnemonic, onBackButton }
   }, []);
 
   const handleConfirmPassword = useCallback(() => {
-    const passwordValue = passwordRef.current?.value;
-    if (passwordValue === password) {
+    if (passwordRef.current?.value && isPasswordCorrect(passwordRef.current.value)) {
       setStep('showSecret');
     }
     setPasswordError('Incorrect password');
-  }, [password]);
+  }, [isPasswordCorrect]);
 
   const handleCopy = useCallback(() => {
     copyToClipboard((seed || mnemonic) as string);
