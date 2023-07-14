@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import * as Sentry from '@sentry/react';
 import { Transaction } from 'xrpl';
 
-import { DEFAULT_RESERVE } from '../../../../constants';
+import { DEFAULT_RESERVE, RESERVE_PER_OWNER } from '../../../../constants';
 import { useLedger, useNetwork, useServer, useWallet } from '../../../../contexts';
 
 const DEFAULT_FEES = 'Loading ...';
@@ -14,7 +14,7 @@ export const useFees = (tx: Transaction, fee: string | null) => {
   const [difference, setDifference] = useState<number | undefined>();
   const [errorDifference, setErrorDifference] = useState<string | undefined>();
 
-  const { estimateNetworkFees } = useLedger();
+  const { estimateNetworkFees, getAccountInfo } = useLedger();
   const { getCurrentWallet } = useWallet();
   const { client } = useNetwork();
   const { serverInfo } = useServer();
@@ -41,11 +41,21 @@ export const useFees = (tx: Transaction, fee: string | null) => {
         ?.getXrpBalance(currentWallet.publicAddress)
         .then((currentBalance) => {
           const diffFee = fee ? Number(fee) : Number(estimatedFees);
-          const difference =
-            Number(currentBalance) -
-            Number(serverInfo?.info.validated_ledger?.reserve_base_xrp || DEFAULT_RESERVE) -
-            Number(diffFee);
-          setDifference(difference);
+          const baseReserve = Number(
+            serverInfo?.info.validated_ledger?.reserve_base_xrp || DEFAULT_RESERVE
+          );
+
+          getAccountInfo()
+            .then((accountInfo) => {
+              const reserve =
+                accountInfo.result.account_data.OwnerCount * RESERVE_PER_OWNER + baseReserve;
+              const difference = Number(currentBalance) - reserve - Number(diffFee);
+              setDifference(difference);
+            })
+            .catch((e) => {
+              const difference = Number(currentBalance) - baseReserve - Number(diffFee);
+              setDifference(difference);
+            });
         })
         .catch((e) => {
           setErrorDifference(e.message);
@@ -56,7 +66,8 @@ export const useFees = (tx: Transaction, fee: string | null) => {
     getCurrentWallet,
     serverInfo?.info.validated_ledger?.reserve_base_xrp,
     estimatedFees,
-    fee
+    fee,
+    getAccountInfo
   ]);
 
   return {
