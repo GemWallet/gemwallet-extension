@@ -17,7 +17,6 @@ jest.mock('@sentry/react', () => {
 let mockGetBalancesPromise = jest.fn();
 let mockFundWalletPromise = jest.fn();
 let mockRequestPromise = jest.fn();
-let mockGetAccountInfoPromise = jest.fn();
 
 let mockNetwork = Network.TESTNET;
 let mockClient: { getBalances: jest.Mock; request: jest.Mock } | null = {
@@ -53,7 +52,15 @@ jest.mock('../../../contexts', () => {
     }),
     useLedger: () => ({
       fundWallet: mockFundWalletPromise,
-      getAccountInfo: mockGetAccountInfoPromise
+      getAccountInfo: jest.fn().mockImplementation(() =>
+        Promise.resolve({
+          result: {
+            account_data: {
+              OwnerCount: 2
+            }
+          }
+        })
+      )
     })
   };
 });
@@ -91,15 +98,6 @@ describe('TokenListing', () => {
       { value: '50', currency: 'USD', issuer: 'r123' },
       { value: '20', currency: 'ETH', issuer: 'r456' }
     ]);
-    mockGetAccountInfoPromise = jest.fn().mockImplementation(() =>
-      Promise.resolve({
-        result: {
-          account_data: {
-            OwnerCount: 2
-          }
-        }
-      })
-    );
 
     const reserve = DEFAULT_RESERVE + RESERVE_PER_OWNER * 2;
 
@@ -112,16 +110,6 @@ describe('TokenListing', () => {
   });
 
   test('should display an error message when there is an error fetching the balances', async () => {
-    mockGetAccountInfoPromise = jest.fn().mockImplementation(() =>
-      Promise.resolve({
-        result: {
-          account_data: {
-            OwnerCount: 2
-          }
-        }
-      })
-    );
-
     mockGetBalancesPromise.mockRejectedValueOnce(
       new Error('Throw an error if there is an error fetching the balances')
     );
@@ -133,16 +121,6 @@ describe('TokenListing', () => {
   });
 
   test('should open the explanation dialog when the explain button is clicked', async () => {
-    mockGetAccountInfoPromise = jest.fn().mockImplementation(() =>
-      Promise.resolve({
-        result: {
-          account_data: {
-            OwnerCount: 2
-          }
-        }
-      })
-    );
-
     mockGetBalancesPromise.mockResolvedValueOnce([
       { value: '100', currency: 'XRP', issuer: undefined }
     ]);
@@ -157,16 +135,6 @@ describe('TokenListing', () => {
   });
 
   test('Should display the fund wallet button when the network is testnet and XRP balance is 0', async () => {
-    mockGetAccountInfoPromise = jest.fn().mockImplementation(() =>
-      Promise.resolve({
-        result: {
-          account_data: {
-            OwnerCount: 2
-          }
-        }
-      })
-    );
-
     mockNetwork = Network.TESTNET;
     mockGetBalancesPromise.mockRejectedValueOnce(
       new Error('Throw an error if there is an error fetching the balances')
@@ -179,16 +147,6 @@ describe('TokenListing', () => {
   });
 
   test('Should not display the fund wallet button when the network is Mainnet and XRP balance is 0', async () => {
-    mockGetAccountInfoPromise = jest.fn().mockImplementation(() =>
-      Promise.resolve({
-        result: {
-          account_data: {
-            OwnerCount: 2
-          }
-        }
-      })
-    );
-
     mockNetwork = Network.MAINNET;
     mockGetBalancesPromise.mockRejectedValueOnce(
       new Error('Throw an error if there is an error fetching the balances')
@@ -201,16 +159,6 @@ describe('TokenListing', () => {
   });
 
   test('Should display the amount of XRP when click on Fund Wallet Button', async () => {
-    mockGetAccountInfoPromise = jest.fn().mockImplementation(() =>
-      Promise.resolve({
-        result: {
-          account_data: {
-            OwnerCount: 2
-          }
-        }
-      })
-    );
-
     const reserve = DEFAULT_RESERVE + RESERVE_PER_OWNER * 2;
 
     mockNetwork = Network.TESTNET;
