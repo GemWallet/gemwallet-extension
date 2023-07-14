@@ -36,7 +36,7 @@ describe('Trustline', () => {
       return false;
     });
     // Should be on the Warning Trustline Page
-    cy.get('h1[data-testid="page-title"]').should('have.text', 'Add Trustline');
+    cy.get('h1[data-testid="page-title"]').should('have.text', 'Set Trustline');
 
     // Should have the proper information
     cy.get('h1[data-testid="page-title"]')
@@ -74,7 +74,7 @@ describe('Trustline', () => {
     });
 
     // Should be on the Warning Trustline Page
-    cy.get('h1[data-testid="page-title"]').should('have.text', 'Add Trustline');
+    cy.get('h1[data-testid="page-title"]').should('have.text', 'Set Trustline');
 
     // Should have the proper information
     cy.get('h1[data-testid="page-title"]')
@@ -88,7 +88,7 @@ describe('Trustline', () => {
     cy.contains('button', 'Continue').click();
 
     // Should be on the Add Trustline Page
-    cy.get('h1[data-testid="page-title"]').should('have.text', 'Add Trustline - Confirm');
+    cy.get('h1[data-testid="page-title"]').should('have.text', 'Set Trustline');
 
     // Should have the proper information
     cy.contains('Issuer:').next().should('have.text', DESTINATION_ADDRESS);
@@ -240,7 +240,7 @@ const navigate = (url: string, password: string) => {
 
 const validateTrustlineTx = (destinationAddress: string, currency: string, limit: string) => {
   // Should be on the Warning Trustline Page
-  cy.get('h1[data-testid="page-title"]').should('have.text', 'Add Trustline');
+  cy.get('h1[data-testid="page-title"]').should('have.text', 'Set Trustline');
 
   // Should have the proper information
   cy.get('h1[data-testid="page-title"]')
@@ -254,7 +254,7 @@ const validateTrustlineTx = (destinationAddress: string, currency: string, limit
   cy.contains('button', 'Continue').click();
 
   // Should be on the Add Trustline Page
-  cy.get('h1[data-testid="page-title"]').should('have.text', 'Add Trustline - Confirm');
+  cy.get('h1[data-testid="page-title"]').should('have.text', 'Set Trustline');
 
   // Should have the proper information
   cy.contains('Issuer:').next().should('have.text', destinationAddress);

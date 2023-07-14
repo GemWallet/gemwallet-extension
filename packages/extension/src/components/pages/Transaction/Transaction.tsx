@@ -288,7 +288,7 @@ export const Transaction: FC = () => {
       {transactionStatusComponent ? (
         <div>{transactionStatusComponent}</div>
       ) : (
-        <PageWithTitle title="Confirm Transaction">
+        <PageWithTitle title="Confirm Payment">
           {!hasEnoughFunds ? (
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
               <ErrorIcon style={{ color: ERROR_RED }} />

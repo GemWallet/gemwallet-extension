@@ -41,7 +41,7 @@ describe('Make payment - XRP', () => {
       return false;
     });
     // Should be on the Confirm Transaction Page
-    cy.get('h1[data-testid="page-title"]').should('have.text', 'Confirm Transaction');
+    cy.get('h1[data-testid="page-title"]').should('have.text', 'Confirm Payment');
 
     // Should have the proper information
     cy.contains('Destination:').next().should('have.text', DESTINATION_ADDRESS);
@@ -68,7 +68,7 @@ describe('Make payment - XRP', () => {
       return false;
     });
     // Should be on the Confirm Transaction Page
-    cy.get('h1[data-testid="page-title"]').should('have.text', 'Confirm Transaction');
+    cy.get('h1[data-testid="page-title"]').should('have.text', 'Confirm Payment');
 
     // Should have the proper information
     cy.contains('Destination:').next().should('have.text', DESTINATION_ADDRESS);
@@ -127,7 +127,7 @@ describe('Make payment - ETH', () => {
       return false;
     });
     // Should be on the Confirm Transaction Page
-    cy.get('h1[data-testid="page-title"]').should('have.text', 'Confirm Transaction');
+    cy.get('h1[data-testid="page-title"]').should('have.text', 'Confirm Payment');
 
     // Should have the proper information
     cy.contains('Destination:').next().should('have.text', DESTINATION_ADDRESS);
@@ -154,7 +154,7 @@ describe('Make payment - ETH', () => {
       return false;
     });
     // Should be on the Confirm Transaction Page
-    cy.get('h1[data-testid="page-title"]').should('have.text', 'Confirm Transaction');
+    cy.get('h1[data-testid="page-title"]').should('have.text', 'Confirm Payment');
 
     // Should have the proper information
     cy.contains('Destination:').next().should('have.text', DESTINATION_ADDRESS);
@@ -215,7 +215,7 @@ describe('Make payment - SOLO', () => {
       return false;
     });
     // Should be on the Confirm Transaction Page
-    cy.get('h1[data-testid="page-title"]').should('have.text', 'Confirm Transaction');
+    cy.get('h1[data-testid="page-title"]').should('have.text', 'Confirm Payment');
 
     // Should have the proper information
     cy.contains('Destination:').next().should('have.text', DESTINATION_ADDRESS);
@@ -253,7 +253,7 @@ describe('Make payment - SOLO', () => {
       return false;
     });
     // Should be on the Confirm Transaction Page
-    cy.get('h1[data-testid="page-title"]').should('have.text', 'Confirm Transaction');
+    cy.get('h1[data-testid="page-title"]').should('have.text', 'Confirm Payment');
 
     // Should have the proper information
     cy.contains('Destination:').next().should('have.text', DESTINATION_ADDRESS);

@@ -229,7 +229,7 @@ export const CreateNFTOffer: FC = () => {
         <div>{transactionStatusComponent}</div>
       ) : (
         <PageWithTitle
-          title="Confirm Transaction"
+          title="Create NFT Offer"
           styles={{ container: { justifyContent: 'initial' } }}
         >
           {!hasEnoughFunds ? (

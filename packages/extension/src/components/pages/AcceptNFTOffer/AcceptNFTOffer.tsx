@@ -193,7 +193,7 @@ export const AcceptNFTOffer: FC = () => {
         <div>{transactionStatusComponent}</div>
       ) : (
         <PageWithTitle
-          title="Confirm Transaction"
+          title="Accept NFT Offer"
           styles={{ container: { justifyContent: 'initial' } }}
         >
           {!hasEnoughFunds ? (

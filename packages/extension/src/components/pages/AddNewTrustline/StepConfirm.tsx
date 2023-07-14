@@ -31,7 +31,7 @@ export const StepConfirm: FC<StepConfirmProps> = ({
   const memos = useMemo(() => fromHexMemos(params.memos ?? undefined) ?? [], [params.memos]);
 
   return (
-    <PageWithTitle title="Add Trustline - Confirm">
+    <PageWithTitle title="Set Trustline">
       {!hasEnoughFunds ? (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <Tooltip title="You need more funds on your wallet to proceed">

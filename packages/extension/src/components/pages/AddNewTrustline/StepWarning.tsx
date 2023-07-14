@@ -12,7 +12,7 @@ interface StepWarningProps {
 
 export const StepWarning: FC<StepWarningProps> = ({ onReject, onContinue }) => {
   return (
-    <PageWithTitle title="Add Trustline">
+    <PageWithTitle title="Set Trustline">
       <div
         style={{
           height: '100%',

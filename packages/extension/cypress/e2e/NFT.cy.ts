@@ -21,7 +21,7 @@ describe('Mint', () => {
   it('Mint NFT', () => {
     navigate(MINT_NFT_URL, PASSWORD);
 
-    cy.get('h1[data-testid="page-title"]').should('have.text', 'Confirm Transaction');
+    cy.get('h1[data-testid="page-title"]').should('have.text', 'Mint NFT');
 
     cy.contains('Transfer Fee:').next().should('have.text', '3%');
     cy.contains('NFT Taxon:').next().should('have.text', '0');
@@ -70,7 +70,7 @@ describe('Mint', () => {
     navigate(url, PASSWORD);
 
     // Confirm
-    cy.get('h1[data-testid="page-title"]').should('have.text', 'Confirm Transaction');
+    cy.get('h1[data-testid="page-title"]').should('have.text', 'Create NFT Offer');
 
     cy.contains('NFT Token ID:').next().should('have.text', this.NFTokenID);
     cy.contains('Amount:').next().should('have.text', '50 XRP');
@@ -105,7 +105,7 @@ describe('Mint', () => {
     navigate(url, PASSWORD);
 
     // Confirm
-    cy.get('h1[data-testid="page-title"]').should('have.text', 'Confirm Transaction');
+    cy.get('h1[data-testid="page-title"]').should('have.text', 'Create NFT Offer');
 
     cy.contains('NFT Token ID:').next().should('have.text', this.NFTokenID);
     cy.contains('Amount:').next().should('have.text', '0.4 SOLO');
@@ -140,7 +140,7 @@ describe('Mint', () => {
     navigate(url, PASSWORD);
 
     // Confirm
-    cy.get('h1[data-testid="page-title"]').should('have.text', 'Confirm Transaction');
+    cy.get('h1[data-testid="page-title"]').should('have.text', 'Create NFT Offer');
 
     cy.contains('NFT Token ID:').next().should('have.text', this.NFTokenID);
     cy.contains('Amount:').next().should('have.text', '0.4 SOLO');
@@ -188,7 +188,7 @@ describe('Mint', () => {
     navigate(url, PASSWORD);
 
     // Confirm
-    cy.get('h1[data-testid="page-title"]').should('have.text', 'Confirm Transaction');
+    cy.get('h1[data-testid="page-title"]').should('have.text', 'Accept NFT Offer');
 
     cy.contains('NFT Token Sell Offer:').next().should('have.text', this.OfferID);
 
@@ -219,7 +219,7 @@ describe('Mint', () => {
     navigate(url, PASSWORD);
 
     // Confirm
-    cy.get('h1[data-testid="page-title"]').should('have.text', 'Confirm Transaction');
+    cy.get('h1[data-testid="page-title"]').should('have.text', 'Accept NFT Offer');
 
     cy.contains('NFT Token Sell Offer:').next().should('have.text', this.OfferID);
 
@@ -246,7 +246,7 @@ describe('Mint', () => {
     navigate(url, PASSWORD);
 
     // Confirm
-    cy.get('h1[data-testid="page-title"]').should('have.text', 'Confirm Transaction');
+    cy.get('h1[data-testid="page-title"]').should('have.text', 'Accept NFT Offer');
 
     cy.contains('NFT Token Sell Offer:').next().should('have.text', this.OfferID);
 
@@ -267,7 +267,7 @@ describe('Mint', () => {
     navigate(url, PASSWORD);
 
     // Confirm
-    cy.get('h1[data-testid="page-title"]').should('have.text', 'Confirm Transaction');
+    cy.get('h1[data-testid="page-title"]').should('have.text', 'Cancel NFT Offer');
 
     cy.contains('Offer IDs:').next().should('have.text', this.OfferID);
 
@@ -291,7 +291,7 @@ describe('Mint', () => {
     navigate(url, PASSWORD);
 
     // Confirm
-    cy.get('h1[data-testid="page-title"]').should('have.text', 'Confirm Transaction');
+    cy.get('h1[data-testid="page-title"]').should('have.text', 'Burn NFT');
 
     cy.contains('NFT Token ID:').next().should('have.text', this.NFTokenID);
 
