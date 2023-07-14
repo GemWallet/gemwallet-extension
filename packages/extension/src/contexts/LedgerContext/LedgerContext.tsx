@@ -747,13 +747,13 @@ const LedgerProvider: FC = ({ children }) => {
     [client, getCurrentWallet]
   );
 
-  const getAccountInfo = useCallback(async (): Promise<AccountInfoResponse> => {
+  const getAccountInfo = useCallback((): Promise<AccountInfoResponse> => {
     const wallet = getCurrentWallet();
 
     if (!client) throw new Error('You need to be connected to a ledger');
     if (!wallet) throw new Error('You need to have a wallet connected to fund the wallet');
     try {
-      return await client.request({
+      return client.request({
         command: 'account_info',
         account: wallet.publicAddress,
         ledger_index: 'current'
