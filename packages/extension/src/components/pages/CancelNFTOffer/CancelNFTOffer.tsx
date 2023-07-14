@@ -179,7 +179,7 @@ export const CancelNFTOffer: FC = () => {
         <div>{transactionStatusComponent}</div>
       ) : (
         <PageWithTitle
-          title="Confirm Transaction"
+          title="Cancel NFT Offer"
           styles={{ container: { justifyContent: 'initial' } }}
         >
           {!hasEnoughFunds ? (

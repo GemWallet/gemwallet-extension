@@ -1,7 +1,6 @@
 describe('Offers', () => {
   // deepcode ignore NoHardcodedPasswords: password used for testing purposes
   const PASSWORD = 'SECRET_PASSWORD';
-  const CREATE_OFFER_URL = `http://localhost:3000?create-offer&takerGets=10000000&takerPays=%7B%22currency%22%3A%22ETH%22%2C%22issuer%22%3A%22rnm76Qgz4G9G4gZBJVuXVvkbt7gVD7szey%22%2C%22value%22%3A%220.1%22%7D&flags=%7B%22tfPassive%22%3Atrue%7D&fee=199&memos=%5B%7B%22memo%22%3A%7B%22memoType%22%3A%224465736372697074696f6e%22%2C%22memoData%22%3A%2254657374206d656d6f%22%7D%7D%5D&id=210328024&requestMessage=undefined&transaction=createOffer`;
 
   beforeEach(() => {
     // Mock the localStorage with a wallet already loaded
@@ -14,13 +13,146 @@ describe('Offers', () => {
     });
   });
 
-  it('Create offer', () => {
-    navigate(CREATE_OFFER_URL, PASSWORD);
+  it('Create offer (XRP to ETH)', () => {
+    const url = `http://localhost:3000?create-offer&takerGets=10000000&takerPays=%7B%22currency%22%3A%22ETH%22%2C%22issuer%22%3A%22rnm76Qgz4G9G4gZBJVuXVvkbt7gVD7szey%22%2C%22value%22%3A%220.1%22%7D&flags=%7B%22tfPassive%22%3Atrue%7D&fee=199&memos=%5B%7B%22memo%22%3A%7B%22memoType%22%3A%224465736372697074696f6e%22%2C%22memoData%22%3A%2254657374206d656d6f%22%7D%7D%5D&id=210328024&requestMessage=undefined&transaction=createOffer`;
+    navigate(url, PASSWORD);
 
-    cy.get('h1[data-testid="page-title"]').should('have.text', 'Confirm Transaction');
+    cy.get('h1[data-testid="page-title"]').should('have.text', 'Create Offer');
 
     cy.contains('Taker gets:').next().should('have.text', '10 XRP');
     cy.contains('Taker pays:').next().should('have.text', '0.1 ETH');
+    cy.contains('Network fees:').next().should('have.text', '0.000199 XRP (MANUAL)');
+    cy.contains('Memos:').next().should('have.text', 'Test memo');
+    cy.contains('Flags:').next().should('have.text', 'tfPassive: true');
+
+    // Confirm
+    cy.contains('button', 'Confirm').click();
+
+    cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction in progress');
+    cy.get('p[data-testid="transaction-subtitle"]').should(
+      'have.text',
+      'We are processing your transactionPlease wait'
+    );
+
+    cy.get('h1[data-testid="transaction-title"]').contains('Transaction accepted', {
+      timeout: 10000
+    });
+    cy.get('p[data-testid="transaction-subtitle"]').should('have.text', 'Transaction Successful');
+  });
+
+  it('Create offer (XRP to SOLO (non hex))', () => {
+    const amount = JSON.stringify({
+      currency: 'SOLO',
+      issuer: 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN',
+      value: '0.1'
+    });
+
+    const url = `http://localhost:3000?create-offer&takerGets=10000000&takerPays=${amount}&flags=%7B%22tfPassive%22%3Atrue%7D&fee=199&memos=%5B%7B%22memo%22%3A%7B%22memoType%22%3A%224465736372697074696f6e%22%2C%22memoData%22%3A%2254657374206d656d6f%22%7D%7D%5D&id=210328024&requestMessage=undefined&transaction=createOffer`;
+    navigate(url, PASSWORD);
+
+    cy.get('h1[data-testid="page-title"]').should('have.text', 'Create Offer');
+
+    cy.contains('Taker gets:').next().should('have.text', '10 XRP');
+    cy.contains('Taker pays:').next().should('have.text', '0.1 SOLO');
+    cy.contains('Network fees:').next().should('have.text', '0.000199 XRP (MANUAL)');
+    cy.contains('Memos:').next().should('have.text', 'Test memo');
+    cy.contains('Flags:').next().should('have.text', 'tfPassive: true');
+
+    // Confirm
+    cy.contains('button', 'Confirm').click();
+
+    cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction in progress');
+    cy.get('p[data-testid="transaction-subtitle"]').should(
+      'have.text',
+      'We are processing your transactionPlease wait'
+    );
+
+    cy.get('h1[data-testid="transaction-title"]').contains('Transaction accepted', {
+      timeout: 10000
+    });
+    cy.get('p[data-testid="transaction-subtitle"]').should('have.text', 'Transaction Successful');
+  });
+
+  it('Create offer (SOLO (non hex) to XRP)', () => {
+    const amount = JSON.stringify({
+      currency: 'SOLO',
+      issuer: 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN',
+      value: '0.1'
+    });
+
+    const url = `http://localhost:3000?create-offer&takerPays=10000000&takerGets=${amount}&flags=%7B%22tfPassive%22%3Atrue%7D&fee=199&memos=%5B%7B%22memo%22%3A%7B%22memoType%22%3A%224465736372697074696f6e%22%2C%22memoData%22%3A%2254657374206d656d6f%22%7D%7D%5D&id=210328024&requestMessage=undefined&transaction=createOffer`;
+    navigate(url, PASSWORD);
+
+    cy.get('h1[data-testid="page-title"]').should('have.text', 'Create Offer');
+
+    cy.contains('Taker pays:').next().should('have.text', '10 XRP');
+    cy.contains('Taker gets:').next().should('have.text', '0.1 SOLO');
+    cy.contains('Network fees:').next().should('have.text', '0.000199 XRP (MANUAL)');
+    cy.contains('Memos:').next().should('have.text', 'Test memo');
+    cy.contains('Flags:').next().should('have.text', 'tfPassive: true');
+
+    // Confirm
+    cy.contains('button', 'Confirm').click();
+
+    cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction in progress');
+    cy.get('p[data-testid="transaction-subtitle"]').should(
+      'have.text',
+      'We are processing your transactionPlease wait'
+    );
+
+    cy.get('h1[data-testid="transaction-title"]').contains('Transaction accepted', {
+      timeout: 10000
+    });
+    cy.get('p[data-testid="transaction-subtitle"]').should('have.text', 'Transaction Successful');
+  });
+
+  it('Create offer (XRP to SOLO (hex))', () => {
+    const amount = JSON.stringify({
+      currency: '534F4C4F00000000000000000000000000000000',
+      issuer: 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN',
+      value: '0.1'
+    });
+
+    const url = `http://localhost:3000?create-offer&takerGets=10000000&takerPays=${amount}&flags=%7B%22tfPassive%22%3Atrue%7D&fee=199&memos=%5B%7B%22memo%22%3A%7B%22memoType%22%3A%224465736372697074696f6e%22%2C%22memoData%22%3A%2254657374206d656d6f%22%7D%7D%5D&id=210328024&requestMessage=undefined&transaction=createOffer`;
+    navigate(url, PASSWORD);
+
+    cy.get('h1[data-testid="page-title"]').should('have.text', 'Create Offer');
+
+    cy.contains('Taker gets:').next().should('have.text', '10 XRP');
+    cy.contains('Taker pays:').next().should('have.text', '0.1 SOLO');
+    cy.contains('Network fees:').next().should('have.text', '0.000199 XRP (MANUAL)');
+    cy.contains('Memos:').next().should('have.text', 'Test memo');
+    cy.contains('Flags:').next().should('have.text', 'tfPassive: true');
+
+    // Confirm
+    cy.contains('button', 'Confirm').click();
+
+    cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction in progress');
+    cy.get('p[data-testid="transaction-subtitle"]').should(
+      'have.text',
+      'We are processing your transactionPlease wait'
+    );
+
+    cy.get('h1[data-testid="transaction-title"]').contains('Transaction accepted', {
+      timeout: 10000
+    });
+    cy.get('p[data-testid="transaction-subtitle"]').should('have.text', 'Transaction Successful');
+  });
+
+  it('Create offer (SOLO (hex) to XRP)', () => {
+    const amount = JSON.stringify({
+      currency: '534F4C4F00000000000000000000000000000000',
+      issuer: 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN',
+      value: '0.1'
+    });
+
+    const url = `http://localhost:3000?create-offer&takerPays=10000000&takerGets=${amount}&flags=%7B%22tfPassive%22%3Atrue%7D&fee=199&memos=%5B%7B%22memo%22%3A%7B%22memoType%22%3A%224465736372697074696f6e%22%2C%22memoData%22%3A%2254657374206d656d6f%22%7D%7D%5D&id=210328024&requestMessage=undefined&transaction=createOffer`;
+    navigate(url, PASSWORD);
+
+    cy.get('h1[data-testid="page-title"]').should('have.text', 'Create Offer');
+
+    cy.contains('Taker pays:').next().should('have.text', '10 XRP');
+    cy.contains('Taker gets:').next().should('have.text', '0.1 SOLO');
     cy.contains('Network fees:').next().should('have.text', '0.000199 XRP (MANUAL)');
     cy.contains('Memos:').next().should('have.text', 'Test memo');
     cy.contains('Flags:').next().should('have.text', 'tfPassive: true');
@@ -65,7 +197,7 @@ describe('Offers', () => {
     );
 
     // Confirm
-    cy.get('h1[data-testid="page-title"]').should('have.text', 'Confirm Transaction');
+    cy.get('h1[data-testid="page-title"]').should('have.text', 'Cancel Offer');
 
     cy.contains('Offer sequence:').next().should('have.text', this.sequence);
     cy.contains('Memos:').next().should('have.text', 'Test memo');

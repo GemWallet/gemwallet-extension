@@ -13,7 +13,7 @@ import {
 import { ERROR_RED } from '../../../constants';
 import { useLedger, useNetwork } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
-import { formatAmount, fromHexMemos } from '../../../utils';
+import { formatAmount, fromHexMemos, handleAmountHexCurrency, parseAmount } from '../../../utils';
 import {
   BaseTransactionParams,
   getBaseFromParams,
@@ -114,7 +114,7 @@ export const AcceptNFTOffer: FC = () => {
     // AcceptNFTOffer fields
     const NFTokenSellOffer = urlParams.get('NFTokenSellOffer');
     const NFTokenBuyOffer = urlParams.get('NFTokenBuyOffer');
-    const NFTokenBrokerFee = urlParams.get('NFTokenBrokerFee');
+    const NFTokenBrokerFee = parseAmount(urlParams.get('NFTokenBrokerFee'), null, null, '');
 
     if (!NFTokenSellOffer && !NFTokenBuyOffer && !NFTokenBrokerFee) {
       // At least one of the fields must be present
@@ -151,6 +151,7 @@ export const AcceptNFTOffer: FC = () => {
 
   const handleConfirm = useCallback(() => {
     setTransaction(TransactionStatus.Pending);
+    handleAmountHexCurrency(params.NFTokenBrokerFee as Amount);
     acceptNFTOffer({
       // BaseTransaction fields
       ...getBaseFromParams(params),
@@ -192,7 +193,7 @@ export const AcceptNFTOffer: FC = () => {
         <div>{transactionStatusComponent}</div>
       ) : (
         <PageWithTitle
-          title="Confirm Transaction"
+          title="Accept NFT Offer"
           styles={{ container: { justifyContent: 'initial' } }}
         >
           {!hasEnoughFunds ? (

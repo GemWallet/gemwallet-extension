@@ -225,10 +225,7 @@ export const MintNFT: FC = () => {
       {transactionStatusComponent ? (
         <div>{transactionStatusComponent}</div>
       ) : (
-        <PageWithTitle
-          title="Confirm Transaction"
-          styles={{ container: { justifyContent: 'initial' } }}
-        >
+        <PageWithTitle title="Mint NFT" styles={{ container: { justifyContent: 'initial' } }}>
           <div style={{ marginBottom: '40px' }}>
             {!hasEnoughFunds ? (
               <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>

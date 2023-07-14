@@ -29,7 +29,7 @@ describe('Set Account', () => {
     cy.get('input[name="password"]').type(PASSWORD);
     cy.contains('button', 'Unlock').click();
 
-    cy.get('h1[data-testid="page-title"]').should('have.text', 'Confirm Transaction');
+    cy.get('h1[data-testid="page-title"]').should('have.text', 'Set Account');
 
     cy.contains('Email hash:').next().should('have.text', '1D1382344586ECFF844DACFF698C2EFB');
     cy.contains('Network fees:').next().should('have.text', '0.000199 XRP (MANUAL)');

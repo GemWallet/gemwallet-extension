@@ -41,6 +41,57 @@ describe('Submit Transaction', () => {
     cy.get('p[data-testid="transaction-subtitle"]').should('have.text', 'Transaction Successful');
   });
 
+  it.only('Submit Transaction (Set Trustline SOLO 1000000)', () => {
+    const transaction = JSON.stringify({
+      TransactionType: 'TrustSet',
+      LimitAmount: {
+        currency: '534F4C4F00000000000000000000000000000000',
+        issuer: 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN',
+        value: '10000000'
+      },
+      Memos: [
+        {
+          Memo: {
+            MemoType: '4465736372697074696f6e',
+            MemoData: '54657374206d656d6f'
+          }
+        }
+      ],
+      Fee: '199'
+    });
+    const url = `http://localhost:3000?submit-transaction&transaction=${transaction}&requestMessage=undefined&submit=transaction`;
+    navigate(url, PASSWORD);
+
+    cy.get('h1[data-testid="page-title"]').should('have.text', 'Confirm Transaction');
+
+    cy.contains('Transaction:')
+      .next()
+      .should(
+        'have.text',
+        '{"TransactionType":"TrustSet""LimitAmount":{"currency":"534F4C4F00000000000000000000000000000000""issuer":"rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN""value":"10000000"}"Memos":[0:{"Memo":{"MemoType":"4465736372697074696f6e""MemoData":"54657374206d656d6f"}}]"Fee":"199""Account":"rB3JmRd5m292YjCsCr65tc8dwZz2WN7HQu"}'
+      );
+
+    cy.contains('Transaction Type:').next().should('have.text', 'TrustSet');
+    cy.contains('Account:').next().should('have.text', 'rB3JmRd5m292YjCsCr65tc8dwZz2WN7HQu');
+    cy.contains('Limit Amount:').next().should('have.text', '10,000,000 SOLO');
+    cy.contains('Memos:').next().should('have.text', 'Test memo');
+    cy.contains('Network fees:').next().should('have.text', '0.000199 XRP (MANUAL)');
+
+    // Confirm
+    cy.contains('button', 'Confirm').click();
+
+    cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction in progress');
+    cy.get('p[data-testid="transaction-subtitle"]').should(
+      'have.text',
+      'We are processing your transactionPlease wait'
+    );
+
+    cy.get('h1[data-testid="transaction-title"]').contains('Transaction accepted', {
+      timeout: 10000
+    });
+    cy.get('p[data-testid="transaction-subtitle"]').should('have.text', 'Transaction Successful');
+  });
+
   const navigate = (url: string, password: string) => {
     cy.visit(url, {
       onBeforeLoad(win) {

@@ -14,7 +14,13 @@ import {
 import { ERROR_RED } from '../../../constants';
 import { useLedger, useNetwork } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
-import { formatAmount, fromHexMemos, parseAmount, parseCreateOfferFlags } from '../../../utils';
+import {
+  formatAmount,
+  fromHexMemos,
+  handleAmountHexCurrency,
+  parseAmount,
+  parseCreateOfferFlags
+} from '../../../utils';
 import {
   BaseTransactionParams,
   getBaseFromParams,
@@ -169,6 +175,8 @@ export const CreateOffer: FC = () => {
     setTransaction(TransactionStatus.Pending);
     // takerGets and takenPays will be present because if not,
     // we won't be able to go to the confirm transaction state
+    handleAmountHexCurrency(params.takerGets as Amount);
+    handleAmountHexCurrency(params.takerPays as Amount);
     createOffer({
       // BaseTransaction fields
       ...getBaseFromParams(params),
@@ -213,10 +221,7 @@ export const CreateOffer: FC = () => {
       {transactionStatusComponent ? (
         <div>{transactionStatusComponent}</div>
       ) : (
-        <PageWithTitle
-          title="Confirm Transaction"
-          styles={{ container: { justifyContent: 'initial' } }}
-        >
+        <PageWithTitle title="Create Offer" styles={{ container: { justifyContent: 'initial' } }}>
           {!hasEnoughFunds ? (
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
               <ErrorIcon style={{ color: ERROR_RED }} />

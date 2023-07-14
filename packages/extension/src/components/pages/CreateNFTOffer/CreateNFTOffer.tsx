@@ -18,6 +18,8 @@ import {
   createNFTOfferFlagsToNumber,
   formatAmount,
   fromHexMemos,
+  handleAmountHexCurrency,
+  parseAmount,
   parseCreateNFTOfferFlags
 } from '../../../utils';
 import {
@@ -128,7 +130,7 @@ export const CreateNFTOffer: FC = () => {
 
     // CreateNFTOffer fields
     const NFTokenID = urlParams.get('NFTokenID');
-    const amount = urlParams.get('amount');
+    const amount = parseAmount(urlParams.get('amount'), null, null, '');
     const owner = urlParams.get('owner');
     const expiration = urlParams.get('expiration') ? Number(urlParams.get('expiration')) : null;
     const destination = urlParams.get('destination');
@@ -179,6 +181,7 @@ export const CreateNFTOffer: FC = () => {
     setTransaction(TransactionStatus.Pending);
     // Amount and NFTokenID will be present because if not,
     // we won't be able to go to the confirm transaction state
+    handleAmountHexCurrency(params.amount as Amount);
     createNFTOffer({
       // BaseTransaction fields
       ...getBaseFromParams(params),
@@ -226,7 +229,7 @@ export const CreateNFTOffer: FC = () => {
         <div>{transactionStatusComponent}</div>
       ) : (
         <PageWithTitle
-          title="Confirm Transaction"
+          title="Create NFT Offer"
           styles={{ container: { justifyContent: 'initial' } }}
         >
           {!hasEnoughFunds ? (

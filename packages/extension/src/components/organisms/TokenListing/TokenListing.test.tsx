@@ -3,6 +3,7 @@ import { render, fireEvent, screen, waitFor } from '@testing-library/react';
 
 import { Network } from '@gemwallet/constants';
 
+import { DEFAULT_RESERVE, RESERVE_PER_OWNER } from '../../../constants';
 import { formatToken } from '../../../utils';
 import { TokenListing, TokenListingProps } from './TokenListing';
 
@@ -50,7 +51,16 @@ jest.mock('../../../contexts', () => {
       }
     }),
     useLedger: () => ({
-      fundWallet: mockFundWalletPromise
+      fundWallet: mockFundWalletPromise,
+      getAccountInfo: jest.fn().mockImplementation(() =>
+        Promise.resolve({
+          result: {
+            account_data: {
+              OwnerCount: 2
+            }
+          }
+        })
+      )
     })
   };
 });
@@ -88,9 +98,12 @@ describe('TokenListing', () => {
       { value: '50', currency: 'USD', issuer: 'r123' },
       { value: '20', currency: 'ETH', issuer: 'r456' }
     ]);
+
+    const reserve = DEFAULT_RESERVE + RESERVE_PER_OWNER * 2;
+
     render(<TokenListing {...props} />);
     await waitFor(() => {
-      expect(screen.getByText('90 XRP')).toBeInTheDocument();
+      expect(screen.getByText(`${100 - reserve} XRP`)).toBeInTheDocument();
       expect(screen.getByText('50 USD')).toBeInTheDocument();
       expect(screen.getByText('20 ETH')).toBeInTheDocument();
     });
@@ -116,7 +129,7 @@ describe('TokenListing', () => {
     await fireEvent.click(explainButton);
     expect(
       screen.getByText(
-        'To create this account to the XRP ledger, you will have to make a first deposit of a minimum 10 XRP.'
+        'The activation of this XRP ledger account was made through a minimum deposit of 10 XRP.'
       )
     ).toBeVisible();
   });
@@ -145,7 +158,9 @@ describe('TokenListing', () => {
     });
   });
 
-  test('Should display "9,990 XRP" When click on Fund Wallet Button', async () => {
+  test('Should display the amount of XRP when click on Fund Wallet Button', async () => {
+    const reserve = DEFAULT_RESERVE + RESERVE_PER_OWNER * 2;
+
     mockNetwork = Network.TESTNET;
     mockFundWalletPromise.mockResolvedValueOnce({ balance: 10000 });
     mockGetBalancesPromise.mockRejectedValueOnce(
@@ -154,7 +169,7 @@ describe('TokenListing', () => {
     render(<TokenListing {...props} />);
 
     const button = await screen.findByTestId('fund-wallet-button');
-    const format = formatToken(9990, 'XRP');
+    const format = formatToken(10000 - reserve, 'XRP');
 
     fireEvent.click(button);
 

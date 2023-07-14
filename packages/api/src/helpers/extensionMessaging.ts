@@ -104,6 +104,10 @@ const serializeMessage = (msg: APIMessages): any => {
     modifiedMsg.payload.takerPays = JSON.stringify(modifiedMsg.payload.takerPays);
   }
 
+  if (typeof modifiedMsg.payload?.NFTokenBrokerFee === 'object') {
+    modifiedMsg.payload.NFTokenBrokerFee = JSON.stringify(modifiedMsg.payload.NFTokenBrokerFee);
+  }
+
   if (typeof modifiedMsg.payload?.flags === 'object') {
     modifiedMsg.payload.flags = JSON.stringify(modifiedMsg.payload.flags);
   }

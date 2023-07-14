@@ -179,10 +179,7 @@ export const CancelOffer: FC = () => {
       {transactionStatusComponent ? (
         <div>{transactionStatusComponent}</div>
       ) : (
-        <PageWithTitle
-          title="Confirm Transaction"
-          styles={{ container: { justifyContent: 'initial' } }}
-        >
+        <PageWithTitle title="Cancel Offer" styles={{ container: { justifyContent: 'initial' } }}>
           {!hasEnoughFunds ? (
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
               <ErrorIcon style={{ color: ERROR_RED }} />

@@ -15,7 +15,12 @@ import {
 import { API_ERROR_BAD_ISSUER, API_ERROR_BAD_REQUEST, HOME_PATH } from '../../../constants';
 import { useLedger, useNetwork } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
-import { currencyToHex, parseLimitAmount, parseTrustSetFlags, toXRPLMemos } from '../../../utils';
+import {
+  handleAmountHexCurrency,
+  parseLimitAmount,
+  parseTrustSetFlags,
+  toXRPLMemos
+} from '../../../utils';
 import {
   BaseTransactionParams,
   getBaseFromParams,
@@ -238,9 +243,7 @@ export const AddNewTrustline: FC = () => {
     if (params.limitAmount === null) {
       setIsParamsMissing(true);
     } else {
-      if (params.limitAmount.currency.length > 3 && params.limitAmount.currency.length !== 40) {
-        params.limitAmount.currency = currencyToHex(params.limitAmount.currency);
-      }
+      handleAmountHexCurrency(params.limitAmount);
       setTrustline({
         // BaseTransaction fields
         ...getBaseFromParams(params),

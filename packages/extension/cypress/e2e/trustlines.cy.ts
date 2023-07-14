@@ -36,7 +36,7 @@ describe('Trustline', () => {
       return false;
     });
     // Should be on the Warning Trustline Page
-    cy.get('h1[data-testid="page-title"]').should('have.text', 'Add Trustline');
+    cy.get('h1[data-testid="page-title"]').should('have.text', 'Set Trustline');
 
     // Should have the proper information
     cy.get('h1[data-testid="page-title"]')
@@ -74,7 +74,7 @@ describe('Trustline', () => {
     });
 
     // Should be on the Warning Trustline Page
-    cy.get('h1[data-testid="page-title"]').should('have.text', 'Add Trustline');
+    cy.get('h1[data-testid="page-title"]').should('have.text', 'Set Trustline');
 
     // Should have the proper information
     cy.get('h1[data-testid="page-title"]')
@@ -88,7 +88,7 @@ describe('Trustline', () => {
     cy.contains('button', 'Continue').click();
 
     // Should be on the Add Trustline Page
-    cy.get('h1[data-testid="page-title"]').should('have.text', 'Add Trustline - Confirm');
+    cy.get('h1[data-testid="page-title"]').should('have.text', 'Set Trustline');
 
     // Should have the proper information
     cy.contains('Issuer:').next().should('have.text', DESTINATION_ADDRESS);
@@ -103,6 +103,38 @@ describe('Trustline', () => {
       'have.text',
       'Your transaction failed, please try again.Something went wrong'
     );
+  });
+
+  it('Confirm SOLO (non hex)', () => {
+    const amount = JSON.stringify({
+      currency: 'SOLO',
+      value: '10000000',
+      issuer: 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN'
+    });
+    const url = `${HOME_URL}?limitAmount=${amount}&flags=${FLAGS}&id=93376196&requestMessage=REQUEST_SET_TRUSTLINE/V3&inAppCall=true&transaction=trustSet`;
+    navigate(url, PASSWORD);
+
+    cy.on('uncaught:exception', (err, runnable) => {
+      // Continue with the test
+      return false;
+    });
+    validateTrustlineTx('rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN', 'SOLO', '10,000,000');
+  });
+
+  it('Confirm SOLO (hex)', () => {
+    const amount = JSON.stringify({
+      currency: '534F4C4F00000000000000000000000000000000',
+      value: '10000000',
+      issuer: 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN'
+    });
+    const url = `${HOME_URL}?limitAmount=${amount}&flags=${FLAGS}&id=93376196&requestMessage=REQUEST_SET_TRUSTLINE/V3&inAppCall=true&transaction=trustSet`;
+    navigate(url, PASSWORD);
+
+    cy.on('uncaught:exception', (err, runnable) => {
+      // Continue with the test
+      return false;
+    });
+    validateTrustlineTx('rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN', 'SOLO', '10,000,000');
   });
 
   const testCases = [
@@ -208,7 +240,7 @@ const navigate = (url: string, password: string) => {
 
 const validateTrustlineTx = (destinationAddress: string, currency: string, limit: string) => {
   // Should be on the Warning Trustline Page
-  cy.get('h1[data-testid="page-title"]').should('have.text', 'Add Trustline');
+  cy.get('h1[data-testid="page-title"]').should('have.text', 'Set Trustline');
 
   // Should have the proper information
   cy.get('h1[data-testid="page-title"]')
@@ -222,7 +254,7 @@ const validateTrustlineTx = (destinationAddress: string, currency: string, limit
   cy.contains('button', 'Continue').click();
 
   // Should be on the Add Trustline Page
-  cy.get('h1[data-testid="page-title"]').should('have.text', 'Add Trustline - Confirm');
+  cy.get('h1[data-testid="page-title"]').should('have.text', 'Set Trustline');
 
   // Should have the proper information
   cy.contains('Issuer:').next().should('have.text', destinationAddress);
