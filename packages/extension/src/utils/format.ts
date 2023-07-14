@@ -11,7 +11,7 @@ import {
   TrustSetFlags
 } from '@gemwallet/constants';
 
-import { hexToCurrency } from './hexConverter';
+import { convertHexCurrencyString } from './convertHexCurrencyString';
 
 const formatValue = (value: number) => {
   return new Intl.NumberFormat(navigator.language, {
@@ -27,7 +27,7 @@ const formatValue = (value: number) => {
 export const formatCurrencyName = (currency: string) => {
   if (currency.length === 40) {
     // Hex representation of currency
-    currency = hexToCurrency(currency);
+    currency = convertHexCurrencyString(currency);
   }
 
   return currency.toUpperCase();
@@ -43,7 +43,7 @@ export const formatAmount = (amount: Amount | IssuedCurrencyAmount) => {
   } else {
     if (amount.currency.length === 40) {
       // Hex representation of currency
-      currency = hexToCurrency(amount.currency);
+      currency = convertHexCurrencyString(amount.currency);
     } else {
       currency = amount.currency;
     }

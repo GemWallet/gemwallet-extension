@@ -1,5 +1,5 @@
 export * from './breakStringByLine';
-export * from './convertCurrencyString';
+export * from './convertHexCurrencyString';
 export * from './crypto';
 export * from './format';
 export * from './getLastItemFromArray';

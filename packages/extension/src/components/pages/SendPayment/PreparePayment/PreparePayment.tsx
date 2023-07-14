@@ -21,7 +21,7 @@ import { Memo } from '@gemwallet/constants';
 
 import { HOME_PATH, navigation } from '../../../../constants';
 import { useNetwork, useWallet } from '../../../../contexts';
-import { convertCurrencyString } from '../../../../utils';
+import { convertHexCurrencyString } from '../../../../utils';
 import { buildDefaultMemos } from '../../../../utils/transaction';
 import { NumericInput } from '../../../atoms';
 import { InformationMessage } from '../../../molecules';
@@ -341,7 +341,7 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
                 key={`${token.currency}-${token.issuer}`}
                 value={`${token.currency}-${token.issuer}`}
               >
-                {convertCurrencyString(token.currency)}
+                {convertHexCurrencyString(token.currency)}
               </MenuItem>
             ))}
           </Select>

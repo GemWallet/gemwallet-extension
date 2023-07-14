@@ -26,7 +26,7 @@ import {
   RESERVE_PER_OWNER
 } from '../../../constants';
 import { useLedger, useNetwork, useServer } from '../../../contexts';
-import { convertCurrencyString } from '../../../utils';
+import { convertHexCurrencyString } from '../../../utils';
 import { TokenLoader } from '../../atoms';
 import { InformationMessage } from '../../molecules/InformationMessage';
 import { TokenDisplay } from '../../molecules/TokenDisplay';
@@ -220,13 +220,13 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
         onExplainClick={handleOpen}
       />
       {trustLineBalances.map((trustedLine) => {
-        const currencyToDisplay = convertCurrencyString(trustedLine.currency);
+        const currencyToDisplay = convertHexCurrencyString(trustedLine.currency);
         const canBeEdited = trustedLine.trustlineDetails || trustedLine.value !== '0';
         const limit = trustedLine.trustlineDetails?.limit || 0;
         const noRipple = trustedLine.trustlineDetails?.noRipple || false;
         const flags = noRipple ? TrustSetFlagsBitmask.tfSetNoRipple : undefined;
         const limitAmount = {
-          currency: convertCurrencyString(trustedLine.currency),
+          currency: convertHexCurrencyString(trustedLine.currency),
           issuer: trustedLine.issuer,
           value: limit
         };
