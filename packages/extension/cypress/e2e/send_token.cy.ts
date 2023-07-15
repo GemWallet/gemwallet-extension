@@ -1,5 +1,7 @@
 /// <reference types="cypress" />
 
+import { Network, NETWORK } from '@gemwallet/constants';
+
 const SRC_ADDRESS = 'rB3JmRd5m292YjCsCr65tc8dwZz2WN7HQu';
 const DEST_ADDRESS = 'rhikRdkFw28csKw9z7fVoBjWncz1HSoQij';
 
@@ -14,7 +16,12 @@ describe('Send Token', () => {
         'wallets',
         'U2FsdGVkX1/JAHkPXi6ZonxQukDVxSlHcveDl30pBLB/Y9tPmrtAIi0ulBoj+mgxv/qj29Odgw8pRm0QzwGpT5zKmTRyf4QHmjpl5UcSNfRw95l/ZxPMgOpy/qrOJgWQHKNVK1TUpQHuV/c+ULBmpyOeMsI60paKXKvBEddTfHggacZV9ABvmCZZbIMM4h3tRn0HtVQY8kFvp9yJuUxq8T6BMgHzCys7hzUjtwdZ81YVEfdUShzEkleuqLsx4STqNvibUmf6HnwCgMCCPTzjulr3XvZK+yfreBb3RPsivSCsl5dwSz0ORtNwg04zjLiTvR+1btv91kifEBrMo3dh/Q=='
       );
-      win.localStorage.setItem('network', 'Testnet');
+      win.localStorage.setItem(
+        'network',
+        JSON.stringify({
+          name: NETWORK[Network.TESTNET].name
+        })
+      );
     });
     cy.visit('http://localhost:3000/', {
       onBeforeLoad(win) {

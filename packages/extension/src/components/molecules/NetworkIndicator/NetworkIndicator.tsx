@@ -169,7 +169,7 @@ export const NetworkIndicator: FC = () => {
   return (
     <>
       <Chip
-        label={currentNetworkName || 'Switch network'}
+        label={currentNetworkName || network || 'Switch network'}
         size="small"
         icon={
           <FiberManualRecordIcon

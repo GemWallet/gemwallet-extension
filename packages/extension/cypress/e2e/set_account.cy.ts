@@ -1,3 +1,5 @@
+import { Network, NETWORK } from '@gemwallet/constants';
+
 describe('Set Account', () => {
   const PASSWORD = 'SECRET_PASSWORD';
 
@@ -8,7 +10,12 @@ describe('Set Account', () => {
         'wallets',
         'U2FsdGVkX19VA07d7tVhAAtUbt+YVbw0xQY7OZMykOW4YI4nRZK9iZ7LT3+xHvrj4kwlPKEcRg0S1GjbIWSFaMzg3Mw8fklZrZLL9QZvnbF821SeDB5lBBj/F9PBg8A07uZhYz1p4sTDsWAOFvrnKJjmlWIqXzN5MFFbWBb3os2xGtAGTslFVUXuTp6eM9X9'
       );
-      win.localStorage.setItem('network', 'Testnet');
+      win.localStorage.setItem(
+        'network',
+        JSON.stringify({
+          name: NETWORK[Network.TESTNET].name
+        })
+      );
     });
   });
 
