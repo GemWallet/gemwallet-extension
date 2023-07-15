@@ -79,8 +79,8 @@ const NetworkDisplay: FC<NetworkDisplayProps> = ({
               {description}
             </Typography>
           </Box>
+          <Box>{isSelected ? <CheckIcon /> : null}</Box>
           <Box>
-            {isSelected ? <CheckIcon /> : null}
             {onRemove && (
               <IconButton
                 onClick={(event) => {
@@ -100,6 +100,7 @@ const NetworkDisplay: FC<NetworkDisplayProps> = ({
 
 export const NetworkIndicator: FC = () => {
   const { client, network, switchNetwork } = useNetwork();
+  const [currentNetworkName, setCurrentNetworkName] = useState<string>(network as string);
   const [explanationOpen, setExplanationOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [handleAddNetwork, setHandleAddNetwork] = useState(false);
@@ -134,9 +135,10 @@ export const NetworkIndicator: FC = () => {
   }, []);
 
   const handleClickOnNetwork = useCallback(
-    async (network: Network, customServer?: string) => {
+    async (network: Network, customNetworkName?: string, customNetworkServer?: string) => {
       setIsLoading(true);
-      await switchNetwork(network, customServer);
+      await switchNetwork(network, customNetworkServer);
+      setCurrentNetworkName(customNetworkName || network);
       handleClose();
     },
     [handleClose, switchNetwork]
@@ -167,7 +169,7 @@ export const NetworkIndicator: FC = () => {
   return (
     <>
       <Chip
-        label={network || 'Switch network'}
+        label={currentNetworkName || 'Switch network'}
         size="small"
         icon={
           <FiberManualRecordIcon
@@ -218,7 +220,7 @@ export const NetworkIndicator: FC = () => {
                         name={name}
                         server={server}
                         description={description}
-                        isSelected={name === network}
+                        isSelected={name === currentNetworkName}
                         onClick={() => handleClickOnNetwork(_network as Network)}
                       />
                     );
@@ -234,8 +236,8 @@ export const NetworkIndicator: FC = () => {
                       name={name}
                       server={server}
                       description={description || ''}
-                      isSelected={name === network}
-                      onClick={() => handleClickOnNetwork(Network.CUSTOM, server)}
+                      isSelected={name === currentNetworkName}
+                      onClick={() => handleClickOnNetwork(Network.CUSTOM, name, server)}
                       onRemove={() => removeNetwork(name)}
                     />
                   );
