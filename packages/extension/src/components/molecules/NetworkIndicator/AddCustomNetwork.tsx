@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 
-import { registerCustomNetwork } from '../../../utils';
+import { saveCustomNetwork } from '../../../utils';
 
 const Transition = forwardRef(function Transition(
   props: TransitionProps & {
@@ -27,9 +27,14 @@ const Transition = forwardRef(function Transition(
 interface AddCustomNetworkProps {
   dialogOpen: boolean;
   handleClose: () => void;
+  refreshNetworks: () => void;
 }
 
-export const AddCustomNetwork: FC<AddCustomNetworkProps> = ({ dialogOpen, handleClose }) => {
+export const AddCustomNetwork: FC<AddCustomNetworkProps> = ({
+  dialogOpen,
+  handleClose,
+  refreshNetworks
+}) => {
   const [networkName, setNetworkName] = useState<string>('');
   const [server, setServer] = useState<string>('');
   const [description, setDescription] = useState<string>('');
@@ -54,13 +59,14 @@ export const AddCustomNetwork: FC<AddCustomNetworkProps> = ({ dialogOpen, handle
   }, []);
 
   const handleAddNetwork = useCallback(() => {
-    registerCustomNetwork({
+    saveCustomNetwork({
       name: networkName,
       server,
       description
     });
+    refreshNetworks();
     handleClose();
-  }, [description, handleClose, networkName, server]);
+  }, [description, handleClose, networkName, refreshNetworks, server]);
 
   const isAddNetworkDisabled = useMemo(() => {
     return !!(networkName === '' || server === '' || serverError);

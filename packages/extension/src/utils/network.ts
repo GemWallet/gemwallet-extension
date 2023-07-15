@@ -27,7 +27,15 @@ export const loadCustomNetworks = (): Record<
   }
 };
 
-export const registerCustomNetwork = (networkData: {
+export const replaceCustomNetworks = (networks: Record<string, any>) => {
+  try {
+    saveData(STORAGE_CUSTOM_NETWORKS, JSON.stringify(networks));
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const saveCustomNetwork = (networkData: {
   name: string;
   server: string;
   description?: string;
@@ -40,7 +48,7 @@ export const registerCustomNetwork = (networkData: {
     existingCustomNetworks[networkData.name] = networkData;
 
     // Save custom networks to storage
-    saveData(STORAGE_CUSTOM_NETWORKS, JSON.stringify(existingCustomNetworks));
+    replaceCustomNetworks(existingCustomNetworks);
   } catch (e) {
     throw e;
   }

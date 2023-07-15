@@ -5,7 +5,7 @@ import { Client } from 'xrpl';
 
 import { NETWORK, Network } from '@gemwallet/constants';
 
-import { loadNetwork, removeNetwork, saveNetwork } from '../../utils';
+import { loadNetwork, removeNetwork, saveCustomNetwork, saveNetwork } from '../../utils';
 
 interface ContextType {
   reconnectToNetwork: () => void;
@@ -115,7 +115,7 @@ const NetworkProvider: FC = ({ children }) => {
   const registerCustomNetwork = useCallback(
     async (networkData: { name: string; server: string; description?: string }) => {
       try {
-        await registerCustomNetwork(networkData);
+        await saveCustomNetwork(networkData);
       } catch (err) {
         Sentry.captureException(err);
       }

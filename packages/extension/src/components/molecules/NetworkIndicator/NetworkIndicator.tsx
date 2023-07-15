@@ -1,10 +1,11 @@
-import { FC, forwardRef, useCallback, useState } from 'react';
+import { FC, forwardRef, useCallback, useEffect, useState } from 'react';
 
 import {
   Close as CloseIcon,
   FiberManualRecord as FiberManualRecordIcon,
   Check as CheckIcon
 } from '@mui/icons-material';
+import DeleteIcon from '@mui/icons-material/Delete';
 import {
   AppBar,
   Box,
@@ -19,12 +20,13 @@ import {
   Typography
 } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
+import * as Sentry from '@sentry/react';
 
 import { NETWORK, Network } from '@gemwallet/constants';
 
 import { SECONDARY_GRAY } from '../../../constants';
 import { useNetwork } from '../../../contexts';
-import { loadCustomNetworks } from '../../../utils';
+import { loadCustomNetworks, replaceCustomNetworks } from '../../../utils';
 import { LoadingOverlay } from '../../templates';
 import { AddCustomNetwork } from './AddCustomNetwork';
 
@@ -43,6 +45,7 @@ interface NetworkDisplayProps {
   description: string;
   isSelected?: boolean;
   onClick: () => void;
+  onRemove?: () => void;
 }
 
 const NetworkDisplay: FC<NetworkDisplayProps> = ({
@@ -50,7 +53,8 @@ const NetworkDisplay: FC<NetworkDisplayProps> = ({
   server,
   description,
   isSelected = false,
-  onClick
+  onClick,
+  onRemove
 }) => {
   const handleCardClick = () => {
     onClick();
@@ -75,7 +79,19 @@ const NetworkDisplay: FC<NetworkDisplayProps> = ({
               {description}
             </Typography>
           </Box>
-          {isSelected ? <CheckIcon /> : null}
+          <Box>
+            {isSelected ? <CheckIcon /> : null}
+            {onRemove && (
+              <IconButton
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onRemove();
+                }}
+              >
+                <DeleteIcon />
+              </IconButton>
+            )}
+          </Box>
         </CardContent>
       </CardActionArea>
     </Card>
@@ -87,7 +103,26 @@ export const NetworkIndicator: FC = () => {
   const [explanationOpen, setExplanationOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [handleAddNetwork, setHandleAddNetwork] = useState(false);
-  const existingNetworks = loadCustomNetworks();
+  const [existingNetworks, setExistingNetworks] = useState<
+    Record<string, { name: string; server: string; description?: string }>
+  >({});
+
+  const refreshCustomNetworks = useCallback(() => {
+    try {
+      const customNetworks = loadCustomNetworks();
+      setExistingNetworks(customNetworks);
+    } catch (error) {
+      Sentry.captureException(error);
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      refreshCustomNetworks();
+    } catch (error) {
+      Sentry.captureException(error);
+    }
+  }, [refreshCustomNetworks]);
 
   const handleOpen = useCallback(() => {
     setExplanationOpen(true);
@@ -115,6 +150,20 @@ export const NetworkIndicator: FC = () => {
     setHandleAddNetwork(false);
   }, []);
 
+  const removeNetwork = useCallback(
+    (networkName: string) => {
+      try {
+        const updatedNetworks = { ...existingNetworks };
+        delete updatedNetworks[networkName];
+        replaceCustomNetworks(updatedNetworks);
+        setExistingNetworks(updatedNetworks);
+      } catch (error) {
+        Sentry.captureException(error);
+      }
+    },
+    [existingNetworks]
+  );
+
   return (
     <>
       <Chip
@@ -134,7 +183,11 @@ export const NetworkIndicator: FC = () => {
         <LoadingOverlay />
       ) : (
         <>
-          <AddCustomNetwork dialogOpen={handleAddNetwork} handleClose={handleAddNetworkClose} />
+          <AddCustomNetwork
+            dialogOpen={handleAddNetwork}
+            handleClose={handleAddNetworkClose}
+            refreshNetworks={refreshCustomNetworks}
+          />
           <Dialog
             fullScreen
             open={explanationOpen}
@@ -183,6 +236,7 @@ export const NetworkIndicator: FC = () => {
                       description={description || ''}
                       isSelected={name === network}
                       onClick={() => handleClickOnNetwork(Network.CUSTOM, server)}
+                      onRemove={() => removeNetwork(name)}
                     />
                   );
                 })
