@@ -9,7 +9,7 @@ import { loadNetwork, removeNetwork, saveNetwork } from '../../utils';
 
 interface ContextType {
   reconnectToNetwork: () => void;
-  switchNetwork: (network: Network) => void;
+  switchNetwork: (network: Network, serverURL?: string) => void;
   resetNetwork: () => void;
   // Returns null if client couldn't connect
   client?: Client | null;
@@ -77,10 +77,11 @@ const NetworkProvider: FC = ({ children }) => {
   };
 
   const switchNetwork = useCallback(
-    async (network: Network) => {
+    async (network: Network, serverURL?: string) => {
       try {
         await client?.disconnect();
-        const ws = new Client(NETWORK[network].server);
+        // If a server URL is provided, use it. Otherwise, use the pre-defined server for the given network
+        const ws = new Client(serverURL || NETWORK[network].server);
         await ws.connect();
         setNetwork(network);
         saveNetwork(network);

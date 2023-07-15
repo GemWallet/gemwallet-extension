@@ -15,6 +15,7 @@ import {
   Dialog,
   IconButton,
   Slide,
+  TextField,
   Toolbar,
   Typography
 } from '@mui/material';
@@ -41,6 +42,7 @@ interface NetworkDisplayProps {
   description: string;
   isSelected?: boolean;
   onClick: () => void;
+  onServerChange: (server: string) => void;
 }
 
 const NetworkDisplay: FC<NetworkDisplayProps> = ({
@@ -48,23 +50,47 @@ const NetworkDisplay: FC<NetworkDisplayProps> = ({
   server,
   description,
   isSelected = false,
-  onClick
+  onClick,
+  onServerChange
 }) => {
+  const [customServer, setCustomServer] = useState(server);
+
+  const handleServerChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newServer = event.target.value;
+    setCustomServer(newServer);
+    onServerChange(newServer);
+  };
+
+  const handleCardClick = () => {
+    if (name !== Network.CUSTOM || (name === Network.CUSTOM && customServer)) {
+      onClick();
+    }
+  };
+
   return (
     <Card
       style={{
         marginBottom: '20px'
       }}
-      onClick={onClick}
     >
-      <CardActionArea>
+      <CardActionArea onClick={handleCardClick}>
         <CardContent
           style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
         >
           <Box>
             <Typography gutterBottom>{name}</Typography>
             <Typography variant="subtitle2" color={SECONDARY_GRAY}>
-              {server}
+              {name === Network.CUSTOM ? (
+                <TextField
+                  value={customServer}
+                  onChange={handleServerChange}
+                  onClick={(event: React.MouseEvent<HTMLInputElement>) => {
+                    event.stopPropagation();
+                  }}
+                />
+              ) : (
+                server
+              )}
             </Typography>
             <Typography style={{ marginTop: '10px' }} variant="body2" color={SECONDARY_GRAY}>
               {description}
@@ -81,6 +107,7 @@ export const NetworkIndicator: FC = () => {
   const { client, network, switchNetwork } = useNetwork();
   const [explanationOpen, setExplanationOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [customServer, setCustomServer] = useState('');
 
   const handleOpen = useCallback(() => {
     setExplanationOpen(true);
@@ -92,13 +119,17 @@ export const NetworkIndicator: FC = () => {
   }, []);
 
   const handleClickOnNetwork = useCallback(
-    async (network: Network) => {
+    async (network: Network, customServer?: string) => {
       setIsLoading(true);
-      await switchNetwork(network);
+      await switchNetwork(network, customServer);
       handleClose();
     },
     [handleClose, switchNetwork]
   );
+
+  const handleCustomServerChange = (server: string) => {
+    setCustomServer(server);
+  };
 
   return (
     <>
@@ -145,7 +176,13 @@ export const NetworkIndicator: FC = () => {
                   server={server}
                   description={description}
                   isSelected={name === network}
-                  onClick={() => handleClickOnNetwork(_network as Network)}
+                  onClick={() =>
+                    handleClickOnNetwork(
+                      _network as Network,
+                      name === Network.CUSTOM ? customServer : undefined
+                    )
+                  }
+                  onServerChange={handleCustomServerChange}
                 />
               );
             })}
