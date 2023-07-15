@@ -193,7 +193,6 @@ export const SetAccount: FC = () => {
     setTransaction(TransactionStatus.Pending);
     // NFTokenID will be present because if not,
     // we won't be able to go to the confirm transaction state
-    console.log(params);
     setAccount({
       // BaseTransaction fields
       ...getBaseFromParams(params),
