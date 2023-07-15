@@ -6,9 +6,7 @@ import { ShowSecret, ShowSecretProps } from './ShowSecret';
 
 const passwordTest = 'test-password';
 
-let mockWalletContext = generateWalletContext({
-  password: passwordTest
-});
+let mockWalletContext = generateWalletContext();
 
 jest.mock('../../../../contexts', () => ({
   useWallet: () => mockWalletContext
@@ -25,6 +23,10 @@ const renderShowSecret = (props?: Partial<ShowSecretProps>) =>
   render(<ShowSecret seed={seed} mnemonic={mnemonic} onBackButton={onBackButton} {...props} />);
 
 describe('ShowSecret', () => {
+  beforeEach(() => {
+    mockWalletContext = generateWalletContext();
+  });
+
   test('renders the seed password step correctly', () => {
     renderShowSecret();
     expect(screen.getByText(/^Do not share your seed!/m)).toBeInTheDocument();
@@ -76,6 +78,7 @@ describe('ShowSecret', () => {
   });
 
   test('displays an error message when the password is incorrect', () => {
+    mockWalletContext = generateWalletContext({ isPasswordCorrect: () => false });
     renderShowSecret();
 
     const passwordInput = screen.getByLabelText('Password');
@@ -99,21 +102,23 @@ describe('ShowSecret', () => {
     userEvent.type(screen.getByLabelText('Password'), incorrectPassword);
     fireEvent.click(screen.getByText('Show'));
     expect(screen.getByLabelText('Password')).toBeInTheDocument();
+    expect(screen.queryByText('Incorrect password')).toBeInTheDocument();
+    mockWalletContext = generateWalletContext({ isPasswordCorrect: () => false });
     fireEvent.change(screen.getByLabelText('Password'), { target: { value: passwordTest } });
-    expect(screen.queryByText('Incorrect password')).toBeNull();
+    expect(screen.queryByText('Incorrect password')).not.toBeInTheDocument();
   });
 
-  test('copies secret to clipboard and resets after 2 seconds', async () => {
+  test('copies secret to clipboard and resets after 2 seconds', () => {
     renderShowSecret();
 
     const passwordInput = screen.getByLabelText('Password');
     fireEvent.change(passwordInput, { target: { value: passwordTest } });
-    await fireEvent.click(screen.getByText('Show'));
+    fireEvent.click(screen.getByText('Show'));
 
     expect(screen.getByTestId('ContentCopyIcon')).toBeInTheDocument();
 
     const copyButton = screen.getByRole('button', { name: 'Copy seed' });
-    await fireEvent.click(copyButton);
+    fireEvent.click(copyButton);
 
     expect(screen.getByTestId('DoneIcon')).toBeInTheDocument();
   });

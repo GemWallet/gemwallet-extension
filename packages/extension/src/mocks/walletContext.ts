@@ -27,12 +27,12 @@ export interface GenerateWalletContextParams {
   isValidMnemonic?: () => boolean;
   importMnemonic?: () => boolean;
   isValidNumbers?: () => boolean;
+  isPasswordCorrect?: () => boolean;
   importNumbers?: () => boolean;
   renameWallet?: () => void;
   removeWallet?: () => void;
   selectedWallet?: number;
   wallets?: WalletLedger[];
-  password?: string;
 }
 
 export const generateWalletContext = (params?: GenerateWalletContextParams): WalletContextType => {
@@ -45,10 +45,10 @@ export const generateWalletContext = (params?: GenerateWalletContextParams): Wal
     isValidMnemonic = () => true,
     importMnemonic = () => true,
     isValidNumbers = () => true,
+    isPasswordCorrect = () => true,
     importNumbers = () => true,
     selectedWallet = 0,
-    wallets = [mockWalletLedger],
-    password
+    wallets = [mockWalletLedger]
   } = params || {};
 
   return {
@@ -63,11 +63,11 @@ export const generateWalletContext = (params?: GenerateWalletContextParams): Wal
     isValidMnemonic,
     importMnemonic,
     isValidNumbers,
+    isPasswordCorrect,
     importNumbers,
     renameWallet: jest.fn(),
     removeWallet: jest.fn(),
     selectedWallet,
-    wallets,
-    password
+    wallets
   };
 };

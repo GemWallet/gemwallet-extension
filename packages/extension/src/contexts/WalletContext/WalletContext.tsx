@@ -29,6 +29,7 @@ export interface WalletContextType {
   isValidMnemonic: (mnemonic: string) => boolean;
   importMnemonic: (password: string, mnemonic: string, walletName?: string) => boolean | undefined;
   isValidNumbers: (numbers: string[]) => boolean;
+  isPasswordCorrect: (password: string) => boolean;
   importNumbers: (password: string, numbers: string[], walletName?: string) => boolean | undefined;
   getCurrentWallet: () => WalletLedger | undefined;
   getWalletByPublicAddress: (publicAddress: string) => WalletLedger | undefined;
@@ -36,7 +37,6 @@ export interface WalletContextType {
   removeWallet: (publicAddress: string) => void;
   wallets: WalletLedger[];
   selectedWallet: number;
-  password?: string;
 }
 
 const WalletContext = createContext<WalletContextType>({
@@ -51,19 +51,19 @@ const WalletContext = createContext<WalletContextType>({
   isValidMnemonic: () => false,
   importMnemonic: () => false,
   isValidNumbers: () => false,
+  isPasswordCorrect: () => false,
   importNumbers: () => false,
   renameWallet: () => {},
   removeWallet: () => {},
   wallets: [],
-  selectedWallet: 0,
-  password: undefined
+  selectedWallet: 0
 });
 
 const WalletProvider: FC = ({ children }) => {
   const navigate = useNavigate();
   const [wallets, setWallets] = useState<WalletLedger[]>([]);
   const [selectedWallet, setSelectedWallet] = useState<number>(loadSelectedWallet());
-  const [password, setPassword] = useState<string>();
+  const [password, setPassword] = useState<string | null>(null);
 
   const signIn = useCallback((password: string) => {
     const wallets = loadWallets(password);
@@ -211,6 +211,16 @@ const WalletProvider: FC = ({ children }) => {
     }
   }, []);
 
+  const isPasswordCorrect = useCallback(
+    (passwordToTest: string) => {
+      if (password === passwordToTest) {
+        return true;
+      }
+      return false;
+    },
+    [password]
+  );
+
   const importNumbers = useCallback(
     (password: string, numbers: string[], walletName?: string) => {
       try {
@@ -247,7 +257,7 @@ const WalletProvider: FC = ({ children }) => {
   const renameWallet = useCallback(
     (name: string, publicAddress: string) => {
       const walletIndex = wallets.findIndex((wallet) => wallet.publicAddress === publicAddress);
-      if (walletIndex >= 0) {
+      if (walletIndex >= 0 && password) {
         const newWallet = { ...wallets[walletIndex] };
         newWallet.name = name;
         const newWallets = [...wallets];
@@ -261,7 +271,7 @@ const WalletProvider: FC = ({ children }) => {
             mnemonic
           })
         );
-        saveData(STORAGE_WALLETS, encrypt(JSON.stringify(walletToSave), password as string));
+        saveData(STORAGE_WALLETS, encrypt(JSON.stringify(walletToSave), password));
       }
     },
     [password, wallets]
@@ -270,7 +280,7 @@ const WalletProvider: FC = ({ children }) => {
   const removeWallet = useCallback(
     (publicAddress: string) => {
       const walletIndex = wallets.findIndex((wallet) => wallet.publicAddress === publicAddress);
-      if (walletIndex >= 0) {
+      if (walletIndex >= 0 && password) {
         if (wallets.length === 1) {
           removeWallets();
         }
@@ -287,7 +297,7 @@ const WalletProvider: FC = ({ children }) => {
         );
         // We also want to remove the trusted apps associated to this wallet
         removeWalletFromTrustedApp(walletIndex);
-        saveData(STORAGE_WALLETS, encrypt(JSON.stringify(walletToSave), password as string));
+        saveData(STORAGE_WALLETS, encrypt(JSON.stringify(walletToSave), password));
       }
     },
     [password, wallets]
@@ -322,12 +332,12 @@ const WalletProvider: FC = ({ children }) => {
     isValidMnemonic,
     importMnemonic,
     isValidNumbers,
+    isPasswordCorrect,
     importNumbers,
     renameWallet,
     removeWallet,
     wallets,
-    selectedWallet,
-    password
+    selectedWallet
   };
 
   return <WalletContext.Provider value={value}>{children}</WalletContext.Provider>;
