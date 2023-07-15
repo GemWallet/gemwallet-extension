@@ -1,9 +1,11 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 
 import { WALLET_SEED } from '../../../mocks';
 import { ImportSeed } from './ImportSeed';
+
+const user = userEvent.setup();
 
 describe('ImportSeed Page', () => {
   test('Should go back', async () => {
@@ -14,13 +16,10 @@ describe('ImportSeed Page', () => {
     );
 
     const nextButton = screen.getByRole('button', { name: 'Next' });
-    const user = userEvent.setup();
 
     // Going to Screen 1
     const seedInput = renderedElements.container.querySelector('#seed');
-    fireEvent.change(seedInput as Element, {
-      target: { value: WALLET_SEED }
-    });
+    await user.type(seedInput, WALLET_SEED);
     await user.click(nextButton);
 
     // Go back to Screen 0

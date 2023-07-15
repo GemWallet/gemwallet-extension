@@ -1,9 +1,11 @@
-import { render, fireEvent } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 
 import { generateWalletContext } from '../../../mocks';
 import { CreatePassword, CreatePasswordProps } from './CreatePassword';
+
+const user = userEvent.setup();
 
 const defaultProps: CreatePasswordProps = {
   activeStep: 1,
@@ -36,13 +38,13 @@ describe('CreatePassword Page', () => {
     );
 
     const nextButton = getByRole('button', { name: 'Next' });
-    const user = userEvent.setup();
 
     const passwordInput = container.querySelector('#password');
     const passwordConfirmInput = container.querySelector('#confirm-password');
-    fireEvent.change(passwordInput as Element, { target: { value: '1234567' } });
-    fireEvent.change(passwordConfirmInput as Element, { target: { value: '1234567' } });
+    await user.type(passwordInput as Element, '1234567');
+    await user.type(passwordConfirmInput as Element, '1234567');
     await user.click(nextButton);
+
     expect(getByText('Password must be at least 8 characters long')).toBeVisible();
   });
 
@@ -54,13 +56,13 @@ describe('CreatePassword Page', () => {
     );
 
     const nextButton = getByRole('button', { name: 'Next' });
-    const user = userEvent.setup();
 
     const passwordInput = container.querySelector('#password');
     const passwordConfirmInput = container.querySelector('#confirm-password');
-    fireEvent.change(passwordInput as Element, { target: { value: '12345678' } });
-    fireEvent.change(passwordConfirmInput as Element, { target: { value: '12345679' } });
+    await user.type(passwordInput as Element, '12345678');
+    await user.type(passwordConfirmInput as Element, '12345679');
     await user.click(nextButton);
+
     expect(getByText('Passwords must match')).toBeVisible();
   });
 });

@@ -1,10 +1,12 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
-import '@testing-library/jest-dom/extend-expect';
 import { ButtonOption, ButtonOptionProps } from './ButtonOption';
 
 const defaultName = 'Option 1';
 const defaultDescription = 'This is option 1';
+
+const user = userEvent.setup();
 
 const renderButtonOption = (props?: Partial<ButtonOptionProps>) =>
   render(
@@ -33,10 +35,10 @@ describe('ButtonOption', () => {
     expect(screen.queryByTestId('check-icon')).not.toBeInTheDocument();
   });
 
-  test('calls the onClick prop when the card is clicked', () => {
+  test('calls the onClick prop when the card is clicked', async () => {
     const onClick = jest.fn();
     const { container } = renderButtonOption({ onClick });
-    fireEvent.click(container.querySelector('.MuiPaper-root') as Element);
+    await user.click(container.querySelector('.MuiPaper-root') as Element);
     expect(onClick).toHaveBeenCalled();
   });
 });

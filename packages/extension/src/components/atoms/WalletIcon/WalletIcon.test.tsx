@@ -1,6 +1,9 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import { WalletIcon, WalletIconProps } from './WalletIcon';
+
+const user = userEvent.setup();
 
 jest.mock('@emeraldpay/hashicon-react', () => ({
   Hashicon: ({ value, size }: { value: string; size: number }) => (
@@ -49,10 +52,10 @@ describe('WalletIcon', () => {
     expect(screen.getByText('50')).toBeInTheDocument();
   });
 
-  test('calls the onClick prop when the icon is clicked', () => {
+  test('calls the onClick prop when the icon is clicked', async () => {
     const onClick = jest.fn();
     renderWalletIcon({ onClick });
-    fireEvent.click(screen.getByRole('button', { name: 'Wallet icon' }));
+    await user.click(screen.getByRole('button', { name: 'Wallet icon' }));
     expect(onClick).toHaveBeenCalled();
   });
 
