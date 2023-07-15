@@ -137,7 +137,7 @@ export const NetworkIndicator: FC = () => {
   const handleClickOnNetwork = useCallback(
     async (network: Network, customNetworkName?: string, customNetworkServer?: string) => {
       setIsLoading(true);
-      await switchNetwork(network, customNetworkServer);
+      await switchNetwork(network, customNetworkName, customNetworkServer);
       setCurrentNetworkName(customNetworkName || network);
       handleClose();
     },

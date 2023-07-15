@@ -9,7 +9,11 @@ import { loadNetwork, removeNetwork, saveCustomNetwork, saveNetwork } from '../.
 
 interface ContextType {
   reconnectToNetwork: () => void;
-  switchNetwork: (network: Network, serverURL?: string) => void;
+  switchNetwork: (
+    network: Network,
+    customNetworkName?: string,
+    customNetworkServer?: string
+  ) => void;
   resetNetwork: () => void;
   registerCustomNetwork: (networkData: {
     name: string;
@@ -18,7 +22,7 @@ interface ContextType {
   }) => void;
   // Returns null if client couldn't connect
   client?: Client | null;
-  network?: Network;
+  network?: Network | string;
 }
 
 const NetworkContext = createContext<ContextType>({
@@ -32,7 +36,7 @@ const NetworkContext = createContext<ContextType>({
 
 const NetworkProvider: FC = ({ children }) => {
   const [client, setClient] = useState<Client | null>();
-  const [network, setNetwork] = useState<Network>();
+  const [network, setNetwork] = useState<Network | string>();
 
   useEffect(() => {
     const connectToNetwork = async () => {
@@ -83,14 +87,14 @@ const NetworkProvider: FC = ({ children }) => {
   };
 
   const switchNetwork = useCallback(
-    async (network: Network, serverURL?: string) => {
+    async (network: Network, customNetworkName?: string, customNetworkServer?: string) => {
       try {
         await client?.disconnect();
         // If a server URL is provided, use it. Otherwise, use the pre-defined server for the given network
-        const ws = new Client(serverURL || NETWORK[network].server);
+        const ws = new Client(customNetworkServer || NETWORK[network].server);
         await ws.connect();
-        setNetwork(network);
-        saveNetwork(network);
+        setNetwork(customNetworkName || network);
+        saveNetwork(customNetworkName || network);
         setClient(ws);
       } catch (err) {
         await client?.disconnect();

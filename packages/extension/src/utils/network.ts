@@ -4,7 +4,7 @@ import { STORAGE_CUSTOM_NETWORKS, STORAGE_NETWORK } from '../constants/localStor
 
 import { loadData, removeData, saveData } from '.';
 
-export const saveNetwork = (network: Network) => {
+export const saveNetwork = (network: Network | string) => {
   try {
     saveData(STORAGE_NETWORK, network);
   } catch (e) {

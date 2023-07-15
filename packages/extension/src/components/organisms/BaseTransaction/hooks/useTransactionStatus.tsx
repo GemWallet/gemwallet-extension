@@ -10,7 +10,7 @@ import { AsyncTransaction, PageWithSpinner } from '../../../templates';
 interface TransactionStatusProps {
   isParamsMissing: boolean;
   errorDifference: string | undefined;
-  network: Network | undefined;
+  network: Network | string | undefined;
   difference: number | undefined;
   transaction: TransactionStatus;
   errorRequestRejection: string;
