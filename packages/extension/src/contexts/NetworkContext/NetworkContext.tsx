@@ -11,6 +11,11 @@ interface ContextType {
   reconnectToNetwork: () => void;
   switchNetwork: (network: Network, serverURL?: string) => void;
   resetNetwork: () => void;
+  registerCustomNetwork: (networkData: {
+    name: string;
+    server: string;
+    description?: string;
+  }) => void;
   // Returns null if client couldn't connect
   client?: Client | null;
   network?: Network;
@@ -20,6 +25,7 @@ const NetworkContext = createContext<ContextType>({
   reconnectToNetwork: () => {},
   switchNetwork: () => {},
   resetNetwork: () => {},
+  registerCustomNetwork: () => {},
   client: undefined,
   network: undefined
 });
@@ -106,10 +112,22 @@ const NetworkProvider: FC = ({ children }) => {
     }
   }, []);
 
+  const registerCustomNetwork = useCallback(
+    async (networkData: { name: string; server: string; description?: string }) => {
+      try {
+        await registerCustomNetwork(networkData);
+      } catch (err) {
+        Sentry.captureException(err);
+      }
+    },
+    []
+  );
+
   const value: ContextType = {
     reconnectToNetwork,
     switchNetwork,
     resetNetwork,
+    registerCustomNetwork,
     client,
     network
   };

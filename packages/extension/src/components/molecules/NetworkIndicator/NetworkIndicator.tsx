@@ -15,7 +15,6 @@ import {
   Dialog,
   IconButton,
   Slide,
-  TextField,
   Toolbar,
   Typography
 } from '@mui/material';
@@ -25,7 +24,9 @@ import { NETWORK, Network } from '@gemwallet/constants';
 
 import { SECONDARY_GRAY } from '../../../constants';
 import { useNetwork } from '../../../contexts';
+import { loadCustomNetworks } from '../../../utils';
 import { LoadingOverlay } from '../../templates';
+import { AddCustomNetwork } from './AddCustomNetwork';
 
 const Transition = forwardRef(function Transition(
   props: TransitionProps & {
@@ -42,7 +43,6 @@ interface NetworkDisplayProps {
   description: string;
   isSelected?: boolean;
   onClick: () => void;
-  onServerChange: (server: string) => void;
 }
 
 const NetworkDisplay: FC<NetworkDisplayProps> = ({
@@ -50,21 +50,10 @@ const NetworkDisplay: FC<NetworkDisplayProps> = ({
   server,
   description,
   isSelected = false,
-  onClick,
-  onServerChange
+  onClick
 }) => {
-  const [customServer, setCustomServer] = useState(server);
-
-  const handleServerChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newServer = event.target.value;
-    setCustomServer(newServer);
-    onServerChange(newServer);
-  };
-
   const handleCardClick = () => {
-    if (name !== Network.CUSTOM || (name === Network.CUSTOM && customServer)) {
-      onClick();
-    }
+    onClick();
   };
 
   return (
@@ -80,17 +69,7 @@ const NetworkDisplay: FC<NetworkDisplayProps> = ({
           <Box>
             <Typography gutterBottom>{name}</Typography>
             <Typography variant="subtitle2" color={SECONDARY_GRAY}>
-              {name === Network.CUSTOM ? (
-                <TextField
-                  value={customServer}
-                  onChange={handleServerChange}
-                  onClick={(event: React.MouseEvent<HTMLInputElement>) => {
-                    event.stopPropagation();
-                  }}
-                />
-              ) : (
-                server
-              )}
+              {server}
             </Typography>
             <Typography style={{ marginTop: '10px' }} variant="body2" color={SECONDARY_GRAY}>
               {description}
@@ -107,7 +86,8 @@ export const NetworkIndicator: FC = () => {
   const { client, network, switchNetwork } = useNetwork();
   const [explanationOpen, setExplanationOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [customServer, setCustomServer] = useState('');
+  const [handleAddNetwork, setHandleAddNetwork] = useState(false);
+  const existingNetworks = loadCustomNetworks();
 
   const handleOpen = useCallback(() => {
     setExplanationOpen(true);
@@ -127,9 +107,13 @@ export const NetworkIndicator: FC = () => {
     [handleClose, switchNetwork]
   );
 
-  const handleCustomServerChange = (server: string) => {
-    setCustomServer(server);
-  };
+  const handleAddNetworkClick = useCallback(() => {
+    setHandleAddNetwork(true);
+  }, []);
+
+  const handleAddNetworkClose = useCallback(() => {
+    setHandleAddNetwork(false);
+  }, []);
 
   return (
     <>
@@ -149,45 +133,92 @@ export const NetworkIndicator: FC = () => {
       {isLoading ? (
         <LoadingOverlay />
       ) : (
-        <Dialog
-          fullScreen
-          open={explanationOpen}
-          onClose={handleClose}
-          TransitionComponent={Transition}
-          data-testid="network-indicator-dialog"
-        >
-          <AppBar sx={{ position: 'relative' }}>
-            <Toolbar>
-              <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
-                <CloseIcon />
-              </IconButton>
-              <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-                Change Network
-              </Typography>
-            </Toolbar>
-          </AppBar>
-          <div style={{ overflowY: 'scroll', height: '544px', margin: '20px 20px 0 20px' }}>
-            {Object.keys(NETWORK).map((_network) => {
-              const { name, server, description } = NETWORK[_network as Network];
-              return (
-                <NetworkDisplay
-                  key={_network}
-                  name={name}
-                  server={server}
-                  description={description}
-                  isSelected={name === network}
-                  onClick={() =>
-                    handleClickOnNetwork(
-                      _network as Network,
-                      name === Network.CUSTOM ? customServer : undefined
-                    )
-                  }
-                  onServerChange={handleCustomServerChange}
-                />
-              );
-            })}
-          </div>
-        </Dialog>
+        <>
+          <AddCustomNetwork dialogOpen={handleAddNetwork} handleClose={handleAddNetworkClose} />
+          <Dialog
+            fullScreen
+            open={explanationOpen}
+            onClose={handleClose}
+            TransitionComponent={Transition}
+            data-testid="network-indicator-dialog"
+          >
+            <AppBar sx={{ position: 'relative' }}>
+              <Toolbar>
+                <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
+                  <CloseIcon />
+                </IconButton>
+                <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+                  Change Network
+                </Typography>
+              </Toolbar>
+            </AppBar>
+            <div style={{ overflowY: 'scroll', height: '544px', margin: '20px 20px 0 20px' }}>
+              {
+                // Display all the pre-defined networks
+                Object.keys(NETWORK)
+                  .filter((network) => network !== Network.CUSTOM)
+                  .map((_network) => {
+                    const { name, server, description } = NETWORK[_network as Network];
+                    return (
+                      <NetworkDisplay
+                        key={_network}
+                        name={name}
+                        server={server}
+                        description={description}
+                        isSelected={name === network}
+                        onClick={() => handleClickOnNetwork(_network as Network)}
+                      />
+                    );
+                  })
+              }
+              {
+                // Display the custom networks of the user
+                Object.keys(existingNetworks).map((_network) => {
+                  const { name, server, description } = existingNetworks[_network];
+                  return (
+                    <NetworkDisplay
+                      key={_network}
+                      name={name}
+                      server={server}
+                      description={description || ''}
+                      isSelected={name === network}
+                      onClick={() => handleClickOnNetwork(Network.CUSTOM, server)}
+                    />
+                  );
+                })
+              }
+              {
+                // Display the custom network input
+                <Card
+                  style={{
+                    marginBottom: '20px'
+                  }}
+                >
+                  <CardActionArea onClick={handleAddNetworkClick}>
+                    <CardContent
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between'
+                      }}
+                    >
+                      <Box>
+                        <Typography gutterBottom>Custom network</Typography>
+                        <Typography
+                          style={{ marginTop: '10px' }}
+                          variant="body2"
+                          color={SECONDARY_GRAY}
+                        >
+                          Add a custom network
+                        </Typography>
+                      </Box>
+                    </CardContent>
+                  </CardActionArea>
+                </Card>
+              }
+            </div>
+          </Dialog>
+        </>
       )}
     </>
   );

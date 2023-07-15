@@ -1,12 +1,46 @@
 import { NETWORK, Network } from '@gemwallet/constants';
 
-import { STORAGE_NETWORK } from '../constants/localStorage';
+import { STORAGE_CUSTOM_NETWORKS, STORAGE_NETWORK } from '../constants/localStorage';
 
 import { loadData, removeData, saveData } from '.';
 
 export const saveNetwork = (network: Network) => {
   try {
     saveData(STORAGE_NETWORK, network);
+  } catch (e) {
+    throw e;
+  }
+};
+
+export const loadCustomNetworks = (): Record<
+  string,
+  { name: string; server: string; description?: string }
+> => {
+  try {
+    const data = loadData(STORAGE_CUSTOM_NETWORKS);
+    if (data) {
+      return JSON.parse(data);
+    }
+    return {};
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const registerCustomNetwork = (networkData: {
+  name: string;
+  server: string;
+  description?: string;
+}) => {
+  try {
+    // Read existing custom networks from storage
+    let existingCustomNetworks = loadCustomNetworks();
+
+    // Add new custom network to existing custom networks
+    existingCustomNetworks[networkData.name] = networkData;
+
+    // Save custom networks to storage
+    saveData(STORAGE_CUSTOM_NETWORKS, JSON.stringify(existingCustomNetworks));
   } catch (e) {
     throw e;
   }
