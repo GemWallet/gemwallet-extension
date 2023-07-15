@@ -22,8 +22,8 @@ module.exports = {
       const chromeServices = {
         entry: {
           main: [paths.appIndexJs].filter(Boolean),
-          content: './src/chromeServices/content.ts',
-          background: './src/chromeServices/background.ts'
+          content: './src/chromeServices/content/index.ts',
+          background: './src/chromeServices/background/index.ts'
         },
         output: {
           ...webpackConfig.output,
