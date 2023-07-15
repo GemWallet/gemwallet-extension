@@ -4,11 +4,26 @@ import { STORAGE_CUSTOM_NETWORKS, STORAGE_NETWORK } from '../constants/localStor
 
 import { loadData, removeData, saveData } from '.';
 
-export const saveNetwork = (network: Network | string) => {
-  try {
-    saveData(STORAGE_NETWORK, network);
-  } catch (e) {
-    throw e;
+export const saveNetwork = (
+  network: Network,
+  customNetworkName?: string,
+  customNetworkServer?: string
+) => {
+  if (customNetworkName && customNetworkServer) {
+    try {
+      saveData(
+        STORAGE_NETWORK,
+        JSON.stringify({ name: customNetworkName, server: customNetworkServer })
+      );
+    } catch (e) {
+      throw e;
+    }
+  } else {
+    try {
+      saveData(STORAGE_NETWORK, JSON.stringify({ name: network, server: NETWORK[network].server }));
+    } catch (e) {
+      throw e;
+    }
   }
 };
 
@@ -57,10 +72,19 @@ export const saveCustomNetwork = (networkData: {
 export const loadNetwork = () => {
   try {
     const data = loadData(STORAGE_NETWORK);
-    if (data && NETWORK[data as Network]) {
-      return NETWORK[data as Network];
+    if (!data) {
+      return NETWORK[Network.MAINNET];
     }
-    return NETWORK[Network.MAINNET];
+
+    const parsedData = JSON.parse(data);
+    if (NETWORK[parsedData.name as Network]) {
+      return NETWORK[parsedData.name as Network];
+    }
+
+    return {
+      name: parsedData.name,
+      server: parsedData.server
+    };
   } catch (error) {
     return NETWORK[Network.MAINNET];
   }

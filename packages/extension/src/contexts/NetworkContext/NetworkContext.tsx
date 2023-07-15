@@ -94,7 +94,7 @@ const NetworkProvider: FC = ({ children }) => {
         const ws = new Client(customNetworkServer || NETWORK[network].server);
         await ws.connect();
         setNetwork(customNetworkName || network);
-        saveNetwork(customNetworkName || network);
+        saveNetwork(network, customNetworkName, customNetworkServer);
         setClient(ws);
       } catch (err) {
         await client?.disconnect();
