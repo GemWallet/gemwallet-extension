@@ -1,8 +1,10 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { generateWalletContext, WALLET_SEED } from '../../../../mocks';
 import { ConfirmSeed, ConfirmSeedProps } from './ConfirmSeed';
+
+const user = userEvent.setup();
 
 const mockedSetActiveStep = jest.fn();
 const defaultProps: ConfirmSeedProps = {
@@ -30,7 +32,6 @@ describe('CreateWallet - ConfirmSeed', () => {
 
   test('Should render an error if seed is not confirmed', async () => {
     const renderedElements = render(<ConfirmSeed {...defaultProps} />);
-    const user = userEvent.setup();
 
     const confirmButton = screen.getByRole('button', { name: 'Confirm' });
     await user.click(confirmButton);
@@ -38,7 +39,7 @@ describe('CreateWallet - ConfirmSeed', () => {
     expect(mockedSetActiveStep).toHaveBeenCalledTimes(0);
 
     const seedInput = renderedElements.container.querySelector('#seed');
-    fireEvent.change(seedInput as Element, { target: { value: WALLET_SEED } });
+    await user.type(seedInput as Element, WALLET_SEED);
     await user.click(confirmButton);
     expect(mockedSetActiveStep).toHaveBeenCalledTimes(1);
   });

@@ -1,10 +1,13 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import { BrowserContext } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
 import { AsyncTransaction } from './AsyncTransaction';
 
 describe('AsyncTransaction Template', () => {
+  const user = userEvent.setup();
+
   describe('Renders the proper elements', () => {
     test('Should render the proper elements for "waiting"', () => {
       render(
@@ -79,9 +82,7 @@ describe('AsyncTransaction Template', () => {
           />
         </BrowserContext.Provider>
       );
-      const buttonElement = screen.getByRole('button', { name: 'Processing' });
-      fireEvent.click(buttonElement);
-      expect(mockedCloseExtension).not.toBeCalled();
+      expect(screen.getByRole('button', { name: 'Processing' })).not.toBeEnabled();
     });
 
     test('Should not call closeExtension when button is clicked for "pending"', () => {
@@ -95,12 +96,10 @@ describe('AsyncTransaction Template', () => {
           />
         </BrowserContext.Provider>
       );
-      const buttonElement = screen.getByRole('button', { name: 'Processing' });
-      fireEvent.click(buttonElement);
-      expect(mockedCloseExtension).not.toBeCalled();
+      expect(screen.getByRole('button', { name: 'Processing' })).not.toBeEnabled();
     });
 
-    test('Should not call closeExtension when button is clicked for "success"', () => {
+    test('Should not call closeExtension when button is clicked for "success"', async () => {
       const mockedCloseExtension = jest.fn();
       render(
         <BrowserContext.Provider value={{ closeExtension: mockedCloseExtension, window }}>
@@ -112,11 +111,11 @@ describe('AsyncTransaction Template', () => {
         </BrowserContext.Provider>
       );
       const buttonElement = screen.getByRole('button', { name: 'Close' });
-      fireEvent.click(buttonElement);
+      await user.click(buttonElement);
       expect(mockedCloseExtension).toBeCalled();
     });
 
-    test('Should not call closeExtension when button is clicked for "rejected"', () => {
+    test('Should not call closeExtension when button is clicked for "rejected"', async () => {
       const mockedCloseExtension = jest.fn();
       render(
         <BrowserContext.Provider value={{ closeExtension: mockedCloseExtension, window }}>
@@ -128,7 +127,7 @@ describe('AsyncTransaction Template', () => {
         </BrowserContext.Provider>
       );
       const buttonElement = screen.getByRole('button', { name: 'Close' });
-      fireEvent.click(buttonElement);
+      await user.click(buttonElement);
       expect(mockedCloseExtension).toBeCalled();
     });
   });

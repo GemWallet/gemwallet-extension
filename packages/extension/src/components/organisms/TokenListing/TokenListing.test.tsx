@@ -1,11 +1,14 @@
 import * as Sentry from '@sentry/react';
-import { render, fireEvent, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import { Network } from '@gemwallet/constants';
 
 import { DEFAULT_RESERVE, RESERVE_PER_OWNER } from '../../../constants';
 import { formatToken } from '../../../utils';
 import { TokenListing, TokenListingProps } from './TokenListing';
+
+const user = userEvent.setup();
 
 jest.mock('react-router-dom');
 jest.mock('@sentry/react', () => {
@@ -126,7 +129,7 @@ describe('TokenListing', () => {
     ]);
     render(<TokenListing {...props} />);
     const explainButton = await screen.findByText('Explain');
-    await fireEvent.click(explainButton);
+    await user.click(explainButton);
     expect(
       screen.getByText(
         'The activation of this XRP ledger account was made through a minimum deposit of 10 XRP.'
@@ -171,7 +174,7 @@ describe('TokenListing', () => {
     const button = await screen.findByTestId('fund-wallet-button');
     const format = formatToken(10000 - reserve, 'XRP');
 
-    fireEvent.click(button);
+    await user.click(button);
 
     await waitFor(() => {
       expect(screen.getByText(format)).toBeInTheDocument();

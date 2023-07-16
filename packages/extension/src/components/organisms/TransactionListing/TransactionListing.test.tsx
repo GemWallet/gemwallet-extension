@@ -1,8 +1,11 @@
-import { fireEvent, render } from '@testing-library/react';
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import { generateWalletContext } from '../../../mocks';
 import { TransactionListing } from './TransactionListing';
 import { mockTransactions } from './TransactionListing.mock';
+
+const user = userEvent.setup();
 
 let mockWalletContext = generateWalletContext();
 jest.mock('../../../contexts', () => ({
@@ -39,7 +42,7 @@ describe('TransactionListing', () => {
     const screen = render(<TransactionListing transactions={mockTransactions} />);
     const transaction = await screen.findByText('Payment sent - 20 XRP');
     expect(transaction).toBeInTheDocument();
-    await fireEvent.click(transaction);
+    await user.click(transaction);
     expect(screen.getByText('Transaction Hash')).toBeInTheDocument();
     expect(screen.getByText('Account')).toBeInTheDocument();
     expect(screen.getByText('Destination')).toBeInTheDocument();
@@ -49,7 +52,7 @@ describe('TransactionListing', () => {
     expect(screen.getByText('Ledger Index')).toBeInTheDocument();
     const closeButton = await screen.findByTestId('close-button');
     expect(closeButton).toBeInTheDocument();
-    await fireEvent.click(closeButton);
+    await user.click(closeButton);
     expect(transaction).toBeInTheDocument();
   });
 
@@ -57,10 +60,10 @@ describe('TransactionListing', () => {
     const screen = render(<TransactionListing transactions={mockTransactions} />);
     const transaction = await screen.findByText('Payment sent - 20 XRP');
     expect(transaction).toBeInTheDocument();
-    await fireEvent.click(transaction);
+    await user.click(transaction);
     const dialog = await screen.findByTestId('dialog');
     expect(dialog).toBeInTheDocument();
-    await fireEvent.keyDown(dialog);
+    await user.type(dialog, '{esc}');
     expect(transaction).toBeInTheDocument();
   });
 });

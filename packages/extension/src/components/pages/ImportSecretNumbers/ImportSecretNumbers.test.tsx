@@ -1,8 +1,10 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 
 import { ImportSecretNumbers } from './ImportSecretNumbers';
+
+const user = userEvent.setup();
 
 describe('ImportSecretNumbers Page', () => {
   test('Should go back', async () => {
@@ -13,7 +15,6 @@ describe('ImportSecretNumbers Page', () => {
     );
 
     const nextButton = screen.getByRole('button', { name: 'Next' });
-    const user = userEvent.setup();
 
     // Going to Screen 1
     const secretNumbers = [
@@ -26,13 +27,11 @@ describe('ImportSecretNumbers Page', () => {
       '001170',
       '073666'
     ];
-    secretNumbers.forEach((number, index) => {
+    secretNumbers.forEach(async (number, index) => {
       const numberInput = renderedElements.container.querySelector(
         `#numbers${String.fromCharCode(65 + index)}`
       );
-      fireEvent.change(numberInput as Element, {
-        target: { value: number }
-      });
+      await user.type(numberInput, number);
     });
 
     await user.click(nextButton);

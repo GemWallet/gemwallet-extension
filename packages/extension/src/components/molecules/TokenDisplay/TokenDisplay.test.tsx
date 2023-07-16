@@ -1,10 +1,14 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import { formatToken } from '../../../utils';
 import { TokenDisplay, TokenDisplayProps } from './TokenDisplay';
 
+const user = userEvent.setup();
+
 describe('TokenDisplay', () => {
   let props: TokenDisplayProps;
+
   beforeEach(() => {
     props = {
       balance: 100,
@@ -32,9 +36,9 @@ describe('TokenDisplay', () => {
     expect(screen.getByText('Explain')).toBeInTheDocument();
   });
 
-  test('should call onExplainClick when the "Explain" button is clicked', () => {
+  test('should call onExplainClick when the "Explain" button is clicked', async () => {
     render(<TokenDisplay {...props} />);
-    fireEvent.click(screen.getByText('Explain'));
+    await user.click(screen.getByText('Explain'));
     expect(props.onExplainClick).toHaveBeenCalled();
   });
 });

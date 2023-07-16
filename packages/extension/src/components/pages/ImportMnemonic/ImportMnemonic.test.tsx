@@ -1,9 +1,11 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 
 import { WALLET_MNEMONIC } from '../../../mocks';
 import { ImportMnemonic } from './ImportMnemonic';
+
+const user = userEvent.setup();
 
 describe('ImportMnemonic Page', () => {
   test('Should go back', async () => {
@@ -14,13 +16,10 @@ describe('ImportMnemonic Page', () => {
     );
 
     const nextButton = screen.getByRole('button', { name: 'Next' });
-    const user = userEvent.setup();
 
     // Going to Screen 1
     const mnemonicInput = renderedElements.container.querySelector('#mnemonic');
-    fireEvent.change(mnemonicInput as Element, {
-      target: { value: WALLET_MNEMONIC }
-    });
+    await user.type(mnemonicInput, WALLET_MNEMONIC);
     await user.click(nextButton);
 
     // Go back to Screen 0
