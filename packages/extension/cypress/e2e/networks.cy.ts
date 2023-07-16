@@ -191,6 +191,9 @@ describe('Switch networks', () => {
     // Click the DeleteIcon of the custom network
     cy.get('[data-testid="DeleteIcon"]').click();
 
+    // Click "Confirm" on the delete network dialog
+    cy.contains('button', 'Delete').click();
+
     // Connect back to the AMMDevnet network
     cy.contains('button', NETWORK[Network.AMM_DEVNET].name).click();
 

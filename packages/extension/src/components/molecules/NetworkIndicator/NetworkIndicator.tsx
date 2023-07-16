@@ -15,6 +15,10 @@ import {
   CardContent,
   Chip,
   Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   IconButton,
   Slide,
   Toolbar,
@@ -113,6 +117,8 @@ export const NetworkIndicator: FC = () => {
   const [existingNetworks, setExistingNetworks] = useState<
     Record<string, { name: string; server: string; description?: string }>
   >({});
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [networkToDelete, setNetworkToDelete] = useState<string | null>(null);
 
   const refreshCustomNetworks = useCallback(() => {
     try {
@@ -158,19 +164,26 @@ export const NetworkIndicator: FC = () => {
     setHandleAddNetwork(false);
   }, []);
 
-  const removeNetwork = useCallback(
-    (networkName: string) => {
+  const removeNetwork = useCallback((networkName: string) => {
+    setNetworkToDelete(networkName);
+    setConfirmDeleteOpen(true);
+  }, []);
+
+  const handleConfirmDelete = useCallback(() => {
+    if (networkToDelete) {
       try {
         const updatedNetworks = { ...existingNetworks };
-        delete updatedNetworks[networkName];
+        delete updatedNetworks[networkToDelete];
         replaceCustomNetworks(updatedNetworks);
         setExistingNetworks(updatedNetworks);
       } catch (error) {
         Sentry.captureException(error);
       }
-    },
-    [existingNetworks]
-  );
+    }
+
+    // close the confirmation dialog
+    setConfirmDeleteOpen(false);
+  }, [existingNetworks, networkToDelete]);
 
   return (
     <>
@@ -199,6 +212,22 @@ export const NetworkIndicator: FC = () => {
               name.toLowerCase()
             )}
           />
+          <Dialog open={confirmDeleteOpen} onClose={() => setConfirmDeleteOpen(false)}>
+            <DialogTitle>Are you sure?</DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+                Are you sure you want to delete the network {networkToDelete}?
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setConfirmDeleteOpen(false)} color="primary">
+                Cancel
+              </Button>
+              <Button onClick={handleConfirmDelete} color="primary" autoFocus>
+                Delete
+              </Button>
+            </DialogActions>
+          </Dialog>
           <Dialog
             fullScreen
             open={explanationOpen}
