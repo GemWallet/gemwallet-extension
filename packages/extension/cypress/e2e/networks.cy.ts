@@ -137,7 +137,7 @@ describe('Switch networks', () => {
       .should('have.text', 'Change Network');
 
     // Open the add custom network window
-    cy.contains('button', 'Custom network').click();
+    cy.contains('button', 'Add a custom network').click();
 
     // Fill the form
     cy.get('input[name="network-name"]').type('XRPL Labs Testnet');

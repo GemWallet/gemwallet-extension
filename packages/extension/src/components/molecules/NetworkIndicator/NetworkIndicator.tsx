@@ -9,6 +9,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import {
   AppBar,
   Box,
+  Button,
   Card,
   CardActionArea,
   CardContent,
@@ -213,69 +214,65 @@ export const NetworkIndicator: FC = () => {
               </Toolbar>
             </AppBar>
             <div style={{ overflowY: 'scroll', height: '544px', margin: '20px 20px 0 20px' }}>
-              {
-                // Display all the pre-defined networks
-                Object.keys(NETWORK)
-                  .filter((network) => network !== Network.CUSTOM)
-                  .map((_network) => {
-                    const { name, server, description } = NETWORK[_network as Network];
+              <div style={{ paddingBottom: '40px' }}>
+                {
+                  // Display all the pre-defined networks
+                  Object.keys(NETWORK)
+                    .filter((network) => network !== Network.CUSTOM)
+                    .map((_network) => {
+                      const { name, server, description } = NETWORK[_network as Network];
+                      return (
+                        <NetworkDisplay
+                          key={_network}
+                          name={name}
+                          server={server}
+                          description={description}
+                          isSelected={name === currentNetworkName}
+                          onClick={() => handleClickOnNetwork(_network as Network)}
+                        />
+                      );
+                    })
+                }
+                {
+                  // Display the custom networks of the user
+                  Object.keys(existingNetworks).map((_network) => {
+                    const { name, server, description } = existingNetworks[_network];
                     return (
                       <NetworkDisplay
                         key={_network}
                         name={name}
                         server={server}
-                        description={description}
+                        description={description || ''}
                         isSelected={name === currentNetworkName}
-                        onClick={() => handleClickOnNetwork(_network as Network)}
+                        onClick={() => handleClickOnNetwork(Network.CUSTOM, name, server)}
+                        onRemove={() => removeNetwork(name)}
                       />
                     );
                   })
-              }
-              {
-                // Display the custom networks of the user
-                Object.keys(existingNetworks).map((_network) => {
-                  const { name, server, description } = existingNetworks[_network];
-                  return (
-                    <NetworkDisplay
-                      key={_network}
-                      name={name}
-                      server={server}
-                      description={description || ''}
-                      isSelected={name === currentNetworkName}
-                      onClick={() => handleClickOnNetwork(Network.CUSTOM, name, server)}
-                      onRemove={() => removeNetwork(name)}
-                    />
-                  );
-                })
-              }
+                }
+              </div>
               {
                 // Display the custom network input
-                <Card
+                <div
                   style={{
-                    marginBottom: '20px'
+                    display: 'flex',
+                    justifyContent: 'center',
+                    position: 'fixed',
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    zIndex: 1
+                    // backgroundColor: '#383838'
                   }}
                 >
-                  <CardActionArea onClick={handleAddNetworkClick}>
-                    <CardContent
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between'
-                      }}
-                    >
-                      <Box>
-                        <Typography gutterBottom>Custom network</Typography>
-                        <Typography
-                          style={{ marginTop: '10px' }}
-                          variant="body2"
-                          color={SECONDARY_GRAY}
-                        >
-                          Add a custom network
-                        </Typography>
-                      </Box>
-                    </CardContent>
-                  </CardActionArea>
-                </Card>
+                  <Button
+                    variant="contained"
+                    onClick={handleAddNetworkClick}
+                    style={{ margin: '10px 0' }}
+                  >
+                    Add a custom network
+                  </Button>
+                </div>
               }
             </div>
           </Dialog>
