@@ -192,7 +192,7 @@ describe('Switch networks', () => {
     cy.get('[data-testid="DeleteIcon"]').click();
 
     // Expect an error dialog when trying to delete the network we are currently connected to
-    cy.contains('button', 'OK').click();
+    cy.contains('button', 'OK', { timeout: 1500 }).click();
 
     // Connect back to the AMMDevnet network
     cy.contains('button', NETWORK[Network.AMM_DEVNET].name).click();
