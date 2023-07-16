@@ -191,8 +191,8 @@ describe('Switch networks', () => {
     // Click the DeleteIcon of the custom network
     cy.get('[data-testid="DeleteIcon"]').click();
 
-    // Click "Confirm" on the delete network dialog
-    cy.contains('button', 'Delete').click();
+    // Expect an error dialog when trying to delete the network we are currently connected to
+    cy.contains('button', 'OK').click();
 
     // Connect back to the AMMDevnet network
     cy.contains('button', NETWORK[Network.AMM_DEVNET].name).click();
@@ -206,6 +206,18 @@ describe('Switch networks', () => {
         timeout: 1500
       }
     );
+
+    // Open the change network window
+    cy.get('div[data-testid="network-indicator"]').click();
+    cy.get('div[data-testid="network-indicator-dialog"]', { timeout: 1500 })
+      .find('header')
+      .should('have.text', 'Change Network');
+
+    // Click the DeleteIcon of the custom network
+    cy.get('[data-testid="DeleteIcon"]').click();
+
+    // Click "Confirm" on the delete network dialog
+    cy.contains('button', 'Delete').click();
 
     // Save the current state of the localStorage
     cy.window().then((win) => {

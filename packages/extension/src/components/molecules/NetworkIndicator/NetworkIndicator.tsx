@@ -119,6 +119,7 @@ export const NetworkIndicator: FC = () => {
   >({});
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [networkToDelete, setNetworkToDelete] = useState<string | null>(null);
+  const [activeNetworkDeleteDialogOpen, setActiveNetworkDeleteDialogOpen] = useState(false);
 
   const refreshCustomNetworks = useCallback(() => {
     try {
@@ -164,10 +165,18 @@ export const NetworkIndicator: FC = () => {
     setHandleAddNetwork(false);
   }, []);
 
-  const removeNetwork = useCallback((networkName: string) => {
-    setNetworkToDelete(networkName);
-    setConfirmDeleteOpen(true);
-  }, []);
+  const removeNetwork = useCallback(
+    (networkName: string) => {
+      // If the network to delete is the active one, show the active network deletion warning dialog
+      if (networkName === currentNetworkName) {
+        setActiveNetworkDeleteDialogOpen(true);
+      } else {
+        setNetworkToDelete(networkName);
+        setConfirmDeleteOpen(true);
+      }
+    },
+    [currentNetworkName]
+  );
 
   const handleConfirmDelete = useCallback(() => {
     if (networkToDelete) {
@@ -225,6 +234,27 @@ export const NetworkIndicator: FC = () => {
               </Button>
               <Button onClick={handleConfirmDelete} color="primary" autoFocus>
                 Delete
+              </Button>
+            </DialogActions>
+          </Dialog>
+          <Dialog
+            open={activeNetworkDeleteDialogOpen}
+            onClose={() => setActiveNetworkDeleteDialogOpen(false)}
+          >
+            <DialogTitle>Error</DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+                You are currently connected to the network {currentNetworkName}. Please switch to
+                another network before deleting this one.
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                onClick={() => setActiveNetworkDeleteDialogOpen(false)}
+                color="primary"
+                autoFocus
+              >
+                OK
               </Button>
             </DialogActions>
           </Dialog>
