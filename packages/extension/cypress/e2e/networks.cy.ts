@@ -7,6 +7,7 @@ describe('Switch networks', () => {
   const PASSWORD = 'SECRET_PASSWORD';
 
   let networkLocalStorage = undefined;
+  let customNetworkLocalStorage = undefined;
   beforeEach(() => {
     // Mock the localStorage with a wallet already loaded
     cy.window().then((win) => {
@@ -16,6 +17,9 @@ describe('Switch networks', () => {
       );
       if (networkLocalStorage) {
         win.localStorage.setItem('network', networkLocalStorage);
+      }
+      if (customNetworkLocalStorage) {
+        win.localStorage.setItem('customNetworks', customNetworkLocalStorage);
       }
     });
     cy.visit('http://localhost:3000/', {
@@ -122,6 +126,74 @@ describe('Switch networks', () => {
     // Save the current state of the localStorage
     cy.window().then((win) => {
       networkLocalStorage = win.localStorage.getItem('network');
+    });
+  });
+
+  it('Add a custom network', () => {
+    // Open the change network window
+    cy.get('div[data-testid="network-indicator"]').click();
+    cy.get('div[data-testid="network-indicator-dialog"]', { timeout: 1500 })
+      .find('header')
+      .should('have.text', 'Change Network');
+
+    // Open the add custom network window
+    cy.contains('button', 'Custom network').click();
+
+    // Fill the form
+    cy.get('input[name="network-name"]').type('XRPL Labs Testnet');
+    cy.get('input[name="server"]').type('wss://testnet.xrpl-labs.com');
+
+    // Save the new network
+    cy.contains('button', 'Add network').click();
+
+    // Switch to the new network
+    cy.contains('button', 'XRPL Labs Testnet').click();
+
+    // Make sure that the network is switched to the custom network
+    cy.get('div[data-testid="loading"]').should('be.visible');
+    cy.get('div[data-testid="network-indicator"]').should('have.text', 'XRPL Labs Testnet', {
+      timeout: 1500
+    });
+
+    // Save the current state of the localStorage
+    cy.window().then((win) => {
+      networkLocalStorage = win.localStorage.getItem('network');
+      customNetworkLocalStorage = win.localStorage.getItem('customNetworks');
+    });
+  });
+
+  it('Delete the custom network', () => {
+    // Custom network should be the network from localStorage
+    cy.get('div[data-testid="network-indicator"]').should('have.text', 'XRPL Labs Testnet', {
+      timeout: 1500
+    });
+
+    // Open the change network window
+    cy.get('div[data-testid="network-indicator"]').click();
+    cy.get('div[data-testid="network-indicator-dialog"]', { timeout: 1500 })
+      .find('header')
+      .should('have.text', 'Change Network');
+
+    // Click the DeleteIcon of the custom network
+    cy.get('[data-testid="DeleteIcon"]').click();
+
+    // Connect back to the AMMDevnet network
+    cy.contains('button', NETWORK[Network.AMM_DEVNET].name).click();
+
+    // Make sure that the network is switched to AMMDevnet
+    cy.get('div[data-testid="loading"]').should('be.visible');
+    cy.get('div[data-testid="network-indicator"]').should(
+      'have.text',
+      NETWORK[Network.AMM_DEVNET].name,
+      {
+        timeout: 1500
+      }
+    );
+
+    // Save the current state of the localStorage
+    cy.window().then((win) => {
+      networkLocalStorage = win.localStorage.getItem('network');
+      customNetworkLocalStorage = win.localStorage.getItem('customNetworks');
     });
   });
 
