@@ -28,27 +28,39 @@ interface AddCustomNetworkProps {
   dialogOpen: boolean;
   handleClose: () => void;
   refreshNetworks: () => void;
+  networkNames: string[];
 }
 
 export const AddCustomNetwork: FC<AddCustomNetworkProps> = ({
   dialogOpen,
   handleClose,
-  refreshNetworks
+  refreshNetworks,
+  networkNames
 }) => {
   const [networkName, setNetworkName] = useState<string>('');
   const [server, setServer] = useState<string>('');
   const [description, setDescription] = useState<string>('');
+  const [networkNameError, setNetworkNameError] = useState<string>('');
   const [serverError, setServerError] = useState<string>('');
 
-  const handleNetworkNameChange = useCallback((e: FocusEvent<HTMLInputElement>) => {
-    setNetworkName(e.target.value);
-  }, []);
+  const handleNetworkNameChange = useCallback(
+    (e: FocusEvent<HTMLInputElement>) => {
+      setNetworkName(e.target.value);
+
+      if (networkNames.includes(e.target.value.toLowerCase())) {
+        setNetworkNameError('A network with this name already exists');
+      } else {
+        setNetworkNameError('');
+      }
+    },
+    [networkNames]
+  );
 
   const handleServerChange = useCallback((e: FocusEvent<HTMLInputElement>) => {
     setServer(e.target.value);
 
     if (!e.target.value.startsWith('wss://')) {
-      setServerError('Server must start with wss://');
+      setServerError('The server must be a valid WebSocket URL (start with wss://)');
     } else {
       setServerError('');
     }
@@ -69,8 +81,12 @@ export const AddCustomNetwork: FC<AddCustomNetworkProps> = ({
   }, [description, handleClose, networkName, refreshNetworks, server]);
 
   const isAddNetworkDisabled = useMemo(() => {
+    if (networkNames.includes(networkName.toLowerCase())) {
+      return true;
+    }
+
     return !!(networkName === '' || server === '' || serverError);
-  }, [networkName, server, serverError]);
+  }, [networkName, networkNames, server, serverError]);
 
   return (
     <Dialog fullScreen open={dialogOpen} onClose={handleClose} TransitionComponent={Transition}>
@@ -90,6 +106,8 @@ export const AddCustomNetwork: FC<AddCustomNetworkProps> = ({
           id="network-name"
           name="network-name"
           onChange={handleNetworkNameChange}
+          error={!!networkNameError}
+          helperText={networkNameError}
           fullWidth
           style={{ marginTop: '5px', marginBottom: '10px' }}
         />
@@ -98,6 +116,8 @@ export const AddCustomNetwork: FC<AddCustomNetworkProps> = ({
           id="server"
           name="server"
           onChange={handleServerChange}
+          error={!!serverError}
+          helperText={serverError}
           fullWidth
           style={{ marginTop: '20px', marginBottom: '10px' }}
         />

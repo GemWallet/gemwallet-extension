@@ -139,9 +139,23 @@ describe('Switch networks', () => {
     // Open the add custom network window
     cy.contains('button', 'Add a custom network').click();
 
+    // Expect an error if the network name already exists
+    cy.get('input[name="network-name"]').type(NETWORK[Network.MAINNET].name);
+    cy.get('#network-name-helper-text').should(
+      'have.text',
+      'A network with this name already exists'
+    );
+
+    // Expect an error if the server is invalid
+    cy.get('input[name="server"]').clear().type('https://testnet.xrpl-labs.com');
+    cy.get('#server-helper-text').should(
+      'have.text',
+      'The server must be a valid WebSocket URL (start with wss://)'
+    );
+
     // Fill the form
-    cy.get('input[name="network-name"]').type('XRPL Labs Testnet');
-    cy.get('input[name="server"]').type('wss://testnet.xrpl-labs.com');
+    cy.get('input[name="network-name"]').clear().type('XRPL Labs Testnet');
+    cy.get('input[name="server"]').clear().type('wss://testnet.xrpl-labs.com');
 
     // Save the new network
     cy.contains('button', 'Add network').click();

@@ -195,6 +195,9 @@ export const NetworkIndicator: FC = () => {
             dialogOpen={handleAddNetwork}
             handleClose={handleAddNetworkClose}
             refreshNetworks={refreshCustomNetworks}
+            networkNames={[...Object.keys(NETWORK), ...Object.keys(existingNetworks)].map((name) =>
+              name.toLowerCase()
+            )}
           />
           <Dialog
             fullScreen
