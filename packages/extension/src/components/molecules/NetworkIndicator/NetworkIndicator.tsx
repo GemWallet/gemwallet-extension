@@ -79,19 +79,24 @@ const NetworkDisplay: FC<NetworkDisplayProps> = ({
               {description}
             </Typography>
           </Box>
-          <Box>{isSelected ? <CheckIcon /> : null}</Box>
           <Box>
             {onRemove && (
-              <IconButton
+              <div
                 onClick={(event) => {
                   event.stopPropagation();
                   onRemove();
                 }}
+                style={{ cursor: 'pointer' }}
               >
                 <DeleteIcon />
-              </IconButton>
+              </div>
             )}
           </Box>
+          {isSelected ? (
+            <Box>
+              <CheckIcon />
+            </Box>
+          ) : null}
         </CardContent>
       </CardActionArea>
     </Card>
