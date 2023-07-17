@@ -28,6 +28,7 @@ import { TransitionProps } from '@mui/material/transitions';
 import * as Sentry from '@sentry/react';
 
 import { NETWORK, Network } from '@gemwallet/constants';
+import { NetworkData } from '@gemwallet/constants/src/network/network.types';
 
 import { SECONDARY_GRAY } from '../../../constants';
 import { useNetwork } from '../../../contexts';
@@ -104,9 +105,7 @@ export const NetworkIndicator: FC = () => {
   const [explanationOpen, setExplanationOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [handleAddNetwork, setHandleAddNetwork] = useState(false);
-  const [existingNetworks, setExistingNetworks] = useState<
-    Record<string, { name: string; server: string; description?: string }>
-  >({});
+  const [existingNetworks, setExistingNetworks] = useState<Record<string, NetworkData>>({});
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [networkToDelete, setNetworkToDelete] = useState<string | null>(null);
   const [activeNetworkDeleteDialogOpen, setActiveNetworkDeleteDialogOpen] = useState(false);

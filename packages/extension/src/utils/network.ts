@@ -1,4 +1,5 @@
 import { NETWORK, Network } from '@gemwallet/constants';
+import { NetworkData } from '@gemwallet/constants/src/network/network.types';
 
 import { STORAGE_CUSTOM_NETWORKS, STORAGE_NETWORK } from '../constants/localStorage';
 
@@ -27,10 +28,7 @@ export const saveNetwork = (
   }
 };
 
-export const loadCustomNetworks = (): Record<
-  string,
-  { name: string; server: string; description?: string }
-> => {
+export const loadCustomNetworks = (): Record<string, NetworkData> => {
   try {
     const data = loadData(STORAGE_CUSTOM_NETWORKS);
     if (data) {
@@ -50,11 +48,7 @@ export const replaceCustomNetworks = (networks: Record<string, any>) => {
   }
 };
 
-export const saveCustomNetwork = (networkData: {
-  name: string;
-  server: string;
-  description?: string;
-}) => {
+export const saveCustomNetwork = (networkData: NetworkData) => {
   try {
     // Read existing custom networks from storage
     let existingCustomNetworks = loadCustomNetworks();

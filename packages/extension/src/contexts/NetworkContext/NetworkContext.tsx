@@ -4,6 +4,7 @@ import * as Sentry from '@sentry/react';
 import { Client } from 'xrpl';
 
 import { NETWORK, Network } from '@gemwallet/constants';
+import { NetworkData } from '@gemwallet/constants/src/network/network.types';
 
 import { loadNetwork, removeNetwork, saveCustomNetwork, saveNetwork } from '../../utils';
 
@@ -15,11 +16,7 @@ interface ContextType {
     customNetworkServer?: string
   ) => void;
   resetNetwork: () => void;
-  registerCustomNetwork: (networkData: {
-    name: string;
-    server: string;
-    description?: string;
-  }) => void;
+  registerCustomNetwork: (networkData: NetworkData) => void;
   // Returns null if client couldn't connect
   client?: Client | null;
   network?: Network | string;
@@ -116,16 +113,13 @@ const NetworkProvider: FC = ({ children }) => {
     }
   }, []);
 
-  const registerCustomNetwork = useCallback(
-    async (networkData: { name: string; server: string; description?: string }) => {
-      try {
-        await saveCustomNetwork(networkData);
-      } catch (err) {
-        Sentry.captureException(err);
-      }
-    },
-    []
-  );
+  const registerCustomNetwork = useCallback(async (networkData: NetworkData) => {
+    try {
+      await saveCustomNetwork(networkData);
+    } catch (err) {
+      Sentry.captureException(err);
+    }
+  }, []);
 
   const value: ContextType = {
     reconnectToNetwork,
