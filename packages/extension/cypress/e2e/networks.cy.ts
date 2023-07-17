@@ -146,6 +146,10 @@ describe('Switch networks', () => {
       'A network with this name already exists'
     );
 
+    // Expect an error if the network name is empty
+    cy.get('input[name="network-name"]').clear().type(' ');
+    cy.get('#network-name-helper-text').should('have.text', 'The network name cannot be empty');
+
     // Expect an error if the server is invalid
     cy.get('input[name="server"]').clear().type('https://testnet.xrpl-labs.com');
     cy.get('#server-helper-text').should(

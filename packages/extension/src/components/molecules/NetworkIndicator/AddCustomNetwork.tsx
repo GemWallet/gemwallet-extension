@@ -49,6 +49,8 @@ export const AddCustomNetwork: FC<AddCustomNetworkProps> = ({
 
       if (networkNames.includes(e.target.value.toLowerCase())) {
         setNetworkNameError('A network with this name already exists');
+      } else if (e.target.value.trim() === '') {
+        setNetworkNameError('The network name cannot be empty');
       } else {
         setNetworkNameError('');
       }

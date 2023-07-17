@@ -324,7 +324,6 @@ export const NetworkIndicator: FC = () => {
                     left: 0,
                     right: 0,
                     zIndex: 1
-                    // backgroundColor: '#383838'
                   }}
                 >
                   <Button
