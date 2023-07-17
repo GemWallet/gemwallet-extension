@@ -306,6 +306,11 @@ const App: FC = () => {
 
       const id = Number(urlParams.get('id')) || 0;
       const network = loadNetwork();
+      const networkResponse = Object.values(NETWORK)
+        .map((n) => n.name.toLowerCase())
+        .includes(network.name.toLowerCase())
+        ? network.name
+        : Network.CUSTOM;
 
       if (extensionWindow) {
         let message:
@@ -316,11 +321,7 @@ const App: FC = () => {
           const response: GetNetworkResponse = {
             type: ResponseType.Response,
             result: {
-              network: Object.values(NETWORK)
-                .map((n) => n.name.toLowerCase())
-                .includes(network.name.toLowerCase())
-                ? network.name
-                : Network.CUSTOM,
+              network: networkResponse,
               websocket: network.server
             }
           };
@@ -332,11 +333,7 @@ const App: FC = () => {
           };
         } else {
           const response: GetNetworkResponseDeprecated = {
-            network: Object.values(NETWORK)
-              .map((n) => n.name.toLowerCase())
-              .includes(network.name.toLowerCase())
-              ? network.name
-              : Network.CUSTOM
+            network: networkResponse
           };
 
           message = {

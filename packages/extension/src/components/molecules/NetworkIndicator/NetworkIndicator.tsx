@@ -61,17 +61,13 @@ const NetworkDisplay: FC<NetworkDisplayProps> = ({
   onClick,
   onRemove
 }) => {
-  const handleCardClick = () => {
-    onClick();
-  };
-
   return (
     <Card
       style={{
         marginBottom: '20px'
       }}
     >
-      <CardActionArea onClick={handleCardClick}>
+      <CardActionArea onClick={onClick}>
         <CardContent
           style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
         >
@@ -84,24 +80,18 @@ const NetworkDisplay: FC<NetworkDisplayProps> = ({
               {description}
             </Typography>
           </Box>
-          <Box>
-            {onRemove && (
-              <div
-                onClick={(event) => {
-                  event.stopPropagation();
-                  onRemove();
-                }}
-                style={{ cursor: 'pointer' }}
-              >
-                <DeleteIcon />
-              </div>
-            )}
-          </Box>
-          {isSelected ? (
-            <Box>
-              <CheckIcon />
-            </Box>
-          ) : null}
+          {onRemove && (
+            <div
+              onClick={(event) => {
+                event.stopPropagation();
+                onRemove();
+              }}
+              style={{ cursor: 'pointer' }}
+            >
+              <DeleteIcon />
+            </div>
+          )}
+          {isSelected ? <CheckIcon /> : null}
         </CardContent>
       </CardActionArea>
     </Card>
