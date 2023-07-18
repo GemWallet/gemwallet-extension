@@ -24,14 +24,14 @@ const Transition = forwardRef(function Transition(
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-interface AddCustomNetworkProps {
+interface AddCustomNetworkDialogProps {
   dialogOpen: boolean;
   handleClose: () => void;
   refreshNetworks: () => void;
   networkNames: string[];
 }
 
-export const AddCustomNetwork: FC<AddCustomNetworkProps> = ({
+export const AddCustomNetworkDialog: FC<AddCustomNetworkDialogProps> = ({
   dialogOpen,
   handleClose,
   refreshNetworks,

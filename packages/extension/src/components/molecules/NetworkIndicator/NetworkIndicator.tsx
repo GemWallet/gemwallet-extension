@@ -34,7 +34,7 @@ import { SECONDARY_GRAY } from '../../../constants';
 import { useNetwork } from '../../../contexts';
 import { loadCustomNetworks, replaceCustomNetworks } from '../../../utils';
 import { LoadingOverlay } from '../../templates';
-import { AddCustomNetwork } from './AddCustomNetwork';
+import { AddCustomNetworkDialog } from './AddCustomNetworkDialog';
 
 const Transition = forwardRef(function Transition(
   props: TransitionProps & {
@@ -202,7 +202,7 @@ export const NetworkIndicator: FC = () => {
         <LoadingOverlay />
       ) : (
         <>
-          <AddCustomNetwork
+          <AddCustomNetworkDialog
             dialogOpen={handleAddNetwork}
             handleClose={handleAddNetworkClose}
             refreshNetworks={refreshCustomNetworks}
