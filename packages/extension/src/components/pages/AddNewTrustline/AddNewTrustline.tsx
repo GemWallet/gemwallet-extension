@@ -14,6 +14,7 @@ import {
 
 import { API_ERROR_BAD_ISSUER, API_ERROR_BAD_REQUEST, HOME_PATH } from '../../../constants';
 import { useLedger, useNetwork } from '../../../contexts';
+import { useFees, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
 import {
   handleAmountHexCurrency,
@@ -28,7 +29,6 @@ import {
   parseBaseParamsFromURLParams
 } from '../../../utils/baseParams';
 import { serializeError } from '../../../utils/errors';
-import { useFees, useTransactionStatus } from '../../organisms/BaseTransaction/hooks';
 import { StepForm, StepWarning, StepConfirm } from '../../pages';
 import { AsyncTransaction } from '../../templates';
 

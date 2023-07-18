@@ -4,8 +4,8 @@ import * as Sentry from '@sentry/react';
 
 import { Network } from '@gemwallet/constants';
 
-import { TransactionStatus } from '../../../../types';
-import { AsyncTransaction, PageWithSpinner } from '../../../templates';
+import { AsyncTransaction, PageWithSpinner } from '../../components/templates';
+import { TransactionStatus } from '../../types';
 
 interface TransactionStatusProps {
   isParamsMissing: boolean;

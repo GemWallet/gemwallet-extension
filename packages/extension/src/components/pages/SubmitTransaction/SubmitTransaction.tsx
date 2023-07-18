@@ -13,11 +13,11 @@ import {
 
 import { ERROR_RED } from '../../../constants';
 import { useLedger, useNetwork } from '../../../contexts';
+import { useFees, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
 import { parseTransactionParam } from '../../../utils';
 import { serializeError } from '../../../utils/errors';
 import { Fee } from '../../organisms';
-import { useFees, useTransactionStatus } from '../../organisms/BaseTransaction/hooks';
 import DisplayXRPLTransaction from '../../organisms/DisplayXRPLTransaction/DisplayXRPLTransaction';
 import { PageWithTitle } from '../../templates';
 

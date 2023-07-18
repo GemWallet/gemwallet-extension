@@ -3,8 +3,8 @@ import { useEffect, useState } from 'react';
 import * as Sentry from '@sentry/react';
 import { Transaction } from 'xrpl';
 
-import { DEFAULT_RESERVE, RESERVE_PER_OWNER } from '../../../../constants';
-import { useLedger, useNetwork, useServer, useWallet } from '../../../../contexts';
+import { DEFAULT_RESERVE, RESERVE_PER_OWNER } from '../../constants';
+import { useLedger, useNetwork, useServer, useWallet } from '../../contexts';
 
 const DEFAULT_FEES = 'Loading ...';
 

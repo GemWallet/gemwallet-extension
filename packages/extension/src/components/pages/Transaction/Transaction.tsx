@@ -15,6 +15,7 @@ import {
 
 import { API_ERROR_BAD_DESTINATION, API_ERROR_BAD_REQUEST, ERROR_RED } from '../../../constants';
 import { useLedger, useNetwork } from '../../../contexts';
+import { useFees, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
 import {
   formatAmount,
@@ -31,7 +32,6 @@ import {
 } from '../../../utils/baseParams';
 import { serializeError, toUIError } from '../../../utils/errors';
 import { BaseTransaction } from '../../organisms/BaseTransaction/BaseTransaction';
-import { useFees, useTransactionStatus } from '../../organisms/BaseTransaction/hooks';
 import { AsyncTransaction, PageWithTitle } from '../../templates';
 
 const createBadRequestCallback = (
