@@ -12,7 +12,7 @@ describe('Login Page', () => {
     );
     const titleElement = screen.getByRole('heading', { name: 'GemWallet' });
     const subTitleElement = screen.getByRole('heading', {
-      name: 'Internet cryptocurrency payments made easy'
+      name: 'Your gateway to the XRPL'
     });
     expect(titleElement).toBeVisible();
     expect(subTitleElement).toBeVisible();
