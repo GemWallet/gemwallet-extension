@@ -272,7 +272,11 @@ interface BaseResponse<T> {
   result?: T;
 }
 
-export interface GetNetworkResponse extends BaseResponse<{ network: Network }> {}
+export interface GetNetworkResponse
+  extends BaseResponse<{
+    network: Network;
+    websocket: string;
+  }> {}
 
 export interface GetNetworkResponseDeprecated {
   network: Network | undefined;

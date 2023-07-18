@@ -14,6 +14,7 @@ export const getNetwork = async (): Promise<GetNetworkResponse> => {
    * - type: 'response'
    * - result:
    *    - network: network name
+   *    - websocket: websocket url
    *
    * if the user rejects the transaction:
    * - type: 'reject'

@@ -7,6 +7,8 @@ import {
   GEM_WALLET,
   GetNetworkResponse,
   GetNetworkResponseDeprecated,
+  NETWORK,
+  Network,
   ReceiveGetNetworkBackgroundMessage,
   ReceiveGetNetworkBackgroundMessageDeprecated,
   ResponseType
@@ -22,6 +24,7 @@ import {
   CancelNFTOffer,
   CancelOffer,
   CreateNFTOffer,
+  CreateOffer,
   CreateWallet,
   EditWallet,
   History,
@@ -34,8 +37,8 @@ import {
   Login,
   MintNFT,
   ResetPassword,
-  SetAccount,
   SendPayment,
+  SetAccount,
   Settings,
   ShareAddress,
   ShareNFT,
@@ -44,8 +47,7 @@ import {
   SubmitTransaction,
   Transaction,
   TrustedApps,
-  Welcome,
-  CreateOffer
+  Welcome
 } from './components/pages';
 import { ErrorBoundary } from './components/templates';
 import {
@@ -303,7 +305,12 @@ const App: FC = () => {
           : 'RECEIVE_NETWORK';
 
       const id = Number(urlParams.get('id')) || 0;
-      const network = loadNetwork().name;
+      const network = loadNetwork();
+      const networkResponse = Object.values(NETWORK)
+        .map((n) => n.name.toLowerCase())
+        .includes(network.name.toLowerCase())
+        ? network.name
+        : Network.CUSTOM;
 
       if (extensionWindow) {
         let message:
@@ -313,7 +320,10 @@ const App: FC = () => {
         if (type === 'RECEIVE_GET_NETWORK/V3') {
           const response: GetNetworkResponse = {
             type: ResponseType.Response,
-            result: { network }
+            result: {
+              network: networkResponse,
+              websocket: network.server
+            }
           };
 
           message = {
@@ -322,7 +332,9 @@ const App: FC = () => {
             payload: { id, ...response }
           };
         } else {
-          const response: GetNetworkResponseDeprecated = { network };
+          const response: GetNetworkResponseDeprecated = {
+            network: networkResponse
+          };
 
           message = {
             app: GEM_WALLET,

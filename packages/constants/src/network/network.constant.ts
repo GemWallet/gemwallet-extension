@@ -2,7 +2,8 @@ export enum Network {
   MAINNET = 'Mainnet',
   TESTNET = 'Testnet',
   DEVNET = 'Devnet',
-  AMM_DEVNET = 'AMM-Devnet'
+  AMM_DEVNET = 'AMM-Devnet',
+  CUSTOM = 'Custom'
 }
 
 export enum NetworkServer {
@@ -33,5 +34,10 @@ export const NETWORK = {
     name: Network.AMM_DEVNET,
     server: NetworkServer.AMM_DEVNET,
     description: 'XLS-30d Automated Market Makers preview network.'
+  },
+  [Network.CUSTOM]: {
+    name: Network.CUSTOM,
+    server: '',
+    description: 'Connect to a custom network server.'
   }
 };

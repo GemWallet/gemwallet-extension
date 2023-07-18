@@ -4,29 +4,36 @@ import * as Sentry from '@sentry/react';
 import { Client } from 'xrpl';
 
 import { NETWORK, Network } from '@gemwallet/constants';
+import { NetworkData } from '@gemwallet/constants/src/network/network.types';
 
-import { loadNetwork, removeNetwork, saveNetwork } from '../../utils';
+import { loadNetwork, removeNetwork, saveCustomNetwork, saveNetwork } from '../../utils';
 
 interface ContextType {
   reconnectToNetwork: () => void;
-  switchNetwork: (network: Network) => void;
+  switchNetwork: (
+    network: Network,
+    customNetworkName?: string,
+    customNetworkServer?: string
+  ) => void;
   resetNetwork: () => void;
+  registerCustomNetwork: (networkData: NetworkData) => void;
   // Returns null if client couldn't connect
   client?: Client | null;
-  network?: Network;
+  network?: Network | string;
 }
 
 const NetworkContext = createContext<ContextType>({
   reconnectToNetwork: () => {},
   switchNetwork: () => {},
   resetNetwork: () => {},
+  registerCustomNetwork: () => {},
   client: undefined,
   network: undefined
 });
 
 const NetworkProvider: FC = ({ children }) => {
   const [client, setClient] = useState<Client | null>();
-  const [network, setNetwork] = useState<Network>();
+  const [network, setNetwork] = useState<Network | string>();
 
   useEffect(() => {
     const connectToNetwork = async () => {
@@ -77,13 +84,14 @@ const NetworkProvider: FC = ({ children }) => {
   };
 
   const switchNetwork = useCallback(
-    async (network: Network) => {
+    async (network: Network, customNetworkName?: string, customNetworkServer?: string) => {
       try {
         await client?.disconnect();
-        const ws = new Client(NETWORK[network].server);
+        // If a server URL is provided, use it. Otherwise, use the pre-defined server for the given network
+        const ws = new Client(customNetworkServer || NETWORK[network].server);
         await ws.connect();
-        setNetwork(network);
-        saveNetwork(network);
+        setNetwork(customNetworkName || network);
+        saveNetwork(network, customNetworkName, customNetworkServer);
         setClient(ws);
       } catch (err) {
         await client?.disconnect();
@@ -105,10 +113,19 @@ const NetworkProvider: FC = ({ children }) => {
     }
   }, []);
 
+  const registerCustomNetwork = useCallback(async (networkData: NetworkData) => {
+    try {
+      await saveCustomNetwork(networkData);
+    } catch (err) {
+      Sentry.captureException(err);
+    }
+  }, []);
+
   const value: ContextType = {
     reconnectToNetwork,
     switchNetwork,
     resetNetwork,
+    registerCustomNetwork,
     client,
     network
   };

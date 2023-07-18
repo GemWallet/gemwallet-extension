@@ -28,7 +28,13 @@ describe('saveNetwork', () => {
   test('should save the network to local storage', () => {
     const network = Network.MAINNET;
     saveNetwork(network);
-    expect(localStorage.setItem).toHaveBeenCalledWith(STORAGE_NETWORK, network);
+    expect(localStorage.setItem).toHaveBeenCalledWith(
+      STORAGE_NETWORK,
+      JSON.stringify({
+        name: network,
+        server: NETWORK[network].server
+      })
+    );
   });
 
   test('should throw an error if saving to local storage fails', () => {
