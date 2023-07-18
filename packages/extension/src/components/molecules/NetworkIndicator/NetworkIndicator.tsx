@@ -1,4 +1,4 @@
-import { FC, forwardRef, useCallback, useEffect, useState } from 'react';
+import { FC, forwardRef, useCallback, useEffect, useMemo, useState } from 'react';
 
 import {
   Close as CloseIcon,
@@ -183,6 +183,41 @@ export const NetworkIndicator: FC = () => {
     setConfirmDeleteOpen(false);
   }, [existingNetworks, networkToDelete]);
 
+  const preDefinedNetworks = useMemo(() => {
+    return Object.keys(NETWORK)
+      .filter((network) => network !== Network.CUSTOM)
+      .map((_network) => {
+        const { name, server, description } = NETWORK[_network as Network];
+        return (
+          <NetworkDisplay
+            key={_network}
+            name={name}
+            server={server}
+            description={description}
+            isSelected={name === currentNetworkName}
+            onClick={() => handleClickOnNetwork(_network as Network)}
+          />
+        );
+      });
+  }, [currentNetworkName, handleClickOnNetwork]);
+
+  const customNetworks = useMemo(() => {
+    return Object.keys(existingNetworks).map((_network) => {
+      const { name, server, description } = existingNetworks[_network];
+      return (
+        <NetworkDisplay
+          key={_network}
+          name={name}
+          server={server}
+          description={description || ''}
+          isSelected={name === currentNetworkName}
+          onClick={() => handleClickOnNetwork(Network.CUSTOM, name, server)}
+          onRemove={() => removeNetwork(name)}
+        />
+      );
+    });
+  }, [currentNetworkName, existingNetworks, handleClickOnNetwork, removeNetwork]);
+
   return (
     <>
       <Chip
@@ -266,41 +301,8 @@ export const NetworkIndicator: FC = () => {
             </AppBar>
             <div style={{ overflowY: 'scroll', height: '544px', margin: '20px 20px 0 20px' }}>
               <div style={{ paddingBottom: '40px' }}>
-                {
-                  // Display all the pre-defined networks
-                  Object.keys(NETWORK)
-                    .filter((network) => network !== Network.CUSTOM)
-                    .map((_network) => {
-                      const { name, server, description } = NETWORK[_network as Network];
-                      return (
-                        <NetworkDisplay
-                          key={_network}
-                          name={name}
-                          server={server}
-                          description={description}
-                          isSelected={name === currentNetworkName}
-                          onClick={() => handleClickOnNetwork(_network as Network)}
-                        />
-                      );
-                    })
-                }
-                {
-                  // Display the custom networks of the user
-                  Object.keys(existingNetworks).map((_network) => {
-                    const { name, server, description } = existingNetworks[_network];
-                    return (
-                      <NetworkDisplay
-                        key={_network}
-                        name={name}
-                        server={server}
-                        description={description || ''}
-                        isSelected={name === currentNetworkName}
-                        onClick={() => handleClickOnNetwork(Network.CUSTOM, name, server)}
-                        onRemove={() => removeNetwork(name)}
-                      />
-                    );
-                  })
-                }
+                {preDefinedNetworks}
+                {customNetworks}
               </div>
               {
                 // Display the custom network input
