@@ -2,17 +2,11 @@ import { FC, forwardRef, useCallback, useEffect, useMemo, useState } from 'react
 
 import {
   Close as CloseIcon,
-  FiberManualRecord as FiberManualRecordIcon,
-  Check as CheckIcon
+  FiberManualRecord as FiberManualRecordIcon
 } from '@mui/icons-material';
-import DeleteIcon from '@mui/icons-material/Delete';
 import {
   AppBar,
-  Box,
   Button,
-  Card,
-  CardActionArea,
-  CardContent,
   Chip,
   Dialog,
   DialogActions,
@@ -30,11 +24,11 @@ import * as Sentry from '@sentry/react';
 import { NETWORK, Network } from '@gemwallet/constants';
 import { NetworkData } from '@gemwallet/constants/src/network/network.types';
 
-import { SECONDARY_GRAY } from '../../../constants';
 import { useNetwork } from '../../../contexts';
 import { loadCustomNetworks, replaceCustomNetworks } from '../../../utils';
 import { LoadingOverlay } from '../../templates';
 import { AddCustomNetworkDialog } from './AddCustomNetworkDialog';
+import { NetworkDisplay } from './NetworkDisplay';
 
 const Transition = forwardRef(function Transition(
   props: TransitionProps & {
@@ -44,60 +38,6 @@ const Transition = forwardRef(function Transition(
 ) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
-
-interface NetworkDisplayProps {
-  name: string;
-  server: string;
-  description: string;
-  isSelected?: boolean;
-  onClick: () => void;
-  onRemove?: () => void;
-}
-
-const NetworkDisplay: FC<NetworkDisplayProps> = ({
-  name,
-  server,
-  description,
-  isSelected = false,
-  onClick,
-  onRemove
-}) => {
-  return (
-    <Card
-      style={{
-        marginBottom: '20px'
-      }}
-    >
-      <CardActionArea onClick={onClick}>
-        <CardContent
-          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
-        >
-          <Box>
-            <Typography gutterBottom>{name}</Typography>
-            <Typography variant="subtitle2" color={SECONDARY_GRAY}>
-              {server}
-            </Typography>
-            <Typography style={{ marginTop: '10px' }} variant="body2" color={SECONDARY_GRAY}>
-              {description}
-            </Typography>
-          </Box>
-          {onRemove && (
-            <div
-              onClick={(event) => {
-                event.stopPropagation();
-                onRemove();
-              }}
-              style={{ cursor: 'pointer' }}
-            >
-              <DeleteIcon />
-            </div>
-          )}
-          {isSelected ? <CheckIcon /> : null}
-        </CardContent>
-      </CardActionArea>
-    </Card>
-  );
-};
 
 export const NetworkIndicator: FC = () => {
   const { client, network, switchNetwork } = useNetwork();
