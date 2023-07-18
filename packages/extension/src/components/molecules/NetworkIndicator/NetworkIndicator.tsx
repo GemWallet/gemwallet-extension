@@ -9,10 +9,6 @@ import {
   Button,
   Chip,
   Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
   IconButton,
   Slide,
   Toolbar,
@@ -27,7 +23,9 @@ import { NetworkData } from '@gemwallet/constants/src/network/network.types';
 import { useNetwork } from '../../../contexts';
 import { loadCustomNetworks, replaceCustomNetworks } from '../../../utils';
 import { LoadingOverlay } from '../../templates';
+import { ActiveNetworkDeleteDialog } from './ActiveNetworkDeleteDialog';
 import { AddCustomNetworkDialog } from './AddCustomNetworkDialog';
+import { DeleteNetworkDialog } from './DeleteNetworkDialog';
 import { NetworkDisplay } from './NetworkDisplay';
 
 const Transition = forwardRef(function Transition(
@@ -185,43 +183,17 @@ export const NetworkIndicator: FC = () => {
               name.toLowerCase()
             )}
           />
-          <Dialog open={confirmDeleteOpen} onClose={() => setConfirmDeleteOpen(false)}>
-            <DialogTitle>Are you sure?</DialogTitle>
-            <DialogContent>
-              <DialogContentText>
-                Are you sure you want to delete the network {networkToDelete}?
-              </DialogContentText>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={() => setConfirmDeleteOpen(false)} color="primary">
-                Cancel
-              </Button>
-              <Button onClick={handleConfirmDelete} color="primary" autoFocus>
-                Delete
-              </Button>
-            </DialogActions>
-          </Dialog>
-          <Dialog
-            open={activeNetworkDeleteDialogOpen}
-            onClose={() => setActiveNetworkDeleteDialogOpen(false)}
-          >
-            <DialogTitle>Error</DialogTitle>
-            <DialogContent>
-              <DialogContentText>
-                You are currently connected to the network {currentNetworkName}. Please switch to
-                another network before deleting this one.
-              </DialogContentText>
-            </DialogContent>
-            <DialogActions>
-              <Button
-                onClick={() => setActiveNetworkDeleteDialogOpen(false)}
-                color="primary"
-                autoFocus
-              >
-                OK
-              </Button>
-            </DialogActions>
-          </Dialog>
+          <DeleteNetworkDialog
+            confirmDeleteOpen={confirmDeleteOpen}
+            networkToDelete={networkToDelete}
+            handleConfirmDelete={handleConfirmDelete}
+            closeDeleteDialog={() => setConfirmDeleteOpen(false)}
+          />
+          <ActiveNetworkDeleteDialog
+            activeNetworkDeleteDialogOpen={activeNetworkDeleteDialogOpen}
+            currentNetworkName={currentNetworkName}
+            closeActiveNetworkDeleteDialog={() => setActiveNetworkDeleteDialogOpen(false)}
+          />
           <Dialog
             fullScreen
             open={explanationOpen}
