@@ -244,6 +244,15 @@ export interface SignTransactionRequest {
   transaction: Transaction;
 }
 
+export interface TransactionWithID {
+  txID: number;
+  transaction: Transaction;
+}
+
+export interface SubmitTransactionsBulkRequest {
+  transactions: TransactionWithID[];
+}
+
 export type RequestPayload =
   | AcceptNFTOfferRequest
   | BurnNFTRequest
@@ -262,7 +271,8 @@ export type RequestPayload =
   | SetTrustlineRequestDeprecated
   | SignMessageRequest
   | SignTransactionRequest
-  | SubmitTransactionRequest;
+  | SubmitTransactionRequest
+  | SubmitTransactionsBulkRequest;
 
 /*
  * Response Payloads
@@ -316,6 +326,9 @@ export interface SignTransactionResponse
   extends BaseResponse<{
     signature: string | null | undefined;
   }> {}
+
+export interface SubmitTransactionsBulkResponse
+  extends BaseResponse<Array<{ hash?: string; error?: Error }>> {}
 
 export interface IsInstalledResponse {
   result: { isInstalled: boolean };
@@ -400,7 +413,8 @@ export type ResponsePayload =
   | SetTrustlineResponseDeprecated
   | SignMessageResponse
   | SignMessageResponseDeprecated
-  | SubmitTransactionResponse;
+  | SubmitTransactionResponse
+  | SubmitTransactionsBulkResponse;
 
 /*
  * Internal Messages Payloads

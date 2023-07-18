@@ -17,6 +17,7 @@ export * from './setTrustline';
 export * from './signMessage';
 export * from './signTransaction';
 export * from './submitTransaction';
+export * from './submitTransactionsBulk';
 
 export type { Amount } from 'xrpl/dist/npm/models/common';
 export type {

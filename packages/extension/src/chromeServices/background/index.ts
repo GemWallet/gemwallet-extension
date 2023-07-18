@@ -52,8 +52,9 @@ import {
   PARAMETER_TRANSACTION_CREATE_OFFER,
   PARAMETER_TRANSACTION_MINT_NFT,
   PARAMETER_TRANSACTION_PAYMENT,
+  PARAMETER_TRANSACTION_TRUSTLINE,
   PARAMETER_TRANSACTION_SET_ACCOUNT,
-  PARAMETER_TRANSACTION_TRUSTLINE
+  PARAMETER_SUBMIT_TRANSACTIONS_BULK
 } from '../../constants/parameters';
 import { focusOrCreatePopupWindow } from './utils/focusOrCreatePopupWindow';
 import { createOffscreen } from './utils/offscreen';
@@ -380,6 +381,17 @@ chrome.runtime.onMessage.addListener(
           result: undefined
         }
       });
+    } else if (type === 'REQUEST_SUBMIT_TRANSACTIONS_BULK/V3') {
+      focusOrCreatePopupWindow({
+        payload: message.payload,
+        sender,
+        parameter: PARAMETER_SUBMIT_TRANSACTIONS_BULK,
+        receivingMessage: 'RECEIVE_SUBMIT_TRANSACTIONS_BULK/V3',
+        errorPayload: {
+          type: ResponseType.Reject,
+          result: undefined
+        }
+      });
       /*
        * Receive messages
        */
@@ -634,6 +646,17 @@ chrome.runtime.onMessage.addListener(
       sendMessageToTab<ReceiveSignTransactionContentMessage>(payload.id, {
         app,
         type: 'RECEIVE_SIGN_TRANSACTION/V3',
+        payload: {
+          type: ResponseType.Response,
+          result: payload.result,
+          error: payload.error
+        }
+      });
+    } else if (type === 'RECEIVE_SUBMIT_TRANSACTIONS_BULK/V3') {
+      const { payload } = message;
+      sendMessageToTab<ReceiveSubmitTransactionContentMessage>(payload.id, {
+        app,
+        type: 'RECEIVE_SUBMIT_TRANSACTIONS_BULK/V3',
         payload: {
           type: ResponseType.Response,
           result: payload.result,
