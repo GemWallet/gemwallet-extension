@@ -27,7 +27,7 @@ export const Welcome: FC = () => {
           GemWallet
         </Typography>
         <Typography variant="h6" component="h2" style={{ marginTop: '30px' }}>
-          Internet cryptocurrency payments made easy
+          Your gateway to the XRPL
         </Typography>
       </Container>
       <Container style={{ display: 'flex', flexDirection: 'column' }}>

@@ -62,7 +62,7 @@ describe('Setup the initial wallet (no previous wallet)', () => {
       ).should('be.visible');
       cy.contains('button', 'Finish').click();
       cy.contains('GemWallet').should('be.visible');
-      cy.contains('Internet cryptocurrency payments made easy').should('be.visible');
+      cy.contains('Your gateway to the XRPL').should('be.visible');
     });
   });
 
@@ -107,7 +107,7 @@ describe('Setup the initial wallet (no previous wallet)', () => {
     // Redirection to the login page
     cy.contains('button', 'Finish').click();
     cy.contains('GemWallet').should('be.visible');
-    cy.contains('Internet cryptocurrency payments made easy').should('be.visible');
+    cy.contains('Your gateway to the XRPL').should('be.visible');
   });
 
   it('Import a wallet - Mnemonic', () => {
@@ -151,7 +151,7 @@ describe('Setup the initial wallet (no previous wallet)', () => {
     // Redirection to the login page
     cy.contains('button', 'Finish').click();
     cy.contains('GemWallet').should('be.visible');
-    cy.contains('Internet cryptocurrency payments made easy').should('be.visible');
+    cy.contains('Your gateway to the XRPL').should('be.visible');
   });
 
   it('Import a wallet - Secret numbers', () => {
@@ -209,7 +209,7 @@ describe('Setup the initial wallet (no previous wallet)', () => {
     // Redirection to the login page
     cy.contains('button', 'Finish').click();
     cy.contains('GemWallet').should('be.visible');
-    cy.contains('Internet cryptocurrency payments made easy').should('be.visible');
+    cy.contains('Your gateway to the XRPL').should('be.visible');
   });
 });
 
@@ -593,14 +593,14 @@ describe('Reset password', () => {
     // Cancel should return to login page
     cy.contains('button', 'Cancel').click();
     cy.contains('GemWallet').should('be.visible');
-    cy.contains('Internet cryptocurrency payments made easy').should('be.visible');
+    cy.contains('Your gateway to the XRPL').should('be.visible');
 
     // Reset the password
     cy.contains('Reset Password').click();
     cy.contains('button', 'Continue').click();
 
     // Onboarding screen of GemWallet
-    cy.contains('Internet cryptocurrency payments made easy').should('be.visible');
+    cy.contains('Your gateway to the XRPL').should('be.visible');
     cy.contains('button', 'Create a new wallet').should('be.visible');
     cy.contains('button', 'Import a wallet').should('be.visible');
   });

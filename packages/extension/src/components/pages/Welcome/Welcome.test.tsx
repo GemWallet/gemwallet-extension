@@ -22,7 +22,7 @@ describe('Welcome Page', () => {
     );
     const titleElement = screen.getByRole('heading', { name: 'GemWallet' });
     const subTitleElement = screen.getByRole('heading', {
-      name: 'Internet cryptocurrency payments made easy'
+      name: 'Your gateway to the XRPL'
     });
     const newWalletButtonElement = screen.getByRole('button', { name: 'Create a new wallet' });
     const importWalletButtonElement = screen.getByRole('button', { name: 'Import a wallet' });
