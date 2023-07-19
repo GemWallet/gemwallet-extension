@@ -1,9 +1,5 @@
 import { FC, useCallback, useEffect, useState } from 'react';
 
-import ErrorIcon from '@mui/icons-material/Error';
-import { Button, Step, StepLabel, Stepper, Typography } from '@mui/material';
-import ReactJson from 'react-json-view';
-
 import {
   GEM_WALLET,
   ReceiveSubmitTransactionsBulkBackgroundMessage,
@@ -11,13 +7,13 @@ import {
   TransactionWithID
 } from '@gemwallet/constants';
 
-import { ERROR_RED } from '../../../constants';
 import { useLedger, useNetwork } from '../../../contexts';
 import { useFees, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
 import { parseTransactionsWithIDListParam } from '../../../utils';
 import { serializeError } from '../../../utils/errors';
 import RecapView from './RecapView/RecapView';
+import StepperView from './StepperView/StepperView';
 
 interface Params {
   id: number;
@@ -168,62 +164,19 @@ export const SubmitTransactionsBulk: FC = () => {
           beginProcess={() => setShowRecap(false)}
         />
       ) : (
-        <>
-          <Stepper activeStep={activeStep} alternativeLabel>
-            {Array(steps)
-              .fill('')
-              .map((_, index) => (
-                <Step key={index}>
-                  <StepLabel>Step {index + 1}</StepLabel>
-                </Step>
-              ))}
-          </Stepper>
-          {!hasEnoughFunds ? (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              <ErrorIcon style={{ color: ERROR_RED }} />
-              <Typography variant="body1" style={{ marginLeft: '10px', color: ERROR_RED }}>
-                Insufficient funds.
-              </Typography>
-            </div>
-          ) : null}
-          {activeStep === steps ? (
-            <div>
-              <Typography>All steps completed</Typography>
-              <Button onClick={handleReset}>Reset</Button>
-            </div>
-          ) : (
-            <div>
-              {transactionsToDisplay?.map((tx, index) => (
-                <div key={index}>
-                  <Typography variant="body1">
-                    Transaction Type: {tx.transaction.TransactionType}
-                  </Typography>
-                  <ReactJson src={tx.transaction} theme="summerfruit" collapsed={true} />
-                </div>
-              ))}
-              {errorRequestRejection && (
-                <Typography color="error">{errorRequestRejection}</Typography>
-              )}
-              <Button disabled={activeStep === 0} onClick={handleBack}>
-                Back
-              </Button>
-              <Button variant="contained" color="secondary" onClick={handleReject}>
-                Reject
-              </Button>
-              <Button variant="contained" color="primary" onClick={handleNext}>
-                {activeStep === steps - 1 ? 'Finish' : 'Next'}
-              </Button>
-              <Button
-                variant="contained"
-                color="secondary"
-                onClick={handleConfirm}
-                disabled={!hasEnoughFunds}
-              >
-                Submit all transactions
-              </Button>
-            </div>
-          )}
-        </>
+        <StepperView
+          activeStep={activeStep}
+          steps={steps}
+          hasEnoughFunds={hasEnoughFunds}
+          transactionsToDisplay={transactionsToDisplay ?? []}
+          totalNumberOfTransactions={params.transactionsListParam?.length ?? 0}
+          errorRequestRejection={errorRequestRejection}
+          handleBack={handleBack}
+          handleReject={handleReject}
+          handleNext={handleNext}
+          handleConfirm={handleConfirm}
+          handleReset={handleReset}
+        />
       )}
     </>
   );
