@@ -163,6 +163,7 @@ export const SubmitTransactionsBulk: FC = () => {
           transactionsListParam={params.transactionsListParam}
           estimatedFees={estimatedFees}
           errorFees={errorFees}
+          hasEnoughFunds={hasEnoughFunds}
           handleReject={handleReject}
           beginProcess={() => setShowRecap(false)}
         />
