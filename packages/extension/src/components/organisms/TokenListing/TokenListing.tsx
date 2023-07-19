@@ -15,7 +15,7 @@ import { TransitionProps } from '@mui/material/transitions';
 import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
 import { TrustSetFlags as TrustSetFlagsBitmask } from 'xrpl';
-import { Trustline } from 'xrpl/dist/npm/models/methods/accountLines';
+import { AccountLinesTrustline } from 'xrpl';
 
 import { Network } from '@gemwallet/constants';
 
@@ -88,12 +88,14 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
         if (accountLines?.result?.lines) {
           trustLineBalances = trustLineBalances
             .map((trustlineBalance) => {
-              const trustlineDetails = accountLines.result.lines.find((line: Trustline) => {
-                return (
-                  line.currency === trustlineBalance.currency &&
-                  line.account === trustlineBalance.issuer
-                );
-              });
+              const trustlineDetails = accountLines.result.lines.find(
+                (line: AccountLinesTrustline) => {
+                  return (
+                    line.currency === trustlineBalance.currency &&
+                    line.account === trustlineBalance.issuer
+                  );
+                }
+              );
               return {
                 ...trustlineBalance,
                 trustlineDetails:
