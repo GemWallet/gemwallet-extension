@@ -1,7 +1,7 @@
 import { FC, useCallback, useEffect, useState } from 'react';
 
 import ErrorIcon from '@mui/icons-material/Error';
-import { Button, Stepper, Step, StepLabel, Typography } from '@mui/material';
+import { Button, Step, StepLabel, Stepper, Typography } from '@mui/material';
 import ReactJson from 'react-json-view';
 
 import {
@@ -17,7 +17,7 @@ import { useFees, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
 import { parseTransactionsWithIDListParam } from '../../../utils';
 import { serializeError } from '../../../utils/errors';
-import { Fee } from '../../organisms';
+import RecapView from './RecapView/RecapView';
 
 interface Params {
   id: number;
@@ -26,7 +26,7 @@ interface Params {
 }
 
 export const SubmitTransactionsBulk: FC = () => {
-  const MAX_TRANSACTIONS_PER_STEP = 2;
+  const MAX_TRANSACTIONS_PER_STEP = 5;
 
   const [params, setParams] = useState<Params>({
     id: 0,
@@ -36,6 +36,7 @@ export const SubmitTransactionsBulk: FC = () => {
   const [isParamsMissing, setIsParamsMissing] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
+  const [showRecap, setShowRecap] = useState(true);
   const { submitTransactionsBulk } = useLedger();
   const { network } = useNetwork();
   const { estimatedFees, errorFees, difference, errorDifference } = useFees(
@@ -53,10 +54,7 @@ export const SubmitTransactionsBulk: FC = () => {
     network,
     difference,
     transaction,
-    errorRequestRejection,
-    onClick: () => {
-      setTransaction(TransactionStatus.Waiting);
-    }
+    errorRequestRejection
   });
 
   // Handle stepper
@@ -64,7 +62,9 @@ export const SubmitTransactionsBulk: FC = () => {
     ? Math.ceil(params.transactionsListParam.length / MAX_TRANSACTIONS_PER_STEP)
     : 0;
   const handleNext = () => {
-    if (activeStep < steps - 1) {
+    if (activeStep === steps - 1) {
+      handleConfirm();
+    } else if (activeStep < steps - 1) {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     }
   };
@@ -128,10 +128,7 @@ export const SubmitTransactionsBulk: FC = () => {
     // transactionsListParam will be present because if not,
     // we won't be able to go to the confirm transaction state
     submitTransactionsBulk({
-      transactions: params.transactionsListParam?.slice(
-        activeStep * MAX_TRANSACTIONS_PER_STEP,
-        (activeStep + 1) * MAX_TRANSACTIONS_PER_STEP
-      ) as TransactionWithID[]
+      transactions: params.transactionsListParam as TransactionWithID[]
     })
       .then((response) => {
         setTransaction(TransactionStatus.Success);
@@ -148,7 +145,7 @@ export const SubmitTransactionsBulk: FC = () => {
         });
         chrome.runtime.sendMessage<ReceiveSubmitTransactionsBulkBackgroundMessage>(message);
       });
-  }, [submitTransactionsBulk, params.transactionsListParam, activeStep, createMessage]);
+  }, [submitTransactionsBulk, params.transactionsListParam, createMessage]);
 
   const { transactionsListParam } = params;
 
@@ -161,6 +158,14 @@ export const SubmitTransactionsBulk: FC = () => {
     <>
       {transactionStatusComponent ? (
         <div>{transactionStatusComponent}</div>
+      ) : showRecap ? (
+        <RecapView
+          transactionsListParam={params.transactionsListParam}
+          estimatedFees={estimatedFees}
+          errorFees={errorFees}
+          handleReject={handleReject}
+          beginProcess={() => setShowRecap(false)}
+        />
       ) : (
         <>
           <Stepper activeStep={activeStep} alternativeLabel>
@@ -172,7 +177,6 @@ export const SubmitTransactionsBulk: FC = () => {
                 </Step>
               ))}
           </Stepper>
-          <Fee errorFees={errorFees} estimatedFees={estimatedFees} fee={null} />
           {!hasEnoughFunds ? (
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
               <ErrorIcon style={{ color: ERROR_RED }} />
@@ -214,7 +218,7 @@ export const SubmitTransactionsBulk: FC = () => {
                 onClick={handleConfirm}
                 disabled={!hasEnoughFunds}
               >
-                Confirm
+                Submit all transactions
               </Button>
             </div>
           )}
