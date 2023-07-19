@@ -17,8 +17,10 @@ interface TransactionStatusProps {
   difference: number | undefined;
   transaction: TransactionStatus;
   errorRequestRejection?: Error;
+  isBulk?: boolean;
   errorValue?: string;
   errorFees: string | undefined;
+  progressPercentage?: number;
   badRequestCallback?: () => void;
   onClick?: () => void;
 }
@@ -29,8 +31,10 @@ export const useTransactionStatus = ({
   difference,
   transaction,
   errorRequestRejection,
+  isBulk,
   errorValue,
   errorFees,
+  progressPercentage,
   badRequestCallback,
   onClick
 }: TransactionStatusProps) => {
@@ -46,7 +50,7 @@ export const useTransactionStatus = ({
       }
       return (
         <AsyncTransaction
-          title="Transaction rejected"
+          title={`Transaction${isBulk ? 's' : ''} rejected`}
           subtitle={
             <>
               Your transaction failed, please try again.
@@ -133,12 +137,12 @@ export const useTransactionStatus = ({
       }
       return (
         <AsyncTransaction
-          title="Incorrect transaction"
+          title={`Incorrect transaction${isBulk ? 's' : ''}`}
           subtitle={
             <>
               {errorValue}
               <br />
-              Please try again with a correct transaction
+              {`Please try again with ${isBulk ? 'correct transactions' : 'a correct transaction'}`}
             </>
           }
           transaction={TransactionStatus.Rejected}
@@ -152,22 +156,24 @@ export const useTransactionStatus = ({
         <AsyncTransaction
           title={
             transaction === TransactionStatus.Success
-              ? 'Transaction accepted'
-              : 'Transaction in progress'
+              ? `Transaction${isBulk ? 's' : ''} accepted`
+              : `Transaction${isBulk ? 's' : ''} in progress`
           }
           subtitle={
             transaction === TransactionStatus.Success ? (
-              'Transaction Successful'
+              `Transaction${isBulk ? 's' : ''} Successful`
             ) : (
               <>
-                We are processing your transaction
+                {`We are processing your transaction${isBulk ? 's' : ''}`}
                 <br />
                 Please wait
               </>
             )
           }
           transaction={transaction}
+          {...(progressPercentage && { progressPercentage })}
           {...(onClick && { onClick })}
+          {...(isBulk && { isBulk })}
         />
       );
     }
@@ -175,10 +181,10 @@ export const useTransactionStatus = ({
     if (transaction === TransactionStatus.Rejected) {
       return (
         <AsyncTransaction
-          title="Transaction rejected"
+          title={`Transaction${isBulk ? 's' : ''} rejected`}
           subtitle={
             <>
-              Your transaction failed, please try again.
+              {`Your transaction${isBulk ? 's' : ''} failed, please try again.`}
               <br />
               {errorRequestRejection
                 ? toUIError(errorRequestRejection).message
@@ -198,9 +204,11 @@ export const useTransactionStatus = ({
     errorValue,
     transaction,
     badRequestCallback,
+    isBulk,
     onClick,
     reconnectToNetwork,
     network,
+    progressPercentage,
     errorRequestRejection
   ]);
 

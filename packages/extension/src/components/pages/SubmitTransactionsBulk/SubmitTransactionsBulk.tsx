@@ -17,12 +17,13 @@ import StepperView from './StepperView/StepperView';
 
 interface Params {
   id: number;
-  // SubmitTransaction fields
+  // SubmitTransactionsBulk fields
   transactionsListParam: TransactionWithID[] | null;
 }
 
 export const SubmitTransactionsBulk: FC = () => {
-  const MAX_TRANSACTIONS_PER_STEP = 5;
+  const MAX_TRANSACTIONS_PER_STEP = 5; // For the stepper
+  const CHUNK_SIZE = 5; // For the submitTransactionsBulk calls and the progress bar
 
   const [params, setParams] = useState<Params>({
     id: 0,
@@ -33,6 +34,11 @@ export const SubmitTransactionsBulk: FC = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
   const [showRecap, setShowRecap] = useState(true);
+  const [processedTransactions, setProcessedTransactions] = useState<
+    Array<{ txID: number; hash?: string; error?: Error }>
+  >([]);
+  const [processedTransactionCount, setProcessedTransactionCount] = useState(0);
+  const [progressPercentage, setProgressPercentage] = useState(0);
   const { submitTransactionsBulk } = useLedger();
   const { network } = useNetwork();
   const { estimatedFees, errorFees, difference, errorDifference } = useFees(
@@ -50,7 +56,9 @@ export const SubmitTransactionsBulk: FC = () => {
     network,
     difference,
     transaction,
-    errorRequestRejection
+    errorRequestRejection,
+    isBulk: true,
+    progressPercentage: progressPercentage
   });
 
   // Handle stepper
@@ -123,26 +131,55 @@ export const SubmitTransactionsBulk: FC = () => {
     setTransaction(TransactionStatus.Pending);
     // transactionsListParam will be present because if not,
     // we won't be able to go to the confirm transaction state
-    submitTransactionsBulk({
-      transactions: params.transactionsListParam as TransactionWithID[]
-    })
-      .then((response) => {
-        setTransaction(TransactionStatus.Success);
-        chrome.runtime.sendMessage<ReceiveSubmitTransactionsBulkBackgroundMessage>(
-          createMessage(response)
-        );
+    const transactionsList = params.transactionsListParam as TransactionWithID[];
+
+    const submitTransactionsInChunks = async (transactions: TransactionWithID[]) => {
+      // Divide transactions into chunks of five or less
+      for (let i = 0; i < transactions.length; i += CHUNK_SIZE) {
+        const chunk = transactions.slice(i, i + CHUNK_SIZE);
+
+        try {
+          const response = await submitTransactionsBulk({ transactions: chunk });
+          setProcessedTransactions((prev) => [...prev, ...response.txResults]);
+
+          setProcessedTransactionCount((prev) => {
+            const newProcessedTransactionCount = prev + response.txResults.length;
+
+            const totalTransactions = params.transactionsListParam?.length || 0;
+            setProgressPercentage(
+              Math.floor((newProcessedTransactionCount / totalTransactions) * 100)
+            );
+
+            return newProcessedTransactionCount;
+          });
+        } catch (e) {
+          throw e;
+        }
+      }
+
+      setTransaction(TransactionStatus.Success);
+    };
+
+    submitTransactionsInChunks(transactionsList)
+      .then(() => {
+        const message = createMessage({
+          txResults: processedTransactions
+        });
+        chrome.runtime.sendMessage<ReceiveSubmitTransactionsBulkBackgroundMessage>(message);
       })
       .catch((e) => {
         setErrorRequestRejection(e.message);
         setTransaction(TransactionStatus.Rejected);
-        const message = createMessage({
-          txResults: null,
-          error: e
-        });
+        const message = createMessage({ txResults: null, error: e });
         chrome.runtime.sendMessage<ReceiveSubmitTransactionsBulkBackgroundMessage>(message);
       });
-  }, [submitTransactionsBulk, params.transactionsListParam, createMessage]);
-
+  }, [
+    params.transactionsListParam,
+    submitTransactionsBulk,
+    processedTransactionCount,
+    createMessage,
+    processedTransactions
+  ]);
   const { transactionsListParam } = params;
 
   const transactionsToDisplay = transactionsListParam?.slice(
