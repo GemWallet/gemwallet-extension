@@ -2,9 +2,6 @@ import React, { FC, useState } from 'react';
 
 import ErrorIcon from '@mui/icons-material/Error';
 import {
-  Step,
-  StepLabel,
-  Stepper,
   Typography,
   Button,
   Container,
@@ -12,7 +9,9 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
-  Dialog
+  Dialog,
+  Pagination,
+  PaginationItem
 } from '@mui/material';
 import ReactJson from 'react-json-view';
 
@@ -77,15 +76,29 @@ const StepperView: FC<StepperViewProps> = ({
   return (
     <PageWithTitle title="Bulk Transactions" styles={{ container: { justifyContent: 'initial' } }}>
       <div style={{ marginBottom: '60px' }}>
-        <Stepper activeStep={activeStep} alternativeLabel>
-          {Array(steps)
-            .fill('')
-            .map((_, index) => (
-              <Step key={index}>
-                <StepLabel>Step {index + 1}</StepLabel>
-              </Step>
-            ))}
-        </Stepper>
+        <div
+          style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+        >
+          <Pagination
+            count={steps}
+            page={activeStep + 1}
+            renderItem={(item) => (
+              <PaginationItem
+                {...item}
+                sx={{
+                  '&:hover': {
+                    backgroundColor: 'transparent',
+                    cursor: 'default'
+                  }
+                }}
+              />
+            )}
+            variant="outlined"
+            color="primary"
+            hidePrevButton
+            hideNextButton
+          />
+        </div>
         {!hasEnoughFunds ? (
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <ErrorIcon style={{ color: ERROR_RED }} />

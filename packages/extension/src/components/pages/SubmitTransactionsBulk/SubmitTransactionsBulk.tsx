@@ -22,7 +22,7 @@ interface Params {
 }
 
 export const SubmitTransactionsBulk: FC = () => {
-  const MAX_TRANSACTIONS_PER_STEP = 5; // For the stepper
+  const MAX_TRANSACTIONS_PER_STEP = 20; // For the stepper
   const CHUNK_SIZE = 5; // For the submitTransactionsBulk calls and the progress bar
 
   const [params, setParams] = useState<Params>({
