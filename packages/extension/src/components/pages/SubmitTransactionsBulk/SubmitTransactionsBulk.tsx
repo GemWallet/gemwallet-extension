@@ -34,10 +34,6 @@ export const SubmitTransactionsBulk: FC = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
   const [showRecap, setShowRecap] = useState(true);
-  const [processedTransactions, setProcessedTransactions] = useState<
-    Array<{ txID: number; hash?: string; error?: Error }>
-  >([]);
-  const [processedTransactionCount, setProcessedTransactionCount] = useState(0);
   const [progressPercentage, setProgressPercentage] = useState(0);
   const { submitTransactionsBulk } = useLedger();
   const { network } = useNetwork();
@@ -133,37 +129,35 @@ export const SubmitTransactionsBulk: FC = () => {
     // we won't be able to go to the confirm transaction state
     const transactionsList = params.transactionsListParam as TransactionWithID[];
 
-    const submitTransactionsInChunks = async (transactions: TransactionWithID[]) => {
+    const submitTransactionsInChunks = async (
+      transactions: TransactionWithID[]
+    ): Promise<{ txID: number; hash?: string; error?: Error }[]> => {
+      let results: { txID: number; hash?: string; error?: Error }[] = [];
+
       // Divide transactions into chunks of five or less
       for (let i = 0; i < transactions.length; i += CHUNK_SIZE) {
         const chunk = transactions.slice(i, i + CHUNK_SIZE);
 
         try {
           const response = await submitTransactionsBulk({ transactions: chunk });
-          setProcessedTransactions((prev) => [...prev, ...response.txResults]);
+          results = [...results, ...response.txResults];
 
-          setProcessedTransactionCount((prev) => {
-            const newProcessedTransactionCount = prev + response.txResults.length;
-
-            const totalTransactions = params.transactionsListParam?.length || 0;
-            setProgressPercentage(
-              Math.floor((newProcessedTransactionCount / totalTransactions) * 100)
-            );
-
-            return newProcessedTransactionCount;
-          });
+          const totalTransactions = params.transactionsListParam?.length || 0;
+          setProgressPercentage(Math.floor((results.length / totalTransactions) * 100));
         } catch (e) {
           throw e;
         }
       }
 
       setTransaction(TransactionStatus.Success);
+
+      return results;
     };
 
     submitTransactionsInChunks(transactionsList)
-      .then(() => {
+      .then((txResults) => {
         const message = createMessage({
-          txResults: processedTransactions
+          txResults
         });
         chrome.runtime.sendMessage<ReceiveSubmitTransactionsBulkBackgroundMessage>(message);
       })
@@ -173,13 +167,7 @@ export const SubmitTransactionsBulk: FC = () => {
         const message = createMessage({ txResults: null, error: e });
         chrome.runtime.sendMessage<ReceiveSubmitTransactionsBulkBackgroundMessage>(message);
       });
-  }, [
-    params.transactionsListParam,
-    submitTransactionsBulk,
-    processedTransactionCount,
-    createMessage,
-    processedTransactions
-  ]);
+  }, [params.transactionsListParam, submitTransactionsBulk, createMessage]);
   const { transactionsListParam } = params;
 
   const transactionsToDisplay = transactionsListParam?.slice(
