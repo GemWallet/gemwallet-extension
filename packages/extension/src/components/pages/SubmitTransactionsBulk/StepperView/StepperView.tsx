@@ -75,7 +75,7 @@ const StepperView: FC<StepperViewProps> = ({
 
   return (
     <PageWithTitle title="Bulk Transactions" styles={{ container: { justifyContent: 'initial' } }}>
-      <div style={{ marginBottom: '60px' }}>
+      <div style={{ marginBottom: '100px' }}>
         <div
           style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
         >
