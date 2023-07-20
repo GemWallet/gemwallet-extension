@@ -1,6 +1,7 @@
 import { FC, useCallback, useEffect, useState } from 'react';
 
 import {
+  DEFAULT_SUBMIT_TX_BULK_ON_ERROR,
   GEM_WALLET,
   ReceiveSubmitTransactionsBulkBackgroundMessage,
   ResponseType,
@@ -36,6 +37,7 @@ export const SubmitTransactionsBulk: FC = () => {
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
   const [showRecap, setShowRecap] = useState(true);
   const [progressPercentage, setProgressPercentage] = useState(0);
+  const [onError, setOnError] = useState<'abort' | 'continue'>(DEFAULT_SUBMIT_TX_BULK_ON_ERROR);
   const { submitTransactionsBulk } = useLedger();
   const { network } = useNetwork();
   const { estimatedFees, errorFees, difference, errorDifference } = useFees(
@@ -77,6 +79,13 @@ export const SubmitTransactionsBulk: FC = () => {
     const urlParams = new URLSearchParams(queryString);
     const id = Number(urlParams.get('id')) || 0;
     const transactionsListParam = parseTransactionsWithIDListParam(urlParams.get('transactions'));
+    const onError = (
+      urlParams.get('onError') === 'abort' || urlParams.get('onError') === 'continue'
+        ? urlParams.get('onError')
+        : DEFAULT_SUBMIT_TX_BULK_ON_ERROR
+    ) as 'abort' | 'continue';
+
+    setOnError(onError ?? DEFAULT_SUBMIT_TX_BULK_ON_ERROR);
 
     if (!transactionsListParam) {
       setIsParamsMissing(true);
@@ -128,7 +137,8 @@ export const SubmitTransactionsBulk: FC = () => {
     const transactionsList = params.transactionsListParam as TransactionWithID[];
 
     const submitTransactionsInChunks = async (
-      transactions: TransactionWithID[]
+      transactions: TransactionWithID[],
+      onError: 'abort' | 'continue'
     ): Promise<TransactionBulkResponse[]> => {
       let results: TransactionBulkResponse[] = [];
 
@@ -137,8 +147,18 @@ export const SubmitTransactionsBulk: FC = () => {
         const chunk = transactions.slice(i, i + CHUNK_SIZE);
 
         try {
-          const response = await submitTransactionsBulk({ transactions: chunk });
+          const response = await submitTransactionsBulk({ transactions: chunk, onError });
           results = [...results, ...response.txResults];
+
+          if (response.hasError) {
+            setErrorRequestRejection('Some transactions were rejected');
+            setTransaction(TransactionStatus.Rejected);
+            const message = createMessage({
+              txResults: null,
+              error: new Error('Some transactions were rejected')
+            });
+            chrome.runtime.sendMessage<ReceiveSubmitTransactionsBulkBackgroundMessage>(message);
+          }
 
           const totalTransactions = params.transactionsListParam?.length || 0;
           setProgressPercentage(Math.floor((results.length / totalTransactions) * 100));
@@ -152,7 +172,7 @@ export const SubmitTransactionsBulk: FC = () => {
       return results;
     };
 
-    submitTransactionsInChunks(transactionsList)
+    submitTransactionsInChunks(transactionsList, onError)
       .then((txResults) => {
         const message = createMessage({
           txResults
@@ -165,7 +185,7 @@ export const SubmitTransactionsBulk: FC = () => {
         const message = createMessage({ txResults: null, error: e });
         chrome.runtime.sendMessage<ReceiveSubmitTransactionsBulkBackgroundMessage>(message);
       });
-  }, [params.transactionsListParam, submitTransactionsBulk, createMessage]);
+  }, [params.transactionsListParam, onError, submitTransactionsBulk, createMessage]);
   const { transactionsListParam } = params;
 
   const transactionsToDisplay = transactionsListParam?.slice(

@@ -103,6 +103,7 @@ interface NFTImageRequest {
 
 interface SubmitTransactionsBulkResponse {
   txResults: TransactionBulkResponse[];
+  hasError?: boolean;
 }
 
 export const LEDGER_CONNECTION_ERROR = 'You need to be connected to a ledger to make a transaction';
@@ -795,6 +796,7 @@ const LedgerProvider: FC = ({ children }) => {
 
   const submitTransactionsBulk = useCallback(
     async (payload: SubmitTransactionsBulkRequest) => {
+      const onError = payload.onError;
       const wallet = getCurrentWallet();
       if (!client) {
         throw new Error('You need to be connected to a ledger');
@@ -824,7 +826,12 @@ const LedgerProvider: FC = ({ children }) => {
                 ID,
                 error: new Error("Couldn't submit the transaction")
               });
-              return { txResults: res };
+              if (onError === 'abort') {
+                return {
+                  txResults: res,
+                  hasError: true
+                };
+              }
             }
 
             if ((tx.result.meta! as TransactionMetadata).TransactionResult !== 'tesSUCCESS') {
@@ -834,7 +841,12 @@ const LedgerProvider: FC = ({ children }) => {
                   "Couldn't submit the signed transaction but the transaction was successful"
                 )
               });
-              return { txResults: res };
+              if (onError === 'abort') {
+                return {
+                  txResults: res,
+                  hasError: true
+                };
+              }
             }
 
             res.push({
@@ -847,7 +859,12 @@ const LedgerProvider: FC = ({ children }) => {
               ID,
               error: e as Error
             });
-            return { txResults: res };
+            if (onError === 'abort') {
+              return {
+                txResults: res,
+                hasError: true
+              };
+            }
           }
         }
 

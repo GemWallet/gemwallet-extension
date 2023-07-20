@@ -249,8 +249,11 @@ export type TransactionWithID = Transaction & {
   ID?: string;
 };
 
+export const DEFAULT_SUBMIT_TX_BULK_ON_ERROR = 'abort';
+
 export interface SubmitTransactionsBulkRequest {
   transactions: TransactionWithID[];
+  onError?: 'abort' | 'continue'; // default: abort
 }
 
 export type RequestPayload =
