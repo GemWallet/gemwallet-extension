@@ -328,7 +328,12 @@ export interface SignTransactionResponse
   }> {}
 
 export interface SubmitTransactionsBulkResponse
-  extends BaseResponse<Array<{ hash?: string; error?: Error }>> {}
+  extends BaseResponse<{
+    transactions: Array<{
+      hash?: string;
+      error?: Error;
+    }>;
+  }> {}
 
 export interface IsInstalledResponse {
   result: { isInstalled: boolean };

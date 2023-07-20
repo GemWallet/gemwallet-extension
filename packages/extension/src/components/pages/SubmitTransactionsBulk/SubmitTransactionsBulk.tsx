@@ -107,7 +107,11 @@ export const SubmitTransactionsBulk: FC = () => {
         payload: {
           id: params.id,
           type: ResponseType.Response,
-          result: txResults ? txResults : undefined,
+          result: txResults
+            ? {
+                transactions: txResults
+              }
+            : undefined,
           error: error ? serializeError(error) : undefined
         }
       };
