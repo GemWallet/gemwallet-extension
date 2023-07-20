@@ -126,13 +126,13 @@ const StepperView: FC<StepperViewProps> = ({
             >
               {collapsed ? 'Expand All' : 'Collapse All'}
             </Button>
-            {transactionsToDisplay?.map((tx, index) => (
+            {transactionsToDisplay?.map(({ ID, ...tx }, index) => (
               <div key={index}>
                 <Typography variant="body2" color="textSecondary" style={{ marginTop: '5px' }}>
-                  {tx.txID} - {tx.transaction.TransactionType}
+                  {ID} - {tx.TransactionType}
                 </Typography>
                 <ReactJson
-                  src={tx.transaction}
+                  src={tx}
                   theme="summerfruit"
                   name={null}
                   enableClipboard={false}

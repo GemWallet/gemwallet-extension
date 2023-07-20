@@ -4,6 +4,7 @@ import {
   GEM_WALLET,
   ReceiveSubmitTransactionsBulkBackgroundMessage,
   ResponseType,
+  TransactionBulkResponse,
   TransactionWithID
 } from '@gemwallet/constants';
 
@@ -38,7 +39,7 @@ export const SubmitTransactionsBulk: FC = () => {
   const { submitTransactionsBulk } = useLedger();
   const { network } = useNetwork();
   const { estimatedFees, errorFees, difference, errorDifference } = useFees(
-    params.transactionsListParam?.map((tx) => tx.transaction) ?? {
+    params.transactionsListParam?.map((tx) => tx) ?? {
       TransactionType: 'Payment',
       Account: '',
       Destination: '',
@@ -89,14 +90,7 @@ export const SubmitTransactionsBulk: FC = () => {
 
   const createMessage = useCallback(
     (messagePayload: {
-      txResults:
-        | Array<{
-            txID: number;
-            hash?: string;
-            error?: Error;
-          }>
-        | null
-        | undefined;
+      txResults: TransactionBulkResponse[] | null | undefined;
       error?: Error;
     }): ReceiveSubmitTransactionsBulkBackgroundMessage => {
       const { txResults, error } = messagePayload;
@@ -135,8 +129,8 @@ export const SubmitTransactionsBulk: FC = () => {
 
     const submitTransactionsInChunks = async (
       transactions: TransactionWithID[]
-    ): Promise<{ txID: number; hash?: string; error?: Error }[]> => {
-      let results: { txID: number; hash?: string; error?: Error }[] = [];
+    ): Promise<TransactionBulkResponse[]> => {
+      let results: TransactionBulkResponse[] = [];
 
       // Divide transactions into chunks of five or less
       for (let i = 0; i < transactions.length; i += CHUNK_SIZE) {

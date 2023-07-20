@@ -27,7 +27,7 @@ const RecapView: React.FC<RecapProps> = ({
   beginProcess
 }) => {
   const getTransactionCountsByType = () => {
-    return transactionsListParam?.reduce<{ [key: string]: number }>((acc, { transaction }) => {
+    return transactionsListParam?.reduce<{ [key: string]: number }>((acc, transaction) => {
       const type = transaction.TransactionType;
       if (!acc[type]) {
         acc[type] = 1;
