@@ -182,6 +182,9 @@ describe('Offers', () => {
   it('Read the Sequence ID from the transaction history', () => {
     navigate('localhost:3000', PASSWORD);
 
+    // Wait for the wallet to load
+    cy.get('[data-testid="token-loader"]').should('not.exist');
+
     // Go to transaction history
     cy.contains('button', 'History').click();
 

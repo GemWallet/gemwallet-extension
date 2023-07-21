@@ -65,6 +65,10 @@ export const NetworkIndicator: FC = () => {
     }
   }, [refreshCustomNetworks]);
 
+  useEffect(() => {
+    setCurrentNetworkName(network as string);
+  }, [network]);
+
   const handleOpen = useCallback(() => {
     setExplanationOpen(true);
   }, []);
