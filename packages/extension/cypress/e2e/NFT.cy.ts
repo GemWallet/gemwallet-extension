@@ -57,6 +57,9 @@ describe('Mint', () => {
   it('Read the minted NFT Token ID', () => {
     navigate('localhost:3000', PASSWORD);
 
+    // Wait for the wallet to load
+    cy.get('[data-testid="token-loader"]').should('not.exist');
+
     // Go to transaction history
     cy.contains('button', 'History').click();
 
@@ -173,6 +176,9 @@ describe('Mint', () => {
 
   it('Read the Offer ID', () => {
     navigate('localhost:3000', PASSWORD);
+
+    // Wait for the wallet to load
+    cy.get('[data-testid="token-loader"]').should('not.exist');
 
     // Go to transaction history
     cy.contains('button', 'History').click();
