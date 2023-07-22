@@ -129,7 +129,7 @@ export const Login: FC = () => {
       }}
     >
       <Container style={{ textAlign: 'center', marginTop: '30%' }}>
-        <Logo style={{ transform: 'scale(2)' }} />
+        <Logo isAnimated style={{ transform: 'scale(2)' }} />
         <Typography variant="h4" component="h1" style={{ marginTop: '30px' }}>
           GemWallet
         </Typography>
