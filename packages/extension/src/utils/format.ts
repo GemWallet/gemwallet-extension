@@ -93,3 +93,28 @@ export const formatFlagsToNumber = (tx: Transaction) => {
 export const formatTransferFee = (fee: number) => {
   return fee / 1000;
 };
+
+// If the given string is longer than the given length, and does not contain a space within the length,
+// then it will be truncated and an ellipsis will be added to the end.
+// We do this, because if there is a space within the range, the string will be correctly displayed in the UI.
+export const formatStringToBeDisplayed = (str: string, length: number) => {
+  // If the length of the given string is lower than the length, return it
+  if (str.length <= length) {
+    return str;
+  }
+
+  // If there is no space within the given length in the string, return the string truncated
+  let spaceIndex = str.indexOf(' ');
+  if (spaceIndex === -1 || spaceIndex > length) {
+    return str.substring(0, length) + '...';
+  }
+
+  // If there is a word with a length bigger than the given length, return the string truncated
+  let words = str.split(' ');
+  let longWordExists = words.some((word) => word.length > length);
+  if (longWordExists) {
+    return str.substring(0, length) + '...';
+  }
+
+  return str;
+};

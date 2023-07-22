@@ -8,6 +8,7 @@ import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { AccountNFToken, NFTData } from '@gemwallet/constants';
 
 import { LedgerContext } from '../../../contexts';
+import { formatStringToBeDisplayed } from '../../../utils';
 import { GemWallet } from '../../atoms';
 import { NFTDetails } from '../../organisms';
 
@@ -25,6 +26,8 @@ const Transition = forwardRef(function Transition(
 });
 
 export const NFTCard: FC<NFTCardProps> = ({ NFT }) => {
+  const MAX_STRING_LENGTH = 30;
+
   const { getNFTData } = useContext(LedgerContext);
   const [NFTData, setNFTData] = useState<NFTData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -104,7 +107,7 @@ export const NFTCard: FC<NFTCardProps> = ({ NFT }) => {
                 style={{ fontSize: '14px', color: 'grey', marginTop: '10px', cursor: 'pointer' }}
                 onClick={() => handleTokenIdClick(NFTData.NFTokenID)}
               >
-                {NFTData.NFTokenID.substring(0, 10) + '...'}
+                {formatStringToBeDisplayed(NFTData.NFTokenID, MAX_STRING_LENGTH)}
               </div>
             </Tooltip>
           ) : null}
@@ -113,12 +116,12 @@ export const NFTCard: FC<NFTCardProps> = ({ NFT }) => {
               style={{ fontSize: '16px', color: 'white', marginTop: '10px' }}
               data-testid="nft_name"
             >
-              {NFTData.name}
+              {formatStringToBeDisplayed(NFTData.name, MAX_STRING_LENGTH)}
             </div>
           ) : null}
           {NFTData?.description ? (
             <div style={{ fontSize: '14px', color: 'grey', marginTop: '10px' }}>
-              {NFTData.description}
+              {formatStringToBeDisplayed(NFTData.description, MAX_STRING_LENGTH)}
             </div>
           ) : null}
           <Button
