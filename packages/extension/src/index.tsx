@@ -2,8 +2,8 @@ import React from 'react';
 
 import Paper from '@mui/material/Paper';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { BrowserTracing } from '@sentry/browser';
 import * as Sentry from '@sentry/react';
-import { BrowserTracing } from '@sentry/tracing';
 import ReactDOM from 'react-dom';
 import {
   BrowserRouter,
