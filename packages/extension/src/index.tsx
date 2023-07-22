@@ -2,8 +2,8 @@ import React from 'react';
 
 import Paper from '@mui/material/Paper';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { BrowserTracing, Replay } from '@sentry/browser';
 import * as Sentry from '@sentry/react';
-import { BrowserTracing } from '@sentry/tracing';
 import ReactDOM from 'react-dom';
 import {
   BrowserRouter,
@@ -62,13 +62,15 @@ Sentry.init({
         createRoutesFromChildren,
         matchRoutes
       )
-    })
+    }),
+    new Replay()
   ],
 
   // We recommend adjusting this value in production, or using tracesSampler
   // for finer control
   sampleRate: process.env.NODE_ENV === 'development' ? 0.0 : 1.0,
-  tracesSampleRate: process.env.NODE_ENV === 'development' ? 0.0 : 1.0
+  tracesSampleRate: process.env.NODE_ENV === 'development' ? 0.0 : 1.0,
+  replaysOnErrorSampleRate: process.env.NODE_ENV === 'development' ? 0.0 : 1.0
 });
 
 ReactDOM.render(
