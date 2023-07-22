@@ -57,6 +57,9 @@ describe('Mint', () => {
   it('View a NFT in the NFT Viewer', () => {
     navigate('localhost:3000', PASSWORD);
 
+    // Wait for the wallet to load
+    cy.get('[data-testid="token-loader"]').should('not.exist');
+
     // Go to NFT Viewer
     cy.contains('button', 'NFTs').click();
 
