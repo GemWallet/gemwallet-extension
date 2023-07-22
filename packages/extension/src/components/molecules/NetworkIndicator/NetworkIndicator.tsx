@@ -21,11 +21,12 @@ import { NETWORK, Network } from '@gemwallet/constants';
 import { NetworkData } from '@gemwallet/constants/src/network/network.types';
 
 import { useNetwork } from '../../../contexts';
-import { loadCustomNetworks, replaceCustomNetworks } from '../../../utils';
+import { loadCustomNetworks, loadNetwork, replaceCustomNetworks } from '../../../utils';
 import { LoadingOverlay } from '../../templates';
 import { ActiveNetworkDeleteDialog } from './ActiveNetworkDeleteDialog';
 import { AddCustomNetworkDialog } from './AddCustomNetworkDialog';
 import { DeleteNetworkDialog } from './DeleteNetworkDialog';
+import { ErrorSwitchNetworkDialog } from './ErrorSwitchNetworkDialog';
 import { NetworkDisplay } from './NetworkDisplay';
 
 const Transition = forwardRef(function Transition(
@@ -47,6 +48,7 @@ export const NetworkIndicator: FC = () => {
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [networkToDelete, setNetworkToDelete] = useState<string | null>(null);
   const [activeNetworkDeleteDialogOpen, setActiveNetworkDeleteDialogOpen] = useState(false);
+  const [errorDialogOpen, setErrorDialogOpen] = useState(false);
 
   const refreshCustomNetworks = useCallback(() => {
     try {
@@ -81,8 +83,19 @@ export const NetworkIndicator: FC = () => {
   const handleClickOnNetwork = useCallback(
     async (network: Network, customNetworkName?: string, customNetworkServer?: string) => {
       setIsLoading(true);
-      await switchNetwork(network, customNetworkName, customNetworkServer);
-      setCurrentNetworkName(customNetworkName || network);
+      const currentNetwork = loadNetwork();
+      try {
+        await switchNetwork(network, customNetworkName, customNetworkServer);
+        setCurrentNetworkName(customNetworkName || network);
+      } catch (error) {
+        // If the network switch fails, reconnect to the previous network
+        try {
+          await switchNetwork(currentNetwork.name, currentNetwork.name, currentNetwork.server);
+          setCurrentNetworkName(currentNetwork.name);
+        } catch (error) {}
+        // Show the error dialog
+        setErrorDialogOpen(true);
+      }
       handleClose();
     },
     [handleClose, switchNetwork]
@@ -179,6 +192,10 @@ export const NetworkIndicator: FC = () => {
         <LoadingOverlay />
       ) : (
         <>
+          <ErrorSwitchNetworkDialog
+            open={errorDialogOpen}
+            onClose={() => setErrorDialogOpen(false)}
+          />
           <AddCustomNetworkDialog
             dialogOpen={handleAddNetwork}
             handleClose={handleAddNetworkClose}
