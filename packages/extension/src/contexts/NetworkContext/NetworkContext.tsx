@@ -97,6 +97,7 @@ const NetworkProvider: FC = ({ children }) => {
         await client?.disconnect();
         setClient(null);
         Sentry.captureException(err);
+        throw err;
       }
     },
     [client]
