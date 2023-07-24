@@ -1,5 +1,3 @@
-import * as Sentry from '@sentry/react';
-
 import {
   BackgroundMessage,
   EventLoginContentMessage,
@@ -35,7 +33,9 @@ import {
   ReceiveSignMessageContentMessage,
   ReceiveSignTransactionContentMessage,
   ReceiveSubmitTransactionContentMessage,
-  ResponseType
+  ResponseType,
+  RequestPayload,
+  ReceiveMessage
 } from '@gemwallet/constants';
 
 import {
@@ -58,6 +58,7 @@ import {
   PARAMETER_TRANSACTION_SET_ACCOUNT,
   PARAMETER_SUBMIT_TRANSACTIONS_BULK
 } from '../../constants/parameters';
+import { generateKey, saveInMemory } from '../../utils/storageInMemory';
 import { focusOrCreatePopupWindow } from './utils/focusOrCreatePopupWindow';
 import { createOffscreen } from './utils/offscreen';
 import { Session } from './utils/session';
@@ -70,6 +71,35 @@ chrome.runtime.onStartup.addListener(createOffscreen);
 chrome.runtime.onMessage.addListener((e) => {}); // keepAlive
 
 const session = Session.getInstance();
+
+// Used to send a message to the view through the chrome.storage.local memory.
+// Useful when the data to send is big.
+const sendInMemoryMessage = ({
+  payload,
+  parameter,
+  receivingMessage,
+  sender
+}: {
+  payload: RequestPayload;
+  parameter: string;
+  receivingMessage: ReceiveMessage;
+  sender: chrome.runtime.MessageSender;
+}) => {
+  const key = generateKey();
+  saveInMemory(key, JSON.stringify(payload));
+  focusOrCreatePopupWindow({
+    payload: {
+      storageKey: key
+    },
+    sender,
+    parameter,
+    receivingMessage,
+    errorPayload: {
+      type: ResponseType.Reject,
+      result: undefined
+    }
+  });
+};
 
 /*
  * Keep only one listener for easier debugging
@@ -384,26 +414,15 @@ chrome.runtime.onMessage.addListener(
         }
       });
     } else if (type === 'REQUEST_SUBMIT_TRANSACTIONS_BULK/V3') {
-      // Persist the payload to local storage
       const { payload } = message;
       try {
-        const key = (Date.now() + Math.random()).toString();
-        chrome.storage.local.set({ [key]: JSON.stringify(payload) });
-        focusOrCreatePopupWindow({
-          payload: {
-            storageKey: key
-          },
-          sender,
+        sendInMemoryMessage({
+          payload,
           parameter: PARAMETER_SUBMIT_TRANSACTIONS_BULK,
           receivingMessage: 'RECEIVE_SUBMIT_TRANSACTIONS_BULK/V3',
-          errorPayload: {
-            type: ResponseType.Reject,
-            result: undefined
-          }
+          sender
         });
-      } catch (e) {
-        Sentry.captureException(e);
-      }
+      } catch (e) {}
       /*
        * Receive messages
        */
