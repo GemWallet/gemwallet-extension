@@ -1,3 +1,5 @@
+import * as Sentry from '@sentry/react';
+
 import {
   BackgroundMessage,
   EventLoginContentMessage,
@@ -382,16 +384,26 @@ chrome.runtime.onMessage.addListener(
         }
       });
     } else if (type === 'REQUEST_SUBMIT_TRANSACTIONS_BULK/V3') {
-      focusOrCreatePopupWindow({
-        payload: message.payload,
-        sender,
-        parameter: PARAMETER_SUBMIT_TRANSACTIONS_BULK,
-        receivingMessage: 'RECEIVE_SUBMIT_TRANSACTIONS_BULK/V3',
-        errorPayload: {
-          type: ResponseType.Reject,
-          result: undefined
-        }
-      });
+      // Persist the payload to local storage
+      const { payload } = message;
+      try {
+        const key = (Date.now() + Math.random()).toString();
+        chrome.storage.local.set({ [key]: JSON.stringify(payload) });
+        focusOrCreatePopupWindow({
+          payload: {
+            storageKey: key
+          },
+          sender,
+          parameter: PARAMETER_SUBMIT_TRANSACTIONS_BULK,
+          receivingMessage: 'RECEIVE_SUBMIT_TRANSACTIONS_BULK/V3',
+          errorPayload: {
+            type: ResponseType.Reject,
+            result: undefined
+          }
+        });
+      } catch (e) {
+        Sentry.captureException(e);
+      }
       /*
        * Receive messages
        */

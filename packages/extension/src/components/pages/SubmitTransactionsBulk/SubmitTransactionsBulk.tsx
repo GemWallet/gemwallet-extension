@@ -1,5 +1,7 @@
 import { FC, useCallback, useEffect, useState } from 'react';
 
+import * as Sentry from '@sentry/react';
+
 import {
   DEFAULT_SUBMIT_TX_BULK_ON_ERROR,
   GEM_WALLET,
@@ -78,23 +80,42 @@ export const SubmitTransactionsBulk: FC = () => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const id = Number(urlParams.get('id')) || 0;
-    const transactionsListParam = parseTransactionsWithIDListParam(urlParams.get('transactions'));
-    const onError = (
-      urlParams.get('onError') === 'abort' || urlParams.get('onError') === 'continue'
-        ? urlParams.get('onError')
-        : DEFAULT_SUBMIT_TX_BULK_ON_ERROR
-    ) as 'abort' | 'continue';
+    let parsedTransactions: TransactionWithID[] | null = null;
 
-    setOnError(onError ?? DEFAULT_SUBMIT_TX_BULK_ON_ERROR);
+    const fetchData = async () => {
+      try {
+        const storageKey = urlParams.get('storageKey');
 
-    if (!transactionsListParam) {
-      setIsParamsMissing(true);
-    }
+        if (storageKey) {
+          const storedData = await chrome.storage.local.get(storageKey);
+          const parsedStoredData = JSON.parse(storedData[storageKey]);
+          if ('transactions' in parsedStoredData) {
+            parsedTransactions = parseTransactionsWithIDListParam(parsedStoredData.transactions);
+          }
+        }
+      } catch (error) {
+        Sentry.captureException(error);
+      }
 
-    setParams({
-      id,
-      transactionsListParam
-    });
+      const onError = (
+        urlParams.get('onError') === 'abort' || urlParams.get('onError') === 'continue'
+          ? urlParams.get('onError')
+          : DEFAULT_SUBMIT_TX_BULK_ON_ERROR
+      ) as 'abort' | 'continue';
+
+      setOnError(onError ?? DEFAULT_SUBMIT_TX_BULK_ON_ERROR);
+
+      if (!parsedTransactions) {
+        setIsParamsMissing(true);
+      }
+
+      setParams({
+        id,
+        transactionsListParam: parsedTransactions
+      });
+    };
+
+    fetchData();
   }, []);
 
   const createMessage = useCallback(

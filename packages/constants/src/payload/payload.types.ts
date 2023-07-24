@@ -256,6 +256,10 @@ export interface SubmitTransactionsBulkRequest {
   onError?: 'abort' | 'continue'; // default: abort
 }
 
+export interface SubmitStorageKeysRequest {
+  storageKey: string;
+}
+
 export type RequestPayload =
   | AcceptNFTOfferRequest
   | BurnNFTRequest
@@ -274,6 +278,7 @@ export type RequestPayload =
   | SetTrustlineRequestDeprecated
   | SignMessageRequest
   | SignTransactionRequest
+  | SubmitStorageKeysRequest
   | SubmitTransactionRequest
   | SubmitTransactionsBulkRequest;
 
