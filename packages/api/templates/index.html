@@ -27,6 +27,9 @@
       <button onclick="handleCancelOffer()">Cancel Offer (check the console)</button>
       <button onclick="handleSubmitTransaction()">Submit transaction (check the console)</button>
       <button onclick="handleSignTransaction()">Sign transaction (check the console)</button>
+      <button onclick="handleSubmitTransactionsBulk()">
+        Submit transactions (Bulk) (check the console)
+      </button>
       <button onclick="handleEvents()">Activate events (check the console)</button>
       <div id="address"></div>
     </div>
@@ -535,6 +538,38 @@
             transaction: tx
           };
           GemWalletApi.signTransaction(payload)
+            .then((res) => {
+              console.log('Received response: ', res);
+            })
+            .catch((e) => {
+              console.error('Something went wrong: ', e);
+            });
+        }
+      })
+      .catch((e) => {
+        console.error('GemWallet is not connected: ', e);
+      });
+  }
+  function handleSubmitTransactionsBulk() {
+    GemWalletApi.isInstalled()
+      .then(({ result }) => {
+        if (result.isInstalled) {
+          const transactions = [
+            {
+              TransactionType: 'Payment',
+              Destination: 'rhikRdkFw28csKw9z7fVoBjWncz1HSoQij',
+              Amount: '100000',
+              Memos: [
+                {
+                  Memo: {
+                    MemoData: '54657374206D656D6F',
+                    MemoType: '4465736372697074696F6E'
+                  }
+                }
+              ]
+            }
+          ];
+          GemWalletApi.submitTransactionsBulk({ transactions })
             .then((res) => {
               console.log('Received response: ', res);
             })
