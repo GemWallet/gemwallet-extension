@@ -1,0 +1,11 @@
+/*
+ * Requests messages
+ */
+export const MSG_INTERNAL_REQUEST_PASSWORD = 'INTERNAL_REQUEST_PASSWORD';
+
+/*
+ * Responses messages
+ */
+export const MSG_INTERNAL_RECEIVE_PASSWORD = 'INTERNAL_RECEIVE_PASSWORD';
+
+export const MSG_INTERNAL_RECEIVE_SIGN_OUT = 'INTERNAL_RECEIVE_SIGN_OUT';

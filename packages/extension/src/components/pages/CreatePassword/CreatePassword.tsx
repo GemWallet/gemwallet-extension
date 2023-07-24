@@ -3,6 +3,12 @@ import { Dispatch, FC, SetStateAction, useCallback, useRef, useState } from 'rea
 import { TextField, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
 
+import {
+  GEM_WALLET,
+  InternalReceivePasswordContentMessage,
+  MSG_INTERNAL_RECEIVE_PASSWORD
+} from '@gemwallet/constants';
+
 import { ERROR_RED } from '../../../constants';
 import { saveWallet, WalletToSave } from '../../../utils';
 import { PageWithStepper } from '../../templates';
@@ -38,6 +44,20 @@ export const CreatePassword: FC<CreatePasswordProps> = ({
       try {
         saveWallet(wallet, confirmPasswordValue);
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
+
+        if (process.env.NODE_ENV === 'production') {
+          chrome.runtime
+            .sendMessage<InternalReceivePasswordContentMessage>({
+              app: GEM_WALLET,
+              type: MSG_INTERNAL_RECEIVE_PASSWORD,
+              payload: {
+                password: passwordValue
+              }
+            })
+            .catch((e) => {
+              Sentry.captureException(e);
+            });
+        }
       } catch (e) {
         Sentry.captureException(e);
         setSaveWalletError(

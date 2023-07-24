@@ -1,6 +1,13 @@
 import { useState, useEffect, FC, useCallback, useRef } from 'react';
 
-import { Button, Container, TextField, Typography } from '@mui/material';
+import {
+  Button,
+  Checkbox,
+  Container,
+  FormControlLabel,
+  TextField,
+  Typography
+} from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 import {
@@ -46,6 +53,7 @@ import { Logo } from '../../atoms/Logo';
 
 export const Login: FC = () => {
   const [passwordError, setPasswordError] = useState('');
+  const [rememberSession, setRememberSession] = useState(false);
   const navigate = useNavigate();
   const { search } = useLocation();
   const { signIn, wallets, selectedWallet } = useWallet();
@@ -99,12 +107,12 @@ export const Login: FC = () => {
 
   const handleUnlock = useCallback(() => {
     const passwordValue = passwordRef.current?.value;
-    if (passwordValue && signIn(passwordValue)) {
+    if (passwordValue && signIn(passwordValue, rememberSession)) {
       navigateToPath();
     } else {
       setPasswordError('Incorrect password');
     }
-  }, [signIn, navigateToPath]);
+  }, [signIn, rememberSession, navigateToPath]);
 
   // Handle Login step button by pressing 'Enter'
   useKeyUp('Enter', handleUnlock);
@@ -142,7 +150,7 @@ export const Login: FC = () => {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          height: '135px'
+          height: '180px'
         }}
       >
         <TextField
@@ -157,6 +165,21 @@ export const Login: FC = () => {
           helperText={passwordError}
           type="password"
           style={{ marginBottom: !passwordError ? '33px' : '10px' }}
+        />
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={rememberSession}
+              onChange={(e) => setRememberSession(e.target.checked)}
+              name="rememberSession"
+              color="primary"
+              style={{ transform: 'scale(0.9)' }}
+            />
+          }
+          label={
+            <Typography style={{ fontSize: '0.9rem' }}>Keep me logged in for 30 minutes</Typography>
+          }
+          style={{ marginTop: '5px' }}
         />
         <Button variant="contained" onClick={handleUnlock}>
           Unlock

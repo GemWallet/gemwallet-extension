@@ -33,7 +33,11 @@ const BrowserProvider: FC = ({ children }) => {
   const closeExtension = useCallback(({ windowId, callback }: CloseProps) => {
     if (chrome?.windows) {
       chrome.storage.local.remove('currentWindowId');
-      chrome.windows.remove(windowId, callback);
+      chrome.windows.remove(windowId).then(() => {
+        if (callback) {
+          callback();
+        }
+      });
     }
   }, []);
 

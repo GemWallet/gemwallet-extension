@@ -1,6 +1,10 @@
 import {
   BackgroundMessage,
   GEM_WALLET,
+  InternalReceivePasswordContentMessage,
+  MSG_INTERNAL_RECEIVE_PASSWORD,
+  MSG_INTERNAL_REQUEST_PASSWORD,
+  MSG_INTERNAL_RECEIVE_SIGN_OUT,
   ReceiveAcceptNFTOfferContentMessage,
   ReceiveBurnNFTContentMessage,
   ReceiveCancelNFTOfferContentMessage,
@@ -45,10 +49,17 @@ import {
   PARAMETER_TRANSACTION_SET_ACCOUNT
 } from '../../constants/parameters';
 import { focusOrCreatePopupWindow } from './utils/focusOrCreatePopupWindow';
+import { createOffscreen } from './utils/offscreen';
+import { Session } from './utils/session';
 
 const sendMessageToTab = <T>(tabId: number | undefined, message: any) => {
   chrome.tabs.sendMessage<T>(tabId ?? 0, message);
 };
+
+chrome.runtime.onStartup.addListener(createOffscreen);
+chrome.runtime.onMessage.addListener((e) => {}); // keepAlive
+
+const session = Session.getInstance();
 
 /*
  * Keep only one listener for easier debugging
@@ -61,7 +72,28 @@ chrome.runtime.onMessage.addListener(
       return; // exit early if the message is not from gem-wallet or the sender is not the extension itself
     }
 
-    if (type === 'REQUEST_GET_NETWORK/V3') {
+    /*
+     * Internal messages
+     */
+    if (type === MSG_INTERNAL_RECEIVE_SIGN_OUT) {
+      session.endSession();
+    } else if (
+      type === MSG_INTERNAL_RECEIVE_PASSWORD &&
+      (message as InternalReceivePasswordContentMessage).payload.password
+    ) {
+      session.startSession((message as InternalReceivePasswordContentMessage).payload.password);
+    } else if (type === MSG_INTERNAL_REQUEST_PASSWORD) {
+      chrome.runtime.sendMessage(chrome.runtime.id, {
+        app: GEM_WALLET,
+        type: MSG_INTERNAL_RECEIVE_PASSWORD,
+        payload: {
+          password: session.getPassword()
+        }
+      } as InternalReceivePasswordContentMessage);
+      /*
+       * Request messages
+       */
+    } else if (type === 'REQUEST_GET_NETWORK/V3') {
       focusOrCreatePopupWindow({
         payload: {
           id: sender.tab?.id
@@ -330,6 +362,9 @@ chrome.runtime.onMessage.addListener(
           result: undefined
         }
       });
+      /*
+       * Receive messages
+       */
     } else if (type === 'RECEIVE_SEND_PAYMENT/V3') {
       const { payload } = message;
       sendMessageToTab<ReceiveSendPaymentContentMessage>(payload.id, {
