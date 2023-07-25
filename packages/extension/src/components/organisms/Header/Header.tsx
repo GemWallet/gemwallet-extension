@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo, useState } from 'react';
+import { FC, useCallback, useState } from 'react';
 
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import DoneIcon from '@mui/icons-material/Done';
@@ -6,6 +6,7 @@ import OutboundIcon from '@mui/icons-material/Outbound';
 import { AppBar, Box, Button, IconButton, Toolbar, Tooltip, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import copyToClipboard from 'copy-to-clipboard';
+import QrCode from 'react-qr-code';
 import { useNavigate } from 'react-router-dom';
 
 import {
@@ -16,7 +17,7 @@ import {
 } from '../../../constants';
 import { useTimeout } from '../../../hooks';
 import { WalletLedger } from '../../../types';
-import { truncateAddress, truncateWalletName } from '../../../utils';
+import { truncateWalletName } from '../../../utils';
 import { WalletIcon } from '../../atoms';
 import { NetworkIndicator } from '../../molecules';
 
@@ -39,8 +40,7 @@ export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => 
   const setTimeout = useTimeout(2000);
 
   const [isCopied, setIsCopied] = useState(false);
-
-  const truncatedAddress = useMemo(() => truncateAddress(publicAddress), [publicAddress]);
+  const [showQR, setShowQR] = useState(false); // State to control the QR code visibility
 
   const handleShare = useCallback(() => {
     copyToClipboard(publicAddress);
@@ -55,6 +55,17 @@ export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => 
   const onWalletIconClick = useCallback(() => {
     navigate(LIST_WALLETS_PATH);
   }, [navigate]);
+
+  const handleReceive = useCallback(() => {
+    setShowQR(!showQR); // Toggle QR code visibility when the receive button is clicked
+  }, [showQR]);
+
+  // Function to abbreviate the wallet address
+  const abbreviateAddress = (address: string, maxLength = 8) => {
+    if (address.length <= maxLength) return address;
+    const halfLength = Math.floor(maxLength / 2);
+    return address.slice(0, halfLength) + '...' + address.slice(-halfLength);
+  };
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -82,7 +93,7 @@ export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => 
               </Typography>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Typography variant="body2" style={{ margin: '3px 0', color: SECONDARY_GRAY }}>
-                  {truncatedAddress}
+                  {abbreviateAddress(publicAddress)}
                 </Typography>
                 <Tooltip title="Copy your address">
                   <IconButton
@@ -121,7 +132,66 @@ export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => 
                 Send
               </Typography>
             </Button>
+            <Button
+              aria-label="receive"
+              size="small"
+              onClick={handleReceive} // Use the handleReceive function for the receive button
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center'
+              }}
+            >
+              <OutboundIcon
+                style={{
+                  transform: 'rotate(135deg)',
+                  color: 'white'
+                }}
+              />
+              <Typography color="white" variant="caption">
+                Receive
+              </Typography>
+            </Button>
           </div>
+          {/* Conditionally render the QR code based on the showQR state */}
+          {showQR && (
+            <div style={{ marginTop: '115px', textAlign: 'center' }}>
+              <div
+                style={{
+                  backgroundColor: 'white',
+                  padding: '6px',
+                  borderRadius: '6px',
+                  display: 'inline-block'
+                }}
+              >
+                {/* Add a white background to create a margin around the QR code */}
+                <div style={{ backgroundColor: 'white', padding: '4px' }}>
+                  <QrCode
+                    value={publicAddress}
+                    size={200}
+                    fgColor="#000000" // QR code foreground color
+                    bgColor="#FFFFFF" // QR code background color
+                    level="L" // Error correction level (you can adjust it based on your needs)
+                  />
+                </div>
+              </div>
+              <Typography color="white" variant="body1" style={{ marginTop: '10px' }}>
+                Wallet Address:
+              </Typography>
+              <Typography color="white" variant="body2">
+                {abbreviateAddress(publicAddress)}
+              </Typography>
+              <Button
+                variant="contained"
+                color="primary"
+                size="small"
+                onClick={handleShare}
+                style={{ marginTop: '10px' }}
+              >
+                Copy
+              </Button>
+            </div>
+          )}
         </StyledToolbar>
       </AppBar>
     </Box>
