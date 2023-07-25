@@ -1,4 +1,4 @@
-import { FC, useCallback, useState } from 'react';
+import React, { FC, useState } from 'react';
 
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import DoneIcon from '@mui/icons-material/Done';
@@ -11,9 +11,9 @@ import { useNavigate } from 'react-router-dom';
 
 import {
   HEADER_HEIGHT_WITHOUT_PADDING,
-  LIST_WALLETS_PATH,
   SECONDARY_GRAY,
-  SEND_PATH
+  SEND_PATH,
+  RECEIVE_QR_PATH
 } from '../../../constants';
 import { useTimeout } from '../../../hooks';
 import { WalletLedger } from '../../../types';
@@ -40,25 +40,21 @@ export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => 
   const setTimeout = useTimeout(2000);
 
   const [isCopied, setIsCopied] = useState(false);
-  const [showQR, setShowQR] = useState(false); // State to control the QR code visibility
+  const [showQR] = useState(false); // State to control the QR code visibility
 
-  const handleShare = useCallback(() => {
+  const handleShare = () => {
     copyToClipboard(publicAddress);
     setIsCopied(true);
     setTimeout(() => setIsCopied(false));
-  }, [publicAddress, setTimeout]);
+  };
 
-  const handleSend = useCallback(() => {
+  const handleSend = () => {
     navigate(SEND_PATH);
-  }, [navigate]);
+  };
 
-  const onWalletIconClick = useCallback(() => {
-    navigate(LIST_WALLETS_PATH);
-  }, [navigate]);
-
-  const handleReceive = useCallback(() => {
-    setShowQR(!showQR); // Toggle QR code visibility when the receive button is clicked
-  }, [showQR]);
+  const handleReceive = () => {
+    navigate(RECEIVE_QR_PATH);
+  };
 
   // Function to abbreviate the wallet address
   const abbreviateAddress = (address: string, maxLength = 8) => {
@@ -81,8 +77,8 @@ export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => 
           >
             <WalletIcon
               publicAddress={publicAddress}
-              onClick={onWalletIconClick}
               isConnectedInformation
+              onClick={() => navigate('/list-wallets')}
             />
             <NetworkIndicator />
           </div>
@@ -122,12 +118,7 @@ export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => 
                 alignItems: 'center'
               }}
             >
-              <OutboundIcon
-                style={{
-                  transform: 'rotate(-45deg)',
-                  color: 'white'
-                }}
-              />
+              <OutboundIcon style={{ transform: 'rotate(-45deg)', color: 'white' }} />
               <Typography color="white" variant="caption">
                 Send
               </Typography>
@@ -142,12 +133,7 @@ export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => 
                 alignItems: 'center'
               }}
             >
-              <OutboundIcon
-                style={{
-                  transform: 'rotate(135deg)',
-                  color: 'white'
-                }}
-              />
+              <OutboundIcon style={{ transform: 'rotate(135deg)', color: 'white' }} />
               <Typography color="white" variant="caption">
                 Receive
               </Typography>
@@ -178,18 +164,9 @@ export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => 
               <Typography color="white" variant="body1" style={{ marginTop: '10px' }}>
                 Wallet Address:
               </Typography>
-              <Typography color="white" variant="body2">
-                {abbreviateAddress(publicAddress)}
+              <Typography color="white" variant="body1" style={{ wordBreak: 'break-all' }}>
+                {publicAddress}
               </Typography>
-              <Button
-                variant="contained"
-                color="primary"
-                size="small"
-                onClick={handleShare}
-                style={{ marginTop: '10px' }}
-              >
-                Copy
-              </Button>
             </div>
           )}
         </StyledToolbar>

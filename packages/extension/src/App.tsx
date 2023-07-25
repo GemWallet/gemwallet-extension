@@ -54,6 +54,7 @@ import {
   TrustedApps,
   Welcome
 } from './components/pages';
+import ReceiveQRCode from './components/pages/ReceiveQRCode/ReceiveQRCode';
 import { ErrorBoundary } from './components/templates';
 import {
   ABOUT_PATH,
@@ -93,6 +94,7 @@ import {
   PARAMETER_TRANSACTION_TRUSTLINE,
   RESET_PASSWORD_PATH,
   SEND_PATH,
+  RECEIVE_QR_PATH,
   SET_ACCOUNT_PATH,
   SETTINGS_PATH,
   SHARE_NFT_PATH,
@@ -499,6 +501,14 @@ const App: FC = () => {
           element={
             <PrivateRoute>
               <SendPayment />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path={RECEIVE_QR_PATH}
+          element={
+            <PrivateRoute>
+              <ReceiveQRCode publicAddress={''} />
             </PrivateRoute>
           }
         />
