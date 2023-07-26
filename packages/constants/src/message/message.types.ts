@@ -46,8 +46,8 @@ import {
   SignTransactionRequest,
   SubmitTransactionResponse,
   SubmitTransactionRequest,
+  SubmitTransactionsBulkModifiedRequest,
   SubmitTransactionsBulkResponse,
-  SubmitTransactionsBulkRequest,
   WebsiteRequest
 } from '../payload/payload.types';
 import {
@@ -267,7 +267,7 @@ export interface RequestSignTransactionMessage {
 export interface RequestSubmitTransactionsBulkMessage {
   app: typeof GEM_WALLET;
   type: 'REQUEST_SUBMIT_TRANSACTIONS_BULK/V3';
-  payload: SubmitTransactionsBulkRequest;
+  payload: SubmitTransactionsBulkModifiedRequest;
 }
 
 // Internal

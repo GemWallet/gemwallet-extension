@@ -24,7 +24,7 @@ interface StepperViewProps {
   activeStep: number;
   steps: number;
   hasEnoughFunds: boolean;
-  transactionsToDisplay: TransactionWithID[];
+  transactionsToDisplay: Record<number, TransactionWithID>;
   totalNumberOfTransactions: number;
   errorRequestRejection: string;
   handleBack: () => void;
@@ -126,10 +126,10 @@ const StepperView: FC<StepperViewProps> = ({
             >
               {collapsed ? 'Expand All' : 'Collapse All'}
             </Button>
-            {transactionsToDisplay?.map(({ ID, ...tx }, index) => (
-              <div key={index}>
+            {Object.entries(transactionsToDisplay || {}).map(([key, tx]) => (
+              <div key={key}>
                 <Typography variant="body2" color="textSecondary" style={{ marginTop: '5px' }}>
-                  {ID} - {tx.TransactionType}
+                  {key} - {tx.TransactionType}
                 </Typography>
                 <ReactJson
                   src={tx}

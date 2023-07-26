@@ -14,7 +14,7 @@ import {
 import { useLedger, useNetwork } from '../../../contexts';
 import { useFees, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
-import { parseTransactionsWithIDListParam } from '../../../utils';
+import { parseTransactionsBulkMap } from '../../../utils';
 import { serializeError } from '../../../utils/errors';
 import RecapView from './RecapView/RecapView';
 import StepperView from './StepperView/StepperView';
@@ -22,7 +22,7 @@ import StepperView from './StepperView/StepperView';
 interface Params {
   id: number;
   // SubmitTransactionsBulk fields
-  transactionsListParam: TransactionWithID[] | null;
+  transactionsMapParam: Record<number, TransactionWithID> | null;
 }
 
 export const SubmitTransactionsBulk: FC = () => {
@@ -31,7 +31,7 @@ export const SubmitTransactionsBulk: FC = () => {
 
   const [params, setParams] = useState<Params>({
     id: 0,
-    transactionsListParam: null
+    transactionsMapParam: null
   });
   const [errorRequestRejection, setErrorRequestRejection] = useState<string>('');
   const [isParamsMissing, setIsParamsMissing] = useState(false);
@@ -43,7 +43,9 @@ export const SubmitTransactionsBulk: FC = () => {
   const { submitTransactionsBulk } = useLedger();
   const { network } = useNetwork();
   const { estimatedFees, errorFees, difference, errorDifference } = useFees(
-    params.transactionsListParam?.map((tx) => tx) ?? {
+    (params.transactionsMapParam ? Object.values(params.transactionsMapParam) : undefined)?.map(
+      (tx) => tx
+    ) ?? {
       TransactionType: 'Payment',
       Account: '',
       Destination: '',
@@ -63,8 +65,8 @@ export const SubmitTransactionsBulk: FC = () => {
   });
 
   // Handle stepper
-  const steps = params.transactionsListParam
-    ? Math.ceil(params.transactionsListParam.length / MAX_TRANSACTIONS_PER_STEP)
+  const steps = params.transactionsMapParam
+    ? Math.ceil(Object.values(params.transactionsMapParam || {}).length / MAX_TRANSACTIONS_PER_STEP)
     : 0;
   const handleNext = () => {
     if (activeStep === steps - 1) {
@@ -80,7 +82,7 @@ export const SubmitTransactionsBulk: FC = () => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const id = Number(urlParams.get('id')) || 0;
-    let parsedTransactions: TransactionWithID[] | null = null;
+    let parsedTransactionsMap: Record<number, TransactionWithID> | null = null;
 
     const fetchData = async () => {
       try {
@@ -90,7 +92,7 @@ export const SubmitTransactionsBulk: FC = () => {
           const storedData = await chrome.storage.local.get(storageKey);
           const parsedStoredData = JSON.parse(storedData[storageKey]);
           if ('transactions' in parsedStoredData) {
-            parsedTransactions = parseTransactionsWithIDListParam(parsedStoredData.transactions);
+            parsedTransactionsMap = parseTransactionsBulkMap(parsedStoredData.transactions);
           }
         }
       } catch (error) {
@@ -105,13 +107,13 @@ export const SubmitTransactionsBulk: FC = () => {
 
       setOnError(onError ?? DEFAULT_SUBMIT_TX_BULK_ON_ERROR);
 
-      if (!parsedTransactions) {
+      if (!parsedTransactionsMap) {
         setIsParamsMissing(true);
       }
 
       setParams({
         id,
-        transactionsListParam: parsedTransactions
+        transactionsMapParam: parsedTransactionsMap
       });
     };
 
@@ -155,13 +157,18 @@ export const SubmitTransactionsBulk: FC = () => {
     setTransaction(TransactionStatus.Pending);
     // transactionsListParam will be present because if not,
     // we won't be able to go to the confirm transaction state
-    const transactionsList = params.transactionsListParam as TransactionWithID[];
+    const transactionsList = params.transactionsMapParam as Record<number, TransactionWithID>;
 
     const submitTransactionsInChunks = async (
-      transactions: TransactionWithID[],
+      transactionsRecord: Record<number, TransactionWithID>,
       onError: 'abort' | 'continue'
     ): Promise<TransactionBulkResponse[]> => {
       let results: TransactionBulkResponse[] = [];
+
+      // Convert transactions to array. Sort them by their key to ensure order
+      const transactions = Object.entries(transactionsRecord)
+        .sort(([keyA], [keyB]) => Number(keyA) - Number(keyB))
+        .map(([_, value]) => value as TransactionWithID);
 
       // Divide transactions into chunks of five or less
       for (let i = 0; i < transactions.length; i += CHUNK_SIZE) {
@@ -181,7 +188,7 @@ export const SubmitTransactionsBulk: FC = () => {
             chrome.runtime.sendMessage<ReceiveSubmitTransactionsBulkBackgroundMessage>(message);
           }
 
-          const totalTransactions = params.transactionsListParam?.length || 0;
+          const totalTransactions = Object.values(params.transactionsMapParam || {}).length;
           setProgressPercentage(Math.floor((results.length / totalTransactions) * 100));
         } catch (e) {
           throw e;
@@ -206,13 +213,23 @@ export const SubmitTransactionsBulk: FC = () => {
         const message = createMessage({ txResults: null, error: e });
         chrome.runtime.sendMessage<ReceiveSubmitTransactionsBulkBackgroundMessage>(message);
       });
-  }, [params.transactionsListParam, onError, submitTransactionsBulk, createMessage]);
-  const { transactionsListParam } = params;
+  }, [params.transactionsMapParam, onError, submitTransactionsBulk, createMessage]);
+  const { transactionsMapParam } = params;
 
-  const transactionsToDisplay = transactionsListParam?.slice(
-    activeStep * MAX_TRANSACTIONS_PER_STEP,
-    (activeStep + 1) * MAX_TRANSACTIONS_PER_STEP
-  );
+  const allTransactions = transactionsMapParam || {};
+  let transactionsToDisplay: Record<number, TransactionWithID> = {};
+  let i = 0;
+  for (let key in allTransactions) {
+    if (allTransactions.hasOwnProperty(key)) {
+      if (
+        i >= activeStep * MAX_TRANSACTIONS_PER_STEP &&
+        i < (activeStep + 1) * MAX_TRANSACTIONS_PER_STEP
+      ) {
+        transactionsToDisplay[parseInt(key)] = allTransactions[parseInt(key)];
+      }
+    }
+    i++;
+  }
 
   return (
     <>
@@ -220,7 +237,7 @@ export const SubmitTransactionsBulk: FC = () => {
         <div>{transactionStatusComponent}</div>
       ) : showRecap ? (
         <RecapView
-          transactionsListParam={params.transactionsListParam}
+          transactionsListParam={Object.values(params.transactionsMapParam || {})}
           estimatedFees={estimatedFees}
           errorFees={errorFees}
           hasEnoughFunds={hasEnoughFunds}
@@ -232,8 +249,8 @@ export const SubmitTransactionsBulk: FC = () => {
           activeStep={activeStep}
           steps={steps}
           hasEnoughFunds={hasEnoughFunds}
-          transactionsToDisplay={transactionsToDisplay ?? []}
-          totalNumberOfTransactions={params.transactionsListParam?.length ?? 0}
+          transactionsToDisplay={transactionsToDisplay ?? {}}
+          totalNumberOfTransactions={Object.values(params.transactionsMapParam || {}).length}
           errorRequestRejection={errorRequestRejection}
           handleBack={handleBack}
           handleReject={handleReject}

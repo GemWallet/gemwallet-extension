@@ -1,9 +1,10 @@
 import {
-  SubmitTransactionsBulkRequest,
   SubmitTransactionsBulkResponse,
   GEM_WALLET,
+  ResponseType,
   RequestSubmitTransactionsBulkMessage,
-  ResponseType
+  TransactionWithID,
+  SubmitTransactionsBulkRequest
 } from '@gemwallet/constants';
 
 import { deserializeError } from '../helpers/errors';
@@ -21,7 +22,14 @@ export const submitTransactionsBulk = async (
     const message: RequestSubmitTransactionsBulkMessage = {
       app: GEM_WALLET,
       type: 'REQUEST_SUBMIT_TRANSACTIONS_BULK/V3',
-      payload
+      payload: {
+        ...payload,
+        // Add an index to each transaction so that we can process them in order
+        transactions: payload.transactions.reduce((acc, transaction, index) => {
+          acc[index] = transaction;
+          return acc;
+        }, {} as Record<number, TransactionWithID>)
+      }
     };
 
     const { result, error } = await sendMessageToContentScript(message);

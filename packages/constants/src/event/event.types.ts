@@ -20,7 +20,7 @@ import {
   SignMessageRequest,
   SignTransactionRequest,
   SubmitTransactionRequest,
-  SubmitTransactionsBulkRequest,
+  SubmitTransactionsBulkModifiedRequest,
   WebsiteRequest
 } from '../payload/payload.types';
 
@@ -46,7 +46,7 @@ interface MessageEventData {
     | SetTrustlineRequestDeprecated
     | SignMessageRequest
     | SubmitTransactionRequest
-    | SubmitTransactionsBulkRequest
+    | SubmitTransactionsBulkModifiedRequest
     | WebsiteRequest;
 }
 
@@ -264,7 +264,7 @@ export interface SubmitTransactionsBulkEventListener extends MessageEvent<Messag
     type: 'REQUEST_SUBMIT_TRANSACTIONS_BULK/V3';
     source: 'GEM_WALLET_MSG_REQUEST';
     messageId: number;
-    payload: SubmitTransactionsBulkRequest;
+    payload: SubmitTransactionsBulkModifiedRequest;
   };
 }
 

@@ -381,22 +381,17 @@ export const parseTransactionParam = (str: string | null): Transaction | null =>
   return null;
 };
 
-export const parseTransactionsWithIDListParam = (
+export const parseTransactionsBulkMap = (
   str: string | null
-): TransactionWithID[] | null => {
+): Record<number, TransactionWithID> | null => {
   if (!str) {
     return null;
   }
 
   try {
     const parsedTransactions = JSON.parse(str);
-
-    if (Array.isArray(parsedTransactions)) {
-      return parsedTransactions.map((transaction) => transaction as TransactionWithID);
-    }
+    return parsedTransactions as Record<number, TransactionWithID>;
   } catch (error) {
     return null;
   }
-
-  return null;
 };

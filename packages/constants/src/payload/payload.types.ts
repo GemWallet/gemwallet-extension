@@ -246,6 +246,7 @@ export interface SignTransactionRequest {
 
 export type TransactionWithID = Transaction & {
   // Optional ID to identify the transaction in the response, after it has been submitted.
+  // This id is only used as an indicator in the response, and is not used to order transactions.
   ID?: string;
 };
 
@@ -253,6 +254,14 @@ export const DEFAULT_SUBMIT_TX_BULK_ON_ERROR = 'abort';
 
 export interface SubmitTransactionsBulkRequest {
   transactions: TransactionWithID[];
+  onError?: 'abort' | 'continue'; // default: abort
+}
+
+// Type that goes through the messaging system. It embeds the transactions in a Record with a numbered key, in order
+// to guarantee that the order is preserved.
+export interface SubmitTransactionsBulkModifiedRequest {
+  // The key is used to guarantee that the transactions are submitted in the same order as they are in the request.
+  transactions: Record<number, TransactionWithID>;
   onError?: 'abort' | 'continue'; // default: abort
 }
 
@@ -280,7 +289,7 @@ export type RequestPayload =
   | SignTransactionRequest
   | SubmitStorageKeysRequest
   | SubmitTransactionRequest
-  | SubmitTransactionsBulkRequest;
+  | SubmitTransactionsBulkModifiedRequest;
 
 /*
  * Response Payloads
