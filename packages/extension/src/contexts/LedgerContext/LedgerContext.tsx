@@ -90,6 +90,8 @@ interface SubmitTransactionResponse {
   hash: string;
 }
 
+export const LEDGER_CONNECTION_ERROR = 'You need to be connected to a ledger to make a transaction';
+
 export interface LedgerContextType {
   // Return transaction hash in case of success
   sendPayment: (payload: SendPaymentRequest) => Promise<string>;
@@ -153,7 +155,7 @@ const LedgerProvider: FC = ({ children }) => {
     async (transaction: Transaction) => {
       const wallet = getCurrentWallet();
       if (!client) {
-        throw new Error('You need to be connected to a ledger to make a transaction');
+        throw new Error(LEDGER_CONNECTION_ERROR);
       } else if (!wallet) {
         throw new Error('You need to have a wallet connected to make a transaction');
       } else {
@@ -198,7 +200,7 @@ const LedgerProvider: FC = ({ children }) => {
   const getTransactions = useCallback(async () => {
     const wallet = getCurrentWallet();
     if (!client) {
-      throw new Error('You need to be connected to a ledger to make a transaction');
+      throw new Error(LEDGER_CONNECTION_ERROR);
     } else if (!wallet) {
       throw new Error('You need to have a wallet connected to make a transaction');
     } else {
@@ -275,7 +277,7 @@ const LedgerProvider: FC = ({ children }) => {
     async (payload: SendPaymentRequest) => {
       const wallet = getCurrentWallet();
       if (!client) {
-        throw new Error('You need to be connected to a ledger to make a transaction');
+        throw new Error(LEDGER_CONNECTION_ERROR);
       } else if (!wallet) {
         throw new Error('You need to have a wallet connected to make a transaction');
       } else {
