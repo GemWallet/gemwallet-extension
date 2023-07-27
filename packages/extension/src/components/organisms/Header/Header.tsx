@@ -1,4 +1,5 @@
-import React, { FC, useState } from 'react';
+import React from 'react';
+import { FC, useCallback, useState } from 'react';
 
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import DoneIcon from '@mui/icons-material/Done';
@@ -6,14 +7,15 @@ import OutboundIcon from '@mui/icons-material/Outbound';
 import { AppBar, Box, Button, IconButton, Toolbar, Tooltip, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import copyToClipboard from 'copy-to-clipboard';
-import QrCode from 'react-qr-code';
+import { Link } from 'react-router-dom'; // Import the Link component for navigation
 import { useNavigate } from 'react-router-dom';
 
 import {
   HEADER_HEIGHT_WITHOUT_PADDING,
+  LIST_WALLETS_PATH,
   SECONDARY_GRAY,
   SEND_PATH,
-  RECEIVE_QR_PATH
+  RECEIVE_QR_PATH // Import the receive path
 } from '../../../constants';
 import { useTimeout } from '../../../hooks';
 import { WalletLedger } from '../../../types';
@@ -40,23 +42,21 @@ export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => 
   const setTimeout = useTimeout(2000);
 
   const [isCopied, setIsCopied] = useState(false);
-  const [showQR] = useState(false); // State to control the QR code visibility
 
-  const handleShare = () => {
+  const handleShare = useCallback(() => {
     copyToClipboard(publicAddress);
     setIsCopied(true);
     setTimeout(() => setIsCopied(false));
-  };
+  }, [publicAddress, setTimeout]);
 
-  const handleSend = () => {
+  const handleSend = useCallback(() => {
     navigate(SEND_PATH);
-  };
+  }, [navigate]);
 
-  const handleReceive = () => {
-    navigate(RECEIVE_QR_PATH);
-  };
+  const onWalletIconClick = useCallback(() => {
+    navigate(LIST_WALLETS_PATH);
+  }, [navigate]);
 
-  // Function to abbreviate the wallet address
   const abbreviateAddress = (address: string, maxLength = 8) => {
     if (address.length <= maxLength) return address;
     const halfLength = Math.floor(maxLength / 2);
@@ -77,8 +77,8 @@ export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => 
           >
             <WalletIcon
               publicAddress={publicAddress}
+              onClick={onWalletIconClick}
               isConnectedInformation
-              onClick={() => navigate('/list-wallets')}
             />
             <NetworkIndicator />
           </div>
@@ -118,57 +118,39 @@ export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => 
                 alignItems: 'center'
               }}
             >
-              <OutboundIcon style={{ transform: 'rotate(-45deg)', color: 'white' }} />
+              <OutboundIcon
+                style={{
+                  transform: 'rotate(-45deg)',
+                  color: 'white'
+                }}
+              />
               <Typography color="white" variant="caption">
                 Send
               </Typography>
             </Button>
-            <Button
-              aria-label="receive"
-              size="small"
-              onClick={handleReceive} // Use the handleReceive function for the receive button
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center'
-              }}
-            >
-              <OutboundIcon style={{ transform: 'rotate(135deg)', color: 'white' }} />
-              <Typography color="white" variant="caption">
-                Receive
-              </Typography>
-            </Button>
-          </div>
-          {/* Conditionally render the QR code based on the showQR state */}
-          {showQR && (
-            <div style={{ marginTop: '115px', textAlign: 'center' }}>
-              <div
+            {/* Instead of showing the QR code here, navigate to the /receive route */}
+            <Link to={RECEIVE_QR_PATH} style={{ textDecoration: 'none' }}>
+              <Button
+                aria-label="receive"
+                size="small"
                 style={{
-                  backgroundColor: 'white',
-                  padding: '6px',
-                  borderRadius: '6px',
-                  display: 'inline-block'
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center'
                 }}
               >
-                {/* Add a white background to create a margin around the QR code */}
-                <div style={{ backgroundColor: 'white', padding: '4px' }}>
-                  <QrCode
-                    value={publicAddress}
-                    size={200}
-                    fgColor="#000000" // QR code foreground color
-                    bgColor="#FFFFFF" // QR code background color
-                    level="L" // Error correction level (you can adjust it based on your needs)
-                  />
-                </div>
-              </div>
-              <Typography color="white" variant="body1" style={{ marginTop: '10px' }}>
-                Wallet Address:
-              </Typography>
-              <Typography color="white" variant="body1" style={{ wordBreak: 'break-all' }}>
-                {publicAddress}
-              </Typography>
-            </div>
-          )}
+                <OutboundIcon
+                  style={{
+                    transform: 'rotate(135deg)',
+                    color: 'white'
+                  }}
+                />
+                <Typography color="white" variant="caption">
+                  Receive
+                </Typography>
+              </Button>
+            </Link>
+          </div>
         </StyledToolbar>
       </AppBar>
     </Box>

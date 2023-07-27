@@ -43,6 +43,7 @@ import {
   MintNFT,
   ResetPassword,
   SendPayment,
+  ReceiveQRCode,
   SetAccount,
   Settings,
   ShareAddress,
@@ -54,7 +55,6 @@ import {
   TrustedApps,
   Welcome
 } from './components/pages';
-import ReceiveQRCode from './components/pages/ReceiveQRCode/ReceiveQRCode';
 import { ErrorBoundary } from './components/templates';
 import {
   ABOUT_PATH,
@@ -508,7 +508,7 @@ const App: FC = () => {
           path={RECEIVE_QR_PATH}
           element={
             <PrivateRoute>
-              <ReceiveQRCode publicAddress={''} />
+              <ReceiveQRCode />
             </PrivateRoute>
           }
         />
