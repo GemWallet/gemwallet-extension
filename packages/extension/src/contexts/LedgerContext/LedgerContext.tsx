@@ -826,6 +826,12 @@ const LedgerProvider: FC = ({ children }) => {
           NFTokenID,
           image
         };
+      } else if (URL.includes('.png') || URL.includes('.jpg')) {
+        // Display the image directly
+        return {
+          NFTokenID,
+          image: URL
+        };
       } else {
         // No JSON to parse, just display the raw NFT attributes
         return {
