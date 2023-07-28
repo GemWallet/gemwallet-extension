@@ -44,6 +44,7 @@ import {
 
 import { AccountTransaction, WalletLedger } from '../../types';
 import { toXRPLMemos, toXRPLSigners } from '../../utils';
+import { parseJSON } from '../../utils/NFTViewer';
 import { useNetwork } from '../NetworkContext';
 import { useWallet } from '../WalletContext';
 
@@ -111,24 +112,6 @@ export interface LedgerContextType {
   getAccountInfo: () => Promise<AccountInfoResponse>;
   getNFTData: (payload: NFTImageRequest) => Promise<NFTData>;
 }
-
-const parseImage = (NFTData: any, URL: string): string => {
-  if (NFTData.image) {
-    return replaceIPFS(NFTData.image);
-  }
-
-  if (NFTData.image_url) {
-    return replaceIPFS(NFTData.image_url);
-  }
-
-  return URL.replace('.json', '.png');
-};
-
-const replaceIPFS = (inputStr: string): string => {
-  return inputStr
-    .replace('ipfs://ipfs/', 'https://ipfs.io/ipfs/')
-    .replace('ipfs://', 'https://ipfs.io/ipfs/');
-};
 
 const LedgerContext = createContext<LedgerContextType>({
   sendPayment: () => new Promise(() => {}),
@@ -826,37 +809,49 @@ const LedgerProvider: FC = ({ children }) => {
       }
 
       URL = URL.replace('ipfs://', 'https://ipfs.io/ipfs/');
-      try {
-        // Parse the JSON, in order to display the NFT in the UI
-        // Sometimes, the URL doesn't have the .json extension, so we wrap it in a try/catch
-        const NFTData = await fetch(URL)
-          .then((res) => res.json())
-          .catch(() => {
-            throw new Error('Error fetching NFT data');
-          });
 
-        const image = parseImage(NFTData, URL);
-
-        return {
-          ...NFTData,
-          NFTokenID,
-          image
-        };
-      } catch (e) {
-        if (URL.includes('.png') || URL.includes('.jpg')) {
-          // Display the image directly
+      // Case 1 - Image URL
+      if (URL.includes('.png') || URL.includes('.jpg')) {
+        try {
+          // Case 1.1 - The URL is directly an image
+          await fetch(URL);
           return {
             NFTokenID,
             image: URL
           };
-        } else {
-          // No JSON to parse, just display the raw NFT attributes
-          return {
-            NFTokenID,
-            description: URL.replace('https://ipfs.io/ipfs/', 'ipfs://')
-          };
+        } catch (e) {
+          // Case 1.2 - The URL is an IPFS hash
+          if (!URL.startsWith('https://ipfs.io/ipfs/') && !URL.startsWith('http')) {
+            URL = `https://ipfs.io/ipfs/${URL}`;
+          }
+          try {
+            await fetch(URL);
+            return {
+              NFTokenID,
+              image: URL
+            };
+          } catch (e) {}
+        }
+      } else {
+        // Case 2 - JSON URL
+        try {
+          await fetch(URL);
+          // Case 2.1 - The URL is directly a JSON
+          return parseJSON(URL, NFTokenID);
+        } catch (e) {}
+        // Case 2.2 - The URL is an IPFS hash
+        if (!URL.startsWith('https://ipfs.io/ipfs/') && !URL.startsWith('http')) {
+          try {
+            await fetch(`https://ipfs.io/ipfs/${URL}`);
+            return parseJSON(`https://ipfs.io/ipfs/${URL}`, NFTokenID);
+          } catch (e) {}
         }
       }
+      // Case 3 - Return the raw NFT attributes
+      return {
+        NFTokenID,
+        description: URL.replace('https://ipfs.io/ipfs/', 'ipfs://')
+      };
     } catch (e) {
       Sentry.captureException(e);
       throw e;
