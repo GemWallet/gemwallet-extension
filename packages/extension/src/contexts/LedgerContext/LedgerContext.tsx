@@ -808,9 +808,9 @@ const LedgerProvider: FC = ({ children }) => {
       }
 
       URL = URL.replace('ipfs://', 'https://ipfs.io/ipfs/');
-
-      if (URL.includes('.json')) {
+      try {
         // Parse the JSON, in order to display the NFT in the UI
+        // Sometimes, the URL doesn't have the .json extension, so we wrap it in a try/catch
         const NFTData = await fetch(URL)
           .then((res) => res.json())
           .catch(() => {
@@ -826,18 +826,20 @@ const LedgerProvider: FC = ({ children }) => {
           NFTokenID,
           image
         };
-      } else if (URL.includes('.png') || URL.includes('.jpg')) {
-        // Display the image directly
-        return {
-          NFTokenID,
-          image: URL
-        };
-      } else {
-        // No JSON to parse, just display the raw NFT attributes
-        return {
-          NFTokenID,
-          description: URL
-        };
+      } catch (e) {
+        if (URL.includes('.png') || URL.includes('.jpg')) {
+          // Display the image directly
+          return {
+            NFTokenID,
+            image: URL
+          };
+        } else {
+          // No JSON to parse, just display the raw NFT attributes
+          return {
+            NFTokenID,
+            description: URL.replace('https://ipfs.io/ipfs/', 'ipfs://')
+          };
+        }
       }
     } catch (e) {
       Sentry.captureException(e);
