@@ -112,6 +112,24 @@ export interface LedgerContextType {
   getNFTData: (payload: NFTImageRequest) => Promise<NFTData>;
 }
 
+const parseImage = (NFTData: any, URL: string): string => {
+  if (NFTData.image) {
+    return replaceIPFS(NFTData.image);
+  }
+
+  if (NFTData.image_url) {
+    return replaceIPFS(NFTData.image_url);
+  }
+
+  return URL.replace('.json', '.png');
+};
+
+const replaceIPFS = (inputStr: string): string => {
+  return inputStr
+    .replace('ipfs://ipfs/', 'https://ipfs.io/ipfs/')
+    .replace('ipfs://', 'https://ipfs.io/ipfs/');
+};
+
 const LedgerContext = createContext<LedgerContextType>({
   sendPayment: () => new Promise(() => {}),
   setTrustline: () => new Promise(() => {}),
@@ -817,9 +835,7 @@ const LedgerProvider: FC = ({ children }) => {
             throw new Error('Error fetching NFT data');
           });
 
-        const image = NFTData.image
-          ? NFTData.image.replace('ipfs://', 'https://ipfs.io/ipfs/')
-          : URL.replace('.json', '.png');
+        const image = parseImage(NFTData, URL);
 
         return {
           ...NFTData,
