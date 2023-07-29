@@ -31,9 +31,9 @@ export const CreateNewWallet: FC<CreateNewWalletProps> = ({ password }) => {
   }, [generateWallet]);
 
   useEffect(() => {
-    if (activeStep === 2) {
+    if (wallet?.seed && activeStep === 2) {
       try {
-        importSeed(password, wallet!.seed!);
+        importSeed(password, wallet.seed);
         navigate(LIST_WALLETS_PATH);
       } catch (e) {
         Sentry.captureException('Cannot save wallet - CreateNewWallet: ' + e);
@@ -53,7 +53,7 @@ export const CreateNewWallet: FC<CreateNewWalletProps> = ({ password }) => {
     return <PageWithSpinner />;
   }
 
-  if (!wallet!.seed) {
+  if (!wallet.seed) {
     const error = new Error("Seed wasn't generated properly within the Create Wallet");
     Sentry.captureException(error);
     throw error;
