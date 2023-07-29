@@ -85,7 +85,7 @@ describe('TokenListing', () => {
     render(<TokenListing {...props} />);
     expect(
       screen.queryByText(
-        'There was an error attempting to retrieve your assets. Please refresh and try again.'
+        'There was an error attempting to connect to the network. Please refresh the page and try again.'
       )
     ).toBeVisible();
   });
