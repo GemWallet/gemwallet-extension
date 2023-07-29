@@ -38,6 +38,6 @@ export const NETWORK = {
   [Network.CUSTOM]: {
     name: Network.CUSTOM,
     server: '',
-    description: 'Connect to a custom network server.'
+    description: 'Custom network'
   }
 };

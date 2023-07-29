@@ -108,7 +108,7 @@ const NetworkProvider: FC = ({ children }) => {
               result: {
                 network: {
                   name: NETWORK[network].name.toLowerCase(),
-                  server: NETWORK[network].server,
+                  server: customNetworkServer ?? NETWORK[network].server,
                   description: NETWORK[network].description
                 }
               }
