@@ -129,8 +129,12 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
     async function checkWalletActivated() {
       try {
         const wallet = getCurrentWallet();
-        await client?.getXrpBalance(wallet!.publicAddress);
-        setIsWalletActivated(true);
+        if (wallet) {
+          await client?.getXrpBalance(wallet.publicAddress);
+          setIsWalletActivated(true);
+        } else {
+          setIsWalletActivated(false);
+        }
       } catch (e) {
         setIsWalletActivated(false);
       }

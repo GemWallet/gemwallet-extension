@@ -36,7 +36,7 @@ export const CreateWallet: FC = () => {
     return <PageWithSpinner />;
   }
 
-  if (!wallet!.seed) {
+  if (!wallet.seed) {
     const error = new Error("Seed wasn't generated properly within the Create Wallet");
     Sentry.captureException(error);
     throw error;
