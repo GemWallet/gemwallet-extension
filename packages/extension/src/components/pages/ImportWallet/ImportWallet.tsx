@@ -32,14 +32,16 @@ const SECRET_TYPES = [
 
 export const ImportWallet: FC = () => {
   const navigate = useNavigate();
-  const [selectedAccount, setSelectedAccount] = useState(-1);
+  const [selectedAccount, setSelectedAccount] = useState<number | null>(null);
 
   const handleBack = useCallback(() => {
     navigate(WELCOME_PATH);
   }, [navigate]);
 
   const handleNext = useCallback(() => {
-    navigate(SECRET_TYPES[selectedAccount].link);
+    if (selectedAccount !== null) {
+      navigate(SECRET_TYPES[selectedAccount].link);
+    }
   }, [navigate, selectedAccount]);
 
   return (
@@ -49,7 +51,7 @@ export const ImportWallet: FC = () => {
       buttonText="Next"
       handleBack={handleBack}
       handleNext={handleNext}
-      disabledNext={selectedAccount === -1}
+      disabledNext={selectedAccount === null}
     >
       <Typography variant="h4" component="h1" style={{ marginTop: '30px' }}>
         Import Wallet
@@ -67,9 +69,7 @@ export const ImportWallet: FC = () => {
           name={name}
           description={description}
           isSelected={selectedAccount === index}
-          onClick={() =>
-            selectedAccount === index ? setSelectedAccount(-1) : setSelectedAccount(index)
-          }
+          onClick={() => setSelectedAccount((prev) => (prev === index ? null : index))}
         />
       ))}
     </PageWithStepper>
