@@ -673,7 +673,7 @@ chrome.runtime.onMessage.addListener(
 /*
  * Tabs management
  */
-let activeTabs = new Set<number>();
+const activeTabs = new Set<number>();
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (sender.tab?.id !== undefined) {
