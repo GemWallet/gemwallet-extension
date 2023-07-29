@@ -117,6 +117,7 @@ export const Login: FC = () => {
         .sendMessage<EventLoginBackgroundMessage>({
           app: GEM_WALLET,
           type: 'EVENT_LOGIN',
+          source: 'GEM_WALLET_MSG_REQUEST',
           payload: {
             id: 0,
             result: {

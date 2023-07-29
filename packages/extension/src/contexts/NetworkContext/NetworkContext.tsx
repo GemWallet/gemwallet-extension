@@ -103,6 +103,7 @@ const NetworkProvider: FC = ({ children }) => {
           .sendMessage<EventNetworkChangedBackgroundMessage>({
             app: GEM_WALLET,
             type: 'EVENT_NETWORK_CHANGED',
+            source: 'GEM_WALLET_MSG_REQUEST',
             payload: {
               id: 0,
               result: {

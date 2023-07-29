@@ -624,6 +624,7 @@ chrome.runtime.onMessage.addListener(
         chrome.tabs.sendMessage<EventNetworkChangedContentMessage>(tabId, {
           app,
           type: 'EVENT_NETWORK_CHANGED',
+          source: 'GEM_WALLET_MSG_REQUEST',
           payload: {
             result: payload.result
           }
@@ -635,6 +636,7 @@ chrome.runtime.onMessage.addListener(
         chrome.tabs.sendMessage<EventWalletChangedContentMessage>(tabId, {
           app,
           type: 'EVENT_WALLET_CHANGED',
+          source: 'GEM_WALLET_MSG_REQUEST',
           payload: {
             result: payload.result
           }
@@ -646,6 +648,7 @@ chrome.runtime.onMessage.addListener(
         chrome.tabs.sendMessage<EventLoginContentMessage>(tabId, {
           app,
           type: 'EVENT_LOGIN',
+          source: 'GEM_WALLET_MSG_REQUEST',
           payload: {
             result: payload.result
           }
@@ -657,6 +660,7 @@ chrome.runtime.onMessage.addListener(
         chrome.tabs.sendMessage<EventLogoutContentMessage>(tabId, {
           app,
           type: 'EVENT_LOGOUT',
+          source: 'GEM_WALLET_MSG_REQUEST',
           payload: {
             result: payload.result
           }

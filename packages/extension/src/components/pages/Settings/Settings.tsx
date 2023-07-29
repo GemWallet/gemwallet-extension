@@ -38,6 +38,7 @@ export const Settings: FC = () => {
       .sendMessage<EventLogoutBackgroundMessage>({
         app: GEM_WALLET,
         type: 'EVENT_LOGOUT',
+        source: 'GEM_WALLET_MSG_REQUEST',
         payload: {
           id: 0,
           result: {

@@ -477,24 +477,28 @@ export interface InternalReceiveSignOutContentMessage {
 export interface EventNetworkChangedContentMessage {
   app: typeof GEM_WALLET;
   type: 'EVENT_NETWORK_CHANGED';
+  source: 'GEM_WALLET_MSG_REQUEST';
   payload: EventNetworkChangedMessagingResponse;
 }
 
 export interface EventWalletChangedContentMessage {
   app: typeof GEM_WALLET;
   type: 'EVENT_WALLET_CHANGED';
+  source: 'GEM_WALLET_MSG_REQUEST';
   payload: EventWalletChangedMessagingResponse;
 }
 
 export interface EventLoginContentMessage {
   app: typeof GEM_WALLET;
   type: 'EVENT_LOGIN';
+  source: 'GEM_WALLET_MSG_REQUEST';
   payload: EventLoginMessagingResponse;
 }
 
 export interface EventLogoutContentMessage {
   app: typeof GEM_WALLET;
   type: 'EVENT_LOGOUT';
+  source: 'GEM_WALLET_MSG_REQUEST';
   payload: EventLogoutMessagingResponse;
 }
 

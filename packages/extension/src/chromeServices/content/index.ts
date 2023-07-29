@@ -943,10 +943,15 @@ setTimeout(() => {
 
   // Events
   chrome.runtime.onMessage.addListener((message: EventContentMessage) => {
+    // We only accept messages from ourselves
+    if (message.app !== GEM_WALLET) return;
+    if (!message.source || message.source !== 'GEM_WALLET_MSG_REQUEST') return;
+
     if (message.type === 'EVENT_NETWORK_CHANGED') {
       window.postMessage(
         {
           type: 'networkChanged',
+          source: message.source,
           payload: message.payload
         },
         window.location.origin
@@ -955,6 +960,7 @@ setTimeout(() => {
       window.postMessage(
         {
           type: 'walletChanged',
+          source: message.source,
           payload: message.payload
         },
         window.location.origin
@@ -963,6 +969,7 @@ setTimeout(() => {
       window.postMessage(
         {
           type: 'login',
+          source: message.source,
           payload: message.payload
         },
         window.location.origin
@@ -971,6 +978,7 @@ setTimeout(() => {
       window.postMessage(
         {
           type: 'logout',
+          source: message.source,
           payload: message.payload
         },
         window.location.origin

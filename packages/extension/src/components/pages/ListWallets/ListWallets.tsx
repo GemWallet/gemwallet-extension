@@ -32,6 +32,7 @@ export const ListWallets: FC = () => {
         .sendMessage<EventWalletChangedBackgroundMessage>({
           app: GEM_WALLET,
           type: 'EVENT_WALLET_CHANGED',
+          source: 'GEM_WALLET_MSG_REQUEST',
           payload: {
             id: 0,
             result: {
