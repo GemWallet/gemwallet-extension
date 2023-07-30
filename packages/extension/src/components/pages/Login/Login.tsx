@@ -8,7 +8,10 @@ import {
   TextField,
   Typography
 } from '@mui/material';
+import * as Sentry from '@sentry/react';
 import { useNavigate, useLocation } from 'react-router-dom';
+
+import { EventLoginBackgroundMessage, GEM_WALLET } from '@gemwallet/constants';
 
 import {
   ACCEPT_NFT_OFFER_PATH,
@@ -109,6 +112,22 @@ export const Login: FC = () => {
     const passwordValue = passwordRef.current?.value;
     if (passwordValue && signIn(passwordValue, rememberSession)) {
       navigateToPath();
+
+      chrome.runtime
+        .sendMessage<EventLoginBackgroundMessage>({
+          app: GEM_WALLET,
+          type: 'EVENT_LOGIN',
+          source: 'GEM_WALLET_MSG_REQUEST',
+          payload: {
+            id: 0,
+            result: {
+              loggedIn: true
+            }
+          }
+        })
+        .catch((e) => {
+          Sentry.captureException(e);
+        });
     } else {
       setPasswordError('Incorrect password');
     }

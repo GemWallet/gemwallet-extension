@@ -1,5 +1,10 @@
 import {
   BackgroundMessage,
+  EventLoginContentMessage,
+  EventLogoutBackgroundMessage,
+  EventLogoutContentMessage,
+  EventNetworkChangedContentMessage,
+  EventWalletChangedContentMessage,
   GEM_WALLET,
   InternalReceivePasswordContentMessage,
   MSG_INTERNAL_RECEIVE_PASSWORD,
@@ -611,6 +616,75 @@ chrome.runtime.onMessage.addListener(
           error: payload.error
         }
       });
+      /*
+       * Events
+       */
+    } else if (type === 'EVENT_NETWORK_CHANGED') {
+      const { payload } = message;
+      activeTabs.forEach((tabId) => {
+        chrome.tabs.sendMessage<EventNetworkChangedContentMessage>(tabId, {
+          app,
+          type: 'EVENT_NETWORK_CHANGED',
+          source: 'GEM_WALLET_MSG_REQUEST',
+          payload: {
+            result: payload.result
+          }
+        });
+      });
+    } else if (type === 'EVENT_WALLET_CHANGED') {
+      const { payload } = message;
+      activeTabs.forEach((tabId) => {
+        chrome.tabs.sendMessage<EventWalletChangedContentMessage>(tabId, {
+          app,
+          type: 'EVENT_WALLET_CHANGED',
+          source: 'GEM_WALLET_MSG_REQUEST',
+          payload: {
+            result: payload.result
+          }
+        });
+      });
+    } else if (type === 'EVENT_LOGIN') {
+      const { payload } = message;
+      activeTabs.forEach((tabId) => {
+        chrome.tabs.sendMessage<EventLoginContentMessage>(tabId, {
+          app,
+          type: 'EVENT_LOGIN',
+          source: 'GEM_WALLET_MSG_REQUEST',
+          payload: {
+            result: payload.result
+          }
+        });
+      });
     }
   }
 );
+
+// Called by the session manager
+export const handleLogoutEvent = (message: EventLogoutBackgroundMessage) => {
+  const { payload } = message;
+  activeTabs.forEach((tabId) => {
+    chrome.tabs.sendMessage<EventLogoutContentMessage>(tabId, {
+      app: message.app,
+      type: 'EVENT_LOGOUT',
+      source: 'GEM_WALLET_MSG_REQUEST',
+      payload: {
+        result: payload.result
+      }
+    });
+  });
+};
+
+/*
+ * Tabs management
+ */
+const activeTabs = new Set<number>();
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (sender.tab?.id !== undefined) {
+    if (request.type === 'CONTENT_SCRIPT_LOADED') {
+      activeTabs.add(sender.tab.id);
+    } else if (request.type === 'CONTENT_SCRIPT_UNLOADED') {
+      activeTabs.delete(sender.tab.id);
+    }
+  }
+});

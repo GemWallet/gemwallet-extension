@@ -1,7 +1,10 @@
 import { FC, useCallback } from 'react';
 
 import AddIcon from '@mui/icons-material/Add';
+import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
+
+import { EventWalletChangedBackgroundMessage, GEM_WALLET } from '@gemwallet/constants';
 
 import { ADD_NEW_WALLET_PATH, HOME_PATH } from '../../../constants';
 import { useWallet } from '../../../contexts';
@@ -22,8 +25,27 @@ export const ListWallets: FC = () => {
   }, [navigate]);
 
   const handleSelectWallet = useCallback(
-    (index: number) => {
+    (index: number, publicAddress: string) => {
       selectWallet(index);
+
+      chrome.runtime
+        .sendMessage<EventWalletChangedBackgroundMessage>({
+          app: GEM_WALLET,
+          type: 'EVENT_WALLET_CHANGED',
+          source: 'GEM_WALLET_MSG_REQUEST',
+          payload: {
+            id: 0,
+            result: {
+              wallet: {
+                publicAddress: publicAddress
+              }
+            }
+          }
+        })
+        .catch((e) => {
+          Sentry.captureException(e);
+        });
+
       handleBack();
     },
     [handleBack, selectWallet]
@@ -46,7 +68,7 @@ export const ListWallets: FC = () => {
             publicAddress={publicAddress}
             key={publicAddress}
             isSelected={selectedWallet === index}
-            onClick={() => handleSelectWallet(index)}
+            onClick={() => handleSelectWallet(index, publicAddress)}
           />
         ))}
       </div>

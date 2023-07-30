@@ -12,6 +12,10 @@ import {
   CreateNFTOfferResponse,
   CreateOfferRequest,
   CreateOfferResponse,
+  EventLoginResponse,
+  EventLogoutResponse,
+  EventNetworkChangedResponse,
+  EventWalletChangedResponse,
   GetAddressResponse,
   GetAddressResponseDeprecated,
   GetNFTResponse,
@@ -98,6 +102,12 @@ export type ReceiveMessage =
   | 'RECEIVE_SIGN_MESSAGE'
   | 'RECEIVE_SIGN_MESSAGE/V3'
   | 'RECEIVE_SUBMIT_TRANSACTION/V3';
+
+export type EventMessage =
+  | 'EVENT_NETWORK_CHANGED'
+  | 'EVENT_WALLET_CHANGED'
+  | 'EVENT_LOGIN'
+  | 'EVENT_LOGOUT';
 
 export type SourceMessage = 'GEM_WALLET_MSG_REQUEST' | 'GEM_WALLET_MSG_RESPONSE';
 
@@ -304,6 +314,12 @@ export type SetTrustlineMessagingResponseDeprecated = MessagingResponse &
 export type PasswordInternalMessagingResponse = InternalMessagingResponse &
   PasswordInternalResponse;
 
+// Event Responses
+export type EventNetworkChangedMessagingResponse = MessagingResponse & EventNetworkChangedResponse;
+export type EventWalletChangedMessagingResponse = MessagingResponse & EventWalletChangedResponse;
+export type EventLoginMessagingResponse = MessagingResponse & EventLoginResponse;
+export type EventLogoutMessagingResponse = MessagingResponse & EventLogoutResponse;
+
 /*
  * Content Script Messages
  */
@@ -457,6 +473,41 @@ export interface InternalReceiveSignOutContentMessage {
   type: typeof MSG_INTERNAL_RECEIVE_SIGN_OUT;
 }
 
+// Event Messages
+export interface EventNetworkChangedContentMessage {
+  app: typeof GEM_WALLET;
+  type: 'EVENT_NETWORK_CHANGED';
+  source: 'GEM_WALLET_MSG_REQUEST';
+  payload: EventNetworkChangedMessagingResponse;
+}
+
+export interface EventWalletChangedContentMessage {
+  app: typeof GEM_WALLET;
+  type: 'EVENT_WALLET_CHANGED';
+  source: 'GEM_WALLET_MSG_REQUEST';
+  payload: EventWalletChangedMessagingResponse;
+}
+
+export interface EventLoginContentMessage {
+  app: typeof GEM_WALLET;
+  type: 'EVENT_LOGIN';
+  source: 'GEM_WALLET_MSG_REQUEST';
+  payload: EventLoginMessagingResponse;
+}
+
+export interface EventLogoutContentMessage {
+  app: typeof GEM_WALLET;
+  type: 'EVENT_LOGOUT';
+  source: 'GEM_WALLET_MSG_REQUEST';
+  payload: EventLogoutMessagingResponse;
+}
+
+export type EventContentMessage =
+  | EventNetworkChangedContentMessage
+  | EventWalletChangedContentMessage
+  | EventLoginContentMessage
+  | EventLogoutContentMessage;
+
 /*
  * Background Script Messages
  */
@@ -540,6 +591,16 @@ export type InternalReceivePasswordBackgroundMessage = InternalReceivePasswordCo
 export type InternalReceiveSignedOutBackgroundMessage = InternalReceiveSignOutContentMessage &
   BackgroundMessagePayload;
 
+export type EventNetworkChangedBackgroundMessage = EventNetworkChangedContentMessage &
+  BackgroundMessagePayload;
+
+export type EventWalletChangedBackgroundMessage = EventWalletChangedContentMessage &
+  BackgroundMessagePayload;
+
+export type EventLoginBackgroundMessage = EventLoginContentMessage & BackgroundMessagePayload;
+
+export type EventLogoutBackgroundMessage = EventLogoutContentMessage & BackgroundMessagePayload;
+
 export type BackgroundMessage =
   //
   // API requests and responses messages
@@ -569,6 +630,10 @@ export type BackgroundMessage =
   | RequestSignMessageMessageDeprecated
   | RequestSubmitTransactionMessage
   // Outputted Messages - DO contain ID within the payloads
+  | EventLoginBackgroundMessage
+  | EventLogoutBackgroundMessage
+  | EventNetworkChangedBackgroundMessage
+  | EventWalletChangedBackgroundMessage
   | ReceiveAcceptNFTOfferBackgroundMessage
   | ReceiveBurnNFTBackgroundMessage
   | ReceiveCancelNFTOfferBackgroundMessage

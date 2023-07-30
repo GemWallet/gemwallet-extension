@@ -15,6 +15,8 @@ describe('Setup the initial wallet (no previous wallet)', () => {
         (win as any).chrome.runtime = {
           sendMessage(message, cb) {}
         };
+
+        cy.stub((win as any).chrome.runtime, 'sendMessage').resolves({});
       }
     });
   });
@@ -234,6 +236,8 @@ describe('Add an additional wallet (with previous wallet)', () => {
         (win as any).chrome.runtime = {
           sendMessage(message, cb) {}
         };
+
+        cy.stub((win as any).chrome.runtime, 'sendMessage').resolves({});
       }
     });
 
@@ -391,6 +395,8 @@ describe('Edit wallet', () => {
         (win as any).chrome.runtime = {
           sendMessage(message, cb) {}
         };
+
+        cy.stub((win as any).chrome.runtime, 'sendMessage').resolves({});
       }
     });
 
@@ -526,6 +532,8 @@ describe('Switch wallet', () => {
         (win as any).chrome.runtime = {
           sendMessage(message, cb) {}
         };
+
+        cy.stub((win as any).chrome.runtime, 'sendMessage').resolves({});
       }
     });
 
@@ -578,6 +586,8 @@ describe('Reset password', () => {
         (win as any).chrome.runtime = {
           sendMessage(message, cb) {}
         };
+
+        cy.stub((win as any).chrome.runtime, 'sendMessage').resolves({});
       }
     });
   });
