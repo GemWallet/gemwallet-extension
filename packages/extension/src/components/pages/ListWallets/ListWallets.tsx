@@ -28,23 +28,25 @@ export const ListWallets: FC = () => {
     (index: number, publicAddress: string) => {
       selectWallet(index);
 
-      chrome.runtime
-        .sendMessage<EventWalletChangedBackgroundMessage>({
-          app: GEM_WALLET,
-          type: 'EVENT_WALLET_CHANGED',
-          source: 'GEM_WALLET_MSG_REQUEST',
-          payload: {
-            id: 0,
-            result: {
-              wallet: {
-                publicAddress: publicAddress
+      if (process.env.NODE_ENV === 'production') {
+        chrome.runtime
+          .sendMessage<EventWalletChangedBackgroundMessage>({
+            app: GEM_WALLET,
+            type: 'EVENT_WALLET_CHANGED',
+            source: 'GEM_WALLET_MSG_REQUEST',
+            payload: {
+              id: 0,
+              result: {
+                wallet: {
+                  publicAddress: publicAddress
+                }
               }
             }
-          }
-        })
-        .catch((e) => {
-          Sentry.captureException(e);
-        });
+          })
+          .catch((e) => {
+            Sentry.captureException(e);
+          });
+      }
 
       handleBack();
     },
