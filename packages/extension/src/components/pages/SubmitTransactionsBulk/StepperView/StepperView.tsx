@@ -49,8 +49,12 @@ const StepperView: FC<StepperViewProps> = ({
 }) => {
   const [collapsed, setCollapsed] = useState<boolean>(true);
   const [open, setOpen] = useState<boolean>(false);
+  const [renderKey, setRenderKey] = useState<number>(0);
 
-  const handleCollapseToggle = () => setCollapsed(!collapsed);
+  const handleCollapseToggle = () => {
+    setCollapsed(!collapsed);
+    setRenderKey((prevKey) => prevKey + 1); // Update key to re-render ReactJson
+  };
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -126,27 +130,32 @@ const StepperView: FC<StepperViewProps> = ({
             >
               {collapsed ? 'Expand All' : 'Collapse All'}
             </Button>
-            {Object.entries(transactionsToDisplay || {}).map(([key, tx]) => (
-              <div key={key}>
-                <Typography variant="body2" color="textSecondary" style={{ marginTop: '5px' }}>
-                  {key} - {tx.TransactionType}
-                </Typography>
-                <ReactJson
-                  src={tx}
-                  theme="summerfruit"
-                  name={null}
-                  enableClipboard={false}
-                  collapsed={collapsed}
-                  shouldCollapse={false}
-                  onEdit={false}
-                  onAdd={false}
-                  onDelete={false}
-                  displayDataTypes={false}
-                  displayObjectSize={false}
-                  indentWidth={2}
-                />
-              </div>
-            ))}
+            {Object.entries(transactionsToDisplay || {}).map(([key, tx]) => {
+              const { ID, ...txWithoutID } = tx;
+              return (
+                <div key={key}>
+                  <Typography variant="body2" color="textSecondary" style={{ marginTop: '5px' }}>
+                    {Number(key) + 1} - {tx.TransactionType}
+                  </Typography>
+                  <ReactJson
+                    src={txWithoutID}
+                    theme="summerfruit"
+                    name={null}
+                    key={renderKey}
+                    enableClipboard={false}
+                    collapsed={collapsed}
+                    shouldCollapse={false}
+                    onEdit={false}
+                    onAdd={false}
+                    onDelete={false}
+                    displayDataTypes={false}
+                    displayObjectSize={false}
+                    indentWidth={2}
+                  />
+                </div>
+              );
+            })}
+
             {errorRequestRejection && (
               <Typography color="error">{errorRequestRejection}</Typography>
             )}
