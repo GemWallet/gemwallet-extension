@@ -18,7 +18,7 @@ interface RecapProps {
   beginProcess: () => void;
 }
 
-const RecapView: React.FC<RecapProps> = ({
+export const RecapView: React.FC<RecapProps> = ({
   transactionsListParam,
   estimatedFees,
   errorFees,
@@ -116,5 +116,3 @@ const RecapView: React.FC<RecapProps> = ({
     </PageWithTitle>
   );
 };
-
-export default RecapView;

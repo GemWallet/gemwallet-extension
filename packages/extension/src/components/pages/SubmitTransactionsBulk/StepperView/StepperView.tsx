@@ -34,7 +34,7 @@ interface StepperViewProps {
   handleReset: () => void;
 }
 
-const StepperView: FC<StepperViewProps> = ({
+export const StepperView: FC<StepperViewProps> = ({
   activeStep,
   steps,
   hasEnoughFunds,
@@ -225,5 +225,3 @@ const StepperView: FC<StepperViewProps> = ({
     </PageWithTitle>
   );
 };
-
-export default StepperView;

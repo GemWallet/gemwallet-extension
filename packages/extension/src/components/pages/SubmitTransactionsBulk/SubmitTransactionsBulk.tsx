@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useState } from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 
 import * as Sentry from '@sentry/react';
 
@@ -16,8 +16,9 @@ import { useFees, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
 import { parseTransactionsBulkMap } from '../../../utils';
 import { serializeError } from '../../../utils/errors';
-import RecapView from './RecapView/RecapView';
-import StepperView from './StepperView/StepperView';
+import { PermissionRequiredView } from './PermissionRequiredView';
+import { RecapView } from './RecapView';
+import { StepperView } from './StepperView';
 
 interface Params {
   id: number;
@@ -40,6 +41,11 @@ export const SubmitTransactionsBulk: FC = () => {
   const [showRecap, setShowRecap] = useState(true);
   const [progressPercentage, setProgressPercentage] = useState(0);
   const [onError, setOnError] = useState<'abort' | 'continue'>(DEFAULT_SUBMIT_TX_BULK_ON_ERROR);
+  const [submitBulkTransactionsEnabled, setSubmitBulkTransactionsEnabled] = useState<boolean>(
+    () => {
+      return JSON.parse(localStorage.getItem('permission-submitBulkTransactions') || 'false');
+    }
+  );
   const { submitTransactionsBulk } = useLedger();
   const { network } = useNetwork();
   const { estimatedFees, errorFees, difference, errorDifference } = useFees(
@@ -63,6 +69,11 @@ export const SubmitTransactionsBulk: FC = () => {
     isBulk: true,
     progressPercentage: progressPercentage
   });
+
+  const enableBulkTransactionPermission = useCallback(() => {
+    localStorage.setItem('permission-submitBulkTransactions', 'true');
+    setSubmitBulkTransactionsEnabled(true);
+  }, []);
 
   // Handle stepper
   const steps = params.transactionsMapParam
@@ -229,6 +240,16 @@ export const SubmitTransactionsBulk: FC = () => {
       }
     }
     i++;
+  }
+
+  if (!submitBulkTransactionsEnabled) {
+    return (
+      <PermissionRequiredView
+        handleReject={handleReject}
+        enableBulkTransactionPermission={enableBulkTransactionPermission}
+        transactionStatusComponent={transactionStatusComponent}
+      />
+    );
   }
 
   return (
