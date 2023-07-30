@@ -99,25 +99,27 @@ const NetworkProvider: FC = ({ children }) => {
         saveNetwork(network, customNetworkName, customNetworkServer);
         setClient(ws);
 
-        chrome.runtime
-          .sendMessage<EventNetworkChangedBackgroundMessage>({
-            app: GEM_WALLET,
-            type: 'EVENT_NETWORK_CHANGED',
-            source: 'GEM_WALLET_MSG_REQUEST',
-            payload: {
-              id: 0,
-              result: {
-                network: {
-                  name: NETWORK[network].name.toLowerCase(),
-                  server: customNetworkServer ?? NETWORK[network].server,
-                  description: NETWORK[network].description
+        if (process.env.NODE_ENV === 'production') {
+          chrome.runtime
+            .sendMessage<EventNetworkChangedBackgroundMessage>({
+              app: GEM_WALLET,
+              type: 'EVENT_NETWORK_CHANGED',
+              source: 'GEM_WALLET_MSG_REQUEST',
+              payload: {
+                id: 0,
+                result: {
+                  network: {
+                    name: NETWORK[network].name.toLowerCase(),
+                    server: customNetworkServer ?? NETWORK[network].server,
+                    description: NETWORK[network].description
+                  }
                 }
               }
-            }
-          })
-          .catch((e) => {
-            Sentry.captureException(e);
-          });
+            })
+            .catch((e) => {
+              Sentry.captureException(e);
+            });
+        }
       } catch (err) {
         await client?.disconnect();
         setClient(null);

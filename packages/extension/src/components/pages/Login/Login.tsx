@@ -113,21 +113,23 @@ export const Login: FC = () => {
     if (passwordValue && signIn(passwordValue, rememberSession)) {
       navigateToPath();
 
-      chrome.runtime
-        .sendMessage<EventLoginBackgroundMessage>({
-          app: GEM_WALLET,
-          type: 'EVENT_LOGIN',
-          source: 'GEM_WALLET_MSG_REQUEST',
-          payload: {
-            id: 0,
-            result: {
-              loggedIn: true
+      if (process.env.NODE_ENV === 'production') {
+        chrome.runtime
+          .sendMessage<EventLoginBackgroundMessage>({
+            app: GEM_WALLET,
+            type: 'EVENT_LOGIN',
+            source: 'GEM_WALLET_MSG_REQUEST',
+            payload: {
+              id: 0,
+              result: {
+                loggedIn: true
+              }
             }
-          }
-        })
-        .catch((e) => {
-          Sentry.captureException(e);
-        });
+          })
+          .catch((e) => {
+            Sentry.captureException(e);
+          });
+      }
     } else {
       setPasswordError('Incorrect password');
     }
