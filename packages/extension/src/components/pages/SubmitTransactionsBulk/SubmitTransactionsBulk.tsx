@@ -242,21 +242,22 @@ export const SubmitTransactionsBulk: FC = () => {
     i++;
   }
 
+  if (transactionStatusComponent) {
+    return <div>{transactionStatusComponent}</div>;
+  }
+
   if (!submitBulkTransactionsEnabled) {
     return (
       <PermissionRequiredView
         handleReject={handleReject}
         enableBulkTransactionPermission={enableBulkTransactionPermission}
-        transactionStatusComponent={transactionStatusComponent}
       />
     );
   }
 
   return (
     <>
-      {transactionStatusComponent ? (
-        <div>{transactionStatusComponent}</div>
-      ) : showRecap ? (
+      {showRecap ? (
         <RecapView
           transactionsListParam={Object.values(params.transactionsMapParam || {})}
           estimatedFees={estimatedFees}
