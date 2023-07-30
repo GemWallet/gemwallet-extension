@@ -1,6 +1,7 @@
 import {
   BackgroundMessage,
   EventLoginContentMessage,
+  EventLogoutBackgroundMessage,
   EventLogoutContentMessage,
   EventNetworkChangedContentMessage,
   EventWalletChangedContentMessage,
@@ -654,21 +655,24 @@ chrome.runtime.onMessage.addListener(
           }
         });
       });
-    } else if (type === 'EVENT_LOGOUT') {
-      const { payload } = message;
-      activeTabs.forEach((tabId) => {
-        chrome.tabs.sendMessage<EventLogoutContentMessage>(tabId, {
-          app,
-          type: 'EVENT_LOGOUT',
-          source: 'GEM_WALLET_MSG_REQUEST',
-          payload: {
-            result: payload.result
-          }
-        });
-      });
     }
   }
 );
+
+// Called by the session manager
+export const handleLogoutEvent = (message: EventLogoutBackgroundMessage) => {
+  const { payload } = message;
+  activeTabs.forEach((tabId) => {
+    chrome.tabs.sendMessage<EventLogoutContentMessage>(tabId, {
+      app: message.app,
+      type: 'EVENT_LOGOUT',
+      source: 'GEM_WALLET_MSG_REQUEST',
+      payload: {
+        result: payload.result
+      }
+    });
+  });
+};
 
 /*
  * Tabs management

@@ -1,3 +1,6 @@
+import { GEM_WALLET } from '@gemwallet/constants';
+
+import { handleLogoutEvent } from '../index';
 import { closeOffscreen, createOffscreen } from './offscreen';
 
 const SESSION_LENGTH_MINUTES = 30;
@@ -22,7 +25,7 @@ export class Session {
   }
 
   public startSession(password: string): void {
-    this.endSession();
+    this.endSession(true);
 
     this.password = password;
     createOffscreen();
@@ -31,18 +34,33 @@ export class Session {
     }, SESSION_LENGTH_MINUTES * MILLISECONDS_IN_MINUTE);
   }
 
-  public endSession(): void {
+  public endSession(onLogin?: boolean): void {
     this.password = null;
     if (this.timeoutId) {
       clearTimeout(this.timeoutId);
       this.timeoutId = null;
       closeOffscreen();
     }
+
+    // Only send logout event if the session was not ended on login
+    if (!onLogin) {
+      handleLogoutEvent({
+        app: GEM_WALLET,
+        type: 'EVENT_LOGOUT',
+        source: 'GEM_WALLET_MSG_REQUEST',
+        payload: {
+          id: 0,
+          result: {
+            loggedIn: false
+          }
+        }
+      });
+    }
   }
 
   public getPassword(): string | null {
     if (!this.isSessionActive()) {
-      this.endSession();
+      this.endSession(true);
     }
     return this.password;
   }
