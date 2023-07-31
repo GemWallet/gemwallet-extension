@@ -86,7 +86,7 @@ export const RecapView: React.FC<RecapProps> = ({
             </Typography>
           ))}
         </Paper>
-        <Fee errorFees={errorFees} estimatedFees={estimatedFees} fee={null} />
+        <Fee errorFees={errorFees} estimatedFees={estimatedFees} fee={null} isBulk={true} />
         <div
           style={{
             display: 'flex',
