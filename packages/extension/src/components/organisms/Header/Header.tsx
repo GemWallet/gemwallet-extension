@@ -15,7 +15,7 @@ import {
   LIST_WALLETS_PATH,
   SECONDARY_GRAY,
   SEND_PATH,
-  RECEIVE_QR_PATH // Import the receive path
+  RECEIVE_PATH // Import the receive path
 } from '../../../constants';
 import { useTimeout } from '../../../hooks';
 import { WalletLedger } from '../../../types';
@@ -129,7 +129,7 @@ export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => 
               </Typography>
             </Button>
             {/* Instead of showing the QR code here, navigate to the /receive route */}
-            <Link to={RECEIVE_QR_PATH} style={{ textDecoration: 'none' }}>
+            <Link to={RECEIVE_PATH} style={{ textDecoration: 'none' }}>
               <Button
                 aria-label="receive"
                 size="small"

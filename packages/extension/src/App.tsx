@@ -41,9 +41,9 @@ import {
   ListWallets,
   Login,
   MintNFT,
+  ReceivePayment,
   ResetPassword,
   SendPayment,
-  ReceiveQRCode,
   SetAccount,
   Settings,
   ShareAddress,
@@ -94,7 +94,7 @@ import {
   PARAMETER_TRANSACTION_TRUSTLINE,
   RESET_PASSWORD_PATH,
   SEND_PATH,
-  RECEIVE_QR_PATH,
+  RECEIVE_PATH,
   SET_ACCOUNT_PATH,
   SETTINGS_PATH,
   SHARE_NFT_PATH,
@@ -505,10 +505,10 @@ const App: FC = () => {
           }
         />
         <Route
-          path={RECEIVE_QR_PATH}
+          path={RECEIVE_PATH}
           element={
             <PrivateRoute>
-              <ReceiveQRCode />
+              <ReceivePayment />
             </PrivateRoute>
           }
         />

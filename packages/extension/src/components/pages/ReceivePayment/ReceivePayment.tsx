@@ -13,11 +13,11 @@ import { Header, NavMenu } from '../../organisms';
 const MARGIN_TOP_CONTAINER = 20;
 const CONTAINER_HEIGHT_TAKEN = HEADER_HEIGHT + NAV_MENU_HEIGHT + MARGIN_TOP_CONTAINER;
 
-export interface ReceiveQRCodeProps {
+export interface ReceivePaymentProps {
   title?: string;
 }
 
-export const ReceiveQRCode: FC<ReceiveQRCodeProps> = ({ children, title }) => {
+export const ReceivePayment: FC<ReceivePaymentProps> = ({ children, title }) => {
   const { wallets, selectedWallet } = useWallet();
   const publicAddress = wallets[selectedWallet].publicAddress;
 
@@ -120,4 +120,4 @@ export const ReceiveQRCode: FC<ReceiveQRCodeProps> = ({ children, title }) => {
   );
 };
 
-export default ReceiveQRCode;
+export default ReceivePayment;
