@@ -13,6 +13,8 @@ import { NetworkData } from '@gemwallet/constants/src/network/network.types';
 
 import { loadNetwork, removeNetwork, saveCustomNetwork, saveNetwork } from '../../utils';
 
+const RECOGNIZED_CONNECTION_ERRORS = ['Connection failed.'];
+
 interface ContextType {
   reconnectToNetwork: () => void;
   switchNetwork: (
@@ -37,8 +39,11 @@ const NetworkContext = createContext<ContextType>({
 });
 
 const NetworkProvider: FC = ({ children }) => {
-  const [client, setClient] = useState<Client | null>();
+  const [client, setClient] = useState<Client | null>(null);
   const [network, setNetwork] = useState<Network | string>();
+  const [isConnectionFailed, setIsConnectionFailed] = useState(false);
+
+  console.log('isConnectionFailed: ', isConnectionFailed);
 
   useEffect(() => {
     let retryCount = 0;
@@ -54,12 +59,14 @@ const NetworkProvider: FC = ({ children }) => {
       } catch (err) {
         await ws?.disconnect();
         setClient(null);
-        Sentry.captureException(err);
-
+        setIsConnectionFailed(true);
         // If connect fails, retry up to maxRetries times
         if (retryCount < maxRetries) {
           retryCount += 1;
           setTimeout(connectToNetwork, 1000);
+        }
+        if (!RECOGNIZED_CONNECTION_ERRORS.includes((err as Error).message)) {
+          Sentry.captureException(err);
         }
       }
     };
@@ -90,10 +97,14 @@ const NetworkProvider: FC = ({ children }) => {
       await ws.connect();
       setNetwork(network || loadedNetwork.name);
       setClient(ws);
+      setIsConnectionFailed(false);
     } catch (err) {
       await client?.disconnect();
       setClient(null);
-      Sentry.captureException(err);
+      setIsConnectionFailed(true);
+      if (!RECOGNIZED_CONNECTION_ERRORS.includes((err as Error).message)) {
+        Sentry.captureException(err);
+      }
     }
   };
 
@@ -107,6 +118,7 @@ const NetworkProvider: FC = ({ children }) => {
         setNetwork(customNetworkName || network);
         saveNetwork(network, customNetworkName, customNetworkServer);
         setClient(ws);
+        setIsConnectionFailed(false);
 
         if (process.env.NODE_ENV === 'production') {
           chrome.runtime
@@ -132,7 +144,10 @@ const NetworkProvider: FC = ({ children }) => {
       } catch (err) {
         await client?.disconnect();
         setClient(null);
-        Sentry.captureException(err);
+        setIsConnectionFailed(true);
+        if (!RECOGNIZED_CONNECTION_ERRORS.includes((err as Error).message)) {
+          Sentry.captureException(err);
+        }
         throw err;
       }
     },
