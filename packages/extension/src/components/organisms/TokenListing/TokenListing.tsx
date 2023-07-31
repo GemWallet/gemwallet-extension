@@ -72,7 +72,7 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
   useEffect(() => {
     async function fetchBalance() {
       try {
-        // Retrieve balances without trustlines details
+        // Retrieve balances without trustline details
         const balances = await client?.getBalances(address);
         const XRPBalance = balances?.find((balance) => balance.issuer === undefined);
         let trustLineBalances = balances?.filter(
@@ -89,13 +89,11 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
           trustLineBalances = trustLineBalances
             .map((trustlineBalance) => {
               const trustlineDetails = accountLines.result.lines.find(
-                (line: AccountLinesTrustline) => {
-                  return (
-                    line.currency === trustlineBalance.currency &&
-                    line.account === trustlineBalance.issuer
-                  );
-                }
+                (line: AccountLinesTrustline) =>
+                  line.currency === trustlineBalance.currency &&
+                  line.account === trustlineBalance.issuer
               );
+
               return {
                 ...trustlineBalance,
                 trustlineDetails:
@@ -152,13 +150,14 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
   if (client === null) {
     return (
       <InformationMessage
-        title="Failed to get assets"
+        title="Failed to connect to the network"
         style={{
           padding: '15px'
         }}
       >
         <Typography style={{ marginBottom: '5px' }}>
-          There was an error attempting to retrieve your assets. Please refresh and try again.
+          There was an error attempting to connect to the network. Please refresh the page and try
+          again.
         </Typography>
         <div style={{ textAlign: 'center', margin: '10px 0' }}>
           <Button variant="contained" onClick={reconnectToNetwork} style={{ marginBottom: '10px' }}>

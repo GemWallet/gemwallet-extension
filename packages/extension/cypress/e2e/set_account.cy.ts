@@ -1,6 +1,7 @@
 import { Network, NETWORK } from '@gemwallet/constants';
 
 describe('Set Account', () => {
+  // deepcode ignore NoHardcodedPasswords: password used for testing purposes
   const PASSWORD = 'SECRET_PASSWORD';
 
   beforeEach(() => {
@@ -28,6 +29,8 @@ describe('Set Account', () => {
           (win as any).chrome.runtime = {
             sendMessage(message, cb) {}
           };
+
+          cy.stub((win as any).chrome.runtime, 'sendMessage').resolves({});
         }
       }
     );

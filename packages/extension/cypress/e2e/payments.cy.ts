@@ -33,6 +33,8 @@ describe('Make payment - XRP', () => {
           (win as any).chrome.runtime = {
             sendMessage(message, cb) {}
           };
+
+          cy.stub((win as any).chrome.runtime, 'sendMessage').resolves({});
         }
       }
     );
@@ -124,6 +126,8 @@ describe('Make payment - ETH', () => {
           (win as any).chrome.runtime = {
             sendMessage(message, cb) {}
           };
+
+          cy.stub((win as any).chrome.runtime, 'sendMessage').resolves({});
         }
       }
     );

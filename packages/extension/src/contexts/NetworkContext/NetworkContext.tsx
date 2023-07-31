@@ -3,7 +3,12 @@ import { useContext, useState, useEffect, createContext, FC, useCallback } from 
 import * as Sentry from '@sentry/react';
 import { Client } from 'xrpl';
 
-import { NETWORK, Network } from '@gemwallet/constants';
+import {
+  EventNetworkChangedBackgroundMessage,
+  GEM_WALLET,
+  NETWORK,
+  Network
+} from '@gemwallet/constants';
 import { NetworkData } from '@gemwallet/constants/src/network/network.types';
 
 import { loadNetwork, removeNetwork, saveCustomNetwork, saveNetwork } from '../../utils';
@@ -93,6 +98,28 @@ const NetworkProvider: FC = ({ children }) => {
         setNetwork(customNetworkName || network);
         saveNetwork(network, customNetworkName, customNetworkServer);
         setClient(ws);
+
+        if (process.env.NODE_ENV === 'production') {
+          chrome.runtime
+            .sendMessage<EventNetworkChangedBackgroundMessage>({
+              app: GEM_WALLET,
+              type: 'EVENT_NETWORK_CHANGED',
+              source: 'GEM_WALLET_MSG_REQUEST',
+              payload: {
+                id: 0,
+                result: {
+                  network: {
+                    name: NETWORK[network].name.toLowerCase(),
+                    server: customNetworkServer ?? NETWORK[network].server,
+                    description: NETWORK[network].description
+                  }
+                }
+              }
+            })
+            .catch((e) => {
+              Sentry.captureException(e);
+            });
+        }
       } catch (err) {
         await client?.disconnect();
         setClient(null);

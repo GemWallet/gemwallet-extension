@@ -1,5 +1,5 @@
 import { GEM_WALLET } from '../global/global.constant';
-import { RequestMessage } from '../message/message.types';
+import { EventMessage, RequestMessage } from '../message/message.types';
 import {
   AcceptNFTOfferRequest,
   BurnNFTRequest,
@@ -7,6 +7,10 @@ import {
   CancelOfferRequest,
   CreateNFTOfferRequest,
   CreateOfferRequest,
+  EventLoginResponse,
+  EventLogoutResponse,
+  EventNetworkChangedResponse,
+  EventWalletChangedResponse,
   MintNFTRequest,
   SendPaymentRequest,
   SendPaymentRequestDeprecated,
@@ -295,3 +299,62 @@ export type EventListener =
   | SignMessageListener
   | SignMessageListenerDeprecated
   | SubmitTransactionEventListener;
+
+// Events
+interface EventEventData {
+  app: typeof GEM_WALLET;
+  type: EventMessage;
+  source: 'GEM_WALLET_MSG_REQUEST';
+  messageId: number;
+  payload?:
+    | EventNetworkChangedResponse
+    | EventWalletChangedResponse
+    | EventLoginResponse
+    | EventLogoutResponse;
+}
+
+export interface EventNetworkChangedEventListener extends MessageEvent<EventEventData> {
+  data: {
+    app: typeof GEM_WALLET;
+    type: 'EVENT_NETWORK_CHANGED';
+    source: 'GEM_WALLET_MSG_REQUEST';
+    messageId: number;
+    payload: EventNetworkChangedResponse;
+  };
+}
+
+export interface EventWalletChangedEventListener extends MessageEvent<EventEventData> {
+  data: {
+    app: typeof GEM_WALLET;
+    type: 'EVENT_WALLET_CHANGED';
+    source: 'GEM_WALLET_MSG_REQUEST';
+    messageId: number;
+    payload: EventWalletChangedResponse;
+  };
+}
+
+export interface EventLoginEventListener extends MessageEvent<EventEventData> {
+  data: {
+    app: typeof GEM_WALLET;
+    type: 'EVENT_LOGIN';
+    source: 'GEM_WALLET_MSG_REQUEST';
+    messageId: number;
+    payload: EventLoginResponse;
+  };
+}
+
+export interface EventLogoutEventListener extends MessageEvent<EventEventData> {
+  data: {
+    app: typeof GEM_WALLET;
+    type: 'EVENT_LOGOUT';
+    source: 'GEM_WALLET_MSG_REQUEST';
+    messageId: number;
+    payload: EventLogoutResponse;
+  };
+}
+
+export type EventEventListener =
+  | EventNetworkChangedEventListener
+  | EventWalletChangedEventListener
+  | EventLoginEventListener
+  | EventLogoutEventListener;

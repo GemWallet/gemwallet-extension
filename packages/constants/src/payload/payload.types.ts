@@ -403,3 +403,30 @@ export type ResponsePayload =
 export interface PasswordInternalResponse {
   password: string;
 }
+
+/*
+ * Events Payloads
+ */
+interface BaseEventResponse<T> {
+  result: T;
+}
+
+export interface EventNetworkChangedResponse
+  extends BaseEventResponse<{
+    network: {
+      name: string;
+      server: string;
+      description: string;
+    };
+  }> {}
+
+export interface EventWalletChangedResponse
+  extends BaseEventResponse<{
+    wallet: {
+      publicAddress: string;
+    };
+  }> {}
+
+export interface EventLoginResponse extends BaseEventResponse<{ loggedIn: boolean }> {}
+
+export interface EventLogoutResponse extends BaseEventResponse<{ loggedIn: boolean }> {}

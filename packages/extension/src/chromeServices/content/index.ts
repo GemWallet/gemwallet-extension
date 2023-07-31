@@ -12,6 +12,7 @@ import {
   CreateNFTOfferMessagingResponse,
   CreateOfferMessagingResponse,
   CreateOfferEventListener,
+  EventContentMessage,
   EventListener,
   GEM_WALLET,
   GetAddressMessagingResponse,
@@ -104,6 +105,7 @@ setTimeout(() => {
       if (!event.data.source || event.data.source !== 'GEM_WALLET_MSG_REQUEST') return;
       const messagedId = event.data.messageId;
 
+      // Requests
       const {
         data: { app, type }
       } = event;
@@ -938,4 +940,64 @@ setTimeout(() => {
     },
     false
   );
-}, 0);
+
+  // Events
+  chrome.runtime.onMessage.addListener((message: EventContentMessage) => {
+    // We only accept messages from ourselves
+    if (message.app !== GEM_WALLET) return;
+    if (!message.source || message.source !== 'GEM_WALLET_MSG_REQUEST') return;
+
+    if (message.type === 'EVENT_NETWORK_CHANGED') {
+      window.postMessage(
+        {
+          type: 'networkChanged',
+          source: message.source,
+          payload: message.payload
+        },
+        window.location.origin
+      );
+    } else if (message.type === 'EVENT_WALLET_CHANGED') {
+      window.postMessage(
+        {
+          type: 'walletChanged',
+          source: message.source,
+          payload: message.payload
+        },
+        window.location.origin
+      );
+    } else if (message.type === 'EVENT_LOGIN') {
+      window.postMessage(
+        {
+          type: 'login',
+          source: message.source,
+          payload: message.payload
+        },
+        window.location.origin
+      );
+    } else if (message.type === 'EVENT_LOGOUT') {
+      window.postMessage(
+        {
+          type: 'logout',
+          source: message.source,
+          payload: message.payload
+        },
+        window.location.origin
+      );
+    }
+  });
+});
+
+/*
+ * Tabs management
+ */
+// When the content script is loaded, we send a message to the background script to add the tab to the list of tabs
+chrome.runtime.sendMessage({
+  type: 'CONTENT_SCRIPT_LOADED'
+});
+
+// When the content script is unloaded, we send a message to the background script to remove the tab from the list of tabs
+window.onbeforeunload = () => {
+  chrome.runtime.sendMessage({
+    type: 'CONTENT_SCRIPT_UNLOADED'
+  });
+};

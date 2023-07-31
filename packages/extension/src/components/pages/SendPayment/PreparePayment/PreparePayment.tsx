@@ -19,8 +19,8 @@ import { isValidAddress } from 'xrpl';
 
 import { Memo } from '@gemwallet/constants';
 
-import { HOME_PATH, navigation } from '../../../../constants';
-import { useNetwork, useWallet } from '../../../../contexts';
+import { DEFAULT_RESERVE, HOME_PATH, RESERVE_PER_OWNER, navigation } from '../../../../constants';
+import { useLedger, useNetwork, useServer, useWallet } from '../../../../contexts';
 import { convertHexCurrencyString } from '../../../../utils';
 import { buildDefaultMemos } from '../../../../utils/transaction';
 import { NumericInput } from '../../../atoms';
@@ -48,8 +48,11 @@ export interface PreparePaymentProps {
 }
 
 export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) => {
+  const { getAccountInfo } = useLedger();
   const { client } = useNetwork();
+  const { serverInfo } = useServer();
   const { getCurrentWallet } = useWallet();
+  const navigate = useNavigate();
   const [address, setAddress] = useState<string>('');
   const [amount, setAmount] = useState<string>('');
   const [memos, setMemos] = useState<Memo[] | undefined>(undefined);
@@ -68,9 +71,40 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
   >();
   const [errorTokens, setErrorTokens] = useState<string>('');
   const [isWalletActivated, setIsWalletActivated] = useState<boolean>(true);
+  const [ownerCount, setOwnerCount] = useState<number>(0);
   const tokenRef = useRef<HTMLInputElement | null>(null);
 
-  const navigate = useNavigate();
+  const baseReserve = useMemo(
+    () => serverInfo?.info.validated_ledger?.reserve_base_xrp || DEFAULT_RESERVE,
+    [serverInfo?.info.validated_ledger?.reserve_base_xrp]
+  );
+
+  const isSendPaymentDisabled = useMemo(() => {
+    return !(
+      address !== '' &&
+      isValidAddress(address) &&
+      amount !== '' &&
+      errorAddress === '' &&
+      errorMemo === '' &&
+      errorDestinationTag === ''
+    );
+  }, [address, amount, errorAddress, errorDestinationTag, errorMemo]);
+
+  const reserve = useMemo(() => {
+    return ownerCount * RESERVE_PER_OWNER + baseReserve;
+  }, [baseReserve, ownerCount]);
+
+  useEffect(() => {
+    const fetchAccountInfo = async () => {
+      try {
+        const accountInfo = await getAccountInfo();
+        setOwnerCount(accountInfo.result.account_data.OwnerCount);
+      } catch (error) {
+        Sentry.captureException(error);
+      }
+    };
+    fetchAccountInfo();
+  }, [getAccountInfo]);
 
   useEffect(() => {
     async function fetchBalances() {
@@ -95,8 +129,12 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
     async function checkWalletActivated() {
       try {
         const wallet = getCurrentWallet();
-        await client?.getXrpBalance(wallet!.publicAddress);
-        setIsWalletActivated(true);
+        if (wallet) {
+          await client?.getXrpBalance(wallet.publicAddress);
+          setIsWalletActivated(true);
+        } else {
+          setIsWalletActivated(false);
+        }
       } catch (e) {
         setIsWalletActivated(false);
       }
@@ -115,9 +153,13 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
         return token.currency === currency && token.issuer === issuer;
       });
 
+      if (token?.currency === 'XRP') {
+        return Number(token.value) - reserve > Number(amountToSend);
+      }
+
       return token && Number(token.value) >= Number(amountToSend);
     },
-    [tokens]
+    [reserve, tokens]
   );
 
   const hasValidMemoLength = useCallback((memo: string | undefined) => {
@@ -224,17 +266,6 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
     },
     [hasValidDestinationTag]
   );
-
-  const isSendPaymentDisabled = useMemo(() => {
-    return !(
-      address !== '' &&
-      isValidAddress(address) &&
-      amount !== '' &&
-      errorAddress === '' &&
-      errorMemo === '' &&
-      errorDestinationTag === ''
-    );
-  }, [address, amount, errorAddress, errorDestinationTag, errorMemo]);
 
   const handleSendPayment = useCallback(() => {
     if (!isSendPaymentDisabled) {

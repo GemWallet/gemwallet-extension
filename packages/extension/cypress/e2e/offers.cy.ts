@@ -234,6 +234,8 @@ describe('Offers', () => {
         (win as any).chrome.runtime = {
           sendMessage(message, cb) {}
         };
+
+        cy.stub((win as any).chrome.runtime, 'sendMessage').resolves({});
       }
     });
 

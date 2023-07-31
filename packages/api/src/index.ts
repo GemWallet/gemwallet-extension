@@ -4,6 +4,7 @@ export * from './cancelNFTOffer';
 export * from './cancelOffer';
 export * from './createNFTOffer';
 export * from './createOffer';
+export * from './on';
 export * from './getAddress';
 export * from './getNetwork';
 export * from './getNFT';
