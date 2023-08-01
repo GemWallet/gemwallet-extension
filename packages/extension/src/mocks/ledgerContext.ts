@@ -21,5 +21,7 @@ export const valueLedgerContext: LedgerContextType = {
   submitTransactionsBulk: jest.fn(),
   getAccountInfo: jest.fn(),
   getNFTData: jest.fn(),
-  deleteAccount: jest.fn()
+  deleteAccount: jest.fn(),
+  getNFTInfo: jest.fn(),
+  getLedgerEntry: jest.fn()
 };

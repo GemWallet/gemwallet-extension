@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
@@ -13,13 +13,19 @@ import {
   DialogActions,
   Dialog,
   Pagination,
-  PaginationItem
+  PaginationItem,
+  CardMedia,
+  Card
 } from '@mui/material';
 import ReactJson from 'react-json-view';
+import { NFTokenAcceptOffer, NFTokenBurn, NFTokenCancelOffer, NFTokenCreateOffer } from 'xrpl';
+import { NFTokenMint } from 'xrpl/dist/npm/models/transactions/NFTokenMint';
 
 import { TransactionWithID } from '@gemwallet/constants';
 
 import { ERROR_RED } from '../../../../constants';
+import { useLedger, useNetwork } from '../../../../contexts';
+import { resolveNFTImage } from '../../../../utils/NFTImageResolver';
 import { PageWithTitle } from '../../../templates';
 
 interface StepperViewProps {
@@ -52,6 +58,9 @@ export const StepperView: FC<StepperViewProps> = ({
   const [collapsed, setCollapsed] = useState<boolean>(true);
   const [open, setOpen] = useState<boolean>(false);
   const [renderKey, setRenderKey] = useState<number>(0);
+  const [txNFTImage, setTxNFTImage] = useState<Record<number, string>>({}); // Key is the transaction index
+  const { network } = useNetwork();
+  const { getNFTInfo, getLedgerEntry } = useLedger();
 
   const handleCollapseToggle = () => {
     setCollapsed(!collapsed);
@@ -78,6 +87,66 @@ export const StepperView: FC<StepperViewProps> = ({
       handleNext();
     }
   };
+
+  useEffect(() => {
+    const resolveImageFromURI = async (URI: string, index: number) => {
+      const nftImage = await resolveNFTImage('', URI);
+      const image = nftImage?.image;
+      if (image === undefined) return;
+
+      setTxNFTImage((prev) => ({ ...prev, [index]: image }));
+    };
+    const resolveImageFromNFTokenID = async (NFTokenID: string, index: number) => {
+      try {
+        const NFTInfo = await getNFTInfo(NFTokenID, network);
+        const URI = NFTInfo.result.uri;
+
+        resolveImageFromURI(URI, index);
+      } catch (error) {}
+    };
+    const resolveImageFromNFTOfferID = async (NFTOfferID: string, index: number) => {
+      try {
+        const ledgerEntry = await getLedgerEntry(NFTOfferID);
+        const NFTokenID = (ledgerEntry?.result?.node as any)?.NFTokenID;
+        if (!NFTokenID) return;
+
+        resolveImageFromNFTokenID(NFTokenID, index);
+      } catch (error) {}
+    };
+    for (let key in transactionsToDisplay) {
+      if (transactionsToDisplay.hasOwnProperty(key)) {
+        if (transactionsToDisplay[key].TransactionType === 'NFTokenMint') {
+          const URI = (transactionsToDisplay[key] as NFTokenMint).URI;
+          if (!URI) continue;
+          resolveImageFromURI(URI, Number(key));
+          continue;
+        }
+
+        if (
+          ['NFTokenCreateOffer', 'NFTokenBurn'].includes(transactionsToDisplay[key].TransactionType)
+        ) {
+          const NFTokenID = (transactionsToDisplay[key] as NFTokenCreateOffer | NFTokenBurn)
+            .NFTokenID;
+          resolveImageFromNFTokenID(NFTokenID, Number(key));
+          continue;
+        }
+
+        if (transactionsToDisplay[key].TransactionType === 'NFTokenAcceptOffer') {
+          const NFTOfferID =
+            (transactionsToDisplay[key] as NFTokenAcceptOffer).NFTokenSellOffer ||
+            (transactionsToDisplay[key] as NFTokenAcceptOffer).NFTokenBuyOffer;
+          if (!NFTOfferID) continue;
+          resolveImageFromNFTOfferID(NFTOfferID, Number(key));
+          continue;
+        }
+
+        if (transactionsToDisplay[key].TransactionType === 'NFTokenCancelOffer') {
+          const NFTOfferIDs = (transactionsToDisplay[key] as NFTokenCancelOffer).NFTokenOffers;
+          NFTOfferIDs.map((NFTOfferID) => resolveImageFromNFTOfferID(NFTOfferID, Number(key)));
+        }
+      }
+    }
+  }, [getLedgerEntry, getNFTInfo, network, transactionsToDisplay]);
 
   return (
     <PageWithTitle title="Bulk Transactions" styles={{ container: { justifyContent: 'initial' } }}>
@@ -146,6 +215,18 @@ export const StepperView: FC<StepperViewProps> = ({
                   <Typography variant="body2" color="textSecondary" style={{ marginTop: '5px' }}>
                     {Number(key) + 1} - {tx.TransactionType}
                   </Typography>
+                  {txNFTImage[Number(key)] ? (
+                    <div style={{ display: 'flex', justifyContent: 'center', margin: '10px 0' }}>
+                      <Card sx={{ maxWidth: 300 }}>
+                        <CardMedia
+                          component="img"
+                          height="140"
+                          image={txNFTImage[Number(key)]}
+                          alt="NFT Image"
+                        />
+                      </Card>
+                    </div>
+                  ) : null}
                   <ReactJson
                     src={txWithoutID}
                     theme="summerfruit"

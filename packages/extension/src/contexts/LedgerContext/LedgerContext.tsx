@@ -5,6 +5,10 @@ import { sign } from 'ripple-keypairs';
 import {
   AccountDelete,
   AccountSet,
+  Client,
+  LedgerEntryRequest,
+  LedgerEntryResponse,
+  NFTInfoRequest,
   NFTokenAcceptOffer,
   NFTokenBurn,
   NFTokenCancelOffer,
@@ -20,6 +24,7 @@ import {
   Wallet
 } from 'xrpl';
 import { AccountInfoResponse } from 'xrpl/dist/npm/models/methods/accountInfo';
+import { NFTInfoResponse } from 'xrpl/dist/npm/models/methods/nftInfo';
 import { BaseTransaction } from 'xrpl/dist/npm/models/transactions/common';
 
 import {
@@ -33,7 +38,9 @@ import {
   CreateNFTOfferRequest,
   CreateOfferRequest,
   GetNFTRequest,
+  MainnetClioServer,
   MintNFTRequest,
+  Network,
   NFTData,
   NFTokenIDResponse,
   SendPaymentRequest,
@@ -133,6 +140,8 @@ export interface LedgerContextType {
   getAccountInfo: (accountId?: string) => Promise<AccountInfoResponse>;
   getNFTData: (payload: NFTImageRequest) => Promise<NFTData>;
   deleteAccount: (destinationAddress: string) => Promise<DeleteAccountResponse>;
+  getNFTInfo: (NFTokenID: string, network?: string) => Promise<NFTInfoResponse>;
+  getLedgerEntry: (ID: string) => Promise<LedgerEntryResponse>;
 }
 
 const LedgerContext = createContext<LedgerContextType>({
@@ -165,7 +174,9 @@ const LedgerContext = createContext<LedgerContextType>({
   submitTransactionsBulk: () => new Promise(() => {}),
   getAccountInfo: () => new Promise(() => {}),
   getNFTData: () => new Promise(() => {}),
-  deleteAccount: () => new Promise(() => {})
+  deleteAccount: () => new Promise(() => {}),
+  getNFTInfo: () => new Promise(() => {}),
+  getLedgerEntry: () => new Promise(() => {})
 });
 
 const LedgerProvider: FC = ({ children }) => {
@@ -899,6 +910,62 @@ const LedgerProvider: FC = ({ children }) => {
     [client, getCurrentWallet]
   );
 
+  const getNFTInfo = useCallback(
+    async (NFTokenID: string, network?: string): Promise<NFTInfoResponse> => {
+      const connectToLedger = async (server: string): Promise<Client> => {
+        let client = new Client(server);
+        await client.connect();
+        return client;
+      };
+
+      if (!client) throw new Error('You need to be connected to a ledger');
+
+      try {
+        if (network === Network.MAINNET) {
+          // Connect to Clio server for mainnet
+          let clioClient;
+          try {
+            clioClient = await connectToLedger(MainnetClioServer.S1);
+          } catch {
+            clioClient = await connectToLedger(MainnetClioServer.S2);
+          }
+          return clioClient.request({
+            command: 'nft_info',
+            nft_id: NFTokenID
+          } as NFTInfoRequest);
+        }
+
+        // Fallback, will probably fail since it's probably not a Clio server
+        return client.request({
+          command: 'nft_info',
+          nft_id: NFTokenID
+        } as NFTInfoRequest);
+      } catch (e) {
+        Sentry.captureException(e);
+        throw e;
+      }
+    },
+    [client]
+  );
+
+  const getLedgerEntry = useCallback(
+    async (ID: string): Promise<LedgerEntryResponse> => {
+      if (!client) throw new Error('You need to be connected to a ledger');
+
+      try {
+        return client.request({
+          command: 'ledger_entry',
+          index: ID,
+          ledger_index: 'validated'
+        } as LedgerEntryRequest);
+      } catch (e) {
+        Sentry.captureException(e);
+        throw e;
+      }
+    },
+    [client]
+  );
+
   const buildBaseTransaction = (
     payload: BaseTransactionRequest,
     wallet: WalletLedger,
@@ -1007,7 +1074,9 @@ const LedgerProvider: FC = ({ children }) => {
     submitTransactionsBulk,
     getAccountInfo,
     getNFTData,
-    deleteAccount
+    deleteAccount,
+    getNFTInfo,
+    getLedgerEntry
   };
 
   return <LedgerContext.Provider value={value}>{children}</LedgerContext.Provider>;
