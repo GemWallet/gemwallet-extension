@@ -82,29 +82,36 @@ export const StepperView: FC<StepperViewProps> = ({
   return (
     <PageWithTitle title="Bulk Transactions" styles={{ container: { justifyContent: 'initial' } }}>
       <div style={{ marginBottom: '100px' }}>
-        <div
-          style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-        >
-          <Pagination
-            count={steps}
-            page={activeStep + 1}
-            renderItem={(item) => (
-              <PaginationItem
-                {...item}
-                sx={{
-                  '&:hover': {
-                    backgroundColor: 'transparent',
-                    cursor: 'default'
-                  }
-                }}
-              />
-            )}
-            variant="outlined"
-            color="primary"
-            hidePrevButton
-            hideNextButton
-          />
-        </div>
+        {steps > 1 ? (
+          <div
+            style={{
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}
+          >
+            <Pagination
+              count={steps}
+              page={activeStep + 1}
+              renderItem={(item) => (
+                <PaginationItem
+                  {...item}
+                  sx={{
+                    '&:hover': {
+                      backgroundColor: 'transparent',
+                      cursor: 'default'
+                    }
+                  }}
+                />
+              )}
+              variant="outlined"
+              color="primary"
+              hidePrevButton
+              hideNextButton
+            />
+          </div>
+        ) : null}
         {!hasEnoughFunds ? (
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <ErrorIcon style={{ color: ERROR_RED }} />
@@ -181,16 +188,20 @@ export const StepperView: FC<StepperViewProps> = ({
                 <Button variant="contained" color="secondary" onClick={handleReject}>
                   Reject
                 </Button>
-                <Button
-                  disabled={activeStep === 0}
-                  onClick={handleBack}
-                  startIcon={<ArrowBackIcon />}
-                />
-                <Button
-                  disabled={activeStep === steps - 1}
-                  onClick={handleNextAndOpen}
-                  endIcon={<ArrowForwardIcon />}
-                />
+                {steps > 1 ? (
+                  <>
+                    <Button
+                      disabled={activeStep === 0}
+                      onClick={handleBack}
+                      startIcon={<ArrowBackIcon />}
+                    />
+                    <Button
+                      disabled={activeStep === steps - 1}
+                      onClick={handleNextAndOpen}
+                      endIcon={<ArrowForwardIcon />}
+                    />
+                  </>
+                ) : null}
                 <Button
                   variant="contained"
                   color="primary"
