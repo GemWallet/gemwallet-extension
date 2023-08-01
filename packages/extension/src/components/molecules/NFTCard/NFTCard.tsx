@@ -62,77 +62,86 @@ export const NFTCard: FC<NFTCardProps> = ({ NFT }) => {
 
   return (
     <>
-      <Dialog
-        open={dialogOpen}
-        onClose={handleCloseDialog}
-        fullScreen
-        TransitionComponent={Transition}
-      >
-        {NFTData && <NFTDetails NFTData={NFTData} handleClose={handleCloseDialog} />}
-      </Dialog>
-      <Paper
-        elevation={5}
-        style={{
-          padding: '10px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: '10px'
-        }}
-      >
-        <ListItem
-          style={{
-            flexDirection: 'column',
-            textAlign: 'center'
-          }}
-        >
-          {loading ? (
-            <CircularProgress data-testid="progressbar" />
-          ) : NFTData?.image ? (
-            <LazyLoadImage
-              alt="nft"
-              height={150}
-              style={{ borderRadius: '4px', boxShadow: '4px 4px 0px black' }}
-              beforeLoad={() => <CircularProgress />}
-              effect="blur"
-              src={NFTData?.image}
-              width={150}
-            />
-          ) : (
-            <GemWallet />
-          )}
-          {NFTData ? (
-            <Tooltip title={NFTData.NFTokenID}>
-              <div
-                style={{ fontSize: '14px', color: 'grey', marginTop: '10px', cursor: 'pointer' }}
-                onClick={() => handleTokenIdClick(NFTData.NFTokenID)}
-              >
-                {formatStringToBeDisplayed(NFTData.NFTokenID, MAX_STRING_LENGTH)}
-              </div>
-            </Tooltip>
-          ) : null}
-          {NFTData?.name ? (
-            <div
-              style={{ fontSize: '16px', color: 'white', marginTop: '10px' }}
-              data-testid="nft_name"
-            >
-              {formatStringToBeDisplayed(NFTData.name, MAX_STRING_LENGTH)}
-            </div>
-          ) : null}
-          {NFTData?.description ? (
-            <div style={{ fontSize: '14px', color: 'grey', marginTop: '10px' }}>
-              {formatStringToBeDisplayed(NFTData.description, MAX_STRING_LENGTH)}
-            </div>
-          ) : null}
-          <Button
-            variant="outlined"
-            style={{ marginTop: '10px', fontSize: '14px', gap: '10px' }}
-            onClick={handleViewNFTClick}
+      {NFTData ? (
+        <>
+          <Dialog
+            open={dialogOpen}
+            onClose={handleCloseDialog}
+            fullScreen
+            TransitionComponent={Transition}
           >
-            View <OpenInNewOutlined style={{ fontSize: '16px' }} />
-          </Button>
-        </ListItem>
-      </Paper>
+            <NFTDetails NFTData={NFTData} handleClose={handleCloseDialog} />
+          </Dialog>
+          <Paper
+            elevation={5}
+            style={{
+              padding: '10px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginBottom: '10px'
+            }}
+          >
+            <ListItem
+              style={{
+                flexDirection: 'column',
+                textAlign: 'center'
+              }}
+            >
+              {loading ? (
+                <CircularProgress data-testid="progressbar" />
+              ) : NFTData?.image ? (
+                <LazyLoadImage
+                  alt="nft"
+                  height={150}
+                  style={{ borderRadius: '4px', boxShadow: '4px 4px 0px black' }}
+                  beforeLoad={() => <CircularProgress />}
+                  effect="blur"
+                  src={NFTData?.image}
+                  width={150}
+                />
+              ) : (
+                <GemWallet />
+              )}
+              {NFTData ? (
+                <Tooltip title={NFTData.NFTokenID}>
+                  <div
+                    style={{
+                      fontSize: '14px',
+                      color: 'grey',
+                      marginTop: '10px',
+                      cursor: 'pointer'
+                    }}
+                    onClick={() => handleTokenIdClick(NFTData.NFTokenID)}
+                  >
+                    {formatStringToBeDisplayed(NFTData.NFTokenID, MAX_STRING_LENGTH)}
+                  </div>
+                </Tooltip>
+              ) : null}
+              {NFTData?.name ? (
+                <div
+                  style={{ fontSize: '16px', color: 'white', marginTop: '10px' }}
+                  data-testid="nft_name"
+                >
+                  {formatStringToBeDisplayed(NFTData.name, MAX_STRING_LENGTH)}
+                </div>
+              ) : null}
+              {NFTData?.description ? (
+                <div style={{ fontSize: '14px', color: 'grey', marginTop: '10px' }}>
+                  {formatStringToBeDisplayed(NFTData.description, MAX_STRING_LENGTH)}
+                </div>
+              ) : null}
+              <Button
+                variant="outlined"
+                style={{ marginTop: '10px', fontSize: '14px', gap: '10px' }}
+                onClick={handleViewNFTClick}
+              >
+                View <OpenInNewOutlined style={{ fontSize: '16px' }} />
+              </Button>
+            </ListItem>
+          </Paper>
+        </>
+      ) : null}
     </>
   );
 };
