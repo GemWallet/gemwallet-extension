@@ -1,5 +1,7 @@
 import React, { FC, useState } from 'react';
 
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ErrorIcon from '@mui/icons-material/Error';
 import {
   Typography,
@@ -170,53 +172,55 @@ export const StepperView: FC<StepperViewProps> = ({
               }}
             >
               <Container
-                style={{ display: 'flex', justifyContent: 'space-evenly', margin: '10px' }}
-              >
-                <Button disabled={activeStep === 0} onClick={handleBack}>
-                  Back
-                </Button>
-                <Button variant="contained" color="primary" onClick={handleNextAndOpen}>
-                  {activeStep === steps - 1 ? 'Submit' : 'Next'}
-                </Button>
-              </Container>
-              <Container
-                style={{ display: 'flex', justifyContent: 'space-evenly', margin: '10px' }}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-around',
+                  padding: '10px'
+                }}
               >
                 <Button variant="contained" color="secondary" onClick={handleReject}>
                   Reject
                 </Button>
-                <div>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleClickOpen}
-                    disabled={!hasEnoughFunds}
-                  >
-                    Submit all
-                  </Button>
-                  <Dialog
-                    open={open}
-                    onClose={handleClose}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                  >
-                    <DialogTitle id="alert-dialog-title">{'Submit all transactions'}</DialogTitle>
-                    <DialogContent>
-                      <DialogContentText id="alert-dialog-description">
-                        You are about to submit {totalNumberOfTransactions} transactions in bulk.
-                        Are you sure?
-                      </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                      <Button onClick={handleClose} color="primary">
-                        Cancel
-                      </Button>
-                      <Button onClick={handleConfirmAndClose} color="primary" autoFocus>
-                        OK
-                      </Button>
-                    </DialogActions>
-                  </Dialog>
-                </div>
+                <Button
+                  disabled={activeStep === 0}
+                  onClick={handleBack}
+                  startIcon={<ArrowBackIcon />}
+                />
+                <Button
+                  disabled={activeStep === steps - 1}
+                  onClick={handleNextAndOpen}
+                  endIcon={<ArrowForwardIcon />}
+                />
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleClickOpen}
+                  disabled={!hasEnoughFunds}
+                >
+                  Submit all
+                </Button>
+                <Dialog
+                  open={open}
+                  onClose={handleClose}
+                  aria-labelledby="alert-dialog-title"
+                  aria-describedby="alert-dialog-description"
+                >
+                  <DialogTitle id="alert-dialog-title">{'Submit all transactions'}</DialogTitle>
+                  <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                      You are about to submit {totalNumberOfTransactions} transactions in bulk. Are
+                      you sure?
+                    </DialogContentText>
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={handleClose} color="primary">
+                      Cancel
+                    </Button>
+                    <Button onClick={handleConfirmAndClose} color="primary" autoFocus>
+                      OK
+                    </Button>
+                  </DialogActions>
+                </Dialog>
               </Container>
             </div>
           </div>
