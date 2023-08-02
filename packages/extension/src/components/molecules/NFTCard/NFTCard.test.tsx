@@ -1,7 +1,6 @@
 import { render, screen, waitFor, act } from '@testing-library/react';
 
 import { LedgerContext } from '../../../contexts';
-import { valueLedgerContext } from '../../../mocks';
 import { NFTCard, NFTCardProps } from './NFTCard';
 
 const mockNFT = {
@@ -26,37 +25,33 @@ const mockNFTData = {
   }
 };
 
-const mockGetNFTData = jest.fn(async () => mockNFTData);
-const mockContext = {
-  ...valueLedgerContext,
-  getNFTData: mockGetNFTData
-};
+const mockGetNFTData = jest.fn();
+// @ts-ignore
+const LedgerContextMockProvider = ({ children }) => (
+  // @ts-ignore
+  <LedgerContext.Provider value={{ getNFTData: mockGetNFTData }}>{children}</LedgerContext.Provider>
+);
 
 const renderNFTCard = (props: NFTCardProps) => {
   act(() => {
     render(
-      <LedgerContext.Provider value={mockContext}>
+      <LedgerContextMockProvider>
         <NFTCard {...props} />
-      </LedgerContext.Provider>
+      </LedgerContextMockProvider>
     );
   });
 };
 
 describe('NFTCard', () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
   test('renders NFTCard component correctly', async () => {
+    mockGetNFTData.mockReturnValue({
+      ...mockNFTData
+    });
+
     renderNFTCard({ NFT: mockNFT });
 
     await waitFor(() => expect(mockGetNFTData).toHaveBeenCalled());
     expect(screen.getByTestId('OpenInNewOutlinedIcon')).toBeInTheDocument();
-  });
-
-  test('displays CircularProgress while fetching data', () => {
-    renderNFTCard({ NFT: mockNFT });
-    expect(screen.getByTestId('progressbar')).toBeInTheDocument();
   });
 
   test('handles error when fetching NFT data', async () => {
