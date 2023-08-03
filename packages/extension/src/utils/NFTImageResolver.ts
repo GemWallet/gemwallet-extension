@@ -1,7 +1,5 @@
 import { convertHexToString } from 'xrpl';
 
-import { AccountNFToken } from '@gemwallet/constants';
-
 import { parseJSON } from './NFTViewer';
 
 export interface NFTData {
@@ -17,8 +15,7 @@ export interface NFTData {
   };
 }
 
-export const resolveNFTImage = async (NFT: AccountNFToken): Promise<NFTData> => {
-  const { NFTokenID, URI } = NFT;
+export const resolveNFTImage = async (NFTokenID: string, URI: string): Promise<NFTData> => {
   let URL = URI ? await convertHexToString(String(URI)) : '';
 
   if (URL.length === 0) {
