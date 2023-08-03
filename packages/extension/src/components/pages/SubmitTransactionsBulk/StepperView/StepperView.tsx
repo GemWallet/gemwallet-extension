@@ -209,8 +209,12 @@ export const StepperView: FC<StepperViewProps> = ({
             {Object.entries(transactionsToDisplay || {}).map(([key, tx]) => {
               const { ID, ...txWithoutID } = tx;
               return (
-                <div key={key}>
-                  <Typography variant="body2" color="textSecondary" style={{ marginTop: '5px' }}>
+                <div key={key} style={{ marginBottom: '20px' }}>
+                  <Typography
+                    variant="body1"
+                    color="textPrimary"
+                    style={{ marginTop: '5px', fontSize: '1.2em' }}
+                  >
                     {Number(key) + 1} - {tx.TransactionType}
                   </Typography>
                   {txNFTData[Number(key)] && txNFTData[Number(key)].name ? (
@@ -221,7 +225,7 @@ export const StepperView: FC<StepperViewProps> = ({
                         marginTop: '5px',
                         fontWeight: 'lighter',
                         fontStyle: 'italic',
-                        fontSize: '0.95em'
+                        fontSize: '1em'
                       }}
                     >
                       {txNFTData[Number(key)].name}
@@ -239,21 +243,23 @@ export const StepperView: FC<StepperViewProps> = ({
                       </Card>
                     </div>
                   ) : null}
-                  <ReactJson
-                    src={txWithoutID}
-                    theme="summerfruit"
-                    name={null}
-                    key={renderKey}
-                    enableClipboard={false}
-                    collapsed={collapsed}
-                    shouldCollapse={false}
-                    onEdit={false}
-                    onAdd={false}
-                    onDelete={false}
-                    displayDataTypes={false}
-                    displayObjectSize={false}
-                    indentWidth={2}
-                  />
+                  <div style={{ marginTop: '5px' }}>
+                    <ReactJson
+                      src={txWithoutID}
+                      theme="summerfruit"
+                      name={null}
+                      key={renderKey}
+                      enableClipboard={false}
+                      collapsed={collapsed}
+                      shouldCollapse={false}
+                      onEdit={false}
+                      onAdd={false}
+                      onDelete={false}
+                      displayDataTypes={false}
+                      displayObjectSize={false}
+                      indentWidth={2}
+                    />
+                  </div>
                 </div>
               );
             })}
