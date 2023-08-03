@@ -37,7 +37,7 @@ export const SubmitTransaction: FC = () => {
   const [isParamsMissing, setIsParamsMissing] = useState(false);
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
   const { submitTransaction } = useLedger();
-  const { network } = useNetwork();
+  const { networkName } = useNetwork();
   const { estimatedFees, errorFees, difference, errorDifference } = useFees(
     params.txParam ?? {
       TransactionType: 'Payment',
@@ -50,7 +50,7 @@ export const SubmitTransaction: FC = () => {
   const { hasEnoughFunds, transactionStatusComponent } = useTransactionStatus({
     isParamsMissing,
     errorDifference,
-    network,
+    network: networkName,
     difference,
     transaction,
     errorRequestRejection

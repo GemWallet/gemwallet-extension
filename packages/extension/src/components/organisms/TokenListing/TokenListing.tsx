@@ -64,7 +64,7 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [trustLineBalances, setTrustLineBalances] = useState<TrustLineBalance[]>([]);
   const [explanationOpen, setExplanationOpen] = useState(false);
-  const { client, reconnectToNetwork, network } = useNetwork();
+  const { client, reconnectToNetwork, networkName } = useNetwork();
   const { serverInfo } = useServer();
   const { fundWallet, getAccountInfo } = useLedger();
   const navigate = useNavigate();
@@ -201,7 +201,7 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
           Your reserved XRP will not show up within your GemWallet's balance as you cannot spend it.
         </div>
 
-        {(network === Network.TESTNET || network === Network.DEVNET) && (
+        {(networkName === Network.TESTNET || networkName === Network.DEVNET) && (
           <div style={{ margin: '15px 0px', textAlign: 'center' }}>
             <Button variant="contained" onClick={handleFundWallet} data-testid="fund-wallet-button">
               Fund Wallet
