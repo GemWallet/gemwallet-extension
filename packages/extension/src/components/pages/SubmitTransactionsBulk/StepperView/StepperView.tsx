@@ -25,7 +25,7 @@ import { TransactionWithID } from '@gemwallet/constants';
 
 import { ERROR_RED } from '../../../../constants';
 import { useLedger, useNetwork } from '../../../../contexts';
-import { resolveNFTImage } from '../../../../utils/NFTImageResolver';
+import { NFTData, resolveNFTImage } from '../../../../utils/NFTImageResolver';
 import { PageWithTitle } from '../../../templates';
 
 interface StepperViewProps {
@@ -58,7 +58,7 @@ export const StepperView: FC<StepperViewProps> = ({
   const [collapsed, setCollapsed] = useState<boolean>(true);
   const [open, setOpen] = useState<boolean>(false);
   const [renderKey, setRenderKey] = useState<number>(0);
-  const [txNFTImage, setTxNFTImage] = useState<Record<number, string>>({}); // Key is the transaction index
+  const [txNFTData, setTxNFTData] = useState<Record<number, NFTData>>({}); // Key is the transaction index
   const { network } = useNetwork();
   const { getNFTInfo, getLedgerEntry } = useLedger();
 
@@ -90,11 +90,9 @@ export const StepperView: FC<StepperViewProps> = ({
 
   useEffect(() => {
     const resolveImageFromURI = async (URI: string, index: number) => {
-      const nftImage = await resolveNFTImage('', URI);
-      const image = nftImage?.image;
-      if (image === undefined) return;
+      const NFTData = await resolveNFTImage('', URI);
 
-      setTxNFTImage((prev) => ({ ...prev, [index]: image }));
+      setTxNFTData((prev) => ({ ...prev, [index]: NFTData }));
     };
     const resolveImageFromNFTokenID = async (NFTokenID: string, index: number) => {
       try {
@@ -215,13 +213,27 @@ export const StepperView: FC<StepperViewProps> = ({
                   <Typography variant="body2" color="textSecondary" style={{ marginTop: '5px' }}>
                     {Number(key) + 1} - {tx.TransactionType}
                   </Typography>
-                  {txNFTImage[Number(key)] ? (
+                  {txNFTData[Number(key)] && txNFTData[Number(key)].name ? (
+                    <Typography
+                      variant="body2"
+                      color="textSecondary"
+                      style={{
+                        marginTop: '5px',
+                        fontWeight: 'lighter',
+                        fontStyle: 'italic',
+                        fontSize: '0.95em'
+                      }}
+                    >
+                      {txNFTData[Number(key)].name}
+                    </Typography>
+                  ) : null}
+                  {txNFTData[Number(key)] && txNFTData[Number(key)].image ? (
                     <div style={{ display: 'flex', justifyContent: 'center', margin: '10px 0' }}>
                       <Card sx={{ maxWidth: 300 }}>
                         <CardMedia
                           component="img"
                           height="140"
-                          image={txNFTImage[Number(key)]}
+                          image={txNFTData[Number(key)].image}
                           alt="NFT Image"
                         />
                       </Card>
