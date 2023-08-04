@@ -18,7 +18,12 @@ export const resolveNFTImage = async (NFT: AccountNFToken): Promise<NFTData> => 
   URL = URL.replace('ipfs://', 'https://ipfs.io/ipfs/');
 
   // Case 1 - Image URL
-  if (URL.includes('.png') || URL.includes('.jpg')) {
+  if (
+    URL.includes('.png') ||
+    URL.includes('.jpg') ||
+    URL.includes('.jpeg') ||
+    URL.includes('.gif')
+  ) {
     try {
       // Case 1.1 - The URL is directly an image
       await fetch(URL);
