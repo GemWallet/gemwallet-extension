@@ -19,12 +19,14 @@ import {
 } from '@mui/material';
 import ReactJson from 'react-json-view';
 import { NFTokenAcceptOffer, NFTokenBurn, NFTokenCancelOffer, NFTokenCreateOffer } from 'xrpl';
+import { Amount } from 'xrpl/dist/npm/models/common';
 import { NFTokenMint } from 'xrpl/dist/npm/models/transactions/NFTokenMint';
 
 import { TransactionWithID } from '@gemwallet/constants';
 
 import { ERROR_RED } from '../../../../constants';
 import { useLedger, useNetwork } from '../../../../contexts';
+import { formatAmount } from '../../../../utils';
 import { NFTData, resolveNFTImage } from '../../../../utils/NFTImageResolver';
 import { PageWithTitle } from '../../../templates';
 
@@ -42,6 +44,10 @@ interface StepperViewProps {
   handleReset: () => void;
 }
 
+type TxNFTData = NFTData & {
+  amount?: Amount; // For NFT offers
+};
+
 export const StepperView: FC<StepperViewProps> = ({
   activeStep,
   steps,
@@ -58,7 +64,7 @@ export const StepperView: FC<StepperViewProps> = ({
   const [collapsed, setCollapsed] = useState<boolean>(true);
   const [open, setOpen] = useState<boolean>(false);
   const [renderKey, setRenderKey] = useState<number>(0);
-  const [txNFTData, setTxNFTData] = useState<Record<number, NFTData>>({}); // Key is the transaction index
+  const [txNFTData, setTxNFTData] = useState<Record<number, TxNFTData>>({}); // Key is the transaction index
   const { network } = useNetwork();
   const { getNFTInfo, getLedgerEntry } = useLedger();
 
@@ -89,17 +95,23 @@ export const StepperView: FC<StepperViewProps> = ({
   };
 
   useEffect(() => {
-    const resolveImageFromURI = async (URI: string, index: number) => {
+    const resolveImageFromURI = async (URI: string, index: number, amount?: Amount) => {
       const NFTData = await resolveNFTImage('', URI);
 
-      setTxNFTData((prev) => ({ ...prev, [index]: NFTData }));
+      setTxNFTData((prev) => ({
+        ...prev,
+        [index]: {
+          ...NFTData,
+          ...(amount && { amount })
+        }
+      }));
     };
-    const resolveImageFromNFTokenID = async (NFTokenID: string, index: number) => {
+    const resolveImageFromNFTokenID = async (NFTokenID: string, index: number, amount?: Amount) => {
       try {
         const NFTInfo = await getNFTInfo(NFTokenID, network);
         const URI = NFTInfo.result.uri;
 
-        resolveImageFromURI(URI, index);
+        resolveImageFromURI(URI, index, amount);
       } catch (error) {}
     };
     const resolveImageFromNFTOfferID = async (NFTOfferID: string, index: number) => {
@@ -108,7 +120,9 @@ export const StepperView: FC<StepperViewProps> = ({
         const NFTokenID = (ledgerEntry?.result?.node as any)?.NFTokenID;
         if (!NFTokenID) return;
 
-        resolveImageFromNFTokenID(NFTokenID, index);
+        const amount = (ledgerEntry?.result?.node as any)?.Amount;
+
+        resolveImageFromNFTokenID(NFTokenID, index, amount);
       } catch (error) {}
     };
     for (let key in transactionsToDisplay) {
@@ -217,6 +231,16 @@ export const StepperView: FC<StepperViewProps> = ({
                   >
                     {Number(key) + 1} - {tx.TransactionType}
                   </Typography>
+                  {'Amount' in txWithoutID && txWithoutID.Amount ? (
+                    <Typography variant="body2" color="textSecondary">
+                      {formatAmount(txWithoutID.Amount)}
+                    </Typography>
+                  ) : null}
+                  {txNFTData[Number(key)] && txNFTData[Number(key)].amount ? (
+                    <Typography variant="body2" color="textSecondary">
+                      {formatAmount(txNFTData[Number(key)].amount as Amount)}
+                    </Typography>
+                  ) : null}
                   {txNFTData[Number(key)] && txNFTData[Number(key)].name ? (
                     <Typography
                       variant="body2"
