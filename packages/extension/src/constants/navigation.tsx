@@ -3,7 +3,7 @@ import HistoryIcon from '@mui/icons-material/History';
 import PhotoCameraBackIcon from '@mui/icons-material/PhotoCameraBack';
 import SettingsIcon from '@mui/icons-material/Settings';
 
-import { HISTORY_PATH, HOME_PATH, NFTS_PATH, SETTINGS_PATH } from './paths';
+import { HISTORY_PATH, HOME_PATH, NFT_VIEWER_PATH, SETTINGS_PATH } from './paths';
 
 export const navigation = [
   {
@@ -18,7 +18,7 @@ export const navigation = [
   },
   {
     label: 'NFTs',
-    pathname: NFTS_PATH,
+    pathname: NFT_VIEWER_PATH,
     icon: <PhotoCameraBackIcon />
   },
   {

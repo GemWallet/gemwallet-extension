@@ -18,7 +18,7 @@ export * from './ImportWallet';
 export * from './ListWallets';
 export * from './Login';
 export * from './MintNFT';
-export * from './NFTs';
+export * from './NFTViewer';
 export * from './ResetPassword';
 export * from './SendPayment';
 export * from './ReceivePayment';

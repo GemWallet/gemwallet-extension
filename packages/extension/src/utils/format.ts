@@ -104,14 +104,14 @@ export const formatStringToBeDisplayed = (str: string, length: number) => {
   }
 
   // If there is no space within the given length in the string, return the string truncated
-  let spaceIndex = str.indexOf(' ');
+  const spaceIndex = str.indexOf(' ');
   if (spaceIndex === -1 || spaceIndex > length) {
     return str.substring(0, length) + '...';
   }
 
   // If there is a word with a length bigger than the given length, return the string truncated
-  let words = str.split(' ');
-  let longWordExists = words.some((word) => word.length > length);
+  const words = str.split(' ');
+  const longWordExists = words.some((word) => word.length > length);
   if (longWordExists) {
     return str.substring(0, length) + '...';
   }

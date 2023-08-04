@@ -18,7 +18,7 @@ interface NFTsProps extends AccountNFTokenResponse {
   loading: boolean;
 }
 
-export const NFTs: FC = () => {
+export const NFTViewer: FC = () => {
   const { getNFTs } = useContext(LedgerContext);
 
   const [NFTs, setNFTs] = useState<NFTsProps>(initalState);
