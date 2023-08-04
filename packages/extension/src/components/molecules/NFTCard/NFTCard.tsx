@@ -4,6 +4,7 @@ import { OpenInNewOutlined } from '@mui/icons-material';
 import { Button, CircularProgress, Dialog, ListItem, Paper, Slide, Tooltip } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
+import { convertHexToString } from 'xrpl';
 
 import { AccountNFToken, NFTData } from '@gemwallet/constants';
 
@@ -48,7 +49,10 @@ export const NFTCard: FC<NFTCardProps> = ({ NFT }) => {
         const nftData = await getNFTData({ NFT });
         setNFTData(nftData);
       } catch (error) {
-        setNFTData(null);
+        setNFTData({
+          NFTokenID: NFT.NFTokenID,
+          description: NFT.URI ? convertHexToString(NFT.URI) : 'No data'
+        });
       } finally {
         setLoading(false);
       }
