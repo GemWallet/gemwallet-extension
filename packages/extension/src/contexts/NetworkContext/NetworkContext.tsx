@@ -11,6 +11,7 @@ import {
 } from '@gemwallet/constants';
 import { NetworkData } from '@gemwallet/constants/src/network/network.types';
 
+import { OfflineBanner } from '../../components/atoms/OfflineBanner';
 import { loadNetwork, removeNetwork, saveCustomNetwork, saveNetwork } from '../../utils';
 
 const RECOGNIZED_CONNECTION_ERRORS = ['Connection failed.'];
@@ -43,8 +44,6 @@ const NetworkProvider: FC = ({ children }) => {
   const [client, setClient] = useState<Client | null>(null);
   const [networkName, setNetworkName] = useState<Network | string>(DEFAULT_NETWORK_NAME);
   const [isConnectionFailed, setIsConnectionFailed] = useState(false);
-
-  console.log('isConnectionFailed: ', isConnectionFailed);
 
   useEffect(() => {
     let retryCount = 0;
@@ -183,7 +182,12 @@ const NetworkProvider: FC = ({ children }) => {
     networkName
   };
 
-  return <NetworkContext.Provider value={value}>{children}</NetworkContext.Provider>;
+  return (
+    <NetworkContext.Provider value={value}>
+      {isConnectionFailed ? <OfflineBanner reconnectToNetwork={reconnectToNetwork} /> : null}
+      {children}
+    </NetworkContext.Provider>
+  );
 };
 
 const useNetwork = (): ContextType => {
