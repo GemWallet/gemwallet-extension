@@ -41,6 +41,7 @@ export const SubmitTransactionsBulk: FC = () => {
   const [showRecap, setShowRecap] = useState(true);
   const [progressPercentage, setProgressPercentage] = useState(0);
   const [onError, setOnError] = useState<'abort' | 'continue'>(DEFAULT_SUBMIT_TX_BULK_ON_ERROR);
+  const [parallelize, setParallelize] = useState(false);
   const [submitBulkTransactionsEnabled, setSubmitBulkTransactionsEnabled] = useState<boolean>(
     () => {
       return JSON.parse(localStorage.getItem('permission-submitBulkTransactions') || 'false');
@@ -105,6 +106,11 @@ export const SubmitTransactionsBulk: FC = () => {
           if ('transactions' in parsedStoredData) {
             parsedTransactionsMap = parseTransactionsBulkMap(parsedStoredData.transactions);
           }
+          if ('parallelize' in parsedStoredData) {
+            setParallelize(
+              parsedStoredData.parallelize === true || parsedStoredData.parallelize === 'true'
+            );
+          }
         }
       } catch (error) {
         Sentry.captureException(error);
@@ -115,7 +121,6 @@ export const SubmitTransactionsBulk: FC = () => {
           ? urlParams.get('onError')
           : DEFAULT_SUBMIT_TX_BULK_ON_ERROR
       ) as 'abort' | 'continue';
-
       setOnError(onError ?? DEFAULT_SUBMIT_TX_BULK_ON_ERROR);
 
       if (!parsedTransactionsMap) {
@@ -186,7 +191,11 @@ export const SubmitTransactionsBulk: FC = () => {
         const chunk = transactions.slice(i, i + CHUNK_SIZE);
 
         try {
-          const response = await submitTransactionsBulk({ transactions: chunk, onError });
+          const response = await submitTransactionsBulk({
+            transactions: chunk,
+            onError,
+            parallelize
+          });
           results = [...results, ...response.txResults];
 
           if (response.hasError) {

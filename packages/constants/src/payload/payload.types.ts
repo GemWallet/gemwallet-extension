@@ -254,6 +254,7 @@ export const DEFAULT_SUBMIT_TX_BULK_ON_ERROR = 'abort';
 
 export interface SubmitTransactionsBulkRequest {
   transactions: TransactionWithID[];
+  parallelize?: boolean; // default: false
   onError?: 'abort' | 'continue'; // default: abort
 }
 
@@ -346,6 +347,7 @@ export interface SignTransactionResponse
 
 export type TransactionBulkResponse = {
   ID?: string;
+  accepted?: boolean;
   hash?: string;
   error?: Error;
 };

@@ -17,9 +17,11 @@ import {
   OfferCancel,
   OfferCreate,
   Payment,
+  SubmitResponse,
   Transaction,
   TransactionMetadata,
   TrustSet,
+  TxResponse,
   validate,
   Wallet
 } from 'xrpl';
@@ -49,7 +51,8 @@ import {
   SignTransactionRequest,
   SubmitTransactionRequest,
   SubmitTransactionsBulkRequest,
-  TransactionBulkResponse
+  TransactionBulkResponse,
+  TransactionWithID
 } from '@gemwallet/constants';
 
 import { AccountTransaction, WalletLedger } from '../../types';
@@ -814,73 +817,71 @@ const LedgerProvider: FC = ({ children }) => {
       }
       if (!wallet) {
         throw new Error('You need to have a wallet connected');
-      } else {
-        let res = [];
-        for (const txWithID of payload.transactions) {
-          const { ID, ...payload } = txWithID;
-          try {
-            if (!payload.Account || txWithID.Account === '') {
-              payload.Account = wallet.publicAddress;
-            }
+      }
 
-            // Validate the transaction
-            validate(payload as unknown as Record<string, unknown>);
-            // Prepare the transaction
-            const prepared: Transaction = await client.autofill(payload);
-            // Sign the transaction
-            const signed = wallet.wallet.sign(prepared);
-            // Submit the signed blob
-            const tx = await client.submitAndWait(signed.tx_blob);
+      const processTransaction = async (txWithID: TransactionWithID) => {
+        const { ID, ...pl } = txWithID;
 
-            if (!tx.result.hash) {
-              res.push({
-                ID,
-                error: new Error("Couldn't submit the transaction")
-              });
-              if (onError === 'abort') {
-                return {
-                  txResults: res,
-                  hasError: true
-                };
-              }
-            }
-
-            if ((tx.result.meta! as TransactionMetadata).TransactionResult !== 'tesSUCCESS') {
-              res.push({
-                ID,
-                error: new Error(
-                  "Couldn't submit the signed transaction but the transaction was successful"
-                )
-              });
-              if (onError === 'abort') {
-                return {
-                  txResults: res,
-                  hasError: true
-                };
-              }
-            }
-
-            res.push({
-              ID,
-              hash: tx.result.hash
-            });
-          } catch (e) {
-            Sentry.captureException(e);
-            res.push({
-              ID,
-              error: e as Error
-            });
-            if (onError === 'abort') {
-              return {
-                txResults: res,
-                hasError: true
-              };
-            }
-          }
+        if (!pl.Account || txWithID.Account === '') {
+          pl.Account = wallet.publicAddress;
         }
 
-        return { txResults: res };
-      }
+        try {
+          // Validate the transaction
+          validate(pl as unknown as Record<string, unknown>);
+          // Prepare the transaction
+          const prepared: Transaction = await client.autofill(pl);
+          // Sign the transaction
+          const signed = wallet.wallet.sign(prepared);
+          // Submit the signed blob based on the mode
+          const tx = payload.parallelize
+            ? await client.submit(signed.tx_blob)
+            : await client.submitAndWait(signed.tx_blob);
+
+          // Check transaction result
+          if (payload.parallelize && !(tx as SubmitResponse).result.accepted) {
+            throw new Error("Couldn't submit the transaction");
+          }
+
+          if (
+            !payload.parallelize &&
+            (!(tx as TxResponse).result.hash ||
+              ((tx as TxResponse).result.meta! as TransactionMetadata).TransactionResult !==
+                'tesSUCCESS')
+          ) {
+            throw new Error(
+              "Couldn't submit the signed transaction but the transaction was successful"
+            );
+          }
+
+          return {
+            ID,
+            hash: !payload.parallelize ? (tx as TxResponse).result.hash : undefined,
+            accepted: payload.parallelize ? true : undefined
+          };
+        } catch (e) {
+          Sentry.captureException(e);
+          return { ID, error: e as Error };
+        }
+      };
+
+      const results = await (payload.parallelize
+        ? Promise.all(payload.transactions.map((tx) => processTransaction(tx)))
+        : (async () => {
+            const sequentialResults = [];
+            for (const tx of payload.transactions) {
+              const result = await processTransaction(tx);
+              sequentialResults.push(result);
+              if (result.error && onError === 'abort') {
+                return sequentialResults;
+              }
+            }
+            return sequentialResults;
+          })());
+
+      const hasError = results.some((r) => r.error);
+
+      return { txResults: results, hasError };
     },
     [client, getCurrentWallet]
   );
