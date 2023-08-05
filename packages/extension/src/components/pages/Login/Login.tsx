@@ -57,7 +57,7 @@ import { Logo } from '../../atoms/Logo';
 
 export const Login: FC = () => {
   const [passwordError, setPasswordError] = useState('');
-  const [rememberSession, setRememberSession] = useState(loadRememberSessionState());
+  const [rememberSession, setRememberSession] = useState(false);
   const navigate = useNavigate();
   const { search } = useLocation();
   const { signIn, wallets, selectedWallet } = useWallet();
@@ -108,6 +108,14 @@ export const Login: FC = () => {
       navigate(`${WELCOME_PATH}${search}`);
     }
   }, [navigate, navigateToPath, search, selectedWallet, wallets]);
+
+  useEffect(() => {
+    const loadRememberSession = async () => {
+      const loadedState = await loadRememberSessionState();
+      setRememberSession(loadedState);
+    };
+    loadRememberSession();
+  }, []);
 
   const handleUnlock = useCallback(() => {
     const passwordValue = passwordRef.current?.value;

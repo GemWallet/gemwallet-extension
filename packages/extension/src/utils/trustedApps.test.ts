@@ -1,5 +1,5 @@
 import { STORAGE_TRUSTED_APPS } from '../constants';
-import { loadData } from './storage';
+import { loadData } from './storageLocal';
 import {
   checkPermissions,
   loadTrustedApps,
