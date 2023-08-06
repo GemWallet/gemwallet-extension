@@ -3,18 +3,14 @@
  */
 
 export const saveInChromeStorage = (key: string, value: string) => {
-  try {
+  if (process.env.NODE_ENV === 'production') {
     chrome.storage.local.set({ [key]: value });
-  } catch (e) {
-    throw e;
   }
 };
 
 export const loadFromChromeStorage = (key: string) => {
-  try {
+  if (process.env.NODE_ENV === 'production') {
     return chrome.storage.local.get(key);
-  } catch (e) {
-    throw e;
   }
 };
 
