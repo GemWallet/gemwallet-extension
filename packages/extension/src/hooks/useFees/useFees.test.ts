@@ -93,7 +93,6 @@ describe('useFees', () => {
       }
     ];
 
-    // it('should estimate fees correctly for a list of transactions', async () => {
     const { result, waitForNextUpdate } = renderHook(() => useFees(transactions, null));
 
     // Wait for effects to run and state to update
@@ -102,7 +101,6 @@ describe('useFees', () => {
     // Check the results
     // The first transaction has a Fee of 199 drops, and the second has an estimated fee of 12 drops
     expect(result.current.estimatedFees).toEqual('211');
-    // });
   });
 
   describe('difference calculation', () => {
