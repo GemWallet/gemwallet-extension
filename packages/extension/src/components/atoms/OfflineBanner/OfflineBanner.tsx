@@ -9,7 +9,7 @@ export interface OfflineBannerProps {
 
 export const OfflineBanner: FC<OfflineBannerProps> = ({ reconnectToNetwork }) => {
   return (
-    <Paper elevation={24}>
+    <Paper elevation={24} style={{ position: 'fixed', top: 0 }}>
       <div style={{ display: 'flex', alignItems: 'center', padding: '8px' }}>
         <WifiOffIcon />
         <Typography variant="body2" style={{ marginRight: '8px', marginLeft: '8px' }}>

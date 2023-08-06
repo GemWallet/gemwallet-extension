@@ -4,17 +4,19 @@ import { Container, Typography, Button } from '@mui/material';
 import * as Sentry from '@sentry/browser';
 import { Extras } from '@sentry/types';
 
+import { useNetwork } from '../../../contexts';
 import { WarningIcon } from './WarningIcon';
 
 export interface ErrorBoundaryProps {
   children: ReactNode;
+  isConnectionFailed: boolean;
 }
 
 interface State {
   hasError: boolean;
 }
 
-export class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
+class ErrorBoundaryClassComponent extends Component<ErrorBoundaryProps, State> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false };
@@ -34,6 +36,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
   }
 
   render() {
+    const { isConnectionFailed } = this.props;
     if (this.state.hasError) {
       return (
         <Container
@@ -42,8 +45,14 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
-            height: '100vh',
-            padding: '15x 16px'
+            padding: '15x 16px',
+            ...(isConnectionFailed
+              ? {
+                  height: 'calc(100vh - 56px)',
+                  position: 'fixed',
+                  top: 56
+                }
+              : { height: '100vh' })
           }}
         >
           <Container style={{ textAlign: 'center' }}>
@@ -60,7 +69,9 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
             <Button
               variant="contained"
               fullWidth
-              style={{ marginTop: '80px' }}
+              style={
+                isConnectionFailed ? { marginTop: 'calc(80px - 28px)' } : { marginTop: '80px' }
+              }
               onClick={() => (window.location.href = 'index.html')}
             >
               Refresh
@@ -73,3 +84,13 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
     return this.props.children;
   }
 }
+
+export const ErrorBoundary: React.FC = ({ children }) => {
+  const { isConnectionFailed } = useNetwork();
+
+  return (
+    <ErrorBoundaryClassComponent isConnectionFailed={isConnectionFailed}>
+      {children}
+    </ErrorBoundaryClassComponent>
+  );
+};

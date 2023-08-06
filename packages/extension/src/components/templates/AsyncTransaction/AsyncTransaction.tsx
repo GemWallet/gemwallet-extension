@@ -6,7 +6,7 @@ import Lottie from 'lottie-react';
 import alert from '../../../assets/alert.json';
 import check from '../../../assets/check.json';
 import loading from '../../../assets/loading.json';
-import { useBrowser } from '../../../contexts';
+import { useBrowser, useNetwork } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
 
 export interface AsyncTransactionProps {
@@ -29,6 +29,8 @@ export const AsyncTransaction: FC<AsyncTransactionProps> = ({
   onClick
 }) => {
   const { window, closeExtension } = useBrowser();
+  const { isConnectionFailed } = useNetwork();
+
   let animation: object = loading;
 
   let buttonText: string = 'Processing';
@@ -56,11 +58,12 @@ export const AsyncTransaction: FC<AsyncTransactionProps> = ({
     <Container
       component="main"
       style={{
+        ...(isConnectionFailed ? { position: 'fixed', top: 56 } : {}),
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
         alignItems: 'center',
-        height: '100vh',
+        height: isConnectionFailed ? `calc(100vh - 56px)` : '100vh',
         padding: '20px 16px'
       }}
     >

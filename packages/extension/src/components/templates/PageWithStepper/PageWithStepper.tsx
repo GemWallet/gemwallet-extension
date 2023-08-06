@@ -4,6 +4,7 @@ import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import { Button, Container, MobileStepper } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
+import { useNetwork } from '../../../contexts';
 import { useKeyUp } from '../../../hooks';
 
 export interface PageWithStepperProps {
@@ -25,6 +26,7 @@ export const PageWithStepper: FC<PageWithStepperProps> = ({
   children
 }) => {
   const navigate = useNavigate();
+  const { isConnectionFailed } = useNetwork();
 
   //Handle Next step button by pressing 'Enter'
   useKeyUp('Enter', handleNext);
@@ -38,7 +40,17 @@ export const PageWithStepper: FC<PageWithStepperProps> = ({
   };
 
   return (
-    <>
+    <div
+      style={
+        isConnectionFailed
+          ? {
+              width: '100%',
+              position: 'fixed',
+              top: 56
+            }
+          : undefined
+      }
+    >
       <MobileStepper
         variant="dots"
         steps={steps}
@@ -51,7 +63,7 @@ export const PageWithStepper: FC<PageWithStepperProps> = ({
             Back
           </Button>
         }
-        style={{ backgroundColor: '#282c34' }}
+        style={{ backgroundColor: '#282c34', top: isConnectionFailed ? 56 : undefined }}
       />
       <Container
         component="main"
@@ -59,7 +71,7 @@ export const PageWithStepper: FC<PageWithStepperProps> = ({
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          height: '100vh',
+          height: isConnectionFailed ? `calc(100vh - 56px)` : '100vh',
           padding: '48px 0 24px 0'
         }}
       >
@@ -77,6 +89,6 @@ export const PageWithStepper: FC<PageWithStepperProps> = ({
           </Button>
         </Container>
       </Container>
-    </>
+    </div>
   );
 };
