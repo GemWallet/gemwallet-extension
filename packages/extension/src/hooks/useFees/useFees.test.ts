@@ -1,8 +1,6 @@
 import { renderHook } from '@testing-library/react-hooks';
 import { Transaction } from 'xrpl';
 
-// @ts-ignore
-import { getXrpBalanceMock } from '../../contexts';
 import { useFees } from './useFees';
 
 // Mock the modules and hooks that `useFees` depends on
@@ -10,8 +8,8 @@ jest.mock('@sentry/react', () => ({
   captureException: jest.fn()
 }));
 
+let mockGetXrpBalance = () => Promise.resolve('50');
 jest.mock('../../contexts', () => {
-  const getXrpBalanceMock = jest.fn().mockResolvedValue('50');
   return {
     useLedger: () => ({
       estimateNetworkFees: jest.fn().mockResolvedValue('12'),
@@ -20,15 +18,14 @@ jest.mock('../../contexts', () => {
       })
     }),
     useNetwork: () => ({
-      client: { getXrpBalance: getXrpBalanceMock }
+      client: { getXrpBalance: mockGetXrpBalance }
     }),
     useServer: () => ({
       serverInfo: {
         info: { validated_ledger: { reserve_base_xrp: '20' } }
       }
     }),
-    useWallet: () => ({ getCurrentWallet: () => ({ publicAddress: 'address' }) }),
-    getXrpBalanceMock
+    useWallet: () => ({ getCurrentWallet: () => ({ publicAddress: 'address' }) })
   };
 });
 
@@ -110,7 +107,6 @@ describe('useFees', () => {
 
   describe('difference calculation', () => {
     it('should calculate difference correctly when a fee is provided', async () => {
-      getXrpBalanceMock.mockResolvedValue('50');
       const { result, waitForNextUpdate } = renderHook(() => useFees(transaction, '199'));
 
       // Wait for effects to run and state to update
@@ -124,7 +120,8 @@ describe('useFees', () => {
 
     it('should calculate difference correctly when balance is more than reserve + fees', async () => {
       // Set the balance to be more than reserve + fees
-      getXrpBalanceMock.mockResolvedValue('100');
+
+      mockGetXrpBalance = () => Promise.resolve('100');
 
       const { result, waitForNextUpdate } = renderHook(() => useFees(transaction, null));
 
@@ -137,7 +134,7 @@ describe('useFees', () => {
 
     it('should calculate difference correctly when balance is less than reserve + fees', async () => {
       // Set the balance to be less than reserve + fees
-      getXrpBalanceMock.mockResolvedValue('20');
+      mockGetXrpBalance = () => Promise.resolve('20');
 
       const { result, waitForNextUpdate } = renderHook(() => useFees(transaction, null));
 
