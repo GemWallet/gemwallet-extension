@@ -1,8 +1,8 @@
-import { FC, useContext, useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 
 import { AccountNFTokenResponse } from '@gemwallet/constants';
 
-import { LedgerContext } from '../../../contexts';
+import { useLedger } from '../../../contexts';
 import { NFTListing } from '../../organisms';
 import { PageWithHeader } from '../../templates';
 
@@ -19,7 +19,7 @@ interface NFTsProps extends AccountNFTokenResponse {
 }
 
 export const NFTViewer: FC = () => {
-  const { getNFTs } = useContext(LedgerContext);
+  const { getNFTs } = useLedger();
 
   const [NFTs, setNFTs] = useState<NFTsProps>(initalState);
 

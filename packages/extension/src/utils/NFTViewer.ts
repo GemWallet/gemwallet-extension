@@ -1,3 +1,5 @@
+import { IPFSResolverPrefix } from '@gemwallet/constants/src/xrpl/nft.constant';
+
 export const parseImage = (NFTData: any, URL: string): string => {
   if (NFTData.image) {
     return replaceIPFS(NFTData.image);
@@ -27,11 +29,11 @@ export const parseJSON = async (URL: any, NFTokenID: string): Promise<any> => {
 };
 
 const replaceIPFS = (inputStr: string): string => {
-  if (!inputStr.startsWith('ipfs://' || 'https://ipfs.io/ipfs/') && !inputStr.startsWith('http')) {
-    return `https://ipfs.io/ipfs/${inputStr}`;
+  if (!inputStr.startsWith('ipfs://' || IPFSResolverPrefix) && !inputStr.startsWith('http')) {
+    return `${IPFSResolverPrefix}${inputStr}`;
   }
 
   return inputStr
-    .replace('ipfs://ipfs/', 'https://ipfs.io/ipfs/')
-    .replace('ipfs://', 'https://ipfs.io/ipfs/');
+    .replace('ipfs://ipfs/', IPFSResolverPrefix)
+    .replace('ipfs://', IPFSResolverPrefix);
 };

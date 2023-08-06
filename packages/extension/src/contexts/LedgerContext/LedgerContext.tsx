@@ -176,23 +176,25 @@ const LedgerProvider: FC = ({ children }) => {
       const wallet = getCurrentWallet();
       if (!client) {
         throw new Error('You need to be connected to a ledger to get the NFTs');
-      } else if (!wallet) {
-        throw new Error('You need to have a wallet connected to get the NFTs');
-      } else {
-        // Prepare the transaction
-        const prepared = await client.request({
-          command: 'account_nfts',
-          account: wallet.publicAddress,
-          limit: payload?.limit,
-          marker: payload?.marker,
-          ledger_index: 'validated'
-        });
-        if (!prepared.result?.account_nfts) {
-          throw new Error("Couldn't get the NFTs");
-        } else {
-          return { account_nfts: prepared.result.account_nfts, marker: prepared.result.marker };
-        }
       }
+      if (!wallet) {
+        throw new Error('You need to have a wallet connected to get the NFTs');
+      }
+
+      // Prepare the transaction
+      const prepared = await client.request({
+        command: 'account_nfts',
+        account: wallet.publicAddress,
+        limit: payload?.limit,
+        marker: payload?.marker,
+        ledger_index: 'validated'
+      });
+
+      if (!prepared.result?.account_nfts) {
+        throw new Error("Couldn't get the NFTs");
+      }
+
+      return { account_nfts: prepared.result.account_nfts, marker: prepared.result.marker };
     },
     [client, getCurrentWallet]
   );

@@ -1,12 +1,15 @@
 import { convertHexToString } from 'xrpl';
 
 import { AccountNFToken, NFTData } from '@gemwallet/constants';
+import { IPFSResolverPrefix } from '@gemwallet/constants/src/xrpl/nft.constant';
 
 import { parseJSON } from './NFTViewer';
 
+import { isImageUrl } from '.';
+
 export const resolveNFTImage = async (NFT: AccountNFToken): Promise<NFTData> => {
   const { NFTokenID, URI } = NFT;
-  let URL = URI ? await convertHexToString(String(URI)) : '';
+  let URL = URI ? await convertHexToString(URI) : '';
 
   if (URL.length === 0) {
     return {
@@ -15,15 +18,10 @@ export const resolveNFTImage = async (NFT: AccountNFToken): Promise<NFTData> => 
     };
   }
 
-  URL = URL.replace('ipfs://', 'https://ipfs.io/ipfs/');
+  URL = URL.replace('ipfs://', IPFSResolverPrefix);
 
   // Case 1 - Image URL
-  if (
-    URL.includes('.png') ||
-    URL.includes('.jpg') ||
-    URL.includes('.jpeg') ||
-    URL.includes('.gif')
-  ) {
+  if (isImageUrl(URL)) {
     try {
       // Case 1.1 - The URL is directly an image
       await fetch(URL);
@@ -33,8 +31,8 @@ export const resolveNFTImage = async (NFT: AccountNFToken): Promise<NFTData> => 
       };
     } catch (e) {
       // Case 1.2 - The URL is an IPFS hash
-      if (!URL.startsWith('https://ipfs.io/ipfs/') && !URL.startsWith('http')) {
-        URL = `https://ipfs.io/ipfs/${URL}`;
+      if (!URL.startsWith(IPFSResolverPrefix) && !URL.startsWith('http')) {
+        URL = `${IPFSResolverPrefix}${URL}`;
       }
       try {
         await fetch(URL);
@@ -52,16 +50,16 @@ export const resolveNFTImage = async (NFT: AccountNFToken): Promise<NFTData> => 
       return parseJSON(URL, NFTokenID);
     } catch (e) {}
     // Case 2.2 - The URL is an IPFS hash
-    if (!URL.startsWith('https://ipfs.io/ipfs/') && !URL.startsWith('http')) {
+    if (!URL.startsWith(IPFSResolverPrefix) && !URL.startsWith('http')) {
       try {
-        await fetch(`https://ipfs.io/ipfs/${URL}`);
-        return parseJSON(`https://ipfs.io/ipfs/${URL}`, NFTokenID);
+        await fetch(`${IPFSResolverPrefix}${URL}`);
+        return parseJSON(`${IPFSResolverPrefix}${URL}`, NFTokenID);
       } catch (e) {}
     }
   }
   // Case 3 - Return the raw NFT attributes
   return {
     NFTokenID,
-    description: URL.replace('https://ipfs.io/ipfs/', 'ipfs://')
+    description: URL.replace(IPFSResolverPrefix, 'ipfs://')
   };
 };

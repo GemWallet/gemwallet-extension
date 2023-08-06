@@ -4,6 +4,7 @@ export * from './crypto';
 export * from './format';
 export * from './getLastItemFromArray';
 export * from './hexConverter';
+export * from './image';
 export * from './link';
 export * from './network';
 export * from './numbersToSeed';
