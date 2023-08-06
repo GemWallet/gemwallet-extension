@@ -5,7 +5,7 @@ import {
   formatCurrencyName,
   formatFlags,
   formatFlagsToNumber,
-  formatStringToBeDisplayed,
+  truncateStringOnLongWord,
   formatToken,
   formatTransferFee
 } from './format';
@@ -163,23 +163,23 @@ describe('formatCurrencyName', () => {
   });
 });
 
-describe('formatStringToBeDisplayed', () => {
+describe('truncateStringOnLongWord', () => {
   it('should return the string as it is if its length is lower than or equal to the given length', () => {
-    expect(formatStringToBeDisplayed('Test string', 11)).toEqual('Test string');
-    expect(formatStringToBeDisplayed('Test string', 12)).toEqual('Test string');
+    expect(truncateStringOnLongWord('Test string', 11)).toEqual('Test string');
+    expect(truncateStringOnLongWord('Test string', 12)).toEqual('Test string');
   });
 
   it('should return the string truncated with "..." at the end if there is no space within the given length', () => {
-    expect(formatStringToBeDisplayed('Teststring', 8)).toEqual('Teststri...');
+    expect(truncateStringOnLongWord('Teststring', 8)).toEqual('Teststri...');
   });
 
   it('should return the string truncated with "..." at the end if there is a word with a length bigger than the given length', () => {
     expect(
-      formatStringToBeDisplayed('This is a supercalifragilisticexpialidocious test', 15)
+      truncateStringOnLongWord('This is a supercalifragilisticexpialidocious test', 15)
     ).toEqual('This is a super...');
   });
 
   it('should return the string raw if there is a space within the given length and no words longer than the length', () => {
-    expect(formatStringToBeDisplayed('This is a test', 10)).toEqual('This is a test');
+    expect(truncateStringOnLongWord('This is a test', 10)).toEqual('This is a test');
   });
 });

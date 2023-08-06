@@ -10,7 +10,7 @@ import { convertHexToString } from 'xrpl';
 import { AccountNFToken, NFTData } from '@gemwallet/constants';
 
 import { useLedger } from '../../../contexts';
-import { formatStringToBeDisplayed } from '../../../utils';
+import { truncateStringOnLongWord } from '../../../utils';
 import { GemWallet } from '../../atoms';
 import { NFTDetails } from '../../organisms';
 
@@ -120,7 +120,7 @@ export const NFTCard: FC<NFTCardProps> = ({ NFT }) => {
                 }}
                 onClick={() => handleTokenIdClick(NFTData.NFTokenID)}
               >
-                {formatStringToBeDisplayed(NFTData.NFTokenID, MAX_STRING_LENGTH)}
+                {truncateStringOnLongWord(NFTData.NFTokenID, MAX_STRING_LENGTH)}
               </div>
             </Tooltip>
           ) : null}
@@ -129,12 +129,12 @@ export const NFTCard: FC<NFTCardProps> = ({ NFT }) => {
               style={{ fontSize: '16px', color: 'white', marginTop: '10px' }}
               data-testid="nft_name"
             >
-              {formatStringToBeDisplayed(NFTData.name, MAX_STRING_LENGTH)}
+              {truncateStringOnLongWord(NFTData.name, MAX_STRING_LENGTH)}
             </div>
           ) : null}
           {NFTData?.description ? (
             <div style={{ fontSize: '14px', color: 'grey', marginTop: '10px' }}>
-              {formatStringToBeDisplayed(NFTData.description, MAX_STRING_LENGTH)}
+              {truncateStringOnLongWord(NFTData.description, MAX_STRING_LENGTH)}
             </div>
           ) : null}
           <Button
