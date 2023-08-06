@@ -29,6 +29,7 @@ interface ContextType {
   // Returns null if client couldn't connect
   client?: Client | null;
   networkName: Network | string;
+  isConnectionFailed: boolean;
 }
 
 const NetworkContext = createContext<ContextType>({
@@ -37,7 +38,8 @@ const NetworkContext = createContext<ContextType>({
   resetNetwork: () => {},
   registerCustomNetwork: () => {},
   client: undefined,
-  networkName: DEFAULT_NETWORK_NAME
+  networkName: DEFAULT_NETWORK_NAME,
+  isConnectionFailed: false
 });
 
 const NetworkProvider: FC = ({ children }) => {
@@ -179,7 +181,8 @@ const NetworkProvider: FC = ({ children }) => {
     resetNetwork,
     registerCustomNetwork,
     client,
-    networkName
+    networkName,
+    isConnectionFailed
   };
 
   return (
