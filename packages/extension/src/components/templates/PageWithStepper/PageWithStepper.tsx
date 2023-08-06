@@ -10,9 +10,9 @@ import { useKeyUp } from '../../../hooks';
 export interface PageWithStepperProps {
   steps: number;
   activeStep: number;
-  buttonText: string;
+  buttonText?: string;
   handleBack: () => void;
-  handleNext: () => void;
+  handleNext?: () => void;
   disabledNext?: boolean;
 }
 
@@ -29,7 +29,7 @@ export const PageWithStepper: FC<PageWithStepperProps> = ({
   const { isConnectionFailed } = useNetwork();
 
   //Handle Next step button by pressing 'Enter'
-  useKeyUp('Enter', handleNext);
+  useKeyUp('Enter', handleNext ? handleNext : () => {});
 
   const handleBackButton = () => {
     if (activeStep === 0) {
@@ -83,11 +83,13 @@ export const PageWithStepper: FC<PageWithStepperProps> = ({
         >
           {children}
         </Container>
-        <Container style={{ display: 'flex', flexDirection: 'column', marginTop: '24px' }}>
-          <Button variant="contained" onClick={() => handleNext()} disabled={disabledNext}>
-            {buttonText}
-          </Button>
-        </Container>
+        {buttonText && handleNext ? (
+          <Container style={{ display: 'flex', flexDirection: 'column', marginTop: '24px' }}>
+            <Button variant="contained" onClick={() => handleNext()} disabled={disabledNext}>
+              {buttonText}
+            </Button>
+          </Container>
+        ) : null}
       </Container>
     </div>
   );
