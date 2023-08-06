@@ -43,7 +43,7 @@ const NetworkContext = createContext<ContextType>({
 });
 
 const NetworkProvider: FC = ({ children }) => {
-  const [client, setClient] = useState<Client | null>(null);
+  const [client, setClient] = useState<Client | null | undefined>(undefined);
   const [networkName, setNetworkName] = useState<Network | string>(DEFAULT_NETWORK_NAME);
   const [isConnectionFailed, setIsConnectionFailed] = useState(false);
 
