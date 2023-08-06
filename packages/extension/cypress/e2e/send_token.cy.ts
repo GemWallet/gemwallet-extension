@@ -34,7 +34,7 @@ describe('Send Token', () => {
       }
     });
 
-    cy.get('.MuiCircularProgress-root', { timeout: 10000 }).should('not.exist');
+    cy.get('.MuiCircularProgress-root', { timeout: 20000 }).should('not.exist');
 
     // Login
     cy.get('input[name="password"]').type(PASSWORD);

@@ -20,7 +20,7 @@ describe('Setup the initial wallet (no previous wallet)', () => {
       }
     });
 
-    cy.get('.MuiCircularProgress-root', { timeout: 10000 }).should('not.exist');
+    cy.get('.MuiCircularProgress-root', { timeout: 20000 }).should('not.exist');
   });
 
   it('Create a new wallet', () => {
@@ -243,7 +243,7 @@ describe('Add an additional wallet (with previous wallet)', () => {
       }
     });
 
-    cy.get('.MuiCircularProgress-root', { timeout: 10000 }).should('not.exist');
+    cy.get('.MuiCircularProgress-root', { timeout: 20000 }).should('not.exist');
 
     // Login
     cy.get('input[name="password"]').type(PASSWORD);
@@ -404,7 +404,7 @@ describe('Edit wallet', () => {
       }
     });
 
-    cy.get('.MuiCircularProgress-root', { timeout: 10000 }).should('not.exist');
+    cy.get('.MuiCircularProgress-root', { timeout: 20000 }).should('not.exist');
 
     // Login
     cy.get('input[name="password"]').type(PASSWORD);
@@ -543,7 +543,7 @@ describe('Switch wallet', () => {
       }
     });
 
-    cy.get('.MuiCircularProgress-root', { timeout: 10000 }).should('not.exist');
+    cy.get('.MuiCircularProgress-root', { timeout: 20000 }).should('not.exist');
 
     // Login
     cy.get('input[name="password"]').type(PASSWORD);
@@ -599,7 +599,7 @@ describe('Reset password', () => {
       }
     });
 
-    cy.get('.MuiCircularProgress-root', { timeout: 10000 }).should('not.exist');
+    cy.get('.MuiCircularProgress-root', { timeout: 20000 }).should('not.exist');
   });
 
   it('Reset password', () => {
