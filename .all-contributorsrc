@@ -129,6 +129,15 @@
       "contributions": [
         "security"
       ]
+    },
+    {
+      "login": "mworks-proj",
+      "name": "meister",
+      "avatar_url": "https://avatars.githubusercontent.com/u/78353166?v=4",
+      "profile": "https://github.com/mworks-proj",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
