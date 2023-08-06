@@ -13,7 +13,3 @@ export const loadFromChromeStorage = (key: string) => {
     return chrome.storage.local.get(key);
   }
 };
-
-export const generateKey = () => {
-  return (Date.now() + Math.random()).toString();
-};
