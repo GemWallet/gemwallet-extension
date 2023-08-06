@@ -1,5 +1,3 @@
-export const ANNOUNCEMENT_LINK =
-  'https://gemwallet.app/blog/announcing-gemwallet-online-payments-on-the-xrpl';
 export const DISCORD_LINK = 'https://discord.gg/CnkP9KGHBe';
 export const DOCUMENTATION_LINK = 'https://gemwallet.app/docs/user-guide/introduction';
 export const FAQ_LINK = 'https://gemwallet.app/faq';
