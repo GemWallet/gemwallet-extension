@@ -41,6 +41,9 @@ const NetworkProvider: FC = ({ children }) => {
   const [network, setNetwork] = useState<Network | string>();
 
   useEffect(() => {
+    let retryCount = 0;
+    const maxRetries = 3;
+
     const connectToNetwork = async () => {
       const network = loadNetwork();
       const ws = new Client(network.server);
@@ -52,6 +55,12 @@ const NetworkProvider: FC = ({ children }) => {
         await ws?.disconnect();
         setClient(null);
         Sentry.captureException(err);
+
+        // If connect fails, retry up to maxRetries times
+        if (retryCount < maxRetries) {
+          retryCount += 1;
+          setTimeout(connectToNetwork, 1000);
+        }
       }
     };
 

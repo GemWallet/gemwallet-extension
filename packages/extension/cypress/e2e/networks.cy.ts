@@ -33,6 +33,8 @@ describe('Switch networks', () => {
       }
     });
 
+    cy.get('.MuiCircularProgress-root', { timeout: 20000 }).should('not.exist');
+
     // Login
     cy.get('input[name="password"]').type(PASSWORD);
     cy.contains('button', 'Unlock').click();

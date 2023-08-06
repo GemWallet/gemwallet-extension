@@ -19,6 +19,8 @@ describe('Setup the initial wallet (no previous wallet)', () => {
         cy.stub((win as any).chrome.runtime, 'sendMessage').resolves({});
       }
     });
+
+    cy.get('.MuiCircularProgress-root', { timeout: 20000 }).should('not.exist');
   });
 
   it('Create a new wallet', () => {
@@ -241,6 +243,8 @@ describe('Add an additional wallet (with previous wallet)', () => {
       }
     });
 
+    cy.get('.MuiCircularProgress-root', { timeout: 20000 }).should('not.exist');
+
     // Login
     cy.get('input[name="password"]').type(PASSWORD);
     cy.contains('button', 'Unlock').click();
@@ -400,6 +404,8 @@ describe('Edit wallet', () => {
       }
     });
 
+    cy.get('.MuiCircularProgress-root', { timeout: 20000 }).should('not.exist');
+
     // Login
     cy.get('input[name="password"]').type(PASSWORD);
     cy.contains('button', 'Unlock').click();
@@ -537,6 +543,8 @@ describe('Switch wallet', () => {
       }
     });
 
+    cy.get('.MuiCircularProgress-root', { timeout: 20000 }).should('not.exist');
+
     // Login
     cy.get('input[name="password"]').type(PASSWORD);
     cy.contains('button', 'Unlock').click();
@@ -590,6 +598,8 @@ describe('Reset password', () => {
         cy.stub((win as any).chrome.runtime, 'sendMessage').resolves({});
       }
     });
+
+    cy.get('.MuiCircularProgress-root', { timeout: 20000 }).should('not.exist');
   });
 
   it('Reset password', () => {
