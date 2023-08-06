@@ -34,6 +34,15 @@ describe('Make payment - XRP', () => {
             sendMessage(message, cb) {}
           };
 
+          (win as any).chrome.storage = {
+            local: {
+              get(key, cb) {},
+              set(obj, cb) {
+                if (cb) cb();
+              }
+            }
+          };
+
           cy.stub((win as any).chrome.runtime, 'sendMessage').resolves({});
         }
       }
@@ -127,6 +136,15 @@ describe('Make payment - ETH', () => {
             sendMessage(message, cb) {}
           };
 
+          (win as any).chrome.storage = {
+            local: {
+              get(key, cb) {},
+              set(obj, cb) {
+                if (cb) cb();
+              }
+            }
+          };
+
           cy.stub((win as any).chrome.runtime, 'sendMessage').resolves({});
         }
       }
@@ -218,6 +236,15 @@ describe('Make payment - SOLO', () => {
           (win as any).chrome.runtime = {
             sendMessage(message, cb) {}
           };
+
+          (win as any).chrome.storage = {
+            local: {
+              get(key, cb) {},
+              set(obj, cb) {
+                if (cb) cb();
+              }
+            }
+          };
         }
       }
     );
@@ -255,6 +282,15 @@ describe('Make payment - SOLO', () => {
           (win as any).chrome = (win as any).chrome || {};
           (win as any).chrome.runtime = {
             sendMessage(message, cb) {}
+          };
+
+          (win as any).chrome.storage = {
+            local: {
+              get(key, cb) {},
+              set(obj, cb) {
+                if (cb) cb();
+              }
+            }
           };
         }
       }

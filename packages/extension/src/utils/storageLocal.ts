@@ -1,3 +1,7 @@
+/*
+ * Manages localStorage data
+ */
+
 export const saveData = (key: string, value: string) => {
   try {
     localStorage.setItem(key, value);

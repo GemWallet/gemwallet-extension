@@ -4,3 +4,4 @@ export const STORAGE_SEED = 'seed';
 export const STORAGE_TRUSTED_APPS = 'trustedApps';
 export const STORAGE_WALLETS = 'wallets';
 export const STORAGE_SELECTED_WALLET = 'selectedWallet';
+export const STORAGE_REMEMBER_SESSION = 'rememberSession';

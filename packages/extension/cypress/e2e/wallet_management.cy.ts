@@ -16,6 +16,15 @@ describe('Setup the initial wallet (no previous wallet)', () => {
           sendMessage(message, cb) {}
         };
 
+        (win as any).chrome.storage = {
+          local: {
+            get(key, cb) {},
+            set(obj, cb) {
+              if (cb) cb();
+            }
+          }
+        };
+
         cy.stub((win as any).chrome.runtime, 'sendMessage').resolves({});
       }
     });
@@ -239,6 +248,15 @@ describe('Add an additional wallet (with previous wallet)', () => {
           sendMessage(message, cb) {}
         };
 
+        (win as any).chrome.storage = {
+          local: {
+            get(key, cb) {},
+            set(obj, cb) {
+              if (cb) cb();
+            }
+          }
+        };
+
         cy.stub((win as any).chrome.runtime, 'sendMessage').resolves({});
       }
     });
@@ -400,6 +418,15 @@ describe('Edit wallet', () => {
           sendMessage(message, cb) {}
         };
 
+        (win as any).chrome.storage = {
+          local: {
+            get(key, cb) {},
+            set(obj, cb) {
+              if (cb) cb();
+            }
+          }
+        };
+
         cy.stub((win as any).chrome.runtime, 'sendMessage').resolves({});
       }
     });
@@ -539,6 +566,15 @@ describe('Switch wallet', () => {
           sendMessage(message, cb) {}
         };
 
+        (win as any).chrome.storage = {
+          local: {
+            get(key, cb) {},
+            set(obj, cb) {
+              if (cb) cb();
+            }
+          }
+        };
+
         cy.stub((win as any).chrome.runtime, 'sendMessage').resolves({});
       }
     });
@@ -593,6 +629,15 @@ describe('Reset password', () => {
         (win as any).chrome = (win as any).chrome || {};
         (win as any).chrome.runtime = {
           sendMessage(message, cb) {}
+        };
+
+        (win as any).chrome.storage = {
+          local: {
+            get(key, cb) {},
+            set(obj, cb) {
+              if (cb) cb();
+            }
+          }
         };
 
         cy.stub((win as any).chrome.runtime, 'sendMessage').resolves({});

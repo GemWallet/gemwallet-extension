@@ -331,6 +331,15 @@ describe('Mint', () => {
           sendMessage(message, cb) {}
         };
 
+        (win as any).chrome.storage = {
+          local: {
+            get(key, cb) {},
+            set(obj, cb) {
+              if (cb) cb();
+            }
+          }
+        };
+
         cy.stub((win as any).chrome.runtime, 'sendMessage').resolves({});
       }
     });

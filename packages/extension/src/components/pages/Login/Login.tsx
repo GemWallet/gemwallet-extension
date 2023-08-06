@@ -1,4 +1,4 @@
-import { useState, useEffect, FC, useCallback, useRef } from 'react';
+import { useState, useEffect, FC, useCallback, useRef, ChangeEvent } from 'react';
 
 import {
   Button,
@@ -52,6 +52,7 @@ import {
 import { useWallet } from '../../../contexts';
 import { useKeyUp } from '../../../hooks/useKeyUp';
 import { loadData } from '../../../utils';
+import { loadRememberSessionState, saveRememberSessionState } from '../../../utils/login';
 import { Logo } from '../../atoms/Logo';
 
 export const Login: FC = () => {
@@ -108,9 +109,18 @@ export const Login: FC = () => {
     }
   }, [navigate, navigateToPath, search, selectedWallet, wallets]);
 
+  useEffect(() => {
+    const loadRememberSession = async () => {
+      const loadedState = await loadRememberSessionState();
+      setRememberSession(loadedState);
+    };
+    loadRememberSession();
+  }, []);
+
   const handleUnlock = useCallback(() => {
     const passwordValue = passwordRef.current?.value;
     if (passwordValue && signIn(passwordValue, rememberSession)) {
+      saveRememberSessionState(rememberSession);
       navigateToPath();
 
       if (process.env.NODE_ENV === 'production') {
@@ -145,6 +155,11 @@ export const Login: FC = () => {
   const handleReset = useCallback(() => {
     navigate(RESET_PASSWORD_PATH);
   }, [navigate]);
+
+  const handleRememberSessionChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const checked = e.target.checked;
+    setRememberSession(checked);
+  };
 
   return (
     <Container
@@ -191,7 +206,7 @@ export const Login: FC = () => {
           control={
             <Checkbox
               checked={rememberSession}
-              onChange={(e) => setRememberSession(e.target.checked)}
+              onChange={handleRememberSessionChange}
               name="rememberSession"
               color="primary"
               style={{ transform: 'scale(0.9)' }}

@@ -1,7 +1,7 @@
 import { NETWORK, Network } from '@gemwallet/constants';
 import { NetworkData } from '@gemwallet/constants/src/network/network.types';
 
-import { STORAGE_CUSTOM_NETWORKS, STORAGE_NETWORK } from '../constants/localStorage';
+import { STORAGE_CUSTOM_NETWORKS, STORAGE_NETWORK } from '../constants/storage';
 
 import { loadData, removeData, saveData } from '.';
 
