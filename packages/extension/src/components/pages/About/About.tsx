@@ -67,9 +67,9 @@ export const About: FC = () => {
         </Typography>
       </div>
       <Typography style={{ marginTop: '0.25rem' }}>
-        GemWallet is a non-custodial wallet extension that allows you to make online payments with
-        one click on the XRPL. Our vision is oriented toward payments, micro-payments and payment
-        streaming.
+        GemWallet takes you into the world of the XRP Ledger. As a fully decentralized,
+        browser-based extension, GemWallet ensures fast transactions and seamless interaction with
+        Web3 applications.
       </Typography>
       <div style={{ marginTop: '1rem' }}>
         <Typography variant="subtitle2">Links</Typography>
