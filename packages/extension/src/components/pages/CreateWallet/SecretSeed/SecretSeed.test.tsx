@@ -6,6 +6,7 @@ import { SecretSeed, SecretSeedProps } from './SecretSeed';
 const defaultProps: SecretSeedProps = {
   activeStep: 0,
   steps: 4,
+  seed: 'fdjlfkhfhdksj',
   handleBack: jest.fn(),
   setActiveStep: jest.fn()
 };
@@ -16,6 +17,9 @@ jest.mock('react-router-dom', () => ({
 
 const mockWalletContext = generateWalletContext();
 jest.mock('../../../../contexts', () => ({
+  useNetwork: () => ({
+    isConnectionFailed: false
+  }),
   useWallet: () => mockWalletContext
 }));
 

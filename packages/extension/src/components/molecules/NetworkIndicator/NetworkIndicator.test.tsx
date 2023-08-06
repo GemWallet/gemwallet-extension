@@ -15,8 +15,9 @@ describe('NetworkIndicator', () => {
   test('renders the correct network name chip', () => {
     mockUseNetwork.mockReturnValue({
       client: undefined,
-      network: 'testnet',
-      switchNetwork: jest.fn()
+      networkName: 'testnet',
+      switchNetwork: jest.fn(),
+      isConnectionFailed: false
     });
 
     render(<NetworkIndicator />);
@@ -27,20 +28,22 @@ describe('NetworkIndicator', () => {
   test('renders the switch network name chip', () => {
     mockUseNetwork.mockReturnValue({
       client: undefined,
-      network: undefined,
-      switchNetwork: jest.fn()
+      networkName: 'Loading...',
+      switchNetwork: jest.fn(),
+      isConnectionFailed: false
     });
 
     render(<NetworkIndicator />);
 
-    expect(screen.getByText('Switch network')).toBeInTheDocument();
+    expect(screen.getByText('Loading...')).toBeInTheDocument();
   });
 
   test('renders the correct green color chip', () => {
     mockUseNetwork.mockReturnValue({
       client: jest.fn(),
-      network: 'testnet',
-      switchNetwork: jest.fn()
+      networkName: 'testnet',
+      switchNetwork: jest.fn(),
+      isConnectionFailed: false
     });
 
     render(<NetworkIndicator />);
@@ -51,8 +54,9 @@ describe('NetworkIndicator', () => {
   test('renders the correct red color chip', () => {
     mockUseNetwork.mockReturnValue({
       client: undefined,
-      network: 'testnet',
-      switchNetwork: jest.fn()
+      networkName: 'testnet',
+      switchNetwork: jest.fn(),
+      isConnectionFailed: false
     });
 
     render(<NetworkIndicator />);
@@ -63,8 +67,9 @@ describe('NetworkIndicator', () => {
   test('opens the dialog on chip click', async () => {
     mockUseNetwork.mockReturnValue({
       client: undefined,
-      network: 'testnet',
-      switchNetwork: jest.fn()
+      networkName: 'testnet',
+      switchNetwork: jest.fn(),
+      isConnectionFailed: false
     });
 
     render(<NetworkIndicator />);
@@ -77,8 +82,9 @@ describe('NetworkIndicator', () => {
   test('closes the dialog on close button click', async () => {
     mockUseNetwork.mockReturnValue({
       client: undefined,
-      network: 'testnet',
-      switchNetwork: jest.fn()
+      networkName: 'testnet',
+      switchNetwork: jest.fn(),
+      isConnectionFailed: false
     });
 
     render(<NetworkIndicator />);

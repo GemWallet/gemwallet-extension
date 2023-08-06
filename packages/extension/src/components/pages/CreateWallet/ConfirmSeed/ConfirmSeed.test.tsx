@@ -21,6 +21,9 @@ jest.mock('react-router-dom', () => ({
 
 const mockWalletContext = generateWalletContext();
 jest.mock('../../../../contexts', () => ({
+  useNetwork: () => ({
+    isConnectionFailed: false
+  }),
   useWallet: () => mockWalletContext
 }));
 
