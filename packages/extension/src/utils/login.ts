@@ -1,3 +1,5 @@
+import * as Sentry from '@sentry/react';
+
 import { STORAGE_REMEMBER_SESSION } from '../constants';
 import { loadFromChromeStorage, saveInChromeStorage } from './storageChrome';
 
@@ -10,6 +12,7 @@ export const loadRememberSessionState = async (): Promise<boolean> => {
     const storedState = await loadFromChromeStorage(STORAGE_REMEMBER_SESSION);
     return storedState ? JSON.parse(storedState[STORAGE_REMEMBER_SESSION]) === true : false;
   } catch (e) {
+    Sentry.captureException(e);
     return false;
   }
 };
