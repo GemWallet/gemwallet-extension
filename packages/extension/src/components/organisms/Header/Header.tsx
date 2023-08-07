@@ -1,4 +1,5 @@
-import { FC, useCallback, useMemo, useState } from 'react';
+import React from 'react';
+import { FC, useCallback, useState } from 'react';
 
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import DoneIcon from '@mui/icons-material/Done';
@@ -6,17 +7,19 @@ import OutboundIcon from '@mui/icons-material/Outbound';
 import { AppBar, Box, Button, IconButton, Toolbar, Tooltip, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import copyToClipboard from 'copy-to-clipboard';
+import { Link } from 'react-router-dom'; // Import the Link component for navigation
 import { useNavigate } from 'react-router-dom';
 
 import {
   HEADER_HEIGHT_WITHOUT_PADDING,
   LIST_WALLETS_PATH,
   SECONDARY_GRAY,
-  SEND_PATH
+  SEND_PATH,
+  RECEIVE_PATH // Import the receive path
 } from '../../../constants';
 import { useTimeout } from '../../../hooks';
 import { WalletLedger } from '../../../types';
-import { truncateAddress, truncateWalletName } from '../../../utils';
+import { truncateWalletName } from '../../../utils';
 import { WalletIcon } from '../../atoms';
 import { NetworkIndicator } from '../../molecules';
 
@@ -40,8 +43,6 @@ export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => 
 
   const [isCopied, setIsCopied] = useState(false);
 
-  const truncatedAddress = useMemo(() => truncateAddress(publicAddress), [publicAddress]);
-
   const handleShare = useCallback(() => {
     copyToClipboard(publicAddress);
     setIsCopied(true);
@@ -55,6 +56,12 @@ export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => 
   const onWalletIconClick = useCallback(() => {
     navigate(LIST_WALLETS_PATH);
   }, [navigate]);
+
+  const abbreviateAddress = (address: string, maxLength = 8) => {
+    if (address.length <= maxLength) return address;
+    const halfLength = Math.floor(maxLength / 2);
+    return address.slice(0, halfLength) + '...' + address.slice(-halfLength);
+  };
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -82,7 +89,7 @@ export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => 
               </Typography>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Typography variant="body2" style={{ margin: '3px 0', color: SECONDARY_GRAY }}>
-                  {truncatedAddress}
+                  {abbreviateAddress(publicAddress)}
                 </Typography>
                 <Tooltip title="Copy your address">
                   <IconButton
@@ -121,6 +128,28 @@ export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => 
                 Send
               </Typography>
             </Button>
+            {/* Instead of showing the QR code here, navigate to the /receive route */}
+            <Link to={RECEIVE_PATH} style={{ textDecoration: 'none' }}>
+              <Button
+                aria-label="receive"
+                size="small"
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center'
+                }}
+              >
+                <OutboundIcon
+                  style={{
+                    transform: 'rotate(135deg)',
+                    color: 'white'
+                  }}
+                />
+                <Typography color="white" variant="caption">
+                  Receive
+                </Typography>
+              </Button>
+            </Link>
           </div>
         </StyledToolbar>
       </AppBar>

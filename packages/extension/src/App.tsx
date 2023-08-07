@@ -41,6 +41,7 @@ import {
   ListWallets,
   Login,
   MintNFT,
+  ReceivePayment,
   ResetPassword,
   SendPayment,
   SetAccount,
@@ -93,6 +94,7 @@ import {
   PARAMETER_TRANSACTION_TRUSTLINE,
   RESET_PASSWORD_PATH,
   SEND_PATH,
+  RECEIVE_PATH,
   SET_ACCOUNT_PATH,
   SETTINGS_PATH,
   SHARE_NFT_PATH,
@@ -499,6 +501,14 @@ const App: FC = () => {
           element={
             <PrivateRoute>
               <SendPayment />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path={RECEIVE_PATH}
+          element={
+            <PrivateRoute>
+              <ReceivePayment />
             </PrivateRoute>
           }
         />
