@@ -201,7 +201,7 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
           Your reserved XRP will not show up within your GemWallet's balance as you cannot spend it.
         </div>
 
-        {network === Network.TESTNET && (
+        {(network === Network.TESTNET || network === Network.DEVNET) && (
           <div style={{ margin: '15px 0px', textAlign: 'center' }}>
             <Button variant="contained" onClick={handleFundWallet} data-testid="fund-wallet-button">
               Fund Wallet

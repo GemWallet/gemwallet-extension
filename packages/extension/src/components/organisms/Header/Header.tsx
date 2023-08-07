@@ -12,7 +12,8 @@ import {
   HEADER_HEIGHT_WITHOUT_PADDING,
   LIST_WALLETS_PATH,
   SECONDARY_GRAY,
-  SEND_PATH
+  SEND_PATH,
+  RECEIVE_PATH
 } from '../../../constants';
 import { useTimeout } from '../../../hooks';
 import { WalletLedger } from '../../../types';
@@ -52,6 +53,10 @@ export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => 
     navigate(SEND_PATH);
   }, [navigate]);
 
+  const handleReceive = useCallback(() => {
+    navigate(RECEIVE_PATH);
+  }, [navigate]);
+
   const onWalletIconClick = useCallback(() => {
     navigate(LIST_WALLETS_PATH);
   }, [navigate]);
@@ -75,7 +80,7 @@ export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => 
             />
             <NetworkIndicator />
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
               <Typography variant="body2" style={{ marginTop: '10px' }}>
                 {truncateWalletName(name, 22)}
@@ -101,26 +106,48 @@ export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => 
                 </Tooltip>
               </div>
             </div>
-            <Button
-              aria-label="send"
-              size="small"
-              onClick={handleSend}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center'
-              }}
-            >
-              <OutboundIcon
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <Button
+                aria-label="send"
+                size="small"
+                onClick={handleSend}
                 style={{
-                  transform: 'rotate(-45deg)',
-                  color: 'white'
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center'
                 }}
-              />
-              <Typography color="white" variant="caption">
-                Send
-              </Typography>
-            </Button>
+              >
+                <OutboundIcon
+                  style={{
+                    transform: 'rotate(-45deg)',
+                    color: 'white'
+                  }}
+                />
+                <Typography color="white" variant="caption">
+                  Send
+                </Typography>
+              </Button>
+              <Button
+                aria-label="receive"
+                size="small"
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center'
+                }}
+                onClick={handleReceive}
+              >
+                <OutboundIcon
+                  style={{
+                    transform: 'rotate(135deg)',
+                    color: 'white'
+                  }}
+                />
+                <Typography color="white" variant="caption">
+                  Receive
+                </Typography>
+              </Button>
+            </div>
           </div>
         </StyledToolbar>
       </AppBar>
