@@ -1,6 +1,7 @@
 import { TrustSet, xrpToDrops } from 'xrpl';
 
 import {
+  abbreviateAddress,
   formatAmount,
   formatCurrencyName,
   formatFlags,
@@ -159,5 +160,43 @@ describe('formatCurrencyName', () => {
     const formattedCurrency = formatCurrencyName(currency);
 
     expect(formattedCurrency).toEqual('ETH');
+  });
+});
+
+describe('abbreviateAddress', () => {
+  it('should return the full address if its length is less than or equal to the max length', () => {
+    const address = 'abcd';
+    const result = abbreviateAddress(address);
+    expect(result).toBe('abcd');
+  });
+
+  it('should abbreviate address correctly if it is longer than the default max length', () => {
+    const address = 'abcdefghijklmnop';
+    const result = abbreviateAddress(address);
+    expect(result).toBe('abcd...mnop');
+  });
+
+  it('should abbreviate address correctly if it is longer than the specified max length', () => {
+    const address = 'abcdefghijklmno';
+    const result = abbreviateAddress(address, 6);
+    expect(result).toBe('abc...mno');
+  });
+
+  it('should return the full address if its length is equal to the max length', () => {
+    const address = 'abcdefgh';
+    const result = abbreviateAddress(address);
+    expect(result).toBe('abcdefgh');
+  });
+
+  it('should handle max lengths that are odd', () => {
+    const address = 'abcdefghijklmno';
+    const result = abbreviateAddress(address, 7);
+    expect(result).toBe('abc...mno');
+  });
+
+  it('should return an address with ellipsis in the middle if it is just one character longer than max length', () => {
+    const address = 'abcdefghi';
+    const result = abbreviateAddress(address);
+    expect(result).toBe('abcd...fghi');
   });
 });

@@ -19,7 +19,7 @@ import {
 } from '../../../constants';
 import { useTimeout } from '../../../hooks';
 import { WalletLedger } from '../../../types';
-import { truncateWalletName } from '../../../utils';
+import { abbreviateAddress, truncateWalletName } from '../../../utils';
 import { WalletIcon } from '../../atoms';
 import { NetworkIndicator } from '../../molecules';
 
@@ -56,12 +56,6 @@ export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => 
   const onWalletIconClick = useCallback(() => {
     navigate(LIST_WALLETS_PATH);
   }, [navigate]);
-
-  const abbreviateAddress = (address: string, maxLength = 8) => {
-    if (address.length <= maxLength) return address;
-    const halfLength = Math.floor(maxLength / 2);
-    return address.slice(0, halfLength) + '...' + address.slice(-halfLength);
-  };
 
   return (
     <Box sx={{ flexGrow: 1 }}>

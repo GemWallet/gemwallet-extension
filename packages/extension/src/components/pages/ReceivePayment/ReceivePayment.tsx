@@ -8,6 +8,7 @@ import QRCode from 'qrcode.react';
 
 import { HEADER_HEIGHT, NAV_MENU_HEIGHT } from '../../../constants';
 import { useWallet } from '../../../contexts';
+import { abbreviateAddress } from '../../../utils';
 import { Header, NavMenu } from '../../organisms';
 
 const MARGIN_TOP_CONTAINER = 20;
@@ -40,12 +41,6 @@ export const ReceivePayment: FC<ReceivePaymentProps> = ({ children, title }) => 
       if (timeoutId) clearTimeout(timeoutId);
     };
   }, [timeoutId]);
-
-  const abbreviateAddress = (address: string, maxLength = 8) => {
-    if (address.length <= maxLength) return address;
-    const halfLength = Math.floor(maxLength / 2);
-    return address.slice(0, halfLength) + '...' + address.slice(-halfLength);
-  };
 
   if (!wallets?.[selectedWallet]) {
     return null;
