@@ -93,9 +93,3 @@ export const formatFlagsToNumber = (tx: Transaction) => {
 export const formatTransferFee = (fee: number) => {
   return fee / 1000;
 };
-
-export const abbreviateAddress = (address: string, maxLength = 8) => {
-  if (address.length <= maxLength) return address;
-  const halfLength = Math.floor(maxLength / 2);
-  return address.slice(0, halfLength) + '...' + address.slice(-halfLength);
-};

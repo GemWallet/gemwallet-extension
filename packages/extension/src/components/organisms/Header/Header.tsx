@@ -1,5 +1,4 @@
-import React from 'react';
-import { FC, useCallback, useState } from 'react';
+import { FC, useCallback, useMemo, useState } from 'react';
 
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import DoneIcon from '@mui/icons-material/Done';
@@ -7,7 +6,6 @@ import OutboundIcon from '@mui/icons-material/Outbound';
 import { AppBar, Box, Button, IconButton, Toolbar, Tooltip, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import copyToClipboard from 'copy-to-clipboard';
-import { Link } from 'react-router-dom'; // Import the Link component for navigation
 import { useNavigate } from 'react-router-dom';
 
 import {
@@ -15,11 +13,11 @@ import {
   LIST_WALLETS_PATH,
   SECONDARY_GRAY,
   SEND_PATH,
-  RECEIVE_PATH // Import the receive path
+  RECEIVE_PATH
 } from '../../../constants';
 import { useTimeout } from '../../../hooks';
 import { WalletLedger } from '../../../types';
-import { abbreviateAddress, truncateWalletName } from '../../../utils';
+import { truncateAddress, truncateWalletName } from '../../../utils';
 import { WalletIcon } from '../../atoms';
 import { NetworkIndicator } from '../../molecules';
 
@@ -43,6 +41,8 @@ export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => 
 
   const [isCopied, setIsCopied] = useState(false);
 
+  const truncatedAddress = useMemo(() => truncateAddress(publicAddress), [publicAddress]);
+
   const handleShare = useCallback(() => {
     copyToClipboard(publicAddress);
     setIsCopied(true);
@@ -51,6 +51,10 @@ export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => 
 
   const handleSend = useCallback(() => {
     navigate(SEND_PATH);
+  }, [navigate]);
+
+  const handleReceive = useCallback(() => {
+    navigate(RECEIVE_PATH);
   }, [navigate]);
 
   const onWalletIconClick = useCallback(() => {
@@ -76,21 +80,14 @@ export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => 
             />
             <NetworkIndicator />
           </div>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              width: '100%'
-            }}
-          >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
               <Typography variant="body2" style={{ marginTop: '10px' }}>
                 {truncateWalletName(name, 22)}
               </Typography>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Typography variant="body2" style={{ margin: '3px 0', color: SECONDARY_GRAY }}>
-                  {abbreviateAddress(publicAddress)}
+                  {truncatedAddress}
                 </Typography>
                 <Tooltip title="Copy your address">
                   <IconButton
@@ -117,8 +114,7 @@ export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => 
                 style={{
                   display: 'flex',
                   flexDirection: 'column',
-                  alignItems: 'center',
-                  marginRight: '10px' // Optionally add some spacing between the two buttons
+                  alignItems: 'center'
                 }}
               >
                 <OutboundIcon
@@ -131,28 +127,26 @@ export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => 
                   Send
                 </Typography>
               </Button>
-              {/* Instead of showing the QR code here, navigate to the /receive route */}
-              <Link to={RECEIVE_PATH} style={{ textDecoration: 'none' }}>
-                <Button
-                  aria-label="receive"
-                  size="small"
+              <Button
+                aria-label="receive"
+                size="small"
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center'
+                }}
+                onClick={handleReceive}
+              >
+                <OutboundIcon
                   style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center'
+                    transform: 'rotate(135deg)',
+                    color: 'white'
                   }}
-                >
-                  <OutboundIcon
-                    style={{
-                      transform: 'rotate(135deg)',
-                      color: 'white'
-                    }}
-                  />
-                  <Typography color="white" variant="caption">
-                    Receive
-                  </Typography>
-                </Button>
-              </Link>
+                />
+                <Typography color="white" variant="caption">
+                  Receive
+                </Typography>
+              </Button>
             </div>
           </div>
         </StyledToolbar>

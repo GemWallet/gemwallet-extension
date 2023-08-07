@@ -6,8 +6,7 @@ import { WalletLedger } from '../../../types';
 import { Header } from './Header';
 
 jest.mock('react-router-dom', () => ({
-  useNavigate: () => jest.fn(),
-  Link: () => 'Mocked Link' // Added this line to mock Link component
+  useNavigate: () => jest.fn()
 }));
 
 jest.mock('../../atoms', () => ({ WalletIcon: () => 'Mocked Wallet Icon' }));
