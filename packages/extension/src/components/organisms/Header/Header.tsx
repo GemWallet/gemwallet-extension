@@ -76,7 +76,14 @@ export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => 
             />
             <NetworkIndicator />
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              width: '100%'
+            }}
+          >
             <div>
               <Typography variant="body2" style={{ marginTop: '10px' }}>
                 {truncateWalletName(name, 22)}
@@ -102,48 +109,51 @@ export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => 
                 </Tooltip>
               </div>
             </div>
-            <Button
-              aria-label="send"
-              size="small"
-              onClick={handleSend}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center'
-              }}
-            >
-              <OutboundIcon
-                style={{
-                  transform: 'rotate(-45deg)',
-                  color: 'white'
-                }}
-              />
-              <Typography color="white" variant="caption">
-                Send
-              </Typography>
-            </Button>
-            {/* Instead of showing the QR code here, navigate to the /receive route */}
-            <Link to={RECEIVE_PATH} style={{ textDecoration: 'none' }}>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
               <Button
-                aria-label="receive"
+                aria-label="send"
                 size="small"
+                onClick={handleSend}
                 style={{
                   display: 'flex',
                   flexDirection: 'column',
-                  alignItems: 'center'
+                  alignItems: 'center',
+                  marginRight: '10px' // Optionally add some spacing between the two buttons
                 }}
               >
                 <OutboundIcon
                   style={{
-                    transform: 'rotate(135deg)',
+                    transform: 'rotate(-45deg)',
                     color: 'white'
                   }}
                 />
                 <Typography color="white" variant="caption">
-                  Receive
+                  Send
                 </Typography>
               </Button>
-            </Link>
+              {/* Instead of showing the QR code here, navigate to the /receive route */}
+              <Link to={RECEIVE_PATH} style={{ textDecoration: 'none' }}>
+                <Button
+                  aria-label="receive"
+                  size="small"
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center'
+                  }}
+                >
+                  <OutboundIcon
+                    style={{
+                      transform: 'rotate(135deg)',
+                      color: 'white'
+                    }}
+                  />
+                  <Typography color="white" variant="caption">
+                    Receive
+                  </Typography>
+                </Button>
+              </Link>
+            </div>
           </div>
         </StyledToolbar>
       </AppBar>
