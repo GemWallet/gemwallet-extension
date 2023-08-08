@@ -4,14 +4,16 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import QRCode from 'qrcode.react';
+import { useNavigate } from 'react-router-dom';
 
 import { useWallet } from '../../../contexts';
 import { truncateAddress } from '../../../utils';
 import { InformationMessage } from '../../molecules';
-import { PageWithHeader } from '../../templates';
+import { PageWithReturn } from '../../templates';
 
 export const ReceivePayment: FC = () => {
   const { wallets, selectedWallet } = useWallet();
+  const navigate = useNavigate();
 
   const [isCopied, setIsCopied] = useState(false);
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
@@ -46,7 +48,16 @@ export const ReceivePayment: FC = () => {
   }
 
   return (
-    <PageWithHeader>
+    <PageWithReturn
+      title="Receive Payment"
+      onBackClick={() => navigate(-1)}
+      style={{
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-around'
+      }}
+    >
       <div
         style={{
           display: 'flex',
@@ -91,6 +102,6 @@ export const ReceivePayment: FC = () => {
           </div>
         </Tooltip>
       </div>
-    </PageWithHeader>
+    </PageWithReturn>
   );
 };
