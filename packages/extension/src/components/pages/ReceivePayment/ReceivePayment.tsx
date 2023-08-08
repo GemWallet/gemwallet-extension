@@ -1,40 +1,35 @@
-import { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import { FC, useCallback, useMemo, useState } from 'react';
 
-import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
-import Typography from '@mui/material/Typography';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import DoneIcon from '@mui/icons-material/Done';
+import { Tooltip, IconButton, Typography } from '@mui/material';
+import copyToClipboard from 'copy-to-clipboard';
 import QRCode from 'qrcode.react';
+import { useNavigate } from 'react-router-dom';
 
 import { useWallet } from '../../../contexts';
 import { truncateAddress } from '../../../utils';
 import { InformationMessage } from '../../molecules';
-import { PageWithHeader } from '../../templates';
+import { PageWithReturn } from '../../templates';
 
 export const ReceivePayment: FC = () => {
   const { wallets, selectedWallet } = useWallet();
+  const navigate = useNavigate();
 
   const [isCopied, setIsCopied] = useState(false);
-  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
 
   const publicAddress = useMemo(
-    () => wallets[selectedWallet].publicAddress,
+    () => wallets[selectedWallet]?.publicAddress,
     [selectedWallet, wallets]
   );
   const truncatedAddress = useMemo(() => truncateAddress(publicAddress), [publicAddress]);
 
-  useEffect(() => {
-    return () => {
-      if (timeoutId) clearTimeout(timeoutId);
-    };
-  }, [timeoutId]);
-
-  const handleCopy = useCallback(async () => {
-    try {
-      await navigator.clipboard.writeText(publicAddress);
+  const handleCopy = useCallback(() => {
+    if (publicAddress) {
+      copyToClipboard(publicAddress);
       setIsCopied(true);
-      const id = setTimeout(() => setIsCopied(false), 3000);
-      setTimeoutId(id);
-    } catch (err) {}
+      setTimeout(() => setIsCopied(false), 2000); // 2 seconds
+    }
   }, [publicAddress]);
 
   if (!wallets?.[selectedWallet]) {
@@ -46,7 +41,16 @@ export const ReceivePayment: FC = () => {
   }
 
   return (
-    <PageWithHeader>
+    <PageWithReturn
+      title="Receive Payment"
+      onBackClick={() => navigate(-1)}
+      style={{
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-around'
+      }}
+    >
       <div
         style={{
           display: 'flex',
@@ -69,28 +73,28 @@ export const ReceivePayment: FC = () => {
             padding: '8px'
           }}
         />
-        <Typography
-          variant="body1"
-          style={{
-            margin: '10px'
-          }}
-        >
-          {truncatedAddress}
-        </Typography>
-        <Tooltip title={isCopied ? 'Copied!' : 'Click to copy'}>
-          <div
-            style={{
-              alignContent: 'center',
-              justifyContent: 'center',
-              margin: '5px'
-            }}
-          >
-            <Button variant="contained" color="primary" onClick={handleCopy}>
-              {isCopied ? 'Copied!' : 'Copy'}
-            </Button>
-          </div>
-        </Tooltip>
+
+        <div style={{ display: 'flex', alignItems: 'center', margin: '10px 0' }}>
+          <Typography variant="body1" data-testid="receive-payment-address">
+            {truncatedAddress}
+          </Typography>
+          <Tooltip title="Copy your address" data-testid="receive-payment-copy">
+            <IconButton
+              size="small"
+              edge="end"
+              color="inherit"
+              aria-label="Copy"
+              onClick={handleCopy}
+            >
+              {isCopied ? (
+                <DoneIcon sx={{ fontSize: '0.9rem' }} color="success" />
+              ) : (
+                <ContentCopyIcon sx={{ fontSize: '0.9rem' }} />
+              )}
+            </IconButton>
+          </Tooltip>
+        </div>
       </div>
-    </PageWithHeader>
+    </PageWithReturn>
   );
 };
