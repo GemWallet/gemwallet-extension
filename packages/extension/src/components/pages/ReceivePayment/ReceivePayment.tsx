@@ -75,8 +75,10 @@ export const ReceivePayment: FC = () => {
         />
 
         <div style={{ display: 'flex', alignItems: 'center', margin: '10px 0' }}>
-          <Typography variant="body1">{truncatedAddress}</Typography>
-          <Tooltip title="Copy your address">
+          <Typography variant="body1" data-testid="receive-payment-address">
+            {truncatedAddress}
+          </Typography>
+          <Tooltip title="Copy your address" data-testid="receive-payment-copy">
             <IconButton
               size="small"
               edge="end"
