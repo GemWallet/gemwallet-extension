@@ -63,7 +63,7 @@ export const PageWithStepper: FC<PageWithStepperProps> = ({
             Back
           </Button>
         }
-        style={{ backgroundColor: '#282c34', top: isConnectionFailed ? 56 : undefined }}
+        style={{ backgroundColor: '#282c34', ...(isConnectionFailed ? { top: 56 } : {}) }}
       />
       <Container
         component="main"

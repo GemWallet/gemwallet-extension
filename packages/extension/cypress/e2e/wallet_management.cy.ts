@@ -55,28 +55,29 @@ describe('Setup the initial wallet (no previous wallet)', () => {
     cy.contains('button', 'Next').click();
 
     // Get the seed
-    cy.get('p').then(($seedParagraph) => {
-      const seed = $seedParagraph.text();
-      cy.contains('button', 'Next').click();
+    cy.get('[data-testid="secret-seed"]')
+      .invoke('text')
+      .then((seed) => {
+        cy.contains('button', 'Next').click();
 
-      // Confirm the seed
-      cy.contains('button', 'Confirm').click();
-      // Error if the seed is incorrect
-      cy.get('p#seed-helper-text').should('have.text', 'Seed incorrect');
+        // Confirm the seed
+        cy.contains('button', 'Confirm').click();
+        // Error if the seed is incorrect
+        cy.get('p#seed-helper-text').should('have.text', 'Seed incorrect');
 
-      // Make sure that after the copy of the seed, we can create a password
-      cy.get('input[name="seed"]').type(seed);
-      cy.contains('button', 'Confirm').click();
+        // Make sure that after the copy of the seed, we can create a password
+        cy.get('input[name="seed"]').type(seed);
+        cy.contains('button', 'Confirm').click();
 
-      // Redirection to the login page
-      cy.contains("Woo, you're in!").should('be.visible');
-      cy.contains(
-        'Follow along with product updates or reach out if you have any questions.'
-      ).should('be.visible');
-      cy.contains('button', 'Finish').click();
-      cy.contains('GemWallet').should('be.visible');
-      cy.contains('Your gateway to the XRPL').should('be.visible');
-    });
+        // Redirection to the login page
+        cy.contains("Woo, you're in!").should('be.visible');
+        cy.contains(
+          'Follow along with product updates or reach out if you have any questions.'
+        ).should('be.visible');
+        cy.contains('button', 'Finish').click();
+        cy.contains('GemWallet').should('be.visible');
+        cy.contains('Your gateway to the XRPL').should('be.visible');
+      });
   });
 
   it('Import a wallet - Family Seed', () => {
@@ -85,7 +86,6 @@ describe('Setup the initial wallet (no previous wallet)', () => {
 
     // Select import by family seed
     cy.contains('button', 'Family Seed').click();
-    cy.contains('button', 'Next').click();
 
     // Error if the seed is incorrect
     cy.contains('button', 'Next').click();
@@ -129,7 +129,6 @@ describe('Setup the initial wallet (no previous wallet)', () => {
 
     // Select import by mnemonic
     cy.contains('button', 'Mnemonic').click();
-    cy.contains('button', 'Next').click();
 
     // Error if the mnemonic is incorrect
     cy.contains('button', 'Next').click();
@@ -173,7 +172,6 @@ describe('Setup the initial wallet (no previous wallet)', () => {
 
     // Select import by secret numbers
     cy.contains('button', 'Secret numbers').click();
-    cy.contains('button', 'Next').click();
 
     // Errors if the mnemonic is incorrect
     cy.contains('button', 'Next').click();
@@ -281,29 +279,30 @@ describe('Add an additional wallet (with previous wallet)', () => {
     cy.contains('button', 'Create a new wallet').click();
 
     // Get the seed
-    cy.get('p').then(($seedParagraph) => {
-      const seed = $seedParagraph.text();
-      cy.contains('button', 'Next').click();
+    cy.get('[data-testid="secret-seed"]')
+      .invoke('text')
+      .then((seed) => {
+        cy.contains('button', 'Next').click();
 
-      // Confirm the seed
-      cy.contains('button', 'Confirm').click();
-      // Error if the seed is incorrect
-      cy.get('p#seed-helper-text').should('have.text', 'Seed incorrect');
+        // Confirm the seed
+        cy.contains('button', 'Confirm').click();
+        // Error if the seed is incorrect
+        cy.get('p#seed-helper-text').should('have.text', 'Seed incorrect');
 
-      // Make sure that after the copy of the seed, we can create a password
-      cy.get('input[name="seed"]').type(seed);
-      cy.contains('button', 'Confirm').click();
+        // Make sure that after the copy of the seed, we can create a password
+        cy.get('input[name="seed"]').type(seed);
+        cy.contains('button', 'Confirm').click();
 
-      // Redirection to the wallets page
-      cy.contains('Your wallets').should('be.visible');
-      cy.get('div[data-testid="wallet-container"]').children().should('have.length', 2);
-      cy.get('div[data-testid="wallet-container"]').first().contains('rJD2...9uVr');
+        // Redirection to the wallets page
+        cy.contains('Your wallets').should('be.visible');
+        cy.get('div[data-testid="wallet-container"]').children().should('have.length', 2);
+        cy.get('div[data-testid="wallet-container"]').first().contains('rJD2...9uVr');
 
-      // Save the current state of the localStorage
-      cy.window().then((win) => {
-        walletLocalStorage = win.localStorage.getItem('wallets');
+        // Save the current state of the localStorage
+        cy.window().then((win) => {
+          walletLocalStorage = win.localStorage.getItem('wallets');
+        });
       });
-    });
   });
 
   it('Add a new wallet - Family Seed', () => {
@@ -312,7 +311,6 @@ describe('Add an additional wallet (with previous wallet)', () => {
 
     // Select import by family seed
     cy.contains('button', 'Family Seed').click();
-    cy.contains('button', 'Next').click();
 
     // Error if the seed is incorrect
     cy.contains('button', 'Add Seed').click();
@@ -339,7 +337,6 @@ describe('Add an additional wallet (with previous wallet)', () => {
 
     // Select import by mnemonic
     cy.contains('button', 'Mnemonic').click();
-    cy.contains('button', 'Next').click();
 
     // Error if the mnemonic is incorrect
     cy.contains('button', 'Next').click();
@@ -366,7 +363,6 @@ describe('Add an additional wallet (with previous wallet)', () => {
 
     // Select import by secret numbers
     cy.contains('button', 'Secret numbers').click();
-    cy.contains('button', 'Next').click();
 
     // Errors if the mnemonic is incorrect
     cy.contains('button', 'Next').click();

@@ -4,7 +4,7 @@ import { Button, TextField, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 import { LIST_WALLETS_PATH } from '../../../../constants';
-import { useWallet } from '../../../../contexts';
+import { useNetwork, useWallet } from '../../../../contexts';
 import { useKeyUp } from '../../../../hooks';
 import { PageWithReturn } from '../../../templates';
 
@@ -16,6 +16,7 @@ export interface ConfirmPasswordProps {
 export const ConfirmPassword: FC<ConfirmPasswordProps> = ({ setPassword, onConfirmPassword }) => {
   const navigate = useNavigate();
   const { signIn } = useWallet();
+  const { isConnectionFailed } = useNetwork();
   const [passwordError, setPasswordError] = useState<string>('');
   const passwordRef = useRef<HTMLInputElement | null>(null);
 
@@ -47,7 +48,7 @@ export const ConfirmPassword: FC<ConfirmPasswordProps> = ({ setPassword, onConfi
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          height: '100%',
+          height: isConnectionFailed ? 'calc(100% - 56px)' : '100%',
           paddingBottom: '10px'
         }}
       >

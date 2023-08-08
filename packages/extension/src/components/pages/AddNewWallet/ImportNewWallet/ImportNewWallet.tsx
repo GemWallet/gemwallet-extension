@@ -40,15 +40,10 @@ export interface ImportNewWalletProps {
 export const ImportNewWallet: FC<ImportNewWalletProps> = ({ password }) => {
   const navigate = useNavigate();
   const [activeStep, setActiveStep] = useState<number>(0);
-  const [selectedAccount, setSelectedAccount] = useState(-1);
 
   const handleBack = useCallback(() => {
     navigate(LIST_WALLETS_PATH);
   }, [navigate]);
-
-  const handleNext = useCallback(() => {
-    setActiveStep(selectedAccount + 1);
-  }, [setActiveStep, selectedAccount]);
 
   if (activeStep === 3) {
     return (
@@ -77,14 +72,7 @@ export const ImportNewWallet: FC<ImportNewWalletProps> = ({ password }) => {
   }
 
   return (
-    <PageWithStepper
-      steps={0}
-      activeStep={0}
-      buttonText="Next"
-      handleBack={handleBack}
-      handleNext={handleNext}
-      disabledNext={selectedAccount === -1}
-    >
+    <PageWithStepper steps={0} activeStep={0} handleBack={handleBack}>
       <Typography variant="h4" component="h1" style={{ marginTop: '30px' }}>
         Import Wallet
       </Typography>
@@ -100,10 +88,7 @@ export const ImportNewWallet: FC<ImportNewWalletProps> = ({ password }) => {
           key={index}
           name={name}
           description={description}
-          isSelected={selectedAccount === index}
-          onClick={() =>
-            selectedAccount === index ? setSelectedAccount(-1) : setSelectedAccount(index)
-          }
+          onClick={() => setActiveStep(index + 1)}
         />
       ))}
     </PageWithStepper>
