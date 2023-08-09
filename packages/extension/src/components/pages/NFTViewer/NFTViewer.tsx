@@ -1,5 +1,7 @@
 import { FC, useEffect, useState } from 'react';
 
+import * as Sentry from '@sentry/react';
+
 import { AccountNFTokenResponse } from '@gemwallet/constants';
 
 import { useLedger } from '../../../contexts';
@@ -41,6 +43,7 @@ export const NFTViewer: FC = () => {
       });
     } catch (error) {
       setNFTs(initalState);
+      Sentry.captureException(error);
     }
   };
 

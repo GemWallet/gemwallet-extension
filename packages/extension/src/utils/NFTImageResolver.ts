@@ -11,7 +11,7 @@ export const resolveNFTImage = async (NFT: AccountNFToken): Promise<NFTData> => 
   const { NFTokenID, URI } = NFT;
   let URL = URI ? await convertHexToString(URI) : '';
 
-  if (URL.length === 0) {
+  if (!URL.length) {
     return {
       NFTokenID,
       description: 'No data'
