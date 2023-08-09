@@ -3,7 +3,7 @@ import { FC, useCallback, useState, useRef } from 'react';
 import { Button, TextField, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
-import { LIST_WALLETS_PATH } from '../../../../constants';
+import { LIST_WALLETS_PATH, NETWORK_BANNER_HEIGHT } from '../../../../constants';
 import { useNetwork, useWallet } from '../../../../contexts';
 import { useKeyUp } from '../../../../hooks';
 import { PageWithReturn } from '../../../templates';
@@ -48,7 +48,7 @@ export const ConfirmPassword: FC<ConfirmPasswordProps> = ({ setPassword, onConfi
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          height: isConnectionFailed ? 'calc(100% - 56px)' : '100%',
+          height: isConnectionFailed ? `calc(100% - ${NETWORK_BANNER_HEIGHT}px)` : '100%',
           paddingBottom: '10px'
         }}
       >

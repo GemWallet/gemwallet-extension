@@ -6,6 +6,7 @@ import Lottie from 'lottie-react';
 import alert from '../../../assets/alert.json';
 import check from '../../../assets/check.json';
 import loading from '../../../assets/loading.json';
+import { NETWORK_BANNER_HEIGHT } from '../../../constants';
 import { useBrowser, useNetwork } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
 
@@ -58,12 +59,12 @@ export const AsyncTransaction: FC<AsyncTransactionProps> = ({
     <Container
       component="main"
       style={{
-        ...(isConnectionFailed ? { position: 'fixed', top: 56 } : {}),
+        ...(isConnectionFailed ? { position: 'fixed', top: NETWORK_BANNER_HEIGHT } : {}),
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
         alignItems: 'center',
-        height: isConnectionFailed ? `calc(100vh - 56px)` : '100vh',
+        height: isConnectionFailed ? `calc(100vh - ${NETWORK_BANNER_HEIGHT}px)` : '100vh',
         padding: '20px 16px'
       }}
     >

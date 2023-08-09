@@ -4,6 +4,7 @@ import { Container, Typography, Button } from '@mui/material';
 import * as Sentry from '@sentry/browser';
 import { Extras } from '@sentry/types';
 
+import { NETWORK_BANNER_HEIGHT } from '../../../constants';
 import { useNetwork } from '../../../contexts';
 import { WarningIcon } from './WarningIcon';
 
@@ -48,9 +49,9 @@ class ErrorBoundaryClassComponent extends Component<ErrorBoundaryProps, State> {
             padding: '15x 16px',
             ...(isConnectionFailed
               ? {
-                  height: 'calc(100vh - 56px)',
+                  height: `calc(100vh - ${NETWORK_BANNER_HEIGHT}px)`,
                   position: 'fixed',
-                  top: 56
+                  top: NETWORK_BANNER_HEIGHT
                 }
               : { height: '100vh' })
           }}

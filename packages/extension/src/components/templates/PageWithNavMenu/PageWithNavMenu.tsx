@@ -1,6 +1,6 @@
 import { FC } from 'react';
 
-import { NAV_MENU_HEIGHT } from '../../../constants';
+import { NAV_MENU_HEIGHT, NETWORK_BANNER_HEIGHT } from '../../../constants';
 import { useNetwork } from '../../../contexts';
 import { NavMenu } from '../../organisms';
 
@@ -15,9 +15,11 @@ export const PageWithNavMenu: FC<PageWithNavMenuProps> = ({ children, indexDefau
     <>
       <div
         style={{
-          height: `calc(100% - ${NAV_MENU_HEIGHT}px${isConnectionFailed ? ' - 56px' : ''})`,
+          height: `calc(100% - ${NAV_MENU_HEIGHT}px${
+            isConnectionFailed ? ` - ${NETWORK_BANNER_HEIGHT}px` : ''
+          })`,
           position: 'fixed',
-          top: isConnectionFailed ? 56 : undefined,
+          top: isConnectionFailed ? NETWORK_BANNER_HEIGHT : undefined,
           width: '100%'
         }}
       >

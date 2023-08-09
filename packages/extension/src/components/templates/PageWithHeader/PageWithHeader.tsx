@@ -3,7 +3,7 @@ import { FC } from 'react';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 
-import { HEADER_HEIGHT, NAV_MENU_HEIGHT } from '../../../constants';
+import { HEADER_HEIGHT, NAV_MENU_HEIGHT, NETWORK_BANNER_HEIGHT } from '../../../constants';
 import { useNetwork, useWallet } from '../../../contexts';
 import { Header, NavMenu } from '../../organisms';
 
@@ -28,7 +28,7 @@ export const PageWithHeader: FC<PageWithHeaderProps> = ({ children, title }) => 
           ? {
               width: '100%',
               position: 'fixed',
-              top: 56
+              top: NETWORK_BANNER_HEIGHT
             }
           : undefined
       }
@@ -39,7 +39,9 @@ export const PageWithHeader: FC<PageWithHeaderProps> = ({ children, title }) => 
         style={{
           display: 'flex',
           flexDirection: 'column',
-          height: `calc(100vh - ${CONTAINER_HEIGHT_TAKEN}px${isConnectionFailed ? ' - 56px' : ''})`,
+          height: `calc(100vh - ${CONTAINER_HEIGHT_TAKEN}px${
+            isConnectionFailed ? ` - ${NETWORK_BANNER_HEIGHT}px` : ''
+          })`,
           margin: `${MARGIN_TOP_CONTAINER}px auto 0 auto`,
           overflowY: 'auto'
         }}

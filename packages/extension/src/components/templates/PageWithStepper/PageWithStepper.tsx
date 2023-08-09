@@ -4,6 +4,7 @@ import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import { Button, Container, MobileStepper } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
+import { NETWORK_BANNER_HEIGHT } from '../../../constants';
 import { useNetwork } from '../../../contexts';
 import { useKeyUp } from '../../../hooks';
 
@@ -46,7 +47,7 @@ export const PageWithStepper: FC<PageWithStepperProps> = ({
           ? {
               width: '100%',
               position: 'fixed',
-              top: 56
+              top: NETWORK_BANNER_HEIGHT
             }
           : undefined
       }
@@ -63,7 +64,10 @@ export const PageWithStepper: FC<PageWithStepperProps> = ({
             Back
           </Button>
         }
-        style={{ backgroundColor: '#282c34', ...(isConnectionFailed ? { top: 56 } : {}) }}
+        style={{
+          backgroundColor: '#282c34',
+          ...(isConnectionFailed ? { top: NETWORK_BANNER_HEIGHT } : {})
+        }}
       />
       <Container
         component="main"
@@ -71,7 +75,7 @@ export const PageWithStepper: FC<PageWithStepperProps> = ({
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          height: isConnectionFailed ? `calc(100vh - 56px)` : '100vh',
+          height: isConnectionFailed ? `calc(100vh - ${NETWORK_BANNER_HEIGHT}px)` : '100vh',
           padding: '48px 0 24px 0'
         }}
       >

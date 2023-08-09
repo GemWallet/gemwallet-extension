@@ -3,6 +3,7 @@ import { CSSProperties, FC } from 'react';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import { Container, Divider, IconButton, Typography } from '@mui/material';
 
+import { NETWORK_BANNER_HEIGHT } from '../../../constants';
 import { useNetwork } from '../../../contexts';
 
 export interface PageWithReturnProps {
@@ -31,7 +32,7 @@ export const PageWithReturn: FC<PageWithReturnProps> = ({
         isConnectionFailed
           ? {
               position: 'fixed',
-              top: 56
+              top: NETWORK_BANNER_HEIGHT
             }
           : undefined
       }
