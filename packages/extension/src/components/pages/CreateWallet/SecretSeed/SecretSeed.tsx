@@ -39,7 +39,7 @@ export const SecretSeed: FC<SecretSeedProps> = ({
         This is the only way you will be able to recover your account. Please store it somewhere
         safe!
       </Typography>
-      <TextCopy text={seed} />
+      <TextCopy text={seed} data-testid="secret-seed" />
     </PageWithStepper>
   );
 };

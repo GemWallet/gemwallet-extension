@@ -3,6 +3,9 @@ import { CSSProperties, FC } from 'react';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import { Container, Divider, IconButton, Typography } from '@mui/material';
 
+import { NETWORK_BANNER_HEIGHT } from '../../../constants';
+import { useNetwork } from '../../../contexts';
+
 export interface PageWithReturnProps {
   title: string;
   onBackClick: React.MouseEventHandler<HTMLButtonElement>;
@@ -21,8 +24,19 @@ export const PageWithReturn: FC<PageWithReturnProps> = ({
   children,
   style
 }) => {
+  const { isConnectionFailed } = useNetwork();
+
   return (
-    <>
+    <div
+      style={
+        isConnectionFailed
+          ? {
+              position: 'fixed',
+              top: NETWORK_BANNER_HEIGHT
+            }
+          : undefined
+      }
+    >
       <div
         style={{
           padding: '0.75rem 1rem',
@@ -55,6 +69,6 @@ export const PageWithReturn: FC<PageWithReturnProps> = ({
       >
         <Container style={style}>{children}</Container>
       </Container>
-    </>
+    </div>
   );
 };

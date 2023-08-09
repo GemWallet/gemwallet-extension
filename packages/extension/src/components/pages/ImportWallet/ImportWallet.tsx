@@ -1,4 +1,4 @@
-import { FC, useCallback, useState } from 'react';
+import { FC, useCallback } from 'react';
 
 import { Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
@@ -32,27 +32,13 @@ const SECRET_TYPES = [
 
 export const ImportWallet: FC = () => {
   const navigate = useNavigate();
-  const [selectedAccount, setSelectedAccount] = useState<number | null>(null);
 
   const handleBack = useCallback(() => {
     navigate(WELCOME_PATH);
   }, [navigate]);
 
-  const handleNext = useCallback(() => {
-    if (selectedAccount !== null) {
-      navigate(SECRET_TYPES[selectedAccount].link);
-    }
-  }, [navigate, selectedAccount]);
-
   return (
-    <PageWithStepper
-      steps={0}
-      activeStep={0}
-      buttonText="Next"
-      handleBack={handleBack}
-      handleNext={handleNext}
-      disabledNext={selectedAccount === null}
-    >
+    <PageWithStepper steps={0} activeStep={0} handleBack={handleBack}>
       <Typography variant="h4" component="h1" style={{ marginTop: '30px' }}>
         Import Wallet
       </Typography>
@@ -68,8 +54,7 @@ export const ImportWallet: FC = () => {
           key={index}
           name={name}
           description={description}
-          isSelected={selectedAccount === index}
-          onClick={() => setSelectedAccount((prev) => (prev === index ? null : index))}
+          onClick={() => navigate(SECRET_TYPES[index].link)}
         />
       ))}
     </PageWithStepper>

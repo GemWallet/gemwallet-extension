@@ -42,7 +42,7 @@ export const CancelNFTOffer: FC = () => {
   const [isParamsMissing, setIsParamsMissing] = useState(false);
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
   const { cancelNFTOffer } = useLedger();
-  const { network } = useNetwork();
+  const { networkName } = useNetwork();
   const { estimatedFees, errorFees, difference, errorDifference } = useFees(
     {
       TransactionType: 'NFTokenCancelOffer',
@@ -54,7 +54,7 @@ export const CancelNFTOffer: FC = () => {
   const { hasEnoughFunds, transactionStatusComponent } = useTransactionStatus({
     isParamsMissing,
     errorDifference,
-    network,
+    network: networkName,
     difference,
     transaction,
     errorRequestRejection

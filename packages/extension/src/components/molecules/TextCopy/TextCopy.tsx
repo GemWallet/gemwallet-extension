@@ -11,7 +11,7 @@ export interface TextCopyProps {
   styleTypography?: CSSProperties;
 }
 
-export const TextCopy: FC<TextCopyProps> = ({ text, style, styleTypography }) => {
+export const TextCopy: FC<TextCopyProps> = ({ text, style, styleTypography, ...rest }) => {
   const [isCopied, setIsCopied] = useState(false);
 
   const handleCopy = useCallback(() => {
@@ -30,6 +30,7 @@ export const TextCopy: FC<TextCopyProps> = ({ text, style, styleTypography }) =>
         marginTop: '20px',
         ...style
       }}
+      {...rest}
     >
       <Typography variant="body2" style={{ textAlign: 'left', ...styleTypography }}>
         {text}

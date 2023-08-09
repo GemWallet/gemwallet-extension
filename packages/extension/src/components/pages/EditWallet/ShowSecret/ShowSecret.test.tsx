@@ -9,6 +9,9 @@ const passwordTest = 'test-password';
 let mockWalletContext = generateWalletContext();
 
 jest.mock('../../../../contexts', () => ({
+  useNetwork: () => ({
+    isConnectionFailed: false
+  }),
   useWallet: () => mockWalletContext
 }));
 

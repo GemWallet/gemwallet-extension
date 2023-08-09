@@ -16,6 +16,9 @@ const defaultProps: CreatePasswordProps = {
 
 const mockWalletContext = generateWalletContext();
 jest.mock('../../../contexts', () => ({
+  useNetwork: () => ({
+    isConnectionFailed: false
+  }),
   useWallet: () => mockWalletContext
 }));
 

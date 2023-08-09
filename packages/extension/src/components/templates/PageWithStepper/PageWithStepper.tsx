@@ -4,14 +4,16 @@ import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import { Button, Container, MobileStepper } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
+import { NETWORK_BANNER_HEIGHT } from '../../../constants';
+import { useNetwork } from '../../../contexts';
 import { useKeyUp } from '../../../hooks';
 
 export interface PageWithStepperProps {
   steps: number;
   activeStep: number;
-  buttonText: string;
+  buttonText?: string;
   handleBack: () => void;
-  handleNext: () => void;
+  handleNext?: () => void;
   disabledNext?: boolean;
 }
 
@@ -25,9 +27,10 @@ export const PageWithStepper: FC<PageWithStepperProps> = ({
   children
 }) => {
   const navigate = useNavigate();
+  const { isConnectionFailed } = useNetwork();
 
   //Handle Next step button by pressing 'Enter'
-  useKeyUp('Enter', handleNext);
+  useKeyUp('Enter', handleNext ? handleNext : () => {});
 
   const handleBackButton = () => {
     if (activeStep === 0) {
@@ -38,7 +41,17 @@ export const PageWithStepper: FC<PageWithStepperProps> = ({
   };
 
   return (
-    <>
+    <div
+      style={
+        isConnectionFailed
+          ? {
+              width: '100%',
+              position: 'fixed',
+              top: NETWORK_BANNER_HEIGHT
+            }
+          : undefined
+      }
+    >
       <MobileStepper
         variant="dots"
         steps={steps}
@@ -51,7 +64,10 @@ export const PageWithStepper: FC<PageWithStepperProps> = ({
             Back
           </Button>
         }
-        style={{ backgroundColor: '#282c34' }}
+        style={{
+          backgroundColor: '#282c34',
+          ...(isConnectionFailed ? { top: NETWORK_BANNER_HEIGHT } : {})
+        }}
       />
       <Container
         component="main"
@@ -59,7 +75,7 @@ export const PageWithStepper: FC<PageWithStepperProps> = ({
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          height: '100vh',
+          height: isConnectionFailed ? `calc(100vh - ${NETWORK_BANNER_HEIGHT}px)` : '100vh',
           padding: '48px 0 24px 0'
         }}
       >
@@ -71,12 +87,14 @@ export const PageWithStepper: FC<PageWithStepperProps> = ({
         >
           {children}
         </Container>
-        <Container style={{ display: 'flex', flexDirection: 'column', marginTop: '24px' }}>
-          <Button variant="contained" onClick={() => handleNext()} disabled={disabledNext}>
-            {buttonText}
-          </Button>
-        </Container>
+        {buttonText && handleNext ? (
+          <Container style={{ display: 'flex', flexDirection: 'column', marginTop: '24px' }}>
+            <Button variant="contained" onClick={() => handleNext()} disabled={disabledNext}>
+              {buttonText}
+            </Button>
+          </Container>
+        ) : null}
       </Container>
-    </>
+    </div>
   );
 };

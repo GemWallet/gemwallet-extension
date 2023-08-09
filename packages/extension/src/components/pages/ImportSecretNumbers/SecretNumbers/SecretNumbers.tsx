@@ -3,7 +3,7 @@ import { FC, useCallback, useState, FocusEvent } from 'react';
 import { Grid, TextField, Typography } from '@mui/material';
 
 import { ERROR_RED } from '../../../../constants';
-import { useWallet } from '../../../../contexts';
+import { useNetwork, useWallet } from '../../../../contexts';
 import { PageWithStepper } from '../../../templates';
 import styles from './styles.module.css';
 
@@ -31,6 +31,7 @@ export interface SecretNumbersProps {
 
 export const SecretNumbers: FC<SecretNumbersProps> = ({ activeStep, steps, onBack, onNext }) => {
   const { isValidNumbers } = useWallet();
+  const { isConnectionFailed } = useNetwork();
   const [numbersError, setNumbersError] = useState('');
   const [inputErrors, setInputErrors] = useState<InputErrors>({
     numbersA: '',
@@ -88,7 +89,11 @@ export const SecretNumbers: FC<SecretNumbersProps> = ({ activeStep, steps, onBac
       <Typography
         variant="subtitle1"
         component="h2"
-        style={{ marginTop: '20px', marginBottom: '10px' }}
+        style={
+          isConnectionFailed
+            ? { marginTop: '10px', marginBottom: '5px' }
+            : { marginTop: '20px', marginBottom: '10px' }
+        }
       >
         Please enter your secret numbers in order to load your wallet to GemWallet.
       </Typography>
@@ -103,7 +108,11 @@ export const SecretNumbers: FC<SecretNumbersProps> = ({ activeStep, steps, onBac
             helperText={inputErrors.numbersA}
             style={{
               marginTop: '15px',
-              marginBottom: Boolean(inputErrors.numbersA) ? '0px' : '20px',
+              marginBottom: Boolean(inputErrors.numbersA)
+                ? '0px'
+                : isConnectionFailed
+                ? '10px'
+                : '20px',
               width: '110px'
             }}
             className={styles.textField}
@@ -121,7 +130,11 @@ export const SecretNumbers: FC<SecretNumbersProps> = ({ activeStep, steps, onBac
             helperText={inputErrors.numbersB}
             style={{
               marginTop: '15px',
-              marginBottom: Boolean(inputErrors.numbersB) ? '0px' : '20px',
+              marginBottom: Boolean(inputErrors.numbersB)
+                ? '0px'
+                : isConnectionFailed
+                ? '10px'
+                : '20px',
               width: '110px'
             }}
             className={styles.textField}
@@ -139,7 +152,11 @@ export const SecretNumbers: FC<SecretNumbersProps> = ({ activeStep, steps, onBac
             helperText={inputErrors.numbersC}
             style={{
               marginTop: '15px',
-              marginBottom: Boolean(inputErrors.numbersC) ? '0px' : '20px',
+              marginBottom: Boolean(inputErrors.numbersC)
+                ? '0px'
+                : isConnectionFailed
+                ? '10px'
+                : '20px',
               width: '110px'
             }}
             className={styles.textField}
@@ -157,7 +174,11 @@ export const SecretNumbers: FC<SecretNumbersProps> = ({ activeStep, steps, onBac
             helperText={inputErrors.numbersD}
             style={{
               marginTop: '15px',
-              marginBottom: Boolean(inputErrors.numbersD) ? '0px' : '20px',
+              marginBottom: Boolean(inputErrors.numbersD)
+                ? '0px'
+                : isConnectionFailed
+                ? '10px'
+                : '20px',
               width: '110px'
             }}
             className={styles.textField}
@@ -175,7 +196,11 @@ export const SecretNumbers: FC<SecretNumbersProps> = ({ activeStep, steps, onBac
             helperText={inputErrors.numbersE}
             style={{
               marginTop: '15px',
-              marginBottom: Boolean(inputErrors.numbersE) ? '0px' : '20px',
+              marginBottom: Boolean(inputErrors.numbersE)
+                ? '0px'
+                : isConnectionFailed
+                ? '10px'
+                : '20px',
               width: '110px'
             }}
             className={styles.textField}
@@ -193,7 +218,11 @@ export const SecretNumbers: FC<SecretNumbersProps> = ({ activeStep, steps, onBac
             helperText={inputErrors.numbersF}
             style={{
               marginTop: '15px',
-              marginBottom: Boolean(inputErrors.numbersF) ? '0px' : '20px',
+              marginBottom: Boolean(inputErrors.numbersF)
+                ? '0px'
+                : isConnectionFailed
+                ? '10px'
+                : '20px',
               width: '110px'
             }}
             className={styles.textField}
@@ -211,7 +240,11 @@ export const SecretNumbers: FC<SecretNumbersProps> = ({ activeStep, steps, onBac
             helperText={inputErrors.numbersG}
             style={{
               marginTop: '15px',
-              marginBottom: Boolean(inputErrors.numbersG) ? '0px' : '20px',
+              marginBottom: Boolean(inputErrors.numbersG)
+                ? '0px'
+                : isConnectionFailed
+                ? '10px'
+                : '20px',
               width: '110px'
             }}
             className={styles.textField}
@@ -229,7 +262,11 @@ export const SecretNumbers: FC<SecretNumbersProps> = ({ activeStep, steps, onBac
             helperText={inputErrors.numbersH}
             style={{
               marginTop: '15px',
-              marginBottom: Boolean(inputErrors.numbersH) ? '0px' : '20px',
+              marginBottom: Boolean(inputErrors.numbersH)
+                ? '0px'
+                : isConnectionFailed
+                ? '10px'
+                : '20px',
               width: '110px'
             }}
             className={styles.textField}

@@ -7,6 +7,9 @@ import { CreateNewWallet } from './CreateNewWallet';
 
 let mockWalletContext = generateWalletContext();
 jest.mock('../../../../contexts', () => ({
+  useNetwork: () => ({
+    isConnectionFailed: false
+  }),
   useWallet: () => mockWalletContext
 }));
 

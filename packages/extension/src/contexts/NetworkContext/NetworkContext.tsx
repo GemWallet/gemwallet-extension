@@ -11,7 +11,11 @@ import {
 } from '@gemwallet/constants';
 import { NetworkData } from '@gemwallet/constants/src/network/network.types';
 
+import { OfflineBanner } from '../../components/atoms/OfflineBanner';
 import { loadNetwork, removeNetwork, saveCustomNetwork, saveNetwork } from '../../utils';
+
+const RECOGNIZED_CONNECTION_ERRORS = ['Connection failed.'];
+const DEFAULT_NETWORK_NAME = 'Loading...';
 
 interface ContextType {
   reconnectToNetwork: () => void;
@@ -24,7 +28,8 @@ interface ContextType {
   registerCustomNetwork: (networkData: NetworkData) => void;
   // Returns null if client couldn't connect
   client?: Client | null;
-  network?: Network | string;
+  networkName: Network | string;
+  isConnectionFailed: boolean;
 }
 
 const NetworkContext = createContext<ContextType>({
@@ -33,12 +38,14 @@ const NetworkContext = createContext<ContextType>({
   resetNetwork: () => {},
   registerCustomNetwork: () => {},
   client: undefined,
-  network: undefined
+  networkName: DEFAULT_NETWORK_NAME,
+  isConnectionFailed: false
 });
 
 const NetworkProvider: FC = ({ children }) => {
-  const [client, setClient] = useState<Client | null>();
-  const [network, setNetwork] = useState<Network | string>();
+  const [client, setClient] = useState<Client | null | undefined>(undefined);
+  const [networkName, setNetworkName] = useState<Network | string>(DEFAULT_NETWORK_NAME);
+  const [isConnectionFailed, setIsConnectionFailed] = useState(false);
 
   useEffect(() => {
     let retryCount = 0;
@@ -46,20 +53,22 @@ const NetworkProvider: FC = ({ children }) => {
 
     const connectToNetwork = async () => {
       const network = loadNetwork();
+      setNetworkName(network.name);
       const ws = new Client(network.server);
       try {
         await ws.connect();
-        setNetwork(network.name);
         setClient(ws);
       } catch (err) {
         await ws?.disconnect();
         setClient(null);
-        Sentry.captureException(err);
-
+        setIsConnectionFailed(true);
         // If connect fails, retry up to maxRetries times
         if (retryCount < maxRetries) {
           retryCount += 1;
           setTimeout(connectToNetwork, 1000);
+        }
+        if (!RECOGNIZED_CONNECTION_ERRORS.includes((err as Error).message)) {
+          Sentry.captureException(err);
         }
       }
     };
@@ -83,19 +92,23 @@ const NetworkProvider: FC = ({ children }) => {
     };
   }, [client]);
 
-  const reconnectToNetwork = async () => {
+  const reconnectToNetwork = useCallback(async () => {
     try {
       const loadedNetwork = loadNetwork();
-      const ws = new Client(network || loadedNetwork.server);
+      const ws = new Client(loadedNetwork.server);
       await ws.connect();
-      setNetwork(network || loadedNetwork.name);
+      setNetworkName(loadedNetwork.name);
       setClient(ws);
+      setIsConnectionFailed(false);
     } catch (err) {
       await client?.disconnect();
       setClient(null);
-      Sentry.captureException(err);
+      setIsConnectionFailed(true);
+      if (!RECOGNIZED_CONNECTION_ERRORS.includes((err as Error).message)) {
+        Sentry.captureException(err);
+      }
     }
-  };
+  }, [client]);
 
   const switchNetwork = useCallback(
     async (network: Network, customNetworkName?: string, customNetworkServer?: string) => {
@@ -104,9 +117,10 @@ const NetworkProvider: FC = ({ children }) => {
         // If a server URL is provided, use it. Otherwise, use the pre-defined server for the given network
         const ws = new Client(customNetworkServer || NETWORK[network].server);
         await ws.connect();
-        setNetwork(customNetworkName || network);
+        setNetworkName(customNetworkName || network);
         saveNetwork(network, customNetworkName, customNetworkServer);
         setClient(ws);
+        setIsConnectionFailed(false);
 
         if (process.env.NODE_ENV === 'production') {
           chrome.runtime
@@ -132,7 +146,10 @@ const NetworkProvider: FC = ({ children }) => {
       } catch (err) {
         await client?.disconnect();
         setClient(null);
-        Sentry.captureException(err);
+        setIsConnectionFailed(true);
+        if (!RECOGNIZED_CONNECTION_ERRORS.includes((err as Error).message)) {
+          Sentry.captureException(err);
+        }
         throw err;
       }
     },
@@ -144,7 +161,7 @@ const NetworkProvider: FC = ({ children }) => {
     try {
       await removeNetwork();
       const network = await loadNetwork();
-      setNetwork(network.name);
+      setNetworkName(network.name);
     } catch (err) {
       Sentry.captureException(err);
     }
@@ -164,10 +181,16 @@ const NetworkProvider: FC = ({ children }) => {
     resetNetwork,
     registerCustomNetwork,
     client,
-    network
+    networkName,
+    isConnectionFailed
   };
 
-  return <NetworkContext.Provider value={value}>{children}</NetworkContext.Provider>;
+  return (
+    <NetworkContext.Provider value={value}>
+      {isConnectionFailed ? <OfflineBanner reconnectToNetwork={reconnectToNetwork} /> : null}
+      {children}
+    </NetworkContext.Provider>
+  );
 };
 
 const useNetwork = (): ContextType => {

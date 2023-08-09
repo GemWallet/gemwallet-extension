@@ -5,7 +5,6 @@ import { List, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/mat
 import { useNavigate } from 'react-router-dom';
 
 import {
-  ANNOUNCEMENT_LINK,
   DISCORD_LINK,
   DOCUMENTATION_LINK,
   FEEDBACK_LINK,
@@ -25,10 +24,6 @@ const aboutLinks = [
   {
     name: 'GemWallet Documentation',
     url: DOCUMENTATION_LINK
-  },
-  {
-    name: 'GemWallet Announcement',
-    url: ANNOUNCEMENT_LINK
   },
   {
     name: 'GemWallet GitHub',

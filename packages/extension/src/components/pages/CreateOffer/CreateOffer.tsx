@@ -58,7 +58,7 @@ export const CreateOffer: FC = () => {
   const [isParamsMissing, setIsParamsMissing] = useState(false);
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
   const { createOffer } = useLedger();
-  const { network } = useNetwork();
+  const { networkName } = useNetwork();
   const { estimatedFees, errorFees, difference, errorDifference } = useFees(
     {
       TransactionType: 'OfferCreate',
@@ -74,7 +74,7 @@ export const CreateOffer: FC = () => {
   const { hasEnoughFunds, transactionStatusComponent } = useTransactionStatus({
     isParamsMissing,
     errorDifference,
-    network,
+    network: networkName,
     difference,
     transaction,
     errorRequestRejection

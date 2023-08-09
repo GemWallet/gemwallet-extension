@@ -39,8 +39,8 @@ const Transition = forwardRef(function Transition(
 });
 
 export const NetworkIndicator: FC = () => {
-  const { client, network, switchNetwork } = useNetwork();
-  const [currentNetworkName, setCurrentNetworkName] = useState<string>(network as string);
+  const { client, networkName, switchNetwork } = useNetwork();
+  const [currentNetworkName, setCurrentNetworkName] = useState<string>(networkName);
   const [explanationOpen, setExplanationOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [handleAddNetwork, setHandleAddNetwork] = useState(false);
@@ -68,8 +68,8 @@ export const NetworkIndicator: FC = () => {
   }, [refreshCustomNetworks]);
 
   useEffect(() => {
-    setCurrentNetworkName(network as string);
-  }, [network]);
+    setCurrentNetworkName(networkName);
+  }, [networkName]);
 
   const handleOpen = useCallback(() => {
     setExplanationOpen(true);
@@ -176,7 +176,7 @@ export const NetworkIndicator: FC = () => {
   return (
     <>
       <Chip
-        label={currentNetworkName || network || 'Switch network'}
+        label={currentNetworkName || networkName}
         size="small"
         icon={
           <FiberManualRecordIcon

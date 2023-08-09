@@ -42,7 +42,7 @@ jest.mock('../../../contexts', () => {
     useNetwork: () => ({
       client: mockClient,
       reconnectToNetwork: jest.fn(),
-      network: mockNetwork
+      networkName: mockNetwork
     }),
     useServer: () => ({
       serverInfo: {

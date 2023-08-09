@@ -61,7 +61,7 @@ export const CreateNFTOffer: FC = () => {
   const [isParamsMissing, setIsParamsMissing] = useState(false);
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
   const { createNFTOffer } = useLedger();
-  const { network } = useNetwork();
+  const { networkName } = useNetwork();
   const { estimatedFees, errorFees, difference, errorDifference } = useFees(
     {
       TransactionType: 'NFTokenCreateOffer',
@@ -78,7 +78,7 @@ export const CreateNFTOffer: FC = () => {
   const { hasEnoughFunds, transactionStatusComponent } = useTransactionStatus({
     isParamsMissing,
     errorDifference,
-    network,
+    network: networkName,
     difference,
     transaction,
     errorRequestRejection
