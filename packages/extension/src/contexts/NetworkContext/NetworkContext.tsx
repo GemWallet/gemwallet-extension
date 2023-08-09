@@ -14,7 +14,7 @@ import { NetworkData } from '@gemwallet/constants/src/network/network.types';
 import { OfflineBanner } from '../../components/atoms/OfflineBanner';
 import { loadNetwork, removeNetwork, saveCustomNetwork, saveNetwork } from '../../utils';
 
-const RECOGNIZED_CONNECTION_ERRORS = ['Connection failed.'];
+const RECOGNIZED_CONNECTION_ERRORS = ['Connection failed.', 'Could not establish connection.'];
 const DEFAULT_NETWORK_NAME = 'Loading...';
 
 interface ContextType {
