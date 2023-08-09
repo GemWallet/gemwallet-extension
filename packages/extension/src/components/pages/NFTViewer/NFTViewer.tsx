@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
 
 import * as Sentry from '@sentry/react';
 
@@ -22,10 +22,9 @@ interface NFTsProps extends AccountNFTokenResponse {
 
 export const NFTViewer: FC = () => {
   const { getNFTs } = useLedger();
-
   const [NFTs, setNFTs] = useState<NFTsProps>(initalState);
 
-  const fetchNFTs = async () => {
+  const fetchNFTs = useCallback(async () => {
     try {
       const payload = {
         limit: MAX_FETCHED_NFTS,
@@ -45,7 +44,7 @@ export const NFTViewer: FC = () => {
       setNFTs(initalState);
       Sentry.captureException(error);
     }
-  };
+  }, [NFTs, getNFTs]);
 
   useEffect(() => {
     fetchNFTs();
