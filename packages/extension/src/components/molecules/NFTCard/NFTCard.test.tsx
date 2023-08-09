@@ -1,6 +1,9 @@
+import { FC, ReactNode } from 'react';
+
 import { render, screen, waitFor, act } from '@testing-library/react';
 
 import { LedgerContext } from '../../../contexts';
+import { valueLedgerContext } from '../../../mocks';
 import { NFTCard, NFTCardProps } from './NFTCard';
 
 const mockNFT = {
@@ -26,10 +29,17 @@ const mockNFTData = {
 };
 
 const mockGetNFTData = jest.fn();
-// @ts-ignore
-const LedgerContextMockProvider = ({ children }) => (
-  // @ts-ignore
-  <LedgerContext.Provider value={{ getNFTData: mockGetNFTData }}>{children}</LedgerContext.Provider>
+const mockContext = {
+  ...valueLedgerContext,
+  getNFTData: mockGetNFTData
+};
+
+interface LedgerContextMockProviderProps {
+  children: ReactNode;
+}
+
+const LedgerContextMockProvider: FC<LedgerContextMockProviderProps> = ({ children }) => (
+  <LedgerContext.Provider value={mockContext}>{children}</LedgerContext.Provider>
 );
 
 const renderNFTCard = (props: NFTCardProps) => {
