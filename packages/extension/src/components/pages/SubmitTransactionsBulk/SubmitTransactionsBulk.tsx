@@ -41,7 +41,7 @@ export const SubmitTransactionsBulk: FC = () => {
   const [showRecap, setShowRecap] = useState(true);
   const [progressPercentage, setProgressPercentage] = useState(0);
   const [onError, setOnError] = useState<'abort' | 'continue'>(DEFAULT_SUBMIT_TX_BULK_ON_ERROR);
-  const [parallelize, setParallelize] = useState(false);
+  const [noWait, setNoWait] = useState(false);
   const [submitBulkTransactionsEnabled, setSubmitBulkTransactionsEnabled] = useState<boolean>(
     () => {
       return JSON.parse(localStorage.getItem('permission-submitBulkTransactions') || 'false');
@@ -106,10 +106,8 @@ export const SubmitTransactionsBulk: FC = () => {
           if ('transactions' in parsedStoredData) {
             parsedTransactionsMap = parseTransactionsBulkMap(parsedStoredData.transactions);
           }
-          if ('parallelize' in parsedStoredData) {
-            setParallelize(
-              parsedStoredData.parallelize === true || parsedStoredData.parallelize === 'true'
-            );
+          if ('noWait' in parsedStoredData) {
+            setNoWait(parsedStoredData.noWait === true || parsedStoredData.noWait === 'true');
           }
         }
       } catch (error) {
@@ -194,7 +192,7 @@ export const SubmitTransactionsBulk: FC = () => {
           const response = await submitTransactionsBulk({
             transactions: chunk,
             onError,
-            parallelize
+            noWait
           });
           results = [...results, ...response.txResults];
 
@@ -211,7 +209,7 @@ export const SubmitTransactionsBulk: FC = () => {
           const totalTransactions = Object.values(params.transactionsMapParam || {}).length;
           setProgressPercentage(Math.floor((results.length / totalTransactions) * 100));
 
-          if (parallelize && i < transactions.length) {
+          if (noWait && i < transactions.length) {
             // Throttle requests
             await new Promise((resolve) => setTimeout(resolve, 5000));
           }
@@ -238,7 +236,7 @@ export const SubmitTransactionsBulk: FC = () => {
         const message = createMessage({ txResults: null, error: e });
         chrome.runtime.sendMessage<ReceiveSubmitTransactionsBulkBackgroundMessage>(message);
       });
-  }, [params.transactionsMapParam, onError, submitTransactionsBulk, parallelize, createMessage]);
+  }, [params.transactionsMapParam, onError, submitTransactionsBulk, noWait, createMessage]);
   const { transactionsMapParam } = params;
 
   const allTransactions = transactionsMapParam || {};
