@@ -210,6 +210,11 @@ export const SubmitTransactionsBulk: FC = () => {
 
           const totalTransactions = Object.values(params.transactionsMapParam || {}).length;
           setProgressPercentage(Math.floor((results.length / totalTransactions) * 100));
+
+          if (parallelize && i < transactions.length) {
+            // Throttle requests
+            await new Promise((resolve) => setTimeout(resolve, 10000));
+          }
         } catch (e) {
           throw e;
         }
@@ -233,7 +238,7 @@ export const SubmitTransactionsBulk: FC = () => {
         const message = createMessage({ txResults: null, error: e });
         chrome.runtime.sendMessage<ReceiveSubmitTransactionsBulkBackgroundMessage>(message);
       });
-  }, [params.transactionsMapParam, onError, submitTransactionsBulk, createMessage]);
+  }, [params.transactionsMapParam, onError, submitTransactionsBulk, parallelize, createMessage]);
   const { transactionsMapParam } = params;
 
   const allTransactions = transactionsMapParam || {};
