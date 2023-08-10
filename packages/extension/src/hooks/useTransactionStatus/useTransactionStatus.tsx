@@ -1,10 +1,13 @@
 import { useMemo } from 'react';
 
+import { Button, Container, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
 
 import { Network } from '@gemwallet/constants';
 
+import { InformationMessage } from '../../components/molecules';
 import { AsyncTransaction, PageWithSpinner } from '../../components/templates';
+import { useNetwork } from '../../contexts';
 import { TransactionStatus } from '../../types';
 
 interface TransactionStatusProps {
@@ -30,6 +33,7 @@ export const useTransactionStatus = ({
   badRequestCallback,
   onClick
 }: TransactionStatusProps) => {
+  const { client, reconnectToNetwork } = useNetwork();
   const hasEnoughFunds = useMemo(() => {
     return Number(difference) > 0;
   }, [difference]);
@@ -52,6 +56,41 @@ export const useTransactionStatus = ({
           transaction={TransactionStatus.Rejected}
           {...(onClick && { onClick })}
         />
+      );
+    }
+
+    if (client === null) {
+      return (
+        <Container
+          component="main"
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            height: '100vh'
+          }}
+        >
+          <InformationMessage
+            title="Failed to connect to the network"
+            style={{
+              padding: '15px'
+            }}
+          >
+            <Typography style={{ marginBottom: '5px' }}>
+              There was an error attempting to connect to the network. Please refresh the page and
+              try again.
+            </Typography>
+            <div style={{ textAlign: 'center', margin: '10px 0' }}>
+              <Button
+                variant="contained"
+                onClick={reconnectToNetwork}
+                style={{ marginBottom: '10px' }}
+              >
+                Refresh
+              </Button>
+            </div>
+          </InformationMessage>
+        </Container>
       );
     }
 
@@ -149,12 +188,14 @@ export const useTransactionStatus = ({
     }
   }, [
     isParamsMissing,
+    client,
     errorDifference,
     difference,
     errorValue,
     transaction,
     badRequestCallback,
     onClick,
+    reconnectToNetwork,
     network,
     errorRequestRejection
   ]);
