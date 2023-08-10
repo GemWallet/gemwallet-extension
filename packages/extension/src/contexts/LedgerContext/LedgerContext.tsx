@@ -870,17 +870,15 @@ const LedgerProvider: FC = ({ children }) => {
         }
       };
 
-      const results = await (async () => {
-        const results = [];
-        for (const tx of payload.transactions) {
-          const result = await processTransaction(tx);
-          results.push(result);
-          if (result.error && onError === 'abort') {
-            return results;
-          }
+      const results: TransactionBulkResponse[] = [];
+      for (const tx of payload.transactions) {
+        const result = await processTransaction(tx);
+        results.push(result);
+
+        if (result.error && onError === 'abort') {
+          break;
         }
-        return results;
-      })();
+      }
 
       const hasError = results.some((r) => r.error);
 
