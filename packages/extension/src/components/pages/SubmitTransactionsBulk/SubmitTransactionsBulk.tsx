@@ -48,7 +48,7 @@ export const SubmitTransactionsBulk: FC = () => {
     }
   );
   const { submitTransactionsBulk } = useLedger();
-  const { network } = useNetwork();
+  const { networkName } = useNetwork();
   const { estimatedFees, errorFees, difference, errorDifference } = useFees(
     (params.transactionsMapParam ? Object.values(params.transactionsMapParam) : undefined)?.map(
       (tx) => tx
@@ -63,7 +63,7 @@ export const SubmitTransactionsBulk: FC = () => {
   const { hasEnoughFunds, transactionStatusComponent } = useTransactionStatus({
     isParamsMissing,
     errorDifference,
-    network,
+    network: networkName,
     difference,
     transaction,
     errorRequestRejection,

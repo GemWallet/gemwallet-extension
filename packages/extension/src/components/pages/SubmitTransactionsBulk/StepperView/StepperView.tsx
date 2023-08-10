@@ -65,7 +65,7 @@ export const StepperView: FC<StepperViewProps> = ({
   const [open, setOpen] = useState<boolean>(false);
   const [renderKey, setRenderKey] = useState<number>(0);
   const [txNFTData, setTxNFTData] = useState<Record<number, TxNFTData>>({}); // Key is the transaction index
-  const { network } = useNetwork();
+  const { networkName } = useNetwork();
   const { getNFTInfo, getLedgerEntry } = useLedger();
 
   const handleCollapseToggle = () => {
@@ -108,7 +108,7 @@ export const StepperView: FC<StepperViewProps> = ({
     };
     const resolveImageFromNFTokenID = async (NFTokenID: string, index: number, amount?: Amount) => {
       try {
-        const NFTInfo = await getNFTInfo(NFTokenID, network);
+        const NFTInfo = await getNFTInfo(NFTokenID, networkName);
         const URI = NFTInfo.result.uri;
 
         resolveImageFromURI(URI, index, amount);
@@ -158,7 +158,7 @@ export const StepperView: FC<StepperViewProps> = ({
         }
       }
     }
-  }, [getLedgerEntry, getNFTInfo, network, transactionsToDisplay]);
+  }, [getLedgerEntry, getNFTInfo, networkName, transactionsToDisplay]);
 
   return (
     <PageWithTitle title="Bulk Transactions" styles={{ container: { justifyContent: 'initial' } }}>
