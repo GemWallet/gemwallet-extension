@@ -838,6 +838,11 @@ const LedgerProvider: FC = ({ children }) => {
             ? await client.submit(signed.tx_blob)
             : await client.submitAndWait(signed.tx_blob);
 
+          if (payload.parallelize) {
+            // Throttle the requests
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+          }
+
           // Check transaction result
           if (payload.parallelize && !(tx as SubmitResponse).result.accepted) {
             throw new Error("Couldn't submit the transaction");
@@ -865,19 +870,17 @@ const LedgerProvider: FC = ({ children }) => {
         }
       };
 
-      const results = await (payload.parallelize
-        ? Promise.all(payload.transactions.map((tx) => processTransaction(tx)))
-        : (async () => {
-            const sequentialResults = [];
-            for (const tx of payload.transactions) {
-              const result = await processTransaction(tx);
-              sequentialResults.push(result);
-              if (result.error && onError === 'abort') {
-                return sequentialResults;
-              }
-            }
-            return sequentialResults;
-          })());
+      const results = await (async () => {
+        const results = [];
+        for (const tx of payload.transactions) {
+          const result = await processTransaction(tx);
+          results.push(result);
+          if (result.error && onError === 'abort') {
+            return results;
+          }
+        }
+        return results;
+      })();
 
       const hasError = results.some((r) => r.error);
 

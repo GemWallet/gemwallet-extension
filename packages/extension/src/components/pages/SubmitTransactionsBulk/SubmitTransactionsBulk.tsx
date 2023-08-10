@@ -213,7 +213,7 @@ export const SubmitTransactionsBulk: FC = () => {
 
           if (parallelize && i < transactions.length) {
             // Throttle requests
-            await new Promise((resolve) => setTimeout(resolve, 10000));
+            await new Promise((resolve) => setTimeout(resolve, 5000));
           }
         } catch (e) {
           throw e;
