@@ -6,7 +6,7 @@ import {
   ResponsePayload
 } from '@gemwallet/constants';
 
-import { MAIN_FILE } from '../../../constants/routes';
+import { MAIN_FILE } from '../../../constants/paths';
 
 const NOTIFICATION_HEIGHT = 620;
 const NOTIFICATION_WIDTH = 360;

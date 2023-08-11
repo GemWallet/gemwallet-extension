@@ -2,7 +2,7 @@ import { FC, useCallback, useEffect } from 'react';
 
 import { CircularProgress, Container, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 import {
   GEM_WALLET,
@@ -19,63 +19,9 @@ import {
 } from '@gemwallet/constants';
 
 import { Logo } from './components/atoms';
-import { PrivateRoute } from './components/atoms/PrivateRoute';
-import {
-  About,
-  AcceptNFTOffer,
-  AddNewTrustline,
-  AddNewWallet,
-  BurnNFT,
-  CancelNFTOffer,
-  CancelOffer,
-  CreateNFTOffer,
-  CreateOffer,
-  CreateWallet,
-  EditWallet,
-  History,
-  Home,
-  ImportMnemonic,
-  ImportSecretNumbers,
-  ImportSeed,
-  ImportWallet,
-  ListWallets,
-  Login,
-  MintNFT,
-  ReceivePayment,
-  ResetPassword,
-  SendPayment,
-  SetAccount,
-  Settings,
-  ShareAddress,
-  ShareNFT,
-  SharePublicKey,
-  SignMessage,
-  SubmitTransaction,
-  Transaction,
-  TrustedApps,
-  Welcome
-} from './components/pages';
+import { AppRoutes } from './components/pages/routes';
 import { ErrorBoundary } from './components/templates';
 import {
-  ABOUT_PATH,
-  ACCEPT_NFT_OFFER_PATH,
-  ADD_NEW_TRUSTLINE_PATH,
-  ADD_NEW_WALLET_PATH,
-  BURN_NFT_PATH,
-  CANCEL_NFT_OFFER_PATH,
-  CANCEL_OFFER_PATH,
-  CREATE_NEW_WALLET_PATH,
-  CREATE_NFT_OFFER_PATH,
-  CREATE_OFFER_PATH,
-  EDIT_WALLET_PATH,
-  HISTORY_PATH,
-  HOME_PATH,
-  IMPORT_MNEMONIC_PATH,
-  IMPORT_SECRET_NUMBERS_PATH,
-  IMPORT_SEED_PATH,
-  IMPORT_WALLET_PATH,
-  LIST_WALLETS_PATH,
-  MINT_NFT_PATH,
   PARAMETER_SHARE_ADDRESS,
   PARAMETER_SHARE_NETWORK,
   PARAMETER_SHARE_NFT,
@@ -91,26 +37,11 @@ import {
   PARAMETER_TRANSACTION_MINT_NFT,
   PARAMETER_TRANSACTION_PAYMENT,
   PARAMETER_TRANSACTION_SET_ACCOUNT,
-  PARAMETER_TRANSACTION_TRUSTLINE,
-  RESET_PASSWORD_PATH,
-  SEND_PATH,
-  RECEIVE_PATH,
-  SET_ACCOUNT_PATH,
-  SETTINGS_PATH,
-  SHARE_NFT_PATH,
-  SHARE_PUBLIC_ADDRESS_PATH,
-  SHARE_PUBLIC_KEY_PATH,
-  SIGN_MESSAGE_PATH,
-  SUBMIT_TRANSACTION_PATH,
-  TRANSACTION_PATH,
-  TRUSTED_APPS_PATH,
-  WELCOME_PATH
+  PARAMETER_TRANSACTION_TRUSTLINE
 } from './constants';
 import { useBrowser, useNetwork, useWallet } from './contexts';
 import { useBeforeUnload } from './hooks';
 import { loadNetwork } from './utils';
-
-const SentryRoutes = Sentry.withSentryReactRouterV6Routing(Routes);
 
 const App: FC = () => {
   const { window: extensionWindow, closeExtension } = useBrowser();
@@ -432,216 +363,7 @@ const App: FC = () => {
 
   return (
     <ErrorBoundary>
-      <SentryRoutes>
-        <Route path="*" element={<Login />} />
-        <Route path={WELCOME_PATH} element={<Welcome />} />
-        <Route path={IMPORT_MNEMONIC_PATH} element={<ImportMnemonic />} />
-        <Route path={IMPORT_SECRET_NUMBERS_PATH} element={<ImportSecretNumbers />} />
-        <Route path={IMPORT_SEED_PATH} element={<ImportSeed />} />
-        <Route path={IMPORT_WALLET_PATH} element={<ImportWallet />} />
-        <Route path={CREATE_NEW_WALLET_PATH} element={<CreateWallet />} />
-        <Route
-          path={HOME_PATH}
-          element={
-            <PrivateRoute>
-              <Home />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path={LIST_WALLETS_PATH}
-          element={
-            <PrivateRoute>
-              <ListWallets />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path={`${EDIT_WALLET_PATH}/:publicAddress`}
-          element={
-            <PrivateRoute>
-              <EditWallet />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path={ADD_NEW_WALLET_PATH}
-          element={
-            <PrivateRoute>
-              <AddNewWallet />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path={ADD_NEW_TRUSTLINE_PATH}
-          element={
-            <PrivateRoute>
-              <AddNewTrustline />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path={TRANSACTION_PATH}
-          element={
-            <PrivateRoute>
-              <Transaction />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path={HISTORY_PATH}
-          element={
-            <PrivateRoute>
-              <History />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path={SEND_PATH}
-          element={
-            <PrivateRoute>
-              <SendPayment />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path={RECEIVE_PATH}
-          element={
-            <PrivateRoute>
-              <ReceivePayment />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path={SETTINGS_PATH}
-          element={
-            <PrivateRoute>
-              <Settings />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path={SIGN_MESSAGE_PATH}
-          element={
-            <PrivateRoute>
-              <SignMessage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path={SUBMIT_TRANSACTION_PATH}
-          element={
-            <PrivateRoute>
-              <SubmitTransaction />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path={SHARE_NFT_PATH}
-          element={
-            <PrivateRoute>
-              <ShareNFT />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path={SHARE_PUBLIC_ADDRESS_PATH}
-          element={
-            <PrivateRoute>
-              <ShareAddress />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path={SHARE_PUBLIC_KEY_PATH}
-          element={
-            <PrivateRoute>
-              <SharePublicKey />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path={MINT_NFT_PATH}
-          element={
-            <PrivateRoute>
-              <MintNFT />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path={CREATE_NFT_OFFER_PATH}
-          element={
-            <PrivateRoute>
-              <CreateNFTOffer />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path={CANCEL_NFT_OFFER_PATH}
-          element={
-            <PrivateRoute>
-              <CancelNFTOffer />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path={ACCEPT_NFT_OFFER_PATH}
-          element={
-            <PrivateRoute>
-              <AcceptNFTOffer />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path={BURN_NFT_PATH}
-          element={
-            <PrivateRoute>
-              <BurnNFT />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path={SET_ACCOUNT_PATH}
-          element={
-            <PrivateRoute>
-              <SetAccount />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path={CREATE_OFFER_PATH}
-          element={
-            <PrivateRoute>
-              <CreateOffer />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path={CANCEL_OFFER_PATH}
-          element={
-            <PrivateRoute>
-              <CancelOffer />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path={ABOUT_PATH}
-          element={
-            <PrivateRoute>
-              <About />
-            </PrivateRoute>
-          }
-        />
-        <Route path={RESET_PASSWORD_PATH} element={<ResetPassword />} />
-        <Route
-          path={TRUSTED_APPS_PATH}
-          element={
-            <PrivateRoute>
-              <TrustedApps />
-            </PrivateRoute>
-          }
-        />
-      </SentryRoutes>
+      <AppRoutes />
     </ErrorBoundary>
   );
 };

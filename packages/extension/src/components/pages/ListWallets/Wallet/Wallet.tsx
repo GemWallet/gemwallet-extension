@@ -5,7 +5,7 @@ import { IconButton, Paper, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 import { EDIT_WALLET_PATH, SECONDARY_GRAY } from '../../../../constants';
-import { truncateAddress } from '../../../../utils';
+import { injectPathParams, truncateAddress } from '../../../../utils';
 import { WalletIcon } from '../../../atoms';
 
 export interface WalletProps {
@@ -56,7 +56,7 @@ export const Wallet: FC<WalletProps> = ({ publicAddress, name, isSelected = fals
         aria-label="More"
         onClick={(e) => {
           e.stopPropagation();
-          navigate(`${EDIT_WALLET_PATH}/${publicAddress}`);
+          navigate(injectPathParams(EDIT_WALLET_PATH, { publicAddress }));
         }}
       >
         <MoreHorizIcon />
