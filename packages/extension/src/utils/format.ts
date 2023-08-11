@@ -93,25 +93,3 @@ export const formatFlagsToNumber = (tx: Transaction) => {
 export const formatTransferFee = (fee: number) => {
   return fee / 1000;
 };
-
-// When we display some strings to the UI, we want to make sure that they are not too long and will not break the UI.
-// To do so, we truncate the string only if:
-// - There is one word with a length bigger than the given length
-// otherwise, we return the string as is.
-// We do not need to truncate the string if there is no word with a length bigger than the given length because in this
-// case, the string will be correctly displayed in multiple lines, and will not break the UI.
-export const truncateStringOnLongWord = (str: string, length: number) => {
-  // If the length of the given string is lower than the length, return it
-  if (str.length <= length) {
-    return str;
-  }
-
-  // If there is a word with a length bigger than the given length, return the string truncated
-  const words = str.split(' ');
-  const longWordExists = words.some((word) => word.length > length);
-  if (longWordExists) {
-    return str.substring(0, length) + '...';
-  }
-
-  return str;
-};

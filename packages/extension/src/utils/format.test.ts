@@ -5,7 +5,6 @@ import {
   formatCurrencyName,
   formatFlags,
   formatFlagsToNumber,
-  truncateStringOnLongWord,
   formatToken,
   formatTransferFee
 } from './format';
@@ -160,26 +159,5 @@ describe('formatCurrencyName', () => {
     const formattedCurrency = formatCurrencyName(currency);
 
     expect(formattedCurrency).toEqual('ETH');
-  });
-});
-
-describe('truncateStringOnLongWord', () => {
-  it('should return the string as it is if its length is lower than or equal to the given length', () => {
-    expect(truncateStringOnLongWord('Test string', 11)).toEqual('Test string');
-    expect(truncateStringOnLongWord('Test string', 12)).toEqual('Test string');
-  });
-
-  it('should return the string truncated with "..." at the end if there is no space within the given length', () => {
-    expect(truncateStringOnLongWord('Teststring', 8)).toEqual('Teststri...');
-  });
-
-  it('should return the string truncated with "..." at the end if there is a word with a length bigger than the given length', () => {
-    expect(
-      truncateStringOnLongWord('This is a supercalifragilisticexpialidocious test', 15)
-    ).toEqual('This is a super...');
-  });
-
-  it('should return the string raw if there is a space within the given length and no words longer than the length', () => {
-    expect(truncateStringOnLongWord('This is a test', 10)).toEqual('This is a test');
   });
 });

@@ -9,8 +9,8 @@ import { convertHexToString } from 'xrpl';
 import { AccountNFToken, NFTData } from '@gemwallet/constants';
 
 import { useLedger } from '../../../contexts';
-import { truncateStringOnLongWord } from '../../../utils';
 import { NFTImage } from '../../atoms';
+import { TruncatedText } from '../../atoms';
 import { NFTDetails } from '../../organisms';
 
 export interface NFTCardProps {
@@ -27,8 +27,6 @@ const Transition = forwardRef(function Transition(
 });
 
 export const NFTCard: FC<NFTCardProps> = ({ NFT }) => {
-  const MAX_STRING_LENGTH = 30;
-
   const { getNFTData } = useLedger();
   const [NFTData, setNFTData] = useState<NFTData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -99,31 +97,22 @@ export const NFTCard: FC<NFTCardProps> = ({ NFT }) => {
             <NFTImage imageURL={NFTData.image} height={150} width={150} />
           )}
           <Tooltip title={NFTData.NFTokenID}>
-            <div
-              style={{
-                fontSize: '14px',
-                color: 'grey',
-                marginTop: '10px',
-                cursor: 'pointer'
-              }}
+            <TruncatedText
               onClick={() => handleTokenIdClick(NFTData.NFTokenID)}
-            >
-              {truncateStringOnLongWord(NFTData.NFTokenID, MAX_STRING_LENGTH)}
-            </div>
+              text={NFTData.NFTokenID}
+              sx={{ fontSize: '14px', color: 'grey', marginTop: '10px', cursor: 'pointer' }}
+            />
           </Tooltip>
-          {NFTData.name ? (
-            <div
-              style={{ fontSize: '16px', color: 'white', marginTop: '10px' }}
-              data-testid="nft_name"
-            >
-              {truncateStringOnLongWord(NFTData.name, MAX_STRING_LENGTH)}
-            </div>
-          ) : null}
-          {NFTData.description ? (
-            <div style={{ fontSize: '14px', color: 'grey', marginTop: '10px' }}>
-              {truncateStringOnLongWord(NFTData.description, MAX_STRING_LENGTH)}
-            </div>
-          ) : null}
+          <TruncatedText
+            text={NFTData.name}
+            sx={{ fontSize: '16px', color: 'white', marginTop: '10px' }}
+            data-testid="nft_name"
+          />
+          <TruncatedText
+            text={NFTData.description}
+            sx={{ fontSize: '14px', color: 'grey', marginTop: '10px' }}
+            maxLength={200}
+          />
           <Button
             variant="outlined"
             style={{ marginTop: '10px', fontSize: '14px', gap: '10px' }}
