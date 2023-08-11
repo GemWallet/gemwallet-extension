@@ -10,9 +10,8 @@ const DEFAULT_FEES = 'Loading ...';
 
 export const useFees = (tx: Transaction | Transaction[], fee: string | null) => {
   const [estimatedFees, setEstimatedFees] = useState<string>(DEFAULT_FEES);
-  const [errorFees, setErrorFees] = useState('');
+  const [error, setError] = useState<string | undefined>();
   const [difference, setDifference] = useState<number | undefined>();
-  const [errorDifference, setErrorDifference] = useState<string | undefined>();
 
   const { estimateNetworkFees, getAccountInfo } = useLedger();
   const { getCurrentWallet } = useWallet();
@@ -59,16 +58,18 @@ export const useFees = (tx: Transaction | Transaction[], fee: string | null) => 
                   const difference =
                     Number(currentBalance) - baseReserve - Number(dropsToXrp(diffFee));
                   setDifference(difference);
+                  setError(e.message);
                   Sentry.captureException(e);
                 });
             })
             .catch((e) => {
-              setErrorDifference(e.message);
+              setError(e.message);
+              Sentry.captureException(e);
             });
         })
         .catch((e) => {
+          setError(e.message);
           Sentry.captureException(e);
-          setErrorFees(e.message);
         });
     }
   }, [
@@ -83,8 +84,7 @@ export const useFees = (tx: Transaction | Transaction[], fee: string | null) => 
 
   return {
     estimatedFees,
-    errorFees,
-    difference,
-    errorDifference
+    errorFees: error,
+    difference
   };
 };

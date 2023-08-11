@@ -12,20 +12,18 @@ import { TransactionStatus } from '../../types';
 
 interface TransactionStatusProps {
   isParamsMissing: boolean;
-  errorDifference: string | undefined;
   network: Network | string | undefined;
   difference: number | undefined;
   transaction: TransactionStatus;
   errorRequestRejection: string;
   errorValue?: string;
-  errorFees?: string;
+  errorFees: string | undefined;
   badRequestCallback?: () => void;
   onClick?: () => void;
 }
 
 export const useTransactionStatus = ({
   isParamsMissing,
-  errorDifference,
   network,
   difference,
   transaction,
@@ -123,33 +121,6 @@ export const useTransactionStatus = ({
       );
     }
 
-    if (errorDifference) {
-      if (errorDifference === 'Account not found.') {
-        return (
-          <AsyncTransaction
-            title="Account not activated"
-            subtitle={
-              <>
-                {`Your account is not activated on the ${network} network.`}
-                <br />
-                Switch network or activate your account.
-              </>
-            }
-            transaction={TransactionStatus.Rejected}
-            {...(onClick && { onClick })}
-          />
-        );
-      }
-      Sentry.captureException('Transaction failed - errorDifference: ' + errorDifference);
-      return (
-        <AsyncTransaction
-          title="Error"
-          subtitle={errorDifference}
-          transaction={TransactionStatus.Rejected}
-        />
-      );
-    }
-
     if (!difference) {
       return <PageWithSpinner />;
     }
@@ -219,7 +190,6 @@ export const useTransactionStatus = ({
     isParamsMissing,
     client,
     errorFees,
-    errorDifference,
     difference,
     errorValue,
     transaction,
