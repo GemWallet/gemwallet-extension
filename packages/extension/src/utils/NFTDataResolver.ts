@@ -7,7 +7,7 @@ import { parseJSON } from './NFTViewer';
 
 import { isImageUrl } from '.';
 
-export const resolveNFTImage = async (NFT: AccountNFToken): Promise<NFTData> => {
+export const resolveNFTData = async (NFT: AccountNFToken): Promise<NFTData> => {
   const { NFTokenID, URI } = NFT;
   let URL = convertHexToString(URI ?? '');
 
@@ -47,12 +47,14 @@ export const resolveNFTImage = async (NFT: AccountNFToken): Promise<NFTData> => 
     try {
       await fetch(URL);
       // Case 2.1 - The URL is directly a JSON
+      // If it follows the XLS-24 standard, it will be automatically parsed
       return parseJSON(URL, NFTokenID);
     } catch (e) {}
     // Case 2.2 - The URL is an IPFS hash
     if (!URL.startsWith(IPFSResolverPrefix) && !URL.startsWith('http')) {
       try {
         await fetch(`${IPFSResolverPrefix}${URL}`);
+        // If it follows the XLS-24 standard, it will be automatically parsed
         return parseJSON(`${IPFSResolverPrefix}${URL}`, NFTokenID);
       } catch (e) {}
     }

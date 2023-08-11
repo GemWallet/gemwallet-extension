@@ -18,7 +18,7 @@ const mockNFT = {
 const mockNFTData = {
   NFTokenID: 'fake',
   schema: 'ipfs://QmNpi8rcXEkohca8iXu7zysKKSJYqCvBJn3xJwga8jXqWU',
-  NFType: 'art.v0',
+  nftType: 'art.v0',
   name: "Ekiserrepe's Oniric Lo-Fi Rooms Vol.1 NFT #1",
   description: "Room #1 of Ekiserrepe's Oniric Lo-Fi Rooms Vol.1",
   image: 'ipfs://bafybeie6pmuddco552t4u7oc7anryqohuj6vl42ngct6ve3q4bjet5piam/1.png',

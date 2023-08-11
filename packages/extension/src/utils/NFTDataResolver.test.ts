@@ -2,7 +2,7 @@ import { convertHexToString } from 'xrpl';
 
 import { AccountNFToken } from '@gemwallet/constants';
 
-import { resolveNFTImage } from './NFTImageResolver';
+import { resolveNFTData } from './NFTDataResolver';
 import { parseJSON } from './NFTViewer';
 
 jest.mock('xrpl');
@@ -24,7 +24,7 @@ describe('resolveNFTImage', () => {
       NFTokenID: '1234',
       URI: ''
     };
-    const result = await resolveNFTImage(NFT as AccountNFToken);
+    const result = await resolveNFTData(NFT as AccountNFToken);
     expect(result).toEqual({
       NFTokenID: '1234',
       description: 'No data'
@@ -39,7 +39,7 @@ describe('resolveNFTImage', () => {
       NFTokenID: '1234',
       URI: 'mockHex'
     };
-    const result = await resolveNFTImage(NFT as AccountNFToken);
+    const result = await resolveNFTData(NFT as AccountNFToken);
     expect(result).toEqual({
       NFTokenID: '1234',
       image: 'https://test.com/image.png'
@@ -54,7 +54,7 @@ describe('resolveNFTImage', () => {
       NFTokenID: '1234',
       URI: 'mockHex'
     };
-    const result = await resolveNFTImage(NFT as AccountNFToken);
+    const result = await resolveNFTData(NFT as AccountNFToken);
     expect(result).toEqual({
       NFTokenID: '1234',
       image: 'https://test.com/image.jpg'
@@ -71,7 +71,7 @@ describe('resolveNFTImage', () => {
       NFTokenID: '1234',
       URI: 'mockHex'
     };
-    const result = await resolveNFTImage(NFT as AccountNFToken);
+    const result = await resolveNFTData(NFT as AccountNFToken);
     expect(result).toEqual({ name: 'test' });
   });
 
@@ -83,7 +83,7 @@ describe('resolveNFTImage', () => {
       NFTokenID: '1234',
       URI: 'mockHex'
     };
-    const result = await resolveNFTImage(NFT as AccountNFToken);
+    const result = await resolveNFTData(NFT as AccountNFToken);
     expect(result).toEqual({
       NFTokenID: '1234',
       description: 'ipfs://testData'
@@ -100,7 +100,7 @@ describe('resolveNFTImage', () => {
       NFTokenID: '1234',
       URI: 'mockHex'
     };
-    const result = await resolveNFTImage(NFT as AccountNFToken);
+    const result = await resolveNFTData(NFT as AccountNFToken);
     expect(result).toEqual({ name: 'test' });
   });
 
@@ -112,7 +112,7 @@ describe('resolveNFTImage', () => {
       NFTokenID: '1234',
       URI: 'mockHex'
     };
-    const result = await resolveNFTImage(NFT as AccountNFToken);
+    const result = await resolveNFTData(NFT as AccountNFToken);
     expect(result).toEqual({
       NFTokenID: '1234',
       description: 'ipfs://testData'

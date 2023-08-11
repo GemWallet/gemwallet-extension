@@ -1,3 +1,4 @@
+import { NFTData } from '@gemwallet/constants';
 import { IPFSResolverPrefix } from '@gemwallet/constants/src/xrpl/nft.constant';
 
 export const parseImage = (NFTData: any, URL: string): string => {
@@ -12,7 +13,7 @@ export const parseImage = (NFTData: any, URL: string): string => {
   return URL.replace('.json', '.png');
 };
 
-export const parseJSON = async (URL: any, NFTokenID: string): Promise<any> => {
+export const parseJSON = async (URL: any, NFTokenID: string): Promise<NFTData> => {
   const NFTData = await fetch(URL)
     .then((res) => res.json())
     .catch(() => {

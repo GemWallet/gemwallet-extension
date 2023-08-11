@@ -43,7 +43,7 @@ import {
 
 import { AccountTransaction, WalletLedger } from '../../types';
 import { toXRPLMemos, toXRPLSigners } from '../../utils';
-import { resolveNFTImage } from '../../utils/NFTImageResolver';
+import { resolveNFTData } from '../../utils/NFTDataResolver';
 import { useNetwork } from '../NetworkContext';
 import { useWallet } from '../WalletContext';
 
@@ -799,7 +799,7 @@ const LedgerProvider: FC = ({ children }) => {
 
   const getNFTData = useCallback(async ({ NFT }: NFTImageRequest) => {
     try {
-      return resolveNFTImage(NFT);
+      return resolveNFTData(NFT);
     } catch (e) {
       Sentry.captureException(e);
       throw e;

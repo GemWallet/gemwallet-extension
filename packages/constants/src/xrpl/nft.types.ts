@@ -14,7 +14,9 @@ export interface AccountNFTokenResponse {
 
 export interface NFTData {
   NFTokenID: string;
-  NFType?: string;
+
+  // XLS-24 standard fields
+  nftType?: string;
   schema?: string;
   name?: string;
   description?: string;
