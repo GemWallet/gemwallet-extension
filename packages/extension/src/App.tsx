@@ -365,9 +365,7 @@ const App: FC = () => {
 
   return (
     <ErrorBoundary>
-      <SentryRoutes>
-        <AppRoutes />
-      </SentryRoutes>
+      <AppRoutes />
     </ErrorBoundary>
   );
 };
