@@ -1,14 +1,17 @@
-import { convertHexToString } from 'xrpl';
+import { convertStringToHex } from 'xrpl';
 
-import { AccountNFToken } from '@gemwallet/constants';
+import { IPFSResolverPrefix } from '@gemwallet/constants/src/xrpl/nft.constant';
 
 import { resolveNFTData } from './NFTDataResolver';
-import { parseJSON } from './NFTViewer';
 
-jest.mock('xrpl');
-jest.mock('./NFTViewer');
+const mockNFT = {
+  Flags: 0,
+  Issuer: '',
+  NFTokenTaxon: 0,
+  nft_serial: 0
+};
 
-describe('resolveNFTImage', () => {
+describe('resolveNFTData', () => {
   let mockFetch: jest.SpyInstance;
 
   beforeEach(() => {
@@ -20,11 +23,7 @@ describe('resolveNFTImage', () => {
   });
 
   it('should return NFTokenID and description if URI is empty', async () => {
-    const NFT = {
-      NFTokenID: '1234',
-      URI: ''
-    };
-    const result = await resolveNFTData(NFT as AccountNFToken);
+    const result = await resolveNFTData({ ...mockNFT, NFTokenID: '1234' });
     expect(result).toEqual({
       NFTokenID: '1234',
       description: 'No data'
@@ -32,14 +31,12 @@ describe('resolveNFTImage', () => {
   });
 
   it('should return NFTokenID and image URL if URL is a PNG image', async () => {
-    // @ts-ignore
-    convertHexToString.mockResolvedValueOnce('https://test.com/image.png');
     mockFetch.mockResolvedValue(new Response(JSON.stringify({}), { status: 200 }));
-    const NFT = {
+    const result = await resolveNFTData({
+      ...mockNFT,
       NFTokenID: '1234',
-      URI: 'mockHex'
-    };
-    const result = await resolveNFTData(NFT as AccountNFToken);
+      URI: convertStringToHex('https://test.com/image.png')
+    });
     expect(result).toEqual({
       NFTokenID: '1234',
       image: 'https://test.com/image.png'
@@ -47,14 +44,12 @@ describe('resolveNFTImage', () => {
   });
 
   it('should return NFTokenID and image URL if URL is a JPG image', async () => {
-    // @ts-ignore
-    convertHexToString.mockResolvedValueOnce('https://test.com/image.jpg');
     mockFetch.mockResolvedValue(new Response(JSON.stringify({}), { status: 200 }));
-    const NFT = {
+    const result = await resolveNFTData({
+      ...mockNFT,
       NFTokenID: '1234',
-      URI: 'mockHex'
-    };
-    const result = await resolveNFTData(NFT as AccountNFToken);
+      URI: convertStringToHex('https://test.com/image.jpg')
+    });
     expect(result).toEqual({
       NFTokenID: '1234',
       image: 'https://test.com/image.jpg'
@@ -62,60 +57,51 @@ describe('resolveNFTImage', () => {
   });
 
   it('should return parsed JSON if URL is a JSON', async () => {
-    // @ts-ignore
-    convertHexToString.mockResolvedValueOnce('https://test.com/data.json');
     mockFetch.mockResolvedValue(new Response(JSON.stringify({}), { status: 200 }));
-    // @ts-ignore
-    parseJSON.mockResolvedValueOnce({ name: 'test' });
-    const NFT = {
+    (global.fetch as jest.Mock).mockResolvedValue(
+      new Response(JSON.stringify({ description: 'Test JSON' }))
+    );
+    const result = await resolveNFTData({
+      ...mockNFT,
       NFTokenID: '1234',
-      URI: 'mockHex'
-    };
-    const result = await resolveNFTData(NFT as AccountNFToken);
-    expect(result).toEqual({ name: 'test' });
-  });
-
-  it('should return raw NFT attributes if URL fetch fails', async () => {
-    // @ts-ignore
-    convertHexToString.mockResolvedValueOnce('ipfs://testData');
-    mockFetch.mockRejectedValueOnce(new Error('fetch error'));
-    const NFT = {
-      NFTokenID: '1234',
-      URI: 'mockHex'
-    };
-    const result = await resolveNFTData(NFT as AccountNFToken);
+      URI: convertStringToHex('https://test.com/data.json')
+    });
     expect(result).toEqual({
       NFTokenID: '1234',
-      description: 'ipfs://testData'
+      description: 'Test JSON',
+      image: 'https://test.com/data.png'
     });
   });
 
-  it('should return parsed JSON if URL is an IPFS URL and fetch is successful', async () => {
-    // @ts-ignore
-    convertHexToString.mockResolvedValueOnce('ipfs://testData');
-    mockFetch.mockResolvedValue(new Response(JSON.stringify({ name: 'test' }), { status: 200 }));
-    // @ts-ignore
-    parseJSON.mockResolvedValueOnce({ name: 'test' });
-    const NFT = {
+  it('should return raw NFT attributes if URL fetch fails', async () => {
+    const testJsonUrl = 'https://test.com/data.json';
+    (global.fetch as jest.Mock).mockRejectedValueOnce(new Error('Fetch failed'));
+
+    const result = await resolveNFTData({
+      ...mockNFT,
       NFTokenID: '1234',
-      URI: 'mockHex'
-    };
-    const result = await resolveNFTData(NFT as AccountNFToken);
-    expect(result).toEqual({ name: 'test' });
+      URI: convertStringToHex(testJsonUrl)
+    });
+
+    expect(result).toEqual({
+      NFTokenID: '1234',
+      description: testJsonUrl.replace(IPFSResolverPrefix, 'ipfs://')
+    });
   });
 
   it('should return raw NFT attributes if URL fetch from IPFS fails', async () => {
-    // @ts-ignore
-    convertHexToString.mockResolvedValueOnce('ipfs://testData');
-    mockFetch.mockRejectedValueOnce(new Error('fetch error'));
-    const NFT = {
+    const testIpfsUrl = `${IPFSResolverPrefix}someHash`;
+    (global.fetch as jest.Mock).mockRejectedValueOnce(new Error('Fetch failed'));
+
+    const result = await resolveNFTData({
+      ...mockNFT,
       NFTokenID: '1234',
-      URI: 'mockHex'
-    };
-    const result = await resolveNFTData(NFT as AccountNFToken);
+      URI: convertStringToHex(testIpfsUrl)
+    });
+
     expect(result).toEqual({
       NFTokenID: '1234',
-      description: 'ipfs://testData'
+      description: `ipfs://someHash`
     });
   });
 });

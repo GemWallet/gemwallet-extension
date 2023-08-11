@@ -9,7 +9,7 @@ import { isImageUrl } from '.';
 
 export const resolveNFTData = async (NFT: AccountNFToken): Promise<NFTData> => {
   const { NFTokenID, URI } = NFT;
-  let URL = convertHexToString(URI ?? '');
+  let URL = URI ? convertHexToString(URI) : '';
 
   if (!URL.length) {
     return {
