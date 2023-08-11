@@ -76,7 +76,8 @@ export const MintNFT: FC = () => {
     network: networkName,
     difference,
     transaction,
-    errorRequestRejection
+    errorRequestRejection,
+    errorFees
   });
 
   const createMessage = useCallback(

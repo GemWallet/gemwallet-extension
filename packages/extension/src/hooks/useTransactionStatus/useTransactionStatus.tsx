@@ -18,6 +18,7 @@ interface TransactionStatusProps {
   transaction: TransactionStatus;
   errorRequestRejection: string;
   errorValue?: string;
+  errorFees?: string;
   badRequestCallback?: () => void;
   onClick?: () => void;
 }
@@ -30,6 +31,7 @@ export const useTransactionStatus = ({
   transaction,
   errorRequestRejection,
   errorValue,
+  errorFees,
   badRequestCallback,
   onClick
 }: TransactionStatusProps) => {
@@ -91,6 +93,33 @@ export const useTransactionStatus = ({
             </div>
           </InformationMessage>
         </Container>
+      );
+    }
+
+    if (errorFees) {
+      if (errorFees === 'Account not found.') {
+        return (
+          <AsyncTransaction
+            title="Account not activated"
+            subtitle={
+              <>
+                {`Your account is not activated on the ${network} network.`}
+                <br />
+                Switch network or activate your account.
+              </>
+            }
+            transaction={TransactionStatus.Rejected}
+            {...(onClick && { onClick })}
+          />
+        );
+      }
+      Sentry.captureException('Transaction failed - errorFees: ' + errorFees);
+      return (
+        <AsyncTransaction
+          title="Error"
+          subtitle={errorFees}
+          transaction={TransactionStatus.Rejected}
+        />
       );
     }
 
@@ -189,6 +218,7 @@ export const useTransactionStatus = ({
   }, [
     isParamsMissing,
     client,
+    errorFees,
     errorDifference,
     difference,
     errorValue,
