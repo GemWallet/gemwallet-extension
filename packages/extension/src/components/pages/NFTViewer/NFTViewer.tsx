@@ -13,11 +13,11 @@ export const MAX_FETCHED_NFTS = 20;
 const initalState = {
   account_nfts: [],
   marker: null,
-  loading: false
+  isLoading: false
 };
 
 interface NFTsProps extends AccountNFTokenResponse {
-  loading: boolean;
+  isLoading: boolean;
 }
 
 export const NFTViewer: FC = () => {
@@ -31,14 +31,14 @@ export const NFTViewer: FC = () => {
         marker: NFTs.marker ?? undefined
       };
 
-      setNFTs({ ...NFTs, loading: true });
+      setNFTs({ ...NFTs, isLoading: true });
 
       const response = await getNFTs(payload);
 
       setNFTs({
         marker: response.marker,
         account_nfts: NFTs.account_nfts.concat(response.account_nfts),
-        loading: false
+        isLoading: false
       });
     } catch (error) {
       setNFTs(initalState);

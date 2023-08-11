@@ -97,7 +97,7 @@ export const AddCustomNetworkDialog: FC<AddCustomNetworkDialogProps> = ({
           <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
             <CloseIcon />
           </IconButton>
-          <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+          <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="p">
             Add custom network
           </Typography>
         </Toolbar>

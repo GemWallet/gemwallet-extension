@@ -27,7 +27,7 @@ export const NFTDetails: FC<NFTDetailsProps> = ({ NFTData, handleClose }) => {
           >
             <CloseIcon />
           </IconButton>
-          <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+          <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="p">
             NFT Details
           </Typography>
         </Toolbar>

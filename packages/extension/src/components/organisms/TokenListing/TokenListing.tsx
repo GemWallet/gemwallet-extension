@@ -266,7 +266,7 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
             <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
               <CloseIcon />
             </IconButton>
-            <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+            <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="p">
               Account balance
             </Typography>
           </Toolbar>

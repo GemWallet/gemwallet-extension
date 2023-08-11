@@ -11,11 +11,11 @@ import { MAX_FETCHED_NFTS } from '../../pages';
 
 export interface NFTListingProps extends AccountNFTokenResponse {
   onLoadMoreClick: () => void;
-  loading: boolean;
+  isLoading: boolean;
 }
 
-export const NFTListing: FC<NFTListingProps> = ({ loading, account_nfts, onLoadMoreClick }) => {
-  if (account_nfts.length === 0 && !loading) {
+export const NFTListing: FC<NFTListingProps> = ({ isLoading, account_nfts, onLoadMoreClick }) => {
+  if (account_nfts.length === 0 && !isLoading) {
     return (
       <InformationMessage title="No NFTs to show">
         <div style={{ marginBottom: '5px' }}>There are no NFTs found in this wallet.</div>

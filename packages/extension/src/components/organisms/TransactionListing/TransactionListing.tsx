@@ -208,7 +208,7 @@ export const TransactionListing: FC<TransactionListingProps> = ({ transactions }
                 >
                   <CloseIcon />
                 </IconButton>
-                <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+                <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="p">
                   Transaction Details
                 </Typography>
               </Toolbar>
