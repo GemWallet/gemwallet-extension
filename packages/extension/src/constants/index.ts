@@ -4,6 +4,6 @@ export * from './links';
 export * from './storage';
 export * from './navigation';
 export * from './parameters';
-export * from './routes';
+export * from './paths';
 export * from './server';
 export * from './sizes';
