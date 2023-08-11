@@ -2,7 +2,7 @@ import { FC, useCallback, useEffect } from 'react';
 
 import { CircularProgress, Container, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
-import { Routes, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 import {
   GEM_WALLET,
@@ -42,8 +42,6 @@ import {
 import { useBrowser, useNetwork, useWallet } from './contexts';
 import { useBeforeUnload } from './hooks';
 import { loadNetwork } from './utils';
-
-const SentryRoutes = Sentry.withSentryReactRouterV6Routing(Routes);
 
 const App: FC = () => {
   const { window: extensionWindow, closeExtension } = useBrowser();
