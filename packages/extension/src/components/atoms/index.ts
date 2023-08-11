@@ -1,5 +1,7 @@
 export * from './ButtonOption';
 export * from './Logo';
+export * from './NFTImage';
+export * from './NFTListItem';
 export * from './NumericInput';
 export * from './PrivateRoute';
 export * from './TileLoader';

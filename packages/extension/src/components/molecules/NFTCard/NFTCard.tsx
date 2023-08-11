@@ -1,17 +1,16 @@
-import { FC, forwardRef, useCallback, useEffect, useState } from 'react';
+import { FC, forwardRef, ReactElement, Ref, useCallback, useEffect, useState } from 'react';
 
 import { OpenInNewOutlined } from '@mui/icons-material';
 import { Button, CircularProgress, Dialog, ListItem, Paper, Slide, Tooltip } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 import * as Sentry from '@sentry/react';
-import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { convertHexToString } from 'xrpl';
 
 import { AccountNFToken, NFTData } from '@gemwallet/constants';
 
 import { useLedger } from '../../../contexts';
 import { truncateStringOnLongWord } from '../../../utils';
-import { GemWallet } from '../../atoms';
+import { NFTImage } from '../../atoms';
 import { NFTDetails } from '../../organisms';
 
 export interface NFTCardProps {
@@ -20,9 +19,9 @@ export interface NFTCardProps {
 
 const Transition = forwardRef(function Transition(
   props: TransitionProps & {
-    children: React.ReactElement;
+    children: ReactElement;
   },
-  ref: React.Ref<unknown>
+  ref: Ref<unknown>
 ) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -96,35 +95,23 @@ export const NFTCard: FC<NFTCardProps> = ({ NFT }) => {
         >
           {isLoading ? (
             <CircularProgress data-testid="progressbar" />
-          ) : NFTData?.image ? (
-            <LazyLoadImage
-              alt="nft"
-              height={150}
-              style={{ borderRadius: '4px', boxShadow: '4px 4px 0px black' }}
-              beforeLoad={() => <CircularProgress />}
-              effect="blur"
-              src={NFTData?.image}
-              width={150}
-            />
           ) : (
-            <GemWallet />
+            <NFTImage imageURL={NFTData.image} height={150} width={150} />
           )}
-          {NFTData ? (
-            <Tooltip title={NFTData.NFTokenID}>
-              <div
-                style={{
-                  fontSize: '14px',
-                  color: 'grey',
-                  marginTop: '10px',
-                  cursor: 'pointer'
-                }}
-                onClick={() => handleTokenIdClick(NFTData.NFTokenID)}
-              >
-                {truncateStringOnLongWord(NFTData.NFTokenID, MAX_STRING_LENGTH)}
-              </div>
-            </Tooltip>
-          ) : null}
-          {NFTData?.name ? (
+          <Tooltip title={NFTData.NFTokenID}>
+            <div
+              style={{
+                fontSize: '14px',
+                color: 'grey',
+                marginTop: '10px',
+                cursor: 'pointer'
+              }}
+              onClick={() => handleTokenIdClick(NFTData.NFTokenID)}
+            >
+              {truncateStringOnLongWord(NFTData.NFTokenID, MAX_STRING_LENGTH)}
+            </div>
+          </Tooltip>
+          {NFTData.name ? (
             <div
               style={{ fontSize: '16px', color: 'white', marginTop: '10px' }}
               data-testid="nft_name"
@@ -132,7 +119,7 @@ export const NFTCard: FC<NFTCardProps> = ({ NFT }) => {
               {truncateStringOnLongWord(NFTData.name, MAX_STRING_LENGTH)}
             </div>
           ) : null}
-          {NFTData?.description ? (
+          {NFTData.description ? (
             <div style={{ fontSize: '14px', color: 'grey', marginTop: '10px' }}>
               {truncateStringOnLongWord(NFTData.description, MAX_STRING_LENGTH)}
             </div>

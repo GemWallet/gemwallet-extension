@@ -6,7 +6,7 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import { AccountNFTokenResponse } from '@gemwallet/constants';
 
 import { InformationMessage } from '../../molecules';
-import { NFTCard } from '../../molecules/NFTCard';
+import { NFTCard } from '../../molecules';
 import { MAX_FETCHED_NFTS } from '../../pages';
 
 export interface NFTListingProps extends AccountNFTokenResponse {
