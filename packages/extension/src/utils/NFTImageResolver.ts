@@ -4,7 +4,7 @@ import { parseJSON } from './NFTViewer';
 
 export interface NFTData {
   NFTokenID: string;
-  NFType?: string;
+  nftType?: string;
   schema?: string;
   name?: string;
   description?: string;

@@ -252,21 +252,23 @@ export type TransactionWithID = Transaction & {
 
 export const DEFAULT_SUBMIT_TX_BULK_ON_ERROR = 'abort';
 
-export interface SubmitTransactionsBulkRequest {
-  transactions: TransactionWithID[];
+export type TransactionErrorHandling = 'abort' | 'continue';
+
+export interface BaseTransactionBulkRequest {
   noWait?: boolean; // default: false
-  onError?: 'abort' | 'continue'; // default: abort
+  onError?: TransactionErrorHandling; // default: abort
 }
 
-// Type that goes through the messaging system. It embeds the transactions in a Record with a numbered key, in order
-// to guarantee that the order is preserved.
-export interface SubmitTransactionsBulkModifiedRequest {
+export interface SubmitTransactionsBulkRequest extends BaseTransactionBulkRequest {
+  transactions: TransactionWithID[];
+}
+
+export interface SubmitTransactionsBulkModifiedRequest extends BaseTransactionBulkRequest {
   // The key is used to guarantee that the transactions are submitted in the same order as they are in the request.
   transactions: Record<number, TransactionWithID>;
-  onError?: 'abort' | 'continue'; // default: abort
 }
 
-export interface SubmitStorageKeysRequest {
+export interface SubmitStorageKeyRequest {
   storageKey: string;
 }
 
@@ -288,7 +290,7 @@ export type RequestPayload =
   | SetTrustlineRequestDeprecated
   | SignMessageRequest
   | SignTransactionRequest
-  | SubmitStorageKeysRequest
+  | SubmitStorageKeyRequest
   | SubmitTransactionRequest
   | SubmitTransactionsBulkModifiedRequest;
 
@@ -349,7 +351,7 @@ export type TransactionBulkResponse = {
   ID?: string;
   accepted?: boolean;
   hash?: string;
-  error?: Error;
+  error?: string;
 };
 
 export interface SubmitTransactionsBulkResponse

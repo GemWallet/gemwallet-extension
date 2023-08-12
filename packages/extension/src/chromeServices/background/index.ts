@@ -58,7 +58,7 @@ import {
   PARAMETER_TRANSACTION_SET_ACCOUNT,
   PARAMETER_SUBMIT_TRANSACTIONS_BULK
 } from '../../constants/parameters';
-import { generateKey, saveInMemory } from '../../utils/storageInMemory';
+import { generateKey, saveInChromeStorage } from '../../utils/storageChrome';
 import { focusOrCreatePopupWindow } from './utils/focusOrCreatePopupWindow';
 import { createOffscreen } from './utils/offscreen';
 import { Session } from './utils/session';
@@ -86,7 +86,7 @@ const sendInMemoryMessage = ({
   sender: chrome.runtime.MessageSender;
 }) => {
   const key = generateKey();
-  saveInMemory(key, JSON.stringify(payload));
+  saveInChromeStorage(key, JSON.stringify(payload));
   focusOrCreatePopupWindow({
     payload: {
       storageKey: key

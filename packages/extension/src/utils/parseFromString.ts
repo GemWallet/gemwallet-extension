@@ -382,15 +382,14 @@ export const parseTransactionParam = (str: string | null): Transaction | null =>
 };
 
 export const parseTransactionsBulkMap = (
-  str: string | null
+  json: object | null
 ): Record<number, TransactionWithID> | null => {
-  if (!str) {
+  if (!json) {
     return null;
   }
 
   try {
-    const parsedTransactions = JSON.parse(str);
-    return parsedTransactions as Record<number, TransactionWithID>;
+    return json as Record<number, TransactionWithID>;
   } catch (error) {
     return null;
   }

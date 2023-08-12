@@ -1,6 +1,6 @@
 import { NFTokenCreateOfferFlags, NFTokenMintFlags, NFTokenMintFlagsInterface } from 'xrpl';
 
-import { Signer } from '@gemwallet/constants';
+import { Signer, TransactionWithID } from '@gemwallet/constants';
 
 import {
   createNFTOfferFlagsToNumber,
@@ -15,6 +15,7 @@ import {
   parseSetAccountFlags,
   parseSigners,
   parseTransactionParam,
+  parseTransactionsBulkMap,
   parseTrustSetFlags
 } from './parseFromString';
 
@@ -381,5 +382,24 @@ describe('parseTransactionParam', () => {
     const notAnObject = '"This is a JSON string, but not an object"';
 
     expect(parseTransactionParam(notAnObject)).toBe(null);
+  });
+});
+
+describe('parseTransactionsBulkMap', () => {
+  it('should return null if input is null', () => {
+    expect(parseTransactionsBulkMap(null)).toBeNull();
+  });
+
+  it('should return the same object if it is of type Record<number, TransactionWithID>', () => {
+    const mockTransaction = { id: '123', amount: 456 };
+    const input: Record<number, TransactionWithID> = { 0: mockTransaction as any };
+
+    expect(parseTransactionsBulkMap(input)).toEqual(input);
+  });
+
+  it('should return the object even if it does not strictly match Record<number, TransactionWithID>', () => {
+    const input = { key: 'value' }; // This doesn't match the type but our function should still return it
+
+    expect(parseTransactionsBulkMap(input as any)).toEqual(input);
   });
 });

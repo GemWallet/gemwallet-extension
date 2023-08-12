@@ -8,13 +8,19 @@ import {
   ReceiveSubmitTransactionsBulkBackgroundMessage,
   ResponseType,
   TransactionBulkResponse,
+  TransactionErrorHandling,
   TransactionWithID
 } from '@gemwallet/constants';
 
+import { STORAGE_PERMISSION_SUBMIT_BULK } from '../../../constants';
 import { useLedger, useNetwork } from '../../../contexts';
 import { useFees, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
-import { parseTransactionsBulkMap } from '../../../utils';
+import {
+  loadFromChromeStorage,
+  parseTransactionsBulkMap,
+  saveInChromeStorage
+} from '../../../utils';
 import { serializeError } from '../../../utils/errors';
 import { PermissionRequiredView } from './PermissionRequiredView';
 import { RecapView } from './RecapView';
@@ -40,13 +46,10 @@ export const SubmitTransactionsBulk: FC = () => {
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
   const [showRecap, setShowRecap] = useState(true);
   const [progressPercentage, setProgressPercentage] = useState(0);
-  const [onError, setOnError] = useState<'abort' | 'continue'>(DEFAULT_SUBMIT_TX_BULK_ON_ERROR);
+  const [onError, setOnError] = useState<TransactionErrorHandling>(DEFAULT_SUBMIT_TX_BULK_ON_ERROR);
   const [noWait, setNoWait] = useState(false);
-  const [submitBulkTransactionsEnabled, setSubmitBulkTransactionsEnabled] = useState<boolean>(
-    () => {
-      return JSON.parse(localStorage.getItem('permission-submitBulkTransactions') || 'false');
-    }
-  );
+  const [submitBulkTransactionsEnabled, setSubmitBulkTransactionsEnabled] =
+    useState<boolean>(false);
   const { submitTransactionsBulk } = useLedger();
   const { networkName } = useNetwork();
   const { estimatedFees, errorFees, difference, errorDifference } = useFees(
@@ -72,7 +75,7 @@ export const SubmitTransactionsBulk: FC = () => {
   });
 
   const enableBulkTransactionPermission = useCallback(() => {
-    localStorage.setItem('permission-submitBulkTransactions', 'true');
+    saveInChromeStorage(STORAGE_PERMISSION_SUBMIT_BULK, 'true');
     setSubmitBulkTransactionsEnabled(true);
   }, []);
 
@@ -91,6 +94,18 @@ export const SubmitTransactionsBulk: FC = () => {
   const handleReset = () => setActiveStep(0);
 
   useEffect(() => {
+    const loadInitialData = async () => {
+      const storedData = await loadFromChromeStorage(STORAGE_PERMISSION_SUBMIT_BULK);
+      if (!storedData) return;
+      if (!(STORAGE_PERMISSION_SUBMIT_BULK in storedData)) return;
+
+      setSubmitBulkTransactionsEnabled(storedData[STORAGE_PERMISSION_SUBMIT_BULK] === 'true');
+    };
+
+    loadInitialData();
+  }, []);
+
+  useEffect(() => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const id = Number(urlParams.get('id')) || 0;
@@ -101,20 +116,22 @@ export const SubmitTransactionsBulk: FC = () => {
         const storageKey = urlParams.get('storageKey');
 
         if (storageKey) {
-          const storedData = await chrome.storage.local.get(storageKey);
-          const parsedStoredData = JSON.parse(storedData[storageKey]);
-          if ('transactions' in parsedStoredData) {
-            parsedTransactionsMap = parseTransactionsBulkMap(parsedStoredData.transactions);
-          }
-          if ('noWait' in parsedStoredData) {
-            setNoWait(parsedStoredData.noWait === true || parsedStoredData.noWait === 'true');
-          }
-          if ('onError' in parsedStoredData) {
-            const onError =
-              parsedStoredData.onError === 'abort' || parsedStoredData.onError === 'continue'
-                ? parsedStoredData.onError
-                : DEFAULT_SUBMIT_TX_BULK_ON_ERROR;
-            setOnError(onError);
+          const storedData = await loadFromChromeStorage(storageKey);
+          if (storedData) {
+            const parsedStoredData = JSON.parse(storedData[storageKey]);
+            if ('transactions' in parsedStoredData) {
+              parsedTransactionsMap = parseTransactionsBulkMap(parsedStoredData.transactions);
+            }
+            if ('noWait' in parsedStoredData) {
+              setNoWait(parsedStoredData.noWait === true || parsedStoredData.noWait === 'true');
+            }
+            if ('onError' in parsedStoredData) {
+              const onError =
+                parsedStoredData.onError === 'abort' || parsedStoredData.onError === 'continue'
+                  ? parsedStoredData.onError
+                  : DEFAULT_SUBMIT_TX_BULK_ON_ERROR;
+              setOnError(onError);
+            }
           }
         }
       } catch (error) {
@@ -175,7 +192,7 @@ export const SubmitTransactionsBulk: FC = () => {
 
     const submitTransactionsInChunks = async (
       transactionsRecord: Record<number, TransactionWithID>,
-      onError: 'abort' | 'continue'
+      onError: TransactionErrorHandling
     ): Promise<TransactionBulkResponse[]> => {
       let results: TransactionBulkResponse[] = [];
 

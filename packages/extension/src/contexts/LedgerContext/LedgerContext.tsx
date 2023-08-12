@@ -866,7 +866,10 @@ const LedgerProvider: FC = ({ children }) => {
           };
         } catch (e) {
           Sentry.captureException(e);
-          return { ID, error: e as Error };
+          return {
+            ID,
+            error: `Error while processing the transaction: ${JSON.stringify(e)}`
+          };
         }
       };
 
