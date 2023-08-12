@@ -109,17 +109,17 @@ export const SubmitTransactionsBulk: FC = () => {
           if ('noWait' in parsedStoredData) {
             setNoWait(parsedStoredData.noWait === true || parsedStoredData.noWait === 'true');
           }
+          if ('onError' in parsedStoredData) {
+            const onError =
+              parsedStoredData.onError === 'abort' || parsedStoredData.onError === 'continue'
+                ? parsedStoredData.onError
+                : DEFAULT_SUBMIT_TX_BULK_ON_ERROR;
+            setOnError(onError);
+          }
         }
       } catch (error) {
         Sentry.captureException(error);
       }
-
-      const onError = (
-        urlParams.get('onError') === 'abort' || urlParams.get('onError') === 'continue'
-          ? urlParams.get('onError')
-          : DEFAULT_SUBMIT_TX_BULK_ON_ERROR
-      ) as 'abort' | 'continue';
-      setOnError(onError ?? DEFAULT_SUBMIT_TX_BULK_ON_ERROR);
 
       if (!parsedTransactionsMap) {
         setIsParamsMissing(true);
@@ -196,14 +196,10 @@ export const SubmitTransactionsBulk: FC = () => {
           });
           results = [...results, ...response.txResults];
 
-          if (response.hasError) {
+          if (response.hasError && onError === 'abort') {
             setErrorRequestRejection('Some transactions were rejected');
             setTransaction(TransactionStatus.Rejected);
-            const message = createMessage({
-              txResults: null,
-              error: new Error('Some transactions were rejected')
-            });
-            chrome.runtime.sendMessage<ReceiveSubmitTransactionsBulkBackgroundMessage>(message);
+            return results;
           }
 
           const totalTransactions = Object.values(params.transactionsMapParam || {}).length;

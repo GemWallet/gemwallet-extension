@@ -162,7 +162,7 @@ export const StepperView: FC<StepperViewProps> = ({
 
   return (
     <PageWithTitle title="Bulk Transactions" styles={{ container: { justifyContent: 'initial' } }}>
-      <div style={{ marginBottom: '100px' }}>
+      <div style={{ marginBottom: '40px' }}>
         {steps > 1 ? (
           <div
             style={{
