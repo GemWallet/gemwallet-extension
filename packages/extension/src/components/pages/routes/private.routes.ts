@@ -27,6 +27,7 @@ import {
   SIGN_MESSAGE_PATH,
   SIGN_TRANSACTION_PATH,
   SUBMIT_TRANSACTION_PATH,
+  SUBMIT_TRANSACTIONS_BULK_PATH,
   TRANSACTION_PATH,
   TRUSTED_APPS_PATH
 } from '../../../constants';
@@ -56,6 +57,7 @@ import { SharePublicKey } from '../SharePublicKey';
 import { SignMessage } from '../SignMessage';
 import { SignTransaction } from '../SignTransaction';
 import { SubmitTransaction } from '../SubmitTransaction';
+import { SubmitTransactionsBulk } from '../SubmitTransactionsBulk';
 import { Transaction } from '../Transaction';
 import { TrustedApps } from '../TrustedApps';
 
@@ -91,6 +93,7 @@ export const privateRoutes: PrivateRouteConfig[] = [
   { path: SIGN_MESSAGE_PATH, element: SignMessage },
   { path: SIGN_TRANSACTION_PATH, element: SignTransaction },
   { path: SUBMIT_TRANSACTION_PATH, element: SubmitTransaction },
+  { path: SUBMIT_TRANSACTIONS_BULK_PATH, element: SubmitTransactionsBulk },
   { path: TRANSACTION_PATH, element: Transaction },
   { path: TRUSTED_APPS_PATH, element: TrustedApps }
 ];
