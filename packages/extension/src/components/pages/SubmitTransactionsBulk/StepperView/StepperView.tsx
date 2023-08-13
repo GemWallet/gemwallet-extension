@@ -22,12 +22,12 @@ import { NFTokenAcceptOffer, NFTokenBurn, NFTokenCancelOffer, NFTokenCreateOffer
 import { Amount } from 'xrpl/dist/npm/models/common';
 import { NFTokenMint } from 'xrpl/dist/npm/models/transactions/NFTokenMint';
 
-import { TransactionWithID } from '@gemwallet/constants';
+import { NFTData, TransactionWithID } from '@gemwallet/constants';
 
 import { ERROR_RED } from '../../../../constants';
 import { useLedger, useNetwork } from '../../../../contexts';
 import { formatAmount } from '../../../../utils';
-import { NFTData, resolveNFTImage } from '../../../../utils/NFTImageResolver';
+import { resolveNFTData } from '../../../../utils/NFTDataResolver';
 import { PageWithTitle } from '../../../templates';
 
 interface StepperViewProps {
@@ -96,7 +96,7 @@ export const StepperView: FC<StepperViewProps> = ({
 
   useEffect(() => {
     const resolveImageFromURI = async (URI: string, index: number, amount?: Amount) => {
-      const NFTData = await resolveNFTImage('', URI);
+      const NFTData = await resolveNFTData('', URI);
 
       setTxNFTData((prev) => ({
         ...prev,
