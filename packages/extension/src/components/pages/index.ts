@@ -20,6 +20,7 @@ export * from './ListWallets';
 export * from './Login';
 export * from './MintNFT';
 export * from './NFTViewer';
+export * from './Permissions';
 export * from './ResetPassword';
 export * from './SendPayment';
 export * from './ReceivePayment';

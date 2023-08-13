@@ -18,6 +18,7 @@ import {
   FAQ_LINK,
   FEEDBACK_LINK,
   NAV_MENU_HEIGHT,
+  PERMISSIONS_PATH,
   RESET_PASSWORD_PATH,
   TRUSTED_APPS_PATH
 } from '../../../constants';
@@ -38,6 +39,10 @@ export const Settings: FC = () => {
       {
         name: 'Trusted Apps',
         onClick: () => navigate(TRUSTED_APPS_PATH)
+      },
+      {
+        name: 'Permissions',
+        onClick: () => navigate(PERMISSIONS_PATH)
       },
       {
         name: 'Help',
