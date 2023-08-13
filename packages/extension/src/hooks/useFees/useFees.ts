@@ -8,11 +8,13 @@ import { useLedger, useNetwork, useServer, useWallet } from '../../contexts';
 
 const DEFAULT_FEES = 'Loading ...';
 
+const calculateTotalFees = (fees: string[]) =>
+  Number(fees.reduce((acc, fee) => acc + Number(fee), 0).toFixed(2));
+
 export const useFees = (tx: Transaction | Transaction[], fee: string | null) => {
   const [estimatedFees, setEstimatedFees] = useState<string>(DEFAULT_FEES);
-  const [errorFees, setErrorFees] = useState('');
+  const [error, setError] = useState<string | undefined>();
   const [difference, setDifference] = useState<number | undefined>();
-  const [errorDifference, setErrorDifference] = useState<string | undefined>();
 
   const { estimateNetworkFees, getAccountInfo } = useLedger();
   const { getCurrentWallet } = useWallet();
@@ -24,52 +26,37 @@ export const useFees = (tx: Transaction | Transaction[], fee: string | null) => 
     if (currentWallet && client) {
       const transactions = Array.isArray(tx) ? tx : [tx];
 
-      Promise.all(
-        transactions.map((transaction) => {
-          if (!transaction.Account || transaction.Account === '') {
-            transaction.Account = currentWallet.publicAddress;
-          }
+      const transactionPromises = transactions.map(async (transaction) => {
+        if (!transaction.Account || transaction.Account === '') {
+          transaction.Account = currentWallet.publicAddress;
+        }
+        return transaction.Fee ? transaction.Fee : await estimateNetworkFees(transaction);
+      });
 
-          return transaction.Fee
-            ? Promise.resolve(transaction.Fee)
-            : estimateNetworkFees(transaction);
-        })
-      )
-        // fees are in drops
-        .then((fees) => {
-          const totalFees = Number(fees.reduce((acc, fee) => acc + Number(fee), 0).toFixed(2));
+      const processTransactions = async () => {
+        try {
+          const fees = await Promise.all(transactionPromises);
+          const totalFees = calculateTotalFees(fees);
           setEstimatedFees(totalFees.toString());
 
-          client
-            ?.getXrpBalance(currentWallet.publicAddress)
-            .then((currentBalance) => {
-              const diffFee = fee ? Number(fee) : totalFees;
-              const baseReserve = Number(
-                serverInfo?.info.validated_ledger?.reserve_base_xrp || DEFAULT_RESERVE
-              );
+          const currentBalance = await client?.getXrpBalance(currentWallet.publicAddress);
+          const diffFee = fee ? Number(fee) : totalFees;
+          const baseReserve = Number(
+            serverInfo?.info.validated_ledger?.reserve_base_xrp || DEFAULT_RESERVE
+          );
 
-              getAccountInfo()
-                .then((accountInfo) => {
-                  const reserve =
-                    accountInfo.result.account_data.OwnerCount * RESERVE_PER_OWNER + baseReserve;
-                  const difference = Number(currentBalance) - reserve - Number(dropsToXrp(diffFee));
-                  setDifference(difference);
-                })
-                .catch((e) => {
-                  const difference =
-                    Number(currentBalance) - baseReserve - Number(dropsToXrp(diffFee));
-                  setDifference(difference);
-                  Sentry.captureException(e);
-                });
-            })
-            .catch((e) => {
-              setErrorDifference(e.message);
-            });
-        })
-        .catch((e) => {
+          const accountInfo = await getAccountInfo();
+          const reserve =
+            accountInfo.result.account_data.OwnerCount * RESERVE_PER_OWNER + baseReserve;
+          const difference = Number(currentBalance) - reserve - Number(dropsToXrp(diffFee));
+          setDifference(difference);
+        } catch (e: any) {
+          setError(e.message);
           Sentry.captureException(e);
-          setErrorFees(e.message);
-        });
+        }
+      };
+
+      processTransactions();
     }
   }, [
     client,
@@ -83,8 +70,7 @@ export const useFees = (tx: Transaction | Transaction[], fee: string | null) => 
 
   return {
     estimatedFees,
-    errorFees,
-    difference,
-    errorDifference
+    errorFees: error,
+    difference
   };
 };

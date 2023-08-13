@@ -85,7 +85,7 @@ export const AddNewTrustline: FC = () => {
   const [errorValue, setErrorValue] = useState<string>('');
   const { setTrustline } = useLedger();
   const { networkName } = useNetwork();
-  const { estimatedFees, errorFees, difference, errorDifference } = useFees(
+  const { estimatedFees, errorFees, difference } = useFees(
     {
       TransactionType: 'TrustSet',
       Account: '',
@@ -149,7 +149,7 @@ export const AddNewTrustline: FC = () => {
   );
   const { hasEnoughFunds, transactionStatusComponent } = useTransactionStatus({
     isParamsMissing,
-    errorDifference,
+    errorFees,
     network: networkName,
     difference,
     transaction,

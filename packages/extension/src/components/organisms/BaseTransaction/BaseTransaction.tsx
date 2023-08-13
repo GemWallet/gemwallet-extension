@@ -30,13 +30,13 @@ type BaseTransactionProps = {
     | CreateOfferFlags
     | SetAccountFlags
     | null;
-  errorFees: string | null;
+  errorFees: string | undefined;
   estimatedFees: string;
 };
 
 type FeeProps = {
   fee: number | null;
-  errorFees: string | null;
+  errorFees: string | undefined;
   estimatedFees: string;
 };
 

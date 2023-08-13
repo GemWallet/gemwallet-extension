@@ -58,7 +58,7 @@ export const MintNFT: FC = () => {
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
   const { mintNFT } = useLedger();
   const { networkName } = useNetwork();
-  const { estimatedFees, errorFees, difference, errorDifference } = useFees(
+  const { estimatedFees, errorFees, difference } = useFees(
     {
       TransactionType: 'NFTokenMint',
       Account: '',
@@ -72,7 +72,7 @@ export const MintNFT: FC = () => {
   );
   const { hasEnoughFunds, transactionStatusComponent } = useTransactionStatus({
     isParamsMissing,
-    errorDifference,
+    errorFees,
     network: networkName,
     difference,
     transaction,

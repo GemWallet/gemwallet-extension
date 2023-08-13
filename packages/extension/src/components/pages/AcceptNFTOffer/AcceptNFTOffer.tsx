@@ -48,7 +48,7 @@ export const AcceptNFTOffer: FC = () => {
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
   const { acceptNFTOffer } = useLedger();
   const { networkName } = useNetwork();
-  const { estimatedFees, errorFees, difference, errorDifference } = useFees(
+  const { estimatedFees, errorFees, difference } = useFees(
     {
       TransactionType: 'NFTokenAcceptOffer',
       Account: '',
@@ -60,7 +60,7 @@ export const AcceptNFTOffer: FC = () => {
   );
   const { hasEnoughFunds, transactionStatusComponent } = useTransactionStatus({
     isParamsMissing,
-    errorDifference,
+    errorFees,
     network: networkName,
     difference,
     transaction,

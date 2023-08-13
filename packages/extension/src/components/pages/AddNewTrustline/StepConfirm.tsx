@@ -13,7 +13,7 @@ import { Params } from './AddNewTrustline';
 interface StepConfirmProps {
   params: Params;
   estimatedFees: string;
-  errorFees: string;
+  errorFees: string | undefined;
   hasEnoughFunds: boolean;
   onReject: () => void;
   onConfirm: () => void;
