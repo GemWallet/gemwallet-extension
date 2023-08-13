@@ -10,6 +10,8 @@ import {
 import { deserializeError } from '../helpers/errors';
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
 
+const MAX_TRANSACTIONS = 50;
+
 export const submitTransactionsBulk = async (
   payload: SubmitTransactionsBulkRequest
 ): Promise<SubmitTransactionsBulkResponse> => {
@@ -17,6 +19,10 @@ export const submitTransactionsBulk = async (
     type: ResponseType.Reject,
     result: undefined
   };
+
+  if (payload.transactions.length === 0 || payload.transactions.length > MAX_TRANSACTIONS) {
+    throw new Error('Invalid number of transactions');
+  }
 
   try {
     const message: RequestSubmitTransactionsBulkMessage = {
