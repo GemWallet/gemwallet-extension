@@ -116,7 +116,7 @@ export const SubmitTransactionsBulk: FC = () => {
         const storageKey = urlParams.get('storageKey');
 
         if (storageKey) {
-          const storedData = await loadFromChromeStorage(storageKey);
+          const storedData = await loadFromChromeStorage(storageKey, true);
           if (storedData) {
             const parsedStoredData = JSON.parse(storedData[storageKey]);
             if ('transactions' in parsedStoredData) {
