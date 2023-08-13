@@ -11,7 +11,7 @@ const mockNFT = {
   Issuer: 'rDGh681kc6V1GKkQB378XhiM1tzkYrnFwQ',
   NFTokenID: '000B0000867AD7165A812436FBFA175555413C26162BCF380000099A00000000',
   NFTokenTaxon: 1,
-  URI: '697066733A2F2F6261667962656965356A626736336A6164676979736337796B6B6A64737170777732746A6D786D7935377077716F6A697666356562366B6D6D79612F312E6A736F6E',
+  URI: '697066733A2F2F6261667962656965356A626736336A6164676979736337796B6B6A64737170777732746A6D786D7935377077716F6A697666356562366B6D6D79612F312E6A736F6E', // Hex: ipfs://bafybeie5jbg63jadgiysc7ykkjdsqpww2tjmxmy57pwqojivf5eb6kmmya/1.json
   nft_serial: 0
 };
 
@@ -54,7 +54,7 @@ const renderNFTCard = (props: NFTCardProps) => {
 
 describe('NFTCard', () => {
   test('renders NFTCard component correctly', async () => {
-    mockGetNFTData.mockReturnValue({
+    mockGetNFTData.mockReturnValueOnce({
       ...mockNFTData
     });
 
@@ -74,7 +74,9 @@ describe('NFTCard', () => {
 
     await waitFor(() => expect(mockGetNFTData).toHaveBeenCalled());
 
-    // Check that the NFT data is not displayed when an error occurs
-    expect(screen.queryByTestId('nft_name')).not.toBeInTheDocument();
+    // Check that the NFT data description is set to convertHexToString(URI) when an error occurs
+    expect(
+      screen.getByText('ipfs://bafybeie5jbg63jadgiysc7ykkjdsqpww2tjmxmy57pwqojivf5eb6kmmya/1.json')
+    ).toBeInTheDocument();
   });
 });

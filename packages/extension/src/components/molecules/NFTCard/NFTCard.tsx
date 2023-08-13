@@ -9,8 +9,7 @@ import { convertHexToString } from 'xrpl';
 import { AccountNFToken, NFTData } from '@gemwallet/constants';
 
 import { useLedger } from '../../../contexts';
-import { NFTImage } from '../../atoms';
-import { TruncatedText } from '../../atoms';
+import { NFTImage, TruncatedText, TruncatedMultiLinesText } from '../../atoms';
 import { NFTDetails } from '../../organisms';
 
 export interface NFTCardProps {
@@ -108,10 +107,9 @@ export const NFTCard: FC<NFTCardProps> = ({ NFT }) => {
             sx={{ fontSize: '16px', color: 'white', marginTop: '10px' }}
             data-testid="nft_name"
           />
-          <TruncatedText
+          <TruncatedMultiLinesText
             text={NFTData.description}
             sx={{ fontSize: '14px', color: 'grey', marginTop: '10px' }}
-            maxLength={200}
           />
           <Button
             variant="outlined"

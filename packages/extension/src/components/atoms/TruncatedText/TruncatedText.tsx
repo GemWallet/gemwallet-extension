@@ -1,18 +1,17 @@
-import { ComponentProps, FC } from 'react';
+import { ComponentProps } from 'react';
 
 import { Typography } from '@mui/material';
 
 type TruncatedTextProps = ComponentProps<typeof Typography> & {
   text?: string;
-  maxLength?: number;
 };
 
-export const TruncatedText: FC<TruncatedTextProps> = ({ text, maxLength, sx, ...rest }) => {
-  if (!text) return null;
-
-  const displayedText =
-    maxLength && text.length > maxLength ? `${text.substring(0, maxLength - 3)}...` : text;
-
+export const TruncatedText = ({
+  text = '',
+  sx,
+  variant = 'body1',
+  ...rest
+}: TruncatedTextProps) => {
   return (
     <Typography
       sx={{
@@ -23,9 +22,9 @@ export const TruncatedText: FC<TruncatedTextProps> = ({ text, maxLength, sx, ...
         ...sx
       }}
       {...rest}
-      variant="body1"
+      variant={variant}
     >
-      {displayedText}
+      {text}
     </Typography>
   );
 };
