@@ -6,12 +6,7 @@ type TruncatedTextProps = ComponentProps<typeof Typography> & {
   text?: string;
 };
 
-export const TruncatedText = ({
-  text = '',
-  sx,
-  variant = 'body1',
-  ...rest
-}: TruncatedTextProps) => {
+export const TruncatedText = ({ text = '', sx, ...rest }: TruncatedTextProps) => {
   return (
     <Typography
       sx={{
@@ -22,7 +17,6 @@ export const TruncatedText = ({
         ...sx
       }}
       {...rest}
-      variant={variant}
     >
       {text}
     </Typography>
