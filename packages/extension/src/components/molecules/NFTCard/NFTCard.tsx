@@ -98,20 +98,23 @@ export const NFTCard: FC<NFTCardProps> = ({ NFT }) => {
           <Tooltip title={NFTData.NFTokenID}>
             <TruncatedText
               onClick={() => handleTokenIdClick(NFTData.NFTokenID)}
-              text={NFTData.NFTokenID}
               sx={{ fontSize: '14px', color: 'grey', marginTop: '10px', cursor: 'pointer' }}
-            />
+            >
+              {NFTData.NFTokenID}
+            </TruncatedText>
           </Tooltip>
           <TruncatedText
-            text={NFTData.name}
             sx={{ fontSize: '16px', color: 'white', marginTop: '10px' }}
             data-testid="nft_name"
-          />
+          >
+            {NFTData.name}
+          </TruncatedText>
           <TruncatedText
-            text={NFTData.description}
             sx={{ fontSize: '14px', color: 'grey', marginTop: '10px' }}
             isMultiline={true}
-          />
+          >
+            {NFTData.description}
+          </TruncatedText>
           <Button
             variant="outlined"
             style={{ marginTop: '10px', fontSize: '14px', gap: '10px' }}
