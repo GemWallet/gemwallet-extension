@@ -165,7 +165,7 @@ export const TransactionListing: FC<TransactionListingProps> = ({ transactions }
   }
 
   return (
-    <List dense>
+    <List dense style={{ paddingTop: 0 }}>
       {tx.map((transaction, index) => (
         <div key={transaction.tx?.hash ?? index}>
           <Paper

@@ -21,8 +21,8 @@ export const TruncatedText: FC<TruncatedTextProps> = ({
             overflow: 'hidden',
             display: '-webkit-box',
             width: '100%', // if the string is very long without spaces, it will not overflow the view
-            webkitBoxOrient: 'vertical',
-            webkitLineClamp: maxLines, // start showing ellipsis when X line is reached
+            WebkitBoxOrient: 'vertical',
+            WebkitLineClamp: maxLines, // start showing ellipsis when X line is reached
             whiteSpace: 'pre-wrap' // let the text wrap preserving spaces
           }
         : {

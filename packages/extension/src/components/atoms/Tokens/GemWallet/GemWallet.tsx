@@ -1,6 +1,6 @@
-import { FC } from 'react';
+import { FC, SVGProps } from 'react';
 
-export const GemWallet: FC = (props) => (
+export const GemWallet: FC<SVGProps<SVGSVGElement>> = (props) => (
   <svg width={45} height={45} xmlns="http://www.w3.org/2000/svg" {...props} data-testid="gem-icon">
     <circle cx="22.492" cy="22.51" r="22.363" fill="#1e1e1e" stroke="null" />
     <g fill="none" stroke="null">

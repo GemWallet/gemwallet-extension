@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { CSSProperties, FC } from 'react';
 
 import { CircularProgress } from '@mui/material';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
@@ -9,11 +9,12 @@ interface NFTImageProps {
   imageURL?: string;
   height?: number;
   width?: number;
+  style?: CSSProperties;
 }
 
-export const NFTImage: FC<NFTImageProps> = ({ imageURL, height = 250, width = 250 }) => {
+export const NFTImage: FC<NFTImageProps> = ({ imageURL, height = 250, width = 250, style }) => {
   return imageURL ? (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', ...style }}>
       <LazyLoadImage
         alt="NFT"
         height={height}
@@ -25,8 +26,20 @@ export const NFTImage: FC<NFTImageProps> = ({ imageURL, height = 250, width = 25
       />
     </div>
   ) : (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-      <GemWallet />
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height,
+        width,
+        backgroundColor: '#1e1e1e',
+        borderRadius: '4px',
+        boxShadow: '4px 4px 0px black',
+        ...style
+      }}
+    >
+      <GemWallet style={{ transform: 'scale(2)' }} />
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 
 import CloseIcon from '@mui/icons-material/Close';
 import {
@@ -42,8 +42,10 @@ export const NFTDetails: FC<NFTDetailsProps> = ({ NFTData, handleClose }) => {
           </Typography>
         </Toolbar>
       </AppBar>
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <NFTImage imageURL={NFTData.image} style={{ marginTop: 30 }} />
+      </div>
       <List sx={{ width: '100%', wordBreak: 'break-word' }}>
-        <NFTImage imageURL={NFTData.image} />
         <ListItem style={listItemStyle}>
           <ListItemText primary="Token ID" secondary={NFTData.NFTokenID} />
         </ListItem>
