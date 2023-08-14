@@ -24,6 +24,7 @@ import { BaseTransaction } from 'xrpl/dist/npm/models/transactions/common';
 import {
   AcceptNFTOfferRequest,
   AccountNFToken,
+  AccountNFTokenResponse,
   BaseTransactionRequest,
   BurnNFTRequest,
   CancelNFTOfferRequest,
@@ -32,6 +33,8 @@ import {
   CreateOfferRequest,
   GetNFTRequest,
   MintNFTRequest,
+  NFTData,
+  NFTokenIDResponse,
   SendPaymentRequest,
   SetAccountRequest,
   SetTrustlineRequest,
@@ -40,18 +43,9 @@ import {
 
 import { AccountTransaction, WalletLedger } from '../../types';
 import { toXRPLMemos, toXRPLSigners } from '../../utils';
+import { resolveNFTData } from '../../utils/NFTDataResolver';
 import { useNetwork } from '../NetworkContext';
 import { useWallet } from '../WalletContext';
-
-interface GetNFTsResponse {
-  account_nfts: AccountNFToken[];
-  marker?: unknown;
-}
-
-interface MintNFTResponse {
-  hash: string;
-  NFTokenID: string;
-}
 
 interface FundWalletResponse {
   wallet: Wallet;
@@ -90,6 +84,10 @@ interface SubmitTransactionResponse {
   hash: string;
 }
 
+interface NFTImageRequest {
+  NFT: AccountNFToken;
+}
+
 export const LEDGER_CONNECTION_ERROR = 'You need to be connected to a ledger to make a transaction';
 
 export interface LedgerContextType {
@@ -98,10 +96,10 @@ export interface LedgerContextType {
   setTrustline: (payload: SetTrustlineRequest) => Promise<string>;
   signMessage: (message: string) => string | undefined;
   estimateNetworkFees: (payload: Transaction) => Promise<string>;
-  getNFTs: (payload?: GetNFTRequest) => Promise<GetNFTsResponse>;
+  getNFTs: (payload?: GetNFTRequest) => Promise<AccountNFTokenResponse>;
   getTransactions: () => Promise<AccountTransaction[]>;
   fundWallet: () => Promise<FundWalletResponse>;
-  mintNFT: (payload: MintNFTRequest) => Promise<MintNFTResponse>;
+  mintNFT: (payload: MintNFTRequest) => Promise<NFTokenIDResponse>;
   createNFTOffer: (payload: CreateNFTOfferRequest) => Promise<CreateNFTOfferResponse>;
   cancelNFTOffer: (payload: CancelNFTOfferRequest) => Promise<CancelNFTOfferResponse>;
   acceptNFTOffer: (payload: AcceptNFTOfferRequest) => Promise<AcceptNFTOfferResponse>;
@@ -111,6 +109,7 @@ export interface LedgerContextType {
   cancelOffer: (payload: CancelOfferRequest) => Promise<CancelOfferResponse>;
   submitTransaction: (payload: SubmitTransactionRequest) => Promise<SubmitTransactionResponse>;
   getAccountInfo: () => Promise<AccountInfoResponse>;
+  getNFTData: (payload: NFTImageRequest) => Promise<NFTData>;
 }
 
 const LedgerContext = createContext<LedgerContextType>({
@@ -139,7 +138,8 @@ const LedgerContext = createContext<LedgerContextType>({
   createOffer: () => new Promise(() => {}),
   cancelOffer: () => new Promise(() => {}),
   submitTransaction: () => new Promise(() => {}),
-  getAccountInfo: () => new Promise(() => {})
+  getAccountInfo: () => new Promise(() => {}),
+  getNFTData: () => new Promise(() => {})
 });
 
 const LedgerProvider: FC = ({ children }) => {
@@ -172,27 +172,29 @@ const LedgerProvider: FC = ({ children }) => {
   );
 
   const getNFTs = useCallback(
-    async (payload?: GetNFTRequest): Promise<GetNFTsResponse> => {
+    async (payload?: GetNFTRequest): Promise<AccountNFTokenResponse> => {
       const wallet = getCurrentWallet();
       if (!client) {
         throw new Error('You need to be connected to a ledger to get the NFTs');
-      } else if (!wallet) {
-        throw new Error('You need to have a wallet connected to get the NFTs');
-      } else {
-        // Prepare the transaction
-        const prepared = await client.request({
-          command: 'account_nfts',
-          account: wallet.publicAddress,
-          limit: payload?.limit,
-          marker: payload?.marker,
-          ledger_index: 'validated'
-        });
-        if (!prepared.result?.account_nfts) {
-          throw new Error("Couldn't get the NFTs");
-        } else {
-          return { account_nfts: prepared.result.account_nfts, marker: prepared.result.marker };
-        }
       }
+      if (!wallet) {
+        throw new Error('You need to have a wallet connected to get the NFTs');
+      }
+
+      // Prepare the transaction
+      const prepared = await client.request({
+        command: 'account_nfts',
+        account: wallet.publicAddress,
+        limit: payload?.limit,
+        marker: payload?.marker,
+        ledger_index: 'validated'
+      });
+
+      if (!prepared.result?.account_nfts) {
+        throw new Error("Couldn't get the NFTs");
+      }
+
+      return { account_nfts: prepared.result.account_nfts, marker: prepared.result.marker };
     },
     [client, getCurrentWallet]
   );
@@ -795,6 +797,15 @@ const LedgerProvider: FC = ({ children }) => {
     ...(payload.txnSignature && { TxnSignature: payload.txnSignature })
   });
 
+  const getNFTData = useCallback(async ({ NFT }: NFTImageRequest) => {
+    try {
+      return resolveNFTData(NFT);
+    } catch (e) {
+      Sentry.captureException(e);
+      throw e;
+    }
+  }, []);
+
   const value: LedgerContextType = {
     sendPayment,
     setTrustline,
@@ -812,7 +823,8 @@ const LedgerProvider: FC = ({ children }) => {
     createOffer,
     cancelOffer,
     submitTransaction,
-    getAccountInfo
+    getAccountInfo,
+    getNFTData
   };
 
   return <LedgerContext.Provider value={value}>{children}</LedgerContext.Provider>;
