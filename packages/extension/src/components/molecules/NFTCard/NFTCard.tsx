@@ -31,14 +31,6 @@ export const NFTCard: FC<NFTCardProps> = ({ NFT }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  const handleViewNFTClick = useCallback(() => {
-    setDialogOpen(true);
-  }, []);
-
-  const handleCloseDialog = useCallback(() => {
-    setDialogOpen(false);
-  }, []);
-
   useEffect(() => {
     const fetchNFTImg = async () => {
       try {
@@ -58,9 +50,17 @@ export const NFTCard: FC<NFTCardProps> = ({ NFT }) => {
     fetchNFTImg();
   }, [getNFTData, NFT]);
 
-  const handleTokenIdClick = (tokenId: string) => {
+  const handleViewNFTClick = useCallback(() => {
+    setDialogOpen(true);
+  }, []);
+
+  const handleCloseDialog = useCallback(() => {
+    setDialogOpen(false);
+  }, []);
+
+  const handleTokenIdClick = useCallback((tokenId: string) => {
     navigator.clipboard.writeText(tokenId);
-  };
+  }, []);
 
   if (!NFTData) return null;
 

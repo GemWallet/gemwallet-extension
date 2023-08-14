@@ -7,7 +7,7 @@ import { formatFlags } from '../../src/utils';
 describe('Mint', () => {
   // deepcode ignore NoHardcodedPasswords: password used for testing purposes
   const PASSWORD = 'SECRET_PASSWORD';
-  const MINT_NFT_URL = `http://localhost:3000/mint-nft?URI=4d696e746564207468726f7567682047656d57616c6c657421&flags=%7B%22tfOnlyXRP%22%3Afalse%2C%22tfTransferable%22%3Atrue%7D&fee=199&transferFee=3000&NFTokenTaxon=0&memos=%5B%7B%22memo%22%3A%7B%22memoType%22%3A%224465736372697074696f6e%22%2C%22memoData%22%3A%2254657374206d656d6f%22%7D%7D%5D&id=210324818&requestMessage=undefined&transaction=mintNFT`;
+  const MINT_NFT_URL = `http://localhost:3000?URI=4d696e746564207468726f7567682047656d57616c6c657421&flags=%7B%22tfOnlyXRP%22%3Afalse%2C%22tfTransferable%22%3Atrue%7D&fee=199&transferFee=3000&NFTokenTaxon=0&memos=%5B%7B%22memo%22%3A%7B%22memoType%22%3A%224465736372697074696f6e%22%2C%22memoData%22%3A%2254657374206d656d6f%22%7D%7D%5D&id=210324818&requestMessage=undefined&transaction=mintNFT`;
 
   beforeEach(() => {
     // Mock the localStorage with a wallet already loaded
@@ -94,7 +94,7 @@ describe('Mint', () => {
   });
 
   it('Create NFT Offer (50 XRP)', function () {
-    const url = `http://localhost:3000/create-nft-offer?amount=50000000&NFTokenID=${this.NFTokenID}&fee=199&flags=%7B%22tfSellNFToken%22%3Atrue%7D&memos=%5B%7B%22memo%22%3A%7B%22memoType%22%3A%224465736372697074696f6e%22%2C%22memoData%22%3A%2254657374206d656d6f%22%7D%7D%5D&id=210325582&requestMessage=undefined&transaction=createNFTOffer`;
+    const url = `http://localhost:3000?amount=50000000&NFTokenID=${this.NFTokenID}&fee=199&flags=%7B%22tfSellNFToken%22%3Atrue%7D&memos=%5B%7B%22memo%22%3A%7B%22memoType%22%3A%224465736372697074696f6e%22%2C%22memoData%22%3A%2254657374206d656d6f%22%7D%7D%5D&id=210325582&requestMessage=undefined&transaction=createNFTOffer`;
     navigate(url, PASSWORD);
 
     // Confirm
@@ -214,7 +214,7 @@ describe('Mint', () => {
   });
 
   it('Accept NFT Offer', function () {
-    const url = `http://localhost:3000/accept-nft-offer?NFTokenSellOffer=${this.OfferID}&fee=199&memos=%5B%7B%22memo%22%3A%7B%22memoType%22%3A%224465736372697074696f6e%22%2C%22memoData%22%3A%2254657374206d656d6f%22%7D%7D%5D&id=210325959&requestMessage=undefined&transaction=acceptNFTOffer`;
+    const url = `http://localhost:3000?NFTokenSellOffer=${this.OfferID}&fee=199&memos=%5B%7B%22memo%22%3A%7B%22memoType%22%3A%224465736372697074696f6e%22%2C%22memoData%22%3A%2254657374206d656d6f%22%7D%7D%5D&id=210325959&requestMessage=undefined&transaction=acceptNFTOffer`;
 
     navigate(url, PASSWORD);
 
@@ -245,7 +245,7 @@ describe('Mint', () => {
       issuer: 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN',
       value: '0.1'
     });
-    const url = `http://localhost:3000/accept-nft-offer?NFTokenBrokerFee=${amount}&NFTokenSellOffer=${this.OfferID}&fee=199&memos=%5B%7B%22memo%22%3A%7B%22memoType%22%3A%224465736372697074696f6e%22%2C%22memoData%22%3A%2254657374206d656d6f%22%7D%7D%5D&id=210325959&requestMessage=undefined&transaction=acceptNFTOffer`;
+    const url = `http://localhost:3000?NFTokenBrokerFee=${amount}&NFTokenSellOffer=${this.OfferID}&fee=199&memos=%5B%7B%22memo%22%3A%7B%22memoType%22%3A%224465736372697074696f6e%22%2C%22memoData%22%3A%2254657374206d656d6f%22%7D%7D%5D&id=210325959&requestMessage=undefined&transaction=acceptNFTOffer`;
 
     navigate(url, PASSWORD);
 
@@ -272,7 +272,7 @@ describe('Mint', () => {
       issuer: 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN',
       value: '0.1'
     });
-    const url = `http://localhost:3000/accept-nft-offer?NFTokenBrokerFee=${amount}&NFTokenSellOffer=${this.OfferID}&fee=199&memos=%5B%7B%22memo%22%3A%7B%22memoType%22%3A%224465736372697074696f6e%22%2C%22memoData%22%3A%2254657374206d656d6f%22%7D%7D%5D&id=210325959&requestMessage=undefined&transaction=acceptNFTOffer`;
+    const url = `http://localhost:3000?NFTokenBrokerFee=${amount}&NFTokenSellOffer=${this.OfferID}&fee=199&memos=%5B%7B%22memo%22%3A%7B%22memoType%22%3A%224465736372697074696f6e%22%2C%22memoData%22%3A%2254657374206d656d6f%22%7D%7D%5D&id=210325959&requestMessage=undefined&transaction=acceptNFTOffer`;
 
     navigate(url, PASSWORD);
 
@@ -294,7 +294,7 @@ describe('Mint', () => {
   });
 
   it('Cancel NFT Offer', function () {
-    const url = `http://localhost:3000/cancel-nft-offer?NFTokenOffers=%5B%22${this.OfferID}%22%5D&fee=199&memos=%5B%7B%22memo%22%3A%7B%22memoType%22%3A%224465736372697074696f6e%22%2C%22memoData%22%3A%2254657374206d656d6f%22%7D%7D%5D&id=210325959&requestMessage=undefined&transaction=cancelNFTOffer`;
+    const url = `http://localhost:3000?NFTokenOffers=%5B%22${this.OfferID}%22%5D&fee=199&memos=%5B%7B%22memo%22%3A%7B%22memoType%22%3A%224465736372697074696f6e%22%2C%22memoData%22%3A%2254657374206d656d6f%22%7D%7D%5D&id=210325959&requestMessage=undefined&transaction=cancelNFTOffer`;
     navigate(url, PASSWORD);
 
     // Confirm
@@ -318,7 +318,7 @@ describe('Mint', () => {
   });
 
   it('Burn NFT', function () {
-    const url = `http://localhost:3000/burn-nft?NFTokenID=${this.NFTokenID}&fee=199&memos=%5B%7B%22memo%22%3A%7B%22memoType%22%3A%224465736372697074696f6e%22%2C%22memoData%22%3A%2254657374206d656d6f%22%7D%7D%5D&id=210325959&requestMessage=undefined&transaction=burnNFT`;
+    const url = `http://localhost:3000?NFTokenID=${this.NFTokenID}&fee=199&memos=%5B%7B%22memo%22%3A%7B%22memoType%22%3A%224465736372697074696f6e%22%2C%22memoData%22%3A%2254657374206d656d6f%22%7D%7D%5D&id=210325959&requestMessage=undefined&transaction=burnNFT`;
     navigate(url, PASSWORD);
 
     // Confirm
