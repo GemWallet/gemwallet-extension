@@ -1,16 +1,26 @@
 import React, { FC } from 'react';
 
 import CloseIcon from '@mui/icons-material/Close';
-import { AppBar, IconButton, List, Toolbar, Typography } from '@mui/material';
+import {
+  AppBar,
+  IconButton,
+  List,
+  ListItem,
+  ListItemText,
+  Toolbar,
+  Typography
+} from '@mui/material';
 
 import { NFTData } from '@gemwallet/constants';
 
-import { NFTImage, NFTListItem } from '../../atoms';
+import { NFTImage } from '../../atoms';
 
 interface NFTDetailsProps {
   NFTData: NFTData;
   handleClose: () => void;
 }
+
+const listItemStyle = { padding: '8px 24px' };
 
 export const NFTDetails: FC<NFTDetailsProps> = ({ NFTData, handleClose }) => {
   return (
@@ -34,9 +44,15 @@ export const NFTDetails: FC<NFTDetailsProps> = ({ NFTData, handleClose }) => {
       </AppBar>
       <List sx={{ width: '100%', wordBreak: 'break-word' }}>
         <NFTImage imageURL={NFTData.image} />
-        <NFTListItem primary="Token ID" secondary={NFTData.NFTokenID} />
-        <NFTListItem primary="Name" secondary={NFTData.name} />
-        <NFTListItem primary="Description" secondary={NFTData.description} />
+        <ListItem style={listItemStyle}>
+          <ListItemText primary="Token ID" secondary={NFTData.NFTokenID} />
+        </ListItem>
+        <ListItem style={listItemStyle}>
+          <ListItemText primary="Name" secondary={NFTData.name ?? 'No data'} />
+        </ListItem>
+        <ListItem style={listItemStyle}>
+          <ListItemText primary="Description" secondary={NFTData.description ?? 'No data'} />
+        </ListItem>
       </List>
     </>
   );
