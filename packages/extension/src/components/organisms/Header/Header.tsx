@@ -19,6 +19,7 @@ import { useTimeout } from '../../../hooks';
 import { WalletLedger } from '../../../types';
 import { truncateAddress, truncateWalletName } from '../../../utils';
 import { WalletIcon } from '../../atoms';
+import { XPUNKS_1 } from '../../misc';
 import { NetworkIndicator } from '../../molecules';
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
@@ -106,6 +107,7 @@ export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => 
                 </Tooltip>
               </div>
             </div>
+            <XPUNKS_1 />
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <Button
                 aria-label="send"
