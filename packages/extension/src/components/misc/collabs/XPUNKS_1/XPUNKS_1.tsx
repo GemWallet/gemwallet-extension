@@ -36,12 +36,11 @@ export const XPUNKS_1: FC = () => {
           alignItems: 'center'
         }}
       >
-        <img alt="XPUNKS" height={30} src={'./collabs/XPUNKS/XPUNKS.gif'} />
         <img
           alt="XPUNKS"
-          width={40}
-          src={'./collabs/XPUNKS/logo.png'}
-          style={{ marginBottom: '8px' }}
+          height={40}
+          src={'./collabs/XPUNKS/XPUNKS-Logo-Full-White.png'}
+          style={{ marginBottom: '7px' }}
         />
       </Button>
     </div>
