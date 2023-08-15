@@ -40,16 +40,21 @@ export const useFees = (tx: Transaction | Transaction[], fee: string | null) => 
           setEstimatedFees(totalFees.toString());
 
           const currentBalance = await client?.getXrpBalance(currentWallet.publicAddress);
-          const diffFee = fee ? Number(fee) : totalFees;
           const baseReserve = Number(
             serverInfo?.info.validated_ledger?.reserve_base_xrp || DEFAULT_RESERVE
           );
-
-          const accountInfo = await getAccountInfo();
-          const reserve =
-            accountInfo.result.account_data.OwnerCount * RESERVE_PER_OWNER + baseReserve;
-          const difference = Number(currentBalance) - reserve - Number(dropsToXrp(diffFee));
-          setDifference(difference);
+          const diffFee = fee ? Number(fee) : totalFees;
+          try {
+            const accountInfo = await getAccountInfo();
+            const reserve =
+              accountInfo.result.account_data.OwnerCount * RESERVE_PER_OWNER + baseReserve;
+            const difference = Number(currentBalance) - reserve - Number(dropsToXrp(diffFee));
+            setDifference(difference);
+          } catch (e) {
+            const difference = Number(currentBalance) - baseReserve - Number(dropsToXrp(diffFee));
+            setDifference(difference);
+            Sentry.captureException(e);
+          }
         } catch (e: any) {
           setError(e.message);
           Sentry.captureException(e);
