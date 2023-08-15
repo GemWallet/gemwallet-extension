@@ -10,7 +10,9 @@ export const saveRememberSessionState = (checked: boolean) => {
 export const loadRememberSessionState = async (): Promise<boolean> => {
   try {
     const storedState = await loadFromChromeStorage(STORAGE_REMEMBER_SESSION);
-    return storedState ? JSON.parse(storedState[STORAGE_REMEMBER_SESSION]) === true : false;
+    return storedState?.[STORAGE_REMEMBER_SESSION]
+      ? JSON.parse(storedState[STORAGE_REMEMBER_SESSION]) === true
+      : false;
   } catch (e) {
     Sentry.captureException(e);
     return false;
