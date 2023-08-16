@@ -85,10 +85,11 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
       isValidAddress(address) &&
       amount !== '' &&
       errorAddress === '' &&
+      errorAmount === '' &&
       errorMemo === '' &&
       errorDestinationTag === ''
     );
-  }, [address, amount, errorAddress, errorDestinationTag, errorMemo]);
+  }, [address, amount, errorAddress, errorAmount, errorDestinationTag, errorMemo]);
 
   const reserve = useMemo(() => {
     return ownerCount * RESERVE_PER_OWNER + baseReserve;
@@ -215,15 +216,18 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
     (e: FocusEvent<HTMLInputElement>) => {
       // Int and decimal numbers only
       const isValidNumber = /^\d*\.?\d*$/.test(e.target.value);
+      const [, fractionalPart] = e.target.value.split('.');
 
-      if (Number(e.target.value) <= 0 && e.target.value !== '' && isValidNumber) {
+      if (isValidNumber && Number(e.target.value) <= 0 && e.target.value !== '') {
         setErrorAmount('You can only send an amount greater than zero');
       } else if (
+        isValidNumber &&
         Number(e.target.value) &&
-        !hasEnoughFunds(e.target.value, tokenRef.current?.value ?? '') &&
-        isValidNumber
+        !hasEnoughFunds(e.target.value, tokenRef.current?.value ?? '')
       ) {
         setErrorAmount('You do not have enough funds to send this amount');
+      } else if (isValidNumber && /^\d*\.?\d*$/.test(fractionalPart) && fractionalPart.length > 6) {
+        setErrorAmount('Fractional part should have at most 6 digits');
       } else if (isValidNumber) {
         setErrorAmount('');
       }
