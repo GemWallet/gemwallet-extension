@@ -10,6 +10,7 @@ export * from './network';
 export * from './numbersToSeed';
 export * from './parseFromString';
 export * from './storageChrome';
+export * from './storageChromeSession';
 export * from './storageLocal';
 export * from './transaction';
 export * from './truncateAddress';
