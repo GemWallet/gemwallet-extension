@@ -7,16 +7,21 @@ export const XPUNKS_1: FC = () => {
   const [isFeatureFlagEnabled, setIsFeatureFlagEnabled] = useState<boolean | null>(null);
   const [collabURL, setCollabURL] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetch('featureFlags.json')
-      .then((response) => response.json())
-      .then((data) => {
+  const fetchFlags = async () => {
+    try {
+      if (process.env.REACT_APP_FEATURE_FLAGS_URL) {
+        const response = await fetch(process.env.REACT_APP_FEATURE_FLAGS_URL);
+        const data = await response.json();
         setIsFeatureFlagEnabled(data.FF_COLLAB_XPUNKS_1 === 1);
         setCollabURL(data.PARAM_COLLAB_XPUNKS_1_URL);
-      })
-      .catch((error) => {
-        Sentry.captureException(error);
-      });
+      }
+    } catch (error) {
+      Sentry.captureException(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchFlags();
   }, []);
 
   if (isFeatureFlagEnabled !== true) {
