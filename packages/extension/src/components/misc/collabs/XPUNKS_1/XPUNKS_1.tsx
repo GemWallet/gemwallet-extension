@@ -5,12 +5,14 @@ import * as Sentry from '@sentry/react';
 
 export const XPUNKS_1: FC = () => {
   const [isFeatureFlagEnabled, setIsFeatureFlagEnabled] = useState<boolean | null>(null);
+  const [collabURL, setCollabURL] = useState<string | null>(null);
 
   useEffect(() => {
     fetch('featureFlags.json')
       .then((response) => response.json())
       .then((data) => {
         setIsFeatureFlagEnabled(data.FF_COLLAB_XPUNKS_1 === 1);
+        setCollabURL(data.PARAM_COLLAB_XPUNKS_1_URL);
       })
       .catch((error) => {
         Sentry.captureException(error);
@@ -22,7 +24,9 @@ export const XPUNKS_1: FC = () => {
   }
 
   const handleClick = () => {
-    window.open('https://xpunks.club');
+    if (collabURL) {
+      window.open(collabURL);
+    }
   };
 
   const blinking = `
