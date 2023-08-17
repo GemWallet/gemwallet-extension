@@ -4,7 +4,7 @@ import { Switch, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 import { SETTINGS_PATH, STORAGE_PERMISSION_SUBMIT_BULK } from '../../../constants';
-import { loadFromChromeStorage, saveInChromeStorage } from '../../../utils';
+import { loadFromChromeLocalStorage, saveInChromeLocalStorage } from '../../../utils';
 import { PageWithReturn } from '../../templates';
 
 export const Permissions: FC = () => {
@@ -14,18 +14,20 @@ export const Permissions: FC = () => {
 
   useEffect(() => {
     const loadInitialData = async () => {
-      const storedData = await loadFromChromeStorage(STORAGE_PERMISSION_SUBMIT_BULK);
+      const storedData = await loadFromChromeLocalStorage(STORAGE_PERMISSION_SUBMIT_BULK);
       if (!storedData) return;
-      if (!(STORAGE_PERMISSION_SUBMIT_BULK in storedData)) return;
 
-      setIsSubmitBulkTransactionsEnabled(storedData[STORAGE_PERMISSION_SUBMIT_BULK] === 'true');
+      setIsSubmitBulkTransactionsEnabled(storedData === 'true');
     };
 
     loadInitialData();
   }, []);
 
   useEffect(() => {
-    saveInChromeStorage(STORAGE_PERMISSION_SUBMIT_BULK, isSubmitBulkTransactionsEnabled.toString());
+    saveInChromeLocalStorage(
+      STORAGE_PERMISSION_SUBMIT_BULK,
+      isSubmitBulkTransactionsEnabled.toString()
+    );
   }, [isSubmitBulkTransactionsEnabled]);
 
   const handleBack = useCallback(() => {

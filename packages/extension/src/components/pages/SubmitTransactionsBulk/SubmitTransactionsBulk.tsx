@@ -17,9 +17,10 @@ import { useLedger, useNetwork } from '../../../contexts';
 import { useFees, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
 import {
-  loadFromChromeStorage,
+  loadFromChromeLocalStorage,
+  loadFromChromeSessionStorage,
   parseTransactionsBulkMap,
-  saveInChromeStorage
+  saveInChromeLocalStorage
 } from '../../../utils';
 import { serializeError } from '../../../utils/errors';
 import { PermissionRequiredView } from './PermissionRequiredView';
@@ -75,7 +76,7 @@ export const SubmitTransactionsBulk: FC = () => {
   });
 
   const enableBulkTransactionPermission = useCallback(() => {
-    saveInChromeStorage(STORAGE_PERMISSION_SUBMIT_BULK, 'true');
+    saveInChromeLocalStorage(STORAGE_PERMISSION_SUBMIT_BULK, 'true');
     setSubmitBulkTransactionsEnabled(true);
   }, []);
 
@@ -95,11 +96,10 @@ export const SubmitTransactionsBulk: FC = () => {
 
   useEffect(() => {
     const loadInitialData = async () => {
-      const storedData = await loadFromChromeStorage(STORAGE_PERMISSION_SUBMIT_BULK);
+      const storedData = await loadFromChromeLocalStorage(STORAGE_PERMISSION_SUBMIT_BULK);
       if (!storedData) return;
-      if (!(STORAGE_PERMISSION_SUBMIT_BULK in storedData)) return;
 
-      setSubmitBulkTransactionsEnabled(storedData[STORAGE_PERMISSION_SUBMIT_BULK] === 'true');
+      setSubmitBulkTransactionsEnabled(storedData === 'true');
     };
 
     loadInitialData();
@@ -116,9 +116,9 @@ export const SubmitTransactionsBulk: FC = () => {
         const storageKey = urlParams.get('storageKey');
 
         if (storageKey) {
-          const storedData = await loadFromChromeStorage(storageKey, true);
+          const storedData = await loadFromChromeSessionStorage(storageKey, true);
           if (storedData) {
-            const parsedStoredData = JSON.parse(storedData[storageKey]);
+            const parsedStoredData = JSON.parse(storedData);
             if ('transactions' in parsedStoredData) {
               parsedTransactionsMap = parseTransactionsBulkMap(parsedStoredData.transactions);
             }
