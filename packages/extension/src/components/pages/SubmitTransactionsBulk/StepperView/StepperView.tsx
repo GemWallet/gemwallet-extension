@@ -96,7 +96,7 @@ export const StepperView: FC<StepperViewProps> = ({
 
   useEffect(() => {
     const resolveImageFromURI = async (URI: string, index: number, amount?: Amount) => {
-      const NFTData = await resolveNFTData('', URI);
+      const NFTData = await resolveNFTData({ URI: URI });
 
       setTxNFTData((prev) => ({
         ...prev,
