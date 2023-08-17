@@ -255,8 +255,13 @@ export const DEFAULT_SUBMIT_TX_BULK_ON_ERROR = 'abort';
 export type TransactionErrorHandling = 'abort' | 'continue';
 
 export interface BaseTransactionBulkRequest {
-  noWait?: boolean; // default: false
-  onError?: TransactionErrorHandling; // default: abort
+  // If set to true, the function will not wait for the transaction hashes to be returned from the XRPL network, and
+  // 'accepted' values will be returned for each transaction, instead of 'hash'.
+  // Default: false
+  noWait?: boolean;
+  // If set to 'continue', the remaining transactions will be submitted even if one of them fails.
+  // Default: 'abort'
+  onError?: TransactionErrorHandling;
 }
 
 export interface SubmitTransactionsBulkRequest extends BaseTransactionBulkRequest {
@@ -348,9 +353,13 @@ export interface SignTransactionResponse
   }> {}
 
 export type TransactionBulkResponse = {
+  // The custom ID of the transaction, if it was set in the request.
   ID?: string;
+  // Whether the transaction was accepted by the XRPL network (noWait = true only).
   accepted?: boolean;
+  // The hash of the transaction (noWait = false only).
   hash?: string;
+  // The error message, if the transaction was rejected.
   error?: string;
 };
 
