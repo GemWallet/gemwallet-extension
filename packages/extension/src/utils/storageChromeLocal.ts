@@ -13,7 +13,7 @@ export const saveInChromeLocalStorage = (key: string, value: any): Promise<void>
         }
       });
     } else {
-      reject(new Error('Not in production environment'));
+      resolve();
     }
   });
 };
@@ -36,7 +36,7 @@ export const loadFromChromeLocalStorage = (
         }
       });
     } else {
-      reject(new Error('Not in production environment'));
+      resolve(null);
     }
   });
 };
