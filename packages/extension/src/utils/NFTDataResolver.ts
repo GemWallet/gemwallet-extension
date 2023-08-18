@@ -1,4 +1,6 @@
+import * as Sentry from '@sentry/react';
 import { convertHexToString } from 'xrpl';
+import { AccountInfoResponse } from 'xrpl/dist/npm/models/methods/accountInfo';
 
 import { AccountNFToken, NFTData } from '@gemwallet/constants';
 import { IPFSResolverPrefix } from '@gemwallet/constants/src/xrpl/nft.constant';
@@ -7,15 +9,34 @@ import { parseJSON } from './NFTViewer';
 
 import { isImageUrl } from '.';
 
-export const resolveNFTData = async (NFT: AccountNFToken): Promise<NFTData> => {
+export const resolveNFTData = async (
+  NFT: AccountNFToken,
+  getAccountInfo: (accountId?: string) => Promise<AccountInfoResponse>
+): Promise<NFTData> => {
   const { NFTokenID, URI } = NFT;
   let URL = URI ? convertHexToString(URI) : '';
 
   if (!URL.length) {
-    return {
-      NFTokenID,
-      description: 'No data'
-    };
+    // Handle the domain field method
+    try {
+      const { result } = await getAccountInfo(NFT.Issuer);
+      const domain = result.account_data.Domain;
+      if (!domain) {
+        return {
+          NFTokenID,
+          description: 'No data'
+        };
+      }
+
+      // The base URI is in the domain field of the issuer
+      URL = `${convertHexToString(domain)}${NFT.NFTokenID}.json`;
+    } catch (e) {
+      Sentry.captureException(e);
+      return {
+        NFTokenID,
+        description: 'No data'
+      };
+    }
   }
 
   URL = URL.replace('ipfs://', IPFSResolverPrefix);
