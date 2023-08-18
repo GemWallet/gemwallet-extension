@@ -108,7 +108,7 @@ export interface LedgerContextType {
   createOffer: (payload: CreateOfferRequest) => Promise<CreateOfferResponse>;
   cancelOffer: (payload: CancelOfferRequest) => Promise<CancelOfferResponse>;
   submitTransaction: (payload: SubmitTransactionRequest) => Promise<SubmitTransactionResponse>;
-  getAccountInfo: () => Promise<AccountInfoResponse>;
+  getAccountInfo: (accountId?: string) => Promise<AccountInfoResponse>;
   getNFTData: (payload: NFTImageRequest) => Promise<NFTData>;
 }
 
@@ -751,22 +751,30 @@ const LedgerProvider: FC = ({ children }) => {
     [client, getCurrentWallet]
   );
 
-  const getAccountInfo = useCallback((): Promise<AccountInfoResponse> => {
-    const wallet = getCurrentWallet();
+  const getAccountInfo = useCallback(
+    (accountId?: string): Promise<AccountInfoResponse> => {
+      const wallet = getCurrentWallet();
 
-    if (!client) throw new Error('You need to be connected to a ledger');
-    if (!wallet) throw new Error('You need to have a wallet connected to fund the wallet');
-    try {
-      return client.request({
-        command: 'account_info',
-        account: wallet.publicAddress,
-        ledger_index: 'current'
-      });
-    } catch (e) {
-      Sentry.captureException(e);
-      throw e;
-    }
-  }, [client, getCurrentWallet]);
+      if (!client) throw new Error('You need to be connected to a ledger');
+      const address = accountId || wallet?.publicAddress;
+      if (!address)
+        throw new Error(
+          'You need to have a wallet connected or provide an account ID to get the account info'
+        );
+
+      try {
+        return client.request({
+          command: 'account_info',
+          account: address,
+          ledger_index: 'current'
+        });
+      } catch (e) {
+        Sentry.captureException(e);
+        throw e;
+      }
+    },
+    [client, getCurrentWallet]
+  );
 
   const buildBaseTransaction = (
     payload: BaseTransactionRequest,
@@ -797,14 +805,17 @@ const LedgerProvider: FC = ({ children }) => {
     ...(payload.txnSignature && { TxnSignature: payload.txnSignature })
   });
 
-  const getNFTData = useCallback(async ({ NFT }: NFTImageRequest) => {
-    try {
-      return resolveNFTData(NFT);
-    } catch (e) {
-      Sentry.captureException(e);
-      throw e;
-    }
-  }, []);
+  const getNFTData = useCallback(
+    async ({ NFT }: NFTImageRequest) => {
+      try {
+        return resolveNFTData(NFT, getAccountInfo);
+      } catch (e) {
+        Sentry.captureException(e);
+        throw e;
+      }
+    },
+    [getAccountInfo]
+  );
 
   const value: LedgerContextType = {
     sendPayment,
