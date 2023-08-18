@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react';
 import { convertHexToString } from 'xrpl';
 import { AccountInfoResponse } from 'xrpl/dist/npm/models/methods/accountInfo';
 
@@ -30,6 +31,7 @@ export const resolveNFTData = async (
       // The base URI is in the domain field of the issuer
       URL = `${convertHexToString(domain)}${NFT.NFTokenID}.json`;
     } catch (e) {
+      Sentry.captureException(e);
       return {
         NFTokenID,
         description: 'No data'
