@@ -66,7 +66,7 @@ export const StepperView: FC<StepperViewProps> = ({
   const [renderKey, setRenderKey] = useState<number>(0);
   const [txNFTData, setTxNFTData] = useState<Record<number, TxNFTData>>({}); // Key is the transaction index
   const { networkName } = useNetwork();
-  const { getNFTInfo, getLedgerEntry } = useLedger();
+  const { getNFTInfo, getLedgerEntry, getAccountInfo } = useLedger();
 
   const handleCollapseToggle = () => {
     setCollapsed(!collapsed);
@@ -95,8 +95,20 @@ export const StepperView: FC<StepperViewProps> = ({
   };
 
   useEffect(() => {
-    const resolveImageFromURI = async (URI: string, index: number, amount?: Amount) => {
-      const NFTData = await resolveNFTData({ URI: URI });
+    const resolveNFTDataFromURI = async (URI: string, index: number, amount?: Amount) => {
+      const NFTData = await resolveNFTData(
+        {
+          // Since we have an URI only, we provide a mock NFT object to the NFT resolver. It's fine because we just need
+          // the data from the URI in this case
+          Flags: 0,
+          Issuer: '',
+          NFTokenID: '',
+          NFTokenTaxon: 0,
+          nft_serial: 0,
+          URI: URI
+        },
+        getAccountInfo
+      );
 
       setTxNFTData((prev) => ({
         ...prev,
@@ -106,15 +118,19 @@ export const StepperView: FC<StepperViewProps> = ({
         }
       }));
     };
-    const resolveImageFromNFTokenID = async (NFTokenID: string, index: number, amount?: Amount) => {
+    const resolveNFTDataFromNFTokenID = async (
+      NFTokenID: string,
+      index: number,
+      amount?: Amount
+    ) => {
       try {
         const NFTInfo = await getNFTInfo(NFTokenID, networkName);
         const URI = NFTInfo.result.uri;
 
-        resolveImageFromURI(URI, index, amount);
+        resolveNFTDataFromURI(URI, index, amount);
       } catch (error) {}
     };
-    const resolveImageFromNFTOfferID = async (NFTOfferID: string, index: number) => {
+    const resolveNFTDataFromNFTOfferID = async (NFTOfferID: string, index: number) => {
       try {
         const ledgerEntry = await getLedgerEntry(NFTOfferID);
         const NFTokenID = (ledgerEntry?.result?.node as any)?.NFTokenID;
@@ -122,43 +138,48 @@ export const StepperView: FC<StepperViewProps> = ({
 
         const amount = (ledgerEntry?.result?.node as any)?.Amount;
 
-        resolveImageFromNFTokenID(NFTokenID, index, amount);
+        resolveNFTDataFromNFTokenID(NFTokenID, index, amount);
       } catch (error) {}
     };
     for (let key in transactionsToDisplay) {
       if (transactionsToDisplay.hasOwnProperty(key)) {
         if (transactionsToDisplay[key].TransactionType === 'NFTokenMint') {
+          // We can only resolve using the URI. No NFT data since the NFT does not exist
           const URI = (transactionsToDisplay[key] as NFTokenMint).URI;
           if (!URI) continue;
-          resolveImageFromURI(URI, Number(key));
+          resolveNFTDataFromURI(URI, Number(key));
           continue;
         }
 
         if (
           ['NFTokenCreateOffer', 'NFTokenBurn'].includes(transactionsToDisplay[key].TransactionType)
         ) {
+          // We directly have the NFTokenID, we can get the NFT data from these, then resolve the NFT as usual
           const NFTokenID = (transactionsToDisplay[key] as NFTokenCreateOffer | NFTokenBurn)
             .NFTokenID;
-          resolveImageFromNFTokenID(NFTokenID, Number(key));
+          resolveNFTDataFromNFTokenID(NFTokenID, Number(key));
           continue;
         }
 
         if (transactionsToDisplay[key].TransactionType === 'NFTokenAcceptOffer') {
+          // We have an NFTOffer ID, we need to resolve the NFTOffer first, get the associated NFTokenID, then we can
+          // resolve the NFT as usual
           const NFTOfferID =
             (transactionsToDisplay[key] as NFTokenAcceptOffer).NFTokenSellOffer ||
             (transactionsToDisplay[key] as NFTokenAcceptOffer).NFTokenBuyOffer;
           if (!NFTOfferID) continue;
-          resolveImageFromNFTOfferID(NFTOfferID, Number(key));
+          resolveNFTDataFromNFTOfferID(NFTOfferID, Number(key));
           continue;
         }
 
         if (transactionsToDisplay[key].TransactionType === 'NFTokenCancelOffer') {
+          // Same as above, but we can have multiple NFTOffers
           const NFTOfferIDs = (transactionsToDisplay[key] as NFTokenCancelOffer).NFTokenOffers;
-          NFTOfferIDs.map((NFTOfferID) => resolveImageFromNFTOfferID(NFTOfferID, Number(key)));
+          NFTOfferIDs.map((NFTOfferID) => resolveNFTDataFromNFTOfferID(NFTOfferID, Number(key)));
         }
       }
     }
-  }, [getLedgerEntry, getNFTInfo, networkName, transactionsToDisplay]);
+  }, [getAccountInfo, getLedgerEntry, getNFTInfo, networkName, transactionsToDisplay]);
 
   return (
     <PageWithTitle title="Bulk Transactions" styles={{ container: { justifyContent: 'initial' } }}>
