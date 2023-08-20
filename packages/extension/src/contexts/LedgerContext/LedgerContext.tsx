@@ -41,7 +41,6 @@ import {
   GetNFTRequest,
   MintNFTRequest,
   Network,
-  NetworkServer,
   NFTData,
   NFTokenIDResponse,
   SendPaymentRequest,
@@ -51,7 +50,8 @@ import {
   SubmitTransactionRequest,
   SubmitBulkTransactionsRequest,
   TransactionBulkResponse,
-  TransactionWithID
+  TransactionWithID,
+  MAINNET_CLIO_NODES
 } from '@gemwallet/constants';
 
 import { AccountTransaction, WalletLedger } from '../../types';
@@ -933,9 +933,9 @@ const LedgerProvider: FC = ({ children }) => {
           // Connect to Clio server for mainnet
           let clioClient;
           try {
-            clioClient = await connectToLedger(NetworkServer.MAINNET_S1);
+            clioClient = await connectToLedger(MAINNET_CLIO_NODES[0]);
           } catch {
-            clioClient = await connectToLedger(NetworkServer.MAINNET_S2).catch(() => {
+            clioClient = await connectToLedger(MAINNET_CLIO_NODES[1]).catch(() => {
               throw new Error("Couldn't connect to a Clio server");
             });
           }
