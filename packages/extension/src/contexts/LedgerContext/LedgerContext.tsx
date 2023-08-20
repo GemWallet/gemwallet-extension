@@ -5,7 +5,6 @@ import { sign } from 'ripple-keypairs';
 import {
   AccountDelete,
   AccountSet,
-  Client,
   LedgerEntryRequest,
   LedgerEntryResponse,
   NFTInfoRequest,
@@ -61,6 +60,7 @@ import { toUIError } from '../../utils/errors';
 import { resolveNFTData } from '../../utils/NFTDataResolver';
 import { useNetwork } from '../NetworkContext';
 import { useWallet } from '../WalletContext';
+import { connectToLedger } from './utils/connectToLedger';
 
 interface FundWalletResponse {
   wallet: Wallet;
@@ -810,7 +810,6 @@ const LedgerProvider: FC = ({ children }) => {
 
   const submitTransactionsBulk = useCallback(
     async (payload: SubmitTransactionsBulkRequest) => {
-      const onError = payload.onError;
       const wallet = getCurrentWallet();
       if (!client) {
         throw new Error('You need to be connected to a ledger');
@@ -873,8 +872,9 @@ const LedgerProvider: FC = ({ children }) => {
         }
       };
 
+      const { onError, transactions } = payload;
       const results: TransactionBulkResponse[] = [];
-      for (const tx of payload.transactions) {
+      for (const tx of transactions) {
         const result = await processTransaction(tx);
         results.push(result);
 
@@ -917,12 +917,6 @@ const LedgerProvider: FC = ({ children }) => {
 
   const getNFTInfo = useCallback(
     async (NFTokenID: string, network?: string): Promise<NFTInfoResponse> => {
-      const connectToLedger = async (server: string): Promise<Client> => {
-        let client = new Client(server);
-        await client.connect();
-        return client;
-      };
-
       if (!client) throw new Error('You need to be connected to a ledger');
 
       try {
@@ -932,7 +926,9 @@ const LedgerProvider: FC = ({ children }) => {
           try {
             clioClient = await connectToLedger(MainnetClioServer.S1);
           } catch {
-            clioClient = await connectToLedger(MainnetClioServer.S2);
+            clioClient = await connectToLedger(MainnetClioServer.S2).catch(() => {
+              throw new Error("Couldn't connect to a Clio server");
+            });
           }
           return clioClient.request({
             command: 'nft_info',
