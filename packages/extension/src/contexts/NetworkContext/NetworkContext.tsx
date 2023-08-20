@@ -187,13 +187,13 @@ const NetworkProvider: FC = ({ children }) => {
       hasOfflineBanner
     };
   }, [
-    reconnectToNetwork,
-    switchNetwork,
-    resetNetwork,
     client,
-    networkName,
+    hasOfflineBanner,
     isConnectionFailed,
-    hasOfflineBanner
+    networkName,
+    reconnectToNetwork,
+    resetNetwork,
+    switchNetwork
   ]);
 
   return (
