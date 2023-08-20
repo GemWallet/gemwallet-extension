@@ -111,12 +111,12 @@ setTimeout(() => {
       } = event;
       // Check if it's an allowed event type to be forwarded
       if (type === 'REQUEST_GET_NETWORK/V3') {
-        chrome.runtime.sendMessage<RequestGetNetworkMessage>(
-          {
+        chrome.runtime
+          .sendMessage<RequestGetNetworkMessage>({
             app,
             type
-          },
-          () => {
+          })
+          .then(() => {
             const messageListener = (
               message: ReceiveGetNetworkContentMessage,
               sender: chrome.runtime.MessageSender
@@ -140,16 +140,15 @@ setTimeout(() => {
               }
             };
             chrome.runtime.onMessage.addListener(messageListener);
-          }
-        );
+          });
       } else if (type === 'REQUEST_NETWORK') {
         // REQUEST_NETWORK is deprecated since v3
-        chrome.runtime.sendMessage<RequestGetNetworkMessageDeprecated>(
-          {
+        chrome.runtime
+          .sendMessage<RequestGetNetworkMessageDeprecated>({
             app,
             type
-          },
-          () => {
+          })
+          .then(() => {
             const messageListener = (
               message: ReceiveGetNetworkContentMessageDeprecated,
               sender: chrome.runtime.MessageSender
@@ -171,19 +170,18 @@ setTimeout(() => {
               }
             };
             chrome.runtime.onMessage.addListener(messageListener);
-          }
-        );
+          });
       } else if (type === 'REQUEST_GET_ADDRESS/V3') {
         const {
           data: { payload }
         } = event as AddressEventListener;
-        chrome.runtime.sendMessage<RequestGetAddressMessage>(
-          {
+        chrome.runtime
+          .sendMessage<RequestGetAddressMessage>({
             app,
             type,
             payload
-          },
-          () => {
+          })
+          .then(() => {
             const messageListener = (
               message: ReceiveGetAddressContentMessage,
               sender: chrome.runtime.MessageSender
@@ -207,20 +205,19 @@ setTimeout(() => {
               }
             };
             chrome.runtime.onMessage.addListener(messageListener);
-          }
-        );
+          });
       } else if (type === 'REQUEST_ADDRESS') {
         // REQUEST_ADDRESS is deprecated since v3
         const {
           data: { payload }
         } = event as AddressEventListener;
-        chrome.runtime.sendMessage<RequestGetAddressMessageDeprecated>(
-          {
+        chrome.runtime
+          .sendMessage<RequestGetAddressMessageDeprecated>({
             app,
             type,
             payload
-          },
-          () => {
+          })
+          .then(() => {
             const messageListener = (
               message: ReceiveGetAddressContentMessageDeprecated,
               sender: chrome.runtime.MessageSender
@@ -242,19 +239,18 @@ setTimeout(() => {
               }
             };
             chrome.runtime.onMessage.addListener(messageListener);
-          }
-        );
+          });
       } else if (type === 'REQUEST_GET_PUBLIC_KEY/V3') {
         const {
           data: { payload }
         } = event as PublicKeyEventListener;
-        chrome.runtime.sendMessage<RequestGetPublicKeyMessage>(
-          {
+        chrome.runtime
+          .sendMessage<RequestGetPublicKeyMessage>({
             app,
             type,
             payload
-          },
-          () => {
+          })
+          .then(() => {
             const messageListener = (
               message: ReceiveGetPublicKeyContentMessage,
               sender: chrome.runtime.MessageSender
@@ -278,20 +274,19 @@ setTimeout(() => {
               }
             };
             chrome.runtime.onMessage.addListener(messageListener);
-          }
-        );
+          });
       } else if (type === 'REQUEST_PUBLIC_KEY') {
         // REQUEST_PUBLIC_KEY is deprecated since v3
         const {
           data: { payload }
         } = event as PublicKeyEventListener;
-        chrome.runtime.sendMessage<RequestGetPublicKeyMessageDeprecated>(
-          {
+        chrome.runtime
+          .sendMessage<RequestGetPublicKeyMessageDeprecated>({
             app,
             type,
             payload
-          },
-          () => {
+          })
+          .then(() => {
             const messageListener = (
               message: ReceiveGetPublicKeyContentMessageDeprecated,
               sender: chrome.runtime.MessageSender
@@ -314,19 +309,18 @@ setTimeout(() => {
               }
             };
             chrome.runtime.onMessage.addListener(messageListener);
-          }
-        );
+          });
       } else if (type === 'REQUEST_GET_NFT/V3') {
         const {
           data: { payload }
         } = event as GetNFTEventListener;
-        chrome.runtime.sendMessage<RequestGetNFTMessage>(
-          {
+        chrome.runtime
+          .sendMessage<RequestGetNFTMessage>({
             app,
             type,
             payload
-          },
-          () => {
+          })
+          .then(() => {
             const messageListener = (
               message: ReceiveGetNFTContentMessage,
               sender: chrome.runtime.MessageSender
@@ -350,20 +344,19 @@ setTimeout(() => {
               }
             };
             chrome.runtime.onMessage.addListener(messageListener);
-          }
-        );
+          });
       } else if (type === 'REQUEST_NFT') {
         // REQUEST_NFT is deprecated since v3
         const {
           data: { payload }
         } = event as GetNFTEventListenerDeprecated;
-        chrome.runtime.sendMessage<RequestGetNFTMessageDeprecated>(
-          {
+        chrome.runtime
+          .sendMessage<RequestGetNFTMessageDeprecated>({
             app,
             type,
             payload
-          },
-          () => {
+          })
+          .then(() => {
             const messageListener = (
               message: ReceiveGetNFTContentMessageDeprecated,
               sender: chrome.runtime.MessageSender
@@ -385,19 +378,18 @@ setTimeout(() => {
               }
             };
             chrome.runtime.onMessage.addListener(messageListener);
-          }
-        );
+          });
       } else if (type === 'REQUEST_SEND_PAYMENT/V3') {
         const {
           data: { payload }
         } = event as PaymentEventListener;
-        chrome.runtime.sendMessage<RequestSendPaymentMessage>(
-          {
+        chrome.runtime
+          .sendMessage<RequestSendPaymentMessage>({
             app,
             type,
             payload
-          },
-          () => {
+          })
+          .then(() => {
             const messageListener = (
               message: ReceiveSendPaymentContentMessage,
               sender: chrome.runtime.MessageSender
@@ -421,20 +413,19 @@ setTimeout(() => {
               }
             };
             chrome.runtime.onMessage.addListener(messageListener);
-          }
-        );
+          });
       } else if (type === 'SEND_PAYMENT') {
         // SEND_PAYMENT is deprecated since v3
         const {
           data: { payload }
         } = event as PaymentEventListenerDeprecated;
-        chrome.runtime.sendMessage<RequestSendPaymentMessageDeprecated>(
-          {
+        chrome.runtime
+          .sendMessage<RequestSendPaymentMessageDeprecated>({
             app,
             type,
             payload
-          },
-          () => {
+          })
+          .then(() => {
             const messageListener = (
               message: ReceiveSendPaymentContentMessageDeprecated,
               sender: chrome.runtime.MessageSender
@@ -457,19 +448,18 @@ setTimeout(() => {
               }
             };
             chrome.runtime.onMessage.addListener(messageListener);
-          }
-        );
+          });
       } else if (type === 'REQUEST_SET_TRUSTLINE/V3') {
         const {
           data: { payload }
         } = event as SetTrustlineEventListener;
-        chrome.runtime.sendMessage<RequestSetTrustlineMessage>(
-          {
+        chrome.runtime
+          .sendMessage<RequestSetTrustlineMessage>({
             app,
             type,
             payload
-          },
-          () => {
+          })
+          .then(() => {
             const messageListener = (
               message: ReceiveSetTrustlineContentMessage,
               sender: chrome.runtime.MessageSender
@@ -493,19 +483,18 @@ setTimeout(() => {
               }
             };
             chrome.runtime.onMessage.addListener(messageListener);
-          }
-        );
+          });
       } else if (type === 'REQUEST_MINT_NFT/V3') {
         const {
           data: { payload }
         } = event as MintNFTEventListener;
-        chrome.runtime.sendMessage<RequestMintNFTMessage>(
-          {
+        chrome.runtime
+          .sendMessage<RequestMintNFTMessage>({
             app,
             type,
             payload
-          },
-          () => {
+          })
+          .then(() => {
             const messageListener = (
               message: ReceiveMintNFTContentMessage,
               sender: chrome.runtime.MessageSender
@@ -529,19 +518,18 @@ setTimeout(() => {
               }
             };
             chrome.runtime.onMessage.addListener(messageListener);
-          }
-        );
+          });
       } else if (type === 'REQUEST_CREATE_NFT_OFFER/V3') {
         const {
           data: { payload }
         } = event as CreateNFTOfferEventListener;
-        chrome.runtime.sendMessage<RequestCreateNFTOfferMessage>(
-          {
+        chrome.runtime
+          .sendMessage<RequestCreateNFTOfferMessage>({
             app,
             type,
             payload
-          },
-          () => {
+          })
+          .then(() => {
             const messageListener = (
               message: ReceiveCreateNFTOfferContentMessage,
               sender: chrome.runtime.MessageSender
@@ -565,19 +553,18 @@ setTimeout(() => {
               }
             };
             chrome.runtime.onMessage.addListener(messageListener);
-          }
-        );
+          });
       } else if (type === 'REQUEST_CANCEL_NFT_OFFER/V3') {
         const {
           data: { payload }
         } = event as CancelNFTOfferEventListener;
-        chrome.runtime.sendMessage<RequestCancelNFTOfferMessage>(
-          {
+        chrome.runtime
+          .sendMessage<RequestCancelNFTOfferMessage>({
             app,
             type,
             payload
-          },
-          () => {
+          })
+          .then(() => {
             const messageListener = (
               message: ReceiveCancelNFTOfferContentMessage,
               sender: chrome.runtime.MessageSender
@@ -601,19 +588,18 @@ setTimeout(() => {
               }
             };
             chrome.runtime.onMessage.addListener(messageListener);
-          }
-        );
+          });
       } else if (type === 'REQUEST_ACCEPT_NFT_OFFER/V3') {
         const {
           data: { payload }
         } = event as AcceptNFTOfferEventListener;
-        chrome.runtime.sendMessage<RequestAcceptNFTOfferMessage>(
-          {
+        chrome.runtime
+          .sendMessage<RequestAcceptNFTOfferMessage>({
             app,
             type,
             payload
-          },
-          () => {
+          })
+          .then(() => {
             const messageListener = (
               message: ReceiveAcceptNFTOfferContentMessage,
               sender: chrome.runtime.MessageSender
@@ -637,19 +623,18 @@ setTimeout(() => {
               }
             };
             chrome.runtime.onMessage.addListener(messageListener);
-          }
-        );
+          });
       } else if (type === 'REQUEST_BURN_NFT/V3') {
         const {
           data: { payload }
         } = event as BurnNFTEventListener;
-        chrome.runtime.sendMessage<RequestBurnNFTMessage>(
-          {
+        chrome.runtime
+          .sendMessage<RequestBurnNFTMessage>({
             app,
             type,
             payload
-          },
-          () => {
+          })
+          .then(() => {
             const messageListener = (
               message: ReceiveBurnNFTContentMessage,
               sender: chrome.runtime.MessageSender
@@ -673,20 +658,19 @@ setTimeout(() => {
               }
             };
             chrome.runtime.onMessage.addListener(messageListener);
-          }
-        );
+          });
       } else if (type === 'REQUEST_ADD_TRUSTLINE') {
         // REQUEST_ADD_TRUSTLINE is deprecated since v3
         const {
           data: { payload }
         } = event as SetTrustlineEventListenerDeprecated;
-        chrome.runtime.sendMessage<RequestSetTrustlineMessageDeprecated>(
-          {
+        chrome.runtime
+          .sendMessage<RequestSetTrustlineMessageDeprecated>({
             app,
             type,
             payload
-          },
-          () => {
+          })
+          .then(() => {
             const messageListener = (
               message: ReceiveSetTrustlineContentMessageDeprecated,
               sender: chrome.runtime.MessageSender
@@ -709,19 +693,18 @@ setTimeout(() => {
               }
             };
             chrome.runtime.onMessage.addListener(messageListener);
-          }
-        );
+          });
       } else if (type === 'REQUEST_SIGN_MESSAGE/V3') {
         const {
           data: { payload }
         } = event as SignMessageListener;
-        chrome.runtime.sendMessage<RequestSignMessageMessage>(
-          {
+        chrome.runtime
+          .sendMessage<RequestSignMessageMessage>({
             app,
             type,
             payload
-          },
-          () => {
+          })
+          .then(() => {
             const messageListener = (
               message: ReceiveSignMessageContentMessage,
               sender: chrome.runtime.MessageSender
@@ -745,20 +728,19 @@ setTimeout(() => {
               }
             };
             chrome.runtime.onMessage.addListener(messageListener);
-          }
-        );
+          });
       } else if (type === 'REQUEST_SIGN_MESSAGE') {
         // REQUEST_SIGN_MESSAGE is deprecated since v3
         const {
           data: { payload }
         } = event as SignMessageListener;
-        chrome.runtime.sendMessage<RequestSignMessageMessageDeprecated>(
-          {
+        chrome.runtime
+          .sendMessage<RequestSignMessageMessageDeprecated>({
             app,
             type,
             payload
-          },
-          () => {
+          })
+          .then(() => {
             const messageListener = (
               message: ReceiveSignMessageContentMessageDeprecated,
               sender: chrome.runtime.MessageSender
@@ -780,19 +762,18 @@ setTimeout(() => {
               }
             };
             chrome.runtime.onMessage.addListener(messageListener);
-          }
-        );
+          });
       } else if (type === 'REQUEST_SET_ACCOUNT/V3') {
         const {
           data: { payload }
         } = event as SetAccountEventListener;
-        chrome.runtime.sendMessage<RequestSetAccountMessage>(
-          {
+        chrome.runtime
+          .sendMessage<RequestSetAccountMessage>({
             app,
             type,
             payload
-          },
-          () => {
+          })
+          .then(() => {
             const messageListener = (
               message: ReceiveSetAccountContentMessage,
               sender: chrome.runtime.MessageSender
@@ -816,19 +797,18 @@ setTimeout(() => {
               }
             };
             chrome.runtime.onMessage.addListener(messageListener);
-          }
-        );
+          });
       } else if (type === 'REQUEST_CREATE_OFFER/V3') {
         const {
           data: { payload }
         } = event as CreateOfferEventListener;
-        chrome.runtime.sendMessage<RequestCreateOfferMessage>(
-          {
+        chrome.runtime
+          .sendMessage<RequestCreateOfferMessage>({
             app,
             type,
             payload
-          },
-          () => {
+          })
+          .then(() => {
             const messageListener = (
               message: ReceiveCreateOfferContentMessage,
               sender: chrome.runtime.MessageSender
@@ -852,19 +832,18 @@ setTimeout(() => {
               }
             };
             chrome.runtime.onMessage.addListener(messageListener);
-          }
-        );
+          });
       } else if (type === 'REQUEST_CANCEL_OFFER/V3') {
         const {
           data: { payload }
         } = event as CancelOfferEventListener;
-        chrome.runtime.sendMessage<RequestCancelOfferMessage>(
-          {
+        chrome.runtime
+          .sendMessage<RequestCancelOfferMessage>({
             app,
             type,
             payload
-          },
-          () => {
+          })
+          .then(() => {
             const messageListener = (
               message: ReceiveCancelOfferContentMessage,
               sender: chrome.runtime.MessageSender
@@ -888,19 +867,18 @@ setTimeout(() => {
               }
             };
             chrome.runtime.onMessage.addListener(messageListener);
-          }
-        );
+          });
       } else if (type === 'REQUEST_SUBMIT_TRANSACTION/V3') {
         const {
           data: { payload }
         } = event as SubmitTransactionEventListener;
-        chrome.runtime.sendMessage<RequestSubmitTransactionMessage>(
-          {
+        chrome.runtime
+          .sendMessage<RequestSubmitTransactionMessage>({
             app,
             type,
             payload
-          },
-          () => {
+          })
+          .then(() => {
             const messageListener = (
               message: ReceiveSubmitTransactionContentMessage,
               sender: chrome.runtime.MessageSender
@@ -924,8 +902,7 @@ setTimeout(() => {
               }
             };
             chrome.runtime.onMessage.addListener(messageListener);
-          }
-        );
+          });
       } else if (type === 'REQUEST_CONNECTION') {
         window.postMessage(
           { source: 'GEM_WALLET_MSG_RESPONSE', messagedId, isConnected: true },
