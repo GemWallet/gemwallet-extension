@@ -21,7 +21,7 @@ export const submitTransactionsBulk = async (
   };
 
   if (payload.transactions.length === 0 || payload.transactions.length > MAX_TRANSACTIONS) {
-    throw new Error('Invalid number of transactions');
+    throw new Error(`Invalid number of transactions (must be between 1 and ${MAX_TRANSACTIONS})`);
   }
 
   try {

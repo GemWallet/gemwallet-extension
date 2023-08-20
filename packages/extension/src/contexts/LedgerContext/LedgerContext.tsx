@@ -39,9 +39,9 @@ import {
   CreateNFTOfferRequest,
   CreateOfferRequest,
   GetNFTRequest,
-  MainnetClioServer,
   MintNFTRequest,
   Network,
+  NetworkServer,
   NFTData,
   NFTokenIDResponse,
   SendPaymentRequest,
@@ -924,9 +924,9 @@ const LedgerProvider: FC = ({ children }) => {
           // Connect to Clio server for mainnet
           let clioClient;
           try {
-            clioClient = await connectToLedger(MainnetClioServer.S1);
+            clioClient = await connectToLedger(NetworkServer.MAINNET_S1);
           } catch {
-            clioClient = await connectToLedger(MainnetClioServer.S2).catch(() => {
+            clioClient = await connectToLedger(NetworkServer.MAINNET_S2).catch(() => {
               throw new Error("Couldn't connect to a Clio server");
             });
           }

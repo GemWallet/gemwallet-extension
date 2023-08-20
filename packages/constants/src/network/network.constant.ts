@@ -10,12 +10,9 @@ export enum NetworkServer {
   MAINNET = 'wss://xrplcluster.com',
   TESTNET = 'wss://s.altnet.rippletest.net:51233',
   DEVNET = 'wss://s.devnet.rippletest.net:51233',
-  AMM_DEVNET = 'wss://amm.devnet.rippletest.net:51233'
-}
-
-export enum MainnetClioServer {
-  S1 = 'wss://s1.ripple.com',
-  S2 = 'wss://s2.ripple.com'
+  AMM_DEVNET = 'wss://amm.devnet.rippletest.net:51233',
+  MAINNET_S1 = 'wss://s1.ripple.com', // Clio
+  MAINNET_S2 = 'wss://s2.ripple.com' // Clio
 }
 
 export const NETWORK = {
