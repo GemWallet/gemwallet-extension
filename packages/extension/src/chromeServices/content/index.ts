@@ -910,19 +910,18 @@ setTimeout(() => {
               }
             };
             chrome.runtime.onMessage.addListener(messageListener);
-          }
-        );
+          });
       } else if (type === 'REQUEST_SUBMIT_TRANSACTIONS_BULK/V3') {
         const {
           data: { payload }
         } = event as SubmitTransactionsBulkEventListener;
-        chrome.runtime.sendMessage<RequestSubmitTransactionsBulkMessage>(
-          {
+        chrome.runtime
+          .sendMessage<RequestSubmitTransactionsBulkMessage>({
             app,
             type,
             payload
-          },
-          () => {
+          })
+          .then(() => {
             const messageListener = (
               message: ReceiveSubmitTransactionsBulkContentMessage,
               sender: chrome.runtime.MessageSender
