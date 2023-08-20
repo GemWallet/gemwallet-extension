@@ -35,6 +35,8 @@ import {
   SendPaymentResponseDeprecated,
   SetAccountResponse,
   SetAccountRequest,
+  SetHookResponse,
+  SetHookRequest,
   SetRegularKeyResponse,
   SetRegularKeyRequest,
   SetTrustlineResponse,
@@ -78,6 +80,7 @@ export type RequestMessage =
   | 'REQUEST_PUBLIC_KEY'
   | 'REQUEST_SEND_PAYMENT/V3'
   | 'REQUEST_SET_ACCOUNT/V3'
+  | 'REQUEST_SET_HOOK/V3'
   | 'REQUEST_SET_REGULAR_KEY/V3'
   | 'REQUEST_SET_TRUSTLINE/V3'
   | 'REQUEST_SIGN_MESSAGE'
@@ -107,6 +110,7 @@ export type ReceiveMessage =
   | 'RECEIVE_PUBLIC_KEY'
   | 'RECEIVE_SEND_PAYMENT/V3'
   | 'RECEIVE_SET_ACCOUNT/V3'
+  | 'RECEIVE_SET_HOOK/V3'
   | 'RECEIVE_SET_REGULAR_KEY/V3'
   | 'RECEIVE_SET_TRUSTLINE/V3'
   | 'RECEIVE_SIGN_MESSAGE'
@@ -278,6 +282,12 @@ export interface RequestSubmitBulkTransactionsMessage {
   payload: SubmitBulkTransactionsWithKeysRequest;
 }
 
+export interface RequestSetHookMessage {
+  app: typeof GEM_WALLET;
+  type: 'REQUEST_SET_HOOK/V3';
+  payload: SetHookRequest;
+}
+
 // Internal
 export interface InternalRequestPasswordMessage {
   app: typeof GEM_WALLET;
@@ -337,6 +347,7 @@ export type SendPaymentMessagingResponse = MessagingResponse & SendPaymentRespon
 export type SendPaymentMessagingResponseDeprecated = MessagingResponse &
   SendPaymentResponseDeprecated;
 export type SetAccountMessagingResponse = MessagingResponse & SetAccountResponse;
+export type SetHookMessagingResponse = MessagingResponse & SetHookResponse;
 export type SetRegularKeyMessagingResponse = MessagingResponse & SetRegularKeyResponse;
 export type SetTrustlineMessagingResponse = MessagingResponse & SetTrustlineResponse;
 export type SetTrustlineMessagingResponseDeprecated = MessagingResponse &
@@ -511,6 +522,12 @@ export interface ReceiveSubmitBulkTransactionsContentMessage {
   payload: SubmitBulkTransactionsMessagingResponse;
 }
 
+export interface ReceiveSetHookContentMessage {
+  app: typeof GEM_WALLET;
+  type: 'RECEIVE_SET_HOOK/V3';
+  payload: SetHookMessagingResponse;
+}
+
 // Internal
 export interface InternalReceivePasswordContentMessage {
   app: typeof GEM_WALLET;
@@ -644,6 +661,9 @@ export type ReceiveSubmitTransactionBackgroundMessage = ReceiveSubmitTransaction
 export type ReceiveSubmitBulkTransactionsBackgroundMessage =
   ReceiveSubmitBulkTransactionsContentMessage & BackgroundMessagePayload;
 
+export type ReceiveSetHookBackgroundMessage = ReceiveSetHookContentMessage &
+  BackgroundMessagePayload;
+
 export type InternalReceivePasswordBackgroundMessage = InternalReceivePasswordContentMessage &
   BackgroundMessagePayload;
 
@@ -683,6 +703,7 @@ export type BackgroundMessage =
   | RequestSendPaymentMessage
   | RequestSendPaymentMessageDeprecated
   | RequestSetAccountMessage
+  | RequestSetHookMessage
   | RequestSetRegularKeyMessage
   | RequestSetTrustlineMessage
   | RequestSetTrustlineMessageDeprecated
@@ -712,6 +733,7 @@ export type BackgroundMessage =
   | ReceivePublicKeyBackgroundMessage
   | ReceivePublicKeyBackgroundMessageDeprecated
   | ReceiveSetAccountBackgroundMessage
+  | ReceiveSetHookBackgroundMessage
   | ReceiveSetRegularKeyBackgroundMessage
   | ReceiveSendPaymentBackgroundMessage
   | ReceiveSendPaymentBackgroundMessageDeprecated
@@ -752,6 +774,7 @@ export type APIMessages =
   | RequestIsInstalledMessage
   | RequestSendPaymentMessage
   | RequestSetAccountMessage
+  | RequestSetHookMessage
   | RequestSetRegularKeyMessage
   | RequestSetTrustlineMessage
   | RequestSignMessageMessage

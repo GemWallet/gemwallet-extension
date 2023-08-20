@@ -28,6 +28,7 @@ import {
   validate,
   Wallet
 } from 'xrpl';
+import { derive, signAndSubmit, utils } from 'xrpl-accountlib';
 
 import {
   AccountNFToken,
@@ -37,6 +38,7 @@ import {
   MAINNET_CLIO_NODES,
   NFTData,
   NFTokenIDResponse,
+  SetHookRequest,
   SignTransactionRequest,
   SubmitBulkTransactionsRequest,
   SubmitTransactionRequest,
@@ -123,6 +125,10 @@ interface SubmitBulkTransactionsResponse {
   hasError?: boolean;
 }
 
+interface SetHookResponse {
+  hash: string;
+}
+
 export const LEDGER_CONNECTION_ERROR = 'You need to be connected to a ledger to make a transaction';
 
 export interface LedgerContextType {
@@ -153,6 +159,7 @@ export interface LedgerContextType {
   deleteAccount: (destinationAddress: string) => Promise<DeleteAccountResponse>;
   getNFTInfo: (NFTokenID: string) => Promise<NFTInfoResponse>;
   getLedgerEntry: (ID: string) => Promise<LedgerEntryResponse>;
+  setHook: (payload: SetHookRequest) => Promise<SetHookResponse>;
 }
 
 const LedgerContext = createContext<LedgerContextType>({
@@ -182,7 +189,8 @@ const LedgerContext = createContext<LedgerContextType>({
   getNFTData: () => new Promise(() => {}),
   deleteAccount: () => new Promise(() => {}),
   getNFTInfo: () => new Promise(() => {}),
-  getLedgerEntry: () => new Promise(() => {})
+  getLedgerEntry: () => new Promise(() => {}),
+  setHook: () => new Promise(() => {})
 });
 
 const LedgerProvider: FC = ({ children }) => {
@@ -759,6 +767,40 @@ const LedgerProvider: FC = ({ children }) => {
     [client, getCurrentWallet]
   );
 
+  const setHook = useCallback(
+    async (payload: SetHookRequest): Promise<SetHookResponse> => {
+      const server = client?.connection.getUrl();
+      if (!server) throw new Error('You need to be connected to a ledger');
+
+      const wallet = getCurrentWallet();
+      if (!wallet?.seed) throw new Error('You need to have a wallet connected');
+
+      const account = derive.familySeed(wallet.seed);
+      const networkInfo = await utils.txNetworkAndAccountValues(server, account);
+
+      try {
+        const tx = {
+          TransactionType: 'SetHook',
+          Hooks: payload.hooks,
+          // Add: Sequence, Account, LastLedgerSequence, Fee (in case Hooks enabled: autodetect (from ledger))
+          ...networkInfo.txValues
+        };
+
+        const submitted = await signAndSubmit(tx, server, account);
+
+        if (!submitted.tx_id) throw new Error('Could not submit the transaction');
+
+        return {
+          hash: submitted.tx_id
+        };
+      } catch (e) {
+        Sentry.captureException(e);
+        throw e;
+      }
+    },
+    [client?.connection, getCurrentWallet]
+  );
+
   const getNFTInfo = useCallback(
     async (NFTokenID: string): Promise<NFTInfoResponse> => {
       if (!client) throw new Error('You need to be connected to a ledger');
@@ -847,7 +889,8 @@ const LedgerProvider: FC = ({ children }) => {
     deleteAccount,
     getNFTInfo,
     getLedgerEntry,
-    setRegularKey
+    setRegularKey,
+    setHook
   };
 
   return <LedgerContext.Provider value={value}>{children}</LedgerContext.Provider>;

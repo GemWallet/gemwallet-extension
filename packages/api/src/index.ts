@@ -13,6 +13,7 @@ export * from './isInstalled';
 export * from './mintNFT';
 export * from './sendPayment';
 export * from './setAccount';
+export * from './setHook';
 export * from './setRegularKey';
 export * from './setTrustline';
 export * from './signMessage';
@@ -23,6 +24,9 @@ export * from './submitBulkTransactions';
 export type { Amount } from 'xrpl/dist/npm/models/common';
 export type {
   AccountNFToken,
+  Hook,
+  HookGrant,
+  HookParameter,
   Memo,
   Network,
   PaymentFlags,
@@ -42,6 +46,7 @@ export type {
   MintNFTRequest,
   SendPaymentRequest,
   SetAccountRequest,
+  SetHookRequest,
   SetRegularKeyRequest,
   SetTrustlineRequest,
   SignMessageRequest,
@@ -66,6 +71,7 @@ export type {
   MintNFTResponse,
   SendPaymentResponse,
   SetAccountResponse,
+  SetHookResponse,
   SetRegularKeyResponse,
   SetTrustlineResponse,
   SignMessageResponse,

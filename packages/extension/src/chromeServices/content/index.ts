@@ -48,6 +48,7 @@ import {
   ReceiveSendPaymentContentMessage,
   ReceiveSendPaymentContentMessageDeprecated,
   ReceiveSetAccountContentMessage,
+  ReceiveSetHookContentMessage,
   ReceiveSetRegularKeyContentMessage,
   ReceiveSetTrustlineContentMessage,
   ReceiveSetTrustlineContentMessageDeprecated,
@@ -73,6 +74,7 @@ import {
   RequestSendPaymentMessage,
   RequestSendPaymentMessageDeprecated,
   RequestSetAccountMessage,
+  RequestSetHookMessage,
   RequestSetRegularKeyMessage,
   RequestSetTrustlineMessage,
   RequestSetTrustlineMessageDeprecated,
@@ -82,6 +84,12 @@ import {
   RequestSubmitTransactionMessage,
   SendPaymentMessagingResponse,
   SendPaymentMessagingResponseDeprecated,
+  SetAccountEventListener,
+  SetAccountMessagingResponse,
+  SetHookEventListener,
+  SetHookMessagingResponse,
+  SetRegularKeyEventListener,
+  SetRegularKeyMessagingResponse,
   SetTrustlineEventListener,
   SetTrustlineEventListenerDeprecated,
   SetTrustlineMessagingResponse,
@@ -91,10 +99,6 @@ import {
   SignMessageMessagingResponseDeprecated,
   SignTransactionEventListener,
   SignTransactionMessagingResponse,
-  SetAccountEventListener,
-  SetAccountMessagingResponse,
-  SetRegularKeyEventListener,
-  SetRegularKeyMessagingResponse,
   SubmitTransactionEventListener,
   SubmitTransactionMessagingResponse,
   SubmitBulkTransactionsEventListener,
@@ -1012,6 +1016,41 @@ setTimeout(() => {
                       result,
                       error
                     } as SignTransactionMessagingResponse,
+                    window.location.origin
+                  );
+                  chrome.runtime.onMessage.removeListener(messageListener);
+                }
+              }
+            };
+            chrome.runtime.onMessage.addListener(messageListener);
+          });
+      } else if (type === 'REQUEST_SET_HOOK/V3') {
+        const {
+          data: { payload }
+        } = event as SetHookEventListener;
+        chrome.runtime
+          .sendMessage<RequestSetHookMessage>({
+            app,
+            type,
+            payload
+          })
+          .then(() => {
+            const messageListener = (
+              message: ReceiveSetHookContentMessage,
+              sender: chrome.runtime.MessageSender
+            ) => {
+              const { app, type, payload } = message;
+              // We make sure that the message comes from GemWallet
+              if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
+                if (type === 'RECEIVE_SET_HOOK/V3') {
+                  const { result, error } = payload;
+                  window.postMessage(
+                    {
+                      source: 'GEM_WALLET_MSG_RESPONSE',
+                      messagedId,
+                      result,
+                      error
+                    } as SetHookMessagingResponse,
                     window.location.origin
                   );
                   chrome.runtime.onMessage.removeListener(messageListener);
