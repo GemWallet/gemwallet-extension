@@ -679,7 +679,7 @@ export const handleLogoutEvent = (message: EventLogoutBackgroundMessage) => {
  */
 const activeTabs = new Set<number>();
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((request, sender) => {
   if (sender.tab?.id !== undefined) {
     if (request.type === 'CONTENT_SCRIPT_LOADED') {
       activeTabs.add(sender.tab.id);
