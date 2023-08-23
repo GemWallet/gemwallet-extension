@@ -70,7 +70,7 @@ describe('Format util', () => {
     test('should handle values with long decimal parts gracefully', () => {
       const value = Number('10.000007') - 10;
       const currency = 'XRP';
-      expect(formatToken(value, currency)).toEqual('0.00000700000000009027 XRP');
+      expect(formatToken(value, currency)).toEqual('0.000007 XRP');
     });
   });
 });
