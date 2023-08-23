@@ -66,6 +66,12 @@ describe('Format util', () => {
       const isDrops = false;
       expect(formatToken(value, currency, isDrops)).toEqual('1,234,567.8977 USD');
     });
+
+    test('should handle values with long decimal parts gracefully', () => {
+      const value = Number('10.000007') - 10;
+      const currency = 'XRP';
+      expect(formatToken(value, currency)).toEqual('0.000007 XRP');
+    });
   });
 });
 

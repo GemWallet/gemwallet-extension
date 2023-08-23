@@ -14,11 +14,14 @@ import {
 import { convertHexCurrencyString } from './convertHexCurrencyString';
 
 const formatValue = (value: number) => {
+  let decimalLength = value.toString().split('.')[1]?.length || 0;
+  decimalLength = Math.min(Math.max(decimalLength, 0), 6);
+
   return new Intl.NumberFormat(navigator.language, {
     style: 'currency',
     currency: 'XRP',
     currencyDisplay: 'narrowSymbol',
-    minimumFractionDigits: value.toString().split('.')[1]?.length || 0
+    minimumFractionDigits: decimalLength
   })
     .format(value)
     .replace(/\s?XRP\s?/, '');
