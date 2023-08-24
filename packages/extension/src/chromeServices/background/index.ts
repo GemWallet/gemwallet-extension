@@ -111,14 +111,20 @@ const sendInMemoryMessage = ({
 
 let currentState: TransactionState = TransactionState.IDLE;
 
-const handleTransactionRequest = (payload: any) => {
+const handleTransactionRequest = async (payload: any) => {
+  // Do not allow multiple transactions at the same time
   if (currentState === TransactionState.IN_PROGRESS) {
     return Promise.resolve();
   }
 
   if (currentState === TransactionState.COMPLETED) {
     // Close the previous popup window
-    // TODO: Insert logic to close the existing popup
+    const openedWindows = await chrome.windows.getAll();
+    const { currentWindowId } = await chrome.storage.local.get('currentWindowId');
+
+    if (currentWindowId && openedWindows.find((window) => window.id === currentWindowId)) {
+      await chrome.windows.remove(currentWindowId);
+    }
   }
 
   currentState = TransactionState.IN_PROGRESS;
