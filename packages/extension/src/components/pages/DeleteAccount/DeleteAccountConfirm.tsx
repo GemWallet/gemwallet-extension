@@ -5,7 +5,7 @@ import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
 
 import { HOME_PATH } from '../../../constants';
-import { useLedger, useNetwork } from '../../../contexts';
+import { useLedger, useNetwork, useWallet } from '../../../contexts';
 import { useFees } from '../../../hooks';
 import { useTransactionStatus } from '../../../hooks/useTransactionStatus/useTransactionStatus';
 import { TransactionStatus } from '../../../types';
@@ -22,8 +22,10 @@ export const DeleteAccountConfirm: FC<DeleteAccountConfirmProps> = ({
 }) => {
   const { deleteAccount } = useLedger();
   const { networkName } = useNetwork();
+  const { getCurrentWallet } = useWallet();
 
   const navigate = useNavigate();
+  const wallet = getCurrentWallet();
 
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
   const [errorRequestRejection, setErrorRequestRejection] = useState<string>('');
@@ -80,8 +82,30 @@ export const DeleteAccountConfirm: FC<DeleteAccountConfirmProps> = ({
               Final Step: Confirm Account Deletion
             </Typography>
             <Typography variant="body1" align="center" style={{ marginTop: '2rem' }}>
-              You are about to permanently delete your account from the XRPL and transfer your XRP
-              funds to:
+              You are about to permanently delete the following account from the XRPL:
+            </Typography>
+            <div
+              style={{
+                backgroundColor: 'white',
+                borderRadius: '4px',
+                padding: '0.2rem 0.5rem',
+                marginTop: '1rem',
+                display: 'inline-block'
+              }}
+            >
+              <Typography
+                variant="body2"
+                align="center"
+                style={{
+                  fontFamily: 'Courier New, Courier, monospace',
+                  color: 'black'
+                }}
+              >
+                {wallet?.publicAddress}
+              </Typography>
+            </div>
+            <Typography variant="body1" align="center" style={{ marginTop: '2rem' }}>
+              and transfer your XRP funds to:
             </Typography>
             <div
               style={{

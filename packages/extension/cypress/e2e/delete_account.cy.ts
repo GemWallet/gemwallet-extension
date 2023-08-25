@@ -78,7 +78,13 @@ describe('Delete account', () => {
     // Should be on the delete account confirmation page
     cy.contains('Final Step: Confirm Account Deletion').should('exist');
 
-    cy.contains('rNvFCZXpDtGeQ3bVas95wGLN6N2stGmA9o').should('exist');
+    cy.contains('You are about to permanently delete the following account from the XRPL:')
+      .next()
+      .should('have.text', 'rJD2jq9TboEoQgNtuRYBRWqJCJupoq9uVr');
+
+    cy.contains('and transfer your XRP funds to:')
+      .next()
+      .should('have.text', 'rNvFCZXpDtGeQ3bVas95wGLN6N2stGmA9o');
 
     // We are not going to actually delete the account, so we just click on the cancel button
     cy.contains('button', 'Cancel').click();
