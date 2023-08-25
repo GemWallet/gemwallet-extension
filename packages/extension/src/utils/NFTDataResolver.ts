@@ -78,12 +78,12 @@ export const resolveNFTData = async (
         const response = await fetch(resourceURL);
         const contentType = response.headers.get('content-type');
 
-        if (contentType && contentType.includes('application/json')) {
+        if (contentType?.includes('application/json')) {
           // If it follows the XLS-24 standard, it will be automatically parsed
           return parseJSON(resourceURL, NFTokenID);
         }
 
-        if (contentType && contentType.startsWith('image/')) {
+        if (contentType?.startsWith('image/')) {
           return {
             NFTokenID,
             image: resourceURL
@@ -95,6 +95,6 @@ export const resolveNFTData = async (
   // Case 3 - Return the raw NFT attributes
   return {
     NFTokenID,
-    description: URL.replace(IPFSResolverPrefix, 'ipfs://')
+    description: URI ? convertHexToString(URI) : undefined
   };
 };
