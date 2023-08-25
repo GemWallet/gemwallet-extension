@@ -66,8 +66,7 @@ import { Session } from './utils/session';
 
 enum TransactionState {
   IN_PROGRESS = 'in progress',
-  COMPLETED = 'completed',
-  IDLE = 'idle' // State when no transaction is taking place
+  IDLE = 'idle'
 }
 
 const sendMessageToTab = <T>(tabId: number | undefined, message: any) => {
@@ -117,7 +116,7 @@ const handleTransactionRequest = async (payload: any) => {
     return Promise.resolve();
   }
 
-  if (currentState === TransactionState.COMPLETED) {
+  if (currentState === TransactionState.IDLE) {
     // Close the previous popup window
     const openedWindows = await chrome.windows.getAll();
     const { currentWindowId } = await chrome.storage.local.get('currentWindowId');
@@ -132,7 +131,7 @@ const handleTransactionRequest = async (payload: any) => {
 };
 
 const handleTransactionResponse = <T>(id: number, payload: any) => {
-  currentState = TransactionState.COMPLETED;
+  currentState = TransactionState.IDLE;
   sendMessageToTab<T>(id, payload);
 };
 
