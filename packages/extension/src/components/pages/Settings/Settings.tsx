@@ -14,6 +14,7 @@ import { useNavigate } from 'react-router-dom';
 
 import {
   ABOUT_PATH,
+  DELETE_ACCOUNT_PATH,
   FAQ_LINK,
   FEEDBACK_LINK,
   NAV_MENU_HEIGHT,
@@ -53,6 +54,10 @@ export const Settings: FC = () => {
       {
         name: 'About',
         onClick: () => navigate(ABOUT_PATH)
+      },
+      {
+        name: 'Delete Account',
+        onClick: () => navigate(DELETE_ACCOUNT_PATH)
       }
     ],
     [navigate]

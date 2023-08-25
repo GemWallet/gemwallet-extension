@@ -10,6 +10,7 @@ import {
   CANCEL_OFFER_PATH,
   CREATE_NFT_OFFER_PATH,
   CREATE_OFFER_PATH,
+  DELETE_ACCOUNT_PATH,
   EDIT_WALLET_PATH,
   HISTORY_PATH,
   HOME_PATH,
@@ -37,6 +38,7 @@ import { CancelNFTOffer } from '../CancelNFTOffer';
 import { CancelOffer } from '../CancelOffer';
 import { CreateNFTOffer } from '../CreateNFTOffer';
 import { CreateOffer } from '../CreateOffer';
+import { DeleteAccount } from '../DeleteAccount';
 import { EditWallet } from '../EditWallet';
 import { History } from '../History';
 import { Home } from '../Home';
@@ -69,6 +71,7 @@ export const privateRoutes: PrivateRouteConfig[] = [
   { path: CANCEL_OFFER_PATH, element: CancelOffer },
   { path: CREATE_NFT_OFFER_PATH, element: CreateNFTOffer },
   { path: CREATE_OFFER_PATH, element: CreateOffer },
+  { path: DELETE_ACCOUNT_PATH, element: DeleteAccount },
   { path: EDIT_WALLET_PATH, element: EditWallet },
   { path: HISTORY_PATH, element: History },
   { path: HOME_PATH, element: Home },
