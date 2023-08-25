@@ -117,6 +117,7 @@ export const useTransactionStatus = ({
           title="Error"
           subtitle={errorFees}
           transaction={TransactionStatus.Rejected}
+          {...(onClick && { onClick })}
         />
       );
     }
