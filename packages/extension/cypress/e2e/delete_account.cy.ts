@@ -41,7 +41,7 @@ describe('Delete account', () => {
     cy.get('input[name="password"]').type('{enter}');
 
     // Should be on the delete account page
-    cy.contains('You are about to permanently delete your account from the XRPL.').should('exist');
+    cy.contains('You are about to permanently delete your account from the XRPL').should('exist');
     cy.contains('button', 'Continue').click();
 
     // Should be on the delete account form page

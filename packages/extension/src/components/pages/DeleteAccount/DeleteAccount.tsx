@@ -69,7 +69,7 @@ export const DeleteAccount: FC = () => {
           <WarningIcon color="warning" fontSize="large" />
         </div>
         <Typography variant="h5" align="center" color="red">
-          You are about to permanently delete your account from the XRPL.
+          You are about to permanently delete your account from the XRPL
         </Typography>
       </div>
       <Typography align="center" style={{ marginTop: '0.5rem' }}>

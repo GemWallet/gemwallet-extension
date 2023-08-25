@@ -53,7 +53,7 @@ export const EnterPasswordDanger: FC<EnterPasswordDangerProps> = ({
           <WarningIcon color="warning" fontSize="large" />
         </div>
         <Typography variant="h5" align="center">
-          The operation you are about to perform is sensitive.
+          The operation you are about to perform is sensitive
         </Typography>
       </div>
       <Typography align="center" style={{ marginTop: '0.5rem' }}>
