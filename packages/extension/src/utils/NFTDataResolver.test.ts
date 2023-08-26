@@ -4,13 +4,6 @@ import { IPFSResolverPrefix } from '@gemwallet/constants/src/xrpl/nft.constant';
 
 import { resolveNFTData } from './NFTDataResolver';
 
-const mockNFT = {
-  Flags: 0,
-  Issuer: '',
-  NFTokenTaxon: 0,
-  nft_serial: 0
-};
-
 describe('resolveNFTData', () => {
   let mockFetch: jest.SpyInstance;
 
@@ -23,7 +16,16 @@ describe('resolveNFTData', () => {
   });
 
   it('should return NFTokenID and description if URI is empty', async () => {
-    const result = await resolveNFTData({ ...mockNFT, NFTokenID: '1234' });
+    const result = await resolveNFTData(
+      {
+        NFTokenID: '1234',
+        Flags: 0,
+        Issuer: '',
+        NFTokenTaxon: 0,
+        nft_serial: 0
+      },
+      jest.fn()
+    );
     expect(result).toEqual({
       NFTokenID: '1234',
       description: 'No data'
@@ -32,11 +34,17 @@ describe('resolveNFTData', () => {
 
   it('should return NFTokenID and image URL if URL is a PNG image', async () => {
     mockFetch.mockResolvedValue(new Response(JSON.stringify({}), { status: 200 }));
-    const result = await resolveNFTData({
-      ...mockNFT,
-      NFTokenID: '1234',
-      URI: convertStringToHex('https://test.com/image.png')
-    });
+    const result = await resolveNFTData(
+      {
+        NFTokenID: '1234',
+        URI: convertStringToHex('https://test.com/image.png'),
+        Flags: 0,
+        Issuer: '',
+        NFTokenTaxon: 0,
+        nft_serial: 0
+      },
+      jest.fn()
+    );
     expect(result).toEqual({
       NFTokenID: '1234',
       image: 'https://test.com/image.png'
@@ -45,11 +53,17 @@ describe('resolveNFTData', () => {
 
   it('should return NFTokenID and image URL if URL is a JPG image', async () => {
     mockFetch.mockResolvedValue(new Response(JSON.stringify({}), { status: 200 }));
-    const result = await resolveNFTData({
-      ...mockNFT,
-      NFTokenID: '1234',
-      URI: convertStringToHex('https://test.com/image.jpg')
-    });
+    const result = await resolveNFTData(
+      {
+        NFTokenID: '1234',
+        URI: convertStringToHex('https://test.com/image.jpg'),
+        Flags: 0,
+        Issuer: '',
+        NFTokenTaxon: 0,
+        nft_serial: 0
+      },
+      jest.fn()
+    );
     expect(result).toEqual({
       NFTokenID: '1234',
       image: 'https://test.com/image.jpg'
@@ -61,11 +75,17 @@ describe('resolveNFTData', () => {
     (global.fetch as jest.Mock).mockResolvedValue(
       new Response(JSON.stringify({ description: 'Test JSON' }))
     );
-    const result = await resolveNFTData({
-      ...mockNFT,
-      NFTokenID: '1234',
-      URI: convertStringToHex('https://test.com/data.json')
-    });
+    const result = await resolveNFTData(
+      {
+        NFTokenID: '1234',
+        URI: convertStringToHex('https://test.com/data.json'),
+        Flags: 0,
+        Issuer: '',
+        NFTokenTaxon: 0,
+        nft_serial: 0
+      },
+      jest.fn()
+    );
     expect(result).toEqual({
       NFTokenID: '1234',
       description: 'Test JSON',
@@ -77,11 +97,17 @@ describe('resolveNFTData', () => {
     const testJsonUrl = 'https://test.com/data.json';
     (global.fetch as jest.Mock).mockRejectedValueOnce(new Error('Fetch failed'));
 
-    const result = await resolveNFTData({
-      ...mockNFT,
-      NFTokenID: '1234',
-      URI: convertStringToHex(testJsonUrl)
-    });
+    const result = await resolveNFTData(
+      {
+        NFTokenID: '1234',
+        URI: convertStringToHex(testJsonUrl),
+        Flags: 0,
+        Issuer: '',
+        NFTokenTaxon: 0,
+        nft_serial: 0
+      },
+      jest.fn()
+    );
 
     expect(result).toEqual({
       NFTokenID: '1234',
@@ -93,15 +119,21 @@ describe('resolveNFTData', () => {
     const testIpfsUrl = `${IPFSResolverPrefix}someHash`;
     (global.fetch as jest.Mock).mockRejectedValueOnce(new Error('Fetch failed'));
 
-    const result = await resolveNFTData({
-      ...mockNFT,
-      NFTokenID: '1234',
-      URI: convertStringToHex(testIpfsUrl)
-    });
+    const result = await resolveNFTData(
+      {
+        NFTokenID: '1234',
+        URI: convertStringToHex(testIpfsUrl),
+        Flags: 0,
+        Issuer: '',
+        NFTokenTaxon: 0,
+        nft_serial: 0
+      },
+      jest.fn()
+    );
 
     expect(result).toEqual({
       NFTokenID: '1234',
-      description: `ipfs://someHash`
+      description: testIpfsUrl
     });
   });
 });
