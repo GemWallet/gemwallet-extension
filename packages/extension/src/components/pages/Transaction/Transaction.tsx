@@ -251,10 +251,21 @@ export const Transaction: FC = () => {
     sendPayment
   ]);
 
+  useEffect(() => {
+    // We want to send a bad request error message only when we have parsed the destination from the params
+    if (params.destination && !isValidDestination) {
+      chrome.runtime.sendMessage<
+        ReceiveSendPaymentBackgroundMessage | ReceiveSendPaymentBackgroundMessageDeprecated
+      >(
+        createMessage({
+          transactionHash: undefined,
+          error: new Error(API_ERROR_BAD_DESTINATION)
+        })
+      );
+    }
+  }, [createMessage, isValidDestination, params.destination]);
+
   if (!isValidDestination) {
-    chrome.runtime.sendMessage<
-      ReceiveSendPaymentBackgroundMessage | ReceiveSendPaymentBackgroundMessageDeprecated
-    >(createMessage({ transactionHash: undefined, error: new Error(API_ERROR_BAD_DESTINATION) }));
     return (
       <AsyncTransaction
         title="Incorrect transaction"
