@@ -59,15 +59,13 @@ import {
   PARAMETER_SUBMIT_TRANSACTIONS_BULK
 } from '../../constants/parameters';
 import { generateKey } from '../../utils/storage';
-import { saveInChromeSessionStorage } from '../../utils/storageChromeSession';
+import {
+  loadFromChromeSessionStorage,
+  saveInChromeSessionStorage
+} from '../../utils/storageChromeSession';
 import { focusOrCreatePopupWindow } from './utils/focusOrCreatePopupWindow';
 import { createOffscreen } from './utils/offscreen';
 import { Session } from './utils/session';
-
-enum TransactionState {
-  IN_PROGRESS = 'in progress',
-  IDLE = 'idle'
-}
 
 const sendMessageToTab = <T>(tabId: number | undefined, message: any) => {
   chrome.tabs.sendMessage<T>(tabId ?? 0, message);
@@ -108,30 +106,29 @@ const sendInMemoryMessage = ({
   );
 };
 
-let currentState: TransactionState = TransactionState.IDLE;
-
 const handleTransactionRequest = async (payload: any) => {
   // Do not allow multiple transactions at the same time
-  if (currentState === TransactionState.IN_PROGRESS) {
+  const hasTxInProgress = await loadFromChromeSessionStorage('hasTxInProgress');
+  if (hasTxInProgress) {
     return Promise.resolve();
   }
 
-  if (currentState === TransactionState.IDLE) {
-    // Close the previous popup window
-    const openedWindows = await chrome.windows.getAll();
-    const { currentWindowId } = await chrome.storage.local.get('currentWindowId');
+  const openedWindows = await chrome.windows.getAll();
+  const { currentWindowId } = await chrome.storage.local.get('currentWindowId');
 
-    if (currentWindowId && openedWindows.find((window) => window.id === currentWindowId)) {
-      await chrome.windows.remove(currentWindowId);
-    }
+  if (currentWindowId && openedWindows.find((window) => window.id === currentWindowId)) {
+    await chrome.storage.local.remove('currentWindowId');
+    await chrome.windows.remove(currentWindowId);
   }
 
-  currentState = TransactionState.IN_PROGRESS;
+  console.log('saving hasTxInProgress to true');
+  saveInChromeSessionStorage('hasTxInProgress', true);
   focusOrCreatePopupWindow(payload);
 };
 
 const handleTransactionResponse = <T>(id: number, payload: any) => {
-  currentState = TransactionState.IDLE;
+  console.log('saving hasTxInProgress to false');
+  saveInChromeSessionStorage('hasTxInProgress', false);
   sendMessageToTab<T>(id, payload);
 };
 

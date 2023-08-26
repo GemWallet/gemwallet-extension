@@ -43,7 +43,7 @@ import {
 } from './constants';
 import { useBrowser, useNetwork, useWallet } from './contexts';
 import { useBeforeUnload } from './hooks';
-import { loadNetwork } from './utils';
+import { loadFromChromeSessionStorage, loadNetwork } from './utils';
 
 const App: FC = () => {
   const { window: extensionWindow, closeExtension } = useBrowser();
@@ -55,7 +55,7 @@ const App: FC = () => {
     (payload: unknown) => {
       if (process.env.NODE_ENV === 'production') {
         chrome.runtime
-          .sendMessage(payload)
+          .sendMessage(chrome.runtime.id, payload)
           .then(() => {
             if (extensionWindow?.id) {
               closeExtension({ windowId: Number(extensionWindow.id) });
@@ -69,90 +69,94 @@ const App: FC = () => {
     [closeExtension, extensionWindow?.id]
   );
 
-  useBeforeUnload(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const windowId = Number(urlParams.get('id'));
-    const defaultPayload = {
-      id: windowId,
-      result: null
-    };
-    if (extensionWindow?.id && windowId) {
-      if (search.includes(PARAMETER_TRANSACTION_PAYMENT)) {
-        const urlParams = new URLSearchParams(window.location.search);
-        const type =
-          urlParams.get('requestMessage') === 'REQUEST_SEND_PAYMENT/V3'
-            ? 'RECEIVE_SEND_PAYMENT/V3'
-            : 'RECEIVE_PAYMENT_HASH';
-        handleTransaction({
-          app: GEM_WALLET,
-          type,
-          payload:
-            type === 'RECEIVE_SEND_PAYMENT/V3'
-              ? defaultPayload
-              : {
-                  id: windowId,
-                  hash: null
-                }
-        });
-      } else if (search.includes(PARAMETER_SHARE_ADDRESS)) {
-        const urlParams = new URLSearchParams(window.location.search);
-        const type =
-          urlParams.get('requestMessage') === 'REQUEST_GET_ADDRESS/V3'
-            ? 'RECEIVE_GET_ADDRESS/V3'
-            : 'RECEIVE_ADDRESS';
-        handleTransaction({
-          app: GEM_WALLET,
-          type,
-          payload:
-            type === 'RECEIVE_GET_ADDRESS/V3'
-              ? defaultPayload
-              : {
-                  id: windowId,
-                  publicAddress: null
-                }
-        });
-      } else if (search.includes(PARAMETER_SHARE_PUBLIC_KEY)) {
-        const urlParams = new URLSearchParams(window.location.search);
-        const type =
-          urlParams.get('requestMessage') === 'REQUEST_GET_PUBLIC_KEY/V3'
-            ? 'RECEIVE_GET_PUBLIC_KEY/V3'
-            : 'RECEIVE_PUBLIC_KEY';
-        handleTransaction({
-          app: GEM_WALLET,
-          type,
-          payload:
-            type === 'RECEIVE_GET_PUBLIC_KEY/V3'
-              ? defaultPayload
-              : {
-                  id: windowId,
-                  address: null,
-                  publicKey: null
-                }
-        });
-      } else if (search.includes(PARAMETER_SIGN_MESSAGE)) {
-        const urlParams = new URLSearchParams(window.location.search);
-        const type =
-          urlParams.get('requestMessage') === 'REQUEST_SIGN_MESSAGE/V3'
-            ? 'RECEIVE_SIGN_MESSAGE/V3'
-            : 'RECEIVE_SIGN_MESSAGE';
-        handleTransaction({
-          app: GEM_WALLET,
-          type,
-          payload:
-            type === 'RECEIVE_SIGN_MESSAGE/V3'
-              ? defaultPayload
-              : {
-                  id: windowId,
-                  signedMessage: null
-                }
-        });
-      } else if (search.includes(PARAMETER_SUBMIT_TRANSACTION)) {
-        handleTransaction({
-          app: GEM_WALLET,
-          type: 'RECEIVE_SUBMIT_TRANSACTION/V3',
-          payload: defaultPayload
-        });
-      } else if (search.includes(PARAMETER_SIGN_TRANSACTION)) {
+  useBeforeUnload(async () => {
+    // Only sends reject message if there is a transaction in progress, which means the user has not confirmed the
+    // transaction but has closed the extension
+    const hasTxInProgress = await loadFromChromeSessionStorage('hasTxInProgress', true);
+    if (hasTxInProgress) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const windowId = Number(urlParams.get('id'));
+      const defaultPayload = {
+        id: windowId,
+        result: null
+      };
+      if (extensionWindow?.id && windowId) {
+        if (search.includes(PARAMETER_TRANSACTION_PAYMENT)) {
+          const urlParams = new URLSearchParams(window.location.search);
+          const type =
+            urlParams.get('requestMessage') === 'REQUEST_SEND_PAYMENT/V3'
+              ? 'RECEIVE_SEND_PAYMENT/V3'
+              : 'RECEIVE_PAYMENT_HASH';
+          handleTransaction({
+            app: GEM_WALLET,
+            type,
+            payload:
+              type === 'RECEIVE_SEND_PAYMENT/V3'
+                ? defaultPayload
+                : {
+                    id: windowId,
+                    hash: null
+                  }
+          });
+        } else if (search.includes(PARAMETER_SHARE_ADDRESS)) {
+          const urlParams = new URLSearchParams(window.location.search);
+          const type =
+            urlParams.get('requestMessage') === 'REQUEST_GET_ADDRESS/V3'
+              ? 'RECEIVE_GET_ADDRESS/V3'
+              : 'RECEIVE_ADDRESS';
+          handleTransaction({
+            app: GEM_WALLET,
+            type,
+            payload:
+              type === 'RECEIVE_GET_ADDRESS/V3'
+                ? defaultPayload
+                : {
+                    id: windowId,
+                    publicAddress: null
+                  }
+          });
+        } else if (search.includes(PARAMETER_SHARE_PUBLIC_KEY)) {
+          const urlParams = new URLSearchParams(window.location.search);
+          const type =
+            urlParams.get('requestMessage') === 'REQUEST_GET_PUBLIC_KEY/V3'
+              ? 'RECEIVE_GET_PUBLIC_KEY/V3'
+              : 'RECEIVE_PUBLIC_KEY';
+          handleTransaction({
+            app: GEM_WALLET,
+            type,
+            payload:
+              type === 'RECEIVE_GET_PUBLIC_KEY/V3'
+                ? defaultPayload
+                : {
+                    id: windowId,
+                    address: null,
+                    publicKey: null
+                  }
+          });
+        } else if (search.includes(PARAMETER_SIGN_MESSAGE)) {
+          const urlParams = new URLSearchParams(window.location.search);
+          const type =
+            urlParams.get('requestMessage') === 'REQUEST_SIGN_MESSAGE/V3'
+              ? 'RECEIVE_SIGN_MESSAGE/V3'
+              : 'RECEIVE_SIGN_MESSAGE';
+          handleTransaction({
+            app: GEM_WALLET,
+            type,
+            payload:
+              type === 'RECEIVE_SIGN_MESSAGE/V3'
+                ? defaultPayload
+                : {
+                    id: windowId,
+                    signedMessage: null
+                  }
+          });
+        } else if (search.includes(PARAMETER_SUBMIT_TRANSACTION)) {
+          handleTransaction({
+            app: GEM_WALLET,
+            type: 'RECEIVE_SUBMIT_TRANSACTION/V3',
+            payload: defaultPayload
+          });
+        } else if (search.includes(PARAMETER_SIGN_TRANSACTION)) {
         handleTransaction({
           app: GEM_WALLET,
           type: 'RECEIVE_SIGN_TRANSACTION/V3',
@@ -165,87 +169,88 @@ const App: FC = () => {
           payload: defaultPayload
         });
       } else if (search.includes(PARAMETER_TRANSACTION_TRUSTLINE)) {
-        const urlParams = new URLSearchParams(window.location.search);
-        const type =
-          urlParams.get('requestMessage') === 'REQUEST_SET_TRUSTLINE/V3'
-            ? 'RECEIVE_SET_TRUSTLINE/V3'
-            : 'RECEIVE_TRUSTLINE_HASH';
-        handleTransaction({
-          app: GEM_WALLET,
-          type,
-          payload:
-            type === 'RECEIVE_SET_TRUSTLINE/V3'
-              ? defaultPayload
-              : {
-                  id: windowId,
-                  hash: null
-                }
-        });
-      } else if (search.includes(PARAMETER_SHARE_NFT)) {
-        const urlParams = new URLSearchParams(window.location.search);
-        const type =
-          urlParams.get('requestMessage') === 'REQUEST_GET_NFT/V3'
-            ? 'RECEIVE_GET_NFT/V3'
-            : 'RECEIVE_NFT';
-        handleTransaction({
-          app: GEM_WALLET,
-          type,
-          payload:
-            type === 'RECEIVE_GET_NFT/V3'
-              ? defaultPayload
-              : {
-                  id: windowId,
-                  nfts: null
-                }
-        });
-      } else if (search.includes(PARAMETER_TRANSACTION_MINT_NFT)) {
-        handleTransaction({
-          app: GEM_WALLET,
-          type: 'RECEIVE_MINT_NFT/V3',
-          payload: defaultPayload
-        });
-      } else if (search.includes(PARAMETER_TRANSACTION_CREATE_NFT_OFFER)) {
-        handleTransaction({
-          app: GEM_WALLET,
-          type: 'RECEIVE_CREATE_NFT_OFFER/V3',
-          payload: defaultPayload
-        });
-      } else if (search.includes(PARAMETER_TRANSACTION_CANCEL_NFT_OFFER)) {
-        handleTransaction({
-          app: GEM_WALLET,
-          type: 'RECEIVE_CANCEL_NFT_OFFER/V3',
-          payload: defaultPayload
-        });
-      } else if (search.includes(PARAMETER_TRANSACTION_ACCEPT_NFT_OFFER)) {
-        handleTransaction({
-          app: GEM_WALLET,
-          type: 'RECEIVE_ACCEPT_NFT_OFFER/V3',
-          payload: defaultPayload
-        });
-      } else if (search.includes(PARAMETER_TRANSACTION_BURN_NFT)) {
-        handleTransaction({
-          app: GEM_WALLET,
-          type: 'RECEIVE_BURN_NFT/V3',
-          payload: defaultPayload
-        });
-      } else if (search.includes(PARAMETER_TRANSACTION_SET_ACCOUNT)) {
-        handleTransaction({
-          app: GEM_WALLET,
-          type: 'RECEIVE_SET_ACCOUNT/V3',
-          payload: defaultPayload
-        });
-      } else if (search.includes(PARAMETER_TRANSACTION_CREATE_OFFER)) {
-        handleTransaction({
-          app: GEM_WALLET,
-          type: 'RECEIVE_CREATE_OFFER/V3',
-          payload: defaultPayload
-        });
-      } else if (search.includes(PARAMETER_TRANSACTION_CANCEL_OFFER)) {
-        handleTransaction({
-          app: GEM_WALLET,
-          type: 'RECEIVE_CANCEL_OFFER/V3',
-          payload: defaultPayload
-        });
+          const urlParams = new URLSearchParams(window.location.search);
+          const type =
+            urlParams.get('requestMessage') === 'REQUEST_SET_TRUSTLINE/V3'
+              ? 'RECEIVE_SET_TRUSTLINE/V3'
+              : 'RECEIVE_TRUSTLINE_HASH';
+          handleTransaction({
+            app: GEM_WALLET,
+            type,
+            payload:
+              type === 'RECEIVE_SET_TRUSTLINE/V3'
+                ? defaultPayload
+                : {
+                    id: windowId,
+                    hash: null
+                  }
+          });
+        } else if (search.includes(PARAMETER_SHARE_NFT)) {
+          const urlParams = new URLSearchParams(window.location.search);
+          const type =
+            urlParams.get('requestMessage') === 'REQUEST_GET_NFT/V3'
+              ? 'RECEIVE_GET_NFT/V3'
+              : 'RECEIVE_NFT';
+          handleTransaction({
+            app: GEM_WALLET,
+            type,
+            payload:
+              type === 'RECEIVE_GET_NFT/V3'
+                ? defaultPayload
+                : {
+                    id: windowId,
+                    nfts: null
+                  }
+          });
+        } else if (search.includes(PARAMETER_TRANSACTION_MINT_NFT)) {
+          handleTransaction({
+            app: GEM_WALLET,
+            type: 'RECEIVE_MINT_NFT/V3',
+            payload: defaultPayload
+          });
+        } else if (search.includes(PARAMETER_TRANSACTION_CREATE_NFT_OFFER)) {
+          handleTransaction({
+            app: GEM_WALLET,
+            type: 'RECEIVE_CREATE_NFT_OFFER/V3',
+            payload: defaultPayload
+          });
+        } else if (search.includes(PARAMETER_TRANSACTION_CANCEL_NFT_OFFER)) {
+          handleTransaction({
+            app: GEM_WALLET,
+            type: 'RECEIVE_CANCEL_NFT_OFFER/V3',
+            payload: defaultPayload
+          });
+        } else if (search.includes(PARAMETER_TRANSACTION_ACCEPT_NFT_OFFER)) {
+          handleTransaction({
+            app: GEM_WALLET,
+            type: 'RECEIVE_ACCEPT_NFT_OFFER/V3',
+            payload: defaultPayload
+          });
+        } else if (search.includes(PARAMETER_TRANSACTION_BURN_NFT)) {
+          handleTransaction({
+            app: GEM_WALLET,
+            type: 'RECEIVE_BURN_NFT/V3',
+            payload: defaultPayload
+          });
+        } else if (search.includes(PARAMETER_TRANSACTION_SET_ACCOUNT)) {
+          handleTransaction({
+            app: GEM_WALLET,
+            type: 'RECEIVE_SET_ACCOUNT/V3',
+            payload: defaultPayload
+          });
+        } else if (search.includes(PARAMETER_TRANSACTION_CREATE_OFFER)) {
+          handleTransaction({
+            app: GEM_WALLET,
+            type: 'RECEIVE_CREATE_OFFER/V3',
+            payload: defaultPayload
+          });
+        } else if (search.includes(PARAMETER_TRANSACTION_CANCEL_OFFER)) {
+          handleTransaction({
+            app: GEM_WALLET,
+            type: 'RECEIVE_CANCEL_OFFER/V3',
+            payload: defaultPayload
+          });
+        }
       }
     }
   });
