@@ -69,7 +69,7 @@ export const EnterPasswordDanger: FC<EnterPasswordDangerProps> = ({
         onChange={handleTextFieldChange}
         helperText={passwordError}
         type="password"
-        style={{ marginBottom: !passwordError ? '33px' : '10px', marginTop: '0.75rem' }}
+        style={{ marginBottom: !passwordError ? '33px' : '10px', marginTop: '1.5rem' }}
         autoComplete="off"
       />
       <div
@@ -85,6 +85,9 @@ export const EnterPasswordDanger: FC<EnterPasswordDangerProps> = ({
       >
         <Button variant="contained" size="large" onClick={onCancel}>
           Cancel
+        </Button>
+        <Button variant="contained" size="large" onClick={handleConfirmPassword}>
+          Continue
         </Button>
       </div>
     </PageWithReturn>

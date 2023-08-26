@@ -52,12 +52,12 @@ export const Settings: FC = () => {
         onClick: () => navigate(RESET_PASSWORD_PATH)
       },
       {
-        name: 'About',
-        onClick: () => navigate(ABOUT_PATH)
-      },
-      {
         name: 'Delete Account',
         onClick: () => navigate(DELETE_ACCOUNT_PATH)
+      },
+      {
+        name: 'About',
+        onClick: () => navigate(ABOUT_PATH)
       }
     ],
     [navigate]
