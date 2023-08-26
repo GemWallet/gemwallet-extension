@@ -44,6 +44,7 @@ import {
 
 import { AccountTransaction, WalletLedger } from '../../types';
 import { toXRPLMemos, toXRPLSigners } from '../../utils';
+import { toUIError } from '../../utils/errors';
 import { resolveNFTData } from '../../utils/NFTDataResolver';
 import { useNetwork } from '../NetworkContext';
 import { useWallet } from '../WalletContext';
@@ -342,23 +343,7 @@ const LedgerProvider: FC = ({ children }) => {
               `Something went wrong, we couldn't add the trustline properly`
           );
         } catch (e) {
-          if (
-            (e as Error).message === 'checksum_invalid' ||
-            (e as Error).message.includes('version_invalid') ||
-            (e as Error).message === 'Non-base58 character'
-          ) {
-            throw new Error('The destination address is incorrect');
-          } else if ((e as Error).message === 'tecUNFUNDED_PAYMENT') {
-            throw new Error('Insufficient funds');
-          } else if ((e as Error).message === 'tecNO_DST_INSUF_XRP') {
-            throw new Error(
-              'The account you are trying to make this transaction to does not exist, and the transaction is not sending enough XRP to create it.'
-            );
-          } else if ((e as Error).message.includes('Unsupported Currency representation')) {
-            throw new Error('The currency is incorrect, you cannot add this trustline.');
-          }
-          Sentry.captureException(e);
-          throw e;
+          throw toUIError(e as Error);
         }
       }
     },

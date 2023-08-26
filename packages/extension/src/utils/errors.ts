@@ -32,10 +32,14 @@ export const toUIError = (error: Error): Error => {
     return new Error(
       'The transaction failed because the provided paths did not have enough liquidity to send anything at all. This could mean that the source and destination accounts are not linked by trust lines.'
     );
+  } else if (error.message === 'tecTOO_SOON') {
+    return new Error('The transaction failed because the account was activated too recently.');
   } else if (error.message.includes('temREDUNDANT')) {
     return new Error(
       'The transaction would do nothing; for example, it is sending a payment directly to the sending account, or creating an offer to buy and sell the same currency from the same issuer.'
     );
+  } else if (error.message.includes('Unsupported Currency representation')) {
+    return new Error('The currency is incorrect, you cannot add this trustline.');
   } else {
     Sentry.captureException(error);
     return error;
