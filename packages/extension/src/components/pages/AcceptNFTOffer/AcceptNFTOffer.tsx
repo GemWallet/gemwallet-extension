@@ -11,7 +11,12 @@ import {
 } from '@gemwallet/constants';
 
 import { ERROR_RED } from '../../../constants';
-import { useLedger, useNetwork } from '../../../contexts';
+import {
+  TransactionProgressStatuses,
+  useLedger,
+  useNetwork,
+  useTransactionProgress
+} from '../../../contexts';
 import { useFees, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
 import { formatAmount, fromHexMemos, handleAmountHexCurrency, parseAmount } from '../../../utils';
@@ -48,6 +53,7 @@ export const AcceptNFTOffer: FC = () => {
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
   const { acceptNFTOffer } = useLedger();
   const { networkName } = useNetwork();
+  const { setTransactionProgress } = useTransactionProgress();
   const { estimatedFees, errorFees, difference } = useFees(
     {
       TransactionType: 'NFTokenAcceptOffer',
@@ -66,6 +72,14 @@ export const AcceptNFTOffer: FC = () => {
     transaction,
     errorRequestRejection
   });
+
+  const sendMessageToBackground = useCallback(
+    (message: ReceiveAcceptNFTOfferBackgroundMessage) => {
+      chrome.runtime.sendMessage(message);
+      setTransactionProgress(TransactionProgressStatuses.IDLE);
+    },
+    [setTransactionProgress]
+  );
 
   const createMessage = useCallback(
     (messagePayload: {
@@ -146,8 +160,8 @@ export const AcceptNFTOffer: FC = () => {
     const message = createMessage({
       hash: null
     });
-    chrome.runtime.sendMessage<ReceiveAcceptNFTOfferBackgroundMessage>(message);
-  }, [createMessage]);
+    sendMessageToBackground(message);
+  }, [createMessage, sendMessageToBackground]);
 
   const handleConfirm = useCallback(() => {
     setTransaction(TransactionStatus.Pending);
@@ -162,7 +176,7 @@ export const AcceptNFTOffer: FC = () => {
     })
       .then((response) => {
         setTransaction(TransactionStatus.Success);
-        chrome.runtime.sendMessage<ReceiveAcceptNFTOfferBackgroundMessage>(createMessage(response));
+        sendMessageToBackground(createMessage(response));
       })
       .catch((e) => {
         setErrorRequestRejection(e);
@@ -171,9 +185,9 @@ export const AcceptNFTOffer: FC = () => {
           hash: undefined,
           error: e
         });
-        chrome.runtime.sendMessage<ReceiveAcceptNFTOfferBackgroundMessage>(message);
+        sendMessageToBackground(message);
       });
-  }, [acceptNFTOffer, params, createMessage]);
+  }, [params, acceptNFTOffer, sendMessageToBackground, createMessage]);
 
   const {
     // Base transaction params

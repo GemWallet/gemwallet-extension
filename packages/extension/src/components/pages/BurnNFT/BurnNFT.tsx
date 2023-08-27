@@ -6,7 +6,12 @@ import { Button, Container, Paper, Typography } from '@mui/material';
 import { GEM_WALLET, ReceiveBurnNFTBackgroundMessage, ResponseType } from '@gemwallet/constants';
 
 import { ERROR_RED } from '../../../constants';
-import { useLedger, useNetwork } from '../../../contexts';
+import {
+  TransactionProgressStatuses,
+  useLedger,
+  useNetwork,
+  useTransactionProgress
+} from '../../../contexts';
 import { useFees, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
 import { fromHexMemos } from '../../../utils';
@@ -41,6 +46,7 @@ export const BurnNFT: FC = () => {
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
   const { burnNFT } = useLedger();
   const { networkName } = useNetwork();
+  const { setTransactionProgress } = useTransactionProgress();
   const { estimatedFees, errorFees, difference } = useFees(
     {
       TransactionType: 'NFTokenBurn',
@@ -58,6 +64,14 @@ export const BurnNFT: FC = () => {
     transaction,
     errorRequestRejection
   });
+
+  const sendMessageToBackground = useCallback(
+    (message: ReceiveBurnNFTBackgroundMessage) => {
+      chrome.runtime.sendMessage(message);
+      setTransactionProgress(TransactionProgressStatuses.IDLE);
+    },
+    [setTransactionProgress]
+  );
 
   const createMessage = useCallback(
     (messagePayload: {
@@ -135,8 +149,8 @@ export const BurnNFT: FC = () => {
     const message = createMessage({
       hash: null
     });
-    chrome.runtime.sendMessage<ReceiveBurnNFTBackgroundMessage>(message);
-  }, [createMessage]);
+    sendMessageToBackground(message);
+  }, [createMessage, sendMessageToBackground]);
 
   const handleConfirm = useCallback(() => {
     setTransaction(TransactionStatus.Pending);
@@ -151,7 +165,7 @@ export const BurnNFT: FC = () => {
     })
       .then((response) => {
         setTransaction(TransactionStatus.Success);
-        chrome.runtime.sendMessage<ReceiveBurnNFTBackgroundMessage>(createMessage(response));
+        sendMessageToBackground(createMessage(response));
       })
       .catch((e) => {
         setErrorRequestRejection(e);
@@ -160,9 +174,9 @@ export const BurnNFT: FC = () => {
           hash: undefined,
           error: e
         });
-        chrome.runtime.sendMessage<ReceiveBurnNFTBackgroundMessage>(message);
+        sendMessageToBackground(message);
       });
-  }, [burnNFT, params, createMessage]);
+  }, [burnNFT, params, sendMessageToBackground, createMessage]);
 
   const {
     // Base transaction params

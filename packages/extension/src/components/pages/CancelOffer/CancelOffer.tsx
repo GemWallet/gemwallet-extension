@@ -10,7 +10,12 @@ import {
 } from '@gemwallet/constants';
 
 import { ERROR_RED } from '../../../constants';
-import { useLedger, useNetwork } from '../../../contexts';
+import {
+  TransactionProgressStatuses,
+  useLedger,
+  useNetwork,
+  useTransactionProgress
+} from '../../../contexts';
 import { useFees, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
 import { fromHexMemos } from '../../../utils';
@@ -43,6 +48,7 @@ export const CancelOffer: FC = () => {
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
   const { cancelOffer } = useLedger();
   const { networkName } = useNetwork();
+  const { setTransactionProgress } = useTransactionProgress();
   const { estimatedFees, errorFees, difference } = useFees(
     {
       TransactionType: 'OfferCancel',
@@ -59,6 +65,14 @@ export const CancelOffer: FC = () => {
     transaction,
     errorRequestRejection
   });
+
+  const sendMessageToBackground = useCallback(
+    (message: ReceiveCancelOfferBackgroundMessage) => {
+      chrome.runtime.sendMessage(message);
+      setTransactionProgress(TransactionProgressStatuses.IDLE);
+    },
+    [setTransactionProgress]
+  );
 
   const createMessage = useCallback(
     (messagePayload: {
@@ -136,8 +150,8 @@ export const CancelOffer: FC = () => {
     const message = createMessage({
       hash: null
     });
-    chrome.runtime.sendMessage<ReceiveCancelOfferBackgroundMessage>(message);
-  }, [createMessage]);
+    sendMessageToBackground(message);
+  }, [createMessage, sendMessageToBackground]);
 
   const handleConfirm = useCallback(() => {
     setTransaction(TransactionStatus.Pending);
@@ -151,7 +165,7 @@ export const CancelOffer: FC = () => {
     })
       .then((response) => {
         setTransaction(TransactionStatus.Success);
-        chrome.runtime.sendMessage<ReceiveCancelOfferBackgroundMessage>(createMessage(response));
+        sendMessageToBackground(createMessage(response));
       })
       .catch((e) => {
         setErrorRequestRejection(e);
@@ -160,9 +174,9 @@ export const CancelOffer: FC = () => {
           hash: undefined,
           error: e
         });
-        chrome.runtime.sendMessage<ReceiveCancelOfferBackgroundMessage>(message);
+        sendMessageToBackground(message);
       });
-  }, [cancelOffer, params, createMessage]);
+  }, [cancelOffer, params, sendMessageToBackground, createMessage]);
 
   const {
     // Base transaction params

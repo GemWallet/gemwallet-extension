@@ -12,7 +12,12 @@ import {
 } from '@gemwallet/constants';
 
 import { ERROR_RED } from '../../../constants';
-import { useLedger, useNetwork } from '../../../contexts';
+import {
+  TransactionProgressStatuses,
+  useLedger,
+  useNetwork,
+  useTransactionProgress
+} from '../../../contexts';
 import { useFees, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
 import {
@@ -58,6 +63,7 @@ export const MintNFT: FC = () => {
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
   const { mintNFT } = useLedger();
   const { networkName } = useNetwork();
+  const { setTransactionProgress } = useTransactionProgress();
   const { estimatedFees, errorFees, difference } = useFees(
     {
       TransactionType: 'NFTokenMint',
@@ -78,6 +84,14 @@ export const MintNFT: FC = () => {
     transaction,
     errorRequestRejection
   });
+
+  const sendMessageToBackground = useCallback(
+    (message: ReceiveMintNFTBackgroundMessage) => {
+      chrome.runtime.sendMessage(message);
+      setTransactionProgress(TransactionProgressStatuses.IDLE);
+    },
+    [setTransactionProgress]
+  );
 
   const createMessage = useCallback(
     (messagePayload: {
@@ -167,8 +181,8 @@ export const MintNFT: FC = () => {
       hash: null,
       NFTokenID: null
     });
-    chrome.runtime.sendMessage<ReceiveMintNFTBackgroundMessage>(message);
-  }, [createMessage]);
+    sendMessageToBackground(message);
+  }, [createMessage, sendMessageToBackground]);
 
   const handleConfirm = useCallback(() => {
     // Need to send the flags as number to xrpl.js, otherwise they won't be recognized
@@ -192,7 +206,7 @@ export const MintNFT: FC = () => {
     })
       .then((response) => {
         setTransaction(TransactionStatus.Success);
-        chrome.runtime.sendMessage<ReceiveMintNFTBackgroundMessage>(createMessage(response));
+        sendMessageToBackground(createMessage(response));
       })
       .catch((e) => {
         setErrorRequestRejection(e);
@@ -202,9 +216,9 @@ export const MintNFT: FC = () => {
           NFTokenID: undefined,
           error: e
         });
-        chrome.runtime.sendMessage<ReceiveMintNFTBackgroundMessage>(message);
+        sendMessageToBackground(message);
       });
-  }, [mintNFT, params, createMessage]);
+  }, [params, mintNFT, sendMessageToBackground, createMessage]);
 
   const {
     // Base transaction params

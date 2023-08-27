@@ -10,7 +10,13 @@ import {
   ResponseType
 } from '@gemwallet/constants';
 
-import { useBrowser, useLedger, useWallet } from '../../../contexts';
+import {
+  TransactionProgressStatuses,
+  useBrowser,
+  useLedger,
+  useTransactionProgress,
+  useWallet
+} from '../../../contexts';
 import { Permission, saveTrustedApp } from '../../../utils';
 import { serializeError } from '../../../utils/errors';
 import { SharingPage } from '../../templates';
@@ -21,6 +27,7 @@ export const ShareNFT: FC = () => {
   const { getNFTs } = useLedger();
   const { selectedWallet } = useWallet();
   const { window: extensionWindow, closeExtension } = useBrowser();
+  const { setTransactionProgress } = useTransactionProgress();
 
   const payload = useMemo(() => {
     const queryString = window.location.search;
@@ -89,9 +96,12 @@ export const ShareNFT: FC = () => {
         })
         .catch((e) => {
           Sentry.captureException(e);
+        })
+        .finally(() => {
+          setTransactionProgress(TransactionProgressStatuses.IDLE);
         });
     },
-    [closeExtension, extensionWindow?.id, id, receivingMessage]
+    [closeExtension, extensionWindow?.id, id, receivingMessage, setTransactionProgress]
   );
 
   const handleReject = useCallback(() => {

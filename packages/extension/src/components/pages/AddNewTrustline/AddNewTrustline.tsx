@@ -13,7 +13,12 @@ import {
 } from '@gemwallet/constants';
 
 import { API_ERROR_BAD_ISSUER, API_ERROR_BAD_REQUEST, HOME_PATH } from '../../../constants';
-import { useLedger, useNetwork } from '../../../contexts';
+import {
+  TransactionProgressStatuses,
+  useLedger,
+  useNetwork,
+  useTransactionProgress
+} from '../../../contexts';
 import { useFees, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
 import {
@@ -33,24 +38,6 @@ import { StepForm, StepWarning, StepConfirm } from '../../pages';
 import { AsyncTransaction } from '../../templates';
 
 type STEP = 'WARNING' | 'TRANSACTION';
-
-const createBadRequestCallback = (
-  createMessage: (messagePayload: {
-    transactionHash: string | null | undefined;
-    error?: Error;
-  }) => ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
-) => {
-  return () => {
-    chrome.runtime.sendMessage<
-      ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
-    >(
-      createMessage({
-        transactionHash: null,
-        error: new Error(API_ERROR_BAD_REQUEST)
-      })
-    );
-  };
-};
 
 export interface Params extends BaseTransactionParams {
   id: number;
@@ -85,6 +72,7 @@ export const AddNewTrustline: FC = () => {
   const [errorValue, setErrorValue] = useState<string>('');
   const { setTrustline } = useLedger();
   const { networkName } = useNetwork();
+  const { setTransactionProgress } = useTransactionProgress();
   const { estimatedFees, errorFees, difference } = useFees(
     {
       TransactionType: 'TrustSet',
@@ -109,6 +97,16 @@ export const AddNewTrustline: FC = () => {
       ? 'RECEIVE_SET_TRUSTLINE/V3'
       : 'RECEIVE_TRUSTLINE_HASH';
   }, []);
+
+  const sendMessageToBackground = useCallback(
+    (
+      message: ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
+    ) => {
+      chrome.runtime.sendMessage(message);
+      setTransactionProgress(TransactionProgressStatuses.IDLE);
+    },
+    [setTransactionProgress]
+  );
 
   const createMessage = useCallback(
     (messagePayload: {
@@ -143,10 +141,15 @@ export const AddNewTrustline: FC = () => {
   );
 
   const navigate = useNavigate();
-  const badRequestCallback = useCallback(
-    () => createBadRequestCallback(createMessage),
-    [createMessage]
-  );
+  const badRequestCallback = useCallback(() => {
+    sendMessageToBackground(
+      createMessage({
+        transactionHash: null,
+        error: new Error(API_ERROR_BAD_REQUEST)
+      })
+    );
+  }, [createMessage, sendMessageToBackground]);
+
   const { hasEnoughFunds, transactionStatusComponent } = useTransactionStatus({
     isParamsMissing,
     errorFees,
@@ -230,11 +233,9 @@ export const AddNewTrustline: FC = () => {
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);
     if (!params.inAppCall) {
-      chrome.runtime.sendMessage<
-        ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
-      >(createMessage({ transactionHash: null }));
+      sendMessageToBackground(createMessage({ transactionHash: null }));
     }
-  }, [createMessage, params.inAppCall]);
+  }, [createMessage, params.inAppCall, sendMessageToBackground]);
 
   const handleConfirm = useCallback(() => {
     setTransaction(TransactionStatus.Pending);
@@ -254,18 +255,14 @@ export const AddNewTrustline: FC = () => {
         .then((transactionHash) => {
           setTransaction(TransactionStatus.Success);
           if (!params.inAppCall) {
-            chrome.runtime.sendMessage<
-              ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
-            >(createMessage({ transactionHash }));
+            sendMessageToBackground(createMessage({ transactionHash }));
           }
         })
         .catch((e) => {
           setErrorRequestRejection(e);
           setTransaction(TransactionStatus.Rejected);
           if (!params.inAppCall) {
-            chrome.runtime.sendMessage<
-              ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
-            >(
+            sendMessageToBackground(
               createMessage({
                 transactionHash: undefined,
                 error: e
@@ -274,7 +271,7 @@ export const AddNewTrustline: FC = () => {
           }
         });
     }
-  }, [params, setTrustline, createMessage]);
+  }, [params, setTrustline, sendMessageToBackground, createMessage]);
 
   const handleTrustlineSubmit = (
     issuer: string,
@@ -366,9 +363,7 @@ export const AddNewTrustline: FC = () => {
 
   if (!isValidIssuer) {
     if (!params.inAppCall) {
-      chrome.runtime.sendMessage<
-        ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
-      >(
+      sendMessageToBackground(
         createMessage({
           transactionHash: null,
           error: new Error(API_ERROR_BAD_ISSUER)

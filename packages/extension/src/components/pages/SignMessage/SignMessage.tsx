@@ -11,7 +11,12 @@ import {
 } from '@gemwallet/constants';
 
 import { API_ERROR_BAD_REQUEST, SECONDARY_GRAY } from '../../../constants';
-import { useBrowser, useLedger } from '../../../contexts';
+import {
+  TransactionProgressStatuses,
+  useBrowser,
+  useLedger,
+  useTransactionProgress
+} from '../../../contexts';
 import { TransactionStatus } from '../../../types';
 import { serializeError } from '../../../utils/errors';
 import { AsyncTransaction, PageWithTitle } from '../../templates';
@@ -19,6 +24,7 @@ import { AsyncTransaction, PageWithTitle } from '../../templates';
 export const SignMessage: FC = () => {
   const { signMessage } = useLedger();
   const { window: extensionWindow, closeExtension } = useBrowser();
+  const { setTransactionProgress } = useTransactionProgress();
   const [isParamsMissing, setIsParamsMissing] = useState(false);
 
   const payload = useMemo(() => {
@@ -92,9 +98,12 @@ export const SignMessage: FC = () => {
         })
         .catch((e) => {
           Sentry.captureException(e);
+        })
+        .finally(() => {
+          setTransactionProgress(TransactionProgressStatuses.IDLE);
         });
     },
-    [closeExtension, extensionWindow?.id, id, receivingMessage]
+    [closeExtension, extensionWindow?.id, id, receivingMessage, setTransactionProgress]
   );
 
   const handleReject = useCallback(() => {
@@ -122,6 +131,7 @@ export const SignMessage: FC = () => {
         error: serializeError(new Error(API_ERROR_BAD_REQUEST))
       }
     });
+    setTransactionProgress(TransactionProgressStatuses.IDLE);
     return (
       <AsyncTransaction
         title="Signature failed"
