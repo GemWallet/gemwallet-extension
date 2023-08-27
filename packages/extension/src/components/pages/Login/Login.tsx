@@ -53,7 +53,7 @@ import {
   PARAMETER_SUBMIT_TRANSACTIONS_BULK,
   SUBMIT_TRANSACTIONS_BULK_PATH
 } from '../../../constants';
-import { useWallet } from '../../../contexts';
+import { TransactionProgressStatuses, useTransactionProgress, useWallet } from '../../../contexts';
 import { useKeyUp } from '../../../hooks/useKeyUp';
 import { loadData } from '../../../utils';
 import { loadRememberSessionState, saveRememberSessionState } from '../../../utils/login';
@@ -65,6 +65,7 @@ export const Login: FC = () => {
   const navigate = useNavigate();
   const { search } = useLocation();
   const { signIn, wallets, selectedWallet } = useWallet();
+  const { setTransactionProgress } = useTransactionProgress();
   const passwordRef = useRef<HTMLInputElement | null>(null);
 
   const navigateToPath = useCallback(() => {
@@ -106,6 +107,10 @@ export const Login: FC = () => {
       navigate(`${HOME_PATH}${search}`);
     }
   }, [navigate, search]);
+
+  useEffect(() => {
+    setTransactionProgress(TransactionProgressStatuses.IN_PROGRESS);
+  }, [setTransactionProgress]);
 
   useEffect(() => {
     // Check if we are still logged-in

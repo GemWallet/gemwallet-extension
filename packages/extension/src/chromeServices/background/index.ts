@@ -121,13 +121,11 @@ const handleTransactionRequest = async (payload: any) => {
     await chrome.windows.remove(currentWindowId);
   }
 
-  console.log('saving hasTxInProgress to true');
   saveInChromeSessionStorage('hasTxInProgress', true);
   focusOrCreatePopupWindow(payload);
 };
 
 const handleTransactionResponse = <T>(id: number, payload: any) => {
-  console.log('saving hasTxInProgress to false');
   saveInChromeSessionStorage('hasTxInProgress', false);
   sendMessageToTab<T>(id, payload);
 };

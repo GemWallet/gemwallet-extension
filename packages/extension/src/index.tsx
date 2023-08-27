@@ -19,6 +19,7 @@ import {
   LedgerProvider,
   NetworkProvider,
   ServerProvider,
+  TransactionProgressProvider,
   WalletProvider
 } from './contexts';
 import reportWebVitals from './reportWebVitals';
@@ -83,7 +84,9 @@ ReactDOM.render(
               <NetworkProvider>
                 <LedgerProvider>
                   <ServerProvider>
-                    <App />
+                    <TransactionProgressProvider>
+                      <App />
+                    </TransactionProgressProvider>
                   </ServerProvider>
                 </LedgerProvider>
               </NetworkProvider>

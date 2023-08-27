@@ -41,15 +41,22 @@ import {
   PARAMETER_TRANSACTION_SET_ACCOUNT,
   PARAMETER_TRANSACTION_TRUSTLINE
 } from './constants';
-import { useBrowser, useNetwork, useWallet } from './contexts';
+import {
+  TransactionProgressStatuses,
+  useBrowser,
+  useNetwork,
+  useTransactionProgress,
+  useWallet
+} from './contexts';
 import { useBeforeUnload } from './hooks';
-import { loadFromChromeSessionStorage, loadNetwork } from './utils';
+import { loadNetwork } from './utils';
 
 const App: FC = () => {
   const { window: extensionWindow, closeExtension } = useBrowser();
   const { search } = useLocation();
   const { signIn } = useWallet();
   const { client } = useNetwork();
+  const { transactionProgress, setTransactionProgress } = useTransactionProgress();
 
   const handleTransaction = useCallback(
     (payload: unknown) => {
@@ -72,8 +79,9 @@ const App: FC = () => {
   useBeforeUnload(async () => {
     // Only sends reject message if there is a transaction in progress, which means the user has not confirmed the
     // transaction but has closed the extension
-    const hasTxInProgress = await loadFromChromeSessionStorage('hasTxInProgress', true);
-    if (hasTxInProgress) {
+    // const hasTxInProgress = await loadFromChromeSessionStorage('hasTxInProgress', true);
+    if (transactionProgress === TransactionProgressStatuses.IN_PROGRESS) {
+      setTransactionProgress(TransactionProgressStatuses.IDLE);
       const urlParams = new URLSearchParams(window.location.search);
       const windowId = Number(urlParams.get('id'));
       const defaultPayload = {

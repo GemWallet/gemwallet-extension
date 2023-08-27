@@ -14,7 +14,12 @@ import {
 } from '@gemwallet/constants';
 
 import { API_ERROR_BAD_DESTINATION, API_ERROR_BAD_REQUEST, ERROR_RED } from '../../../constants';
-import { useLedger, useNetwork } from '../../../contexts';
+import {
+  TransactionProgressStatuses,
+  useLedger,
+  useNetwork,
+  useTransactionProgress
+} from '../../../contexts';
 import { useFees, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
 import {
@@ -33,24 +38,6 @@ import {
 import { serializeError } from '../../../utils/errors';
 import { BaseTransaction } from '../../organisms/BaseTransaction/BaseTransaction';
 import { AsyncTransaction, PageWithTitle } from '../../templates';
-
-const createBadRequestCallback = (
-  createMessage: (messagePayload: {
-    transactionHash: string | null | undefined;
-    error?: Error;
-  }) => ReceiveSendPaymentBackgroundMessage | ReceiveSendPaymentBackgroundMessageDeprecated
-) => {
-  return () => {
-    chrome.runtime.sendMessage<
-      ReceiveSendPaymentBackgroundMessage | ReceiveSendPaymentBackgroundMessageDeprecated
-    >(
-      createMessage({
-        transactionHash: null,
-        error: new Error(API_ERROR_BAD_REQUEST)
-      })
-    );
-  };
-};
 
 interface Params extends BaseTransactionParams {
   id: number;
@@ -77,6 +64,7 @@ export const Transaction: FC = () => {
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
   const { sendPayment } = useLedger();
   const { networkName } = useNetwork();
+  const { setTransactionProgress } = useTransactionProgress();
   const { estimatedFees, errorFees, difference } = useFees(
     {
       TransactionType: 'Payment',
@@ -97,6 +85,16 @@ export const Transaction: FC = () => {
       ? { messageType: 'REQUEST_SEND_PAYMENT/V3', receivingMessage: 'RECEIVE_SEND_PAYMENT/V3' }
       : { messageType: 'SEND_PAYMENT', receivingMessage: 'RECEIVE_PAYMENT_HASH' };
   }, []);
+
+  const sendMessageToBackground = useCallback(
+    (
+      message: ReceiveSendPaymentBackgroundMessage | ReceiveSendPaymentBackgroundMessageDeprecated
+    ) => {
+      chrome.runtime.sendMessage(message);
+      setTransactionProgress(TransactionProgressStatuses.IDLE);
+    },
+    [setTransactionProgress]
+  );
 
   const createMessage = useCallback(
     (payload: {
@@ -130,8 +128,13 @@ export const Transaction: FC = () => {
   );
 
   const badRequestCallback = useCallback(() => {
-    createBadRequestCallback(createMessage);
-  }, [createMessage]);
+    sendMessageToBackground(
+      createMessage({
+        transactionHash: null,
+        error: new Error(API_ERROR_BAD_REQUEST)
+      })
+    );
+  }, [createMessage, sendMessageToBackground]);
 
   const { hasEnoughFunds, transactionStatusComponent } = useTransactionStatus({
     isParamsMissing,
@@ -198,7 +201,7 @@ export const Transaction: FC = () => {
       destinationTag,
       flags
     });
-  }, [messageType]);
+  }, [messageType, setTransactionProgress]);
 
   const isValidDestination = useMemo(() => {
     if (params.destination && isValidAddress(params.destination)) {
@@ -209,10 +212,8 @@ export const Transaction: FC = () => {
 
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);
-    chrome.runtime.sendMessage<
-      ReceiveSendPaymentBackgroundMessage | ReceiveSendPaymentBackgroundMessageDeprecated
-    >(createMessage({ transactionHash: null }));
-  }, [createMessage]);
+    sendMessageToBackground(createMessage({ transactionHash: null }));
+  }, [createMessage, sendMessageToBackground]);
 
   const handleConfirm = useCallback(() => {
     setTransaction(TransactionStatus.Pending);
@@ -229,41 +230,42 @@ export const Transaction: FC = () => {
     })
       .then((transactionHash) => {
         setTransaction(TransactionStatus.Success);
-        chrome.runtime.sendMessage<
-          ReceiveSendPaymentBackgroundMessage | ReceiveSendPaymentBackgroundMessageDeprecated
-        >(createMessage({ transactionHash }));
+        sendMessageToBackground(createMessage({ transactionHash }));
       })
       .catch((e) => {
         setErrorRequestRejection(e);
         setTransaction(TransactionStatus.Rejected);
-        chrome.runtime.sendMessage<
-          ReceiveSendPaymentBackgroundMessage | ReceiveSendPaymentBackgroundMessageDeprecated
-        >(createMessage({ transactionHash: undefined, error: e }));
+        sendMessageToBackground(createMessage({ transactionHash: undefined, error: e }));
       });
   }, [
-    createMessage,
     params.amount,
     params.destination,
     params.memos,
     params.destinationTag,
     params.fee,
     params.flags,
-    sendPayment
+    sendPayment,
+    sendMessageToBackground,
+    createMessage
   ]);
 
   useEffect(() => {
     // We want to send a bad request error message only when we have parsed the destination from the params
     if (params.destination && !isValidDestination) {
-      chrome.runtime.sendMessage<
-        ReceiveSendPaymentBackgroundMessage | ReceiveSendPaymentBackgroundMessageDeprecated
-      >(
+      sendMessageToBackground(
         createMessage({
           transactionHash: undefined,
           error: new Error(API_ERROR_BAD_DESTINATION)
         })
       );
     }
-  }, [createMessage, isValidDestination, params.destination]);
+  }, [
+    createMessage,
+    isValidDestination,
+    params.destination,
+    sendMessageToBackground,
+    setTransactionProgress
+  ]);
 
   if (!isValidDestination) {
     return (
