@@ -13,11 +13,18 @@ const mockNetworkContext = {
 };
 const mockBrowserContext = jest.fn();
 const mockWalletContext = generateWalletContext();
+const mockTransactionProgressContext = {
+  setTransactionProgress: jest.fn()
+};
 
 jest.mock('../../../contexts', () => ({
   useNetwork: () => mockNetworkContext,
   useBrowser: () => mockBrowserContext,
-  useWallet: () => mockWalletContext
+  useWallet: () => mockWalletContext,
+  useTransactionProgress: () => mockTransactionProgressContext,
+  TransactionProgressStatuses: {
+    IN_PROGRESS: 'mock'
+  }
 }));
 
 jest.mock('react-router-dom', () => ({
