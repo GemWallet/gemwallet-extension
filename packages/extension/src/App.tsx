@@ -58,6 +58,10 @@ const App: FC = () => {
   const { client } = useNetwork();
   const { transactionProgress, setTransactionProgress } = useTransactionProgress();
 
+  useEffect(() => {
+    setTransactionProgress(TransactionProgressStatuses.IN_PROGRESS);
+  }, [setTransactionProgress]);
+
   const handleTransaction = useCallback(
     (payload: unknown) => {
       if (process.env.NODE_ENV === 'production') {
