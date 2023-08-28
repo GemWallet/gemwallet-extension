@@ -31,6 +31,7 @@ import {
   ReceiveSetTrustlineContentMessage,
   ReceiveSetTrustlineContentMessageDeprecated,
   ReceiveSignMessageContentMessage,
+  ReceiveSignTransactionContentMessage,
   ReceiveSubmitTransactionContentMessage,
   ResponseType
 } from '@gemwallet/constants';
@@ -41,6 +42,8 @@ import {
   PARAMETER_SHARE_NFT,
   PARAMETER_SHARE_PUBLIC_KEY,
   PARAMETER_SIGN_MESSAGE,
+  PARAMETER_SIGN_TRANSACTION,
+  PARAMETER_SUBMIT_TRANSACTION,
   PARAMETER_TRANSACTION_ACCEPT_NFT_OFFER,
   PARAMETER_TRANSACTION_BURN_NFT,
   PARAMETER_TRANSACTION_CANCEL_NFT_OFFER,
@@ -48,10 +51,9 @@ import {
   PARAMETER_TRANSACTION_CREATE_NFT_OFFER,
   PARAMETER_TRANSACTION_CREATE_OFFER,
   PARAMETER_TRANSACTION_MINT_NFT,
-  PARAMETER_SUBMIT_TRANSACTION,
   PARAMETER_TRANSACTION_PAYMENT,
-  PARAMETER_TRANSACTION_TRUSTLINE,
-  PARAMETER_TRANSACTION_SET_ACCOUNT
+  PARAMETER_TRANSACTION_SET_ACCOUNT,
+  PARAMETER_TRANSACTION_TRUSTLINE
 } from '../../constants/parameters';
 import { focusOrCreatePopupWindow } from './utils/focusOrCreatePopupWindow';
 import { createOffscreen } from './utils/offscreen';
@@ -367,6 +369,17 @@ chrome.runtime.onMessage.addListener(
           result: undefined
         }
       });
+    } else if (type === 'REQUEST_SIGN_TRANSACTION/V3') {
+      focusOrCreatePopupWindow({
+        payload: message.payload,
+        sender,
+        parameter: PARAMETER_SIGN_TRANSACTION,
+        receivingMessage: 'RECEIVE_SIGN_TRANSACTION/V3',
+        errorPayload: {
+          type: ResponseType.Reject,
+          result: undefined
+        }
+      });
       /*
        * Receive messages
        */
@@ -610,6 +623,17 @@ chrome.runtime.onMessage.addListener(
       sendMessageToTab<ReceiveSubmitTransactionContentMessage>(payload.id, {
         app,
         type: 'RECEIVE_SUBMIT_TRANSACTION/V3',
+        payload: {
+          type: ResponseType.Response,
+          result: payload.result,
+          error: payload.error
+        }
+      });
+    } else if (type === 'RECEIVE_SIGN_TRANSACTION/V3') {
+      const { payload } = message;
+      sendMessageToTab<ReceiveSignTransactionContentMessage>(payload.id, {
+        app,
+        type: 'RECEIVE_SIGN_TRANSACTION/V3',
         payload: {
           type: ResponseType.Response,
           result: payload.result,

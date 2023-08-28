@@ -240,6 +240,10 @@ export interface SubmitTransactionRequest {
   transaction: Transaction;
 }
 
+export interface SignTransactionRequest {
+  transaction: Transaction;
+}
+
 export type RequestPayload =
   | AcceptNFTOfferRequest
   | BurnNFTRequest
@@ -257,6 +261,7 @@ export type RequestPayload =
   | SetTrustlineRequest
   | SetTrustlineRequestDeprecated
   | SignMessageRequest
+  | SignTransactionRequest
   | SubmitTransactionRequest;
 
 /*
@@ -305,6 +310,11 @@ export interface SignMessageResponseDeprecated {
 export interface SubmitTransactionResponse
   extends BaseResponse<{
     hash: string;
+  }> {}
+
+export interface SignTransactionResponse
+  extends BaseResponse<{
+    signature: string | null | undefined;
   }> {}
 
 export interface IsInstalledResponse {
