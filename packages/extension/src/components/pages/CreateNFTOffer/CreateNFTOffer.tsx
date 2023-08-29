@@ -57,7 +57,7 @@ export const CreateNFTOffer: FC = () => {
     destination: null,
     flags: null
   });
-  const [errorRequestRejection, setErrorRequestRejection] = useState<string>('');
+  const [errorRequestRejection, setErrorRequestRejection] = useState<Error>();
   const [isParamsMissing, setIsParamsMissing] = useState(false);
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
   const { createNFTOffer } = useLedger();
@@ -198,7 +198,7 @@ export const CreateNFTOffer: FC = () => {
         chrome.runtime.sendMessage<ReceiveCreateNFTOfferBackgroundMessage>(createMessage(response));
       })
       .catch((e) => {
-        setErrorRequestRejection(e.message);
+        setErrorRequestRejection(e);
         setTransaction(TransactionStatus.Rejected);
         const message = createMessage({
           hash: undefined,

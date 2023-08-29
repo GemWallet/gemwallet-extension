@@ -28,7 +28,7 @@ export const DeleteAccountConfirm: FC<DeleteAccountConfirmProps> = ({
   const wallet = getCurrentWallet();
 
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
-  const [errorRequestRejection, setErrorRequestRejection] = useState<string>('');
+  const [errorRequestRejection, setErrorRequestRejection] = useState<Error>();
 
   const { errorFees, difference } = useFees(
     {
@@ -56,7 +56,7 @@ export const DeleteAccountConfirm: FC<DeleteAccountConfirmProps> = ({
         setTransaction(TransactionStatus.Success);
       })
       .catch((e) => {
-        setErrorRequestRejection(e.message);
+        setErrorRequestRejection(e);
         setTransaction(TransactionStatus.Rejected);
         Sentry.captureException(e);
       });

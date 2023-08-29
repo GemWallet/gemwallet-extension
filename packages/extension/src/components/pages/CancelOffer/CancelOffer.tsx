@@ -38,7 +38,7 @@ export const CancelOffer: FC = () => {
     // CancelOffer fields
     offerSequence: null
   });
-  const [errorRequestRejection, setErrorRequestRejection] = useState<string>('');
+  const [errorRequestRejection, setErrorRequestRejection] = useState<Error>();
   const [isParamsMissing, setIsParamsMissing] = useState(false);
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
   const { cancelOffer } = useLedger();
@@ -154,7 +154,7 @@ export const CancelOffer: FC = () => {
         chrome.runtime.sendMessage<ReceiveCancelOfferBackgroundMessage>(createMessage(response));
       })
       .catch((e) => {
-        setErrorRequestRejection(e.message);
+        setErrorRequestRejection(e);
         setTransaction(TransactionStatus.Rejected);
         const message = createMessage({
           hash: undefined,

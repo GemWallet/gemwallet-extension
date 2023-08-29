@@ -54,7 +54,7 @@ export const CreateOffer: FC = () => {
     takerGets: null,
     takerPays: null
   });
-  const [errorRequestRejection, setErrorRequestRejection] = useState<string>('');
+  const [errorRequestRejection, setErrorRequestRejection] = useState<Error>();
   const [isParamsMissing, setIsParamsMissing] = useState(false);
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
   const { createOffer } = useLedger();
@@ -192,7 +192,7 @@ export const CreateOffer: FC = () => {
         chrome.runtime.sendMessage<ReceiveCreateOfferBackgroundMessage>(createMessage(response));
       })
       .catch((e) => {
-        setErrorRequestRejection(e.message);
+        setErrorRequestRejection(e);
         setTransaction(TransactionStatus.Rejected);
         const message = createMessage({
           hash: undefined,

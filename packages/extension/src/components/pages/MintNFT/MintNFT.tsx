@@ -53,7 +53,7 @@ export const MintNFT: FC = () => {
     NFTokenTaxon: 0,
     issuer: null
   });
-  const [errorRequestRejection, setErrorRequestRejection] = useState<string>('');
+  const [errorRequestRejection, setErrorRequestRejection] = useState<Error>();
   const [isParamsMissing, setIsParamsMissing] = useState(false);
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
   const { mintNFT } = useLedger();
@@ -195,7 +195,7 @@ export const MintNFT: FC = () => {
         chrome.runtime.sendMessage<ReceiveMintNFTBackgroundMessage>(createMessage(response));
       })
       .catch((e) => {
-        setErrorRequestRejection(e.message);
+        setErrorRequestRejection(e);
         setTransaction(TransactionStatus.Rejected);
         const message = createMessage({
           hash: undefined,

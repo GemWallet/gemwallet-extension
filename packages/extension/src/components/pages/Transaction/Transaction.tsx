@@ -30,7 +30,7 @@ import {
   initialBaseTransactionParams,
   parseBaseParamsFromURLParams
 } from '../../../utils/baseParams';
-import { serializeError, toUIError } from '../../../utils/errors';
+import { serializeError } from '../../../utils/errors';
 import { BaseTransaction } from '../../organisms/BaseTransaction/BaseTransaction';
 import { AsyncTransaction, PageWithTitle } from '../../templates';
 
@@ -72,7 +72,7 @@ export const Transaction: FC = () => {
     destinationTag: null,
     flags: null
   });
-  const [errorRequestRejection, setErrorRequestRejection] = useState<string>('');
+  const [errorRequestRejection, setErrorRequestRejection] = useState<Error>();
   const [isParamsMissing, setIsParamsMissing] = useState(false);
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
   const { sendPayment } = useLedger();
@@ -234,7 +234,7 @@ export const Transaction: FC = () => {
         >(createMessage({ transactionHash }));
       })
       .catch((e) => {
-        setErrorRequestRejection(toUIError(e).message);
+        setErrorRequestRejection(e);
         setTransaction(TransactionStatus.Rejected);
         chrome.runtime.sendMessage<
           ReceiveSendPaymentBackgroundMessage | ReceiveSendPaymentBackgroundMessageDeprecated

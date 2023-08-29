@@ -78,7 +78,7 @@ export const AddNewTrustline: FC = () => {
     inAppCall,
     showForm: false
   });
-  const [errorRequestRejection, setErrorRequestRejection] = useState<string>('');
+  const [errorRequestRejection, setErrorRequestRejection] = useState<Error>();
   const [isParamsMissing, setIsParamsMissing] = useState(false);
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
   const [step, setStep] = useState<STEP>('WARNING');
@@ -260,7 +260,7 @@ export const AddNewTrustline: FC = () => {
           }
         })
         .catch((e) => {
-          setErrorRequestRejection(e.message);
+          setErrorRequestRejection(e);
           setTransaction(TransactionStatus.Rejected);
           if (!params.inAppCall) {
             chrome.runtime.sendMessage<

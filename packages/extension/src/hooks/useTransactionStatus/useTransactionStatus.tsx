@@ -9,13 +9,14 @@ import { InformationMessage } from '../../components/molecules';
 import { AsyncTransaction, PageWithSpinner } from '../../components/templates';
 import { useNetwork } from '../../contexts';
 import { TransactionStatus } from '../../types';
+import { toUIError } from '../../utils/errors';
 
 interface TransactionStatusProps {
   isParamsMissing: boolean;
   network: Network | string | undefined;
   difference: number | undefined;
   transaction: TransactionStatus;
-  errorRequestRejection: string;
+  errorRequestRejection?: Error;
   errorValue?: string;
   errorFees: string | undefined;
   badRequestCallback?: () => void;
@@ -179,7 +180,9 @@ export const useTransactionStatus = ({
             <>
               Your transaction failed, please try again.
               <br />
-              {errorRequestRejection ? errorRequestRejection : 'Something went wrong'}
+              {errorRequestRejection
+                ? toUIError(errorRequestRejection).message
+                : 'Something went wrong'}
             </>
           }
           transaction={TransactionStatus.Rejected}
