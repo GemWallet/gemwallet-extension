@@ -845,6 +845,9 @@ const LedgerProvider: FC = ({ children }) => {
           hash: tx.result.hash
         };
       } catch (e) {
+        if ((e as Error).message.includes('tecTOO_SOON')) {
+          throw new Error('tecTOO_SOON');
+        }
         Sentry.captureException(e);
         throw e;
       }
