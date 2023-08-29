@@ -33,7 +33,7 @@ export const SubmitTransaction: FC = () => {
     // SubmitTransaction fields
     txParam: null
   });
-  const [errorRequestRejection, setErrorRequestRejection] = useState<string>('');
+  const [errorRequestRejection, setErrorRequestRejection] = useState<Error>();
   const [isParamsMissing, setIsParamsMissing] = useState(false);
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
   const { submitTransaction } = useLedger();
@@ -120,7 +120,7 @@ export const SubmitTransaction: FC = () => {
         );
       })
       .catch((e) => {
-        setErrorRequestRejection(e.message);
+        setErrorRequestRejection(e);
         setTransaction(TransactionStatus.Rejected);
         const message = createMessage({
           hash: undefined,

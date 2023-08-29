@@ -38,7 +38,7 @@ export const CancelNFTOffer: FC = () => {
     // CancelNFTOffer fields
     NFTokenOffers: null
   });
-  const [errorRequestRejection, setErrorRequestRejection] = useState<string>('');
+  const [errorRequestRejection, setErrorRequestRejection] = useState<Error>();
   const [isParamsMissing, setIsParamsMissing] = useState(false);
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
   const { cancelNFTOffer } = useLedger();
@@ -152,7 +152,7 @@ export const CancelNFTOffer: FC = () => {
         chrome.runtime.sendMessage<ReceiveCancelNFTOfferBackgroundMessage>(createMessage(response));
       })
       .catch((e) => {
-        setErrorRequestRejection(e.message);
+        setErrorRequestRejection(e);
         setTransaction(TransactionStatus.Rejected);
         const message = createMessage({
           hash: undefined,

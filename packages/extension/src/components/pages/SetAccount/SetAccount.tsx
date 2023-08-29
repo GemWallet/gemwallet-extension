@@ -56,7 +56,7 @@ export const SetAccount: FC = () => {
     transferRate: null,
     tickSize: null
   });
-  const [errorRequestRejection, setErrorRequestRejection] = useState<string>('');
+  const [errorRequestRejection, setErrorRequestRejection] = useState<Error>();
   const [isParamsMissing, setIsParamsMissing] = useState(false);
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
   const { setAccount } = useLedger();
@@ -212,7 +212,7 @@ export const SetAccount: FC = () => {
         chrome.runtime.sendMessage<ReceiveSetAccountBackgroundMessage>(createMessage(response));
       })
       .catch((e) => {
-        setErrorRequestRejection(e.message);
+        setErrorRequestRejection(e);
         setTransaction(TransactionStatus.Rejected);
         const message = createMessage({
           hash: undefined,

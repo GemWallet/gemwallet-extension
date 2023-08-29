@@ -3,6 +3,7 @@ import { createContext, FC, useCallback, useContext } from 'react';
 import * as Sentry from '@sentry/react';
 import { sign } from 'ripple-keypairs';
 import {
+  AccountDelete,
   AccountSet,
   NFTokenAcceptOffer,
   NFTokenBurn,
@@ -43,6 +44,7 @@ import {
 
 import { AccountTransaction, WalletLedger } from '../../types';
 import { toXRPLMemos, toXRPLSigners } from '../../utils';
+import { toUIError } from '../../utils/errors';
 import { resolveNFTData } from '../../utils/NFTDataResolver';
 import { useNetwork } from '../NetworkContext';
 import { useWallet } from '../WalletContext';
@@ -84,6 +86,10 @@ interface SubmitTransactionResponse {
   hash: string;
 }
 
+interface DeleteAccountResponse {
+  hash: string;
+}
+
 interface NFTImageRequest {
   NFT: AccountNFToken;
 }
@@ -110,6 +116,7 @@ export interface LedgerContextType {
   submitTransaction: (payload: SubmitTransactionRequest) => Promise<SubmitTransactionResponse>;
   getAccountInfo: (accountId?: string) => Promise<AccountInfoResponse>;
   getNFTData: (payload: NFTImageRequest) => Promise<NFTData>;
+  deleteAccount: (destinationAddress: string) => Promise<DeleteAccountResponse>;
 }
 
 const LedgerContext = createContext<LedgerContextType>({
@@ -139,7 +146,8 @@ const LedgerContext = createContext<LedgerContextType>({
   cancelOffer: () => new Promise(() => {}),
   submitTransaction: () => new Promise(() => {}),
   getAccountInfo: () => new Promise(() => {}),
-  getNFTData: () => new Promise(() => {})
+  getNFTData: () => new Promise(() => {}),
+  deleteAccount: () => new Promise(() => {})
 });
 
 const LedgerProvider: FC = ({ children }) => {
@@ -335,23 +343,7 @@ const LedgerProvider: FC = ({ children }) => {
               `Something went wrong, we couldn't add the trustline properly`
           );
         } catch (e) {
-          if (
-            (e as Error).message === 'checksum_invalid' ||
-            (e as Error).message.includes('version_invalid') ||
-            (e as Error).message === 'Non-base58 character'
-          ) {
-            throw new Error('The destination address is incorrect');
-          } else if ((e as Error).message === 'tecUNFUNDED_PAYMENT') {
-            throw new Error('Insufficient funds');
-          } else if ((e as Error).message === 'tecNO_DST_INSUF_XRP') {
-            throw new Error(
-              'The account you are trying to make this transaction to does not exist, and the transaction is not sending enough XRP to create it.'
-            );
-          } else if ((e as Error).message.includes('Unsupported Currency representation')) {
-            throw new Error('The currency is incorrect, you cannot add this trustline.');
-          }
-          Sentry.captureException(e);
-          throw e;
+          throw toUIError(e as Error);
         }
       }
     },
@@ -790,6 +782,7 @@ const LedgerProvider: FC = ({ children }) => {
       | 'AccountSet'
       | 'OfferCreate'
       | 'OfferCancel'
+      | 'AccountDelete'
   ): BaseTransaction => ({
     TransactionType: txType,
     Account: wallet.publicAddress,
@@ -817,6 +810,51 @@ const LedgerProvider: FC = ({ children }) => {
     [getAccountInfo]
   );
 
+  const deleteAccount = useCallback(
+    async (destinationAddress: string) => {
+      const wallet = getCurrentWallet();
+      if (!client) {
+        throw new Error('You need to be connected to a ledger');
+      }
+
+      if (!wallet) {
+        throw new Error('You need to have a wallet connected');
+      }
+
+      try {
+        const tx = await client.submitAndWait(
+          {
+            ...(buildBaseTransaction({}, wallet, 'AccountDelete') as AccountDelete),
+            Destination: destinationAddress
+          },
+          { wallet: wallet.wallet, autofill: true }
+        );
+
+        if (!tx.result.hash) {
+          throw new Error("Couldn't delete the account");
+        }
+
+        if ((tx.result.meta! as TransactionMetadata).TransactionResult !== 'tesSUCCESS') {
+          throw new Error(
+            (tx.result.meta as TransactionMetadata)?.TransactionResult ||
+              "Couldn't delete the account but the transaction was successfully submitted"
+          );
+        }
+
+        return {
+          hash: tx.result.hash
+        };
+      } catch (e) {
+        if ((e as Error).message.includes('tecTOO_SOON')) {
+          throw new Error('tecTOO_SOON');
+        }
+        Sentry.captureException(e);
+        throw e;
+      }
+    },
+    [client, getCurrentWallet]
+  );
+
   const value: LedgerContextType = {
     sendPayment,
     setTrustline,
@@ -835,7 +873,8 @@ const LedgerProvider: FC = ({ children }) => {
     cancelOffer,
     submitTransaction,
     getAccountInfo,
-    getNFTData
+    getNFTData,
+    deleteAccount
   };
 
   return <LedgerContext.Provider value={value}>{children}</LedgerContext.Provider>;

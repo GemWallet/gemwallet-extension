@@ -9,6 +9,7 @@ export * from './CreateNFTOffer';
 export * from './CreateOffer';
 export * from './CreateWallet';
 export * from './EditWallet';
+export * from './EnterPasswordDanger';
 export * from './History';
 export * from './Home';
 export * from './ImportMnemonic';

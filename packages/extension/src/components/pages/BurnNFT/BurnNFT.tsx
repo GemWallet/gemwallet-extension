@@ -36,7 +36,7 @@ export const BurnNFT: FC = () => {
     NFTokenID: null,
     owner: null
   });
-  const [errorRequestRejection, setErrorRequestRejection] = useState<string>('');
+  const [errorRequestRejection, setErrorRequestRejection] = useState<Error>();
   const [isParamsMissing, setIsParamsMissing] = useState(false);
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
   const { burnNFT } = useLedger();
@@ -154,7 +154,7 @@ export const BurnNFT: FC = () => {
         chrome.runtime.sendMessage<ReceiveBurnNFTBackgroundMessage>(createMessage(response));
       })
       .catch((e) => {
-        setErrorRequestRejection(e.message);
+        setErrorRequestRejection(e);
         setTransaction(TransactionStatus.Rejected);
         const message = createMessage({
           hash: undefined,
