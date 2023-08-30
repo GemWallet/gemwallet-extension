@@ -39,6 +39,7 @@ import {
   SendPaymentRequest,
   SetAccountRequest,
   SetTrustlineRequest,
+  SignTransactionRequest,
   SubmitTransactionRequest
 } from '@gemwallet/constants';
 
@@ -90,6 +91,10 @@ interface DeleteAccountResponse {
   hash: string;
 }
 
+interface SignTransactionResponse {
+  signature: string;
+}
+
 interface NFTImageRequest {
   NFT: AccountNFToken;
 }
@@ -113,6 +118,7 @@ export interface LedgerContextType {
   setAccount: (payload: SetAccountRequest) => Promise<SetAccountResponse>;
   createOffer: (payload: CreateOfferRequest) => Promise<CreateOfferResponse>;
   cancelOffer: (payload: CancelOfferRequest) => Promise<CancelOfferResponse>;
+  signTransaction: (payload: SignTransactionRequest) => Promise<SignTransactionResponse>;
   submitTransaction: (payload: SubmitTransactionRequest) => Promise<SubmitTransactionResponse>;
   getAccountInfo: (accountId?: string) => Promise<AccountInfoResponse>;
   getNFTData: (payload: NFTImageRequest) => Promise<NFTData>;
@@ -144,6 +150,7 @@ const LedgerContext = createContext<LedgerContextType>({
   setAccount: () => new Promise(() => {}),
   createOffer: () => new Promise(() => {}),
   cancelOffer: () => new Promise(() => {}),
+  signTransaction: () => new Promise(() => {}),
   submitTransaction: () => new Promise(() => {}),
   getAccountInfo: () => new Promise(() => {}),
   getNFTData: () => new Promise(() => {}),
@@ -697,50 +704,83 @@ const LedgerProvider: FC = ({ children }) => {
     [client, getCurrentWallet]
   );
 
-  const submitTransaction = useCallback(
-    async (payload: SubmitTransactionRequest) => {
+  const processTransaction = useCallback(
+    async (
+      payload: SubmitTransactionRequest | SignTransactionRequest,
+      signOnly = false
+    ): Promise<SubmitTransactionResponse | SignTransactionResponse> => {
       const wallet = getCurrentWallet();
       if (!client) {
         throw new Error('You need to be connected to a ledger');
       }
       if (!wallet) {
         throw new Error('You need to have a wallet connected');
-      } else {
-        try {
-          if (!payload.transaction.Account || payload.transaction.Account === '') {
-            payload.transaction.Account = wallet.publicAddress;
-          }
-
-          // Validate the transaction
-          validate(payload.transaction as unknown as Record<string, unknown>);
-          // Prepare the transaction
-          const prepared: Transaction = await client.autofill(payload.transaction);
-          // Sign the transaction
-          const signed = wallet.wallet.sign(prepared);
-          // Submit the signed blob
-          const tx = await client.submitAndWait(signed.tx_blob);
-
-          if (!tx.result.hash) {
-            throw new Error("Couldn't submit the transaction");
-          }
-
-          if ((tx.result.meta! as TransactionMetadata).TransactionResult !== 'tesSUCCESS') {
-            throw new Error(
-              (tx.result.meta as TransactionMetadata)?.TransactionResult ||
-                "Couldn't submit the signed transaction but the transaction was successful"
-            );
-          }
-
-          return {
-            hash: tx.result.hash
-          };
-        } catch (e) {
-          Sentry.captureException(e);
-          throw e;
-        }
       }
+
+      if (!payload.transaction.Account || payload.transaction.Account === '') {
+        payload.transaction.Account = wallet.publicAddress;
+      }
+
+      // Validate the transaction
+      validate(payload.transaction as unknown as Record<string, unknown>);
+      // Prepare the transaction
+      const prepared: Transaction = await client.autofill(payload.transaction);
+      // Sign the transaction
+      const signed = wallet.wallet.sign(prepared);
+
+      if (signOnly) {
+        if (!signed.tx_blob) {
+          throw new Error("Couldn't sign the transaction");
+        }
+
+        return {
+          signature: signed.tx_blob
+        };
+      }
+
+      // Submit the signed blob
+      const tx = await client.submitAndWait(signed.tx_blob);
+
+      if (!tx.result.hash) {
+        throw new Error("Couldn't submit the transaction");
+      }
+
+      if ((tx.result.meta! as TransactionMetadata).TransactionResult !== 'tesSUCCESS') {
+        throw new Error(
+          (tx.result.meta as TransactionMetadata)?.TransactionResult ||
+            "Couldn't submit the signed transaction but the transaction was successful"
+        );
+      }
+
+      return {
+        hash: tx.result.hash
+      };
     },
     [client, getCurrentWallet]
+  );
+
+  const submitTransaction = useCallback(
+    async (payload: SubmitTransactionRequest) => {
+      try {
+        return (await processTransaction(payload)) as SubmitTransactionResponse;
+      } catch (e) {
+        Sentry.captureException(e);
+        throw e;
+      }
+    },
+    [processTransaction]
+  );
+
+  const signTransaction = useCallback(
+    async (payload: SignTransactionRequest) => {
+      try {
+        return (await processTransaction(payload, true)) as SignTransactionResponse;
+      } catch (e) {
+        Sentry.captureException(e);
+        throw e;
+      }
+    },
+    [processTransaction]
   );
 
   const getAccountInfo = useCallback(
@@ -871,6 +911,7 @@ const LedgerProvider: FC = ({ children }) => {
     setAccount,
     createOffer,
     cancelOffer,
+    signTransaction,
     submitTransaction,
     getAccountInfo,
     getNFTData,

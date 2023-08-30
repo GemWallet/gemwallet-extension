@@ -27,6 +27,7 @@ import {
   PARAMETER_SHARE_NFT,
   PARAMETER_SHARE_PUBLIC_KEY,
   PARAMETER_SIGN_MESSAGE,
+  PARAMETER_SIGN_TRANSACTION,
   PARAMETER_SUBMIT_TRANSACTION,
   PARAMETER_TRANSACTION_ACCEPT_NFT_OFFER,
   PARAMETER_TRANSACTION_BURN_NFT,
@@ -148,6 +149,12 @@ const App: FC = () => {
         handleTransaction({
           app: GEM_WALLET,
           type: 'RECEIVE_SUBMIT_TRANSACTION/V3',
+          payload: defaultPayload
+        });
+      } else if (search.includes(PARAMETER_SIGN_TRANSACTION)) {
+        handleTransaction({
+          app: GEM_WALLET,
+          type: 'RECEIVE_SIGN_TRANSACTION/V3',
           payload: defaultPayload
         });
       } else if (search.includes(PARAMETER_TRANSACTION_TRUSTLINE)) {
