@@ -41,7 +41,7 @@ export const SubmitTransactionsBulk: FC = () => {
     id: 0,
     transactionsMapParam: null
   });
-  const [errorRequestRejection, setErrorRequestRejection] = useState<string>('');
+  const [errorRequestRejection, setErrorRequestRejection] = useState<Error>();
   const [isParamsMissing, setIsParamsMissing] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
@@ -214,7 +214,7 @@ export const SubmitTransactionsBulk: FC = () => {
           results = [...results, ...response.txResults];
 
           if (response.hasError && onError === 'abort') {
-            setErrorRequestRejection('Some transactions were rejected');
+            setErrorRequestRejection(new Error('Some transactions were rejected'));
             setTransaction(TransactionStatus.Rejected);
             return results;
           }

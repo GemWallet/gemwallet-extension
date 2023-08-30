@@ -36,7 +36,7 @@ interface StepperViewProps {
   hasEnoughFunds: boolean;
   transactionsToDisplay: Record<number, TransactionWithID>;
   totalNumberOfTransactions: number;
-  errorRequestRejection: string;
+  errorRequestRejection?: Error;
   handleBack: () => void;
   handleReject: () => void;
   handleNext: () => void;
@@ -309,9 +309,9 @@ export const StepperView: FC<StepperViewProps> = ({
               );
             })}
 
-            {errorRequestRejection && (
-              <Typography color="error">{errorRequestRejection}</Typography>
-            )}
+            {errorRequestRejection ? (
+              <Typography color="error">{errorRequestRejection.message}</Typography>
+            ) : null}
             <div
               style={{
                 justifyContent: 'center',
