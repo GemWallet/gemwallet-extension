@@ -95,7 +95,7 @@ describe('Submit Transactions (Bulk)', () => {
 
     navigate(url, PASSWORD, '1693425372955.3833', {
       transactions: transactionsMap,
-      noWait: true
+      waitForHashes: false
     });
 
     cy.contains('button', 'Enable Permission').click();

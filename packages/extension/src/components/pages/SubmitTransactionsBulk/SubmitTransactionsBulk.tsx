@@ -48,7 +48,7 @@ export const SubmitTransactionsBulk: FC = () => {
   const [showRecap, setShowRecap] = useState(true);
   const [progressPercentage, setProgressPercentage] = useState(0);
   const [onError, setOnError] = useState<TransactionErrorHandling>(DEFAULT_SUBMIT_TX_BULK_ON_ERROR);
-  const [noWait, setNoWait] = useState(false);
+  const [waitForHashes, setWaitForHashes] = useState(true);
   const [submitBulkTransactionsEnabled, setSubmitBulkTransactionsEnabled] =
     useState<boolean>(false);
   const { submitTransactionsBulk } = useLedger();
@@ -117,8 +117,13 @@ export const SubmitTransactionsBulk: FC = () => {
             if ('transactions' in parsedStoredData) {
               parsedTransactionsMap = parseTransactionsBulkMap(parsedStoredData.transactions);
             }
-            if ('noWait' in parsedStoredData) {
-              setNoWait(parsedStoredData.noWait === true || parsedStoredData.noWait === 'true');
+            if ('waitForHashes' in parsedStoredData) {
+              setWaitForHashes(
+                !(
+                  parsedStoredData.waitForHashes === false ||
+                  parsedStoredData.waitForHashes === 'false'
+                )
+              );
             }
             if ('onError' in parsedStoredData) {
               const onError =
@@ -204,7 +209,7 @@ export const SubmitTransactionsBulk: FC = () => {
           const response = await submitTransactionsBulk({
             transactions: chunk,
             onError,
-            noWait
+            waitForHashes
           });
           results = [...results, ...response.txResults];
 
@@ -217,7 +222,7 @@ export const SubmitTransactionsBulk: FC = () => {
           const totalTransactions = Object.values(params.transactionsMapParam || {}).length;
           setProgressPercentage(Math.floor((results.length / totalTransactions) * 100));
 
-          if (noWait && i < transactions.length) {
+          if (!waitForHashes && i < transactions.length) {
             // Throttle requests
             await new Promise((resolve) => setTimeout(resolve, 5000));
           }
@@ -244,7 +249,7 @@ export const SubmitTransactionsBulk: FC = () => {
         const message = createMessage({ txResults: null, error: e });
         chrome.runtime.sendMessage<ReceiveSubmitTransactionsBulkBackgroundMessage>(message);
       });
-  }, [params.transactionsMapParam, onError, submitTransactionsBulk, noWait, createMessage]);
+  }, [params.transactionsMapParam, onError, submitTransactionsBulk, waitForHashes, createMessage]);
   const { transactionsMapParam } = params;
 
   const allTransactions = transactionsMapParam || {};

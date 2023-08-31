@@ -1255,7 +1255,7 @@
           GemWalletApi.submitTransactionsBulk({
             transactions,
             onError: 'abort',
-            noWait: false
+            waitForHashes: false
           })
             .then((res) => {
               console.log('Received response: ', res);

@@ -833,22 +833,22 @@ const LedgerProvider: FC = ({ children }) => {
           // Sign the transaction
           const signed = wallet.wallet.sign(prepared);
           // Submit the signed blob based on the mode
-          const tx = payload.noWait
-            ? await client.submit(signed.tx_blob)
-            : await client.submitAndWait(signed.tx_blob);
+          const tx = payload.waitForHashes
+            ? await client.submitAndWait(signed.tx_blob)
+            : await client.submit(signed.tx_blob);
 
-          if (payload.noWait) {
+          if (!payload.waitForHashes) {
             // Throttle the requests
             await new Promise((resolve) => setTimeout(resolve, 1000));
           }
 
           // Check transaction result
-          if (payload.noWait && !(tx as SubmitResponse).result.accepted) {
+          if (!payload.waitForHashes && !(tx as SubmitResponse).result.accepted) {
             throw new Error("Couldn't submit the transaction");
           }
 
           if (
-            !payload.noWait &&
+            payload.waitForHashes &&
             (!(tx as TxResponse).result.hash ||
               ((tx as TxResponse).result.meta! as TransactionMetadata).TransactionResult !==
                 'tesSUCCESS')
@@ -860,8 +860,8 @@ const LedgerProvider: FC = ({ children }) => {
 
           return {
             ID,
-            hash: !payload.noWait ? (tx as TxResponse).result.hash : undefined,
-            accepted: payload.noWait ? true : undefined
+            hash: payload.waitForHashes ? (tx as TxResponse).result.hash : undefined,
+            accepted: !payload.waitForHashes ? true : undefined
           };
         } catch (e) {
           Sentry.captureException(e);
