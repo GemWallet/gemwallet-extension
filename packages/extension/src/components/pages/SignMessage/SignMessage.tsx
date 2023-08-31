@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import { FC, useCallback, useMemo, useState } from 'react';
 
 import { Avatar, Button, Container, Divider, Paper, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
@@ -20,12 +20,6 @@ export const SignMessage: FC = () => {
   const { signMessage } = useLedger();
   const { window: extensionWindow, closeExtension } = useBrowser();
   const [isParamsMissing, setIsParamsMissing] = useState(false);
-
-  useEffect(() => {
-    if (isParamsMissing) {
-      Sentry.captureMessage('Params are missing');
-    }
-  }, [isParamsMissing]);
 
   const payload = useMemo(() => {
     const queryString = window.location.search;
