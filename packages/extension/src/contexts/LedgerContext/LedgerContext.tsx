@@ -859,14 +859,14 @@ const LedgerProvider: FC = ({ children }) => {
           }
 
           return {
-            ID,
+            id: ID,
             hash: payload.waitForHashes ? (tx as TxResponse).result.hash : undefined,
             accepted: !payload.waitForHashes ? true : undefined
           };
         } catch (e) {
           Sentry.captureException(e);
           return {
-            ID,
+            id: ID,
             error: `Error while processing the transaction: ${JSON.stringify(e)}`
           };
         }
