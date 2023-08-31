@@ -27,8 +27,6 @@ export const useFees = (tx: Transaction | Transaction[], fee: string | null) => 
       const transactions = Array.isArray(tx) ? tx : [tx];
 
       if (transactions.length) {
-        const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
         const processTransactions = async () => {
           try {
             const fees = [];
@@ -42,10 +40,6 @@ export const useFees = (tx: Transaction | Transaction[], fee: string | null) => 
                 ? transaction.Fee
                 : await estimateNetworkFees(transaction);
               fees.push(fee);
-
-              if (i < transactions.length - 1) {
-                await delay(10); // 10ms delay between each request
-              }
             }
             const totalFees = calculateTotalFees(fees);
             setEstimatedFees(totalFees.toString());
