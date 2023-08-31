@@ -134,6 +134,12 @@ export const SubmitTransaction: FC = () => {
 
   return (
     <>
+      <style>{`
+        .react-json-view .string-value {
+          white-space: pre-wrap; /* allow text to break onto the next line */
+          word-break: break-all; /* break long strings */
+        }
+      `}</style>
       {transactionStatusComponent ? (
         <div>{transactionStatusComponent}</div>
       ) : (

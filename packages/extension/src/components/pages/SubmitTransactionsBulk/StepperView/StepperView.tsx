@@ -182,205 +182,216 @@ export const StepperView: FC<StepperViewProps> = ({
   }, [getAccountInfo, getLedgerEntry, getNFTInfo, networkName, transactionsToDisplay]);
 
   return (
-    <PageWithTitle title="Bulk Transactions" styles={{ container: { justifyContent: 'initial' } }}>
-      <div style={{ marginBottom: '40px' }}>
-        {steps > 1 ? (
-          <div
-            style={{
-              width: '100%',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center'
-            }}
-          >
-            <Pagination
-              count={steps}
-              page={activeStep + 1}
-              renderItem={(item) => (
-                <PaginationItem
-                  {...item}
-                  sx={{
-                    '&:hover': {
-                      backgroundColor: 'transparent',
-                      cursor: 'default'
-                    }
-                  }}
-                />
-              )}
-              variant="outlined"
-              color="primary"
-              hidePrevButton
-              hideNextButton
-            />
-          </div>
-        ) : null}
-        {!hasEnoughFunds ? (
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <ErrorIcon style={{ color: ERROR_RED }} />
-            <Typography variant="body1" style={{ marginLeft: '10px', color: ERROR_RED }}>
-              Insufficient funds.
-            </Typography>
-          </div>
-        ) : null}
-        {activeStep === steps ? (
-          <div>
-            <Typography>All steps completed</Typography>
-            <Button onClick={handleReset}>Reset</Button>
-          </div>
-        ) : (
-          <div>
-            <Button
-              variant="outlined"
-              onClick={handleCollapseToggle}
-              style={{
-                marginTop: '20px',
-                marginBottom: '20px',
-                padding: '6px 12px',
-                fontSize: '0.875em'
-              }}
-            >
-              {collapsed ? 'Expand All' : 'Collapse All'}
-            </Button>
-            {Object.entries(transactionsToDisplay || {}).map(([key, tx]) => {
-              const { ID, ...txWithoutID } = tx;
-              return (
-                <div key={key} style={{ marginBottom: '20px' }}>
-                  <Typography
-                    variant="body1"
-                    color="textPrimary"
-                    style={{ marginTop: '5px', fontSize: '1.2em' }}
-                  >
-                    {Number(key) + 1} - {tx.TransactionType}
-                  </Typography>
-                  {'Amount' in txWithoutID && txWithoutID.Amount ? (
-                    <Typography variant="body2" color="textSecondary">
-                      {formatAmount(txWithoutID.Amount)}
-                    </Typography>
-                  ) : null}
-                  {txNFTData[Number(key)] && txNFTData[Number(key)].amount ? (
-                    <Typography variant="body2" color="textSecondary">
-                      {formatAmount(txNFTData[Number(key)].amount as Amount)}
-                    </Typography>
-                  ) : null}
-                  {txNFTData[Number(key)] && txNFTData[Number(key)].name ? (
-                    <Typography
-                      variant="body2"
-                      color="textSecondary"
-                      style={{
-                        marginTop: '5px',
-                        fontWeight: 'lighter',
-                        fontStyle: 'italic',
-                        fontSize: '1em'
-                      }}
-                    >
-                      {txNFTData[Number(key)].name}
-                    </Typography>
-                  ) : null}
-                  {txNFTData[Number(key)] && txNFTData[Number(key)].image ? (
-                    <div style={{ display: 'flex', justifyContent: 'center', margin: '10px 0' }}>
-                      <Card sx={{ maxWidth: 300 }}>
-                        <CardMedia
-                          component="img"
-                          height="140"
-                          image={txNFTData[Number(key)].image}
-                          alt="NFT Image"
-                        />
-                      </Card>
-                    </div>
-                  ) : null}
-                  <div style={{ marginTop: '5px' }}>
-                    <ReactJson
-                      src={txWithoutID}
-                      theme="summerfruit"
-                      name={null}
-                      key={renderKey}
-                      enableClipboard={false}
-                      collapsed={collapsed}
-                      shouldCollapse={false}
-                      onEdit={false}
-                      onAdd={false}
-                      onDelete={false}
-                      displayDataTypes={false}
-                      displayObjectSize={false}
-                      indentWidth={2}
-                    />
-                  </div>
-                </div>
-              );
-            })}
-
-            {errorRequestRejection ? (
-              <Typography color="error">{errorRequestRejection.message}</Typography>
-            ) : null}
+    <>
+      <style>{`
+        .react-json-view .string-value {
+          white-space: pre-wrap; /* allow text to break onto the next line */
+          word-break: break-all; /* break long strings */
+        }
+      `}</style>
+      <PageWithTitle
+        title="Bulk Transactions"
+        styles={{ container: { justifyContent: 'initial' } }}
+      >
+        <div style={{ marginBottom: '40px' }}>
+          {steps > 1 ? (
             <div
               style={{
+                width: '100%',
+                display: 'flex',
                 justifyContent: 'center',
-                position: 'fixed',
-                bottom: 0,
-                left: 0,
-                right: 0,
-                backgroundColor: '#1d1d1d'
+                alignItems: 'center'
               }}
             >
-              <Container
+              <Pagination
+                count={steps}
+                page={activeStep + 1}
+                renderItem={(item) => (
+                  <PaginationItem
+                    {...item}
+                    sx={{
+                      '&:hover': {
+                        backgroundColor: 'transparent',
+                        cursor: 'default'
+                      }
+                    }}
+                  />
+                )}
+                variant="outlined"
+                color="primary"
+                hidePrevButton
+                hideNextButton
+              />
+            </div>
+          ) : null}
+          {!hasEnoughFunds ? (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              <ErrorIcon style={{ color: ERROR_RED }} />
+              <Typography variant="body1" style={{ marginLeft: '10px', color: ERROR_RED }}>
+                Insufficient funds.
+              </Typography>
+            </div>
+          ) : null}
+          {activeStep === steps ? (
+            <div>
+              <Typography>All steps completed</Typography>
+              <Button onClick={handleReset}>Reset</Button>
+            </div>
+          ) : (
+            <div>
+              <Button
+                variant="outlined"
+                onClick={handleCollapseToggle}
                 style={{
-                  display: 'flex',
-                  justifyContent: 'space-around',
-                  padding: '10px'
+                  marginTop: '20px',
+                  marginBottom: '20px',
+                  padding: '6px 12px',
+                  fontSize: '0.875em'
                 }}
               >
-                <Button variant="contained" color="secondary" onClick={handleReject}>
-                  Reject
-                </Button>
-                {steps > 1 ? (
-                  <>
-                    <Button
-                      disabled={activeStep === 0}
-                      onClick={handleBack}
-                      startIcon={<ArrowBackIcon />}
-                    />
-                    <Button
-                      disabled={activeStep === steps - 1}
-                      onClick={handleNextAndOpen}
-                      endIcon={<ArrowForwardIcon />}
-                    />
-                  </>
-                ) : null}
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleClickOpen}
-                  disabled={!hasEnoughFunds}
+                {collapsed ? 'Expand All' : 'Collapse All'}
+              </Button>
+              {Object.entries(transactionsToDisplay || {}).map(([key, tx]) => {
+                const { ID, ...txWithoutID } = tx;
+                return (
+                  <div key={key} style={{ marginBottom: '20px' }}>
+                    <Typography
+                      variant="body1"
+                      color="textPrimary"
+                      style={{ marginTop: '5px', fontSize: '1.2em' }}
+                    >
+                      {Number(key) + 1} - {tx.TransactionType}
+                    </Typography>
+                    {'Amount' in txWithoutID && txWithoutID.Amount ? (
+                      <Typography variant="body2" color="textSecondary">
+                        {formatAmount(txWithoutID.Amount)}
+                      </Typography>
+                    ) : null}
+                    {txNFTData[Number(key)] && txNFTData[Number(key)].amount ? (
+                      <Typography variant="body2" color="textSecondary">
+                        {formatAmount(txNFTData[Number(key)].amount as Amount)}
+                      </Typography>
+                    ) : null}
+                    {txNFTData[Number(key)] && txNFTData[Number(key)].name ? (
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        style={{
+                          marginTop: '5px',
+                          fontWeight: 'lighter',
+                          fontStyle: 'italic',
+                          fontSize: '1em'
+                        }}
+                      >
+                        {txNFTData[Number(key)].name}
+                      </Typography>
+                    ) : null}
+                    {txNFTData[Number(key)] && txNFTData[Number(key)].image ? (
+                      <div style={{ display: 'flex', justifyContent: 'center', margin: '10px 0' }}>
+                        <Card sx={{ maxWidth: 300 }}>
+                          <CardMedia
+                            component="img"
+                            height="140"
+                            image={txNFTData[Number(key)].image}
+                            alt="NFT Image"
+                          />
+                        </Card>
+                      </div>
+                    ) : null}
+                    <div style={{ marginTop: '5px' }}>
+                      <ReactJson
+                        src={txWithoutID}
+                        theme="summerfruit"
+                        name={null}
+                        key={renderKey}
+                        enableClipboard={false}
+                        collapsed={collapsed}
+                        shouldCollapse={false}
+                        onEdit={false}
+                        onAdd={false}
+                        onDelete={false}
+                        displayDataTypes={false}
+                        displayObjectSize={false}
+                        indentWidth={2}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+
+              {errorRequestRejection ? (
+                <Typography color="error">{errorRequestRejection.message}</Typography>
+              ) : null}
+              <div
+                style={{
+                  justifyContent: 'center',
+                  position: 'fixed',
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  backgroundColor: '#1d1d1d'
+                }}
+              >
+                <Container
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-around',
+                    padding: '10px'
+                  }}
                 >
-                  Submit all
-                </Button>
-                <Dialog
-                  open={open}
-                  onClose={handleClose}
-                  aria-labelledby="alert-dialog-title"
-                  aria-describedby="alert-dialog-description"
-                >
-                  <DialogTitle id="alert-dialog-title">{'Submit all transactions'}</DialogTitle>
-                  <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
-                      You are about to submit {totalNumberOfTransactions} transactions in bulk. Are
-                      you sure?
-                    </DialogContentText>
-                  </DialogContent>
-                  <DialogActions>
-                    <Button onClick={handleClose} color="primary">
-                      Cancel
-                    </Button>
-                    <Button onClick={handleConfirmAndClose} color="primary" autoFocus>
-                      OK
-                    </Button>
-                  </DialogActions>
-                </Dialog>
-              </Container>
+                  <Button variant="contained" color="secondary" onClick={handleReject}>
+                    Reject
+                  </Button>
+                  {steps > 1 ? (
+                    <>
+                      <Button
+                        disabled={activeStep === 0}
+                        onClick={handleBack}
+                        startIcon={<ArrowBackIcon />}
+                      />
+                      <Button
+                        disabled={activeStep === steps - 1}
+                        onClick={handleNextAndOpen}
+                        endIcon={<ArrowForwardIcon />}
+                      />
+                    </>
+                  ) : null}
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleClickOpen}
+                    disabled={!hasEnoughFunds}
+                  >
+                    Submit all
+                  </Button>
+                  <Dialog
+                    open={open}
+                    onClose={handleClose}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                  >
+                    <DialogTitle id="alert-dialog-title">{'Submit all transactions'}</DialogTitle>
+                    <DialogContent>
+                      <DialogContentText id="alert-dialog-description">
+                        You are about to submit {totalNumberOfTransactions} transactions in bulk.
+                        Are you sure?
+                      </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                      <Button onClick={handleClose} color="primary">
+                        Cancel
+                      </Button>
+                      <Button onClick={handleConfirmAndClose} color="primary" autoFocus>
+                        OK
+                      </Button>
+                    </DialogActions>
+                  </Dialog>
+                </Container>
+              </div>
             </div>
-          </div>
-        )}
-      </div>
-    </PageWithTitle>
+          )}
+        </div>
+      </PageWithTitle>
+    </>
   );
 };
