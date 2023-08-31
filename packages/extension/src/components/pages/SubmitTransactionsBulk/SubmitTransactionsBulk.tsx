@@ -56,12 +56,7 @@ export const SubmitTransactionsBulk: FC = () => {
   const { estimatedFees, errorFees, difference } = useFees(
     (params.transactionsMapParam ? Object.values(params.transactionsMapParam) : undefined)?.map(
       (tx) => tx
-    ) ?? {
-      TransactionType: 'Payment',
-      Account: '',
-      Destination: '',
-      Amount: ''
-    },
+    ) ?? [],
     null
   );
   const { hasEnoughFunds, transactionStatusComponent } = useTransactionStatus({

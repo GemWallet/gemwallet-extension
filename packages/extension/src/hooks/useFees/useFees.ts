@@ -14,7 +14,7 @@ const calculateTotalFees = (fees: string[]) =>
 export const useFees = (tx: Transaction | Transaction[], fee: string | null) => {
   const [estimatedFees, setEstimatedFees] = useState<string>(DEFAULT_FEES);
   const [error, setError] = useState<string | undefined>();
-  const [difference, setDifference] = useState<number | undefined>();
+  const [difference, setDifference] = useState<number>(1); // by default, we want to correctly display the view and not being stuck on the loading state
 
   const { estimateNetworkFees, getAccountInfo } = useLedger();
   const { getCurrentWallet } = useWallet();
@@ -26,42 +26,54 @@ export const useFees = (tx: Transaction | Transaction[], fee: string | null) => 
     if (currentWallet && client) {
       const transactions = Array.isArray(tx) ? tx : [tx];
 
-      const transactionPromises = transactions.map(async (transaction) => {
-        if (!transaction.Account || transaction.Account === '') {
-          transaction.Account = currentWallet.publicAddress;
-        }
-        return transaction.Fee ? transaction.Fee : await estimateNetworkFees(transaction);
-      });
+      if (transactions.length) {
+        const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-      const processTransactions = async () => {
-        try {
-          const fees = await Promise.all(transactionPromises);
-          const totalFees = calculateTotalFees(fees);
-          setEstimatedFees(totalFees.toString());
-
-          const currentBalance = await client?.getXrpBalance(currentWallet.publicAddress);
-          const baseReserve = Number(
-            serverInfo?.info.validated_ledger?.reserve_base_xrp || DEFAULT_RESERVE
-          );
-          const diffFee = fee ? Number(fee) : totalFees;
+        const processTransactions = async () => {
           try {
-            const accountInfo = await getAccountInfo();
-            const reserve =
-              accountInfo.result.account_data.OwnerCount * RESERVE_PER_OWNER + baseReserve;
-            const difference = Number(currentBalance) - reserve - Number(dropsToXrp(diffFee));
-            setDifference(difference);
-          } catch (e) {
-            const difference = Number(currentBalance) - baseReserve - Number(dropsToXrp(diffFee));
-            setDifference(difference);
+            const fees = [];
+            for (let i = 0; i < transactions.length; i++) {
+              const transaction = transactions[i];
+              if (!transaction.Account || transaction.Account === '') {
+                transaction.Account = currentWallet.publicAddress;
+              }
+
+              const fee = transaction.Fee
+                ? transaction.Fee
+                : await estimateNetworkFees(transaction);
+              fees.push(fee);
+
+              if (i < transactions.length - 1) {
+                await delay(10); // 10ms delay between each request
+              }
+            }
+            const totalFees = calculateTotalFees(fees);
+            setEstimatedFees(totalFees.toString());
+
+            const currentBalance = await client?.getXrpBalance(currentWallet.publicAddress);
+            const baseReserve = Number(
+              serverInfo?.info.validated_ledger?.reserve_base_xrp || DEFAULT_RESERVE
+            );
+            const diffFee = fee ? Number(fee) : totalFees;
+            try {
+              const accountInfo = await getAccountInfo();
+              const reserve =
+                accountInfo.result.account_data.OwnerCount * RESERVE_PER_OWNER + baseReserve;
+              const difference = Number(currentBalance) - reserve - Number(dropsToXrp(diffFee));
+              setDifference(difference);
+            } catch (e) {
+              const difference = Number(currentBalance) - baseReserve - Number(dropsToXrp(diffFee));
+              setDifference(difference);
+              Sentry.captureException(e);
+            }
+          } catch (e: any) {
+            setError(e.message);
             Sentry.captureException(e);
           }
-        } catch (e: any) {
-          setError(e.message);
-          Sentry.captureException(e);
-        }
-      };
+        };
 
-      processTransactions();
+        processTransactions();
+      }
     }
   }, [
     client,
