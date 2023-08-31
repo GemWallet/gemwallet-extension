@@ -49,7 +49,7 @@ import {
   SetTrustlineRequest,
   SignTransactionRequest,
   SubmitTransactionRequest,
-  SubmitTransactionsBulkRequest,
+  SubmitBulkTransactionsRequest,
   TransactionBulkResponse,
   TransactionWithID
 } from '@gemwallet/constants';
@@ -111,7 +111,7 @@ interface NFTImageRequest {
   NFT: AccountNFToken;
 }
 
-interface SubmitTransactionsBulkResponse {
+interface SubmitBulkTransactionsResponse {
   txResults: TransactionBulkResponse[];
   hasError?: boolean;
 }
@@ -137,9 +137,9 @@ export interface LedgerContextType {
   cancelOffer: (payload: CancelOfferRequest) => Promise<CancelOfferResponse>;
   signTransaction: (payload: SignTransactionRequest) => Promise<SignTransactionResponse>;
   submitTransaction: (payload: SubmitTransactionRequest) => Promise<SubmitTransactionResponse>;
-  submitTransactionsBulk: (
-    payload: SubmitTransactionsBulkRequest
-  ) => Promise<SubmitTransactionsBulkResponse>;
+  submitBulkTransactions: (
+    payload: SubmitBulkTransactionsRequest
+  ) => Promise<SubmitBulkTransactionsResponse>;
   getAccountInfo: (accountId?: string) => Promise<AccountInfoResponse>;
   getNFTData: (payload: NFTImageRequest) => Promise<NFTData>;
   deleteAccount: (destinationAddress: string) => Promise<DeleteAccountResponse>;
@@ -174,7 +174,7 @@ const LedgerContext = createContext<LedgerContextType>({
   cancelOffer: () => new Promise(() => {}),
   signTransaction: () => new Promise(() => {}),
   submitTransaction: () => new Promise(() => {}),
-  submitTransactionsBulk: () => new Promise(() => {}),
+  submitBulkTransactions: () => new Promise(() => {}),
   getAccountInfo: () => new Promise(() => {}),
   getNFTData: () => new Promise(() => {}),
   deleteAccount: () => new Promise(() => {}),
@@ -808,8 +808,8 @@ const LedgerProvider: FC = ({ children }) => {
     [processTransaction]
   );
 
-  const submitTransactionsBulk = useCallback(
-    async (payload: SubmitTransactionsBulkRequest) => {
+  const submitBulkTransactions = useCallback(
+    async (payload: SubmitBulkTransactionsRequest) => {
       const wallet = getCurrentWallet();
       if (!client) {
         throw new Error('You need to be connected to a ledger');
@@ -1072,7 +1072,7 @@ const LedgerProvider: FC = ({ children }) => {
     cancelOffer,
     signTransaction,
     submitTransaction,
-    submitTransactionsBulk,
+    submitBulkTransactions,
     getAccountInfo,
     getNFTData,
     deleteAccount,

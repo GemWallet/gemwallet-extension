@@ -32,7 +32,7 @@ export * from './SharePublicKey';
 export * from './SignMessage';
 export * from './SignTransaction';
 export * from './SubmitTransaction';
-export * from './SubmitTransactionsBulk';
+export * from './SubmitBulkTransactions';
 export * from './Transaction';
 export * from './TrustedApps';
 export * from './Welcome';

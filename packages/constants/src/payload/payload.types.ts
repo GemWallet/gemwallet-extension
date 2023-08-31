@@ -254,7 +254,7 @@ export const DEFAULT_SUBMIT_TX_BULK_ON_ERROR = 'abort';
 
 export type TransactionErrorHandling = 'abort' | 'continue';
 
-export interface BaseTransactionBulkRequest {
+export interface BaseBulkTransactionsRequest {
   // If set to false, the function will not wait for the transaction hashes to be returned from the XRPL. It makes the
   // execution faster, but the caller will not know the transaction hashes.
   // Default: true
@@ -264,11 +264,11 @@ export interface BaseTransactionBulkRequest {
   onError?: TransactionErrorHandling;
 }
 
-export interface SubmitTransactionsBulkRequest extends BaseTransactionBulkRequest {
+export interface SubmitBulkTransactionsRequest extends BaseBulkTransactionsRequest {
   transactions: TransactionWithID[];
 }
 
-export interface SubmitTransactionsBulkWithKeysRequest extends BaseTransactionBulkRequest {
+export interface SubmitBulkTransactionsWithKeysRequest extends BaseBulkTransactionsRequest {
   // The key is used to guarantee that the transactions are submitted in the same order as they are in the request.
   transactions: Record<number, TransactionWithID>;
 }
@@ -297,7 +297,7 @@ export type RequestPayload =
   | SignTransactionRequest
   | SubmitStorageKeyRequest
   | SubmitTransactionRequest
-  | SubmitTransactionsBulkWithKeysRequest;
+  | SubmitBulkTransactionsWithKeysRequest;
 
 /*
  * Response Payloads
@@ -363,7 +363,7 @@ export type TransactionBulkResponse = {
   error?: string;
 };
 
-export interface SubmitTransactionsBulkResponse
+export interface SubmitBulkTransactionsResponse
   extends BaseResponse<{
     transactions: TransactionBulkResponse[];
   }> {}
@@ -452,7 +452,7 @@ export type ResponsePayload =
   | SignMessageResponse
   | SignMessageResponseDeprecated
   | SubmitTransactionResponse
-  | SubmitTransactionsBulkResponse;
+  | SubmitBulkTransactionsResponse;
 
 /*
  * Internal Messages Payloads

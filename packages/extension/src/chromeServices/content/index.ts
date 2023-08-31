@@ -93,10 +93,10 @@ import {
   SetAccountEventListener,
   SubmitTransactionEventListener,
   SubmitTransactionMessagingResponse,
-  SubmitTransactionsBulkEventListener,
-  RequestSubmitTransactionsBulkMessage,
-  ReceiveSubmitTransactionsBulkContentMessage,
-  SubmitTransactionsBulkMessagingResponse
+  SubmitBulkTransactionsEventListener,
+  RequestSubmitBulkTransactionsMessage,
+  ReceiveSubmitBulkTransactionsContentMessage,
+  SubmitBulkTransactionsMessagingResponse
 } from '@gemwallet/constants';
 
 /**
@@ -914,16 +914,16 @@ setTimeout(() => {
       } else if (type === 'REQUEST_SUBMIT_TRANSACTIONS_BULK/V3') {
         const {
           data: { payload }
-        } = event as SubmitTransactionsBulkEventListener;
+        } = event as SubmitBulkTransactionsEventListener;
         chrome.runtime
-          .sendMessage<RequestSubmitTransactionsBulkMessage>({
+          .sendMessage<RequestSubmitBulkTransactionsMessage>({
             app,
             type,
             payload
           })
           .then(() => {
             const messageListener = (
-              message: ReceiveSubmitTransactionsBulkContentMessage,
+              message: ReceiveSubmitBulkTransactionsContentMessage,
               sender: chrome.runtime.MessageSender
             ) => {
               const { app, type, payload } = message;
@@ -937,7 +937,7 @@ setTimeout(() => {
                       messagedId,
                       result,
                       error
-                    } as SubmitTransactionsBulkMessagingResponse,
+                    } as SubmitBulkTransactionsMessagingResponse,
                     window.location.origin
                   );
                   chrome.runtime.onMessage.removeListener(messageListener);

@@ -1,10 +1,10 @@
 import {
-  SubmitTransactionsBulkResponse,
+  SubmitBulkTransactionsResponse,
   GEM_WALLET,
   ResponseType,
-  RequestSubmitTransactionsBulkMessage,
+  RequestSubmitBulkTransactionsMessage,
   TransactionWithID,
-  SubmitTransactionsBulkRequest
+  SubmitBulkTransactionsRequest
 } from '@gemwallet/constants';
 
 import { deserializeError } from '../helpers/errors';
@@ -12,10 +12,10 @@ import { sendMessageToContentScript } from '../helpers/extensionMessaging';
 
 const MAX_TRANSACTIONS = 50;
 
-export const submitTransactionsBulk = async (
-  payload: SubmitTransactionsBulkRequest
-): Promise<SubmitTransactionsBulkResponse> => {
-  let response: SubmitTransactionsBulkResponse = {
+export const submitBulkTransactions = async (
+  payload: SubmitBulkTransactionsRequest
+): Promise<SubmitBulkTransactionsResponse> => {
+  let response: SubmitBulkTransactionsResponse = {
     type: ResponseType.Reject,
     result: undefined
   };
@@ -25,7 +25,7 @@ export const submitTransactionsBulk = async (
   }
 
   try {
-    const message: RequestSubmitTransactionsBulkMessage = {
+    const message: RequestSubmitBulkTransactionsMessage = {
       app: GEM_WALLET,
       type: 'REQUEST_SUBMIT_TRANSACTIONS_BULK/V3',
       payload: {

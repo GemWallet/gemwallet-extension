@@ -5,7 +5,7 @@ import * as Sentry from '@sentry/react';
 import {
   DEFAULT_SUBMIT_TX_BULK_ON_ERROR,
   GEM_WALLET,
-  ReceiveSubmitTransactionsBulkBackgroundMessage,
+  ReceiveSubmitBulkTransactionsBackgroundMessage,
   ResponseType,
   TransactionBulkResponse,
   TransactionErrorHandling,
@@ -29,13 +29,13 @@ import { StepperView } from './StepperView';
 
 interface Params {
   id: number;
-  // SubmitTransactionsBulk fields
+  // submitBulkTransactions fields
   transactionsMapParam: Record<number, TransactionWithID> | null;
 }
 
-export const SubmitTransactionsBulk: FC = () => {
+export const SubmitBulkTransactions: FC = () => {
   const MAX_TRANSACTIONS_PER_STEP = 20; // For the stepper
-  const CHUNK_SIZE = 5; // For the submitTransactionsBulk calls and the progress bar
+  const CHUNK_SIZE = 5; // For the submitBulkTransactions calls and the progress bar
 
   const [params, setParams] = useState<Params>({
     id: 0,
@@ -51,7 +51,7 @@ export const SubmitTransactionsBulk: FC = () => {
   const [waitForHashes, setWaitForHashes] = useState(true);
   const [submitBulkTransactionsEnabled, setSubmitBulkTransactionsEnabled] =
     useState<boolean>(false);
-  const { submitTransactionsBulk } = useLedger();
+  const { submitBulkTransactions } = useLedger();
   const { networkName } = useNetwork();
   const { estimatedFees, errorFees, difference } = useFees(
     (params.transactionsMapParam ? Object.values(params.transactionsMapParam) : undefined)?.map(
@@ -155,7 +155,7 @@ export const SubmitTransactionsBulk: FC = () => {
     (messagePayload: {
       txResults: TransactionBulkResponse[] | null | undefined;
       error?: Error;
-    }): ReceiveSubmitTransactionsBulkBackgroundMessage => {
+    }): ReceiveSubmitBulkTransactionsBackgroundMessage => {
       const { txResults, error } = messagePayload;
 
       return {
@@ -181,7 +181,7 @@ export const SubmitTransactionsBulk: FC = () => {
     const message = createMessage({
       txResults: null
     });
-    chrome.runtime.sendMessage<ReceiveSubmitTransactionsBulkBackgroundMessage>(message);
+    chrome.runtime.sendMessage<ReceiveSubmitBulkTransactionsBackgroundMessage>(message);
   }, [createMessage]);
 
   const handleConfirm = useCallback(() => {
@@ -206,7 +206,7 @@ export const SubmitTransactionsBulk: FC = () => {
         const chunk = transactions.slice(i, i + CHUNK_SIZE);
 
         try {
-          const response = await submitTransactionsBulk({
+          const response = await submitBulkTransactions({
             transactions: chunk,
             onError,
             waitForHashes
@@ -241,15 +241,15 @@ export const SubmitTransactionsBulk: FC = () => {
         const message = createMessage({
           txResults
         });
-        chrome.runtime.sendMessage<ReceiveSubmitTransactionsBulkBackgroundMessage>(message);
+        chrome.runtime.sendMessage<ReceiveSubmitBulkTransactionsBackgroundMessage>(message);
       })
       .catch((e) => {
         setErrorRequestRejection(e.message);
         setTransaction(TransactionStatus.Rejected);
         const message = createMessage({ txResults: null, error: e });
-        chrome.runtime.sendMessage<ReceiveSubmitTransactionsBulkBackgroundMessage>(message);
+        chrome.runtime.sendMessage<ReceiveSubmitBulkTransactionsBackgroundMessage>(message);
       });
-  }, [params.transactionsMapParam, onError, submitTransactionsBulk, waitForHashes, createMessage]);
+  }, [params.transactionsMapParam, onError, submitBulkTransactions, waitForHashes, createMessage]);
   const { transactionsMapParam } = params;
 
   const allTransactions = transactionsMapParam || {};

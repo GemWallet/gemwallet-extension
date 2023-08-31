@@ -46,8 +46,8 @@ import {
   SignTransactionRequest,
   SubmitTransactionResponse,
   SubmitTransactionRequest,
-  SubmitTransactionsBulkWithKeysRequest,
-  SubmitTransactionsBulkResponse,
+  SubmitBulkTransactionsWithKeysRequest,
+  SubmitBulkTransactionsResponse,
   WebsiteRequest
 } from '../payload/payload.types';
 import {
@@ -264,10 +264,10 @@ export interface RequestSignTransactionMessage {
   payload: SignTransactionRequest;
 }
 
-export interface RequestSubmitTransactionsBulkMessage {
+export interface RequestSubmitBulkTransactionsMessage {
   app: typeof GEM_WALLET;
   type: 'REQUEST_SUBMIT_TRANSACTIONS_BULK/V3';
-  payload: SubmitTransactionsBulkWithKeysRequest;
+  payload: SubmitBulkTransactionsWithKeysRequest;
 }
 
 // Internal
@@ -322,8 +322,8 @@ export type SignMessageMessagingResponseDeprecated = MessagingResponse &
   SignMessageResponseDeprecated;
 export type SignTransactionMessagingResponse = MessagingResponse & SignTransactionResponse;
 export type SubmitTransactionMessagingResponse = MessagingResponse & SubmitTransactionResponse;
-export type SubmitTransactionsBulkMessagingResponse = MessagingResponse &
-  SubmitTransactionsBulkResponse;
+export type SubmitBulkTransactionsMessagingResponse = MessagingResponse &
+  SubmitBulkTransactionsResponse;
 export type IsInstalledMessagingResponse = MessagingResponse & IsInstalledResponse;
 export type SendPaymentMessagingResponse = MessagingResponse & SendPaymentResponse;
 export type SendPaymentMessagingResponseDeprecated = MessagingResponse &
@@ -490,10 +490,10 @@ export interface ReceiveSignTransactionContentMessage {
   payload: SignTransactionMessagingResponse;
 }
 
-export interface ReceiveSubmitTransactionsBulkContentMessage {
+export interface ReceiveSubmitBulkTransactionsContentMessage {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_SUBMIT_TRANSACTIONS_BULK/V3';
-  payload: SubmitTransactionsBulkMessagingResponse;
+  payload: SubmitBulkTransactionsMessagingResponse;
 }
 
 // Internal
@@ -623,8 +623,8 @@ export type ReceiveSignTransactionBackgroundMessage = ReceiveSignTransactionCont
 export type ReceiveSubmitTransactionBackgroundMessage = ReceiveSubmitTransactionContentMessage &
   BackgroundMessagePayload;
 
-export type ReceiveSubmitTransactionsBulkBackgroundMessage =
-  ReceiveSubmitTransactionsBulkContentMessage & BackgroundMessagePayload;
+export type ReceiveSubmitBulkTransactionsBackgroundMessage =
+  ReceiveSubmitBulkTransactionsContentMessage & BackgroundMessagePayload;
 
 export type InternalReceivePasswordBackgroundMessage = InternalReceivePasswordContentMessage &
   BackgroundMessagePayload;
@@ -671,7 +671,7 @@ export type BackgroundMessage =
   | RequestSignMessageMessageDeprecated
   | RequestSignTransactionMessage
   | RequestSubmitTransactionMessage
-  | RequestSubmitTransactionsBulkMessage
+  | RequestSubmitBulkTransactionsMessage
   // Outputted Messages - DO contain ID within the payloads
   | EventLoginBackgroundMessage
   | EventLogoutBackgroundMessage
@@ -701,7 +701,7 @@ export type BackgroundMessage =
   | ReceiveSignMessageBackgroundMessageDeprecated
   | ReceiveSignTransactionBackgroundMessage
   | ReceiveSubmitTransactionBackgroundMessage
-  | ReceiveSubmitTransactionsBulkBackgroundMessage
+  | ReceiveSubmitBulkTransactionsBackgroundMessage
   //
   // Internal message - Messages between the extension and the background script
   //
@@ -736,4 +736,4 @@ export type APIMessages =
   | RequestSignMessageMessage
   | RequestSignTransactionMessage
   | RequestSubmitTransactionMessage
-  | RequestSubmitTransactionsBulkMessage;
+  | RequestSubmitBulkTransactionsMessage;
