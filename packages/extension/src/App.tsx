@@ -66,7 +66,7 @@ const App: FC = () => {
     (payload: unknown) => {
       if (process.env.NODE_ENV === 'production') {
         chrome.runtime
-          .sendMessage(chrome.runtime.id, payload)
+          .sendMessage(payload)
           .then(() => {
             if (extensionWindow?.id) {
               closeExtension({ windowId: Number(extensionWindow.id) });
@@ -83,7 +83,6 @@ const App: FC = () => {
   useBeforeUnload(async () => {
     // Only sends reject message if there is a transaction in progress, which means the user has not confirmed the
     // transaction but has closed the extension
-    // const hasTxInProgress = await loadFromChromeSessionStorage('hasTxInProgress', true);
     if (transactionProgress === TransactionProgressStatuses.IN_PROGRESS) {
       setTransactionProgress(TransactionProgressStatuses.IDLE);
       const urlParams = new URLSearchParams(window.location.search);
@@ -169,18 +168,18 @@ const App: FC = () => {
             payload: defaultPayload
           });
         } else if (search.includes(PARAMETER_SIGN_TRANSACTION)) {
-        handleTransaction({
-          app: GEM_WALLET,
-          type: 'RECEIVE_SIGN_TRANSACTION/V3',
-          payload: defaultPayload
-        });
-      } else if (search.includes(PARAMETER_SUBMIT_TRANSACTIONS_BULK)) {
-        handleTransaction({
-          app: GEM_WALLET,
-          type: 'RECEIVE_SUBMIT_BULK_TRANSACTIONS/V3',
-          payload: defaultPayload
-        });
-      } else if (search.includes(PARAMETER_TRANSACTION_TRUSTLINE)) {
+          handleTransaction({
+            app: GEM_WALLET,
+            type: 'RECEIVE_SIGN_TRANSACTION/V3',
+            payload: defaultPayload
+          });
+        } else if (search.includes(PARAMETER_SUBMIT_TRANSACTIONS_BULK)) {
+          handleTransaction({
+            app: GEM_WALLET,
+            type: 'RECEIVE_SUBMIT_BULK_TRANSACTIONS/V3',
+            payload: defaultPayload
+          });
+        } else if (search.includes(PARAMETER_TRANSACTION_TRUSTLINE)) {
           const urlParams = new URLSearchParams(window.location.search);
           const type =
             urlParams.get('requestMessage') === 'REQUEST_SET_TRUSTLINE/V3'

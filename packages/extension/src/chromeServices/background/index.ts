@@ -58,6 +58,7 @@ import {
   PARAMETER_TRANSACTION_SET_ACCOUNT,
   PARAMETER_SUBMIT_TRANSACTIONS_BULK
 } from '../../constants/parameters';
+import { STORAGE_STATE_TRANSACTION } from '../../constants/storage';
 import { generateKey } from '../../utils/storage';
 import {
   loadFromChromeSessionStorage,
@@ -108,7 +109,7 @@ const sendInMemoryMessage = ({
 
 const handleTransactionRequest = async (payload: any) => {
   // Do not allow multiple transactions at the same time
-  const hasTxInProgress = await loadFromChromeSessionStorage('hasTxInProgress');
+  const hasTxInProgress = await loadFromChromeSessionStorage(STORAGE_STATE_TRANSACTION);
   if (hasTxInProgress) {
     return Promise.resolve();
   }
@@ -121,12 +122,12 @@ const handleTransactionRequest = async (payload: any) => {
     await chrome.windows.remove(currentWindowId);
   }
 
-  saveInChromeSessionStorage('hasTxInProgress', true);
+  saveInChromeSessionStorage(STORAGE_STATE_TRANSACTION, true);
   focusOrCreatePopupWindow(payload);
 };
 
 const handleTransactionResponse = <T>(id: number, payload: any) => {
-  saveInChromeSessionStorage('hasTxInProgress', false);
+  saveInChromeSessionStorage(STORAGE_STATE_TRANSACTION, false);
   sendMessageToTab<T>(id, payload);
 };
 
