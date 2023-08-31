@@ -160,7 +160,7 @@ export const SubmitBulkTransactions: FC = () => {
 
       return {
         app: GEM_WALLET,
-        type: 'RECEIVE_SUBMIT_TRANSACTIONS_BULK/V3',
+        type: 'RECEIVE_SUBMIT_BULK_TRANSACTIONS/V3',
         payload: {
           id: params.id,
           type: ResponseType.Response,

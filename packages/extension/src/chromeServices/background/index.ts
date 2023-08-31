@@ -415,13 +415,13 @@ chrome.runtime.onMessage.addListener(
           result: undefined
         }
       });
-    } else if (type === 'REQUEST_SUBMIT_TRANSACTIONS_BULK/V3') {
+    } else if (type === 'REQUEST_SUBMIT_BULK_TRANSACTIONS/V3') {
       const { payload } = message;
       try {
         sendInMemoryMessage({
           payload,
           parameter: PARAMETER_SUBMIT_TRANSACTIONS_BULK,
-          receivingMessage: 'RECEIVE_SUBMIT_TRANSACTIONS_BULK/V3',
+          receivingMessage: 'RECEIVE_SUBMIT_BULK_TRANSACTIONS/V3',
           sender
         });
       } catch (e) {}
@@ -685,11 +685,11 @@ chrome.runtime.onMessage.addListener(
           error: payload.error
         }
       });
-    } else if (type === 'RECEIVE_SUBMIT_TRANSACTIONS_BULK/V3') {
+    } else if (type === 'RECEIVE_SUBMIT_BULK_TRANSACTIONS/V3') {
       const { payload } = message;
       sendMessageToTab<ReceiveSubmitTransactionContentMessage>(payload.id, {
         app,
-        type: 'RECEIVE_SUBMIT_TRANSACTIONS_BULK/V3',
+        type: 'RECEIVE_SUBMIT_BULK_TRANSACTIONS/V3',
         payload: {
           type: ResponseType.Response,
           result: payload.result,

@@ -911,7 +911,7 @@ setTimeout(() => {
             };
             chrome.runtime.onMessage.addListener(messageListener);
           });
-      } else if (type === 'REQUEST_SUBMIT_TRANSACTIONS_BULK/V3') {
+      } else if (type === 'REQUEST_SUBMIT_BULK_TRANSACTIONS/V3') {
         const {
           data: { payload }
         } = event as SubmitBulkTransactionsEventListener;
@@ -929,7 +929,7 @@ setTimeout(() => {
               const { app, type, payload } = message;
               // We make sure that the message comes from GemWallet
               if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
-                if (type === 'RECEIVE_SUBMIT_TRANSACTIONS_BULK/V3') {
+                if (type === 'RECEIVE_SUBMIT_BULK_TRANSACTIONS/V3') {
                   const { result, error } = payload;
                   window.postMessage(
                     {

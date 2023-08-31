@@ -81,7 +81,7 @@ export type RequestMessage =
   | 'REQUEST_SIGN_MESSAGE/V3'
   | 'REQUEST_SIGN_TRANSACTION/V3'
   | 'REQUEST_SUBMIT_TRANSACTION/V3'
-  | 'REQUEST_SUBMIT_TRANSACTIONS_BULK/V3'
+  | 'REQUEST_SUBMIT_BULK_TRANSACTIONS/V3'
   | 'SEND_PAYMENT';
 
 export type ReceiveMessage =
@@ -109,7 +109,7 @@ export type ReceiveMessage =
   | 'RECEIVE_SIGN_MESSAGE/V3'
   | 'RECEIVE_SIGN_TRANSACTION/V3'
   | 'RECEIVE_SUBMIT_TRANSACTION/V3'
-  | 'RECEIVE_SUBMIT_TRANSACTIONS_BULK/V3';
+  | 'RECEIVE_SUBMIT_BULK_TRANSACTIONS/V3';
 
 export type EventMessage =
   | 'EVENT_NETWORK_CHANGED'
@@ -266,7 +266,7 @@ export interface RequestSignTransactionMessage {
 
 export interface RequestSubmitBulkTransactionsMessage {
   app: typeof GEM_WALLET;
-  type: 'REQUEST_SUBMIT_TRANSACTIONS_BULK/V3';
+  type: 'REQUEST_SUBMIT_BULK_TRANSACTIONS/V3';
   payload: SubmitBulkTransactionsWithKeysRequest;
 }
 
@@ -492,7 +492,7 @@ export interface ReceiveSignTransactionContentMessage {
 
 export interface ReceiveSubmitBulkTransactionsContentMessage {
   app: typeof GEM_WALLET;
-  type: 'RECEIVE_SUBMIT_TRANSACTIONS_BULK/V3';
+  type: 'RECEIVE_SUBMIT_BULK_TRANSACTIONS/V3';
   payload: SubmitBulkTransactionsMessagingResponse;
 }
 

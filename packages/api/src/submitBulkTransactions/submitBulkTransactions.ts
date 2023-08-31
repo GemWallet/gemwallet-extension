@@ -27,7 +27,7 @@ export const submitBulkTransactions = async (
   try {
     const message: RequestSubmitBulkTransactionsMessage = {
       app: GEM_WALLET,
-      type: 'REQUEST_SUBMIT_TRANSACTIONS_BULK/V3',
+      type: 'REQUEST_SUBMIT_BULK_TRANSACTIONS/V3',
       payload: {
         ...payload,
         // Add an index to each transaction so that we can process them in order

@@ -161,7 +161,7 @@ const App: FC = () => {
       } else if (search.includes(PARAMETER_SUBMIT_TRANSACTIONS_BULK)) {
         handleTransaction({
           app: GEM_WALLET,
-          type: 'RECEIVE_SUBMIT_TRANSACTIONS_BULK/V3',
+          type: 'RECEIVE_SUBMIT_BULK_TRANSACTIONS/V3',
           payload: defaultPayload
         });
       } else if (search.includes(PARAMETER_TRANSACTION_TRUSTLINE)) {

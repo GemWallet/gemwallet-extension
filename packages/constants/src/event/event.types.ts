@@ -261,7 +261,7 @@ export interface SignTransactionEventListener extends MessageEvent<MessageEventD
 export interface SubmitBulkTransactionsEventListener extends MessageEvent<MessageEventData> {
   data: {
     app: typeof GEM_WALLET;
-    type: 'REQUEST_SUBMIT_TRANSACTIONS_BULK/V3';
+    type: 'REQUEST_SUBMIT_BULK_TRANSACTIONS/V3';
     source: 'GEM_WALLET_MSG_REQUEST';
     messageId: number;
     payload: SubmitBulkTransactionsWithKeysRequest;
