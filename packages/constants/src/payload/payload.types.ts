@@ -354,7 +354,7 @@ export interface SignTransactionResponse
 
 export type TransactionBulkResponse = {
   // The custom ID of the transaction, if it was set in the request.
-  ID?: string;
+  id?: string;
   // Whether the transaction was accepted by the XRPL network (waitForHashes = false only).
   accepted?: boolean;
   // The hash of the transaction (waitForHashes = true only).

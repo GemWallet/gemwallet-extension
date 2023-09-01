@@ -168,8 +168,8 @@ export const SignTransaction: FC = () => {
                 </Typography>
               </div>
             ) : null}
-            {txParam && txParam.Account ? <DisplayXRPLTransaction tx={txParam} /> : null}
-            {txParam && txParam.Account ? (
+            {txParam?.Account ? <DisplayXRPLTransaction tx={txParam} /> : null}
+            {txParam?.Account ? (
               <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
                 <Typography variant="body1">Raw Transaction:</Typography>
                 <ReactJson

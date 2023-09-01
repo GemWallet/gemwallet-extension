@@ -199,7 +199,7 @@ export const SubmitBulkTransactions: FC = () => {
       // Convert transactions to array. Sort them by their key to ensure order
       const transactions = Object.entries(transactionsRecord)
         .sort(([keyA], [keyB]) => Number(keyA) - Number(keyB))
-        .map(([_, value]) => value as TransactionWithID);
+        .map(([_, value]) => value);
 
       // Divide transactions into chunks of five or less
       for (let i = 0; i < transactions.length; i += CHUNK_SIZE) {
@@ -219,7 +219,7 @@ export const SubmitBulkTransactions: FC = () => {
             return results;
           }
 
-          const totalTransactions = Object.values(params.transactionsMapParam || {}).length;
+          const totalTransactions = Object.values(params.transactionsMapParam ?? {}).length;
           setProgressPercentage(Math.floor((results.length / totalTransactions) * 100));
 
           if (!waitForHashes && i < transactions.length) {
@@ -252,7 +252,7 @@ export const SubmitBulkTransactions: FC = () => {
   }, [params.transactionsMapParam, onError, submitBulkTransactions, waitForHashes, createMessage]);
   const { transactionsMapParam } = params;
 
-  const allTransactions = transactionsMapParam || {};
+  const allTransactions = transactionsMapParam ?? {};
   let transactionsToDisplay: Record<number, TransactionWithID> = {};
   let i = 0;
   for (let key in allTransactions) {
@@ -284,7 +284,7 @@ export const SubmitBulkTransactions: FC = () => {
     <>
       {showRecap ? (
         <RecapView
-          transactionsListParam={Object.values(params.transactionsMapParam || {})}
+          transactionsListParam={Object.values(params.transactionsMapParam ?? {})}
           estimatedFees={estimatedFees}
           errorFees={errorFees}
           hasEnoughFunds={hasEnoughFunds}
@@ -297,7 +297,7 @@ export const SubmitBulkTransactions: FC = () => {
           steps={steps}
           hasEnoughFunds={hasEnoughFunds}
           transactionsToDisplay={transactionsToDisplay ?? {}}
-          totalNumberOfTransactions={Object.values(params.transactionsMapParam || {}).length}
+          totalNumberOfTransactions={Object.values(params.transactionsMapParam ?? {}).length}
           errorRequestRejection={errorRequestRejection}
           handleBack={handleBack}
           handleReject={handleReject}

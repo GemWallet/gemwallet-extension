@@ -554,20 +554,48 @@
     GemWalletApi.isInstalled()
       .then(({ result }) => {
         if (result.isInstalled) {
-          const transactions = Array.from({ length: 50 }, (_, index) => ({
-            ID: String(index + 1).padStart(3, '0'),
-            TransactionType: 'Payment',
-            Destination: 'rhikRdkFw28csKw9z7fVoBjWncz1HSoQij',
-            Amount: '100000',
-            Memos: [
+          const transactions = [
+            ...[
               {
-                Memo: {
-                  MemoData: '54657374206D656D6F',
-                  MemoType: '4465736372697074696F6E'
-                }
+                ID: '001',
+                TransactionType: 'TrustSet',
+                LimitAmount: {
+                  currency: 'ETH',
+                  issuer: 'rnm76Qgz4G9G4gZBJVuXVvkbt7gVD7szey',
+                  value: '10000000'
+                },
+                Memos: [
+                  {
+                    Memo: {
+                      MemoType: '4465736372697074696f6e',
+                      MemoData: '54657374206d656d6f'
+                    }
+                  }
+                ],
+                Fee: '199'
+              },
+              {
+                ID: '002',
+                TransactionType: 'NFTokenMint',
+                URI: '516D6654463665756E47726A57597642666A72614B486D765572354444566D525351424373513252564D71764A72',
+                NFTokenTaxon: 0
               }
-            ]
-          }));
+            ],
+            ...Array.from({ length: 48 }, (_, index) => ({
+              ID: String(index + 1).padStart(3, '3'),
+              TransactionType: 'Payment',
+              Destination: 'rhikRdkFw28csKw9z7fVoBjWncz1HSoQij',
+              Amount: '100000',
+              Memos: [
+                {
+                  Memo: {
+                    MemoData: '54657374206D656D6F',
+                    MemoType: '4465736372697074696F6E'
+                  }
+                }
+              ]
+            }))
+          ];
           GemWalletApi.submitBulkTransactions({
             transactions,
             onError: 'abort',

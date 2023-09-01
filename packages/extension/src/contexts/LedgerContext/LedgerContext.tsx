@@ -151,18 +151,12 @@ const LedgerContext = createContext<LedgerContextType>({
   sendPayment: () => new Promise(() => {}),
   setTrustline: () => new Promise(() => {}),
   signMessage: () => undefined,
-  estimateNetworkFees: () =>
-    new Promise((resolve) => {
-      resolve('0');
-    }),
+  estimateNetworkFees: () => Promise.resolve('0'),
   getNFTs: () =>
     new Promise(() => ({
       account_nfts: []
     })),
-  getTransactions: () =>
-    new Promise((resolve) => {
-      resolve([]);
-    }),
+  getTransactions: () => Promise.resolve([]),
   fundWallet: () => new Promise(() => {}),
   mintNFT: () => new Promise(() => {}),
   createNFTOffer: () => new Promise(() => {}),

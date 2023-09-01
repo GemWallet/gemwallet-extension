@@ -75,12 +75,13 @@ export const RecapView: React.FC<RecapProps> = ({
         </Paper>
         <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
           <Typography variant="body1">Types of transactions:</Typography>
-          {Object.entries(getTransactionCountsByType() || {}).map(([type, count]) => (
+          {Object.entries(getTransactionCountsByType() ?? {}).map(([type, count]) => (
             <Typography
               variant="body2"
               style={{
                 wordBreak: 'break-word'
               }}
+              key={type}
             >
               {type}: {count}
             </Typography>

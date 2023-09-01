@@ -165,7 +165,7 @@ export const StepperView: FC<StepperViewProps> = ({
           // We have an NFTOffer ID, we need to resolve the NFTOffer first, get the associated NFTokenID, then we can
           // resolve the NFT as usual
           const NFTOfferID =
-            (transactionsToDisplay[key] as NFTokenAcceptOffer).NFTokenSellOffer ||
+            (transactionsToDisplay[key] as NFTokenAcceptOffer).NFTokenSellOffer ??
             (transactionsToDisplay[key] as NFTokenAcceptOffer).NFTokenBuyOffer;
           if (!NFTOfferID) continue;
           resolveNFTDataFromNFTOfferID(NFTOfferID, Number(key));
@@ -175,7 +175,9 @@ export const StepperView: FC<StepperViewProps> = ({
         if (transactionsToDisplay[key].TransactionType === 'NFTokenCancelOffer') {
           // Same as above, but we can have multiple NFTOffers
           const NFTOfferIDs = (transactionsToDisplay[key] as NFTokenCancelOffer).NFTokenOffers;
-          NFTOfferIDs.map((NFTOfferID) => resolveNFTDataFromNFTOfferID(NFTOfferID, Number(key)));
+          NFTOfferIDs.forEach((NFTOfferID) => {
+            resolveNFTDataFromNFTOfferID(NFTOfferID, Number(key));
+          });
         }
       }
     }

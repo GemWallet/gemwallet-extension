@@ -1,7 +1,7 @@
 import { Client } from 'xrpl';
 
 export const connectToLedger = async (server: string): Promise<Client> => {
-  let client = new Client(server);
+  const client = new Client(server);
   try {
     await client.connect();
   } catch (e) {
