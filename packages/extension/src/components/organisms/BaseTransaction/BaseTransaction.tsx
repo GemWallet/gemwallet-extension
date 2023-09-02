@@ -38,6 +38,7 @@ type FeeProps = {
   fee: number | null;
   errorFees: string | undefined;
   estimatedFees: string;
+  isBulk?: boolean;
 };
 
 export const BaseTransaction: FC<BaseTransactionProps> = ({
@@ -80,16 +81,22 @@ export const BaseTransaction: FC<BaseTransactionProps> = ({
   </>
 );
 
-export const Fee: FC<FeeProps> = ({ errorFees, estimatedFees, fee }) => (
+export const Fee: FC<FeeProps> = ({ errorFees, estimatedFees, fee, isBulk }) => (
   <>
     <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
       <Typography variant="body1" style={{ display: 'flex', alignItems: 'center' }}>
-        <Tooltip title="These are the fees to make the transaction over the network">
+        <Tooltip
+          title={
+            isBulk
+              ? 'These are the total fees to submit all the transactions over the network'
+              : 'These are the fees to submit the transaction over the network'
+          }
+        >
           <IconButton size="small">
             <ErrorIcon />
           </IconButton>
         </Tooltip>
-        Network fees:
+        {isBulk ? `Total network fees` : `Network fees`}:
       </Typography>
       <Typography variant="body2" gutterBottom align="right">
         {errorFees ? (

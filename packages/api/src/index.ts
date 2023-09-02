@@ -17,6 +17,7 @@ export * from './setTrustline';
 export * from './signMessage';
 export * from './signTransaction';
 export * from './submitTransaction';
+export * from './submitBulkTransactions';
 
 export type { Amount } from 'xrpl/dist/npm/models/common';
 export type {
@@ -43,7 +44,8 @@ export type {
   SetTrustlineRequest,
   SignMessageRequest,
   SignTransactionRequest,
-  SubmitTransactionRequest
+  SubmitTransactionRequest,
+  SubmitBulkTransactionsRequest
 } from '@gemwallet/constants';
 
 // API response types
@@ -65,5 +67,6 @@ export type {
   SetTrustlineResponse,
   SignMessageResponse,
   SignTransactionResponse,
-  SubmitTransactionResponse
+  SubmitTransactionResponse,
+  SubmitBulkTransactionsResponse
 } from '@gemwallet/constants';

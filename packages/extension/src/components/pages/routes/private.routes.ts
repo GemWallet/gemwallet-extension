@@ -17,6 +17,7 @@ import {
   LIST_WALLETS_PATH,
   MINT_NFT_PATH,
   NFT_VIEWER_PATH,
+  PERMISSIONS_PATH,
   RECEIVE_PATH,
   SEND_PATH,
   SETTINGS_PATH,
@@ -27,6 +28,7 @@ import {
   SIGN_MESSAGE_PATH,
   SIGN_TRANSACTION_PATH,
   SUBMIT_TRANSACTION_PATH,
+  SUBMIT_TRANSACTIONS_BULK_PATH,
   TRANSACTION_PATH,
   TRUSTED_APPS_PATH
 } from '../../../constants';
@@ -46,6 +48,7 @@ import { Home } from '../Home';
 import { ListWallets } from '../ListWallets';
 import { MintNFT } from '../MintNFT';
 import { NFTViewer } from '../NFTViewer';
+import { Permissions } from '../Permissions';
 import { ReceivePayment } from '../ReceivePayment';
 import { SendPayment } from '../SendPayment';
 import { SetAccount } from '../SetAccount';
@@ -55,6 +58,7 @@ import { ShareNFT } from '../ShareNFT';
 import { SharePublicKey } from '../SharePublicKey';
 import { SignMessage } from '../SignMessage';
 import { SignTransaction } from '../SignTransaction';
+import { SubmitBulkTransactions } from '../SubmitBulkTransactions';
 import { SubmitTransaction } from '../SubmitTransaction';
 import { Transaction } from '../Transaction';
 import { TrustedApps } from '../TrustedApps';
@@ -80,6 +84,7 @@ export const privateRoutes: PrivateRouteConfig[] = [
   { path: LIST_WALLETS_PATH, element: ListWallets },
   { path: MINT_NFT_PATH, element: MintNFT },
   { path: NFT_VIEWER_PATH, element: NFTViewer },
+  { path: PERMISSIONS_PATH, element: Permissions },
   { path: RECEIVE_PATH, element: ReceivePayment },
   { path: SEND_PATH, element: SendPayment },
   { path: SET_ACCOUNT_PATH, element: SetAccount },
@@ -91,6 +96,7 @@ export const privateRoutes: PrivateRouteConfig[] = [
   { path: SIGN_MESSAGE_PATH, element: SignMessage },
   { path: SIGN_TRANSACTION_PATH, element: SignTransaction },
   { path: SUBMIT_TRANSACTION_PATH, element: SubmitTransaction },
+  { path: SUBMIT_TRANSACTIONS_BULK_PATH, element: SubmitBulkTransactions },
   { path: TRANSACTION_PATH, element: Transaction },
   { path: TRUSTED_APPS_PATH, element: TrustedApps }
 ];

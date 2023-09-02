@@ -244,6 +244,39 @@ export interface SignTransactionRequest {
   transaction: Transaction;
 }
 
+export type TransactionWithID = Transaction & {
+  // Optional ID to identify the transaction in the response, after it has been submitted.
+  // This id is only used as an indicator in the response, and is not used to order transactions.
+  ID?: string;
+};
+
+export const DEFAULT_SUBMIT_TX_BULK_ON_ERROR = 'abort';
+
+export type TransactionErrorHandling = 'abort' | 'continue';
+
+export interface BaseBulkTransactionsRequest {
+  // If set to false, the function will not wait for the transaction hashes to be returned from the XRPL. It makes the
+  // execution faster, but the caller will not know the transaction hashes.
+  // Default: true
+  waitForHashes?: boolean;
+  // If set to 'continue', the remaining transactions will be submitted even if one of them fails.
+  // Default: 'abort'
+  onError?: TransactionErrorHandling;
+}
+
+export interface SubmitBulkTransactionsRequest extends BaseBulkTransactionsRequest {
+  transactions: TransactionWithID[];
+}
+
+export interface SubmitBulkTransactionsWithKeysRequest extends BaseBulkTransactionsRequest {
+  // The key is used to guarantee that the transactions are submitted in the same order as they are in the request.
+  transactions: Record<number, TransactionWithID>;
+}
+
+export interface SubmitStorageKeyRequest {
+  storageKey: string;
+}
+
 export type RequestPayload =
   | AcceptNFTOfferRequest
   | BurnNFTRequest
@@ -262,7 +295,9 @@ export type RequestPayload =
   | SetTrustlineRequestDeprecated
   | SignMessageRequest
   | SignTransactionRequest
-  | SubmitTransactionRequest;
+  | SubmitStorageKeyRequest
+  | SubmitTransactionRequest
+  | SubmitBulkTransactionsWithKeysRequest;
 
 /*
  * Response Payloads
@@ -315,6 +350,22 @@ export interface SubmitTransactionResponse
 export interface SignTransactionResponse
   extends BaseResponse<{
     signature: string | null | undefined;
+  }> {}
+
+export type TransactionBulkResponse = {
+  // The custom ID of the transaction, if it was set in the request.
+  id?: string;
+  // Whether the transaction was accepted by the XRPL network (waitForHashes = false only).
+  accepted?: boolean;
+  // The hash of the transaction (waitForHashes = true only).
+  hash?: string;
+  // The error message, if the transaction was rejected.
+  error?: string;
+};
+
+export interface SubmitBulkTransactionsResponse
+  extends BaseResponse<{
+    transactions: TransactionBulkResponse[];
   }> {}
 
 export interface IsInstalledResponse {
@@ -400,7 +451,8 @@ export type ResponsePayload =
   | SetTrustlineResponseDeprecated
   | SignMessageResponse
   | SignMessageResponseDeprecated
-  | SubmitTransactionResponse;
+  | SubmitTransactionResponse
+  | SubmitBulkTransactionsResponse;
 
 /*
  * Internal Messages Payloads

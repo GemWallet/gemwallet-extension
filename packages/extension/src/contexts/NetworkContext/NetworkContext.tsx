@@ -13,6 +13,7 @@ import { NetworkData } from '@gemwallet/constants/src/network/network.types';
 
 import { OfflineBanner } from '../../components/atoms/OfflineBanner';
 import { loadNetwork, removeNetwork, saveCustomNetwork, saveNetwork } from '../../utils';
+import { connectToLedger } from '../LedgerContext/utils/connectToLedger';
 
 const RECOGNIZED_CONNECTION_ERRORS = ['Connection failed.', 'Could not establish connection.'];
 const DEFAULT_NETWORK_NAME = 'Loading...';
@@ -54,12 +55,10 @@ const NetworkProvider: FC = ({ children }) => {
     const connectToNetwork = async () => {
       const network = loadNetwork();
       setNetworkName(network.name);
-      const ws = new Client(network.server);
       try {
-        await ws.connect();
+        const ws = await connectToLedger(network.server);
         setClient(ws);
       } catch (err) {
-        await ws?.disconnect();
         setClient(null);
         setIsConnectionFailed(true);
         // If connect fails, retry up to maxRetries times
@@ -95,8 +94,7 @@ const NetworkProvider: FC = ({ children }) => {
   const reconnectToNetwork = useCallback(async () => {
     try {
       const loadedNetwork = loadNetwork();
-      const ws = new Client(loadedNetwork.server);
-      await ws.connect();
+      const ws = await connectToLedger(loadedNetwork.server);
       setNetworkName(loadedNetwork.name);
       setClient(ws);
       setIsConnectionFailed(false);
@@ -115,8 +113,7 @@ const NetworkProvider: FC = ({ children }) => {
       try {
         await client?.disconnect();
         // If a server URL is provided, use it. Otherwise, use the pre-defined server for the given network
-        const ws = new Client(customNetworkServer || NETWORK[network].server);
-        await ws.connect();
+        const ws = await connectToLedger(customNetworkServer || NETWORK[network].server);
         setNetworkName(customNetworkName || network);
         saveNetwork(network, customNetworkName, customNetworkServer);
         setClient(ws);

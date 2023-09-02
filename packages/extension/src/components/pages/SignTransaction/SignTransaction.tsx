@@ -134,6 +134,12 @@ export const SignTransaction: FC = () => {
 
   return (
     <>
+      <style>{`
+        .react-json-view .string-value {
+          white-space: pre-wrap; /* allow text to break onto the next line */
+          word-break: break-all; /* break long strings */
+        }
+      `}</style>
       {transactionStatusComponent ? (
         <div>{transactionStatusComponent}</div>
       ) : (
@@ -162,8 +168,8 @@ export const SignTransaction: FC = () => {
                 </Typography>
               </div>
             ) : null}
-            {txParam ? <DisplayXRPLTransaction tx={txParam} /> : null}
-            {txParam ? (
+            {txParam?.Account ? <DisplayXRPLTransaction tx={txParam} /> : null}
+            {txParam?.Account ? (
               <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
                 <Typography variant="body1">Raw Transaction:</Typography>
                 <ReactJson

@@ -5,6 +5,9 @@ import { sign } from 'ripple-keypairs';
 import {
   AccountDelete,
   AccountSet,
+  LedgerEntryRequest,
+  LedgerEntryResponse,
+  NFTInfoRequest,
   NFTokenAcceptOffer,
   NFTokenBurn,
   NFTokenCancelOffer,
@@ -13,13 +16,16 @@ import {
   OfferCancel,
   OfferCreate,
   Payment,
+  SubmitResponse,
   Transaction,
   TransactionMetadata,
   TrustSet,
+  TxResponse,
   validate,
   Wallet
 } from 'xrpl';
 import { AccountInfoResponse } from 'xrpl/dist/npm/models/methods/accountInfo';
+import { NFTInfoResponse } from 'xrpl/dist/npm/models/methods/nftInfo';
 import { BaseTransaction } from 'xrpl/dist/npm/models/transactions/common';
 
 import {
@@ -34,13 +40,18 @@ import {
   CreateOfferRequest,
   GetNFTRequest,
   MintNFTRequest,
+  Network,
+  NetworkServer,
   NFTData,
   NFTokenIDResponse,
   SendPaymentRequest,
   SetAccountRequest,
   SetTrustlineRequest,
   SignTransactionRequest,
-  SubmitTransactionRequest
+  SubmitTransactionRequest,
+  SubmitBulkTransactionsRequest,
+  TransactionBulkResponse,
+  TransactionWithID
 } from '@gemwallet/constants';
 
 import { AccountTransaction, WalletLedger } from '../../types';
@@ -49,6 +60,7 @@ import { toUIError } from '../../utils/errors';
 import { resolveNFTData } from '../../utils/NFTDataResolver';
 import { useNetwork } from '../NetworkContext';
 import { useWallet } from '../WalletContext';
+import { connectToLedger } from './utils/connectToLedger';
 
 interface FundWalletResponse {
   wallet: Wallet;
@@ -99,6 +111,11 @@ interface NFTImageRequest {
   NFT: AccountNFToken;
 }
 
+interface SubmitBulkTransactionsResponse {
+  txResults: TransactionBulkResponse[];
+  hasError?: boolean;
+}
+
 export const LEDGER_CONNECTION_ERROR = 'You need to be connected to a ledger to make a transaction';
 
 export interface LedgerContextType {
@@ -120,27 +137,26 @@ export interface LedgerContextType {
   cancelOffer: (payload: CancelOfferRequest) => Promise<CancelOfferResponse>;
   signTransaction: (payload: SignTransactionRequest) => Promise<SignTransactionResponse>;
   submitTransaction: (payload: SubmitTransactionRequest) => Promise<SubmitTransactionResponse>;
+  submitBulkTransactions: (
+    payload: SubmitBulkTransactionsRequest
+  ) => Promise<SubmitBulkTransactionsResponse>;
   getAccountInfo: (accountId?: string) => Promise<AccountInfoResponse>;
   getNFTData: (payload: NFTImageRequest) => Promise<NFTData>;
   deleteAccount: (destinationAddress: string) => Promise<DeleteAccountResponse>;
+  getNFTInfo: (NFTokenID: string, network?: string) => Promise<NFTInfoResponse>;
+  getLedgerEntry: (ID: string) => Promise<LedgerEntryResponse>;
 }
 
 const LedgerContext = createContext<LedgerContextType>({
   sendPayment: () => new Promise(() => {}),
   setTrustline: () => new Promise(() => {}),
   signMessage: () => undefined,
-  estimateNetworkFees: () =>
-    new Promise((resolve) => {
-      resolve('0');
-    }),
+  estimateNetworkFees: () => Promise.resolve('0'),
   getNFTs: () =>
     new Promise(() => ({
       account_nfts: []
     })),
-  getTransactions: () =>
-    new Promise((resolve) => {
-      resolve([]);
-    }),
+  getTransactions: () => Promise.resolve([]),
   fundWallet: () => new Promise(() => {}),
   mintNFT: () => new Promise(() => {}),
   createNFTOffer: () => new Promise(() => {}),
@@ -152,9 +168,12 @@ const LedgerContext = createContext<LedgerContextType>({
   cancelOffer: () => new Promise(() => {}),
   signTransaction: () => new Promise(() => {}),
   submitTransaction: () => new Promise(() => {}),
+  submitBulkTransactions: () => new Promise(() => {}),
   getAccountInfo: () => new Promise(() => {}),
   getNFTData: () => new Promise(() => {}),
-  deleteAccount: () => new Promise(() => {})
+  deleteAccount: () => new Promise(() => {}),
+  getNFTInfo: () => new Promise(() => {}),
+  getLedgerEntry: () => new Promise(() => {})
 });
 
 const LedgerProvider: FC = ({ children }) => {
@@ -783,6 +802,88 @@ const LedgerProvider: FC = ({ children }) => {
     [processTransaction]
   );
 
+  const submitBulkTransactions = useCallback(
+    async (payload: SubmitBulkTransactionsRequest) => {
+      const wallet = getCurrentWallet();
+      if (!client) {
+        throw new Error('You need to be connected to a ledger');
+      }
+      if (!wallet) {
+        throw new Error('You need to have a wallet connected');
+      }
+
+      const processTransaction = async (txWithID: TransactionWithID) => {
+        const { ID, ...pl } = txWithID;
+
+        if (!pl.Account || txWithID.Account === '') {
+          pl.Account = wallet.publicAddress;
+        }
+
+        try {
+          // Validate the transaction
+          validate(pl as unknown as Record<string, unknown>);
+          // Prepare the transaction
+          const prepared: Transaction = await client.autofill(pl);
+          // Sign the transaction
+          const signed = wallet.wallet.sign(prepared);
+          // Submit the signed blob based on the mode
+          const tx = payload.waitForHashes
+            ? await client.submitAndWait(signed.tx_blob)
+            : await client.submit(signed.tx_blob);
+
+          if (!payload.waitForHashes) {
+            // Throttle the requests
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+          }
+
+          // Check transaction result
+          if (!payload.waitForHashes && !(tx as SubmitResponse).result.accepted) {
+            throw new Error("Couldn't submit the transaction");
+          }
+
+          if (
+            payload.waitForHashes &&
+            (!(tx as TxResponse).result.hash ||
+              ((tx as TxResponse).result.meta! as TransactionMetadata).TransactionResult !==
+                'tesSUCCESS')
+          ) {
+            throw new Error(
+              "Couldn't submit the signed transaction but the transaction was successful"
+            );
+          }
+
+          return {
+            id: ID,
+            hash: payload.waitForHashes ? (tx as TxResponse).result.hash : undefined,
+            accepted: !payload.waitForHashes ? true : undefined
+          };
+        } catch (e) {
+          Sentry.captureException(e);
+          return {
+            id: ID,
+            error: `Error while processing the transaction: ${JSON.stringify(e)}`
+          };
+        }
+      };
+
+      const { onError, transactions } = payload;
+      const results: TransactionBulkResponse[] = [];
+      for (const tx of transactions) {
+        const result = await processTransaction(tx);
+        results.push(result);
+
+        if (result.error && onError === 'abort') {
+          break;
+        }
+      }
+
+      const hasError = results.some((r) => r.error);
+
+      return { txResults: results, hasError };
+    },
+    [client, getCurrentWallet]
+  );
+
   const getAccountInfo = useCallback(
     (accountId?: string): Promise<AccountInfoResponse> => {
       const wallet = getCurrentWallet();
@@ -806,6 +907,58 @@ const LedgerProvider: FC = ({ children }) => {
       }
     },
     [client, getCurrentWallet]
+  );
+
+  const getNFTInfo = useCallback(
+    async (NFTokenID: string, network?: string): Promise<NFTInfoResponse> => {
+      if (!client) throw new Error('You need to be connected to a ledger');
+
+      try {
+        if (network === Network.MAINNET) {
+          // Connect to Clio server for mainnet
+          let clioClient;
+          try {
+            clioClient = await connectToLedger(NetworkServer.MAINNET_S1);
+          } catch {
+            clioClient = await connectToLedger(NetworkServer.MAINNET_S2).catch(() => {
+              throw new Error("Couldn't connect to a Clio server");
+            });
+          }
+          return clioClient.request({
+            command: 'nft_info',
+            nft_id: NFTokenID
+          } as NFTInfoRequest);
+        }
+
+        // Fallback, will probably fail since it's probably not a Clio server
+        return client.request({
+          command: 'nft_info',
+          nft_id: NFTokenID
+        } as NFTInfoRequest);
+      } catch (e) {
+        Sentry.captureException(e);
+        throw e;
+      }
+    },
+    [client]
+  );
+
+  const getLedgerEntry = useCallback(
+    async (ID: string): Promise<LedgerEntryResponse> => {
+      if (!client) throw new Error('You need to be connected to a ledger');
+
+      try {
+        return client.request({
+          command: 'ledger_entry',
+          index: ID,
+          ledger_index: 'validated'
+        } as LedgerEntryRequest);
+      } catch (e) {
+        Sentry.captureException(e);
+        throw e;
+      }
+    },
+    [client]
   );
 
   const buildBaseTransaction = (
@@ -913,9 +1066,12 @@ const LedgerProvider: FC = ({ children }) => {
     cancelOffer,
     signTransaction,
     submitTransaction,
+    submitBulkTransactions,
     getAccountInfo,
     getNFTData,
-    deleteAccount
+    deleteAccount,
+    getNFTInfo,
+    getLedgerEntry
   };
 
   return <LedgerContext.Provider value={value}>{children}</LedgerContext.Provider>;

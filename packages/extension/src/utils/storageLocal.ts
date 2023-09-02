@@ -1,5 +1,5 @@
 /*
- * Manages localStorage data
+ * Manages the storage in localStorage
  */
 
 export const saveData = (key: string, value: string) => {

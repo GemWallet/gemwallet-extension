@@ -23,21 +23,17 @@ export const loadFromChromeSessionStorage = (
   deleteAfterLoad: boolean = false
 ): Promise<any> => {
   return new Promise((resolve, reject) => {
-    if (process.env.NODE_ENV === 'production') {
-      chrome.storage.session.get(key, (result) => {
-        if (chrome.runtime.lastError) {
-          reject(chrome.runtime.lastError);
-        } else {
-          const data = result[key];
-          if (deleteAfterLoad) {
-            deleteFromChromeSessionStorage(key);
-          }
-          resolve(data);
+    chrome.storage.session.get(key, (result) => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError);
+      } else {
+        const data = result[key];
+        if (deleteAfterLoad) {
+          deleteFromChromeSessionStorage(key);
         }
-      });
-    } else {
-      resolve(null);
-    }
+        resolve(data);
+      }
+    });
   });
 };
 

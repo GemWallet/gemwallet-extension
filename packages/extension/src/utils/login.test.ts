@@ -1,21 +1,21 @@
 import { STORAGE_REMEMBER_SESSION } from '../constants';
 import { loadRememberSessionState, saveRememberSessionState } from './login';
-import { saveInChromeStorage, loadFromChromeStorage } from './storageChrome';
+import { saveInChromeLocalStorage, loadFromChromeLocalStorage } from './storageChromeLocal';
 
-jest.mock('./storageChrome', () => ({
-  saveInChromeStorage: jest.fn(),
-  loadFromChromeStorage: jest.fn()
+jest.mock('./storageChromeLocal', () => ({
+  saveInChromeLocalStorage: jest.fn(),
+  loadFromChromeLocalStorage: jest.fn()
 }));
 
 describe('saveRememberSessionState', () => {
   beforeEach(() => {
-    saveInChromeStorage.mockClear();
+    saveInChromeLocalStorage.mockClear();
   });
 
   test('should save the remember session state to chrome storage', async () => {
     const state = true;
     saveRememberSessionState(state);
-    expect(saveInChromeStorage).toHaveBeenCalledWith(
+    expect(saveInChromeLocalStorage).toHaveBeenCalledWith(
       STORAGE_REMEMBER_SESSION,
       JSON.stringify(state)
     );
@@ -24,28 +24,26 @@ describe('saveRememberSessionState', () => {
 
 describe('loadRememberSessionState', () => {
   beforeEach(() => {
-    loadFromChromeStorage.mockClear();
+    loadFromChromeLocalStorage.mockClear();
   });
 
   test('should load the remember session state from chrome storage', async () => {
     const state = true;
-    (loadFromChromeStorage as jest.Mock).mockResolvedValue({
-      [STORAGE_REMEMBER_SESSION]: JSON.stringify(state)
-    });
+    (loadFromChromeLocalStorage as jest.Mock).mockResolvedValue(JSON.stringify(state));
 
     const loadedState = await loadRememberSessionState();
     expect(loadedState).toEqual(state);
   });
 
   test('should return false if no state is found in chrome storage', async () => {
-    (loadFromChromeStorage as jest.Mock).mockResolvedValue({});
+    (loadFromChromeLocalStorage as jest.Mock).mockResolvedValue({});
 
     const loadedState = await loadRememberSessionState();
     expect(loadedState).toEqual(false);
   });
 
   test('should return false if an error occurs while loading the state', async () => {
-    (loadFromChromeStorage as jest.Mock).mockRejectedValue(
+    (loadFromChromeLocalStorage as jest.Mock).mockRejectedValue(
       new Error('Error loading state from chrome storage')
     );
 

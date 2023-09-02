@@ -190,21 +190,23 @@ export const CancelNFTOffer: FC = () => {
               </Typography>
             </div>
           ) : null}
-          <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-            <Typography variant="body1">Offer IDs:</Typography>
-            {offers.map((offer, index) => (
-              <div key={index} style={{ marginBottom: index === offer.length - 1 ? 0 : '8px' }}>
-                <Typography
-                  variant="body2"
-                  style={{
-                    wordBreak: 'break-word'
-                  }}
-                >
-                  {offer}
-                </Typography>
-              </div>
-            ))}
-          </Paper>
+          {offers ? (
+            <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
+              <Typography variant="body1">Offer IDs:</Typography>
+              {offers.map((offer, index) => (
+                <div key={index} style={{ marginBottom: index === offer.length - 1 ? 0 : '8px' }}>
+                  <Typography
+                    variant="body2"
+                    style={{
+                      wordBreak: 'break-word'
+                    }}
+                  >
+                    {offer}
+                  </Typography>
+                </div>
+              ))}
+            </Paper>
+          ) : null}
           <div style={{ marginBottom: '40px' }}>
             <BaseTransaction
               fee={fee ? Number(fee) : null}

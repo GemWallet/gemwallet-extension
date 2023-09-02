@@ -1,6 +1,6 @@
 import { FC } from 'react';
 
-import { Button, Container, Typography } from '@mui/material';
+import { Button, Container, LinearProgress, Typography } from '@mui/material';
 import Lottie from 'lottie-react';
 
 import alert from '../../../assets/alert.json';
@@ -14,6 +14,8 @@ export interface AsyncTransactionProps {
   title: string;
   subtitle: React.ReactNode;
   transaction: TransactionStatus;
+  progressPercentage?: number;
+  isBulk?: boolean;
   onClick?: () => void;
 }
 
@@ -27,6 +29,8 @@ export const AsyncTransaction: FC<AsyncTransactionProps> = ({
   title,
   subtitle,
   transaction,
+  progressPercentage,
+  isBulk,
   onClick
 }) => {
   const { window, closeExtension } = useBrowser();
@@ -85,6 +89,14 @@ export const AsyncTransaction: FC<AsyncTransactionProps> = ({
         >
           {subtitle}
         </Typography>
+        {transaction === TransactionStatus.Pending && isBulk ? (
+          <div style={{ width: '100%', marginTop: '20px' }}>
+            <LinearProgress variant="determinate" value={progressPercentage ?? 0} />
+            <Typography align="center" variant="body2">
+              Progress: {progressPercentage ?? 0}%
+            </Typography>
+          </div>
+        ) : null}
       </div>
       <Button
         fullWidth

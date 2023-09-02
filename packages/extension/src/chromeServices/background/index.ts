@@ -33,7 +33,9 @@ import {
   ReceiveSignMessageContentMessage,
   ReceiveSignTransactionContentMessage,
   ReceiveSubmitTransactionContentMessage,
-  ResponseType
+  ResponseType,
+  RequestPayload,
+  ReceiveMessage
 } from '@gemwallet/constants';
 
 import {
@@ -52,9 +54,12 @@ import {
   PARAMETER_TRANSACTION_CREATE_OFFER,
   PARAMETER_TRANSACTION_MINT_NFT,
   PARAMETER_TRANSACTION_PAYMENT,
+  PARAMETER_TRANSACTION_TRUSTLINE,
   PARAMETER_TRANSACTION_SET_ACCOUNT,
-  PARAMETER_TRANSACTION_TRUSTLINE
+  PARAMETER_SUBMIT_TRANSACTIONS_BULK
 } from '../../constants/parameters';
+import { generateKey } from '../../utils/storage';
+import { saveInChromeSessionStorage } from '../../utils/storageChromeSession';
 import { focusOrCreatePopupWindow } from './utils/focusOrCreatePopupWindow';
 import { createOffscreen } from './utils/offscreen';
 import { Session } from './utils/session';
@@ -67,6 +72,36 @@ chrome.runtime.onStartup.addListener(createOffscreen);
 chrome.runtime.onMessage.addListener((e) => {}); // keepAlive
 
 const session = Session.getInstance();
+
+// Used to send a message to the view through the chrome.storage.local memory.
+// Useful when the data to send is big.
+const sendInMemoryMessage = ({
+  payload,
+  parameter,
+  receivingMessage,
+  sender
+}: {
+  payload: RequestPayload;
+  parameter: string;
+  receivingMessage: ReceiveMessage;
+  sender: chrome.runtime.MessageSender;
+}) => {
+  const key = generateKey();
+  saveInChromeSessionStorage(key, JSON.stringify(payload)).then((r) =>
+    focusOrCreatePopupWindow({
+      payload: {
+        storageKey: key
+      },
+      sender,
+      parameter,
+      receivingMessage,
+      errorPayload: {
+        type: ResponseType.Reject,
+        result: undefined
+      }
+    })
+  );
+};
 
 /*
  * Keep only one listener for easier debugging
@@ -380,6 +415,16 @@ chrome.runtime.onMessage.addListener(
           result: undefined
         }
       });
+    } else if (type === 'REQUEST_SUBMIT_BULK_TRANSACTIONS/V3') {
+      const { payload } = message;
+      try {
+        sendInMemoryMessage({
+          payload,
+          parameter: PARAMETER_SUBMIT_TRANSACTIONS_BULK,
+          receivingMessage: 'RECEIVE_SUBMIT_BULK_TRANSACTIONS/V3',
+          sender
+        });
+      } catch (e) {}
       /*
        * Receive messages
        */
@@ -634,6 +679,17 @@ chrome.runtime.onMessage.addListener(
       sendMessageToTab<ReceiveSignTransactionContentMessage>(payload.id, {
         app,
         type: 'RECEIVE_SIGN_TRANSACTION/V3',
+        payload: {
+          type: ResponseType.Response,
+          result: payload.result,
+          error: payload.error
+        }
+      });
+    } else if (type === 'RECEIVE_SUBMIT_BULK_TRANSACTIONS/V3') {
+      const { payload } = message;
+      sendMessageToTab<ReceiveSubmitTransactionContentMessage>(payload.id, {
+        app,
+        type: 'RECEIVE_SUBMIT_BULK_TRANSACTIONS/V3',
         payload: {
           type: ResponseType.Response,
           result: payload.result,

@@ -182,7 +182,7 @@ export const DisplayXRPLTransaction: FC<XRPLTxProps> = ({ tx }) => {
       }
 
       return (
-        <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
+        <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }} key={key}>
           <Typography variant="body1">{key}:</Typography>
           <Typography variant="body2">
             <pre style={{ margin: 0 }}>{displayValue}</pre>

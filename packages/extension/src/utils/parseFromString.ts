@@ -16,6 +16,7 @@ import {
   PaymentFlags,
   SetAccountFlags,
   Signer,
+  TransactionWithID,
   TrustSetFlags
 } from '@gemwallet/constants';
 
@@ -378,4 +379,18 @@ export const parseTransactionParam = (str: string | null): Transaction | null =>
   }
 
   return null;
+};
+
+export const parseTransactionsBulkMap = (
+  json: object | null
+): Record<number, TransactionWithID> | null => {
+  if (!json) {
+    return null;
+  }
+
+  try {
+    return json as Record<number, TransactionWithID>;
+  } catch (error) {
+    return null;
+  }
 };

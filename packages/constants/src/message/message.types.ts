@@ -46,6 +46,8 @@ import {
   SignTransactionRequest,
   SubmitTransactionResponse,
   SubmitTransactionRequest,
+  SubmitBulkTransactionsWithKeysRequest,
+  SubmitBulkTransactionsResponse,
   WebsiteRequest
 } from '../payload/payload.types';
 import {
@@ -79,6 +81,7 @@ export type RequestMessage =
   | 'REQUEST_SIGN_MESSAGE/V3'
   | 'REQUEST_SIGN_TRANSACTION/V3'
   | 'REQUEST_SUBMIT_TRANSACTION/V3'
+  | 'REQUEST_SUBMIT_BULK_TRANSACTIONS/V3'
   | 'SEND_PAYMENT';
 
 export type ReceiveMessage =
@@ -105,7 +108,8 @@ export type ReceiveMessage =
   | 'RECEIVE_SIGN_MESSAGE'
   | 'RECEIVE_SIGN_MESSAGE/V3'
   | 'RECEIVE_SIGN_TRANSACTION/V3'
-  | 'RECEIVE_SUBMIT_TRANSACTION/V3';
+  | 'RECEIVE_SUBMIT_TRANSACTION/V3'
+  | 'RECEIVE_SUBMIT_BULK_TRANSACTIONS/V3';
 
 export type EventMessage =
   | 'EVENT_NETWORK_CHANGED'
@@ -260,6 +264,12 @@ export interface RequestSignTransactionMessage {
   payload: SignTransactionRequest;
 }
 
+export interface RequestSubmitBulkTransactionsMessage {
+  app: typeof GEM_WALLET;
+  type: 'REQUEST_SUBMIT_BULK_TRANSACTIONS/V3';
+  payload: SubmitBulkTransactionsWithKeysRequest;
+}
+
 // Internal
 export interface InternalRequestPasswordMessage {
   app: typeof GEM_WALLET;
@@ -312,6 +322,8 @@ export type SignMessageMessagingResponseDeprecated = MessagingResponse &
   SignMessageResponseDeprecated;
 export type SignTransactionMessagingResponse = MessagingResponse & SignTransactionResponse;
 export type SubmitTransactionMessagingResponse = MessagingResponse & SubmitTransactionResponse;
+export type SubmitBulkTransactionsMessagingResponse = MessagingResponse &
+  SubmitBulkTransactionsResponse;
 export type IsInstalledMessagingResponse = MessagingResponse & IsInstalledResponse;
 export type SendPaymentMessagingResponse = MessagingResponse & SendPaymentResponse;
 export type SendPaymentMessagingResponseDeprecated = MessagingResponse &
@@ -478,6 +490,12 @@ export interface ReceiveSignTransactionContentMessage {
   payload: SignTransactionMessagingResponse;
 }
 
+export interface ReceiveSubmitBulkTransactionsContentMessage {
+  app: typeof GEM_WALLET;
+  type: 'RECEIVE_SUBMIT_BULK_TRANSACTIONS/V3';
+  payload: SubmitBulkTransactionsMessagingResponse;
+}
+
 // Internal
 export interface InternalReceivePasswordContentMessage {
   app: typeof GEM_WALLET;
@@ -605,6 +623,9 @@ export type ReceiveSignTransactionBackgroundMessage = ReceiveSignTransactionCont
 export type ReceiveSubmitTransactionBackgroundMessage = ReceiveSubmitTransactionContentMessage &
   BackgroundMessagePayload;
 
+export type ReceiveSubmitBulkTransactionsBackgroundMessage =
+  ReceiveSubmitBulkTransactionsContentMessage & BackgroundMessagePayload;
+
 export type InternalReceivePasswordBackgroundMessage = InternalReceivePasswordContentMessage &
   BackgroundMessagePayload;
 
@@ -650,6 +671,7 @@ export type BackgroundMessage =
   | RequestSignMessageMessageDeprecated
   | RequestSignTransactionMessage
   | RequestSubmitTransactionMessage
+  | RequestSubmitBulkTransactionsMessage
   // Outputted Messages - DO contain ID within the payloads
   | EventLoginBackgroundMessage
   | EventLogoutBackgroundMessage
@@ -679,6 +701,7 @@ export type BackgroundMessage =
   | ReceiveSignMessageBackgroundMessageDeprecated
   | ReceiveSignTransactionBackgroundMessage
   | ReceiveSubmitTransactionBackgroundMessage
+  | ReceiveSubmitBulkTransactionsBackgroundMessage
   //
   // Internal message - Messages between the extension and the background script
   //
@@ -712,4 +735,5 @@ export type APIMessages =
   | RequestSetTrustlineMessage
   | RequestSignMessageMessage
   | RequestSignTransactionMessage
-  | RequestSubmitTransactionMessage;
+  | RequestSubmitTransactionMessage
+  | RequestSubmitBulkTransactionsMessage;
