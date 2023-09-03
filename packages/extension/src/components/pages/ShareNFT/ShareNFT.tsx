@@ -11,7 +11,7 @@ import {
 } from '@gemwallet/constants';
 
 import {
-  TransactionProgressStatuses,
+  TransactionProgressStatus,
   useBrowser,
   useLedger,
   useTransactionProgress,
@@ -98,7 +98,7 @@ export const ShareNFT: FC = () => {
           Sentry.captureException(e);
         })
         .finally(() => {
-          setTransactionProgress(TransactionProgressStatuses.IDLE);
+          setTransactionProgress(TransactionProgressStatus.IDLE);
         });
     },
     [closeExtension, extensionWindow?.id, id, receivingMessage, setTransactionProgress]

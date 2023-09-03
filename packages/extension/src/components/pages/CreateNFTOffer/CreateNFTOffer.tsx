@@ -13,7 +13,7 @@ import {
 
 import { ERROR_RED } from '../../../constants';
 import {
-  TransactionProgressStatuses,
+  TransactionProgressStatus,
   useLedger,
   useNetwork,
   useTransactionProgress
@@ -93,7 +93,7 @@ export const CreateNFTOffer: FC = () => {
   const sendMessageToBackground = useCallback(
     (message: ReceiveCreateNFTOfferBackgroundMessage) => {
       chrome.runtime.sendMessage(message);
-      setTransactionProgress(TransactionProgressStatuses.IDLE);
+      setTransactionProgress(TransactionProgressStatus.IDLE);
     },
     [setTransactionProgress]
   );

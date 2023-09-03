@@ -22,7 +22,7 @@ jest.mock('../../../contexts', () => ({
   useBrowser: () => mockBrowserContext,
   useWallet: () => mockWalletContext,
   useTransactionProgress: () => mockTransactionProgressContext,
-  TransactionProgressStatuses: {
+  TransactionProgressStatus: {
     IN_PROGRESS: 'mock'
   }
 }));

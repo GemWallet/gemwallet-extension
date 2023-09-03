@@ -14,7 +14,7 @@ import {
 
 import { API_ERROR_BAD_ISSUER, API_ERROR_BAD_REQUEST, HOME_PATH } from '../../../constants';
 import {
-  TransactionProgressStatuses,
+  TransactionProgressStatus,
   useLedger,
   useNetwork,
   useTransactionProgress
@@ -103,7 +103,7 @@ export const AddNewTrustline: FC = () => {
       message: ReceiveSetTrustlineBackgroundMessage | ReceiveSetTrustlineBackgroundMessageDeprecated
     ) => {
       chrome.runtime.sendMessage(message);
-      setTransactionProgress(TransactionProgressStatuses.IDLE);
+      setTransactionProgress(TransactionProgressStatus.IDLE);
     },
     [setTransactionProgress]
   );

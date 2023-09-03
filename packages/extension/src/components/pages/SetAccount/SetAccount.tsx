@@ -13,7 +13,7 @@ import {
 
 import { ERROR_RED } from '../../../constants';
 import {
-  TransactionProgressStatuses,
+  TransactionProgressStatus,
   useLedger,
   useNetwork,
   useTransactionProgress
@@ -95,7 +95,7 @@ export const SetAccount: FC = () => {
   const sendMessageToBackground = useCallback(
     (message: ReceiveSetAccountBackgroundMessage) => {
       chrome.runtime.sendMessage(message);
-      setTransactionProgress(TransactionProgressStatuses.IDLE);
+      setTransactionProgress(TransactionProgressStatus.IDLE);
     },
     [setTransactionProgress]
   );

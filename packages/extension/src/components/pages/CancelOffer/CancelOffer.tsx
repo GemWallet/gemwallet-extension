@@ -11,7 +11,7 @@ import {
 
 import { ERROR_RED } from '../../../constants';
 import {
-  TransactionProgressStatuses,
+  TransactionProgressStatus,
   useLedger,
   useNetwork,
   useTransactionProgress
@@ -69,7 +69,7 @@ export const CancelOffer: FC = () => {
   const sendMessageToBackground = useCallback(
     (message: ReceiveCancelOfferBackgroundMessage) => {
       chrome.runtime.sendMessage(message);
-      setTransactionProgress(TransactionProgressStatuses.IDLE);
+      setTransactionProgress(TransactionProgressStatus.IDLE);
     },
     [setTransactionProgress]
   );

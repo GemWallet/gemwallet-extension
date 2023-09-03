@@ -42,7 +42,7 @@ import {
   PARAMETER_TRANSACTION_TRUSTLINE
 } from './constants';
 import {
-  TransactionProgressStatuses,
+  TransactionProgressStatus,
   useBrowser,
   useNetwork,
   useTransactionProgress,
@@ -59,7 +59,7 @@ const App: FC = () => {
   const { transactionProgress, setTransactionProgress } = useTransactionProgress();
 
   useEffect(() => {
-    setTransactionProgress(TransactionProgressStatuses.IN_PROGRESS);
+    setTransactionProgress(TransactionProgressStatus.IN_PROGRESS);
   }, [setTransactionProgress]);
 
   const handleTransaction = useCallback(
@@ -83,8 +83,8 @@ const App: FC = () => {
   useBeforeUnload(async () => {
     // Only sends reject message if there is a transaction in progress, which means the user has not confirmed the
     // transaction but has closed the extension
-    if (transactionProgress === TransactionProgressStatuses.IN_PROGRESS) {
-      setTransactionProgress(TransactionProgressStatuses.IDLE);
+    if (transactionProgress === TransactionProgressStatus.IN_PROGRESS) {
+      setTransactionProgress(TransactionProgressStatus.IDLE);
       const urlParams = new URLSearchParams(window.location.search);
       const windowId = Number(urlParams.get('id'));
       const defaultPayload = {

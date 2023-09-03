@@ -12,7 +12,7 @@ import {
 
 import { API_ERROR_BAD_REQUEST, SECONDARY_GRAY } from '../../../constants';
 import {
-  TransactionProgressStatuses,
+  TransactionProgressStatus,
   useBrowser,
   useLedger,
   useTransactionProgress
@@ -100,7 +100,7 @@ export const SignMessage: FC = () => {
           Sentry.captureException(e);
         })
         .finally(() => {
-          setTransactionProgress(TransactionProgressStatuses.IDLE);
+          setTransactionProgress(TransactionProgressStatus.IDLE);
         });
     },
     [closeExtension, extensionWindow?.id, id, receivingMessage, setTransactionProgress]
@@ -131,7 +131,7 @@ export const SignMessage: FC = () => {
         error: serializeError(new Error(API_ERROR_BAD_REQUEST))
       }
     });
-    setTransactionProgress(TransactionProgressStatuses.IDLE);
+    setTransactionProgress(TransactionProgressStatus.IDLE);
     return (
       <AsyncTransaction
         title="Signature failed"

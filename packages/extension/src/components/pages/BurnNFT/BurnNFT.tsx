@@ -7,7 +7,7 @@ import { GEM_WALLET, ReceiveBurnNFTBackgroundMessage, ResponseType } from '@gemw
 
 import { ERROR_RED } from '../../../constants';
 import {
-  TransactionProgressStatuses,
+  TransactionProgressStatus,
   useLedger,
   useNetwork,
   useTransactionProgress
@@ -68,7 +68,7 @@ export const BurnNFT: FC = () => {
   const sendMessageToBackground = useCallback(
     (message: ReceiveBurnNFTBackgroundMessage) => {
       chrome.runtime.sendMessage(message);
-      setTransactionProgress(TransactionProgressStatuses.IDLE);
+      setTransactionProgress(TransactionProgressStatus.IDLE);
     },
     [setTransactionProgress]
   );

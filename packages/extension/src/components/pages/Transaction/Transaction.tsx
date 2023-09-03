@@ -15,7 +15,7 @@ import {
 
 import { API_ERROR_BAD_DESTINATION, API_ERROR_BAD_REQUEST, ERROR_RED } from '../../../constants';
 import {
-  TransactionProgressStatuses,
+  TransactionProgressStatus,
   useLedger,
   useNetwork,
   useTransactionProgress
@@ -91,7 +91,7 @@ export const Transaction: FC = () => {
       message: ReceiveSendPaymentBackgroundMessage | ReceiveSendPaymentBackgroundMessageDeprecated
     ) => {
       chrome.runtime.sendMessage(message);
-      setTransactionProgress(TransactionProgressStatuses.IDLE);
+      setTransactionProgress(TransactionProgressStatus.IDLE);
     },
     [setTransactionProgress]
   );
