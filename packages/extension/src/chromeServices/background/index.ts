@@ -58,9 +58,16 @@ import {
   PARAMETER_TRANSACTION_SET_ACCOUNT,
   PARAMETER_SUBMIT_TRANSACTIONS_BULK
 } from '../../constants/parameters';
+import { STORAGE_STATE_TRANSACTION } from '../../constants/storage';
 import { generateKey } from '../../utils/storage';
-import { saveInChromeSessionStorage } from '../../utils/storageChromeSession';
-import { focusOrCreatePopupWindow } from './utils/focusOrCreatePopupWindow';
+import {
+  loadFromChromeSessionStorage,
+  saveInChromeSessionStorage
+} from '../../utils/storageChromeSession';
+import {
+  FocusOrCreatePopupWindowParam,
+  focusOrCreatePopupWindow
+} from './utils/focusOrCreatePopupWindow';
 import { createOffscreen } from './utils/offscreen';
 import { Session } from './utils/session';
 
@@ -103,6 +110,30 @@ const sendInMemoryMessage = ({
   );
 };
 
+const handleTransactionRequest = async (payload: FocusOrCreatePopupWindowParam) => {
+  // Do not allow multiple transactions at the same time
+  const hasTxInProgress = await loadFromChromeSessionStorage(STORAGE_STATE_TRANSACTION);
+  if (Boolean(hasTxInProgress)) {
+    return Promise.resolve();
+  }
+
+  const openedWindows = await chrome.windows.getAll();
+  const { currentWindowId } = await chrome.storage.local.get('currentWindowId');
+
+  if (currentWindowId && openedWindows.find((window) => window.id === currentWindowId)) {
+    await chrome.storage.local.remove('currentWindowId');
+    await chrome.windows.remove(currentWindowId);
+  }
+
+  saveInChromeSessionStorage(STORAGE_STATE_TRANSACTION, true);
+  focusOrCreatePopupWindow(payload);
+};
+
+const handleTransactionResponse = <T>(id: number, payload: any) => {
+  saveInChromeSessionStorage(STORAGE_STATE_TRANSACTION, false);
+  sendMessageToTab<T>(id, payload);
+};
+
 /*
  * Keep only one listener for easier debugging
  */
@@ -136,7 +167,7 @@ chrome.runtime.onMessage.addListener(
        * Request messages
        */
     } else if (type === 'REQUEST_GET_NETWORK/V3') {
-      focusOrCreatePopupWindow({
+      handleTransactionRequest({
         payload: {
           id: sender.tab?.id
         },
@@ -153,7 +184,7 @@ chrome.runtime.onMessage.addListener(
       });
     } else if (type === 'REQUEST_NETWORK') {
       // Deprecated
-      focusOrCreatePopupWindow({
+      handleTransactionRequest({
         payload: {
           id: sender.tab?.id
         },
@@ -167,7 +198,7 @@ chrome.runtime.onMessage.addListener(
         height: 1
       });
     } else if (type === 'REQUEST_GET_ADDRESS/V3') {
-      focusOrCreatePopupWindow({
+      handleTransactionRequest({
         payload: message.payload,
         sender,
         parameter: PARAMETER_SHARE_ADDRESS,
@@ -180,7 +211,7 @@ chrome.runtime.onMessage.addListener(
       });
     } else if (type === 'REQUEST_ADDRESS') {
       // Deprecated
-      focusOrCreatePopupWindow({
+      handleTransactionRequest({
         payload: message.payload,
         sender,
         parameter: PARAMETER_SHARE_ADDRESS,
@@ -190,7 +221,7 @@ chrome.runtime.onMessage.addListener(
         }
       });
     } else if (type === 'REQUEST_GET_PUBLIC_KEY/V3') {
-      focusOrCreatePopupWindow({
+      handleTransactionRequest({
         payload: message.payload,
         sender,
         parameter: PARAMETER_SHARE_PUBLIC_KEY,
@@ -203,7 +234,7 @@ chrome.runtime.onMessage.addListener(
       });
     } else if (type === 'REQUEST_PUBLIC_KEY') {
       // Deprecated
-      focusOrCreatePopupWindow({
+      handleTransactionRequest({
         payload: message.payload,
         sender,
         parameter: PARAMETER_SHARE_PUBLIC_KEY,
@@ -214,7 +245,7 @@ chrome.runtime.onMessage.addListener(
         }
       });
     } else if (type === 'REQUEST_GET_NFT/V3') {
-      focusOrCreatePopupWindow({
+      handleTransactionRequest({
         payload: message.payload,
         sender,
         parameter: PARAMETER_SHARE_NFT,
@@ -227,7 +258,7 @@ chrome.runtime.onMessage.addListener(
       });
     } else if (type === 'REQUEST_NFT') {
       // Deprecated
-      focusOrCreatePopupWindow({
+      handleTransactionRequest({
         payload: message.payload,
         sender,
         parameter: PARAMETER_SHARE_NFT,
@@ -237,7 +268,7 @@ chrome.runtime.onMessage.addListener(
         }
       });
     } else if (type === 'REQUEST_SEND_PAYMENT/V3') {
-      focusOrCreatePopupWindow({
+      handleTransactionRequest({
         payload: message.payload,
         sender,
         parameter: PARAMETER_TRANSACTION_PAYMENT,
@@ -250,7 +281,7 @@ chrome.runtime.onMessage.addListener(
       });
     } else if (type === 'SEND_PAYMENT') {
       // Deprecated
-      focusOrCreatePopupWindow({
+      handleTransactionRequest({
         payload: message.payload,
         sender,
         parameter: PARAMETER_TRANSACTION_PAYMENT,
@@ -260,7 +291,7 @@ chrome.runtime.onMessage.addListener(
         }
       });
     } else if (type === 'REQUEST_MINT_NFT/V3') {
-      focusOrCreatePopupWindow({
+      handleTransactionRequest({
         payload: message.payload,
         sender,
         parameter: PARAMETER_TRANSACTION_MINT_NFT,
@@ -271,7 +302,7 @@ chrome.runtime.onMessage.addListener(
         }
       });
     } else if (type === 'REQUEST_CREATE_NFT_OFFER/V3') {
-      focusOrCreatePopupWindow({
+      handleTransactionRequest({
         payload: message.payload,
         sender,
         parameter: PARAMETER_TRANSACTION_CREATE_NFT_OFFER,
@@ -282,7 +313,7 @@ chrome.runtime.onMessage.addListener(
         }
       });
     } else if (type === 'REQUEST_CANCEL_NFT_OFFER/V3') {
-      focusOrCreatePopupWindow({
+      handleTransactionRequest({
         payload: message.payload,
         sender,
         parameter: PARAMETER_TRANSACTION_CANCEL_NFT_OFFER,
@@ -293,7 +324,7 @@ chrome.runtime.onMessage.addListener(
         }
       });
     } else if (type === 'REQUEST_ACCEPT_NFT_OFFER/V3') {
-      focusOrCreatePopupWindow({
+      handleTransactionRequest({
         payload: message.payload,
         sender,
         parameter: PARAMETER_TRANSACTION_ACCEPT_NFT_OFFER,
@@ -304,7 +335,7 @@ chrome.runtime.onMessage.addListener(
         }
       });
     } else if (type === 'REQUEST_BURN_NFT/V3') {
-      focusOrCreatePopupWindow({
+      handleTransactionRequest({
         payload: message.payload,
         sender,
         parameter: PARAMETER_TRANSACTION_BURN_NFT,
@@ -315,7 +346,7 @@ chrome.runtime.onMessage.addListener(
         }
       });
     } else if (type === 'REQUEST_SET_ACCOUNT/V3') {
-      focusOrCreatePopupWindow({
+      handleTransactionRequest({
         payload: message.payload,
         sender,
         parameter: PARAMETER_TRANSACTION_SET_ACCOUNT,
@@ -326,7 +357,7 @@ chrome.runtime.onMessage.addListener(
         }
       });
     } else if (type === 'REQUEST_CREATE_OFFER/V3') {
-      focusOrCreatePopupWindow({
+      handleTransactionRequest({
         payload: message.payload,
         sender,
         parameter: PARAMETER_TRANSACTION_CREATE_OFFER,
@@ -337,7 +368,7 @@ chrome.runtime.onMessage.addListener(
         }
       });
     } else if (type === 'REQUEST_CANCEL_OFFER/V3') {
-      focusOrCreatePopupWindow({
+      handleTransactionRequest({
         payload: message.payload,
         sender,
         parameter: PARAMETER_TRANSACTION_CANCEL_OFFER,
@@ -348,7 +379,7 @@ chrome.runtime.onMessage.addListener(
         }
       });
     } else if (type === 'REQUEST_SET_TRUSTLINE/V3') {
-      focusOrCreatePopupWindow({
+      handleTransactionRequest({
         payload: message.payload,
         sender,
         parameter: PARAMETER_TRANSACTION_TRUSTLINE,
@@ -361,7 +392,7 @@ chrome.runtime.onMessage.addListener(
       });
     } else if (type === 'REQUEST_ADD_TRUSTLINE') {
       // Deprecated
-      focusOrCreatePopupWindow({
+      handleTransactionRequest({
         payload: message.payload,
         sender,
         parameter: PARAMETER_TRANSACTION_TRUSTLINE,
@@ -371,7 +402,7 @@ chrome.runtime.onMessage.addListener(
         }
       });
     } else if (type === 'REQUEST_SIGN_MESSAGE/V3') {
-      focusOrCreatePopupWindow({
+      handleTransactionRequest({
         payload: message.payload,
         sender,
         parameter: PARAMETER_SIGN_MESSAGE,
@@ -384,7 +415,7 @@ chrome.runtime.onMessage.addListener(
       });
     } else if (type === 'REQUEST_SIGN_MESSAGE') {
       // Deprecated
-      focusOrCreatePopupWindow({
+      handleTransactionRequest({
         payload: message.payload,
         sender,
         parameter: PARAMETER_SIGN_MESSAGE,
@@ -394,7 +425,7 @@ chrome.runtime.onMessage.addListener(
         }
       });
     } else if (type === 'REQUEST_SUBMIT_TRANSACTION/V3') {
-      focusOrCreatePopupWindow({
+      handleTransactionRequest({
         payload: message.payload,
         sender,
         parameter: PARAMETER_SUBMIT_TRANSACTION,
@@ -430,7 +461,7 @@ chrome.runtime.onMessage.addListener(
        */
     } else if (type === 'RECEIVE_SEND_PAYMENT/V3') {
       const { payload } = message;
-      sendMessageToTab<ReceiveSendPaymentContentMessage>(payload.id, {
+      handleTransactionResponse<ReceiveSendPaymentContentMessage>(payload.id, {
         app,
         type: 'RECEIVE_SEND_PAYMENT/V3',
         payload: {
@@ -442,7 +473,7 @@ chrome.runtime.onMessage.addListener(
     } else if (type === 'RECEIVE_PAYMENT_HASH') {
       // Deprecated
       const { payload } = message;
-      sendMessageToTab<ReceiveSendPaymentContentMessageDeprecated>(payload.id, {
+      handleTransactionResponse<ReceiveSendPaymentContentMessageDeprecated>(payload.id, {
         app,
         type: 'RECEIVE_PAYMENT_HASH',
         payload: {
@@ -451,7 +482,7 @@ chrome.runtime.onMessage.addListener(
       });
     } else if (type === 'RECEIVE_MINT_NFT/V3') {
       const { payload } = message;
-      sendMessageToTab<ReceiveMintNFTContentMessage>(payload.id, {
+      handleTransactionResponse<ReceiveMintNFTContentMessage>(payload.id, {
         app,
         type: 'RECEIVE_MINT_NFT/V3',
         payload: {
@@ -462,7 +493,7 @@ chrome.runtime.onMessage.addListener(
       });
     } else if (type === 'RECEIVE_CREATE_NFT_OFFER/V3') {
       const { payload } = message;
-      sendMessageToTab<ReceiveCreateNFTOfferContentMessage>(payload.id, {
+      handleTransactionResponse<ReceiveCreateNFTOfferContentMessage>(payload.id, {
         app,
         type: 'RECEIVE_CREATE_NFT_OFFER/V3',
         payload: {
@@ -473,7 +504,7 @@ chrome.runtime.onMessage.addListener(
       });
     } else if (type === 'RECEIVE_CANCEL_NFT_OFFER/V3') {
       const { payload } = message;
-      sendMessageToTab<ReceiveCancelNFTOfferContentMessage>(payload.id, {
+      handleTransactionResponse<ReceiveCancelNFTOfferContentMessage>(payload.id, {
         app,
         type: 'RECEIVE_CANCEL_NFT_OFFER/V3',
         payload: {
@@ -484,7 +515,7 @@ chrome.runtime.onMessage.addListener(
       });
     } else if (type === 'RECEIVE_ACCEPT_NFT_OFFER/V3') {
       const { payload } = message;
-      sendMessageToTab<ReceiveAcceptNFTOfferContentMessage>(payload.id, {
+      handleTransactionResponse<ReceiveAcceptNFTOfferContentMessage>(payload.id, {
         app,
         type: 'RECEIVE_ACCEPT_NFT_OFFER/V3',
         payload: {
@@ -495,7 +526,7 @@ chrome.runtime.onMessage.addListener(
       });
     } else if (type === 'RECEIVE_BURN_NFT/V3') {
       const { payload } = message;
-      sendMessageToTab<ReceiveBurnNFTContentMessage>(payload.id, {
+      handleTransactionResponse<ReceiveBurnNFTContentMessage>(payload.id, {
         app,
         type: 'RECEIVE_BURN_NFT/V3',
         payload: {
@@ -506,7 +537,7 @@ chrome.runtime.onMessage.addListener(
       });
     } else if (type === 'RECEIVE_SET_ACCOUNT/V3') {
       const { payload } = message;
-      sendMessageToTab<ReceiveSetAccountContentMessage>(payload.id, {
+      handleTransactionResponse<ReceiveSetAccountContentMessage>(payload.id, {
         app,
         type: 'RECEIVE_SET_ACCOUNT/V3',
         payload: {
@@ -517,7 +548,7 @@ chrome.runtime.onMessage.addListener(
       });
     } else if (type === 'RECEIVE_CREATE_OFFER/V3') {
       const { payload } = message;
-      sendMessageToTab<ReceiveCreateOfferContentMessage>(payload.id, {
+      handleTransactionResponse<ReceiveCreateOfferContentMessage>(payload.id, {
         app,
         type: 'RECEIVE_CREATE_OFFER/V3',
         payload: {
@@ -528,7 +559,7 @@ chrome.runtime.onMessage.addListener(
       });
     } else if (type === 'RECEIVE_CANCEL_OFFER/V3') {
       const { payload } = message;
-      sendMessageToTab<ReceiveCancelOfferContentMessage>(payload.id, {
+      handleTransactionResponse<ReceiveCancelOfferContentMessage>(payload.id, {
         app,
         type: 'RECEIVE_CANCEL_OFFER/V3',
         payload: {
@@ -539,7 +570,7 @@ chrome.runtime.onMessage.addListener(
       });
     } else if (type === 'RECEIVE_SET_TRUSTLINE/V3') {
       const { payload } = message;
-      sendMessageToTab<ReceiveSetTrustlineContentMessage>(payload.id, {
+      handleTransactionResponse<ReceiveSetTrustlineContentMessage>(payload.id, {
         app,
         type: 'RECEIVE_SET_TRUSTLINE/V3',
         payload: {
@@ -551,7 +582,7 @@ chrome.runtime.onMessage.addListener(
     } else if (type === 'RECEIVE_TRUSTLINE_HASH') {
       // Deprecated
       const { payload } = message;
-      sendMessageToTab<ReceiveSetTrustlineContentMessageDeprecated>(payload.id, {
+      handleTransactionResponse<ReceiveSetTrustlineContentMessageDeprecated>(payload.id, {
         app,
         type: 'RECEIVE_TRUSTLINE_HASH',
         payload: {
@@ -560,7 +591,7 @@ chrome.runtime.onMessage.addListener(
       });
     } else if (type === 'RECEIVE_GET_ADDRESS/V3') {
       const { payload } = message;
-      sendMessageToTab<ReceiveGetAddressContentMessage>(payload.id, {
+      handleTransactionResponse<ReceiveGetAddressContentMessage>(payload.id, {
         app,
         type: 'RECEIVE_GET_ADDRESS/V3',
         payload: {
@@ -572,7 +603,7 @@ chrome.runtime.onMessage.addListener(
     } else if (type === 'RECEIVE_ADDRESS') {
       // Deprecated
       const { payload } = message;
-      sendMessageToTab<ReceiveGetAddressContentMessageDeprecated>(payload.id, {
+      handleTransactionResponse<ReceiveGetAddressContentMessageDeprecated>(payload.id, {
         app,
         type: 'RECEIVE_ADDRESS',
         payload: {
@@ -581,7 +612,7 @@ chrome.runtime.onMessage.addListener(
       });
     } else if (type === 'RECEIVE_GET_NETWORK/V3') {
       const { payload } = message;
-      sendMessageToTab<ReceiveGetNetworkContentMessage>(payload.id, {
+      handleTransactionResponse<ReceiveGetNetworkContentMessage>(payload.id, {
         app,
         type: 'RECEIVE_GET_NETWORK/V3',
         payload: {
@@ -593,7 +624,7 @@ chrome.runtime.onMessage.addListener(
     } else if (type === 'RECEIVE_NETWORK') {
       // Deprecated
       const { payload } = message;
-      sendMessageToTab<ReceiveGetNetworkContentMessageDeprecated>(payload.id, {
+      handleTransactionResponse<ReceiveGetNetworkContentMessageDeprecated>(payload.id, {
         app,
         type: 'RECEIVE_NETWORK',
         payload: {
@@ -602,7 +633,7 @@ chrome.runtime.onMessage.addListener(
       });
     } else if (type === 'RECEIVE_GET_PUBLIC_KEY/V3') {
       const { payload } = message;
-      sendMessageToTab<ReceiveGetPublicKeyContentMessage>(payload.id, {
+      handleTransactionResponse<ReceiveGetPublicKeyContentMessage>(payload.id, {
         app,
         type: 'RECEIVE_GET_PUBLIC_KEY/V3',
         payload: {
@@ -614,7 +645,7 @@ chrome.runtime.onMessage.addListener(
     } else if (type === 'RECEIVE_PUBLIC_KEY') {
       // Deprecated
       const { payload } = message;
-      sendMessageToTab<ReceiveGetPublicKeyContentMessageDeprecated>(payload.id, {
+      handleTransactionResponse<ReceiveGetPublicKeyContentMessageDeprecated>(payload.id, {
         app,
         type: 'RECEIVE_PUBLIC_KEY',
         payload: {
@@ -624,7 +655,7 @@ chrome.runtime.onMessage.addListener(
       });
     } else if (type === 'RECEIVE_GET_NFT/V3') {
       const { payload } = message;
-      sendMessageToTab<ReceiveGetNFTContentMessage>(payload.id, {
+      handleTransactionResponse<ReceiveGetNFTContentMessage>(payload.id, {
         app,
         type: 'RECEIVE_GET_NFT/V3',
         payload: {
@@ -636,7 +667,7 @@ chrome.runtime.onMessage.addListener(
     } else if (type === 'RECEIVE_NFT') {
       // Deprecated
       const { payload } = message;
-      sendMessageToTab<ReceiveGetNFTContentMessageDeprecated>(payload.id, {
+      handleTransactionResponse<ReceiveGetNFTContentMessageDeprecated>(payload.id, {
         app,
         type: 'RECEIVE_NFT',
         payload: {
@@ -645,7 +676,7 @@ chrome.runtime.onMessage.addListener(
       });
     } else if (type === 'RECEIVE_SIGN_MESSAGE/V3') {
       const { payload } = message;
-      sendMessageToTab<ReceiveSignMessageContentMessage>(payload.id, {
+      handleTransactionResponse<ReceiveSignMessageContentMessage>(payload.id, {
         app,
         type: 'RECEIVE_SIGN_MESSAGE/V3',
         payload: {
@@ -656,7 +687,7 @@ chrome.runtime.onMessage.addListener(
       });
     } else if (type === 'RECEIVE_SIGN_MESSAGE') {
       const { payload } = message;
-      sendMessageToTab<ReceiveSignMessageContentMessage>(payload.id, {
+      handleTransactionResponse<ReceiveSignMessageContentMessage>(payload.id, {
         app,
         type: 'RECEIVE_SIGN_MESSAGE',
         payload: {
@@ -665,7 +696,7 @@ chrome.runtime.onMessage.addListener(
       });
     } else if (type === 'RECEIVE_SUBMIT_TRANSACTION/V3') {
       const { payload } = message;
-      sendMessageToTab<ReceiveSubmitTransactionContentMessage>(payload.id, {
+      handleTransactionResponse<ReceiveSubmitTransactionContentMessage>(payload.id, {
         app,
         type: 'RECEIVE_SUBMIT_TRANSACTION/V3',
         payload: {

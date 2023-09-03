@@ -12,7 +12,12 @@ import {
 } from '@gemwallet/constants';
 
 import { ERROR_RED } from '../../../constants';
-import { useLedger, useNetwork } from '../../../contexts';
+import {
+  TransactionProgressStatus,
+  useLedger,
+  useNetwork,
+  useTransactionProgress
+} from '../../../contexts';
 import { useFees, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
 import { fromHexMemos, parseSetAccountFlags } from '../../../utils';
@@ -61,6 +66,7 @@ export const SetAccount: FC = () => {
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
   const { setAccount } = useLedger();
   const { networkName } = useNetwork();
+  const { setTransactionProgress } = useTransactionProgress();
   const { estimatedFees, errorFees, difference } = useFees(
     {
       TransactionType: 'AccountSet',
@@ -85,6 +91,14 @@ export const SetAccount: FC = () => {
     transaction,
     errorRequestRejection
   });
+
+  const sendMessageToBackground = useCallback(
+    (message: ReceiveSetAccountBackgroundMessage) => {
+      chrome.runtime.sendMessage(message);
+      setTransactionProgress(TransactionProgressStatus.IDLE);
+    },
+    [setTransactionProgress]
+  );
 
   const createMessage = useCallback(
     (messagePayload: {
@@ -186,8 +200,8 @@ export const SetAccount: FC = () => {
     const message = createMessage({
       hash: null
     });
-    chrome.runtime.sendMessage<ReceiveSetAccountBackgroundMessage>(message);
-  }, [createMessage]);
+    sendMessageToBackground(message);
+  }, [createMessage, sendMessageToBackground]);
 
   const handleConfirm = useCallback(() => {
     setTransaction(TransactionStatus.Pending);
@@ -209,7 +223,7 @@ export const SetAccount: FC = () => {
     })
       .then((response) => {
         setTransaction(TransactionStatus.Success);
-        chrome.runtime.sendMessage<ReceiveSetAccountBackgroundMessage>(createMessage(response));
+        sendMessageToBackground(createMessage(response));
       })
       .catch((e) => {
         setErrorRequestRejection(e);
@@ -218,9 +232,9 @@ export const SetAccount: FC = () => {
           hash: undefined,
           error: e
         });
-        chrome.runtime.sendMessage<ReceiveSetAccountBackgroundMessage>(message);
+        sendMessageToBackground(message);
       });
-  }, [setAccount, params, createMessage]);
+  }, [setAccount, params, sendMessageToBackground, createMessage]);
 
   const {
     // Base transaction params

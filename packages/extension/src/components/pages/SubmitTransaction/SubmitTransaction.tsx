@@ -12,7 +12,12 @@ import {
 } from '@gemwallet/constants';
 
 import { ERROR_RED } from '../../../constants';
-import { useLedger, useNetwork } from '../../../contexts';
+import {
+  TransactionProgressStatus,
+  useLedger,
+  useNetwork,
+  useTransactionProgress
+} from '../../../contexts';
 import { useFees, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
 import { parseTransactionParam } from '../../../utils';
@@ -38,6 +43,7 @@ export const SubmitTransaction: FC = () => {
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
   const { submitTransaction } = useLedger();
   const { networkName } = useNetwork();
+  const { setTransactionProgress } = useTransactionProgress();
   const { estimatedFees, errorFees, difference } = useFees(
     params.txParam ?? {
       TransactionType: 'Payment',
@@ -55,6 +61,14 @@ export const SubmitTransaction: FC = () => {
     transaction,
     errorRequestRejection
   });
+
+  const sendMessageToBackground = useCallback(
+    (message: ReceiveSubmitTransactionBackgroundMessage) => {
+      chrome.runtime.sendMessage(message);
+      setTransactionProgress(TransactionProgressStatus.IDLE);
+    },
+    [setTransactionProgress]
+  );
 
   const createMessage = useCallback(
     (messagePayload: {
@@ -102,8 +116,8 @@ export const SubmitTransaction: FC = () => {
     const message = createMessage({
       hash: null
     });
-    chrome.runtime.sendMessage<ReceiveSubmitTransactionBackgroundMessage>(message);
-  }, [createMessage]);
+    sendMessageToBackground(message);
+  }, [createMessage, sendMessageToBackground]);
 
   const handleConfirm = useCallback(() => {
     setTransaction(TransactionStatus.Pending);
@@ -115,9 +129,7 @@ export const SubmitTransaction: FC = () => {
     })
       .then((response) => {
         setTransaction(TransactionStatus.Success);
-        chrome.runtime.sendMessage<ReceiveSubmitTransactionBackgroundMessage>(
-          createMessage(response)
-        );
+        sendMessageToBackground(createMessage(response));
       })
       .catch((e) => {
         setErrorRequestRejection(e);
@@ -126,9 +138,9 @@ export const SubmitTransaction: FC = () => {
           hash: undefined,
           error: e
         });
-        chrome.runtime.sendMessage<ReceiveSubmitTransactionBackgroundMessage>(message);
+        sendMessageToBackground(message);
       });
-  }, [submitTransaction, params, createMessage]);
+  }, [submitTransaction, params.txParam, sendMessageToBackground, createMessage]);
 
   const { txParam } = params;
 

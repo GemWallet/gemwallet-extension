@@ -26,16 +26,7 @@ export const serializeToQueryString = (payload?: Record<string, any>) =>
         .join('&')
     : '';
 
-export const focusOrCreatePopupWindow = async ({
-  payload,
-  sender,
-  parameter,
-  requestMessage,
-  receivingMessage,
-  errorPayload,
-  width = NOTIFICATION_WIDTH,
-  height = NOTIFICATION_HEIGHT
-}: {
+export type FocusOrCreatePopupWindowParam = {
   payload: RequestPayload;
   sender: chrome.runtime.MessageSender;
   parameter: string;
@@ -45,7 +36,18 @@ export const focusOrCreatePopupWindow = async ({
   errorPayload: ResponsePayload;
   width?: number;
   height?: number;
-}): Promise<void> => {
+};
+
+export const focusOrCreatePopupWindow = async ({
+  payload,
+  sender,
+  parameter,
+  requestMessage,
+  receivingMessage,
+  errorPayload,
+  width = NOTIFICATION_WIDTH,
+  height = NOTIFICATION_HEIGHT
+}: FocusOrCreatePopupWindowParam): Promise<void> => {
   try {
     const openedWindows = await chrome.windows.getAll();
     const { currentWindowId } = await chrome.storage.local.get('currentWindowId');
