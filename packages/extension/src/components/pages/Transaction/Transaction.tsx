@@ -210,6 +210,24 @@ export const Transaction: FC = () => {
     return false;
   }, [params.destination]);
 
+  useEffect(() => {
+    // We want to send a bad request error message only when we have parsed the destination from the params
+    if (params.destination && !isValidDestination) {
+      sendMessageToBackground(
+        createMessage({
+          transactionHash: undefined,
+          error: new Error(API_ERROR_BAD_DESTINATION)
+        })
+      );
+    }
+  }, [
+    createMessage,
+    isValidDestination,
+    params.destination,
+    sendMessageToBackground,
+    setTransactionProgress
+  ]);
+
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);
     sendMessageToBackground(createMessage({ transactionHash: null }));
@@ -247,24 +265,6 @@ export const Transaction: FC = () => {
     sendPayment,
     sendMessageToBackground,
     createMessage
-  ]);
-
-  useEffect(() => {
-    // We want to send a bad request error message only when we have parsed the destination from the params
-    if (params.destination && !isValidDestination) {
-      sendMessageToBackground(
-        createMessage({
-          transactionHash: undefined,
-          error: new Error(API_ERROR_BAD_DESTINATION)
-        })
-      );
-    }
-  }, [
-    createMessage,
-    isValidDestination,
-    params.destination,
-    sendMessageToBackground,
-    setTransactionProgress
   ]);
 
   if (!isValidDestination) {
