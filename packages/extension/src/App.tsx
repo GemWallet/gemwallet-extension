@@ -58,10 +58,6 @@ const App: FC = () => {
   const { client } = useNetwork();
   const { transactionProgress, setTransactionProgress } = useTransactionProgress();
 
-  useEffect(() => {
-    setTransactionProgress(TransactionProgressStatus.IN_PROGRESS);
-  }, [setTransactionProgress]);
-
   const handleTransaction = useCallback(
     (payload: unknown) => {
       if (process.env.NODE_ENV === 'production') {
@@ -81,8 +77,8 @@ const App: FC = () => {
   );
 
   useBeforeUnload(async () => {
-    // Only sends reject message if there is a transaction in progress, which means the user has not confirmed the
-    // transaction but has closed the extension
+    // Sends a reject message only if a transaction is in progress,
+    // indicating that the user has not confirmed the transaction but has closed the extension.
     if (transactionProgress === TransactionProgressStatus.IN_PROGRESS) {
       setTransactionProgress(TransactionProgressStatus.IDLE);
       const urlParams = new URLSearchParams(window.location.search);

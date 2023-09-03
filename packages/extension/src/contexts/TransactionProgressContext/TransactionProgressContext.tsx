@@ -9,18 +9,18 @@ export enum TransactionProgressStatus {
 
 interface TransactionProgressContextType {
   setTransactionProgress: (status: TransactionProgressStatus) => void;
-  transactionProgress?: TransactionProgressStatus;
+  transactionProgress: TransactionProgressStatus;
 }
 
 const TransactionProgressContext = createContext<TransactionProgressContextType>({
   setTransactionProgress: () => {},
-  transactionProgress: undefined
+  transactionProgress: TransactionProgressStatus.IN_PROGRESS
 });
 
 const TransactionProgressProvider: FC = ({ children }) => {
-  const [transactionProgress, setTransactionProgress] = useState<
-    TransactionProgressStatus | undefined
-  >(undefined);
+  const [transactionProgress, setTransactionProgress] = useState<TransactionProgressStatus>(
+    TransactionProgressStatus.IN_PROGRESS
+  );
 
   const contextValue: TransactionProgressContextType = {
     transactionProgress,
