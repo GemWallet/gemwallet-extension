@@ -64,7 +64,10 @@ import {
   loadFromChromeSessionStorage,
   saveInChromeSessionStorage
 } from '../../utils/storageChromeSession';
-import { focusOrCreatePopupWindow } from './utils/focusOrCreatePopupWindow';
+import {
+  FocusOrCreatePopupWindowParam,
+  focusOrCreatePopupWindow
+} from './utils/focusOrCreatePopupWindow';
 import { createOffscreen } from './utils/offscreen';
 import { Session } from './utils/session';
 
@@ -107,10 +110,10 @@ const sendInMemoryMessage = ({
   );
 };
 
-const handleTransactionRequest = async (payload: any) => {
+const handleTransactionRequest = async (payload: FocusOrCreatePopupWindowParam) => {
   // Do not allow multiple transactions at the same time
   const hasTxInProgress = await loadFromChromeSessionStorage(STORAGE_STATE_TRANSACTION);
-  if (hasTxInProgress) {
+  if (Boolean(hasTxInProgress)) {
     return Promise.resolve();
   }
 
