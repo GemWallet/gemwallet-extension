@@ -37,10 +37,7 @@ import {
   MAINNET_CLIO_NODES,
   NFTData,
   NFTokenIDResponse,
-  SendPaymentRequest,
-  SetAccountRequest,
   SetRegularKeyRequest,
-  SetTrustlineRequest,
   SignTransactionRequest,
   SubmitBulkTransactionsRequest,
   SubmitTransactionRequest,
@@ -462,7 +459,7 @@ const LedgerProvider: FC = ({ children }) => {
           if ((tx.result.meta! as TransactionMetadata).TransactionResult !== 'tesSUCCESS') {
             throw new Error(
               (tx.result.meta as TransactionMetadata)?.TransactionResult ||
-              "Couldn't set the account but the transaction was successful"
+                "Couldn't set the account but the transaction was successful"
             );
           }
 
