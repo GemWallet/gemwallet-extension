@@ -1,4 +1,4 @@
-import { CSSProperties, FC, useMemo } from 'react';
+import { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
 
 import EditIcon from '@mui/icons-material/Edit';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
@@ -12,6 +12,7 @@ import { IconTextButton } from '../../atoms/IconTextButton';
 export interface TokenDisplayProps {
   balance: number;
   token: string;
+  issuer?: string;
   isXRPToken?: boolean;
   trustlineLimit?: number;
   trustlineNoRipple?: boolean;
@@ -20,9 +21,81 @@ export interface TokenDisplayProps {
   style?: CSSProperties;
 }
 
+type SocialLinks = {
+  url: string;
+  type?: 'socialmedia' | 'support';
+  title?: string;
+};
+
+type IssuerDetails = {
+  domain: string;
+  icon: string;
+  kyc: boolean;
+  name: string;
+  trust_level: number;
+  weblinks: SocialLinks[];
+};
+
+type TokenDetails = {
+  asset_class: string;
+  description: string;
+  icon: string;
+  name: string;
+  trust_level: number;
+};
+
+type Metrics = {
+  trustlines: number;
+  holders: number;
+  supply: string;
+  marketcap: string;
+  price: string;
+  volume_24h: string;
+  volume_7d: string;
+  exchanges_24h: string;
+  exchanges_7d: string;
+  takers_24h: string;
+  takers_7d: string;
+};
+
+interface XRPLMetaAPIResponse {
+  currency: string;
+  issuer: string;
+  meta: {
+    token: TokenDetails;
+    issuer: IssuerDetails;
+  };
+  metrics: Metrics;
+}
+
+interface RenderTokenIconProps {
+  isXRPToken?: boolean;
+  tokenIconUrl: string;
+  token: string;
+}
+
+const RenderTokenIcon: FC<RenderTokenIconProps> = ({ isXRPToken, tokenIconUrl, token }) => {
+  if (isXRPToken) {
+    return <Xrp />;
+  }
+
+  if (tokenIconUrl) {
+    return (
+      <img
+        src={tokenIconUrl}
+        alt={token}
+        style={{ width: '45px', height: '45px', marginRight: '10px' }}
+      />
+    );
+  }
+
+  return <GemWallet />;
+};
+
 export const TokenDisplay: FC<TokenDisplayProps> = ({
   balance,
   token,
+  issuer,
   isXRPToken = false,
   trustlineLimit,
   trustlineNoRipple,
@@ -30,6 +103,27 @@ export const TokenDisplay: FC<TokenDisplayProps> = ({
   onTrustlineDetailsClick,
   style
 }) => {
+  const [tokenIconUrl, setTokenIconUrl] = useState<string>('');
+
+  /* We use the token and issuer to get the logo from XRPL Meta */
+  useEffect(() => {
+    async function getTrustLineLogo() {
+      if (issuer) {
+        try {
+          // API Reference: https://xrplmeta.org/api
+          const res: Response = await fetch(`https://s1.xrplmeta.org/token/${token}:${issuer}`);
+          const json: XRPLMetaAPIResponse = await res.json(); // Make sure this JSON structure conforms to XRPLMetaAPIResponse
+          const icon: string | undefined = json?.meta?.token?.icon ?? json?.meta?.issuer?.icon;
+          setTokenIconUrl(icon);
+        } catch (error) {
+          console.log(`An error occurred: ${error}`);
+        }
+      }
+    }
+
+    getTrustLineLogo();
+  }, [issuer, token]);
+
   /* We a warning if trustline's limit is 0 or if the noRipple flag is set to false */
   const tokenWarningMessage = useMemo(() => {
     if (trustlineLimit === 0 && trustlineNoRipple === false) {
@@ -57,7 +151,7 @@ export const TokenDisplay: FC<TokenDisplayProps> = ({
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center' }}>
-        {isXRPToken ? <Xrp /> : <GemWallet />}
+        <RenderTokenIcon {...{ isXRPToken, tokenIconUrl, token }} />
         <div style={{ marginLeft: '10px' }}>
           <Tooltip title={tokenWarningMessage} placement="top">
             <Typography
