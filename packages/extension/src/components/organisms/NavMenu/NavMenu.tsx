@@ -4,11 +4,11 @@ import { BottomNavigation, BottomNavigationAction } from '@mui/material';
 import { styled } from '@mui/system';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { navigation } from '../../../constants';
+import { GEMWALLET_BLUE, navigation } from '../../../constants';
 
 const StyledBottomNavigationAction = styled(BottomNavigationAction)`
   &.Mui-selected {
-    border-top: 4px solid #3dd4f5;
+    border-top: 4px solid ${GEMWALLET_BLUE};
   }
   border-top: 4px solid transparent;
 `;
