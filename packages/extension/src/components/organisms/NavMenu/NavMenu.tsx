@@ -1,9 +1,17 @@
 import { FC, useMemo } from 'react';
 
 import { BottomNavigation, BottomNavigationAction } from '@mui/material';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { styled } from '@mui/system';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { navigation } from '../../../constants';
+
+const StyledBottomNavigationAction = styled(BottomNavigationAction)`
+  &.Mui-selected {
+    border-top: 4px solid #3dd4f5;
+  }
+  border-top: 4px solid transparent;
+`;
 
 export interface NavMenuProps {
   indexDefaultNav?: number;
@@ -13,7 +21,7 @@ export const NavMenu: FC<NavMenuProps> = ({ indexDefaultNav }) => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const value = useMemo(
-    () => indexDefaultNav || navigation.findIndex((link) => link.pathname === pathname),
+    () => indexDefaultNav ?? navigation.findIndex((link) => link.pathname === pathname),
     [indexDefaultNav, pathname]
   );
 
@@ -32,9 +40,9 @@ export const NavMenu: FC<NavMenuProps> = ({ indexDefaultNav }) => {
         backgroundColor: '#1e1e1e'
       }}
     >
-      {navigation.map(({ label, icon }) => {
-        return <BottomNavigationAction key={label} label={label} icon={icon} />;
-      })}
+      {navigation.map(({ label, icon }, index) => (
+        <StyledBottomNavigationAction key={label} label={label} icon={icon} value={index} />
+      ))}
     </BottomNavigation>
   );
 };
