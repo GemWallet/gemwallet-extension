@@ -48,6 +48,7 @@ import {
   ReceiveSendPaymentContentMessage,
   ReceiveSendPaymentContentMessageDeprecated,
   ReceiveSetAccountContentMessage,
+  ReceiveSetRegularKeyContentMessage,
   ReceiveSetTrustlineContentMessage,
   ReceiveSetTrustlineContentMessageDeprecated,
   ReceiveSignMessageContentMessage,
@@ -72,6 +73,7 @@ import {
   RequestSendPaymentMessage,
   RequestSendPaymentMessageDeprecated,
   RequestSetAccountMessage,
+  RequestSetRegularKeyMessage,
   RequestSetTrustlineMessage,
   RequestSetTrustlineMessageDeprecated,
   RequestSignMessageMessage,
@@ -89,8 +91,10 @@ import {
   SignMessageMessagingResponseDeprecated,
   SignTransactionEventListener,
   SignTransactionMessagingResponse,
-  SetAccountMessagingResponse,
   SetAccountEventListener,
+  SetAccountMessagingResponse,
+  SetRegularKeyEventListener,
+  SetRegularKeyMessagingResponse,
   SubmitTransactionEventListener,
   SubmitTransactionMessagingResponse,
   SubmitBulkTransactionsEventListener,
@@ -798,6 +802,41 @@ setTimeout(() => {
                       result,
                       error
                     } as SetAccountMessagingResponse,
+                    window.location.origin
+                  );
+                  chrome.runtime.onMessage.removeListener(messageListener);
+                }
+              }
+            };
+            chrome.runtime.onMessage.addListener(messageListener);
+          });
+      } else if (type === 'REQUEST_SET_REGULAR_KEY/V3') {
+        const {
+          data: { payload }
+        } = event as SetRegularKeyEventListener;
+        chrome.runtime
+          .sendMessage<RequestSetRegularKeyMessage>({
+            app,
+            type,
+            payload
+          })
+          .then(() => {
+            const messageListener = (
+              message: ReceiveSetRegularKeyContentMessage,
+              sender: chrome.runtime.MessageSender
+            ) => {
+              const { app, type, payload } = message;
+              // We make sure that the message comes from GemWallet
+              if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
+                if (type === 'RECEIVE_SET_REGULAR_KEY/V3') {
+                  const { result, error } = payload;
+                  window.postMessage(
+                    {
+                      source: 'GEM_WALLET_MSG_RESPONSE',
+                      messagedId,
+                      result,
+                      error
+                    } as SetRegularKeyMessagingResponse,
                     window.location.origin
                   );
                   chrome.runtime.onMessage.removeListener(messageListener);

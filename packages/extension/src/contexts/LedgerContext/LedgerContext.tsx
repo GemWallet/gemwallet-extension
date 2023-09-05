@@ -19,6 +19,7 @@ import {
   OfferCancel,
   OfferCreate,
   Payment,
+  SetRegularKey,
   SubmitResponse,
   Transaction,
   TransactionMetadata,
@@ -36,6 +37,10 @@ import {
   MAINNET_CLIO_NODES,
   NFTData,
   NFTokenIDResponse,
+  SendPaymentRequest,
+  SetAccountRequest,
+  SetRegularKeyRequest,
+  SetTrustlineRequest,
   SignTransactionRequest,
   SubmitBulkTransactionsRequest,
   SubmitTransactionRequest,
@@ -80,6 +85,10 @@ interface BurnNFTResponse {
 }
 
 interface SetAccountResponse {
+  hash: string;
+}
+
+interface SetRegularKeyResponse {
   hash: string;
 }
 
@@ -129,6 +138,7 @@ export interface LedgerContextType {
   acceptNFTOffer: (payload: NFTokenAcceptOffer) => Promise<AcceptNFTOfferResponse>;
   burnNFT: (payload: NFTokenBurn) => Promise<BurnNFTResponse>;
   setAccount: (payload: AccountSet) => Promise<SetAccountResponse>;
+  setRegularKey: (payload: SetRegularKeyRequest) => Promise<SetRegularKeyResponse>;
   createOffer: (payload: OfferCreate) => Promise<CreateOfferResponse>;
   cancelOffer: (payload: OfferCancel) => Promise<CancelOfferResponse>;
   signTransaction: (payload: SignTransactionRequest) => Promise<SignTransactionResponse>;
@@ -160,6 +170,7 @@ const LedgerContext = createContext<LedgerContextType>({
   acceptNFTOffer: () => new Promise(() => {}),
   burnNFT: () => new Promise(() => {}),
   setAccount: () => new Promise(() => {}),
+  setRegularKey: () => new Promise(() => {}),
   createOffer: () => new Promise(() => {}),
   cancelOffer: () => new Promise(() => {}),
   signTransaction: () => new Promise(() => {}),
@@ -425,6 +436,46 @@ const LedgerProvider: FC = ({ children }) => {
       }
     },
     [client, getCurrentWallet, handleTransaction]
+  );
+
+  const setRegularKey = useCallback(
+    async (payload: SetRegularKeyRequest) => {
+      const wallet = getCurrentWallet();
+      if (!client) {
+        throw new Error('You need to be connected to a ledger');
+      } else if (!wallet) {
+        throw new Error('You need to have a wallet connected');
+      } else {
+        try {
+          const tx = await client.submitAndWait(
+            {
+              ...(buildBaseTransaction(payload, wallet, 'SetRegularKey') as SetRegularKey),
+              ...(payload.regularKey && { RegularKey: payload.regularKey })
+            },
+            { wallet: wallet.wallet, autofill: true }
+          );
+
+          if (!tx.result.hash) {
+            throw new Error("Couldn't set the account");
+          }
+
+          if ((tx.result.meta! as TransactionMetadata).TransactionResult !== 'tesSUCCESS') {
+            throw new Error(
+              (tx.result.meta as TransactionMetadata)?.TransactionResult ||
+              "Couldn't set the account but the transaction was successful"
+            );
+          }
+
+          return {
+            hash: tx.result.hash
+          };
+        } catch (e) {
+          Sentry.captureException(e);
+          throw e;
+        }
+      }
+    },
+    [client, getCurrentWallet]
   );
 
   const createOffer = useCallback(
@@ -786,7 +837,8 @@ const LedgerProvider: FC = ({ children }) => {
     getNFTData,
     deleteAccount,
     getNFTInfo,
-    getLedgerEntry
+    getLedgerEntry,
+    setRegularKey
   };
 
   return <LedgerContext.Provider value={value}>{children}</LedgerContext.Provider>;

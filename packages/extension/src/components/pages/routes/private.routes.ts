@@ -23,6 +23,7 @@ import {
   SEND_PATH,
   SETTINGS_PATH,
   SET_ACCOUNT_PATH,
+  SET_REGULAR_KEY_PATH,
   SHARE_NFT_PATH,
   SHARE_PUBLIC_ADDRESS_PATH,
   SHARE_PUBLIC_KEY_PATH,
@@ -53,6 +54,7 @@ import { Permissions } from '../Permissions';
 import { ReceivePayment } from '../ReceivePayment';
 import { SendPayment } from '../SendPayment';
 import { SetAccount } from '../SetAccount';
+import { SetRegularKey } from '../SetRegularKey';
 import { Settings } from '../Settings';
 import { ShareAddress } from '../ShareAddress';
 import { ShareNFT } from '../ShareNFT';
@@ -90,6 +92,7 @@ export const privateRoutes: PrivateRouteConfig[] = [
   { path: RECEIVE_PATH, element: ReceivePayment },
   { path: SEND_PATH, element: SendPayment },
   { path: SET_ACCOUNT_PATH, element: SetAccount },
+  { path: SET_REGULAR_KEY_PATH, element: SetRegularKey },
   { path: SETTINGS_PATH, element: Settings },
   { path: SHARE_NFT_PATH, element: ShareNFT },
   { path: SHARE_PUBLIC_ADDRESS_PATH, element: ShareAddress },

@@ -15,6 +15,7 @@ import {
   SendPaymentRequest,
   SendPaymentRequestDeprecated,
   SetAccountRequest,
+  SetRegularKeyRequest,
   SetTrustlineRequest,
   SetTrustlineRequestDeprecated,
   SignMessageRequest,
@@ -42,6 +43,7 @@ interface MessageEventData {
     | SendPaymentRequest
     | SendPaymentRequestDeprecated
     | SetAccountRequest
+    | SetRegularKeyRequest
     | SetTrustlineRequest
     | SetTrustlineRequestDeprecated
     | SignMessageRequest
@@ -278,6 +280,16 @@ export interface SetAccountEventListener extends MessageEvent<MessageEventData> 
   };
 }
 
+export interface SetRegularKeyEventListener extends MessageEvent<MessageEventData> {
+  data: {
+    app: typeof GEM_WALLET;
+    type: 'REQUEST_SET_REGULAR_KEY/V3';
+    source: 'GEM_WALLET_MSG_REQUEST';
+    messageId: number;
+    payload: SetRegularKeyRequest;
+  };
+}
+
 export interface CreateOfferEventListener extends MessageEvent<MessageEventData> {
   data: {
     app: typeof GEM_WALLET;
@@ -317,6 +329,7 @@ export type EventListener =
   | PaymentEventListener
   | PaymentEventListenerDeprecated
   | SetAccountEventListener
+  | SetRegularKeyEventListener
   | SetTrustlineEventListener
   | SetTrustlineEventListenerDeprecated
   | SignMessageListener

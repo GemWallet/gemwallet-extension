@@ -13,6 +13,7 @@ export * from './isInstalled';
 export * from './mintNFT';
 export * from './sendPayment';
 export * from './setAccount';
+export * from './setRegularKey';
 export * from './setTrustline';
 export * from './signMessage';
 export * from './signTransaction';
@@ -41,6 +42,7 @@ export type {
   MintNFTRequest,
   SendPaymentRequest,
   SetAccountRequest,
+  SetRegularKeyRequest,
   SetTrustlineRequest,
   SignMessageRequest,
   SignTransactionRequest,
@@ -64,6 +66,7 @@ export type {
   MintNFTResponse,
   SendPaymentResponse,
   SetAccountResponse,
+  SetRegularKeyResponse,
   SetTrustlineResponse,
   SignMessageResponse,
   SignTransactionResponse,

@@ -25,6 +25,7 @@ import {
   ReceiveSendPaymentContentMessage,
   ReceiveSendPaymentContentMessageDeprecated,
   ReceiveSetAccountContentMessage,
+  ReceiveSetRegularKeyContentMessage,
   ReceiveSetTrustlineContentMessage,
   ReceiveSetTrustlineContentMessageDeprecated,
   ReceiveSignMessageContentMessage,
@@ -44,6 +45,7 @@ import {
   PARAMETER_SIGN_MESSAGE,
   PARAMETER_SIGN_TRANSACTION,
   PARAMETER_SUBMIT_TRANSACTION,
+  PARAMETER_SUBMIT_TRANSACTIONS_BULK,
   PARAMETER_TRANSACTION_ACCEPT_NFT_OFFER,
   PARAMETER_TRANSACTION_BURN_NFT,
   PARAMETER_TRANSACTION_CANCEL_NFT_OFFER,
@@ -54,7 +56,7 @@ import {
   PARAMETER_TRANSACTION_PAYMENT,
   PARAMETER_TRANSACTION_TRUSTLINE,
   PARAMETER_TRANSACTION_SET_ACCOUNT,
-  PARAMETER_SUBMIT_TRANSACTIONS_BULK
+  PARAMETER_TRANSACTION_SET_REGULAR_KEY
 } from '../../constants/parameters';
 import { STORAGE_CURRENT_WINDOW_ID, STORAGE_STATE_TRANSACTION } from '../../constants/storage';
 import { generateKey } from '../../utils/storage';
@@ -361,6 +363,17 @@ chrome.runtime.onMessage.addListener(
           sender
         });
       } catch (e) {}
+    } else if (type === 'REQUEST_SET_REGULAR_KEY/V3') {
+      handleTransactionRequest({
+        payload: message.payload,
+        sender,
+        parameter: PARAMETER_TRANSACTION_SET_REGULAR_KEY,
+        receivingMessage: 'RECEIVE_SET_REGULAR_KEY/V3',
+        errorPayload: {
+          type: ResponseType.Reject,
+          result: undefined
+        }
+      });
     } else if (type === 'REQUEST_CREATE_OFFER/V3') {
       const { payload } = message;
       try {
@@ -547,6 +560,17 @@ chrome.runtime.onMessage.addListener(
       handleTransactionResponse<ReceiveSetAccountContentMessage>(payload.id, {
         app,
         type: 'RECEIVE_SET_ACCOUNT/V3',
+        payload: {
+          type: ResponseType.Response,
+          result: payload.result,
+          error: payload.error
+        }
+      });
+    } else if (type === 'RECEIVE_SET_REGULAR_KEY/V3') {
+      const { payload } = message;
+      handleTransactionResponse<ReceiveSetRegularKeyContentMessage>(payload.id, {
+        app,
+        type: 'RECEIVE_SET_REGULAR_KEY/V3',
         payload: {
           type: ResponseType.Response,
           result: payload.result,

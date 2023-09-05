@@ -235,6 +235,12 @@ export interface SetAccountRequest extends BaseTransactionRequest {
   tickSize?: number;
 }
 
+export interface SetRegularKeyRequest extends BaseTransactionRequest {
+  // A base-58-encoded Address that indicates the regular key pair to be assigned to the account. If omitted, removes
+  // any existing regular key pair from the account. Must not match the master key pair for the address.
+  regularKey?: string;
+}
+
 export interface CreateOfferRequest extends BaseTransactionRequest {
   flags?: CreateOfferFlags;
   // Time after which the Offer is no longer active, in seconds since the Ripple Epoch.
@@ -309,6 +315,7 @@ export type RequestPayload =
   | SendPaymentRequest
   | SendPaymentRequestDeprecated
   | SetAccountRequest
+  | SetRegularKeyRequest
   | SetTrustlineRequest
   | SetTrustlineRequestDeprecated
   | SignMessageRequest
@@ -435,6 +442,11 @@ export interface SetAccountResponse
     hash: string;
   }> {}
 
+export interface SetRegularKeyResponse
+  extends BaseResponse<{
+    hash: string;
+  }> {}
+
 export interface CreateOfferResponse
   extends BaseResponse<{
     hash: string;
@@ -465,6 +477,7 @@ export type ResponsePayload =
   | SendPaymentResponse
   | SendPaymentResponseDeprecated
   | SetAccountResponse
+  | SetRegularKeyResponse
   | SetTrustlineResponse
   | SetTrustlineResponseDeprecated
   | SignMessageResponse
