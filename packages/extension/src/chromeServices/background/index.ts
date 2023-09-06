@@ -95,7 +95,7 @@ const sendInMemoryMessage = ({
 }) => {
   const key = generateKey();
   saveInChromeSessionStorage(key, JSON.stringify(payload)).then((r) =>
-    focusOrCreatePopupWindow({
+    handleTransactionRequest({
       payload: {
         storageKey: key
       },
@@ -436,7 +436,7 @@ chrome.runtime.onMessage.addListener(
         }
       });
     } else if (type === 'REQUEST_SIGN_TRANSACTION/V3') {
-      focusOrCreatePopupWindow({
+      handleTransactionRequest({
         payload: message.payload,
         sender,
         parameter: PARAMETER_SIGN_TRANSACTION,
@@ -707,7 +707,7 @@ chrome.runtime.onMessage.addListener(
       });
     } else if (type === 'RECEIVE_SIGN_TRANSACTION/V3') {
       const { payload } = message;
-      sendMessageToTab<ReceiveSignTransactionContentMessage>(payload.id, {
+      handleTransactionResponse<ReceiveSignTransactionContentMessage>(payload.id, {
         app,
         type: 'RECEIVE_SIGN_TRANSACTION/V3',
         payload: {
@@ -718,7 +718,7 @@ chrome.runtime.onMessage.addListener(
       });
     } else if (type === 'RECEIVE_SUBMIT_BULK_TRANSACTIONS/V3') {
       const { payload } = message;
-      sendMessageToTab<ReceiveSubmitTransactionContentMessage>(payload.id, {
+      handleTransactionResponse<ReceiveSubmitTransactionContentMessage>(payload.id, {
         app,
         type: 'RECEIVE_SUBMIT_BULK_TRANSACTIONS/V3',
         payload: {
