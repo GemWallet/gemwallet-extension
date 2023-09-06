@@ -111,16 +111,18 @@ const sendInMemoryMessage = ({
 };
 
 const handleTransactionRequest = async (payload: FocusOrCreatePopupWindowParam) => {
+  const { currentWindowId } = await chrome.storage.local.get('currentWindowId');
+  const openedWindows = await chrome.windows.getAll();
+  const windowStillOpened =
+    currentWindowId && openedWindows.find((window) => window.id === currentWindowId);
+
   // Do not allow multiple transactions at the same time
   const hasTxInProgress = await loadFromChromeSessionStorage(STORAGE_STATE_TRANSACTION);
-  if (Boolean(hasTxInProgress)) {
+  if (Boolean(hasTxInProgress) && windowStillOpened) {
     return Promise.resolve();
   }
 
-  const openedWindows = await chrome.windows.getAll();
-  const { currentWindowId } = await chrome.storage.local.get('currentWindowId');
-
-  if (currentWindowId && openedWindows.find((window) => window.id === currentWindowId)) {
+  if (windowStillOpened) {
     await chrome.storage.local.remove('currentWindowId');
     await chrome.windows.remove(currentWindowId);
   }
