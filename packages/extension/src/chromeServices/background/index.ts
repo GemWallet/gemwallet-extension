@@ -95,7 +95,7 @@ const sendInMemoryMessage = ({
 }) => {
   const key = generateKey();
   saveInChromeSessionStorage(key, JSON.stringify(payload)).then((r) =>
-    focusOrCreatePopupWindow({
+    handleTransactionRequest({
       payload: {
         storageKey: key
       },
@@ -111,16 +111,18 @@ const sendInMemoryMessage = ({
 };
 
 const handleTransactionRequest = async (payload: FocusOrCreatePopupWindowParam) => {
+  const { currentWindowId } = await chrome.storage.local.get('currentWindowId');
+  const openedWindows = await chrome.windows.getAll();
+  const windowStillOpened =
+    currentWindowId && openedWindows.find((window) => window.id === currentWindowId);
+
   // Do not allow multiple transactions at the same time
   const hasTxInProgress = await loadFromChromeSessionStorage(STORAGE_STATE_TRANSACTION);
-  if (Boolean(hasTxInProgress)) {
+  if (Boolean(hasTxInProgress) && windowStillOpened) {
     return Promise.resolve();
   }
 
-  const openedWindows = await chrome.windows.getAll();
-  const { currentWindowId } = await chrome.storage.local.get('currentWindowId');
-
-  if (currentWindowId && openedWindows.find((window) => window.id === currentWindowId)) {
+  if (windowStillOpened) {
     await chrome.storage.local.remove('currentWindowId');
     await chrome.windows.remove(currentWindowId);
   }
@@ -436,7 +438,7 @@ chrome.runtime.onMessage.addListener(
         }
       });
     } else if (type === 'REQUEST_SIGN_TRANSACTION/V3') {
-      focusOrCreatePopupWindow({
+      handleTransactionRequest({
         payload: message.payload,
         sender,
         parameter: PARAMETER_SIGN_TRANSACTION,
@@ -707,7 +709,7 @@ chrome.runtime.onMessage.addListener(
       });
     } else if (type === 'RECEIVE_SIGN_TRANSACTION/V3') {
       const { payload } = message;
-      sendMessageToTab<ReceiveSignTransactionContentMessage>(payload.id, {
+      handleTransactionResponse<ReceiveSignTransactionContentMessage>(payload.id, {
         app,
         type: 'RECEIVE_SIGN_TRANSACTION/V3',
         payload: {
@@ -718,7 +720,7 @@ chrome.runtime.onMessage.addListener(
       });
     } else if (type === 'RECEIVE_SUBMIT_BULK_TRANSACTIONS/V3') {
       const { payload } = message;
-      sendMessageToTab<ReceiveSubmitTransactionContentMessage>(payload.id, {
+      handleTransactionResponse<ReceiveSubmitTransactionContentMessage>(payload.id, {
         app,
         type: 'RECEIVE_SUBMIT_BULK_TRANSACTIONS/V3',
         payload: {

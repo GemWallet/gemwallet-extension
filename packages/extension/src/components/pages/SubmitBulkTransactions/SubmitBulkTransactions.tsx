@@ -13,7 +13,12 @@ import {
 } from '@gemwallet/constants';
 
 import { STORAGE_PERMISSION_SUBMIT_BULK } from '../../../constants';
-import { useLedger, useNetwork } from '../../../contexts';
+import {
+  TransactionProgressStatus,
+  useLedger,
+  useNetwork,
+  useTransactionProgress
+} from '../../../contexts';
 import { useFees, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
 import {
@@ -53,6 +58,7 @@ export const SubmitBulkTransactions: FC = () => {
     useState<boolean>(false);
   const { submitBulkTransactions } = useLedger();
   const { networkName } = useNetwork();
+  const { setTransactionProgress } = useTransactionProgress();
   const { estimatedFees, errorFees, difference } = useFees(
     (params.transactionsMapParam ? Object.values(params.transactionsMapParam) : undefined)?.map(
       (tx) => tx
@@ -151,6 +157,14 @@ export const SubmitBulkTransactions: FC = () => {
     fetchData();
   }, []);
 
+  const sendMessageToBackground = useCallback(
+    (message: ReceiveSubmitBulkTransactionsBackgroundMessage) => {
+      chrome.runtime.sendMessage(message);
+      setTransactionProgress(TransactionProgressStatus.IDLE);
+    },
+    [setTransactionProgress]
+  );
+
   const createMessage = useCallback(
     (messagePayload: {
       txResults: TransactionBulkResponse[] | null | undefined;
@@ -181,8 +195,8 @@ export const SubmitBulkTransactions: FC = () => {
     const message = createMessage({
       txResults: null
     });
-    chrome.runtime.sendMessage<ReceiveSubmitBulkTransactionsBackgroundMessage>(message);
-  }, [createMessage]);
+    sendMessageToBackground(message);
+  }, [createMessage, sendMessageToBackground]);
 
   const handleConfirm = useCallback(() => {
     setTransaction(TransactionStatus.Pending);
@@ -241,15 +255,22 @@ export const SubmitBulkTransactions: FC = () => {
         const message = createMessage({
           txResults
         });
-        chrome.runtime.sendMessage<ReceiveSubmitBulkTransactionsBackgroundMessage>(message);
+        sendMessageToBackground(message);
       })
       .catch((e) => {
         setErrorRequestRejection(e.message);
         setTransaction(TransactionStatus.Rejected);
         const message = createMessage({ txResults: null, error: e });
-        chrome.runtime.sendMessage<ReceiveSubmitBulkTransactionsBackgroundMessage>(message);
+        sendMessageToBackground(message);
       });
-  }, [params.transactionsMapParam, onError, submitBulkTransactions, waitForHashes, createMessage]);
+  }, [
+    params.transactionsMapParam,
+    onError,
+    submitBulkTransactions,
+    waitForHashes,
+    createMessage,
+    sendMessageToBackground
+  ]);
   const { transactionsMapParam } = params;
 
   const allTransactions = transactionsMapParam ?? {};

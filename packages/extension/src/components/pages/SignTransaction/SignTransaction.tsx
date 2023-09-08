@@ -12,7 +12,12 @@ import {
 } from '@gemwallet/constants';
 
 import { ERROR_RED, SECONDARY_GRAY } from '../../../constants';
-import { useLedger, useNetwork } from '../../../contexts';
+import {
+  TransactionProgressStatus,
+  useLedger,
+  useNetwork,
+  useTransactionProgress
+} from '../../../contexts';
 import { useFees, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
 import { parseTransactionParam } from '../../../utils';
@@ -38,6 +43,7 @@ export const SignTransaction: FC = () => {
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
   const { signTransaction } = useLedger();
   const { networkName } = useNetwork();
+  const { setTransactionProgress } = useTransactionProgress();
   const { estimatedFees, errorFees, difference } = useFees(
     params.txParam ?? {
       TransactionType: 'Payment',
@@ -55,6 +61,14 @@ export const SignTransaction: FC = () => {
     transaction,
     errorRequestRejection
   });
+
+  const sendMessageToBackground = useCallback(
+    (message: ReceiveSignTransactionBackgroundMessage) => {
+      chrome.runtime.sendMessage(message);
+      setTransactionProgress(TransactionProgressStatus.IDLE);
+    },
+    [setTransactionProgress]
+  );
 
   const createMessage = useCallback(
     (messagePayload: {
@@ -102,8 +116,8 @@ export const SignTransaction: FC = () => {
     const message = createMessage({
       signature: null
     });
-    chrome.runtime.sendMessage<ReceiveSignTransactionBackgroundMessage>(message);
-  }, [createMessage]);
+    sendMessageToBackground(message);
+  }, [createMessage, sendMessageToBackground]);
 
   const handleSign = useCallback(() => {
     setTransaction(TransactionStatus.Pending);
@@ -115,9 +129,7 @@ export const SignTransaction: FC = () => {
     })
       .then((response) => {
         setTransaction(TransactionStatus.Success);
-        chrome.runtime.sendMessage<ReceiveSignTransactionBackgroundMessage>(
-          createMessage(response)
-        );
+        sendMessageToBackground(createMessage(response));
       })
       .catch((e) => {
         setErrorRequestRejection(e);
@@ -126,9 +138,9 @@ export const SignTransaction: FC = () => {
           signature: undefined,
           error: e
         });
-        chrome.runtime.sendMessage<ReceiveSignTransactionBackgroundMessage>(message);
+        sendMessageToBackground(message);
       });
-  }, [signTransaction, params, createMessage]);
+  }, [signTransaction, params.txParam, sendMessageToBackground, createMessage]);
 
   const { txParam } = params;
 
