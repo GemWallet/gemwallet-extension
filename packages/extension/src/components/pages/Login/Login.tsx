@@ -212,12 +212,16 @@ export const Login: FC = () => {
           error={!!passwordError}
           onChange={handleTextFieldChange}
           helperText={passwordError}
-          type={showPassword ? 'text' : 'password'} // Toggle between text and password type
+          type={showPassword ? 'text' : 'password'}
           style={{ marginBottom: !passwordError ? '33px' : '10px' }}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
-                <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                <IconButton
+                  onClick={() => setShowPassword(!showPassword)}
+                  edge="end"
+                  aria-label={showPassword ? 'Hide Password' : 'Show Password'}
+                >
                   {showPassword ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
               </InputAdornment>
