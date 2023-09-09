@@ -1,3 +1,4 @@
+export * from './errors/errors.constant';
 export * from './event/event.types';
 export * from './message/message.constant';
 export * from './message/message.types';
