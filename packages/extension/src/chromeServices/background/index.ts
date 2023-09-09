@@ -815,18 +815,11 @@ chrome.runtime.onMessage.addListener((request, sender) => {
 });
 
 const sendToActiveTabs = (payload: any): void => {
-  // Check all active tabs and remove the ones that are closed
   activeTabs.forEach((tabId) => {
     chrome.tabs.get(tabId, () => {
-      if (chrome.runtime.lastError) {
-        activeTabs.delete(tabId);
+      if (!chrome.runtime.lastError) {
+        chrome.tabs.sendMessage(tabId, payload);
       }
     });
-  });
-
-  activeTabs.forEach((tabId) => {
-    try {
-      chrome.tabs.sendMessage(tabId, payload);
-    } catch {}
   });
 };
