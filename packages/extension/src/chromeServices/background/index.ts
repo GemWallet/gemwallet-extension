@@ -1,10 +1,6 @@
 import {
   BackgroundMessage,
-  EventLoginContentMessage,
   EventLogoutBackgroundMessage,
-  EventLogoutContentMessage,
-  EventNetworkChangedContentMessage,
-  EventWalletChangedContentMessage,
   GEM_WALLET,
   InternalReceivePasswordContentMessage,
   MSG_INTERNAL_RECEIVE_PASSWORD,
@@ -58,7 +54,7 @@ import {
   PARAMETER_TRANSACTION_SET_ACCOUNT,
   PARAMETER_SUBMIT_TRANSACTIONS_BULK
 } from '../../constants/parameters';
-import { STORAGE_STATE_TRANSACTION } from '../../constants/storage';
+import { STORAGE_CURRENT_WINDOW_ID, STORAGE_STATE_TRANSACTION } from '../../constants/storage';
 import { generateKey } from '../../utils/storage';
 import {
   loadFromChromeSessionStorage,
@@ -69,6 +65,7 @@ import {
   focusOrCreatePopupWindow
 } from './utils/focusOrCreatePopupWindow';
 import { createOffscreen } from './utils/offscreen';
+import { buildRejectMessage } from './utils/rejectOnClose';
 import { Session } from './utils/session';
 
 const sendMessageToTab = <T>(tabId: number | undefined, message: any) => {
@@ -79,6 +76,7 @@ chrome.runtime.onStartup.addListener(createOffscreen);
 chrome.runtime.onMessage.addListener((e) => {}); // keepAlive
 
 const session = Session.getInstance();
+let currentReceivingMessage: string | undefined = undefined; // For reject message on popup close
 
 // Used to send a message to the view through the chrome.storage.local memory.
 // Useful when the data to send is big.
@@ -111,7 +109,7 @@ const sendInMemoryMessage = ({
 };
 
 const handleTransactionRequest = async (payload: FocusOrCreatePopupWindowParam) => {
-  const { currentWindowId } = await chrome.storage.local.get('currentWindowId');
+  const { currentWindowId } = await chrome.storage.local.get(STORAGE_CURRENT_WINDOW_ID);
   const openedWindows = await chrome.windows.getAll();
   const windowStillOpened =
     currentWindowId && openedWindows.find((window) => window.id === currentWindowId);
@@ -123,10 +121,11 @@ const handleTransactionRequest = async (payload: FocusOrCreatePopupWindowParam) 
   }
 
   if (windowStillOpened) {
-    await chrome.storage.local.remove('currentWindowId');
+    await chrome.storage.local.remove(STORAGE_CURRENT_WINDOW_ID);
     await chrome.windows.remove(currentWindowId);
   }
 
+  currentReceivingMessage = payload.receivingMessage;
   saveInChromeSessionStorage(STORAGE_STATE_TRANSACTION, true);
   focusOrCreatePopupWindow(payload);
 };
@@ -734,56 +733,67 @@ chrome.runtime.onMessage.addListener(
        */
     } else if (type === 'EVENT_NETWORK_CHANGED') {
       const { payload } = message;
-      activeTabs.forEach((tabId) => {
-        chrome.tabs.sendMessage<EventNetworkChangedContentMessage>(tabId, {
-          app,
-          type: 'EVENT_NETWORK_CHANGED',
-          source: 'GEM_WALLET_MSG_REQUEST',
-          payload: {
-            result: payload.result
-          }
-        });
+      sendToActiveTabs({
+        app,
+        type: 'EVENT_NETWORK_CHANGED',
+        source: 'GEM_WALLET_MSG_REQUEST',
+        payload: {
+          result: payload.result
+        }
       });
     } else if (type === 'EVENT_WALLET_CHANGED') {
       const { payload } = message;
-      activeTabs.forEach((tabId) => {
-        chrome.tabs.sendMessage<EventWalletChangedContentMessage>(tabId, {
-          app,
-          type: 'EVENT_WALLET_CHANGED',
-          source: 'GEM_WALLET_MSG_REQUEST',
-          payload: {
-            result: payload.result
-          }
-        });
+      sendToActiveTabs({
+        app,
+        type: 'EVENT_WALLET_CHANGED',
+        source: 'GEM_WALLET_MSG_REQUEST',
+        payload: {
+          result: payload.result
+        }
       });
     } else if (type === 'EVENT_LOGIN') {
       const { payload } = message;
-      activeTabs.forEach((tabId) => {
-        chrome.tabs.sendMessage<EventLoginContentMessage>(tabId, {
-          app,
-          type: 'EVENT_LOGIN',
-          source: 'GEM_WALLET_MSG_REQUEST',
-          payload: {
-            result: payload.result
-          }
-        });
+      sendToActiveTabs({
+        app,
+        type: 'EVENT_LOGIN',
+        source: 'GEM_WALLET_MSG_REQUEST',
+        payload: {
+          result: payload.result
+        }
       });
     }
   }
 );
 
+/*
+ * Rejection messages management (when the popup is closed)
+ */
+chrome.windows.onRemoved.addListener(function (windowId) {
+  // Check if the closed window is your extension's popup
+  isPopupWindow(windowId).then((isPopup) => {
+    if (isPopup && currentReceivingMessage) {
+      const response = buildRejectMessage(currentReceivingMessage);
+      sendToActiveTabs(response);
+    }
+  });
+});
+
+// Read the windowId from storage and check if it matches the closed window's id
+const isPopupWindow = async (windowId: number): Promise<boolean> => {
+  const { currentWindowId } = await chrome.storage.local.get(STORAGE_CURRENT_WINDOW_ID);
+  return windowId === currentWindowId;
+};
+
 // Called by the session manager
 export const handleLogoutEvent = (message: EventLogoutBackgroundMessage) => {
   const { payload } = message;
-  activeTabs.forEach((tabId) => {
-    chrome.tabs.sendMessage<EventLogoutContentMessage>(tabId, {
-      app: message.app,
-      type: 'EVENT_LOGOUT',
-      source: 'GEM_WALLET_MSG_REQUEST',
-      payload: {
-        result: payload.result
-      }
-    });
+  sendToActiveTabs({
+    app: message.app,
+    type: 'EVENT_LOGOUT',
+    source: 'GEM_WALLET_MSG_REQUEST',
+    payload: {
+      result: payload.result
+    }
   });
 };
 
@@ -797,7 +807,26 @@ chrome.runtime.onMessage.addListener((request, sender) => {
     if (request.type === 'CONTENT_SCRIPT_LOADED') {
       activeTabs.add(sender.tab.id);
     } else if (request.type === 'CONTENT_SCRIPT_UNLOADED') {
-      activeTabs.delete(sender.tab.id);
+      try {
+        activeTabs.delete(sender.tab.id);
+      } catch {}
     }
   }
 });
+
+const sendToActiveTabs = (payload: any): void => {
+  // Check all active tabs and remove the ones that are closed
+  activeTabs.forEach((tabId) => {
+    chrome.tabs.get(tabId, () => {
+      if (chrome.runtime.lastError) {
+        activeTabs.delete(tabId);
+      }
+    });
+  });
+
+  activeTabs.forEach((tabId) => {
+    try {
+      chrome.tabs.sendMessage(tabId, payload);
+    } catch {}
+  });
+};

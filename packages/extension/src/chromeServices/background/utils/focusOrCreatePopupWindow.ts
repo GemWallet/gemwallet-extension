@@ -7,6 +7,7 @@ import {
 } from '@gemwallet/constants';
 
 import { MAIN_FILE } from '../../../constants/paths';
+import { STORAGE_CURRENT_WINDOW_ID } from '../../../constants/storage';
 
 const NOTIFICATION_HEIGHT = 620;
 const NOTIFICATION_WIDTH = 360;
@@ -50,7 +51,7 @@ export const focusOrCreatePopupWindow = async ({
 }: FocusOrCreatePopupWindowParam): Promise<void> => {
   try {
     const openedWindows = await chrome.windows.getAll();
-    const { currentWindowId } = await chrome.storage.local.get('currentWindowId');
+    const { currentWindowId } = await chrome.storage.local.get(STORAGE_CURRENT_WINDOW_ID);
 
     if (currentWindowId && openedWindows.find((window) => window.id === currentWindowId)) {
       chrome.windows.update(currentWindowId, { focused: true });
