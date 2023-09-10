@@ -1,6 +1,8 @@
 import { Dispatch, FC, SetStateAction, useCallback, useRef, useState } from 'react';
 
-import { TextField, Typography } from '@mui/material';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import { IconButton, InputAdornment, TextField, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
 
 import {
@@ -10,7 +12,7 @@ import {
 } from '@gemwallet/constants';
 
 import { ERROR_RED } from '../../../constants';
-import { saveWallet, WalletToSave } from '../../../utils';
+import { WalletToSave, saveWallet } from '../../../utils';
 import { PageWithStepper } from '../../templates';
 
 export interface CreatePasswordProps {
@@ -30,10 +32,16 @@ export const CreatePassword: FC<CreatePasswordProps> = ({
 }) => {
   const [passwordError, setPasswordError] = useState('');
   const [saveWalletError, setSaveWalletError] = useState('');
+  const [showPassword, setShowPassword] = useState(false); // State for showing/hiding the password
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // State for showing/hiding the confirm password
   const passwordRef = useRef<HTMLInputElement | null>(null);
   const confirmPasswordRef = useRef<HTMLInputElement | null>(null);
 
   const handleNext = useCallback(() => {
+    // Clear old errors when user attempts to proceed
+    setPasswordError('');
+    setSaveWalletError('');
+
     const passwordValue: string | undefined = passwordRef.current?.value;
     const confirmPasswordValue: string | undefined = confirmPasswordRef.current?.value;
     if (passwordValue === undefined || passwordValue == null || passwordValue.length < 8) {
@@ -67,6 +75,16 @@ export const CreatePassword: FC<CreatePasswordProps> = ({
     }
   }, [setActiveStep, wallet]);
 
+  // Clear old errors when user interacts with the password field
+  const handlePasswordChange = () => {
+    setPasswordError('');
+  };
+
+  // Clear old errors when user interacts with the confirm password field
+  const handleConfirmPasswordChange = () => {
+    setPasswordError('');
+  };
+
   return (
     <PageWithStepper
       steps={steps}
@@ -89,8 +107,22 @@ export const CreatePassword: FC<CreatePasswordProps> = ({
         label="Password"
         inputRef={passwordRef}
         error={!!passwordError}
-        type="password"
+        type={showPassword ? 'text' : 'password'} // Toggle between text and password type
         style={{ marginTop: '20px' }}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton
+                onClick={() => setShowPassword(!showPassword)}
+                edge="end"
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? <VisibilityOff /> : <Visibility />}
+              </IconButton>
+            </InputAdornment>
+          )
+        }}
+        onChange={handlePasswordChange} // Clear old errors when user interacts with this field
       />
       <TextField
         fullWidth
@@ -101,8 +133,22 @@ export const CreatePassword: FC<CreatePasswordProps> = ({
         inputRef={confirmPasswordRef}
         error={!!passwordError}
         helperText={passwordError}
-        type="password"
+        type={showConfirmPassword ? 'text' : 'password'} // Toggle between text and password type
         style={{ marginTop: '20px' }}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                edge="end"
+                aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
+              >
+                {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+              </IconButton>
+            </InputAdornment>
+          )
+        }}
+        onChange={handleConfirmPasswordChange} // Clear old errors when user interacts with this field
       />
       {saveWalletError ? (
         <Typography variant="body2" style={{ marginTop: '15px', color: ERROR_RED }}>

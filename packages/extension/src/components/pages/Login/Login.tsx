@@ -1,5 +1,7 @@
-import { useState, useEffect, FC, useCallback, useRef, ChangeEvent } from 'react';
+import { ChangeEvent, FC, useCallback, useEffect, useRef, useState } from 'react';
 
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import {
   Button,
   Checkbox,
@@ -8,8 +10,10 @@ import {
   TextField,
   Typography
 } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
 import * as Sentry from '@sentry/react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { EventLoginBackgroundMessage, GEM_WALLET } from '@gemwallet/constants';
 
@@ -29,6 +33,7 @@ import {
   PARAMETER_SIGN_MESSAGE,
   PARAMETER_SIGN_TRANSACTION,
   PARAMETER_SUBMIT_TRANSACTION,
+  PARAMETER_SUBMIT_TRANSACTIONS_BULK,
   PARAMETER_TRANSACTION_ACCEPT_NFT_OFFER,
   PARAMETER_TRANSACTION_BURN_NFT,
   PARAMETER_TRANSACTION_CANCEL_NFT_OFFER,
@@ -43,15 +48,14 @@ import {
   SET_ACCOUNT_PATH,
   SHARE_NFT_PATH,
   SHARE_PUBLIC_ADDRESS_PATH,
+  SHARE_PUBLIC_KEY_PATH,
   SIGN_MESSAGE_PATH,
   SIGN_TRANSACTION_PATH,
-  SHARE_PUBLIC_KEY_PATH,
   STORAGE_WALLETS,
+  SUBMIT_TRANSACTIONS_BULK_PATH,
   SUBMIT_TRANSACTION_PATH,
   TRANSACTION_PATH,
-  WELCOME_PATH,
-  PARAMETER_SUBMIT_TRANSACTIONS_BULK,
-  SUBMIT_TRANSACTIONS_BULK_PATH
+  WELCOME_PATH
 } from '../../../constants';
 import { useWallet } from '../../../contexts';
 import { useKeyUp } from '../../../hooks/useKeyUp';
@@ -62,6 +66,7 @@ import { Logo } from '../../atoms/Logo';
 export const Login: FC = () => {
   const [passwordError, setPasswordError] = useState('');
   const [rememberSession, setRememberSession] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const { search } = useLocation();
   const { signIn, wallets, selectedWallet } = useWallet();
@@ -207,8 +212,21 @@ export const Login: FC = () => {
           error={!!passwordError}
           onChange={handleTextFieldChange}
           helperText={passwordError}
-          type="password"
+          type={showPassword ? 'text' : 'password'}
           style={{ marginBottom: !passwordError ? '33px' : '10px' }}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  onClick={() => setShowPassword(!showPassword)}
+                  edge="end"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            )
+          }}
         />
         <FormControlLabel
           control={

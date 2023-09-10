@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 
 import { Login } from './Login';
@@ -16,5 +17,22 @@ describe('Login Page', () => {
     });
     expect(titleElement).toBeVisible();
     expect(subTitleElement).toBeVisible();
+  });
+
+  test('Toggles password visibility when the show password button is clicked', async () => {
+    render(
+      <BrowserRouter>
+        <Login />
+      </BrowserRouter>
+    );
+
+    const passwordInput = screen.getByLabelText('Password');
+    expect(passwordInput).toHaveAttribute('type', 'password');
+
+    await userEvent.click(screen.getByLabelText('Show password'));
+    expect(passwordInput).toHaveAttribute('type', 'text');
+
+    await userEvent.click(screen.getByLabelText('Hide password'));
+    expect(passwordInput).toHaveAttribute('type', 'password');
   });
 });
