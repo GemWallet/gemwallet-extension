@@ -220,7 +220,7 @@ export const Login: FC = () => {
                 <IconButton
                   onClick={() => setShowPassword(!showPassword)}
                   edge="end"
-                  aria-label={showPassword ? 'Hide Password' : 'Show Password'}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? <VisibilityOff /> : <Visibility />}
                 </IconButton>

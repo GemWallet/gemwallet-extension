@@ -29,10 +29,10 @@ describe('Login Page', () => {
     const passwordInput = screen.getByLabelText('Password');
     expect(passwordInput).toHaveAttribute('type', 'password');
 
-    await userEvent.click(screen.getByLabelText('Show Password'));
+    await userEvent.click(screen.getByLabelText('Show password'));
     expect(passwordInput).toHaveAttribute('type', 'text');
 
-    await userEvent.click(screen.getByLabelText('Hide Password'));
+    await userEvent.click(screen.getByLabelText('Hide password'));
     expect(passwordInput).toHaveAttribute('type', 'password');
   });
 });
