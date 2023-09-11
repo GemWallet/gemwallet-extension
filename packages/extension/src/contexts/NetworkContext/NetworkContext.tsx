@@ -9,10 +9,9 @@ import {
   NETWORK,
   Network
 } from '@gemwallet/constants';
-import { NetworkData } from '@gemwallet/constants/src/network/network.types';
 
 import { OfflineBanner } from '../../components/atoms/OfflineBanner';
-import { loadNetwork, removeNetwork, saveCustomNetwork, saveNetwork } from '../../utils';
+import { loadNetwork, removeNetwork, saveNetwork } from '../../utils';
 import { connectToLedger } from '../LedgerContext/utils/connectToLedger';
 
 const RECOGNIZED_CONNECTION_ERRORS = ['Connection failed.', 'Could not establish connection.'];
@@ -26,7 +25,6 @@ interface ContextType {
     customNetworkServer?: string
   ) => void;
   resetNetwork: () => void;
-  registerCustomNetwork: (networkData: NetworkData) => void;
   // Returns null if client couldn't connect
   client?: Client | null;
   networkName: Network | string;
@@ -37,7 +35,6 @@ const NetworkContext = createContext<ContextType>({
   reconnectToNetwork: () => {},
   switchNetwork: () => {},
   resetNetwork: () => {},
-  registerCustomNetwork: () => {},
   client: undefined,
   networkName: DEFAULT_NETWORK_NAME,
   isConnectionFailed: false
@@ -164,19 +161,10 @@ const NetworkProvider: FC = ({ children }) => {
     }
   }, []);
 
-  const registerCustomNetwork = useCallback(async (networkData: NetworkData) => {
-    try {
-      await saveCustomNetwork(networkData);
-    } catch (err) {
-      Sentry.captureException(err);
-    }
-  }, []);
-
   const value: ContextType = {
     reconnectToNetwork,
     switchNetwork,
     resetNetwork,
-    registerCustomNetwork,
     client,
     networkName,
     isConnectionFailed
