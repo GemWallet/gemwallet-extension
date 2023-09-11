@@ -12,13 +12,7 @@ import {
 } from '@gemwallet/constants';
 
 import { OfflineBanner } from '../../components/atoms/OfflineBanner';
-import {
-  SHARE_NFT_PATH,
-  SHARE_PUBLIC_ADDRESS_PATH,
-  SHARE_PUBLIC_KEY_PATH,
-  SIGN_MESSAGE_PATH,
-  SIGN_TRANSACTION_PATH
-} from '../../constants';
+import { hideOfflineBannerRoutes } from '../../components/pages/routes';
 import { loadNetwork, removeNetwork, saveNetwork } from '../../utils';
 import { connectToLedger } from '../LedgerContext/utils/connectToLedger';
 
@@ -47,14 +41,6 @@ const NetworkContext = createContext<ContextType>({
   networkName: DEFAULT_NETWORK_NAME,
   hasOfflineBanner: false
 });
-
-const pathsToHideOfflineBanner = [
-  SHARE_NFT_PATH,
-  SHARE_PUBLIC_ADDRESS_PATH,
-  SHARE_PUBLIC_KEY_PATH,
-  SIGN_MESSAGE_PATH,
-  SIGN_TRANSACTION_PATH
-];
 
 const NetworkProvider: FC = ({ children }) => {
   const { pathname } = useLocation();
@@ -108,7 +94,7 @@ const NetworkProvider: FC = ({ children }) => {
   }, [client]);
 
   useEffect(() => {
-    if (isConnectionFailed && !pathsToHideOfflineBanner.includes(pathname)) {
+    if (isConnectionFailed && !hideOfflineBannerRoutes.includes(pathname)) {
       setHasOfflineBanner(true);
     } else {
       setHasOfflineBanner(false);
