@@ -17,7 +17,7 @@ describe('NetworkIndicator', () => {
       client: undefined,
       networkName: 'testnet',
       switchNetwork: jest.fn(),
-      isConnectionFailed: false
+      hasOfflineBanner: false
     });
 
     render(<NetworkIndicator />);
@@ -30,7 +30,7 @@ describe('NetworkIndicator', () => {
       client: undefined,
       networkName: 'Loading...',
       switchNetwork: jest.fn(),
-      isConnectionFailed: false
+      hasOfflineBanner: false
     });
 
     render(<NetworkIndicator />);
@@ -43,7 +43,7 @@ describe('NetworkIndicator', () => {
       client: jest.fn(),
       networkName: 'testnet',
       switchNetwork: jest.fn(),
-      isConnectionFailed: false
+      hasOfflineBanner: false
     });
 
     render(<NetworkIndicator />);
@@ -56,7 +56,7 @@ describe('NetworkIndicator', () => {
       client: undefined,
       networkName: 'testnet',
       switchNetwork: jest.fn(),
-      isConnectionFailed: false
+      hasOfflineBanner: false
     });
 
     render(<NetworkIndicator />);
@@ -69,7 +69,7 @@ describe('NetworkIndicator', () => {
       client: undefined,
       networkName: 'testnet',
       switchNetwork: jest.fn(),
-      isConnectionFailed: false
+      hasOfflineBanner: false
     });
 
     render(<NetworkIndicator />);
@@ -84,7 +84,7 @@ describe('NetworkIndicator', () => {
       client: undefined,
       networkName: 'testnet',
       switchNetwork: jest.fn(),
-      isConnectionFailed: false
+      hasOfflineBanner: false
     });
 
     render(<NetworkIndicator />);

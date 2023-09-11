@@ -9,17 +9,17 @@ export interface PageWithNavMenuProps {
 }
 
 export const PageWithNavMenu: FC<PageWithNavMenuProps> = ({ children, indexDefaultNav }) => {
-  const { isConnectionFailed } = useNetwork();
+  const { hasOfflineBanner } = useNetwork();
 
   return (
     <>
       <div
         style={{
           height: `calc(100% - ${NAV_MENU_HEIGHT}px${
-            isConnectionFailed ? ` - ${NETWORK_BANNER_HEIGHT}px` : ''
+            hasOfflineBanner ? ` - ${NETWORK_BANNER_HEIGHT}px` : ''
           })`,
           position: 'fixed',
-          top: isConnectionFailed ? NETWORK_BANNER_HEIGHT : undefined,
+          top: hasOfflineBanner ? NETWORK_BANNER_HEIGHT : undefined,
           width: '100%'
         }}
       >

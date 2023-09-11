@@ -24,12 +24,12 @@ export const PageWithReturn: FC<PageWithReturnProps> = ({
   children,
   style
 }) => {
-  const { isConnectionFailed } = useNetwork();
+  const { hasOfflineBanner } = useNetwork();
 
   return (
     <div
       style={
-        isConnectionFailed
+        hasOfflineBanner
           ? {
               position: 'fixed',
               top: NETWORK_BANNER_HEIGHT

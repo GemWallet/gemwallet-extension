@@ -16,7 +16,7 @@ export interface PageWithHeaderProps {
 
 export const PageWithHeader: FC<PageWithHeaderProps> = ({ children, title }) => {
   const { wallets, selectedWallet } = useWallet();
-  const { isConnectionFailed } = useNetwork();
+  const { hasOfflineBanner } = useNetwork();
 
   if (!wallets?.[selectedWallet]) {
     return null;
@@ -24,7 +24,7 @@ export const PageWithHeader: FC<PageWithHeaderProps> = ({ children, title }) => 
   return (
     <div
       style={
-        isConnectionFailed
+        hasOfflineBanner
           ? {
               width: '100%',
               position: 'fixed',
@@ -40,7 +40,7 @@ export const PageWithHeader: FC<PageWithHeaderProps> = ({ children, title }) => 
           display: 'flex',
           flexDirection: 'column',
           height: `calc(100vh - ${CONTAINER_HEIGHT_TAKEN}px${
-            isConnectionFailed ? ` - ${NETWORK_BANNER_HEIGHT}px` : ''
+            hasOfflineBanner ? ` - ${NETWORK_BANNER_HEIGHT}px` : ''
           })`,
           margin: `${MARGIN_TOP_CONTAINER}px auto 0 auto`,
           overflowY: 'auto'

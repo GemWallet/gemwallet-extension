@@ -1,6 +1,7 @@
 import { useContext, useMemo, useState, useEffect, createContext, FC, useCallback } from 'react';
 
 import * as Sentry from '@sentry/react';
+import { useLocation } from 'react-router-dom';
 import { Client } from 'xrpl';
 
 import {
@@ -11,6 +12,13 @@ import {
 } from '@gemwallet/constants';
 
 import { OfflineBanner } from '../../components/atoms/OfflineBanner';
+import {
+  SHARE_NFT_PATH,
+  SHARE_PUBLIC_ADDRESS_PATH,
+  SHARE_PUBLIC_KEY_PATH,
+  SIGN_MESSAGE_PATH,
+  SIGN_TRANSACTION_PATH
+} from '../../constants';
 import { loadNetwork, removeNetwork, saveNetwork } from '../../utils';
 import { connectToLedger } from '../LedgerContext/utils/connectToLedger';
 
@@ -28,7 +36,7 @@ interface ContextType {
   // Returns null if client couldn't connect
   client?: Client | null;
   networkName: Network | string;
-  isConnectionFailed: boolean;
+  hasOfflineBanner: boolean;
 }
 
 const NetworkContext = createContext<ContextType>({
@@ -37,13 +45,24 @@ const NetworkContext = createContext<ContextType>({
   resetNetwork: () => new Promise(() => {}),
   client: undefined,
   networkName: DEFAULT_NETWORK_NAME,
-  isConnectionFailed: false
+  hasOfflineBanner: false
 });
 
+const pathsToHideOfflineBanner = [
+  SHARE_NFT_PATH,
+  SHARE_PUBLIC_ADDRESS_PATH,
+  SHARE_PUBLIC_KEY_PATH,
+  SIGN_MESSAGE_PATH,
+  SIGN_TRANSACTION_PATH
+];
+
 const NetworkProvider: FC = ({ children }) => {
+  const { pathname } = useLocation();
+
   const [client, setClient] = useState<Client | null | undefined>(undefined);
   const [networkName, setNetworkName] = useState<Network | string>(DEFAULT_NETWORK_NAME);
   const [isConnectionFailed, setIsConnectionFailed] = useState(false);
+  const [hasOfflineBanner, setHasOfflineBanner] = useState(false);
 
   useEffect(() => {
     let retryCount = 0;
@@ -87,6 +106,14 @@ const NetworkProvider: FC = ({ children }) => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
   }, [client]);
+
+  useEffect(() => {
+    if (isConnectionFailed && !pathsToHideOfflineBanner.includes(pathname)) {
+      setHasOfflineBanner(true);
+    } else {
+      setHasOfflineBanner(false);
+    }
+  }, [isConnectionFailed, pathname]);
 
   const reconnectToNetwork = useCallback(async () => {
     try {
@@ -168,13 +195,13 @@ const NetworkProvider: FC = ({ children }) => {
       resetNetwork,
       client,
       networkName,
-      isConnectionFailed
+      hasOfflineBanner
     };
-  }, [reconnectToNetwork, switchNetwork, resetNetwork, client, networkName, isConnectionFailed]);
+  }, [reconnectToNetwork, switchNetwork, resetNetwork, client, networkName, hasOfflineBanner]);
 
   return (
     <NetworkContext.Provider value={value}>
-      {isConnectionFailed ? <OfflineBanner reconnectToNetwork={reconnectToNetwork} /> : null}
+      {hasOfflineBanner ? <OfflineBanner reconnectToNetwork={reconnectToNetwork} /> : null}
       {children}
     </NetworkContext.Provider>
   );
