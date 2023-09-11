@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect, createContext, FC, useCallback } from 'react';
+import { useContext, useMemo, useState, useEffect, createContext, FC, useCallback } from 'react';
 
 import * as Sentry from '@sentry/react';
 import { Client } from 'xrpl';
@@ -18,13 +18,13 @@ const RECOGNIZED_CONNECTION_ERRORS = ['Connection failed.', 'Could not establish
 const DEFAULT_NETWORK_NAME = 'Loading...';
 
 interface ContextType {
-  reconnectToNetwork: () => void;
+  reconnectToNetwork: () => Promise<void>;
   switchNetwork: (
     network: Network,
     customNetworkName?: string,
     customNetworkServer?: string
-  ) => void;
-  resetNetwork: () => void;
+  ) => Promise<void>;
+  resetNetwork: () => Promise<void>;
   // Returns null if client couldn't connect
   client?: Client | null;
   networkName: Network | string;
@@ -32,9 +32,9 @@ interface ContextType {
 }
 
 const NetworkContext = createContext<ContextType>({
-  reconnectToNetwork: () => {},
-  switchNetwork: () => {},
-  resetNetwork: () => {},
+  reconnectToNetwork: () => new Promise(() => {}),
+  switchNetwork: () => new Promise(() => {}),
+  resetNetwork: () => new Promise(() => {}),
   client: undefined,
   networkName: DEFAULT_NETWORK_NAME,
   isConnectionFailed: false
@@ -161,14 +161,16 @@ const NetworkProvider: FC = ({ children }) => {
     }
   }, []);
 
-  const value: ContextType = {
-    reconnectToNetwork,
-    switchNetwork,
-    resetNetwork,
-    client,
-    networkName,
-    isConnectionFailed
-  };
+  const value: ContextType = useMemo(() => {
+    return {
+      reconnectToNetwork,
+      switchNetwork,
+      resetNetwork,
+      client,
+      networkName,
+      isConnectionFailed
+    };
+  }, [reconnectToNetwork, switchNetwork, resetNetwork, client, networkName, isConnectionFailed]);
 
   return (
     <NetworkContext.Provider value={value}>
