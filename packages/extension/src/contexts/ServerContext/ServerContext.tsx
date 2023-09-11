@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect, createContext, FC } from 'react';
+import { useContext, useMemo, useState, useEffect, createContext, FC } from 'react';
 
 import * as Sentry from '@sentry/react';
 import { ServerInfoResponse } from 'xrpl';
@@ -35,9 +35,11 @@ const ServerProvider: FC = ({ children }) => {
       });
   }, [client]);
 
-  const value: ContextType = {
-    serverInfo
-  };
+  const value: ContextType = useMemo(() => {
+    return {
+      serverInfo
+    };
+  }, [serverInfo]);
 
   return <ServerContext.Provider value={value}>{children}</ServerContext.Provider>;
 };
