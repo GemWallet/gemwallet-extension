@@ -6,12 +6,13 @@ import ReactJson from 'react-json-view';
 import { Transaction } from 'xrpl';
 
 import {
+  API_ERROR_BAD_REQUEST,
   GEM_WALLET,
   ReceiveSubmitTransactionBackgroundMessage,
   ResponseType
 } from '@gemwallet/constants';
 
-import { API_ERROR_BAD_REQUEST, ERROR_RED } from '../../../constants';
+import { ERROR_RED } from '../../../constants';
 import {
   TransactionProgressStatus,
   useLedger,

@@ -4,13 +4,14 @@ import { Avatar, Button, Container, Divider, Paper, Typography } from '@mui/mate
 import * as Sentry from '@sentry/react';
 
 import {
+  API_ERROR_BAD_REQUEST,
   GEM_WALLET,
   ReceiveSignMessageBackgroundMessage,
   ReceiveSignMessageBackgroundMessageDeprecated,
   ResponseType
 } from '@gemwallet/constants';
 
-import { API_ERROR_BAD_REQUEST, SECONDARY_GRAY } from '../../../constants';
+import { SECONDARY_GRAY } from '../../../constants';
 import {
   TransactionProgressStatus,
   useBrowser,

@@ -5,6 +5,7 @@ import { isValidAddress, TrustSetFlags as TrustSetFlagsBitmask } from 'xrpl';
 import { IssuedCurrencyAmount } from 'xrpl/dist/npm/models/common';
 
 import {
+  API_ERROR_BAD_REQUEST,
   GEM_WALLET,
   ReceiveSetTrustlineBackgroundMessage,
   ReceiveSetTrustlineBackgroundMessageDeprecated,
@@ -12,7 +13,7 @@ import {
   TrustSetFlags
 } from '@gemwallet/constants';
 
-import { API_ERROR_BAD_ISSUER, API_ERROR_BAD_REQUEST, HOME_PATH } from '../../../constants';
+import { API_ERROR_BAD_ISSUER, HOME_PATH } from '../../../constants';
 import {
   TransactionProgressStatus,
   useLedger,

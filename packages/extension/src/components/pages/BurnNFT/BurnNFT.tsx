@@ -3,9 +3,14 @@ import { FC, useCallback, useEffect, useState } from 'react';
 import ErrorIcon from '@mui/icons-material/Error';
 import { Button, Container, Paper, Typography } from '@mui/material';
 
-import { GEM_WALLET, ReceiveBurnNFTBackgroundMessage, ResponseType } from '@gemwallet/constants';
+import {
+  API_ERROR_BAD_REQUEST,
+  GEM_WALLET,
+  ReceiveBurnNFTBackgroundMessage,
+  ResponseType
+} from '@gemwallet/constants';
 
-import { API_ERROR_BAD_REQUEST, ERROR_RED } from '../../../constants';
+import { ERROR_RED } from '../../../constants';
 import {
   TransactionProgressStatus,
   useLedger,

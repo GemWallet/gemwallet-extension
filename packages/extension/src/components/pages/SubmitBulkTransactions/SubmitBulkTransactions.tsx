@@ -3,6 +3,7 @@ import React, { FC, useCallback, useEffect, useState } from 'react';
 import * as Sentry from '@sentry/react';
 
 import {
+  API_ERROR_BAD_REQUEST,
   DEFAULT_SUBMIT_TX_BULK_ON_ERROR,
   GEM_WALLET,
   ReceiveSubmitBulkTransactionsBackgroundMessage,
@@ -12,7 +13,7 @@ import {
   TransactionWithID
 } from '@gemwallet/constants';
 
-import { API_ERROR_BAD_REQUEST, STORAGE_PERMISSION_SUBMIT_BULK } from '../../../constants';
+import { STORAGE_PERMISSION_SUBMIT_BULK } from '../../../constants';
 import {
   TransactionProgressStatus,
   useLedger,

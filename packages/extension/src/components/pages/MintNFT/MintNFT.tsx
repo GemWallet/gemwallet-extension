@@ -5,13 +5,14 @@ import { Button, Container, Paper, Tooltip, Typography } from '@mui/material';
 import { convertHexToString } from 'xrpl';
 
 import {
+  API_ERROR_BAD_REQUEST,
   GEM_WALLET,
   MintNFTFlags,
   ReceiveMintNFTBackgroundMessage,
   ResponseType
 } from '@gemwallet/constants';
 
-import { API_ERROR_BAD_REQUEST, ERROR_RED } from '../../../constants';
+import { ERROR_RED } from '../../../constants';
 import {
   TransactionProgressStatus,
   useLedger,

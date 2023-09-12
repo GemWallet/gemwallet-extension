@@ -5,12 +5,13 @@ import { Button, Container, Paper, Typography } from '@mui/material';
 import { Amount } from 'xrpl/dist/npm/models/common';
 
 import {
+  API_ERROR_BAD_REQUEST,
   GEM_WALLET,
   ReceiveAcceptNFTOfferBackgroundMessage,
   ResponseType
 } from '@gemwallet/constants';
 
-import { API_ERROR_BAD_REQUEST, ERROR_RED } from '../../../constants';
+import { ERROR_RED } from '../../../constants';
 import {
   TransactionProgressStatus,
   useLedger,
