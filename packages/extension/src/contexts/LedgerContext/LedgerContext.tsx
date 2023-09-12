@@ -755,11 +755,12 @@ const LedgerProvider: FC = ({ children }) => {
       // Sign the transaction
       const signed = wallet.wallet.sign(prepared);
 
+      if (!signed.tx_blob) {
+        throw new Error("Couldn't sign the transaction");
+      }
+
       // Handle signing-only case
       if (signOnly) {
-        if (!signed.tx_blob) {
-          throw new Error("Couldn't sign the transaction");
-        }
         return {
           signature: signed.tx_blob
         };
