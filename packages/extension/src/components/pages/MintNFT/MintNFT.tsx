@@ -5,6 +5,7 @@ import { Button, Container, Paper, Tooltip, Typography } from '@mui/material';
 import { convertHexToString } from 'xrpl';
 
 import {
+  API_ERROR_BAD_REQUEST,
   GEM_WALLET,
   MintNFTFlags,
   ReceiveMintNFTBackgroundMessage,
@@ -76,14 +77,6 @@ export const MintNFT: FC = () => {
     },
     params.fee
   );
-  const { hasEnoughFunds, transactionStatusComponent } = useTransactionStatus({
-    isParamsMissing,
-    errorFees,
-    network: networkName,
-    difference,
-    transaction,
-    errorRequestRejection
-  });
 
   const sendMessageToBackground = useCallback(
     (message: ReceiveMintNFTBackgroundMessage) => {
@@ -120,6 +113,25 @@ export const MintNFT: FC = () => {
     },
     [params.id]
   );
+
+  const badRequestCallback = useCallback(() => {
+    sendMessageToBackground(
+      createMessage({
+        hash: null,
+        error: new Error(API_ERROR_BAD_REQUEST)
+      })
+    );
+  }, [createMessage, sendMessageToBackground]);
+
+  const { hasEnoughFunds, transactionStatusComponent } = useTransactionStatus({
+    isParamsMissing,
+    errorFees,
+    network: networkName,
+    difference,
+    transaction,
+    errorRequestRejection,
+    badRequestCallback
+  });
 
   useEffect(() => {
     const queryString = window.location.search;

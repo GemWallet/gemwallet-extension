@@ -1,10 +1,11 @@
 import {
-  SubmitBulkTransactionsResponse,
+  API_ERROR_BAD_REQUEST,
   GEM_WALLET,
-  ResponseType,
   RequestSubmitBulkTransactionsMessage,
-  TransactionWithID,
-  SubmitBulkTransactionsRequest
+  ResponseType,
+  SubmitBulkTransactionsRequest,
+  SubmitBulkTransactionsResponse,
+  TransactionWithID
 } from '@gemwallet/constants';
 
 import { deserializeError } from '../helpers/errors';
@@ -19,6 +20,10 @@ export const submitBulkTransactions = async (
     type: ResponseType.Reject,
     result: undefined
   };
+
+  if (!payload.transactions) {
+    throw new Error(API_ERROR_BAD_REQUEST);
+  }
 
   if (payload.transactions.length === 0 || payload.transactions.length > MAX_TRANSACTIONS) {
     throw new Error(`Invalid number of transactions (must be between 1 and ${MAX_TRANSACTIONS})`);

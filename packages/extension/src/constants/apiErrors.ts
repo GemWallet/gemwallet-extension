@@ -1,3 +1,2 @@
 export const API_ERROR_BAD_DESTINATION = 'gem_BAD_DESTINATION';
 export const API_ERROR_BAD_ISSUER = 'gem_BAD_ISSUER';
-export const API_ERROR_BAD_REQUEST = 'gem_BAD_REQUEST';

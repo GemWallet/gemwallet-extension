@@ -6,6 +6,7 @@ import ReactJson from 'react-json-view';
 import { Transaction } from 'xrpl';
 
 import {
+  API_ERROR_BAD_REQUEST,
   GEM_WALLET,
   ReceiveSignTransactionBackgroundMessage,
   ResponseType
@@ -53,14 +54,6 @@ export const SignTransaction: FC = () => {
     },
     params.txParam?.Fee ?? null
   );
-  const { hasEnoughFunds, transactionStatusComponent } = useTransactionStatus({
-    isParamsMissing,
-    errorFees,
-    network: networkName,
-    difference,
-    transaction,
-    errorRequestRejection
-  });
 
   const sendMessageToBackground = useCallback(
     (message: ReceiveSignTransactionBackgroundMessage) => {
@@ -94,6 +87,25 @@ export const SignTransaction: FC = () => {
     },
     [params.id]
   );
+
+  const badRequestCallback = useCallback(() => {
+    sendMessageToBackground(
+      createMessage({
+        signature: null,
+        error: new Error(API_ERROR_BAD_REQUEST)
+      })
+    );
+  }, [createMessage, sendMessageToBackground]);
+
+  const { hasEnoughFunds, transactionStatusComponent } = useTransactionStatus({
+    isParamsMissing,
+    errorFees,
+    network: networkName,
+    difference,
+    transaction,
+    errorRequestRejection,
+    badRequestCallback
+  });
 
   useEffect(() => {
     const queryString = window.location.search;

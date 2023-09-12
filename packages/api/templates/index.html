@@ -27,7 +27,7 @@
       <button onclick="handleCancelOffer()">Cancel Offer (check the console)</button>
       <button onclick="handleSubmitTransaction()">Submit transaction (check the console)</button>
       <button onclick="handleSignTransaction()">Sign transaction (check the console)</button>
-      <button onclick="handlesubmitBulkTransactions()">
+      <button onclick="handleSubmitBulkTransactions()">
         Submit transactions (Bulk) (check the console)
       </button>
       <button onclick="handleEvents()">Activate events (check the console)</button>
@@ -550,7 +550,7 @@
         console.error('GemWallet is not connected: ', e);
       });
   }
-  function handlesubmitBulkTransactions() {
+  function handleSubmitBulkTransactions() {
     GemWalletApi.isInstalled()
       .then(({ result }) => {
         if (result.isInstalled) {

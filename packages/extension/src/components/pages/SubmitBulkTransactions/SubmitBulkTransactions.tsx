@@ -3,6 +3,7 @@ import React, { FC, useCallback, useEffect, useState } from 'react';
 import * as Sentry from '@sentry/react';
 
 import {
+  API_ERROR_BAD_REQUEST,
   DEFAULT_SUBMIT_TX_BULK_ON_ERROR,
   GEM_WALLET,
   ReceiveSubmitBulkTransactionsBackgroundMessage,
@@ -65,6 +66,49 @@ export const SubmitBulkTransactions: FC = () => {
     ) ?? [],
     null
   );
+
+  const sendMessageToBackground = useCallback(
+    (message: ReceiveSubmitBulkTransactionsBackgroundMessage) => {
+      chrome.runtime.sendMessage(message);
+      setTransactionProgress(TransactionProgressStatus.IDLE);
+    },
+    [setTransactionProgress]
+  );
+
+  const createMessage = useCallback(
+    (messagePayload: {
+      txResults: TransactionBulkResponse[] | null | undefined;
+      error?: Error;
+    }): ReceiveSubmitBulkTransactionsBackgroundMessage => {
+      const { txResults, error } = messagePayload;
+
+      return {
+        app: GEM_WALLET,
+        type: 'RECEIVE_SUBMIT_BULK_TRANSACTIONS/V3',
+        payload: {
+          id: params.id,
+          type: ResponseType.Response,
+          result: txResults
+            ? {
+                transactions: txResults
+              }
+            : undefined,
+          error: error ? serializeError(error) : undefined
+        }
+      };
+    },
+    [params.id]
+  );
+
+  const badRequestCallback = useCallback(() => {
+    sendMessageToBackground(
+      createMessage({
+        txResults: null,
+        error: new Error(API_ERROR_BAD_REQUEST)
+      })
+    );
+  }, [createMessage, sendMessageToBackground]);
+
   const { hasEnoughFunds, transactionStatusComponent } = useTransactionStatus({
     isParamsMissing,
     errorFees,
@@ -73,7 +117,8 @@ export const SubmitBulkTransactions: FC = () => {
     transaction,
     errorRequestRejection,
     isBulk: true,
-    progressPercentage: progressPercentage
+    progressPercentage: progressPercentage,
+    badRequestCallback
   });
 
   const enableBulkTransactionPermission = useCallback(() => {
@@ -156,39 +201,6 @@ export const SubmitBulkTransactions: FC = () => {
 
     fetchData();
   }, []);
-
-  const sendMessageToBackground = useCallback(
-    (message: ReceiveSubmitBulkTransactionsBackgroundMessage) => {
-      chrome.runtime.sendMessage(message);
-      setTransactionProgress(TransactionProgressStatus.IDLE);
-    },
-    [setTransactionProgress]
-  );
-
-  const createMessage = useCallback(
-    (messagePayload: {
-      txResults: TransactionBulkResponse[] | null | undefined;
-      error?: Error;
-    }): ReceiveSubmitBulkTransactionsBackgroundMessage => {
-      const { txResults, error } = messagePayload;
-
-      return {
-        app: GEM_WALLET,
-        type: 'RECEIVE_SUBMIT_BULK_TRANSACTIONS/V3',
-        payload: {
-          id: params.id,
-          type: ResponseType.Response,
-          result: txResults
-            ? {
-                transactions: txResults
-              }
-            : undefined,
-          error: error ? serializeError(error) : undefined
-        }
-      };
-    },
-    [params.id]
-  );
 
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);

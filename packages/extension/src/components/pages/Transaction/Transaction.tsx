@@ -6,6 +6,7 @@ import { isValidAddress } from 'xrpl';
 import { Amount } from 'xrpl/dist/npm/models/common';
 
 import {
+  API_ERROR_BAD_REQUEST,
   GEM_WALLET,
   PaymentFlags,
   ReceiveSendPaymentBackgroundMessage,
@@ -13,7 +14,7 @@ import {
   ResponseType
 } from '@gemwallet/constants';
 
-import { API_ERROR_BAD_DESTINATION, API_ERROR_BAD_REQUEST, ERROR_RED } from '../../../constants';
+import { API_ERROR_BAD_DESTINATION, ERROR_RED } from '../../../constants';
 import {
   TransactionProgressStatus,
   useLedger,

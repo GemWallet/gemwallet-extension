@@ -5,6 +5,7 @@ import { Button, Container, Paper, Typography } from '@mui/material';
 import { AccountSetAsfFlags } from 'xrpl';
 
 import {
+  API_ERROR_BAD_REQUEST,
   GEM_WALLET,
   ReceiveSetAccountBackgroundMessage,
   ResponseType,
@@ -83,14 +84,6 @@ export const SetAccount: FC = () => {
     },
     params.fee
   );
-  const { hasEnoughFunds, transactionStatusComponent } = useTransactionStatus({
-    isParamsMissing,
-    errorFees,
-    network: networkName,
-    difference,
-    transaction,
-    errorRequestRejection
-  });
 
   const sendMessageToBackground = useCallback(
     (message: ReceiveSetAccountBackgroundMessage) => {
@@ -124,6 +117,25 @@ export const SetAccount: FC = () => {
     },
     [params.id]
   );
+
+  const badRequestCallback = useCallback(() => {
+    sendMessageToBackground(
+      createMessage({
+        hash: null,
+        error: new Error(API_ERROR_BAD_REQUEST)
+      })
+    );
+  }, [createMessage, sendMessageToBackground]);
+
+  const { hasEnoughFunds, transactionStatusComponent } = useTransactionStatus({
+    isParamsMissing,
+    errorFees,
+    network: networkName,
+    difference,
+    transaction,
+    errorRequestRejection,
+    badRequestCallback
+  });
 
   useEffect(() => {
     const queryString = window.location.search;
