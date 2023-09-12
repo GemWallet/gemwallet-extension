@@ -44,7 +44,7 @@
           const payment = {
             amount: '0.2',
             destination: issuer || 'rNvFCZXpDtGeQ3bVas95wGLN6N2stGmA9o',
-            currency: 'ETH',
+            currency: currency ? 'ETH' : undefined,
             issuer,
             memos: [
               {

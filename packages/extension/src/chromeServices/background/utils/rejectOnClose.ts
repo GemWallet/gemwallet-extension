@@ -5,7 +5,7 @@ const defaultPayload = {
 };
 
 export const buildRejectMessage = (type: string): any => {
-  if (type === 'RECEIVE_SEND_PAYMENT/V3' || type === 'SEND_PAYMENT') {
+  if (type === 'RECEIVE_SEND_PAYMENT/V3' || type === 'RECEIVE_PAYMENT_HASH') {
     return {
       app: GEM_WALLET,
       type,
@@ -68,7 +68,7 @@ export const buildRejectMessage = (type: string): any => {
       type: 'RECEIVE_SUBMIT_BULK_TRANSACTIONS/V3',
       payload: defaultPayload
     };
-  } else if (type === 'RECEIVE_SET_TRUSTLINE/V3' || type === 'RECEIVE_ADD_TRUSTLINE') {
+  } else if (type === 'RECEIVE_SET_TRUSTLINE/V3' || type === 'RECEIVE_TRUSTLINE_HASH') {
     return {
       app: GEM_WALLET,
       type,
