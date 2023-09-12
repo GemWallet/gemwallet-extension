@@ -17,7 +17,8 @@ import {
   TransactionProgressStatus,
   useLedger,
   useNetwork,
-  useTransactionProgress
+  useTransactionProgress,
+  useWallet
 } from '../../../contexts';
 import { useFees, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
@@ -43,7 +44,7 @@ export const SignTransaction: FC = () => {
   const [isParamsMissing, setIsParamsMissing] = useState(false);
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
   const { signTransaction } = useLedger();
-  const { networkName } = useNetwork();
+  const { isConnectionFailed, networkName } = useNetwork();
   const { setTransactionProgress } = useTransactionProgress();
   const { estimatedFees, errorFees, difference } = useFees(
     params.txParam ?? {
@@ -54,6 +55,8 @@ export const SignTransaction: FC = () => {
     },
     params.txParam?.Fee ?? null
   );
+  const { getCurrentWallet } = useWallet();
+  const wallet = getCurrentWallet();
 
   const sendMessageToBackground = useCallback(
     (message: ReceiveSignTransactionBackgroundMessage) => {
@@ -117,11 +120,19 @@ export const SignTransaction: FC = () => {
       setIsParamsMissing(true);
     }
 
+    if (
+      txParam !== null &&
+      wallet?.publicAddress &&
+      (!txParam?.Account || txParam?.Account === '')
+    ) {
+      txParam.Account = wallet.publicAddress;
+    }
+
     setParams({
       id,
       txParam
     });
-  }, []);
+  }, [wallet?.publicAddress]);
 
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);
@@ -212,11 +223,13 @@ export const SignTransaction: FC = () => {
                 />
               </Paper>
             ) : null}
-            <Fee
-              errorFees={errorFees}
-              estimatedFees={estimatedFees}
-              fee={txParam?.Fee ? Number(txParam?.Fee) : null}
-            />
+            {isConnectionFailed ? null : (
+              <Fee
+                errorFees={errorFees}
+                estimatedFees={estimatedFees}
+                fee={txParam?.Fee ? Number(txParam?.Fee) : null}
+              />
+            )}
           </div>
           <div
             style={{

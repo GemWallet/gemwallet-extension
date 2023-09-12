@@ -729,44 +729,58 @@ const LedgerProvider: FC = ({ children }) => {
       signOnly = false
     ): Promise<SubmitTransactionResponse | SignTransactionResponse> => {
       const wallet = getCurrentWallet();
-      if (!client) {
-        throw new Error('You need to be connected to a ledger');
-      }
       if (!wallet) {
         throw new Error('You need to have a wallet connected');
       }
+      if (!signOnly) {
+        if (!client) {
+          throw new Error('You need to be connected to a ledger');
+        }
+      }
 
+      // Ensure the transaction has an Account or set it to the wallet's public address
       if (!payload.transaction.Account || payload.transaction.Account === '') {
         payload.transaction.Account = wallet.publicAddress;
       }
 
       // Validate the transaction
       validate(payload.transaction as unknown as Record<string, unknown>);
-      // Prepare the transaction
-      const prepared: Transaction = await client.autofill(payload.transaction);
+
+      // Prepare the transaction if needed
+      let prepared: Transaction = payload.transaction;
+      if (!signOnly && client) {
+        prepared = await client.autofill(payload.transaction);
+      }
+
       // Sign the transaction
       const signed = wallet.wallet.sign(prepared);
 
+      // Handle signing-only case
       if (signOnly) {
         if (!signed.tx_blob) {
           throw new Error("Couldn't sign the transaction");
         }
-
         return {
           signature: signed.tx_blob
         };
       }
 
-      // Submit the signed blob
+      // Ensure client is available for submission
+      if (!client) {
+        throw new Error('You need to be connected to a ledger');
+      }
+
+      // Submit the signed transaction
       const tx = await client.submitAndWait(signed.tx_blob);
 
       if (!tx.result.hash) {
         throw new Error("Couldn't submit the transaction");
       }
 
-      if ((tx.result.meta! as TransactionMetadata).TransactionResult !== 'tesSUCCESS') {
+      const transactionResult = (tx.result.meta! as TransactionMetadata)?.TransactionResult;
+      if (transactionResult !== 'tesSUCCESS') {
         throw new Error(
-          (tx.result.meta as TransactionMetadata)?.TransactionResult ||
+          transactionResult ||
             "Couldn't submit the signed transaction but the transaction was successful"
         );
       }

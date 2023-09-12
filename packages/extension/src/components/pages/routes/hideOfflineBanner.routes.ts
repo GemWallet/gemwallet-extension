@@ -1,5 +1,4 @@
 import {
-  SHARE_NFT_PATH,
   SHARE_PUBLIC_ADDRESS_PATH,
   SHARE_PUBLIC_KEY_PATH,
   SIGN_MESSAGE_PATH,
@@ -7,7 +6,6 @@ import {
 } from '../../../constants';
 
 export const hideOfflineBannerRoutes = [
-  SHARE_NFT_PATH,
   SHARE_PUBLIC_ADDRESS_PATH,
   SHARE_PUBLIC_KEY_PATH,
   SIGN_MESSAGE_PATH,

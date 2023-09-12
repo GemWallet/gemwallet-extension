@@ -30,6 +30,7 @@ interface ContextType {
   // Returns null if client couldn't connect
   client?: Client | null;
   networkName: Network | string;
+  isConnectionFailed: boolean;
   hasOfflineBanner: boolean;
 }
 
@@ -39,6 +40,7 @@ const NetworkContext = createContext<ContextType>({
   resetNetwork: () => new Promise(() => {}),
   client: undefined,
   networkName: DEFAULT_NETWORK_NAME,
+  isConnectionFailed: false,
   hasOfflineBanner: false
 });
 
@@ -181,9 +183,18 @@ const NetworkProvider: FC = ({ children }) => {
       resetNetwork,
       client,
       networkName,
+      isConnectionFailed,
       hasOfflineBanner
     };
-  }, [reconnectToNetwork, switchNetwork, resetNetwork, client, networkName, hasOfflineBanner]);
+  }, [
+    reconnectToNetwork,
+    switchNetwork,
+    resetNetwork,
+    client,
+    networkName,
+    isConnectionFailed,
+    hasOfflineBanner
+  ]);
 
   return (
     <NetworkContext.Provider value={value}>
