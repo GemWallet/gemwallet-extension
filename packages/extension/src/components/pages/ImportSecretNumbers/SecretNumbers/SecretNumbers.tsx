@@ -31,7 +31,7 @@ export interface SecretNumbersProps {
 
 export const SecretNumbers: FC<SecretNumbersProps> = ({ activeStep, steps, onBack, onNext }) => {
   const { isValidNumbers } = useWallet();
-  const { isConnectionFailed } = useNetwork();
+  const { hasOfflineBanner } = useNetwork();
   const [numbersError, setNumbersError] = useState('');
   const [inputErrors, setInputErrors] = useState<InputErrors>({
     numbersA: '',
@@ -90,7 +90,7 @@ export const SecretNumbers: FC<SecretNumbersProps> = ({ activeStep, steps, onBac
         variant="subtitle1"
         component="h2"
         style={
-          isConnectionFailed
+          hasOfflineBanner
             ? { marginTop: '10px', marginBottom: '5px' }
             : { marginTop: '20px', marginBottom: '10px' }
         }
@@ -110,7 +110,7 @@ export const SecretNumbers: FC<SecretNumbersProps> = ({ activeStep, steps, onBac
               marginTop: '15px',
               marginBottom: Boolean(inputErrors.numbersA)
                 ? '0px'
-                : isConnectionFailed
+                : hasOfflineBanner
                 ? '10px'
                 : '20px',
               width: '110px'
@@ -132,7 +132,7 @@ export const SecretNumbers: FC<SecretNumbersProps> = ({ activeStep, steps, onBac
               marginTop: '15px',
               marginBottom: Boolean(inputErrors.numbersB)
                 ? '0px'
-                : isConnectionFailed
+                : hasOfflineBanner
                 ? '10px'
                 : '20px',
               width: '110px'
@@ -154,7 +154,7 @@ export const SecretNumbers: FC<SecretNumbersProps> = ({ activeStep, steps, onBac
               marginTop: '15px',
               marginBottom: Boolean(inputErrors.numbersC)
                 ? '0px'
-                : isConnectionFailed
+                : hasOfflineBanner
                 ? '10px'
                 : '20px',
               width: '110px'
@@ -176,7 +176,7 @@ export const SecretNumbers: FC<SecretNumbersProps> = ({ activeStep, steps, onBac
               marginTop: '15px',
               marginBottom: Boolean(inputErrors.numbersD)
                 ? '0px'
-                : isConnectionFailed
+                : hasOfflineBanner
                 ? '10px'
                 : '20px',
               width: '110px'
@@ -198,7 +198,7 @@ export const SecretNumbers: FC<SecretNumbersProps> = ({ activeStep, steps, onBac
               marginTop: '15px',
               marginBottom: Boolean(inputErrors.numbersE)
                 ? '0px'
-                : isConnectionFailed
+                : hasOfflineBanner
                 ? '10px'
                 : '20px',
               width: '110px'
@@ -220,7 +220,7 @@ export const SecretNumbers: FC<SecretNumbersProps> = ({ activeStep, steps, onBac
               marginTop: '15px',
               marginBottom: Boolean(inputErrors.numbersF)
                 ? '0px'
-                : isConnectionFailed
+                : hasOfflineBanner
                 ? '10px'
                 : '20px',
               width: '110px'
@@ -242,7 +242,7 @@ export const SecretNumbers: FC<SecretNumbersProps> = ({ activeStep, steps, onBac
               marginTop: '15px',
               marginBottom: Boolean(inputErrors.numbersG)
                 ? '0px'
-                : isConnectionFailed
+                : hasOfflineBanner
                 ? '10px'
                 : '20px',
               width: '110px'
@@ -264,7 +264,7 @@ export const SecretNumbers: FC<SecretNumbersProps> = ({ activeStep, steps, onBac
               marginTop: '15px',
               marginBottom: Boolean(inputErrors.numbersH)
                 ? '0px'
-                : isConnectionFailed
+                : hasOfflineBanner
                 ? '10px'
                 : '20px',
               width: '110px'

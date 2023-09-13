@@ -13,17 +13,17 @@ export interface PageWithTitleProps {
 }
 
 export const PageWithTitle: FC<PageWithTitleProps> = ({ title, children, styles }) => {
-  const { isConnectionFailed } = useNetwork();
+  const { hasOfflineBanner } = useNetwork();
 
   return (
     <Container
       component="main"
       style={{
-        ...(isConnectionFailed ? { position: 'fixed', top: NETWORK_BANNER_HEIGHT } : {}),
+        ...(hasOfflineBanner ? { position: 'fixed', top: NETWORK_BANNER_HEIGHT } : {}),
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        height: isConnectionFailed ? `calc(100vh - ${NETWORK_BANNER_HEIGHT}px)` : '100vh',
+        height: hasOfflineBanner ? `calc(100vh - ${NETWORK_BANNER_HEIGHT}px)` : '100vh',
         padding: '20px 16px',
         overflowY: 'auto',
         ...styles?.container

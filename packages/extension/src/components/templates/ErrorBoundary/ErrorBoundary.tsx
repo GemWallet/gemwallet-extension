@@ -10,7 +10,7 @@ import { WarningIcon } from './WarningIcon';
 
 export interface ErrorBoundaryProps {
   children: ReactNode;
-  isConnectionFailed: boolean;
+  hasOfflineBanner: boolean;
 }
 
 interface State {
@@ -37,7 +37,7 @@ class ErrorBoundaryClassComponent extends Component<ErrorBoundaryProps, State> {
   }
 
   render() {
-    const { isConnectionFailed } = this.props;
+    const { hasOfflineBanner } = this.props;
     if (this.state.hasError) {
       return (
         <Container
@@ -47,7 +47,7 @@ class ErrorBoundaryClassComponent extends Component<ErrorBoundaryProps, State> {
             flexDirection: 'column',
             justifyContent: 'space-between',
             padding: '15x 16px',
-            ...(isConnectionFailed
+            ...(hasOfflineBanner
               ? {
                   height: `calc(100vh - ${NETWORK_BANNER_HEIGHT}px)`,
                   position: 'fixed',
@@ -70,9 +70,7 @@ class ErrorBoundaryClassComponent extends Component<ErrorBoundaryProps, State> {
             <Button
               variant="contained"
               fullWidth
-              style={
-                isConnectionFailed ? { marginTop: 'calc(80px - 28px)' } : { marginTop: '80px' }
-              }
+              style={hasOfflineBanner ? { marginTop: 'calc(80px - 28px)' } : { marginTop: '80px' }}
               onClick={() => (window.location.href = 'index.html')}
             >
               Refresh
@@ -87,10 +85,10 @@ class ErrorBoundaryClassComponent extends Component<ErrorBoundaryProps, State> {
 }
 
 export const ErrorBoundary: React.FC = ({ children }) => {
-  const { isConnectionFailed } = useNetwork();
+  const { hasOfflineBanner } = useNetwork();
 
   return (
-    <ErrorBoundaryClassComponent isConnectionFailed={isConnectionFailed}>
+    <ErrorBoundaryClassComponent hasOfflineBanner={hasOfflineBanner}>
       {children}
     </ErrorBoundaryClassComponent>
   );

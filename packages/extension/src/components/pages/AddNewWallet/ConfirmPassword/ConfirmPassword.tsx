@@ -16,7 +16,7 @@ export interface ConfirmPasswordProps {
 export const ConfirmPassword: FC<ConfirmPasswordProps> = ({ setPassword, onConfirmPassword }) => {
   const navigate = useNavigate();
   const { signIn } = useWallet();
-  const { isConnectionFailed } = useNetwork();
+  const { hasOfflineBanner } = useNetwork();
   const [passwordError, setPasswordError] = useState<string>('');
   const passwordRef = useRef<HTMLInputElement | null>(null);
 
@@ -48,7 +48,7 @@ export const ConfirmPassword: FC<ConfirmPasswordProps> = ({ setPassword, onConfi
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          height: isConnectionFailed ? `calc(100% - ${NETWORK_BANNER_HEIGHT}px)` : '100%',
+          height: hasOfflineBanner ? `calc(100% - ${NETWORK_BANNER_HEIGHT}px)` : '100%',
           paddingBottom: '10px'
         }}
       >

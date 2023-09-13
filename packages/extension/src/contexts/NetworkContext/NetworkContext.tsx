@@ -1,6 +1,7 @@
-import { useContext, useState, useEffect, createContext, FC, useCallback } from 'react';
+import { useContext, useMemo, useState, useEffect, createContext, FC, useCallback } from 'react';
 
 import * as Sentry from '@sentry/react';
+import { useLocation } from 'react-router-dom';
 import { Client } from 'xrpl';
 
 import {
@@ -9,44 +10,47 @@ import {
   NETWORK,
   Network
 } from '@gemwallet/constants';
-import { NetworkData } from '@gemwallet/constants/src/network/network.types';
 
 import { OfflineBanner } from '../../components/atoms/OfflineBanner';
-import { loadNetwork, removeNetwork, saveCustomNetwork, saveNetwork } from '../../utils';
+import { hideOfflineBannerRoutes } from '../../components/pages/routes';
+import { loadNetwork, removeNetwork, saveNetwork } from '../../utils';
 import { connectToLedger } from '../LedgerContext/utils/connectToLedger';
 
 const RECOGNIZED_CONNECTION_ERRORS = ['Connection failed.', 'Could not establish connection.'];
 const DEFAULT_NETWORK_NAME = 'Loading...';
 
 interface ContextType {
-  reconnectToNetwork: () => void;
+  reconnectToNetwork: () => Promise<void>;
   switchNetwork: (
     network: Network,
     customNetworkName?: string,
     customNetworkServer?: string
-  ) => void;
-  resetNetwork: () => void;
-  registerCustomNetwork: (networkData: NetworkData) => void;
+  ) => Promise<void>;
+  resetNetwork: () => Promise<void>;
   // Returns null if client couldn't connect
   client?: Client | null;
   networkName: Network | string;
   isConnectionFailed: boolean;
+  hasOfflineBanner: boolean;
 }
 
 const NetworkContext = createContext<ContextType>({
-  reconnectToNetwork: () => {},
-  switchNetwork: () => {},
-  resetNetwork: () => {},
-  registerCustomNetwork: () => {},
+  reconnectToNetwork: () => new Promise(() => {}),
+  switchNetwork: () => new Promise(() => {}),
+  resetNetwork: () => new Promise(() => {}),
   client: undefined,
   networkName: DEFAULT_NETWORK_NAME,
-  isConnectionFailed: false
+  isConnectionFailed: false,
+  hasOfflineBanner: false
 });
 
 const NetworkProvider: FC = ({ children }) => {
+  const { pathname } = useLocation();
+
   const [client, setClient] = useState<Client | null | undefined>(undefined);
   const [networkName, setNetworkName] = useState<Network | string>(DEFAULT_NETWORK_NAME);
   const [isConnectionFailed, setIsConnectionFailed] = useState(false);
+  const [hasOfflineBanner, setHasOfflineBanner] = useState(false);
 
   useEffect(() => {
     let retryCount = 0;
@@ -90,6 +94,14 @@ const NetworkProvider: FC = ({ children }) => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
   }, [client]);
+
+  useEffect(() => {
+    if (isConnectionFailed && !hideOfflineBannerRoutes.includes(pathname)) {
+      setHasOfflineBanner(true);
+    } else {
+      setHasOfflineBanner(false);
+    }
+  }, [isConnectionFailed, pathname]);
 
   const reconnectToNetwork = useCallback(async () => {
     try {
@@ -164,27 +176,29 @@ const NetworkProvider: FC = ({ children }) => {
     }
   }, []);
 
-  const registerCustomNetwork = useCallback(async (networkData: NetworkData) => {
-    try {
-      await saveCustomNetwork(networkData);
-    } catch (err) {
-      Sentry.captureException(err);
-    }
-  }, []);
-
-  const value: ContextType = {
+  const value: ContextType = useMemo(() => {
+    return {
+      reconnectToNetwork,
+      switchNetwork,
+      resetNetwork,
+      client,
+      networkName,
+      isConnectionFailed,
+      hasOfflineBanner
+    };
+  }, [
     reconnectToNetwork,
     switchNetwork,
     resetNetwork,
-    registerCustomNetwork,
     client,
     networkName,
-    isConnectionFailed
-  };
+    isConnectionFailed,
+    hasOfflineBanner
+  ]);
 
   return (
     <NetworkContext.Provider value={value}>
-      {isConnectionFailed ? <OfflineBanner reconnectToNetwork={reconnectToNetwork} /> : null}
+      {hasOfflineBanner ? <OfflineBanner reconnectToNetwork={reconnectToNetwork} /> : null}
       {children}
     </NetworkContext.Provider>
   );

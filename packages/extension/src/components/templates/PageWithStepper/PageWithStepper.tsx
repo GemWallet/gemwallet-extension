@@ -27,7 +27,7 @@ export const PageWithStepper: FC<PageWithStepperProps> = ({
   children
 }) => {
   const navigate = useNavigate();
-  const { isConnectionFailed } = useNetwork();
+  const { hasOfflineBanner } = useNetwork();
 
   //Handle Next step button by pressing 'Enter'
   useKeyUp('Enter', handleNext ? handleNext : () => {});
@@ -43,7 +43,7 @@ export const PageWithStepper: FC<PageWithStepperProps> = ({
   return (
     <div
       style={
-        isConnectionFailed
+        hasOfflineBanner
           ? {
               width: '100%',
               position: 'fixed',
@@ -66,7 +66,7 @@ export const PageWithStepper: FC<PageWithStepperProps> = ({
         }
         style={{
           backgroundColor: '#282c34',
-          ...(isConnectionFailed ? { top: NETWORK_BANNER_HEIGHT } : {})
+          ...(hasOfflineBanner ? { top: NETWORK_BANNER_HEIGHT } : {})
         }}
       />
       <Container
@@ -75,7 +75,7 @@ export const PageWithStepper: FC<PageWithStepperProps> = ({
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          height: isConnectionFailed ? `calc(100vh - ${NETWORK_BANNER_HEIGHT}px)` : '100vh',
+          height: hasOfflineBanner ? `calc(100vh - ${NETWORK_BANNER_HEIGHT}px)` : '100vh',
           padding: '48px 0 24px 0'
         }}
       >

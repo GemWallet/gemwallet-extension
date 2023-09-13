@@ -38,7 +38,8 @@ export const useTransactionStatus = ({
   badRequestCallback,
   onClick
 }: TransactionStatusProps) => {
-  const { client, reconnectToNetwork } = useNetwork();
+  const { client, hasOfflineBanner, reconnectToNetwork } = useNetwork();
+
   const hasEnoughFunds = useMemo(() => {
     return Number(difference) > 0;
   }, [difference]);
@@ -64,7 +65,7 @@ export const useTransactionStatus = ({
       );
     }
 
-    if (client === null) {
+    if (client === null && hasOfflineBanner) {
       return (
         <Container
           component="main"
@@ -198,6 +199,7 @@ export const useTransactionStatus = ({
     }
   }, [
     isParamsMissing,
+    hasOfflineBanner,
     client,
     errorFees,
     difference,
