@@ -21,7 +21,7 @@ const StyledBottomNavigation = styled(BottomNavigation)`
     width: var(--decoration-width);
     height: 2px;
     background: skyblue;
-    transition: left 300ms, width 300ms;
+    transition: 300ms;
     border-radius: 2px;
   }
 `;
