@@ -1,4 +1,4 @@
-import { FC, useState, useEffect, useMemo } from 'react';
+import { FC, MouseEvent, useState, useEffect, useMemo } from 'react';
 
 import { BottomNavigation, BottomNavigationAction } from '@mui/material';
 import { styled } from '@mui/system';
@@ -60,14 +60,7 @@ export const NavMenu: FC<NavMenuProps> = ({ indexDefaultNav }) => {
     }
   }, [value]);
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>, newValue: number) => {
-    const target = event.currentTarget as HTMLElement;
-    const reducedWidth = target.offsetWidth * 0.75;
-    const adjustedLeft = target.offsetLeft + (target.offsetWidth - reducedWidth) / 2;
-    setStyleValues({
-      '--decoration-left': `${adjustedLeft}px`,
-      '--decoration-width': `${reducedWidth}px`
-    });
+  const handleClick = (event: MouseEvent<HTMLButtonElement>, newValue: number) => {
     const { pathname } = navigation[newValue];
     navigate(pathname);
   };
