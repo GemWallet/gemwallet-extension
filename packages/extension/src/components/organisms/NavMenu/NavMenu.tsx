@@ -50,9 +50,11 @@ export const NavMenu: FC<NavMenuProps> = ({ indexDefaultNav }) => {
         value
       ] as HTMLElement;
       if (element) {
+        const reducedWidth = element.offsetWidth * 0.75;
+        const adjustedLeft = element.offsetLeft + (element.offsetWidth - reducedWidth) / 2;
         setStyleValues({
-          '--decoration-left': `${element.offsetLeft}px`,
-          '--decoration-width': `${element.offsetWidth}px`
+          '--decoration-left': `${adjustedLeft}px`,
+          '--decoration-width': `${reducedWidth}px`
         });
       }
     }
@@ -60,9 +62,11 @@ export const NavMenu: FC<NavMenuProps> = ({ indexDefaultNav }) => {
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>, newValue: number) => {
     const target = event.currentTarget as HTMLElement;
+    const reducedWidth = target.offsetWidth * 0.75;
+    const adjustedLeft = target.offsetLeft + (target.offsetWidth - reducedWidth) / 2;
     setStyleValues({
-      '--decoration-left': `${target.offsetLeft}px`,
-      '--decoration-width': `${target.offsetWidth}px`
+      '--decoration-left': `${adjustedLeft}px`,
+      '--decoration-width': `${reducedWidth}px`
     });
     const { pathname } = navigation[newValue];
     navigate(pathname);
