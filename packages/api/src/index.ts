@@ -68,5 +68,6 @@ export type {
   SignMessageResponse,
   SignTransactionResponse,
   SubmitTransactionResponse,
-  SubmitBulkTransactionsResponse
+  SubmitBulkTransactionsResponse,
+  TransactionBulkResponse
 } from '@gemwallet/constants';
