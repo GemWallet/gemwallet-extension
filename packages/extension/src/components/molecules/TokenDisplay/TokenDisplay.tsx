@@ -5,9 +5,10 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { Paper, Tooltip, Typography } from '@mui/material';
 
 import { SECONDARY_GRAY } from '../../../constants';
+import { XRPLMetaTokenAPIResponse } from '../../../types';
 import { formatToken } from '../../../utils';
-import { GemWallet, Xrp } from '../../atoms';
 import { IconTextButton } from '../../atoms/IconTextButton';
+import { RenderTokenIcon } from './RenderTokenIcon';
 
 export interface TokenDisplayProps {
   balance: number;
@@ -20,77 +21,6 @@ export interface TokenDisplayProps {
   onTrustlineDetailsClick?: () => void;
   style?: CSSProperties;
 }
-
-type SocialLinks = {
-  url: string;
-  type?: 'socialmedia' | 'support';
-  title?: string;
-};
-
-type IssuerDetails = {
-  domain: string;
-  icon: string;
-  kyc: boolean;
-  name: string;
-  trust_level: number;
-  weblinks: SocialLinks[];
-};
-
-type TokenDetails = {
-  asset_class: string;
-  description: string;
-  icon: string;
-  name: string;
-  trust_level: number;
-};
-
-type Metrics = {
-  trustlines: number;
-  holders: number;
-  supply: string;
-  marketcap: string;
-  price: string;
-  volume_24h: string;
-  volume_7d: string;
-  exchanges_24h: string;
-  exchanges_7d: string;
-  takers_24h: string;
-  takers_7d: string;
-};
-
-interface XRPLMetaAPIResponse {
-  currency: string;
-  issuer: string;
-  meta: {
-    token: TokenDetails;
-    issuer: IssuerDetails;
-  };
-  metrics: Metrics;
-}
-
-interface RenderTokenIconProps {
-  isXRPToken?: boolean;
-  tokenIconUrl: string;
-  token: string;
-}
-
-const RenderTokenIcon: FC<RenderTokenIconProps> = ({ isXRPToken, tokenIconUrl, token }) => {
-  if (isXRPToken) {
-    return <Xrp />;
-  }
-
-  if (tokenIconUrl) {
-    return (
-      <img
-        src={tokenIconUrl}
-        alt={token}
-        style={{ width: '45px', height: '45px', marginRight: '10px' }}
-      />
-    );
-  }
-
-  return <GemWallet />;
-};
 
 export const TokenDisplay: FC<TokenDisplayProps> = ({
   balance,
@@ -112,7 +42,7 @@ export const TokenDisplay: FC<TokenDisplayProps> = ({
         try {
           // API Reference: https://xrplmeta.org/api
           const res: Response = await fetch(`https://s1.xrplmeta.org/token/${token}:${issuer}`);
-          const json: XRPLMetaAPIResponse = await res.json(); // Make sure this JSON structure conforms to XRPLMetaAPIResponse
+          const json: XRPLMetaTokenAPIResponse = await res.json(); // Make sure this JSON structure conforms to XRPLMetaTokenAPIResponse
           const icon: string | undefined = json?.meta?.token?.icon ?? json?.meta?.issuer?.icon;
           setTokenIconUrl(icon);
         } catch (error) {
