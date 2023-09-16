@@ -6,9 +6,13 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import { navigation } from '../../../constants';
 
+const defaultDecoration = {
+  '--decoration-left': '50%',
+  '--decoration-width': '0'
+};
+
 const StyledBottomNavigation = styled(BottomNavigation)`
-  --decoration-left: 50%;
-  --decoration-width: 0;
+  ${defaultDecoration}
   position: relative;
   border-top: none !important;
   box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.25);
@@ -38,7 +42,8 @@ export interface NavMenuProps {
 export const NavMenu: FC<NavMenuProps> = ({ indexDefaultNav }) => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const [styleValues, setStyleValues] = useState({});
+  const [styleValues, setStyleValues] = useState(defaultDecoration);
+
   const value = useMemo(
     () => indexDefaultNav ?? navigation.findIndex((link) => link.pathname === pathname),
     [indexDefaultNav, pathname]
