@@ -67,12 +67,13 @@ import {
 } from '../../../utils/storageChromeLocal';
 import { Logo } from '../../atoms/Logo';
 
+const maxAttempts = 5;
+
 export const Login: FC = () => {
   const [passwordError, setPasswordError] = useState('');
   const [rememberSession, setRememberSession] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [disableLogin, setDisableLogin] = useState(false);
-  const maxAttempts = 5;
   const [currentAttempts, setCurrentAttempts] = useState(0);
   const navigate = useNavigate();
   const { search } = useLocation();
@@ -141,8 +142,8 @@ export const Login: FC = () => {
     const loadTimerData = async () => {
       const storedTimerData = await loadFromChromeLocalStorage('disabledLoginTimer');
       if (storedTimerData !== null) {
-        const expireDate = storedTimerData;
-        if (expireDate > Date.now()) {
+        const expirationDate = storedTimerData;
+        if (expirationDate > Date.now()) {
           setDisableLogin(true);
         } else {
           setDisableLogin(false);
@@ -177,9 +178,9 @@ export const Login: FC = () => {
       }
     } else {
       if (currentAttempts >= maxAttempts) {
-        let TIMESTAMP = Date.now();
+        const TIMESTAMP = Date.now() + 1000 * 60 * 15;
         setDisableLogin(true);
-        saveInChromeLocalStorage('disabledLoginTimer', TIMESTAMP + 1000 * 60 * 15);
+        saveInChromeLocalStorage('disabledLoginTimer', TIMESTAMP);
         setPasswordError('Please try again in 15 min');
       } else {
         setCurrentAttempts((currentAttempts) => currentAttempts + 1);
