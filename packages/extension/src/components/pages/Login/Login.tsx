@@ -61,6 +61,10 @@ import { useWallet } from '../../../contexts';
 import { useKeyUp } from '../../../hooks/useKeyUp';
 import { loadData } from '../../../utils';
 import { loadRememberSessionState, saveRememberSessionState } from '../../../utils/login';
+import {
+  loadFromChromeLocalStorage,
+  saveInChromeLocalStorage
+} from '../../../utils/storageChromeLocal';
 import { Logo } from '../../atoms/Logo';
 
 export const Login: FC = () => {
@@ -134,19 +138,18 @@ export const Login: FC = () => {
   }, []);
 
   useEffect(() => {
-    const data = window.localStorage.getItem('loginDisabled');
-    if (data !== null) {
-      console.log('current date:' + Date.now());
-      const expireDate = JSON.parse(data).expiresOn;
-      console.log('expireDate' + expireDate);
-      if (expireDate > Date.now()) {
-        console.log('hello login disable');
-        setDisableLogin(true);
-      } else {
-        console.log('hello login ok ');
-        setDisableLogin(false);
+    const loadTimerData = async () => {
+      const storedTimerData = await loadFromChromeLocalStorage('disabledLoginTimer');
+      if (storedTimerData !== null) {
+        const expireDate = storedTimerData;
+        if (expireDate > Date.now()) {
+          setDisableLogin(true);
+        } else {
+          setDisableLogin(false);
+        }
       }
-    }
+    };
+    loadTimerData();
   }, []);
 
   const handleUnlock = useCallback(() => {
@@ -176,17 +179,10 @@ export const Login: FC = () => {
       if (currentAttempts >= maxAttempts) {
         let TIMESTAMP = Date.now();
         setDisableLogin(true);
-        window.localStorage.setItem(
-          'loginDisabled',
-          JSON.stringify({
-            value: true,
-            expiresOn: TIMESTAMP + 1000 * 60 * 15
-          })
-        );
+        saveInChromeLocalStorage('disabledLoginTimer', TIMESTAMP + 1000 * 60 * 15);
         setPasswordError('Please try again in 15 min');
       } else {
         setCurrentAttempts((currentAttempts) => currentAttempts + 1);
-        console.log(currentAttempts);
         setPasswordError('Incorrect password');
       }
     }
