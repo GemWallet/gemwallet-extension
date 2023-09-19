@@ -390,6 +390,8 @@ const SetRegularKeyForm: FC<SetRegularKeyFormProps> = ({
           <TextField
             fullWidth
             style={{ marginBottom: '15px' }}
+            id="regularKey"
+            name="regularKey"
             label="Regular Key"
             variant="outlined"
             value={inputRegularKey || ''}
@@ -402,6 +404,8 @@ const SetRegularKeyForm: FC<SetRegularKeyFormProps> = ({
             <FormControlLabel
               control={
                 <Checkbox
+                  id="deleteRegularKey"
+                  name="deleteRegularKey"
                   checked={removeKeyChecked}
                   onChange={handleCheckboxChange}
                   color="primary"
