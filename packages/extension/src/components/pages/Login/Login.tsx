@@ -68,6 +68,7 @@ import {
 import { Logo } from '../../atoms/Logo';
 
 const maxAttempts = 5;
+const DELAY_RETRY_MINS = 15;
 
 export const Login: FC = () => {
   const [passwordError, setPasswordError] = useState('');
@@ -142,9 +143,9 @@ export const Login: FC = () => {
     const loadTimerData = async () => {
       const storedTimerData = await loadFromChromeLocalStorage('disabledLoginTimer');
       if (storedTimerData !== null) {
-        const expirationDate = storedTimerData;
-        if (expirationDate > Date.now()) {
+        if (storedTimerData > Date.now()) {
           setDisableLogin(true);
+          setPasswordError('Too many attempts, please try again later');
         } else {
           setDisableLogin(false);
         }
@@ -177,11 +178,11 @@ export const Login: FC = () => {
           });
       }
     } else {
-      if (currentAttempts >= maxAttempts) {
-        const TIMESTAMP = Date.now() + 1000 * 60 * 15;
+      if (currentAttempts >= maxAttempts - 1) {
+        const TIMESTAMP = Date.now() + 1000 * 60 * DELAY_RETRY_MINS;
         setDisableLogin(true);
         saveInChromeLocalStorage('disabledLoginTimer', TIMESTAMP);
-        setPasswordError('Please try again in 15 min');
+        setPasswordError(`Please try again in ${DELAY_RETRY_MINS} mins`);
       } else {
         setCurrentAttempts((currentAttempts) => currentAttempts + 1);
         setPasswordError('Incorrect password');
