@@ -133,6 +133,22 @@ export const Login: FC = () => {
     loadRememberSession();
   }, []);
 
+  useEffect(() => {
+    const data = window.localStorage.getItem('loginDisabled');
+    if (data !== null) {
+      console.log('current date:' + Date.now());
+      const expireDate = JSON.parse(data).expiresOn;
+      console.log('expireDate' + expireDate);
+      if (expireDate > Date.now()) {
+        console.log('hello login disable');
+        setDisableLogin(true);
+      } else {
+        console.log('hello login ok ');
+        setDisableLogin(false);
+      }
+    }
+  }, []);
+
   const handleUnlock = useCallback(() => {
     const passwordValue = passwordRef.current?.value;
     if (passwordValue && signIn(passwordValue, rememberSession)) {
@@ -158,7 +174,15 @@ export const Login: FC = () => {
       }
     } else {
       if (currentAttempts >= maxAttempts) {
+        let TIMESTAMP = Date.now();
         setDisableLogin(true);
+        window.localStorage.setItem(
+          'loginDisabled',
+          JSON.stringify({
+            value: true,
+            expiresOn: TIMESTAMP + 1000 * 60 * 15
+          })
+        );
         setPasswordError('Please try again in 15 min');
       } else {
         setCurrentAttempts((currentAttempts) => currentAttempts + 1);
