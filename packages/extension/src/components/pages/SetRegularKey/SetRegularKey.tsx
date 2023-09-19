@@ -1,16 +1,27 @@
-import { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import { ChangeEvent, FC, useCallback, useEffect, useMemo, useState } from 'react';
 
 import ErrorIcon from '@mui/icons-material/Error';
-import { Button, Container, Paper, Typography } from '@mui/material';
+import {
+  Button,
+  Checkbox,
+  Container,
+  FormControlLabel,
+  Link,
+  Paper,
+  TextField,
+  Typography
+} from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import { isValidAddress } from 'xrpl';
 
 import {
   GEM_WALLET,
+  Memo,
   ReceiveSetRegularKeyBackgroundMessage,
   ResponseType
 } from '@gemwallet/constants';
 
-import { ERROR_RED } from '../../../constants';
+import { ERROR_RED, HOME_PATH, SETTINGS_PATH } from '../../../constants';
 import {
   TransactionProgressStatus,
   useLedger,
@@ -28,24 +39,35 @@ import {
 } from '../../../utils/baseParams';
 import { serializeError } from '../../../utils/errors';
 import { BaseTransaction } from '../../organisms/BaseTransaction/BaseTransaction';
-import { AsyncTransaction, PageWithTitle } from '../../templates';
+import { AsyncTransaction, PageWithReturn, PageWithTitle } from '../../templates';
 
 interface Params extends BaseTransactionParams {
   id: number;
   // SetRegularKey fields
   regularKey: string | null;
+  // UI specific fields
+  inAppCall: boolean;
 }
 
 export const SetRegularKey: FC = () => {
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  const inAppCall = urlParams.get('inAppCall') === 'true' || false;
+
   const [params, setParams] = useState<Params>({
     id: 0,
     // BaseTransaction fields
     ...initialBaseTransactionParams,
     // SetRegularKey fields
-    regularKey: null
+    regularKey: null,
+    // UI specific fields
+    inAppCall
   });
   const [errorRequestRejection, setErrorRequestRejection] = useState<Error>();
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
+  const [inputRegularKey, setInputRegularKey] = useState<string | null>(null);
+  const [inputRegularKeyError, setInputRegularKeyError] = useState<string>('');
+  const [removeKeyChecked, setRemoveKeyChecked] = useState(false);
   const { setRegularKey } = useLedger();
   const { networkName } = useNetwork();
   const { setTransactionProgress } = useTransactionProgress();
@@ -57,21 +79,26 @@ export const SetRegularKey: FC = () => {
     },
     params.fee
   );
+  const navigate = useNavigate();
   const { hasEnoughFunds, transactionStatusComponent } = useTransactionStatus({
     isParamsMissing: false,
     errorFees,
     network: networkName,
     difference,
     transaction,
-    errorRequestRejection
+    errorRequestRejection,
+    onClick: params.inAppCall ? () => navigate(HOME_PATH) : undefined
   });
 
   const sendMessageToBackground = useCallback(
     (message: ReceiveSetRegularKeyBackgroundMessage) => {
-      chrome.runtime.sendMessage(message);
-      setTransactionProgress(TransactionProgressStatus.IDLE);
+      if (!params.inAppCall) {
+        chrome.runtime.sendMessage(message);
+        setTransactionProgress(TransactionProgressStatus.IDLE);
+      }
     },
-    [setTransactionProgress]
+
+    [params.inAppCall, setTransactionProgress]
   );
 
   const createMessage = useCallback(
@@ -107,6 +134,26 @@ export const SetRegularKey: FC = () => {
 
     return isValidAddress(params.regularKey);
   }, [params.regularKey]);
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setInputRegularKey(e.target.value);
+
+    if (e.target.value !== '' && !isValidAddress(e.target.value)) {
+      // We only accept valid addresses and empty strings (for removing the regular key)
+      setInputRegularKeyError('The regular key is not a valid address');
+    } else {
+      setInputRegularKeyError('');
+    }
+  };
+
+  // Modify this to handle checkbox changes
+  const handleCheckboxChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setRemoveKeyChecked(e.target.checked);
+    if (e.target.checked) {
+      setInputRegularKey(null);
+      setInputRegularKeyError('');
+    }
+  };
 
   useEffect(() => {
     const queryString = window.location.search;
@@ -144,9 +191,15 @@ export const SetRegularKey: FC = () => {
       ticketSequence,
       txnSignature,
       // SetRegularKey fields
-      regularKey
+      regularKey,
+      // UI specific fields
+      inAppCall
     });
-  }, []);
+  }, [inAppCall]);
+
+  const handleBack = useCallback(() => {
+    navigate(SETTINGS_PATH);
+  }, [navigate]);
 
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);
@@ -158,13 +211,14 @@ export const SetRegularKey: FC = () => {
 
   const handleConfirm = useCallback(() => {
     setTransaction(TransactionStatus.Pending);
-    // NFTokenID will be present because if not,
-    // we won't be able to go to the confirm transaction state
+    const finalRegularKey =
+      inAppCall && removeKeyChecked ? undefined : inAppCall ? inputRegularKey : params.regularKey;
+
     setRegularKey({
       // BaseTransaction fields
       ...getBaseFromParams(params),
       // SetRegularKey fields
-      regularKey: params.regularKey || undefined
+      regularKey: finalRegularKey || undefined
     })
       .then((response) => {
         setTransaction(TransactionStatus.Success);
@@ -179,7 +233,15 @@ export const SetRegularKey: FC = () => {
         });
         sendMessageToBackground(message);
       });
-  }, [setRegularKey, params, sendMessageToBackground, createMessage]);
+  }, [
+    inAppCall,
+    removeKeyChecked,
+    inputRegularKey,
+    params,
+    setRegularKey,
+    sendMessageToBackground,
+    createMessage
+  ]);
 
   const {
     // Base transaction params
@@ -207,60 +269,187 @@ export const SetRegularKey: FC = () => {
     );
   }
 
+  if (transactionStatusComponent) {
+    return <div>{transactionStatusComponent}</div>;
+  }
+
+  if (params.inAppCall) {
+    return (
+      <PageWithReturn title="Set Regular Key" onBackClick={handleBack}>
+        <SetRegularKeyForm
+          regularKey={regularKey}
+          decodedMemos={decodedMemos}
+          fee={fee}
+          inAppCall={inAppCall}
+          hasEnoughFunds={hasEnoughFunds}
+          inputRegularKey={inputRegularKey}
+          inputRegularKeyError={inputRegularKeyError}
+          removeKeyChecked={removeKeyChecked}
+          estimatedFees={estimatedFees}
+          handleInputChange={handleInputChange}
+          handleCheckboxChange={handleCheckboxChange}
+          handleReject={handleReject}
+          handleConfirm={handleConfirm}
+          errorFees={errorFees}
+        />
+      </PageWithReturn>
+    );
+  }
+
+  return (
+    <PageWithTitle title="Set Regular Key" styles={{ container: { justifyContent: 'initial' } }}>
+      <SetRegularKeyForm
+        regularKey={regularKey}
+        decodedMemos={decodedMemos}
+        fee={fee}
+        inAppCall={inAppCall}
+        hasEnoughFunds={hasEnoughFunds}
+        inputRegularKey={inputRegularKey}
+        inputRegularKeyError={inputRegularKeyError}
+        removeKeyChecked={removeKeyChecked}
+        estimatedFees={estimatedFees}
+        handleInputChange={handleInputChange}
+        handleCheckboxChange={handleCheckboxChange}
+        handleReject={handleReject}
+        handleConfirm={handleConfirm}
+        errorFees={errorFees}
+      />
+    </PageWithTitle>
+  );
+};
+
+interface SetRegularKeyFormProps {
+  // API params
+  regularKey: string | null;
+  decodedMemos: Memo[];
+  fee: string | null;
+  // UI specific params
+  inAppCall: boolean;
+  hasEnoughFunds: boolean;
+  inputRegularKey: string | null;
+  inputRegularKeyError: string;
+  removeKeyChecked: boolean;
+  estimatedFees: string;
+  // UI functions
+  handleInputChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  handleCheckboxChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  handleReject: () => void;
+  handleConfirm: () => void;
+  // Error handling
+  errorFees: string | undefined;
+}
+
+const SetRegularKeyForm: FC<SetRegularKeyFormProps> = ({
+  regularKey,
+  decodedMemos,
+  fee,
+  inAppCall,
+  hasEnoughFunds,
+  inputRegularKey,
+  inputRegularKeyError,
+  handleInputChange,
+  removeKeyChecked,
+  handleCheckboxChange,
+  estimatedFees,
+  handleReject,
+  handleConfirm,
+  errorFees
+}) => {
   return (
     <>
-      {transactionStatusComponent ? (
-        <div>{transactionStatusComponent}</div>
-      ) : (
-        <PageWithTitle
-          title="Set Regular Key"
-          styles={{ container: { justifyContent: 'initial' } }}
+      <Typography align="center" style={{ marginTop: '0.5rem', fontSize: '0.9rem' }}>
+        You can protect your account by assigning a regular key pair to it and using it instead of
+        the master key pair to sign transactions whenever possible.
+      </Typography>
+      <Typography align="center" style={{ marginTop: '0.5rem', fontSize: '0.9rem' }}>
+        If your regular key pair is compromised, but your master key pair is not, you can use a
+        SetRegularKey transaction to regain control of your account.
+      </Typography>
+      <Typography
+        align="center"
+        style={{ marginTop: '0.5rem', fontSize: '0.9rem', marginBottom: '1rem' }}
+      >
+        <Link
+          href="https://xrpl.org/assign-a-regular-key-pair.html?utm_source=gemwallet.app"
+          target="_blank"
+          rel="noreferrer"
         >
-          {!hasEnoughFunds ? (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              <ErrorIcon style={{ color: ERROR_RED }} />
-              <Typography variant="body1" style={{ marginLeft: '10px', color: ERROR_RED }}>
-                Insufficient funds.
-              </Typography>
-            </div>
-          ) : null}
-          {regularKey ? (
-            <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-              <Typography variant="body1">Regular Key:</Typography>
-              <Typography variant="body2">{regularKey}</Typography>
-            </Paper>
-          ) : null}
-          <div style={{ marginBottom: '40px' }}>
-            <BaseTransaction
-              fee={fee ? Number(fee) : null}
-              memos={decodedMemos}
-              flags={null}
-              errorFees={errorFees}
-              estimatedFees={estimatedFees}
+          Learn more about regular keys
+        </Link>
+      </Typography>
+      {!hasEnoughFunds ? (
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <ErrorIcon style={{ color: ERROR_RED }} />
+          <Typography variant="body1" style={{ marginLeft: '10px', color: ERROR_RED }}>
+            Insufficient funds.
+          </Typography>
+        </div>
+      ) : null}
+      {inAppCall ? (
+        <>
+          <TextField
+            fullWidth
+            style={{ marginBottom: '15px' }}
+            label="Regular Key"
+            variant="outlined"
+            value={inputRegularKey || ''}
+            onChange={handleInputChange}
+            disabled={removeKeyChecked}
+            error={!!inputRegularKeyError}
+            helperText={inputRegularKeyError}
+          />
+          <Typography style={{ marginBottom: '15px', fontSize: '0.9rem !important' }}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={removeKeyChecked}
+                  onChange={handleCheckboxChange}
+                  color="primary"
+                />
+              }
+              label="Check this box to remove the current regular key"
             />
-          </div>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              position: 'fixed',
-              bottom: 0,
-              left: 0,
-              right: 0,
-              backgroundColor: '#1d1d1d'
-            }}
+          </Typography>
+        </>
+      ) : regularKey ? (
+        <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
+          <Typography variant="body1">Regular Key:</Typography>
+          <Typography variant="body2">{regularKey}</Typography>
+        </Paper>
+      ) : null}
+      <div style={{ marginBottom: '40px' }}>
+        <BaseTransaction
+          fee={fee ? Number(fee) : null}
+          memos={decodedMemos}
+          flags={null}
+          errorFees={errorFees}
+          estimatedFees={estimatedFees}
+        />
+      </div>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          backgroundColor: '#1d1d1d'
+        }}
+      >
+        <Container style={{ display: 'flex', justifyContent: 'space-evenly', margin: '10px' }}>
+          <Button variant="contained" color="secondary" onClick={handleReject}>
+            Reject
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleConfirm}
+            disabled={!hasEnoughFunds || inputRegularKeyError !== ''}
           >
-            <Container style={{ display: 'flex', justifyContent: 'space-evenly', margin: '10px' }}>
-              <Button variant="contained" color="secondary" onClick={handleReject}>
-                Reject
-              </Button>
-              <Button variant="contained" onClick={handleConfirm} disabled={!hasEnoughFunds}>
-                Confirm
-              </Button>
-            </Container>
-          </div>
-        </PageWithTitle>
-      )}
+            Confirm
+          </Button>
+        </Container>
+      </div>
     </>
   );
 };

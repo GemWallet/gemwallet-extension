@@ -12,6 +12,7 @@ import {
   NAV_MENU_HEIGHT,
   PERMISSIONS_PATH,
   RESET_PASSWORD_PATH,
+  SET_REGULAR_KEY_PATH,
   STORAGE_PERMISSION_ADVANCED_MODE,
   SUBMIT_RAW_TRANSACTION_PATH,
   TRUSTED_APPS_PATH
@@ -53,6 +54,11 @@ export const Settings: FC = () => {
         name: 'Permissions',
         type: 'button',
         onClick: () => navigate(PERMISSIONS_PATH)
+      },
+      {
+        name: 'Set Regular Key',
+        type: 'button',
+        onClick: () => navigate(`${SET_REGULAR_KEY_PATH}?inAppCall=true`)
       }
     ],
     [navigate]
