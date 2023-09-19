@@ -67,6 +67,9 @@ export const Login: FC = () => {
   const [passwordError, setPasswordError] = useState('');
   const [rememberSession, setRememberSession] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [disableLogin, setDisableLogin] = useState(false);
+  const maxAttempts = 5;
+  const [currentAttempts, setCurrentAttempts] = useState(0);
   const navigate = useNavigate();
   const { search } = useLocation();
   const { signIn, wallets, selectedWallet } = useWallet();
@@ -154,9 +157,16 @@ export const Login: FC = () => {
           });
       }
     } else {
-      setPasswordError('Incorrect password');
+      if (currentAttempts >= maxAttempts) {
+        setDisableLogin(true);
+        setPasswordError('Please try again in 15 min');
+      } else {
+        setCurrentAttempts((currentAttempts) => currentAttempts + 1);
+        console.log(currentAttempts);
+        setPasswordError('Incorrect password');
+      }
     }
-  }, [signIn, rememberSession, navigateToPath]);
+  }, [signIn, rememberSession, navigateToPath, currentAttempts]);
 
   // Handle Login step button by pressing 'Enter'
   useKeyUp('Enter', handleUnlock);
@@ -208,6 +218,7 @@ export const Login: FC = () => {
           id="password"
           name="password"
           label="Password"
+          disabled={disableLogin}
           inputRef={passwordRef}
           error={!!passwordError}
           onChange={handleTextFieldChange}
@@ -243,7 +254,7 @@ export const Login: FC = () => {
           }
           style={{ marginTop: '5px' }}
         />
-        <Button variant="contained" onClick={handleUnlock}>
+        <Button variant="contained" onClick={handleUnlock} disabled={disableLogin}>
           Unlock
         </Button>
         <Typography
