@@ -68,7 +68,7 @@ export const SetRegularKey: FC = () => {
   const [inputRegularKey, setInputRegularKey] = useState<string | null>(null);
   const [inputRegularKeyError, setInputRegularKeyError] = useState<string>('');
   const [removeKeyChecked, setRemoveKeyChecked] = useState(false);
-  const { setRegularKey } = useLedger();
+  const { setRegularKey, getAccountInfo } = useLedger();
   const { networkName } = useNetwork();
   const { setTransactionProgress } = useTransactionProgress();
   const { estimatedFees, errorFees, difference } = useFees(
@@ -160,6 +160,13 @@ export const SetRegularKey: FC = () => {
     const urlParams = new URLSearchParams(queryString);
     const id = Number(urlParams.get('id')) || 0;
 
+    getAccountInfo().then((accountInfo) => {
+      const currentRegularKey = accountInfo.result.account_data.RegularKey;
+      if (currentRegularKey) {
+        setInputRegularKey(currentRegularKey);
+      }
+    });
+
     // BaseTransaction fields
     const {
       fee,
@@ -195,7 +202,7 @@ export const SetRegularKey: FC = () => {
       // UI specific fields
       inAppCall
     });
-  }, [inAppCall]);
+  }, [getAccountInfo, inAppCall]);
 
   const handleBack = useCallback(() => {
     navigate(SETTINGS_PATH);

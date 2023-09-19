@@ -78,6 +78,7 @@ describe('Set Regular Key', () => {
     cy.contains('Set Regular Key').click();
 
     // Enter wrong Regular Key
+    cy.get('input[name="regularKey"]').clear();
     cy.get('input[name="regularKey"]').type('fake');
     cy.get('input[name="regularKey"]').blur();
     cy.get('#regularKey-helper-text').should('have.text', 'The regular key is not a valid address');
@@ -112,11 +113,8 @@ describe('Set Regular Key', () => {
     // Click on Set Regular Key
     cy.contains('Set Regular Key').click();
 
-    // Enter wrong Regular Key
-    cy.get('input[name="regularKey"]').type('fake');
-    cy.get('input[name="regularKey"]').blur();
-    cy.get('#regularKey-helper-text').should('have.text', 'The regular key is not a valid address');
-    cy.contains('button', 'Confirm').should('be.disabled');
+    // Check the current Regular Key
+    cy.get('input[name="regularKey"]').should('have.value', 'rNvFCZXpDtGeQ3bVas95wGLN6N2stGmA9o');
 
     // Check the checkbox
     cy.get('input[name="deleteRegularKey"]').click();
@@ -135,6 +133,18 @@ describe('Set Regular Key', () => {
       timeout: 10000
     });
     cy.get('p[data-testid="transaction-subtitle"]').should('have.text', 'Transaction Successful');
+
+    // Click Close
+    cy.contains('button', 'Close').click();
+
+    // Click on settings
+    cy.contains('Settings').click();
+
+    // Click on Set Regular Key
+    cy.contains('Set Regular Key').click();
+
+    // Check the current Regular Key
+    cy.get('input[name="regularKey"]').should('have.value', '');
   });
 });
 
