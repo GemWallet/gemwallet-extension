@@ -178,7 +178,7 @@ export const Login: FC = () => {
           });
       }
     } else {
-      if (currentAttempts >= maxAttempts - 1) {
+      if (currentAttempts >= MAX_ATTEMPTS - 1) {
         const TIMESTAMP = Date.now() + 1000 * 60 * DELAY_RETRY_MINS;
         setDisableLogin(true);
         saveInChromeLocalStorage('disabledLoginTimer', TIMESTAMP);
