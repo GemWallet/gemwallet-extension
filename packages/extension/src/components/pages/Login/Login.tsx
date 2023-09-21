@@ -67,7 +67,7 @@ import {
 } from '../../../utils/storageChromeLocal';
 import { Logo } from '../../atoms/Logo';
 
-const maxAttempts = 5;
+const MAX_ATTEMPTS = 5;
 const DELAY_RETRY_MINS = 15;
 
 export const Login: FC = () => {
