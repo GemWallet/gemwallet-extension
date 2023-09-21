@@ -1,7 +1,7 @@
 # 💎 GemWallet Extension
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-15-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-16-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 ## GemWallet: A crypto wallet & Web3 layer for the XRPL
@@ -137,6 +137,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Daviran"><img src="https://avatars.githubusercontent.com/u/77353097?v=4?s=100" width="100px;" alt="David Bugnon"/><br /><sub><b>David Bugnon</b></sub></a><br /><a href="#security-Daviran" title="Security">🛡️</a> <a href="https://github.com/GemWallet/gemwallet-extension/commits?author=Daviran" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/RCouery"><img src="https://avatars.githubusercontent.com/u/61977921?v=4?s=100" width="100px;" alt="RCouery"/><br /><sub><b>RCouery</b></sub></a><br /><a href="#security-RCouery" title="Security">🛡️</a></td>
     </tr>
   </tbody>
 </table>
