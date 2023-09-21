@@ -44,7 +44,7 @@
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     "@types/react-lazy-load-image-component": "^1.5.2",
-    "cypress": "^12.9.0",
+    "cypress": "^12.17.0",
     "jest-canvas-mock": "^2.4.0",
     "ts-loader": "~8.2.0"
   },
