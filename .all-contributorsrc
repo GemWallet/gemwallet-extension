@@ -151,6 +151,15 @@
         "security",
         "code"
       ]
+    },
+    {
+      "login": "RCouery",
+      "name": "RCouery",
+      "avatar_url": "https://avatars.githubusercontent.com/u/61977921?v=4",
+      "profile": "https://github.com/RCouery",
+      "contributions": [
+        "security"
+      ]
     }
   ],
   "contributorsPerLine": 7,
