@@ -119,6 +119,8 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
             icon: token.meta.token.icon,
             currency: token.currency,
             issuer: token.issuer,
+            issuerName: token.meta.issuer.name,
+            issuerIcon: token.meta.issuer.icon,
             trustLevel: token.meta.token.trust_level,
             issuerTrustLevel: token.meta.issuer.trust_level
           }))

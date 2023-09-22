@@ -9,6 +9,8 @@ export interface TokenData {
   icon: string;
   currency: string;
   issuer: string;
+  issuerName: string;
+  issuerIcon: string;
 }
 
 interface TokenModalProps {
@@ -63,7 +65,24 @@ export const TokenModal: FC<TokenModalProps> = ({ open, tokens, onClose, onSelec
                 </ListItemAvatar>
                 <ListItemText
                   primary={safeConvertHexCurrencyString(token.currency)}
-                  primaryTypographyProps={{ style: { color: 'white' } }}
+                  secondary={
+                    <>
+                      <span style={{ marginRight: '5px', verticalAlign: 'middle' }}>Issued by</span>
+                      <Avatar
+                        src={token.issuerIcon}
+                        alt={`${token.issuerName} issuer logo`}
+                        style={{
+                          width: '20px',
+                          height: '20px',
+                          display: 'inline-block',
+                          marginRight: '5px',
+                          marginLeft: '5px',
+                          verticalAlign: 'middle'
+                        }}
+                      />
+                      <span style={{ verticalAlign: 'middle' }}>{token.issuerName}</span>
+                    </>
+                  }
                 />
               </ListItem>
             ))}
