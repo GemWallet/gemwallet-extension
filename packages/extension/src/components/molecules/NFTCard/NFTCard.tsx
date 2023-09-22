@@ -1,7 +1,7 @@
 import { FC, forwardRef, ReactElement, Ref, useCallback, useEffect, useState } from 'react';
 
 import { OpenInNewOutlined } from '@mui/icons-material';
-import { Button, CircularProgress, Dialog, ListItem, Paper, Slide, Tooltip } from '@mui/material';
+import { Button, CircularProgress, Dialog, Paper, Slide, Tooltip } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 import * as Sentry from '@sentry/react';
 import { convertHexToString } from 'xrpl';
@@ -14,7 +14,7 @@ import { NFTDetails } from '../../organisms';
 
 export interface NFTCardProps {
   NFT: AccountNFToken;
-  layout: 'large' | 'small';
+  layout: 'large' | 'small' | 'list';
 }
 
 const Transition = forwardRef(function Transition(
@@ -78,80 +78,136 @@ export const NFTCard: FC<NFTCardProps> = ({ NFT, layout }) => {
       <Paper
         elevation={5}
         style={{
-          width: layout === 'large' ? '90%' : '40%',
-          padding: layout === 'large' ? '10px' : '14px',
+          maxWidth: '100%',
+          width: layout === 'large' ? '90%' : layout === 'small' ? '40%' : '90%',
+          padding: layout === 'large' ? '10px' : layout === 'list' ? '16px' : '14px',
           display: 'flex',
-          flexDirection: 'column',
+          flexDirection: layout === 'list' ? 'row' : 'column',
           alignItems: 'center',
           justifyContent: 'center',
           marginBottom: '10px'
         }}
       >
-        <ListItem
-          key={NFT.NFTokenID}
-          style={{
-            flexDirection: 'column',
-            textAlign: 'center',
-            width: '100%'
-          }}
-        >
-          {isLoading ? (
-            <CircularProgress data-testid="progressbar" />
-          ) : (
-            <NFTImage
-              imageURL={NFTData.image}
-              height={layout === 'large' ? 150 : 120}
-              width={layout === 'large' ? 150 : 120}
-            />
-          )}
-          <Tooltip title={NFTData.NFTokenID || ''}>
-            <div
-              onClick={() => handleTokenIdClick(NFTData.NFTokenID || '')}
-              style={{
-                display: 'block',
-                maxWidth: '100%',
-                overflow: 'hidden',
-                whiteSpace: 'nowrap',
-                textOverflow: 'ellipsis',
-                color: 'grey',
-                marginTop: '10px',
-                cursor: 'pointer'
-              }}
-            >
-              <TruncatedText sx={{ fontSize: layout === 'small' ? '12px' : undefined }}>
-                {NFTData.NFTokenID}
+        {/* Details for 'list' layout */}
+        {layout === 'list' ? (
+          <div
+            onClick={handleViewNFTClick}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              width: '100%',
+              cursor: 'pointer'
+            }}
+          >
+            {/* NFT Image */}
+            {isLoading ? (
+              <CircularProgress data-testid="progressbar" />
+            ) : (
+              <NFTImage
+                imageURL={NFTData.image}
+                height={60}
+                width={60}
+                style={{ marginRight: '20px' }}
+              />
+            )}
+
+            <div style={{ width: 'calc(100% - 80px)', maxWidth: 'calc(100% - 80px)' }}>
+              <Tooltip title={NFTData.NFTokenID || ''}>
+                <div
+                  onClick={(e) => {
+                    handleTokenIdClick(NFTData.NFTokenID || '');
+                    e.stopPropagation(); // Prevents the parent div's onClick from being triggered
+                  }}
+                  style={{
+                    display: 'block',
+                    maxWidth: '100%',
+                    overflow: 'hidden',
+                    whiteSpace: 'nowrap',
+                    textOverflow: 'ellipsis',
+                    color: 'grey',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <TruncatedText sx={{ fontSize: '14px' }}>{NFTData.NFTokenID}</TruncatedText>
+                </div>
+              </Tooltip>
+              <TruncatedText
+                isMultiline={true}
+                maxLines={'1'}
+                sx={{ color: 'white', fontSize: '14px' }}
+                data-testid="nft_name"
+              >
+                {NFTData.name}
               </TruncatedText>
             </div>
-          </Tooltip>
-          <TruncatedText
-            sx={{
-              fontSize: layout === 'small' ? '12px' : '16px',
-              color: 'white',
-              marginTop: layout === 'large' ? '10px' : '4px'
-            }}
-            data-testid="nft_name"
-          >
-            {NFTData.name}
-          </TruncatedText>
-          {layout === 'large' ? (
+          </div>
+        ) : null}
+
+        {/* Details for 'large' and 'small' layouts */}
+        {layout !== 'list' ? (
+          <>
+            {isLoading ? (
+              <CircularProgress data-testid="progressbar" />
+            ) : (
+              <NFTImage
+                imageURL={NFTData.image}
+                height={layout === 'large' ? 150 : 120}
+                width={layout === 'large' ? 150 : 120}
+              />
+            )}
+
+            <Tooltip title={NFTData.NFTokenID || ''}>
+              <div
+                onClick={() => handleTokenIdClick(NFTData.NFTokenID || '')}
+                style={{
+                  display: 'block',
+                  maxWidth: '100%',
+                  overflow: 'hidden',
+                  whiteSpace: 'nowrap',
+                  textOverflow: 'ellipsis',
+                  color: 'grey',
+                  marginTop: '10px',
+                  cursor: 'pointer'
+                }}
+              >
+                <TruncatedText
+                  sx={{ fontSize: layout === 'small' ? '12px' : undefined, textAlign: 'center' }}
+                >
+                  {NFTData.NFTokenID}
+                </TruncatedText>
+              </div>
+            </Tooltip>
             <TruncatedText
-              sx={{ fontSize: '14px', color: 'grey', marginTop: '10px' }}
-              isMultiline={true}
+              sx={{
+                fontSize: layout === 'small' ? '12px' : '16px',
+                color: 'white',
+                marginTop: layout === 'large' ? '10px' : '4px',
+                textAlign: 'center'
+              }}
+              data-testid="nft_name"
             >
-              {NFTData.description}
+              {NFTData.name}
             </TruncatedText>
-          ) : null}
-          <Button
-            variant="outlined"
-            style={{
-              marginTop: '10px',
-              fontSize: layout === 'large' ? '14px' : '10px'
-            }}
-            onClick={handleViewNFTClick}
-          >
-            View <OpenInNewOutlined style={{ fontSize: layout === 'large' ? '16px' : '12px' }} />
-          </Button>
-        </ListItem>
+            {layout === 'large' && (
+              <TruncatedText
+                sx={{ fontSize: '14px', color: 'grey', marginTop: '10px', textAlign: 'center' }}
+                isMultiline={true}
+              >
+                {NFTData.description}
+              </TruncatedText>
+            )}
+            <Button
+              variant="outlined"
+              style={{
+                marginTop: '10px',
+                fontSize: layout === 'large' ? '14px' : '10px'
+              }}
+              onClick={handleViewNFTClick}
+            >
+              View <OpenInNewOutlined style={{ fontSize: layout === 'large' ? '16px' : '12px' }} />
+            </Button>
+          </>
+        ) : null}
       </Paper>
     </>
   );

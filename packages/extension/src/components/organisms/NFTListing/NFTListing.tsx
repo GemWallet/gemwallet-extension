@@ -1,5 +1,6 @@
 import { FC, useState } from 'react';
 
+import ListAltIcon from '@mui/icons-material/ListAlt';
 import PhotoSizeSelectSmallIcon from '@mui/icons-material/PhotoSizeSelectSmall';
 import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap';
 import { List, IconButton, Tooltip } from '@mui/material';
@@ -17,7 +18,7 @@ export interface NFTListingProps extends AccountNFTokenResponse {
 }
 
 export const NFTListing: FC<NFTListingProps> = ({ isLoading, account_nfts, onLoadMoreClick }) => {
-  const [layout, setLayout] = useState<'large' | 'small'>('large');
+  const [layout, setLayout] = useState<'large' | 'small' | 'list'>('large');
 
   if (account_nfts.length === 0 && !isLoading) {
     return (
@@ -43,9 +44,18 @@ export const NFTListing: FC<NFTListingProps> = ({ isLoading, account_nfts, onLoa
           <IconButton
             size="small"
             onClick={() => setLayout('small')}
-            color={layout === 'large' ? 'default' : 'primary'}
+            color={layout === 'small' ? 'primary' : 'default'}
           >
             <PhotoSizeSelectSmallIcon style={{ fontSize: '16px' }} />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="List Layout">
+          <IconButton
+            size="small"
+            onClick={() => setLayout('list')}
+            color={layout === 'list' ? 'primary' : 'default'}
+          >
+            <ListAltIcon style={{ fontSize: '16px' }} />
           </IconButton>
         </Tooltip>
       </div>
@@ -59,7 +69,7 @@ export const NFTListing: FC<NFTListingProps> = ({ isLoading, account_nfts, onLoa
         <List dense style={{ paddingTop: 0 }}>
           <div
             style={{
-              display: 'flex',
+              display: layout === 'list' ? 'block' : 'flex',
               flexWrap: 'wrap',
               justifyContent: layout === 'large' ? 'center' : 'space-between'
             }}
