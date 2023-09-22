@@ -108,6 +108,7 @@ export const NFTCard: FC<NFTCardProps> = ({ NFT, layout = 'large' }) => {
                 height={60}
                 width={60}
                 style={{ marginRight: '20px' }}
+                fallbackScale={1}
               />
             )}
 
