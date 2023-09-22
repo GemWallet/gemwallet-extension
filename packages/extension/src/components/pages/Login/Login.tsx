@@ -61,12 +61,21 @@ import { useWallet } from '../../../contexts';
 import { useKeyUp } from '../../../hooks/useKeyUp';
 import { loadData } from '../../../utils';
 import { loadRememberSessionState, saveRememberSessionState } from '../../../utils/login';
+import {
+  loadFromChromeLocalStorage,
+  saveInChromeLocalStorage
+} from '../../../utils/storageChromeLocal';
 import { Logo } from '../../atoms/Logo';
+
+const MAX_ATTEMPTS = 5;
+const DELAY_RETRY_MINS = 15;
 
 export const Login: FC = () => {
   const [passwordError, setPasswordError] = useState('');
   const [rememberSession, setRememberSession] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [disableLogin, setDisableLogin] = useState(false);
+  const [currentAttempts, setCurrentAttempts] = useState(0);
   const navigate = useNavigate();
   const { search } = useLocation();
   const { signIn, wallets, selectedWallet } = useWallet();
@@ -130,6 +139,21 @@ export const Login: FC = () => {
     loadRememberSession();
   }, []);
 
+  useEffect(() => {
+    const loadTimerData = async () => {
+      const storedTimerData = await loadFromChromeLocalStorage('disabledLoginTimer');
+      if (storedTimerData !== null) {
+        if (storedTimerData > Date.now()) {
+          setDisableLogin(true);
+          setPasswordError('Too many attempts, please try again later');
+        } else {
+          setDisableLogin(false);
+        }
+      }
+    };
+    loadTimerData();
+  }, []);
+
   const handleUnlock = useCallback(() => {
     const passwordValue = passwordRef.current?.value;
     if (passwordValue && signIn(passwordValue, rememberSession)) {
@@ -154,9 +178,17 @@ export const Login: FC = () => {
           });
       }
     } else {
-      setPasswordError('Incorrect password');
+      if (currentAttempts >= MAX_ATTEMPTS - 1) {
+        const TIMESTAMP = Date.now() + 1000 * 60 * DELAY_RETRY_MINS;
+        setDisableLogin(true);
+        saveInChromeLocalStorage('disabledLoginTimer', TIMESTAMP);
+        setPasswordError(`Please try again in ${DELAY_RETRY_MINS} mins`);
+      } else {
+        setCurrentAttempts((currentAttempts) => currentAttempts + 1);
+        setPasswordError('Incorrect password');
+      }
     }
-  }, [signIn, rememberSession, navigateToPath]);
+  }, [signIn, rememberSession, navigateToPath, currentAttempts]);
 
   // Handle Login step button by pressing 'Enter'
   useKeyUp('Enter', handleUnlock);
@@ -208,6 +240,7 @@ export const Login: FC = () => {
           id="password"
           name="password"
           label="Password"
+          disabled={disableLogin}
           inputRef={passwordRef}
           error={!!passwordError}
           onChange={handleTextFieldChange}
@@ -243,7 +276,7 @@ export const Login: FC = () => {
           }
           style={{ marginTop: '5px' }}
         />
-        <Button variant="contained" onClick={handleUnlock}>
+        <Button variant="contained" onClick={handleUnlock} disabled={disableLogin}>
           Unlock
         </Button>
         <Typography
