@@ -47,6 +47,7 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
   const [errorToken, setErrorToken] = useState<string>('');
   const [errorLimit, setErrorLimit] = useState<string>('');
   // Search token functionality
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [isTokenModalOpen, setIsTokenModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchedTokens, setSearchedTokens] = useState<TokenData[]>([]);
@@ -165,12 +166,14 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
   }, [searchTerm]);
 
   const handleOpenTokenModal = () => {
-    if (searchTerm.length < MIN_SEARCH_LENGTH) {
-      setSearchError(`Query must be at least ${MIN_SEARCH_LENGTH} characters.`);
-    } else {
-      fetchAllTokens().then(() => {
-        setIsTokenModalOpen(true);
-      });
+    if (isSearchFocused) {
+      if (searchTerm.length < MIN_SEARCH_LENGTH) {
+        setSearchError(`Query must be at least ${MIN_SEARCH_LENGTH} characters.`);
+      } else {
+        fetchAllTokens().then(() => {
+          setIsTokenModalOpen(true);
+        });
+      }
     }
   };
 
@@ -227,6 +230,8 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
               helperText={searchError}
               style={{ marginTop: '5px', marginBottom: '10px' }}
               autoComplete="off"
+              onFocus={() => setIsSearchFocused(true)}
+              onBlur={() => setIsSearchFocused(false)}
             />
           </>
         ) : null}
