@@ -14,6 +14,7 @@ import { NFTDetails } from '../../organisms';
 
 export interface NFTCardProps {
   NFT: AccountNFToken;
+  layout: 'large' | 'small';
 }
 
 const Transition = forwardRef(function Transition(
@@ -25,14 +26,14 @@ const Transition = forwardRef(function Transition(
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export const NFTCard: FC<NFTCardProps> = ({ NFT }) => {
+export const NFTCard: FC<NFTCardProps> = ({ NFT, layout }) => {
   const { getNFTData } = useLedger();
   const [NFTData, setNFTData] = useState<NFTData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
-    const fetchNFTImg = async () => {
+    const fetchNFTData = async () => {
       try {
         setIsLoading(true);
         const nftData = await getNFTData({ NFT });
@@ -47,7 +48,7 @@ export const NFTCard: FC<NFTCardProps> = ({ NFT }) => {
         setIsLoading(false);
       }
     };
-    fetchNFTImg();
+    fetchNFTData();
   }, [getNFTData, NFT]);
 
   const handleViewNFTClick = useCallback(() => {
@@ -77,50 +78,78 @@ export const NFTCard: FC<NFTCardProps> = ({ NFT }) => {
       <Paper
         elevation={5}
         style={{
-          padding: '10px',
+          width: layout === 'large' ? '90%' : '40%',
+          padding: layout === 'large' ? '10px' : '14px',
           display: 'flex',
+          flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'space-between',
+          justifyContent: 'center',
           marginBottom: '10px'
         }}
       >
         <ListItem
+          key={NFT.NFTokenID}
           style={{
             flexDirection: 'column',
-            textAlign: 'center'
+            textAlign: 'center',
+            width: '100%'
           }}
         >
           {isLoading ? (
             <CircularProgress data-testid="progressbar" />
           ) : (
-            <NFTImage imageURL={NFTData.image} height={150} width={150} />
+            <NFTImage
+              imageURL={NFTData.image}
+              height={layout === 'large' ? 150 : 120}
+              width={layout === 'large' ? 150 : 120}
+            />
           )}
-          <Tooltip title={NFTData.NFTokenID}>
-            <TruncatedText
-              onClick={() => handleTokenIdClick(NFTData.NFTokenID)}
-              sx={{ fontSize: '14px', color: 'grey', marginTop: '10px', cursor: 'pointer' }}
+          <Tooltip title={NFTData.NFTokenID || ''}>
+            <div
+              onClick={() => handleTokenIdClick(NFTData.NFTokenID || '')}
+              style={{
+                display: 'block',
+                maxWidth: '100%',
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+                textOverflow: 'ellipsis',
+                color: 'grey',
+                marginTop: '10px',
+                cursor: 'pointer'
+              }}
             >
-              {NFTData.NFTokenID}
-            </TruncatedText>
+              <TruncatedText sx={{ fontSize: layout === 'small' ? '12px' : undefined }}>
+                {NFTData.NFTokenID}
+              </TruncatedText>
+            </div>
           </Tooltip>
           <TruncatedText
-            sx={{ fontSize: '16px', color: 'white', marginTop: '10px' }}
+            sx={{
+              fontSize: layout === 'small' ? '12px' : '16px',
+              color: 'white',
+              marginTop: layout === 'large' ? '10px' : '4px'
+            }}
             data-testid="nft_name"
           >
             {NFTData.name}
           </TruncatedText>
-          <TruncatedText
-            sx={{ fontSize: '14px', color: 'grey', marginTop: '10px' }}
-            isMultiline={true}
-          >
-            {NFTData.description}
-          </TruncatedText>
+          {layout === 'large' ? (
+            <TruncatedText
+              sx={{ fontSize: '14px', color: 'grey', marginTop: '10px' }}
+              isMultiline={true}
+            >
+              {NFTData.description}
+            </TruncatedText>
+          ) : null}
           <Button
             variant="outlined"
-            style={{ marginTop: '10px', fontSize: '14px', gap: '10px' }}
+            style={{
+              marginTop: '10px',
+              fontSize: layout === 'large' ? '14px' : '10px'
+            }}
             onClick={handleViewNFTClick}
           >
-            View <OpenInNewOutlined style={{ fontSize: '16px' }} />
+            View <OpenInNewOutlined style={{ fontSize: layout === 'large' ? '16px' : '12px' }} />
           </Button>
         </ListItem>
       </Paper>
