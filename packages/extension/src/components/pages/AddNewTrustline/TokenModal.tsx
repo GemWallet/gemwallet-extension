@@ -53,6 +53,7 @@ export const TokenModal: FC<TokenModalProps> = ({ open, tokens, onClose, onSelec
             alignItems="center"
             height="100%"
             padding="20px 0"
+            fontSize="16px"
           >
             No data found
           </Box>
