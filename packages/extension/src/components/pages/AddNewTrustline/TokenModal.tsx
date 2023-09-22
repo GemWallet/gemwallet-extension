@@ -42,7 +42,8 @@ export const TokenModal: FC<TokenModalProps> = ({ open, tokens, onClose, onSelec
           left: '50%',
           transform: 'translate(-50%, -50%)',
           outline: 'none',
-          overflow: 'auto'
+          overflow: 'auto',
+          color: 'white'
         }}
       >
         {tokens.length === 0 ? (
@@ -90,6 +91,7 @@ export const TokenModal: FC<TokenModalProps> = ({ open, tokens, onClose, onSelec
                       color: 'white'
                     }
                   }}
+                  secondaryTypographyProps={{ component: 'div' }}
                 />
               </ListItem>
             ))}

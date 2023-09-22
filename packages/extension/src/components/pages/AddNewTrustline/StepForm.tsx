@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, FocusEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { ChangeEvent, FC, FocusEvent, useCallback, useMemo, useState } from 'react';
 
 import { Button, TextField, Typography } from '@mui/material';
 import { Checkbox, FormControlLabel } from '@mui/material';
@@ -35,6 +35,9 @@ interface StepFormProps {
   initialValues?: InitialValues;
 }
 
+const MIN_SEARCH_LENGTH = 3;
+const LIMIT_API_RESULTS = 1000;
+
 export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }) => {
   const [issuer, setIssuer] = useState<string>(initialValues?.issuer || '');
   const [token, setToken] = useState<string>(initialValues?.token || '');
@@ -47,6 +50,8 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
   const [isTokenModalOpen, setIsTokenModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchedTokens, setSearchedTokens] = useState<TokenData[]>([]);
+  const [searchError, setSearchError] = useState<string>('');
+
   const navigate = useNavigate();
   const { networkName } = useNetwork();
 
@@ -105,53 +110,57 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
     onTrustlineSubmit(issuer, token, limit, noRipple, false, false);
   }, [noRipple, issuer, limit, onTrustlineSubmit, token]);
 
-  // Fetch all tokens on mount
-  useEffect(() => {
-    async function fetchAllTokens() {
-      let url = `https://s1.xrplmeta.org/tokens?limit=1000`;
-      if (searchTerm !== '') {
-        url = `https://s1.xrplmeta.org/tokens?name_like=${searchTerm}&limit=1000`;
-      }
-
-      try {
-        // API Reference: https://xrplmeta.org/api
-        const res: Response = await fetch(url);
-        const json: XRPLMetaTokensListAPIResponse = (await res.json()) || [];
-        const allTokenData = json.tokens
-          .map((token) => ({
-            name: token.meta.token.name,
-            icon: token.meta.token.icon,
-            currency: token.currency,
-            issuer: token.issuer,
-            issuerName: token.meta.issuer.name,
-            issuerIcon: token.meta.issuer.icon,
-            trustLevel: token.meta.token.trust_level,
-            issuerTrustLevel: token.meta.issuer.trust_level
-          }))
-          // Only accept valid tokens with a trust level of 3 (issuer & token)
-          .filter(
-            (token) =>
-              token.currency !== undefined &&
-              token.issuer !== undefined &&
-              token.trustLevel === 3 &&
-              token.issuerTrustLevel === 3
-          )
-          .sort((a, b) => a.name.localeCompare(b.name));
-        setSearchedTokens(allTokenData);
-      } catch (error) {
-        Sentry.captureException(error);
-      }
-    }
-
-    fetchAllTokens();
-  }, [searchTerm]);
-
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
+    if (e.target.value.length > 0 && e.target.value.length >= MIN_SEARCH_LENGTH) {
+      setSearchError('');
+    }
   };
 
+  const fetchAllTokens = useCallback(async () => {
+    if (searchTerm === '') {
+      return;
+    }
+
+    const url = `https://s1.xrplmeta.org/tokens?name_like=${searchTerm}&limit=${LIMIT_API_RESULTS}`;
+    try {
+      // API Reference: https://xrplmeta.org/api
+      const res: Response = await fetch(url);
+      const json: XRPLMetaTokensListAPIResponse = (await res.json()) || [];
+      const allTokenData = json.tokens
+        .map((token) => ({
+          name: token.meta.token.name,
+          icon: token.meta.token.icon,
+          currency: token.currency,
+          issuer: token.issuer,
+          issuerName: token.meta.issuer.name,
+          issuerIcon: token.meta.issuer.icon,
+          trustLevel: token.meta.token.trust_level,
+          issuerTrustLevel: token.meta.issuer.trust_level
+        }))
+        // Only accept valid tokens with a trust level of 3 (issuer & token)
+        .filter(
+          (token) =>
+            token.currency !== undefined &&
+            token.issuer !== undefined &&
+            token.trustLevel === 3 &&
+            token.issuerTrustLevel === 3
+        )
+        .sort((a, b) => a.name.localeCompare(b.name));
+      setSearchedTokens(allTokenData);
+    } catch (error) {
+      Sentry.captureException(error);
+    }
+  }, [searchTerm]);
+
   const handleOpenTokenModal = () => {
-    setIsTokenModalOpen(true);
+    if (searchTerm.length < MIN_SEARCH_LENGTH) {
+      setSearchError(`Query must be at least ${MIN_SEARCH_LENGTH} characters.`);
+    } else {
+      fetchAllTokens().then(() => {
+        setIsTokenModalOpen(true);
+      });
+    }
   };
 
   useKeyUp('Enter', handleOpenTokenModal);
@@ -203,6 +212,8 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
               name="searchToken"
               fullWidth
               onChange={handleSearchChange}
+              error={!!searchError}
+              helperText={searchError}
               style={{ marginTop: '5px', marginBottom: '10px' }}
               autoComplete="off"
             />
