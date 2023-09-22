@@ -42,8 +42,7 @@ export const TokenModal: FC<TokenModalProps> = ({ open, tokens, onClose, onSelec
           left: '50%',
           transform: 'translate(-50%, -50%)',
           outline: 'none',
-          overflow: 'auto',
-          color: 'white'
+          overflow: 'auto'
         }}
       >
         {tokens.length === 0 ? (
@@ -83,6 +82,14 @@ export const TokenModal: FC<TokenModalProps> = ({ open, tokens, onClose, onSelec
                       <span style={{ verticalAlign: 'middle' }}>{token.issuerName}</span>
                     </>
                   }
+                  primaryTypographyProps={{
+                    style: {
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      color: 'white'
+                    }
+                  }}
                 />
               </ListItem>
             ))}
