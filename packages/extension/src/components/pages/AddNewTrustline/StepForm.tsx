@@ -122,12 +122,14 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
       return;
     }
 
-    const url = `https://s1.xrplmeta.org/tokens?name_like=${searchTerm}&limit=${LIMIT_API_RESULTS}`;
-    try {
-      // API Reference: https://xrplmeta.org/api
+    const fetchTokensPage = async (offset = 0): Promise<TokenData[]> => {
+      const url = `https://s1.xrplmeta.org/tokens?name_like=${searchTerm}&limit=${LIMIT_API_RESULTS}&offset=${offset}`;
+
       const res: Response = await fetch(url);
       const json: XRPLMetaTokensListAPIResponse = (await res.json()) || [];
-      const allTokenData = json.tokens
+      const hasNextPage = json.tokens.length >= LIMIT_API_RESULTS;
+
+      const tokenData = json.tokens
         .map((token) => ({
           name: token.meta.token.name,
           icon: token.meta.token.icon,
@@ -138,7 +140,6 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
           trustLevel: token.meta.token.trust_level,
           issuerTrustLevel: token.meta.issuer.trust_level
         }))
-        // Only accept valid tokens with a trust level of 3 (issuer & token)
         .filter(
           (token) =>
             token.currency !== undefined &&
@@ -147,6 +148,16 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
             token.issuerTrustLevel === 3
         )
         .sort((a, b) => a.name.localeCompare(b.name));
+
+      if (hasNextPage) {
+        return [...tokenData, ...(await fetchTokensPage(offset + LIMIT_API_RESULTS))];
+      } else {
+        return tokenData;
+      }
+    };
+
+    try {
+      const allTokenData = await fetchTokensPage();
       setSearchedTokens(allTokenData);
     } catch (error) {
       Sentry.captureException(error);
