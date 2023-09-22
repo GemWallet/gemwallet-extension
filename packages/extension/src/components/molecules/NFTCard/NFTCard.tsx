@@ -26,7 +26,7 @@ const Transition = forwardRef(function Transition(
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export const NFTCard: FC<NFTCardProps> = ({ NFT, layout }) => {
+export const NFTCard: FC<NFTCardProps> = ({ NFT, layout = 'large' }) => {
   const { getNFTData } = useLedger();
   const [NFTData, setNFTData] = useState<NFTData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
