@@ -3,6 +3,8 @@ import { CSSProperties, FC } from 'react';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import { ListItem, ListItemIcon, ListItemText } from '@mui/material';
 
+const radiusSize = '12px';
+
 interface MenuGroupProps {
   sectionName: string;
   items: {
@@ -13,7 +15,7 @@ interface MenuGroupProps {
 
 const groupStyles: CSSProperties = {
   backgroundColor: '#272727',
-  borderRadius: '12px',
+  borderRadius: radiusSize,
   marginBottom: '16px'
 };
 
@@ -27,6 +29,26 @@ const sectionHeaderStyle: CSSProperties = {
   margin: '0 6px 10px 6px'
 };
 
+const firstListItemStyles: CSSProperties = {
+  borderTopLeftRadius: radiusSize,
+  borderTopRightRadius: radiusSize
+};
+
+const lastListItemStyles: CSSProperties = {
+  borderBottomLeftRadius: radiusSize,
+  borderBottomRightRadius: radiusSize
+};
+
+const listItemTextStyle: CSSProperties = {
+  flex: 1,
+  paddingLeft: '5px'
+};
+
+const listItemIconStyle: CSSProperties = {
+  minWidth: '32px',
+  marginRight: '-10px'
+};
+
 export const MenuGroup: FC<MenuGroupProps> = ({ sectionName, items }) => {
   return (
     <>
@@ -37,10 +59,17 @@ export const MenuGroup: FC<MenuGroupProps> = ({ sectionName, items }) => {
             button
             key={name}
             onClick={onClick}
-            style={index !== arr.length - 1 ? listItemStyles : {}}
+            style={{
+              ...(index === 0
+                ? firstListItemStyles
+                : index === arr.length - 1
+                ? lastListItemStyles
+                : {}),
+              ...(index !== arr.length - 1 ? listItemStyles : {})
+            }}
           >
-            <ListItemText primary={name} style={{ flex: 1 }} />
-            <ListItemIcon style={{ minWidth: '32px' }}>
+            <ListItemText primary={name} style={listItemTextStyle} />
+            <ListItemIcon style={listItemIconStyle}>
               <NavigateNextIcon />
             </ListItemIcon>
           </ListItem>
