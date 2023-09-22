@@ -160,7 +160,8 @@ export const NFTCard: FC<NFTCardProps> = ({ NFT, layout = 'large' }) => {
               <div
                 onClick={() => handleTokenIdClick(NFTData.NFTokenID || '')}
                 style={{
-                  display: 'block',
+                  display: 'flex',
+                  justifyContent: 'center',
                   maxWidth: '100%',
                   overflow: 'hidden',
                   whiteSpace: 'nowrap',
@@ -171,7 +172,11 @@ export const NFTCard: FC<NFTCardProps> = ({ NFT, layout = 'large' }) => {
                 }}
               >
                 <TruncatedText
-                  sx={{ fontSize: layout === 'small' ? '12px' : undefined, textAlign: 'center' }}
+                  sx={{
+                    fontSize: layout === 'small' ? '12px' : '14px',
+                    textAlign: 'center',
+                    maxWidth: '90%'
+                  }}
                 >
                   {NFTData.NFTokenID}
                 </TruncatedText>
