@@ -1,13 +1,17 @@
-import { FC, FocusEvent, useCallback, useMemo, useState } from 'react';
+import { ChangeEvent, FC, FocusEvent, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Button, TextField, Typography } from '@mui/material';
 import { Checkbox, FormControlLabel } from '@mui/material';
+import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
 import { isValidAddress } from 'xrpl';
 
 import { HOME_PATH, MAX_TOKEN_LENGTH } from '../../../constants';
+import { useKeyUp } from '../../../hooks';
+import { XRPLMetaTokensListAPIResponse } from '../../../types';
 import { NumericInput } from '../../atoms';
 import { PageWithReturn } from '../../templates';
+import { TokenData, TokenModal } from './TokenModal';
 
 interface InitialValues {
   issuer: string;
@@ -36,6 +40,10 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
   const [errorIssuer, setErrorIssuer] = useState<string>('');
   const [errorToken, setErrorToken] = useState<string>('');
   const [errorLimit, setErrorLimit] = useState<string>('');
+  // Search token functionality
+  const [isTokenModalOpen, setIsTokenModalOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchedTokens, setSearchedTokens] = useState<TokenData[]>([]);
   const navigate = useNavigate();
 
   const handleBack = useCallback(() => {
@@ -93,6 +101,61 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
     onTrustlineSubmit(issuer, token, limit, noRipple, false, false);
   }, [noRipple, issuer, limit, onTrustlineSubmit, token]);
 
+  // Fetch all tokens on mount
+  useEffect(() => {
+    async function fetchAllTokens() {
+      let url = `https://s1.xrplmeta.org/tokens?limit=1000`;
+      if (searchTerm !== '') {
+        url = `https://s1.xrplmeta.org/tokens?name_like=${searchTerm}&limit=1000`;
+      }
+
+      try {
+        // API Reference: https://xrplmeta.org/api
+        const res: Response = await fetch(url);
+        const json: XRPLMetaTokensListAPIResponse = (await res.json()) || [];
+        const allTokenData = json.tokens
+          .map((token) => ({
+            name: token.meta.token.name,
+            icon: token.meta.token.icon,
+            currency: token.currency,
+            issuer: token.issuer,
+            trustLevel: token.meta.token.trust_level,
+            issuerTrustLevel: token.meta.issuer.trust_level
+          }))
+          // Only accept valid tokens with a trust level of 3 (issuer & token)
+          .filter(
+            (token) =>
+              token.currency !== undefined &&
+              token.issuer !== undefined &&
+              token.trustLevel === 3 &&
+              token.issuerTrustLevel === 3
+          )
+          .sort((a, b) => a.name.localeCompare(b.name));
+        setSearchedTokens(allTokenData);
+      } catch (error) {
+        Sentry.captureException(error);
+      }
+    }
+
+    fetchAllTokens();
+  }, [searchTerm]);
+
+  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const handleOpenTokenModal = () => {
+    setIsTokenModalOpen(true);
+  };
+
+  useKeyUp('Enter', handleOpenTokenModal);
+
+  const selectToken = (token: TokenData) => {
+    setIssuer(token.issuer);
+    setToken(token.currency);
+    setIsTokenModalOpen(false);
+  };
+
   return (
     <PageWithReturn
       title={initialValues ? 'Edit trustline' : 'Add trustline'}
@@ -117,6 +180,27 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
         </div>
       ) : null}
       <div style={{ margin: '20px' }}>
+        <TokenModal
+          open={isTokenModalOpen}
+          tokens={searchedTokens}
+          onClose={() => setIsTokenModalOpen(false)}
+          onSelectToken={selectToken}
+        />
+        <Typography variant="h6" style={{ marginBottom: '5px' }}>
+          Search token
+        </Typography>
+        <TextField
+          label="Search by name or issuer address"
+          id="searchToken"
+          name="searchToken"
+          fullWidth
+          onChange={handleSearchChange}
+          style={{ marginTop: '5px', marginBottom: '10px' }}
+          autoComplete="off"
+        />
+        <Typography variant="h6" style={{ marginTop: '15px', marginBottom: '5px' }}>
+          Enter details manually
+        </Typography>
         <TextField
           label="Issuer"
           id="issuer"
