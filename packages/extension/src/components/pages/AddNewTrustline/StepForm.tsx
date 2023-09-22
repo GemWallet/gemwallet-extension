@@ -185,6 +185,10 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
     setIsTokenModalOpen(false);
   };
 
+  const canSearchTokens = useMemo(() => {
+    return networkName === Network.MAINNET && !initialValues;
+  }, [initialValues, networkName]);
+
   return (
     <PageWithReturn
       title={initialValues ? 'Edit trustline' : 'Add trustline'}
@@ -209,7 +213,7 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
         </div>
       ) : null}
       <div style={{ margin: '20px' }}>
-        {networkName === Network.MAINNET ? (
+        {canSearchTokens ? (
           <>
             <TokenModal
               open={isTokenModalOpen}
@@ -235,15 +239,17 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
             />
           </>
         ) : null}
-        <Typography
-          variant="h6"
-          style={{
-            marginTop: networkName === Network.MAINNET ? '15px' : '0',
-            marginBottom: '5px'
-          }}
-        >
-          Enter details manually
-        </Typography>
+        {!initialValues ? (
+          <Typography
+            variant="h6"
+            style={{
+              marginTop: canSearchTokens ? '15px' : '0',
+              marginBottom: '5px'
+            }}
+          >
+            Enter details manually
+          </Typography>
+        ) : null}
         <TextField
           label="Issuer"
           id="issuer"
