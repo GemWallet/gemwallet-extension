@@ -6,7 +6,10 @@ import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
 import { isValidAddress } from 'xrpl';
 
+import { Network } from '@gemwallet/constants';
+
 import { HOME_PATH, MAX_TOKEN_LENGTH } from '../../../constants';
+import { useNetwork } from '../../../contexts';
 import { useKeyUp } from '../../../hooks';
 import { XRPLMetaTokensListAPIResponse } from '../../../types';
 import { NumericInput } from '../../atoms';
@@ -45,6 +48,7 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
   const [searchTerm, setSearchTerm] = useState('');
   const [searchedTokens, setSearchedTokens] = useState<TokenData[]>([]);
   const navigate = useNavigate();
+  const { networkName } = useNetwork();
 
   const handleBack = useCallback(() => {
     navigate(HOME_PATH);
@@ -182,25 +186,35 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
         </div>
       ) : null}
       <div style={{ margin: '20px' }}>
-        <TokenModal
-          open={isTokenModalOpen}
-          tokens={searchedTokens}
-          onClose={() => setIsTokenModalOpen(false)}
-          onSelectToken={selectToken}
-        />
-        <Typography variant="h6" style={{ marginBottom: '5px' }}>
-          Search token
-        </Typography>
-        <TextField
-          label="Search by name or issuer address"
-          id="searchToken"
-          name="searchToken"
-          fullWidth
-          onChange={handleSearchChange}
-          style={{ marginTop: '5px', marginBottom: '10px' }}
-          autoComplete="off"
-        />
-        <Typography variant="h6" style={{ marginTop: '15px', marginBottom: '5px' }}>
+        {networkName === Network.MAINNET ? (
+          <>
+            <TokenModal
+              open={isTokenModalOpen}
+              tokens={searchedTokens}
+              onClose={() => setIsTokenModalOpen(false)}
+              onSelectToken={selectToken}
+            />
+            <Typography variant="h6" style={{ marginBottom: '5px' }}>
+              Search token
+            </Typography>
+            <TextField
+              label="Search by name or issuer"
+              id="searchToken"
+              name="searchToken"
+              fullWidth
+              onChange={handleSearchChange}
+              style={{ marginTop: '5px', marginBottom: '10px' }}
+              autoComplete="off"
+            />
+          </>
+        ) : null}
+        <Typography
+          variant="h6"
+          style={{
+            marginTop: networkName === Network.MAINNET ? '15px' : '0',
+            marginBottom: '5px'
+          }}
+        >
           Enter details manually
         </Typography>
         <TextField
