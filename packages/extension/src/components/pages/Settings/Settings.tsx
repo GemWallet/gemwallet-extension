@@ -1,15 +1,7 @@
 import { FC, useCallback, useMemo } from 'react';
 
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import {
-  Button,
-  Divider,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Typography
-} from '@mui/material';
+import LockIcon from '@mui/icons-material/Lock';
+import { Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 import {
@@ -24,7 +16,8 @@ import {
 } from '../../../constants';
 import { useWallet } from '../../../contexts';
 import { openExternalLink } from '../../../utils';
-import { PageWithNavMenu } from '../../templates';
+import { PageWithHeader } from '../../templates';
+import { ItemMenuGroup, MenuGroup } from './MenuGroup';
 
 export const Settings: FC = () => {
   const navigate = useNavigate();
@@ -34,50 +27,61 @@ export const Settings: FC = () => {
     signOut();
   }, [signOut]);
 
-  const items = useMemo(
+  const accountParamsItems = useMemo<ItemMenuGroup[]>(
     () => [
       {
         name: 'Trusted Apps',
+        type: 'button',
         onClick: () => navigate(TRUSTED_APPS_PATH)
       },
       {
         name: 'Permissions',
+        type: 'button',
         onClick: () => navigate(PERMISSIONS_PATH)
-      },
+      }
+    ],
+    [navigate]
+  );
+
+  const infoItems = useMemo<ItemMenuGroup[]>(
+    () => [
       {
         name: 'Help',
+        type: 'link',
         onClick: () => openExternalLink(FAQ_LINK)
       },
       {
         name: 'Leave A Feedback',
+        type: 'link',
         onClick: () => openExternalLink(FEEDBACK_LINK)
       },
       {
-        name: 'Reset Password',
-        onClick: () => navigate(RESET_PASSWORD_PATH)
-      },
-      {
-        name: 'Delete Account',
-        onClick: () => navigate(DELETE_ACCOUNT_PATH)
-      },
-      {
         name: 'About',
+        type: 'link',
         onClick: () => navigate(ABOUT_PATH)
       }
     ],
     [navigate]
   );
 
+  const dangerZoneItems = useMemo<ItemMenuGroup[]>(
+    () => [
+      {
+        name: 'Reset Password',
+        type: 'button',
+        onClick: () => navigate(RESET_PASSWORD_PATH)
+      },
+      {
+        name: 'Delete Account',
+        type: 'button',
+        onClick: () => navigate(DELETE_ACCOUNT_PATH)
+      }
+    ],
+    [navigate]
+  );
+
   return (
-    <PageWithNavMenu>
-      <div
-        style={{
-          padding: '0.75rem 1rem'
-        }}
-      >
-        <Typography variant="h6">Settings</Typography>
-      </div>
-      <Divider />
+    <PageWithHeader>
       <div
         style={{
           display: 'flex',
@@ -86,26 +90,21 @@ export const Settings: FC = () => {
           height: `calc(100% - ${NAV_MENU_HEIGHT}px)`
         }}
       >
-        <List>
-          {items.map(({ name, onClick }) => (
-            <ListItem button key={name} onClick={onClick}>
-              <ListItemText primary={name} />
-              <ListItemIcon>
-                <NavigateNextIcon />
-              </ListItemIcon>
-            </ListItem>
-          ))}
-        </List>
-        <div
-          style={{
-            margin: '1.5rem'
-          }}
-        >
-          <Button variant="contained" fullWidth size="large" onClick={handleLock}>
-            Lock
+        <div style={{ paddingBottom: '0.75rem' }}>
+          <MenuGroup sectionName={'Account settings'} items={accountParamsItems} />
+          <MenuGroup sectionName={'Informations'} items={infoItems} />
+          <MenuGroup sectionName={'Danger zone'} items={dangerZoneItems} />
+          <Button
+            variant="contained"
+            fullWidth
+            size="large"
+            startIcon={<LockIcon />}
+            onClick={handleLock}
+          >
+            Lock wallet
           </Button>
         </div>
       </div>
-    </PageWithNavMenu>
+    </PageWithHeader>
   );
 };
