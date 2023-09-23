@@ -117,8 +117,6 @@ export type EventMessage =
   | 'EVENT_LOGIN'
   | 'EVENT_LOGOUT';
 
-export type SourceMessage = 'GEM_WALLET_MSG_REQUEST' | 'GEM_WALLET_MSG_RESPONSE';
-
 /*
  * Requests
  */

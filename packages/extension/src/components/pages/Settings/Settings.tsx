@@ -16,7 +16,7 @@ import {
 import { useWallet } from '../../../contexts';
 import { openExternalLink } from '../../../utils';
 import { PageWithHeader } from '../../templates';
-import { MenuGroup } from './MenuGroup';
+import { ItemMenuGroup, MenuGroup } from './MenuGroup';
 
 export const Settings: FC = () => {
   const navigate = useNavigate();
@@ -26,46 +26,53 @@ export const Settings: FC = () => {
     signOut();
   }, [signOut]);
 
-  const accountParamsItems = useMemo(
+  const accountParamsItems = useMemo<ItemMenuGroup[]>(
     () => [
       {
         name: 'Trusted Apps',
+        type: 'button',
         onClick: () => navigate(TRUSTED_APPS_PATH)
       },
       {
         name: 'Permissions',
+        type: 'button',
         onClick: () => navigate(PERMISSIONS_PATH)
       }
     ],
     [navigate]
   );
 
-  const infoItems = useMemo(
+  const infoItems = useMemo<ItemMenuGroup[]>(
     () => [
       {
         name: 'Help',
+        type: 'link',
         onClick: () => openExternalLink(FAQ_LINK)
       },
       {
         name: 'Leave A Feedback',
+        type: 'link',
         onClick: () => openExternalLink(FEEDBACK_LINK)
       },
       {
         name: 'About',
+        type: 'link',
         onClick: () => navigate(ABOUT_PATH)
       }
     ],
     [navigate]
   );
 
-  const dangerZoneItems = useMemo(
+  const dangerZoneItems = useMemo<ItemMenuGroup[]>(
     () => [
       {
         name: 'Reset Password',
+        type: 'button',
         onClick: () => navigate(RESET_PASSWORD_PATH)
       },
       {
         name: 'Delete Account',
+        type: 'button',
         onClick: () => navigate(DELETE_ACCOUNT_PATH)
       }
     ],

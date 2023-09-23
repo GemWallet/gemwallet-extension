@@ -1,16 +1,21 @@
 import { CSSProperties, FC } from 'react';
 
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { ListItem, ListItemIcon, ListItemText } from '@mui/material';
+
+import { SECONDARY_GRAY } from '../../../constants';
 
 const radiusSize = '12px';
 
-interface MenuGroupProps {
+export type ItemMenuGroup = {
+  name: string;
+  type: 'link' | 'button';
+  onClick: () => void;
+};
+export interface MenuGroupProps {
   sectionName: string;
-  items: {
-    name: string;
-    onClick: () => void;
-  }[];
+  items: ItemMenuGroup[];
 }
 
 const groupStyles: CSSProperties = {
@@ -54,7 +59,7 @@ export const MenuGroup: FC<MenuGroupProps> = ({ sectionName, items }) => {
     <>
       <div style={sectionHeaderStyle}>{sectionName}</div>
       <div style={groupStyles}>
-        {items.map(({ name, onClick }, index, arr) => (
+        {items.map(({ name, type, onClick }, index, arr) => (
           <ListItem
             button
             key={name}
@@ -67,10 +72,24 @@ export const MenuGroup: FC<MenuGroupProps> = ({ sectionName, items }) => {
                 : {}),
               ...(index !== arr.length - 1 ? listItemStyles : {})
             }}
+            sx={{
+              '.MuiListItemIcon-root': {
+                color: SECONDARY_GRAY
+              },
+              '&:hover': {
+                '.MuiListItemIcon-root': {
+                  color: 'inherit'
+                }
+              }
+            }}
           >
             <ListItemText primary={name} style={listItemTextStyle} />
             <ListItemIcon style={listItemIconStyle}>
-              <NavigateNextIcon />
+              {type === 'link' ? (
+                <OpenInNewIcon fontSize="small" sx={{ height: '18px' }} />
+              ) : (
+                <NavigateNextIcon />
+              )}
             </ListItemIcon>
           </ListItem>
         ))}
