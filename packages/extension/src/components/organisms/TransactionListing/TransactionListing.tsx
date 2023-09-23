@@ -8,7 +8,6 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogTitle,
   Divider,
   IconButton,
   List,
@@ -192,31 +191,43 @@ export const TransactionListing: FC<TransactionListingProps> = ({ transactions }
           <FilterListIcon style={{ fontSize: '18px' }} />
         </IconButton>
         <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
-          <DialogTitle>Filter Transactions</DialogTitle>
-          <DialogContent>
+          <DialogContent style={{ maxHeight: '250px', minWidth: '220px', overflowY: 'auto' }}>
+            <Typography variant="h6" style={{ marginBottom: '5px' }}>
+              Transaction types
+            </Typography>
             {transactionTypes.map((type) => (
-              <FormControlLabel
-                key={type}
-                control={
-                  <Checkbox
-                    color="primary"
-                    value={type}
-                    checked={filterTypes.includes(type as string)}
-                    onChange={(e) => {
-                      const checked = e.target.checked;
-                      if (type) {
-                        setFilterTypes((prev) =>
-                          checked ? [...prev, type] : prev.filter((t) => t !== type)
-                        );
-                      }
-                    }}
-                  />
-                }
-                label={type}
-              />
+              <div key={type}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      size="small"
+                      color="primary"
+                      value={type}
+                      checked={filterTypes.includes(type as string)}
+                      onChange={(e) => {
+                        const checked = e.target.checked;
+                        if (type) {
+                          setFilterTypes((prev) =>
+                            checked ? [...prev, type] : prev.filter((t) => t !== type)
+                          );
+                        }
+                      }}
+                    />
+                  }
+                  label={type}
+                />
+              </div>
             ))}
           </DialogContent>
           <DialogActions>
+            <Button
+              onClick={() => {
+                setFilterTypes([]);
+              }}
+              color="secondary"
+            >
+              Reset Filters
+            </Button>
             <Button onClick={() => setDialogOpen(false)} color="primary">
               Close
             </Button>
