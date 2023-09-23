@@ -18,7 +18,7 @@ import {
 } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 import { unix } from 'moment';
-import { convertHexToString, dropsToXrp } from 'xrpl';
+import { convertHexToString, DepositPreauth, dropsToXrp, Payment, SetRegularKey } from 'xrpl';
 
 import { useWallet } from '../../../contexts';
 import { AccountTransaction, TransactionTypes } from '../../../types';
@@ -43,74 +43,60 @@ const Transition = React.forwardRef(function Transition(
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const formatTransaction = (transaction: AccountTransaction, publicAddress: string): string => {
-  switch (transaction.tx?.TransactionType) {
-    case TransactionTypes.Payment:
-      // Might need to handle more use case
-      const amount = formatAmount(transaction.tx.Amount);
-      if (transaction.tx.Destination === publicAddress) {
-        return `Payment received - ${amount}`;
-      }
-      return `Payment sent - ${amount}`;
-    case TransactionTypes.TrustSet: {
-      // Might need to handle more use case
-      return 'TrustLine transaction';
+type TransactionFormatter = (transaction: AccountTransaction, publicAddress: string) => string;
+
+const transactionMappers: Record<TransactionTypes, TransactionFormatter> = {
+  [TransactionTypes.Payment]: (transaction, publicAddress) => {
+    const amount = formatAmount((transaction.tx as Payment).Amount);
+    return (transaction.tx as Payment).Destination === publicAddress
+      ? `Payment received - ${amount}`
+      : `Payment sent - ${amount}`;
+  },
+  [TransactionTypes.TrustSet]: () => 'TrustLine transaction',
+  [TransactionTypes.EscrowCreate]: () => 'Create escrow',
+  [TransactionTypes.EscrowFinish]: () => 'Finish escrow',
+  [TransactionTypes.EscrowCancel]: () => 'Cancel escrow',
+  [TransactionTypes.AccountSet]: () => 'Edit account',
+  [TransactionTypes.SignerListSet]: () => 'Set Signer List',
+  [TransactionTypes.OfferCreate]: () => 'Create offer',
+  [TransactionTypes.OfferCancel]: () => 'Cancel offer',
+  [TransactionTypes.AccountDelete]: () => 'Delete Account',
+  [TransactionTypes.SetRegularKey]: (transaction) => {
+    if ((transaction.tx as SetRegularKey).RegularKey) {
+      return 'Set Regular Key';
     }
-    case TransactionTypes.EscrowCreate:
-      return 'Create escrow';
-    case TransactionTypes.EscrowFinish:
-      return 'Finish escrow';
-    case TransactionTypes.EscrowCancel:
-      return 'Cancel escrow';
-    case TransactionTypes.AccountSet:
-      // Might need to handle more use cases here
-      return 'Edit account';
-    case TransactionTypes.SignerListSet:
-      return 'Set Signer List';
-    case TransactionTypes.OfferCreate:
-      // Might need to handle more use cases here
-      return 'Create offer';
-    case TransactionTypes.OfferCancel:
-      return 'Cancel offer';
-    case TransactionTypes.AccountDelete:
-      return 'Delete Account';
-    case TransactionTypes.SetRegularKey:
-      if (transaction.tx.RegularKey) {
-        return 'Set Regular Key';
-      }
-      return 'Remove Regular Key';
-    case TransactionTypes.DepositPreauth:
-      if (transaction.tx.Authorize) {
-        return 'Authorize deposit';
-      }
-      return 'Unauthorize deposit';
-    case TransactionTypes.CheckCreate:
-      return 'Create check';
-    case TransactionTypes.CheckCash:
-      return 'Cash check';
-    case TransactionTypes.CheckCancel:
-      return 'Cancel check';
-    case TransactionTypes.TicketCreate:
-      return 'Create ticket';
-    case TransactionTypes.PaymentChannelCreate:
-      return 'Create payment channel';
-    case TransactionTypes.PaymentChannelClaim:
-      return 'Claim payment channel';
-    case TransactionTypes.PaymentChannelFund:
-      return 'Fund payment channel';
-    case TransactionTypes.NFTokenMint:
-      return 'Mint NFT';
-    case TransactionTypes.NFTokenBurn:
-      return 'Burn NFT';
-    case TransactionTypes.NFTokenCreateOffer:
-      return 'Create NFT offer';
-    case TransactionTypes.NFTokenCancelOffer:
-      return 'Cancel NFT offer';
-    case TransactionTypes.NFTokenAcceptOffer:
-      return 'Accept NFT offer';
-    default:
-      return 'Unsupported transaction';
+    return 'Remove Regular Key';
+  },
+  [TransactionTypes.DepositPreauth]: (transaction) => {
+    if ((transaction.tx as DepositPreauth).Authorize) {
+      return 'Authorize Deposit';
+    }
+    return 'Unauthorize Deposit';
+  },
+  [TransactionTypes.CheckCreate]: () => 'Create check',
+  [TransactionTypes.CheckCash]: () => 'Cash check',
+  [TransactionTypes.CheckCancel]: () => 'Cancel check',
+  [TransactionTypes.TicketCreate]: () => 'Create ticket',
+  [TransactionTypes.PaymentChannelCreate]: () => 'Create payment channel',
+  [TransactionTypes.PaymentChannelClaim]: () => 'Claim payment channel',
+  [TransactionTypes.PaymentChannelFund]: () => 'Fund payment channel',
+  [TransactionTypes.NFTokenMint]: () => 'Mint NFT',
+  [TransactionTypes.NFTokenBurn]: () => 'Burn NFT',
+  [TransactionTypes.NFTokenCreateOffer]: () => 'Create NFT offer',
+  [TransactionTypes.NFTokenCancelOffer]: () => 'Cancel NFT offer',
+  [TransactionTypes.NFTokenAcceptOffer]: () => 'Accept NFT offer'
+};
+
+const formatTransaction = (transaction: AccountTransaction, publicAddress: string): string => {
+  if (!transaction.tx) {
+    return 'Unsupported transaction';
   }
+
+  const txType = transaction.tx.TransactionType;
+  const formatter = transactionMappers[txType as keyof typeof transactionMappers];
+
+  // If formatter doesn't exist for this txType, return the txType as default message
+  return formatter ? formatter(transaction, publicAddress) : txType;
 };
 
 const renderDestinationField = (transaction: AccountTransaction): JSX.Element | null => {
