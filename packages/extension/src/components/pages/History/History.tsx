@@ -17,19 +17,28 @@ export const History: FC = () => {
   const [isTxFailed, setIsTxFailed] = useState<boolean>(false);
 
   useEffect(() => {
+    let isMounted = true;
+
     const getTx = async () => {
       try {
         const tx = await getTransactions();
-        setTransactions(tx);
+        if (isMounted) {
+          setTransactions(tx);
+        }
       } catch (e) {
-        if ((e as Error).message === LEDGER_CONNECTION_ERROR) {
-          setIsTxFailed(true);
-        } else {
-          Sentry.captureException(e);
+        if (isMounted) {
+          if ((e as Error).message === LEDGER_CONNECTION_ERROR) {
+            setIsTxFailed(true);
+          } else {
+            Sentry.captureException(e);
+          }
         }
       }
     };
     getTx();
+    return () => {
+      isMounted = false;
+    };
   }, [getTransactions]);
 
   if (isTxFailed) {
