@@ -1,5 +1,6 @@
 import { FC, useCallback, useMemo } from 'react';
 
+import LockIcon from '@mui/icons-material/Lock';
 import { Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
@@ -89,27 +90,17 @@ export const Settings: FC = () => {
           height: `calc(100% - ${NAV_MENU_HEIGHT}px)`
         }}
       >
-        <div style={{ paddingBottom: '55px' }}>
+        <div style={{ paddingBottom: '0.75rem' }}>
           <MenuGroup sectionName={'Account settings'} items={accountParamsItems} />
           <MenuGroup sectionName={'Informations'} items={infoItems} />
           <MenuGroup sectionName={'Danger zone'} items={dangerZoneItems} />
-        </div>
-        <div
-          style={{
-            marginLeft: '1rem',
-            marginRight: '1rem',
-            paddingBottom: '0.75rem',
-            display: 'flex',
-            justifyContent: 'center',
-            position: 'fixed',
-            bottom: 57,
-            left: 0,
-            right: 0,
-            zIndex: 1,
-            backgroundColor: '#1d1d1d'
-          }}
-        >
-          <Button variant="contained" fullWidth size="large" onClick={handleLock}>
+          <Button
+            variant="contained"
+            fullWidth
+            size="large"
+            startIcon={<LockIcon />}
+            onClick={handleLock}
+          >
             Lock wallet
           </Button>
         </div>
