@@ -139,14 +139,11 @@ export const TransactionListing: FC<TransactionListingProps> = ({ transactions }
     [tx]
   );
 
-  const handleClose = useCallback(
-    (index: number) => {
-      const newTx = [...tx];
-      newTx[index].touched = false;
-      setTx(newTx);
-    },
-    [tx]
-  );
+  const handleClose = useCallback(() => {
+    const newTx = [...tx];
+    newTx.map((t) => (t.touched = false));
+    setTx(newTx);
+  }, [tx]);
 
   const groupTransactionsByDate = useCallback(
     (transactions: ExtendedAccountTransaction[]): Map<string, ExtendedAccountTransaction[]> => {
@@ -281,7 +278,7 @@ export const TransactionListing: FC<TransactionListingProps> = ({ transactions }
                           edge="start"
                           color="inherit"
                           aria-label="close"
-                          onClick={() => handleClose(index)}
+                          onClick={() => handleClose()}
                           style={{ cursor: 'pointer' }}
                           data-testid="close-button"
                         >
