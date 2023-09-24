@@ -1,6 +1,6 @@
 {
   "name": "@gemwallet/extension",
-  "version": "3.5.1",
+  "version": "3.5.2",
   "description": "GemWallet browser extension",
   "private": true,
   "dependencies": {
@@ -8,9 +8,9 @@
     "@emeraldpay/hashicon-react": "^0.5.2",
     "@emotion/react": "^11.7.0",
     "@emotion/styled": "^11.6.0",
-    "@mui/icons-material": "^5.11.16",
-    "@mui/material": "^5.11.16",
-    "@sentry/react": "^7.68.0",
+    "@mui/icons-material": "^5.14.9",
+    "@mui/material": "^5.14.10",
+    "@sentry/react": "^7.70.0",
     "copy-to-clipboard": "^3.3.1",
     "crypto-js": "^4.1.1",
     "lottie-react": "^2.1.0",
