@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { CSSProperties, FC } from 'react';
 
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
@@ -12,9 +12,13 @@ const CONTAINER_HEIGHT_TAKEN = HEADER_HEIGHT + NAV_MENU_HEIGHT + MARGIN_TOP_CONT
 
 export interface PageWithHeaderProps {
   title?: string;
+  styles?: {
+    root?: CSSProperties;
+    container?: CSSProperties;
+  };
 }
 
-export const PageWithHeader: FC<PageWithHeaderProps> = ({ children, title }) => {
+export const PageWithHeader: FC<PageWithHeaderProps> = ({ children, styles, title }) => {
   const { wallets, selectedWallet } = useWallet();
   const { hasOfflineBanner } = useNetwork();
 
@@ -23,15 +27,16 @@ export const PageWithHeader: FC<PageWithHeaderProps> = ({ children, title }) => 
   }
   return (
     <div
-      style={
-        hasOfflineBanner
+      style={{
+        ...(hasOfflineBanner
           ? {
               width: '100%',
               position: 'fixed',
               top: NETWORK_BANNER_HEIGHT
             }
-          : undefined
-      }
+          : {}),
+        ...styles?.root
+      }}
     >
       <Header wallet={wallets[selectedWallet]} />
       <Container
@@ -43,7 +48,8 @@ export const PageWithHeader: FC<PageWithHeaderProps> = ({ children, title }) => 
             hasOfflineBanner ? ` - ${NETWORK_BANNER_HEIGHT}px` : ''
           })`,
           margin: `${MARGIN_TOP_CONTAINER}px auto 0 auto`,
-          overflowY: 'auto'
+          overflowY: 'auto',
+          ...styles?.container
         }}
       >
         {title && (

@@ -10,9 +10,16 @@ interface NFTImageProps {
   height?: number;
   width?: number;
   style?: CSSProperties;
+  fallbackScale?: number;
 }
 
-export const NFTImage: FC<NFTImageProps> = ({ imageURL, height = 250, width = 250, style }) => {
+export const NFTImage: FC<NFTImageProps> = ({
+  imageURL,
+  height = 250,
+  width = 250,
+  style,
+  fallbackScale = 2
+}) => {
   return imageURL ? (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', ...style }}>
       <LazyLoadImage
@@ -39,7 +46,7 @@ export const NFTImage: FC<NFTImageProps> = ({ imageURL, height = 250, width = 25
         ...style
       }}
     >
-      <GemWallet style={{ transform: 'scale(2)' }} />
+      <GemWallet style={{ transform: `scale(${fallbackScale}` }} />
     </div>
   );
 };
