@@ -23,7 +23,7 @@ export const NFTListing: FC<NFTListingProps> = ({ isLoading, account_nfts, onLoa
 
   if (account_nfts.length === 0 && !isLoading) {
     return (
-      <InformationMessage title="No NFTs to show">
+      <InformationMessage title="No NFTs to show" style={{ marginTop: 10 }}>
         <div style={{ marginBottom: '5px' }}>There are no NFTs found in this wallet.</div>
       </InformationMessage>
     );
