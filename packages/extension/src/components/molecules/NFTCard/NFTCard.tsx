@@ -12,9 +12,11 @@ import { useLedger } from '../../../contexts';
 import { NFTImage, TruncatedText } from '../../atoms';
 import { NFTDetails } from '../../organisms';
 
+export type NFTCardLayout = 'large' | 'small' | 'list';
+
 export interface NFTCardProps {
   NFT: AccountNFToken;
-  layout: 'large' | 'small' | 'list';
+  layout: NFTCardLayout;
 }
 
 const Transition = forwardRef(function Transition(

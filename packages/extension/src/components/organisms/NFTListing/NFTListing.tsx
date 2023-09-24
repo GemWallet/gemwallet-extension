@@ -8,10 +8,8 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 
 import { AccountNFTokenResponse } from '@gemwallet/constants';
 
-import { InformationMessage, NFTCard } from '../../molecules';
+import { InformationMessage, NFTCard, NFTCardLayout } from '../../molecules';
 import { MAX_FETCHED_NFTS } from '../../pages';
-
-type Layout = 'large' | 'small' | 'list';
 
 export interface NFTListingProps extends AccountNFTokenResponse {
   onLoadMoreClick: () => void;
@@ -19,7 +17,7 @@ export interface NFTListingProps extends AccountNFTokenResponse {
 }
 
 export const NFTListing: FC<NFTListingProps> = ({ isLoading, account_nfts, onLoadMoreClick }) => {
-  const [layout, setLayout] = useState<Layout>('large');
+  const [layout, setLayout] = useState<NFTCardLayout>('large');
 
   if (account_nfts.length === 0 && !isLoading) {
     return (
