@@ -109,11 +109,11 @@
     "eslint": "^7.11.0"
   },
   "scripts": {
-    "start": "craco start",
-    "build": "INLINE_RUNTIME_CHUNK=false GENERATE_SOURCEMAP=false craco build",
+    "start": "node scripts/start.js",
+    "build": "INLINE_RUNTIME_CHUNK=false GENERATE_SOURCEMAP=false node scripts/build.js",
     "cypress:open": "cypress open",
     "cypress:e2e": "cypress open --browser chrome --e2e",
-    "test": "craco test --all --coverage",
+    "test": "node scripts/test.js --all --coverage",
     "type-check": "tsc --project tsconfig.json --pretty --noEmit"
   },
   "browserslist": {
