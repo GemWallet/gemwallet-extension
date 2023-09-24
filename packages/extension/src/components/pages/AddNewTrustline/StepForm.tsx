@@ -8,7 +8,13 @@ import { isValidAddress } from 'xrpl';
 
 import { Network } from '@gemwallet/constants';
 
-import { HOME_PATH, MAX_TOKEN_LENGTH } from '../../../constants';
+import {
+  HOME_PATH,
+  LIMIT_API_RESULTS,
+  MAX_TOKEN_LENGTH,
+  MIN_SEARCH_LENGTH,
+  XRPL_META_URL
+} from '../../../constants';
 import { useNetwork } from '../../../contexts';
 import { useKeyUp } from '../../../hooks';
 import { XRPLMetaTokensListAPIResponse } from '../../../types';
@@ -23,7 +29,7 @@ interface InitialValues {
   noRipple: boolean;
 }
 
-interface StepFormProps {
+export interface StepFormProps {
   onTrustlineSubmit: (
     issuer: string,
     token: string,
@@ -34,9 +40,6 @@ interface StepFormProps {
   ) => void;
   initialValues?: InitialValues;
 }
-
-const MIN_SEARCH_LENGTH = 3;
-const LIMIT_API_RESULTS = 1000;
 
 export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }) => {
   const [issuer, setIssuer] = useState<string>(initialValues?.issuer || '');
@@ -81,14 +84,14 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
   }, []);
 
   const handleLimitChange = useCallback((e: FocusEvent<HTMLInputElement>) => {
-    if (Number(e.target.value) < 0 && e.target.value !== '') {
-      setErrorLimit('The limit cannot be a negative number');
-    } else {
-      setErrorLimit('');
-    }
+    const inputValue = e.target.value;
+    const isNegative = Number(inputValue) < 0;
 
-    if (!Number.isNaN(Number(e.target.value))) {
-      setLimit(e.target.value);
+    if (inputValue !== '' && !isNegative && !Number.isNaN(Number(inputValue))) {
+      setErrorLimit('');
+      setLimit(inputValue);
+    } else {
+      setErrorLimit(isNegative ? 'The limit cannot be a negative number' : 'Invalid input');
     }
   }, []);
 
@@ -111,12 +114,12 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
     onTrustlineSubmit(issuer, token, limit, noRipple, false, false);
   }, [noRipple, issuer, limit, onTrustlineSubmit, token]);
 
-  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleSearchChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
     if (e.target.value.length > 0 && e.target.value.length >= MIN_SEARCH_LENGTH) {
       setSearchError('');
     }
-  };
+  }, []);
 
   const fetchAllTokens = useCallback(async () => {
     if (searchTerm === '') {
@@ -124,7 +127,7 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
     }
 
     const fetchTokensPage = async (offset = 0): Promise<TokenData[]> => {
-      const url = `https://s1.xrplmeta.org/tokens?name_like=${searchTerm}&limit=${LIMIT_API_RESULTS}&offset=${offset}`;
+      const url = `${XRPL_META_URL}/tokens?name_like=${searchTerm}&limit=${LIMIT_API_RESULTS}&offset=${offset}`;
 
       const res: Response = await fetch(url);
       const json: XRPLMetaTokensListAPIResponse = (await res.json()) || [];
@@ -145,8 +148,8 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
           (token) =>
             token.currency !== undefined &&
             token.issuer !== undefined &&
-            token.trustLevel === 3 &&
-            token.issuerTrustLevel === 3
+            token.trustLevel >= 3 &&
+            token.issuerTrustLevel >= 3
         )
         .sort((a, b) => a.name.localeCompare(b.name));
 
@@ -165,7 +168,7 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
     }
   }, [searchTerm]);
 
-  const handleOpenTokenModal = () => {
+  const handleOpenTokenModal = useCallback(() => {
     if (isSearchFocused) {
       if (searchTerm.length < MIN_SEARCH_LENGTH) {
         setSearchError(`Query must be at least ${MIN_SEARCH_LENGTH} characters.`);
@@ -175,15 +178,15 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
         });
       }
     }
-  };
+  }, [fetchAllTokens, isSearchFocused, searchTerm.length]);
 
   useKeyUp('Enter', handleOpenTokenModal);
 
-  const selectToken = (token: TokenData) => {
+  const selectToken = useCallback((token: TokenData) => {
     setIssuer(token.issuer);
     setToken(token.currency);
     setIsTokenModalOpen(false);
-  };
+  }, []);
 
   const canSearchTokens = useMemo(() => {
     return networkName === Network.MAINNET && !initialValues;

@@ -1,8 +1,25 @@
 import { FC } from 'react';
 
-import { Modal, List, ListItem, ListItemText, ListItemAvatar, Avatar, Box } from '@mui/material';
+import {
+  Modal,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemAvatar,
+  Avatar,
+  Box,
+  Typography
+} from '@mui/material';
 
 import { convertHexCurrencyString } from '../../../utils';
+
+const safeConvertHexCurrencyString = (currency: string): string => {
+  try {
+    return convertHexCurrencyString(currency);
+  } catch (error) {
+    return currency; // fallback to the original value in case of error
+  }
+};
 
 export interface TokenData {
   name: string;
@@ -13,7 +30,7 @@ export interface TokenData {
   issuerIcon: string;
 }
 
-interface TokenModalProps {
+export interface TokenModalProps {
   open: boolean;
   tokens: TokenData[];
   onClose: () => void;
@@ -21,14 +38,6 @@ interface TokenModalProps {
 }
 
 export const TokenModal: FC<TokenModalProps> = ({ open, tokens, onClose, onSelectToken }) => {
-  const safeConvertHexCurrencyString = (currency: string): string => {
-    try {
-      return convertHexCurrencyString(currency);
-    } catch (error) {
-      return currency; // fallback to the original value in case of error
-    }
-  };
-
   return (
     <Modal open={open} onClose={onClose}>
       <Box
@@ -37,7 +46,7 @@ export const TokenModal: FC<TokenModalProps> = ({ open, tokens, onClose, onSelec
           width: '300px',
           backgroundColor: '#272727',
           borderRadius: '10px',
-          position: 'absolute' as 'absolute',
+          position: 'absolute',
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
@@ -47,7 +56,7 @@ export const TokenModal: FC<TokenModalProps> = ({ open, tokens, onClose, onSelec
         }}
       >
         {tokens.length === 0 ? (
-          <Box
+          <Typography
             display="flex"
             justifyContent="center"
             alignItems="center"
@@ -56,7 +65,7 @@ export const TokenModal: FC<TokenModalProps> = ({ open, tokens, onClose, onSelec
             fontSize="16px"
           >
             No data found
-          </Box>
+          </Typography>
         ) : (
           <List style={{ maxHeight: '280px', overflow: 'auto' }}>
             {tokens.map((token, index) => (
