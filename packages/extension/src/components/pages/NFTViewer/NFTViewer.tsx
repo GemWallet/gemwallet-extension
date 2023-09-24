@@ -10,7 +10,7 @@ import { PageWithHeader } from '../../templates';
 
 export const MAX_FETCHED_NFTS = 20;
 
-const initalState = {
+const initialState = {
   account_nfts: [],
   marker: null,
   isLoading: false
@@ -22,7 +22,7 @@ interface NFTsProps extends AccountNFTokenResponse {
 
 export const NFTViewer: FC = () => {
   const { getNFTs } = useLedger();
-  const [NFTs, setNFTs] = useState<NFTsProps>(initalState);
+  const [NFTs, setNFTs] = useState<NFTsProps>(initialState);
 
   const fetchNFTs = useCallback(async () => {
     try {
@@ -41,7 +41,7 @@ export const NFTViewer: FC = () => {
         isLoading: false
       });
     } catch (error) {
-      setNFTs(initalState);
+      setNFTs(initialState);
       Sentry.captureException(error);
     }
   }, [NFTs, getNFTs]);
