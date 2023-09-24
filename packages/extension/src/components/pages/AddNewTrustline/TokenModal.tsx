@@ -8,7 +8,9 @@ import {
   ListItemAvatar,
   Avatar,
   Box,
-  Typography
+  Typography,
+  DialogActions,
+  Button
 } from '@mui/material';
 
 import { convertHexCurrencyString } from '../../../utils';
@@ -42,7 +44,7 @@ export const TokenModal: FC<TokenModalProps> = ({ open, tokens, onClose, onSelec
     <Modal open={open} onClose={onClose}>
       <Box
         style={{
-          maxHeight: '300px',
+          maxHeight: '350px',
           width: '300px',
           backgroundColor: '#272727',
           borderRadius: '10px',
@@ -51,7 +53,7 @@ export const TokenModal: FC<TokenModalProps> = ({ open, tokens, onClose, onSelec
           left: '50%',
           transform: 'translate(-50%, -50%)',
           outline: 'none',
-          overflow: 'auto',
+          overflow: 'hidden',
           color: 'white'
         }}
       >
@@ -107,6 +109,15 @@ export const TokenModal: FC<TokenModalProps> = ({ open, tokens, onClose, onSelec
             ))}
           </List>
         )}
+        <DialogActions
+          style={{
+            backgroundColor: '#272727'
+          }}
+        >
+          <Button onClick={onClose} color="primary">
+            Close
+          </Button>
+        </DialogActions>
       </Box>
     </Modal>
   );
