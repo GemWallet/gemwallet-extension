@@ -58,7 +58,7 @@ export const TokenModal: FC<TokenModalProps> = ({ open, tokens, onClose, onSelec
           color: 'white'
         }}
       >
-        <DialogTitle sx={{ m: 0, p: 2 }}>Tokens</DialogTitle>
+        <DialogTitle sx={{ margin: 0, paddingX: 2, paddingBottom: '8px' }}>Tokens</DialogTitle>
         {tokens.length === 0 ? (
           <Typography
             display="flex"
@@ -71,7 +71,7 @@ export const TokenModal: FC<TokenModalProps> = ({ open, tokens, onClose, onSelec
             No data found
           </Typography>
         ) : (
-          <List style={{ maxHeight: '280px', overflow: 'auto' }}>
+          <List style={{ maxHeight: '280px', overflow: 'auto', paddingTop: 0 }}>
             {tokens.map((token, index) => (
               <ListItem button key={index} onClick={() => onSelectToken(token)}>
                 <ListItemAvatar>
