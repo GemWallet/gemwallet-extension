@@ -10,7 +10,8 @@ import {
   Box,
   Typography,
   DialogActions,
-  Button
+  Button,
+  DialogTitle
 } from '@mui/material';
 
 import { convertHexCurrencyString } from '../../../utils';
@@ -57,6 +58,7 @@ export const TokenModal: FC<TokenModalProps> = ({ open, tokens, onClose, onSelec
           color: 'white'
         }}
       >
+        <DialogTitle sx={{ m: 0, p: 2 }}>Tokens</DialogTitle>
         {tokens.length === 0 ? (
           <Typography
             display="flex"
