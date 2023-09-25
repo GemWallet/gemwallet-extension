@@ -1,4 +1,4 @@
-import { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
+import { CSSProperties, FC, forwardRef, Ref, useEffect, useMemo, useState } from 'react';
 
 import EditIcon from '@mui/icons-material/Edit';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
@@ -22,6 +22,13 @@ export interface TokenDisplayProps {
   style?: CSSProperties;
 }
 
+interface TokenDisplayData {
+  tokenName: string;
+  tokenIconUrl?: string;
+  issuerName?: string;
+  issuerIconUrl?: string;
+}
+
 export const TokenDisplay: FC<TokenDisplayProps> = ({
   balance,
   token,
@@ -33,7 +40,7 @@ export const TokenDisplay: FC<TokenDisplayProps> = ({
   onTrustlineDetailsClick,
   style
 }) => {
-  const [tokenIconUrl, setTokenIconUrl] = useState<string>('');
+  const [tokenData, setTokenData] = useState<TokenDisplayData | undefined>(undefined);
 
   /* We use the token and issuer to get the logo from XRPL Meta */
   useEffect(() => {
@@ -43,8 +50,17 @@ export const TokenDisplay: FC<TokenDisplayProps> = ({
           // API Reference: https://xrplmeta.org/api
           const res: Response = await fetch(`https://s1.xrplmeta.org/token/${token}:${issuer}`);
           const json: XRPLMetaTokenAPIResponse = await res.json(); // Make sure this JSON structure conforms to XRPLMetaTokenAPIResponse
-          const icon: string | undefined = json?.meta?.token?.icon ?? json?.meta?.issuer?.icon;
-          setTokenIconUrl(icon);
+          const tokenName: string | undefined = json?.meta?.token?.name ?? token;
+          const tokenIconUrl: string | undefined =
+            json?.meta?.token?.icon ?? json?.meta?.issuer?.icon;
+          const issuerName: string | undefined = json?.meta?.issuer?.name;
+          const issuerIconUrl: string | undefined = json?.meta?.issuer?.icon;
+          setTokenData({
+            tokenName,
+            tokenIconUrl,
+            issuerName,
+            issuerIconUrl
+          });
         } catch (error) {
           console.log(`An error occurred: ${error}`);
         }
@@ -80,21 +96,34 @@ export const TokenDisplay: FC<TokenDisplayProps> = ({
         ...style
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center' }}>
-        <RenderTokenIcon {...{ isXRPToken, tokenIconUrl, token }} />
-        <div style={{ marginLeft: '10px' }}>
-          <Tooltip title={tokenWarningMessage} placement="top">
-            <Typography
-              style={tokenWarningMessage ? { color: 'brown', cursor: 'help' } : undefined}
-            >
-              {token}
-            </Typography>
-          </Tooltip>
-          <Typography variant="body2" style={{ color: SECONDARY_GRAY }}>
-            {formatToken(balance, token)}
-          </Typography>
-        </div>
-      </div>
+      {tokenData?.issuerName ? (
+        <Tooltip
+          title={
+            <>
+              <Typography variant="caption" style={{ fontStyle: 'italic' }}>
+                Issued by {tokenData.issuerName}
+              </Typography>
+            </>
+          }
+          placement="top"
+        >
+          <TokenInfo
+            isXRPToken={isXRPToken}
+            tokenIconUrl={tokenData?.tokenIconUrl}
+            token={token}
+            tokenWarningMessage={tokenWarningMessage}
+            balance={balance}
+          />
+        </Tooltip>
+      ) : (
+        <TokenInfo
+          isXRPToken={isXRPToken}
+          tokenIconUrl={tokenData?.tokenIconUrl}
+          token={token}
+          tokenWarningMessage={tokenWarningMessage}
+          balance={balance}
+        />
+      )}
       {onExplainClick ? (
         <IconTextButton onClick={onExplainClick}>
           <InfoOutlinedIcon style={{ color: SECONDARY_GRAY }} fontSize="small" />
@@ -114,3 +143,29 @@ export const TokenDisplay: FC<TokenDisplayProps> = ({
     </Paper>
   );
 };
+
+interface TokenInfoProps {
+  isXRPToken: boolean;
+  tokenIconUrl: string | undefined;
+  token: string;
+  tokenWarningMessage: string | undefined;
+  balance: number;
+}
+
+const TokenInfo = forwardRef((props: TokenInfoProps, ref: Ref<HTMLDivElement>) => {
+  const { isXRPToken, tokenIconUrl, token, tokenWarningMessage, balance, ...otherProps } = props;
+
+  return (
+    <div ref={ref} {...otherProps} style={{ display: 'flex', alignItems: 'center' }}>
+      <RenderTokenIcon {...{ isXRPToken, tokenIconUrl: tokenIconUrl || '', token }} />
+      <div style={{ marginLeft: '10px' }}>
+        <Typography style={tokenWarningMessage ? { color: 'brown', cursor: 'help' } : undefined}>
+          {token}
+        </Typography>
+        <Typography variant="body2" style={{ color: SECONDARY_GRAY }}>
+          {formatToken(balance, token)}
+        </Typography>
+      </div>
+    </div>
+  );
+});
