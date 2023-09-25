@@ -1,5 +1,7 @@
 import { FC } from 'react';
 
+import { Avatar } from '@mui/material';
+
 import { GemWallet, Xrp } from '../../../atoms';
 
 interface RenderTokenIconProps {
@@ -14,13 +16,7 @@ export const RenderTokenIcon: FC<RenderTokenIconProps> = ({ isXRPToken, tokenIco
   }
 
   if (tokenIconUrl) {
-    return (
-      <img
-        src={tokenIconUrl}
-        alt={token}
-        style={{ width: '45px', height: '45px', marginRight: '10px' }}
-      />
-    );
+    return <Avatar src={tokenIconUrl} alt={token} style={{ width: '45px', height: '45px' }} />;
   }
 
   return <GemWallet />;
