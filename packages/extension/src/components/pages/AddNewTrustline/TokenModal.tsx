@@ -11,7 +11,8 @@ import {
   Typography,
   DialogActions,
   Button,
-  DialogTitle
+  DialogTitle,
+  CircularProgress
 } from '@mui/material';
 
 import { convertHexCurrencyString } from '../../../utils';
@@ -36,11 +37,18 @@ export interface TokenData {
 export interface TokenModalProps {
   open: boolean;
   tokens: TokenData[];
+  isFetching: boolean;
   onClose: () => void;
   onSelectToken: (token: TokenData) => void;
 }
 
-export const TokenModal: FC<TokenModalProps> = ({ open, tokens, onClose, onSelectToken }) => {
+export const TokenModal: FC<TokenModalProps> = ({
+  open,
+  tokens,
+  isFetching,
+  onClose,
+  onSelectToken
+}) => {
   return (
     <Modal open={open} onClose={onClose}>
       <Box
@@ -59,7 +67,19 @@ export const TokenModal: FC<TokenModalProps> = ({ open, tokens, onClose, onSelec
         }}
       >
         <DialogTitle sx={{ margin: 0, paddingX: 2, paddingBottom: '8px' }}>Tokens</DialogTitle>
-        {tokens.length === 0 ? (
+        {isFetching ? (
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: '100%',
+              padding: '20px 0'
+            }}
+          >
+            <CircularProgress />
+          </div>
+        ) : tokens.length === 0 ? (
           <Typography
             display="flex"
             justifyContent="center"

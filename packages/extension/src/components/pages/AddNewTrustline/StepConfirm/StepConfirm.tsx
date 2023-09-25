@@ -4,11 +4,11 @@ import ErrorIcon from '@mui/icons-material/Error';
 import { Button, Container, IconButton, Paper, Tooltip, Typography } from '@mui/material';
 import { IssuedCurrencyAmount } from 'xrpl/dist/npm/models/common';
 
-import { ERROR_RED } from '../../../constants';
-import { formatAmount, formatCurrencyName, fromHexMemos } from '../../../utils';
-import { BaseTransaction } from '../../organisms/BaseTransaction/BaseTransaction';
-import { PageWithTitle } from '../../templates';
-import { Params } from './AddNewTrustline';
+import { ERROR_RED } from '../../../../constants';
+import { formatAmount, formatCurrencyName, fromHexMemos } from '../../../../utils';
+import { BaseTransaction } from '../../../organisms/BaseTransaction/BaseTransaction';
+import { PageWithTitle } from '../../../templates';
+import { Params } from '../AddNewTrustline';
 
 interface StepConfirmProps {
   params: Params;

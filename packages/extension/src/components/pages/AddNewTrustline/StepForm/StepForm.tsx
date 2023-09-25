@@ -1,26 +1,16 @@
-import { ChangeEvent, FC, FocusEvent, useCallback, useMemo, useState } from 'react';
+import { FC, FocusEvent, useCallback, useMemo, useState } from 'react';
 
-import { Button, TextField, Typography } from '@mui/material';
-import { Checkbox, FormControlLabel } from '@mui/material';
-import * as Sentry from '@sentry/react';
+import { Button, TextField, Typography, Checkbox, FormControlLabel } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { isValidAddress } from 'xrpl';
 
 import { Network } from '@gemwallet/constants';
 
-import {
-  HOME_PATH,
-  LIMIT_API_RESULTS,
-  MAX_TOKEN_LENGTH,
-  MIN_SEARCH_LENGTH,
-  XRPL_META_URL
-} from '../../../constants';
-import { useNetwork } from '../../../contexts';
-import { useKeyUp } from '../../../hooks';
-import { XRPLMetaTokensListAPIResponse } from '../../../types';
-import { NumericInput } from '../../atoms';
-import { PageWithReturn } from '../../templates';
-import { TokenData, TokenModal } from './TokenModal';
+import { HOME_PATH, MAX_TOKEN_LENGTH } from '../../../../constants';
+import { useNetwork } from '../../../../contexts';
+import { NumericInput } from '../../../atoms';
+import { PageWithReturn } from '../../../templates';
+import { SearchToken } from './SearchToken';
 
 interface InitialValues {
   issuer: string;
@@ -49,12 +39,6 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
   const [errorIssuer, setErrorIssuer] = useState<string>('');
   const [errorToken, setErrorToken] = useState<string>('');
   const [errorLimit, setErrorLimit] = useState<string>('');
-  // Search token functionality
-  const [isSearchFocused, setIsSearchFocused] = useState(false);
-  const [isTokenModalOpen, setIsTokenModalOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [searchedTokens, setSearchedTokens] = useState<TokenData[]>([]);
-  const [searchError, setSearchError] = useState<string>('');
 
   const navigate = useNavigate();
   const { networkName } = useNetwork();
@@ -114,80 +98,6 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
     onTrustlineSubmit(issuer, token, limit, noRipple, false, false);
   }, [noRipple, issuer, limit, onTrustlineSubmit, token]);
 
-  const handleSearchChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-    if (e.target.value.length > 0 && e.target.value.length >= MIN_SEARCH_LENGTH) {
-      setSearchError('');
-    }
-  }, []);
-
-  const fetchAllTokens = useCallback(async () => {
-    if (searchTerm === '') {
-      return;
-    }
-
-    const fetchTokensPage = async (offset = 0): Promise<TokenData[]> => {
-      const url = `${XRPL_META_URL}/tokens?name_like=${searchTerm}&limit=${LIMIT_API_RESULTS}&offset=${offset}`;
-
-      const res: Response = await fetch(url);
-      const json: XRPLMetaTokensListAPIResponse = (await res.json()) || [];
-      const hasNextPage = json.tokens.length >= LIMIT_API_RESULTS;
-
-      const tokenData = json.tokens
-        .map((token) => ({
-          name: token.meta.token.name,
-          icon: token.meta.token.icon,
-          currency: token.currency,
-          issuer: token.issuer,
-          issuerName: token.meta.issuer.name,
-          issuerIcon: token.meta.issuer.icon,
-          trustLevel: token.meta.token.trust_level,
-          issuerTrustLevel: token.meta.issuer.trust_level
-        }))
-        .filter(
-          (token) =>
-            token.currency !== undefined &&
-            token.issuer !== undefined &&
-            token.trustLevel >= 3 &&
-            token.issuerTrustLevel >= 3
-        )
-        .sort((a, b) => a.name.localeCompare(b.name));
-
-      if (hasNextPage) {
-        return [...tokenData, ...(await fetchTokensPage(offset + LIMIT_API_RESULTS))];
-      } else {
-        return tokenData;
-      }
-    };
-
-    try {
-      const allTokenData = await fetchTokensPage();
-      setSearchedTokens(allTokenData);
-    } catch (error) {
-      Sentry.captureException(error);
-    }
-  }, [searchTerm]);
-
-  const handleOpenTokenModal = useCallback(() => {
-    if (isSearchFocused) {
-      if (searchTerm.length < MIN_SEARCH_LENGTH) {
-        setSearchError(`Query must be at least ${MIN_SEARCH_LENGTH} characters.`);
-      } else {
-        fetchAllTokens().then(() => {
-          setIsTokenModalOpen(true);
-        });
-      }
-    }
-  }, [fetchAllTokens, isSearchFocused, searchTerm.length]);
-
-  useKeyUp('Enter', handleOpenTokenModal);
-
-  const selectToken = useCallback((token: TokenData) => {
-    setIssuer(token.issuer);
-    setToken(token.currency);
-    setIsTokenModalOpen(false);
-  }, []);
-
   const canSearchTokens = useMemo(() => {
     return networkName === Network.MAINNET && !initialValues;
   }, [initialValues, networkName]);
@@ -216,32 +126,7 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
         </div>
       ) : null}
       <div style={{ margin: '20px' }}>
-        {canSearchTokens ? (
-          <>
-            <TokenModal
-              open={isTokenModalOpen}
-              tokens={searchedTokens}
-              onClose={() => setIsTokenModalOpen(false)}
-              onSelectToken={selectToken}
-            />
-            <Typography variant="h6" style={{ marginBottom: '5px' }}>
-              Search token
-            </Typography>
-            <TextField
-              label="Search by name or issuer"
-              id="searchToken"
-              name="searchToken"
-              fullWidth
-              onChange={handleSearchChange}
-              error={!!searchError}
-              helperText={searchError}
-              style={{ marginTop: '5px', marginBottom: '10px' }}
-              autoComplete="off"
-              onFocus={() => setIsSearchFocused(true)}
-              onBlur={() => setIsSearchFocused(false)}
-            />
-          </>
-        ) : null}
+        {canSearchTokens ? <SearchToken setIssuer={setIssuer} setToken={setToken} /> : null}
         {!initialValues ? (
           <Typography
             variant="h6"
