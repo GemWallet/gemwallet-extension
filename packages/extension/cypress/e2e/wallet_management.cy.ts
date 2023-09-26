@@ -477,7 +477,7 @@ describe('Edit wallet', () => {
 
     // Lock the extension
     cy.get('button[aria-label="close"]').click();
-    cy.contains('button', 'Wallets').parent().children().eq(3).click();
+    cy.contains('button', 'Tokens').parent().children().eq(3).click();
     cy.contains('button', 'Lock').click();
 
     // Check if the wallets are properly loaded with the name changed
@@ -600,7 +600,7 @@ describe('Switch wallet', () => {
     cy.contains('Wallet 3').should('be.visible');
 
     // Lock the extension
-    cy.contains('button', 'Wallets').parent().children().eq(3).click();
+    cy.contains('button', 'Tokens').parent().children().eq(3).click();
     cy.contains('button', 'Lock').click();
 
     // Check if the default wallet is properly loaded
