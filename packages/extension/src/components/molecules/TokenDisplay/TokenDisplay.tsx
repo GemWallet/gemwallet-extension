@@ -2,7 +2,7 @@ import { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
 
 import EditIcon from '@mui/icons-material/Edit';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import { Paper, Tooltip, Typography } from '@mui/material';
+import { Paper, Typography } from '@mui/material';
 
 import { SECONDARY_GRAY } from '../../../constants';
 import { XRPL_META_URL } from '../../../constants/xrplmeta';
@@ -97,24 +97,14 @@ export const TokenDisplay: FC<TokenDisplayProps> = ({
       }}
     >
       {tokenData?.issuerName ? (
-        <Tooltip
-          title={
-            <>
-              <Typography variant="caption" style={{ fontStyle: 'italic' }}>
-                Issued by {tokenData.issuerName}
-              </Typography>
-            </>
-          }
-          placement="top"
-        >
-          <TokenInfo
-            isXRPToken={isXRPToken}
-            tokenIconUrl={tokenData?.tokenIconUrl}
-            token={token}
-            tokenWarningMessage={tokenWarningMessage}
-            balance={balance}
-          />
-        </Tooltip>
+        <TokenInfo
+          isXRPToken={isXRPToken}
+          tokenIconUrl={tokenData?.tokenIconUrl}
+          token={token}
+          tokenWarningMessage={tokenWarningMessage}
+          balance={balance}
+          issuerName={tokenData?.issuerName}
+        />
       ) : (
         <TokenInfo
           isXRPToken={isXRPToken}
