@@ -2,7 +2,7 @@ import { FC } from 'react';
 
 import { Avatar } from '@mui/material';
 
-import { GemWallet, Xrp } from '../../../atoms';
+import { GemWallet, Xrp } from '../../../../atoms';
 
 interface RenderTokenIconProps {
   isXRPToken?: boolean;

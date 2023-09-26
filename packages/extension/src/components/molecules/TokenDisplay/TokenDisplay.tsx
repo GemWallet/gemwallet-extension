@@ -1,4 +1,4 @@
-import { CSSProperties, FC, forwardRef, Ref, useEffect, useMemo, useState } from 'react';
+import { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
 
 import EditIcon from '@mui/icons-material/Edit';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
@@ -7,9 +7,8 @@ import { Paper, Tooltip, Typography } from '@mui/material';
 import { SECONDARY_GRAY } from '../../../constants';
 import { XRPL_META_URL } from '../../../constants/xrplmeta';
 import { XRPLMetaTokenAPIResponse } from '../../../types';
-import { formatToken } from '../../../utils';
 import { IconTextButton } from '../../atoms/IconTextButton';
-import { RenderTokenIcon } from './RenderTokenIcon';
+import { TokenInfo } from './TokenInfo';
 
 export interface TokenDisplayProps {
   balance: number;
@@ -144,29 +143,3 @@ export const TokenDisplay: FC<TokenDisplayProps> = ({
     </Paper>
   );
 };
-
-interface TokenInfoProps {
-  isXRPToken: boolean;
-  tokenIconUrl: string | undefined;
-  token: string;
-  tokenWarningMessage: string | undefined;
-  balance: number;
-}
-
-const TokenInfo = forwardRef((props: TokenInfoProps, ref: Ref<HTMLDivElement>) => {
-  const { isXRPToken, tokenIconUrl, token, tokenWarningMessage, balance, ...otherProps } = props;
-
-  return (
-    <div ref={ref} {...otherProps} style={{ display: 'flex', alignItems: 'center' }}>
-      <RenderTokenIcon {...{ isXRPToken, tokenIconUrl: tokenIconUrl || '', token }} />
-      <div style={{ marginLeft: '10px' }}>
-        <Typography style={tokenWarningMessage ? { color: 'brown', cursor: 'help' } : undefined}>
-          {token}
-        </Typography>
-        <Typography variant="body2" style={{ color: SECONDARY_GRAY }}>
-          {formatToken(balance, token)}
-        </Typography>
-      </div>
-    </div>
-  );
-});
