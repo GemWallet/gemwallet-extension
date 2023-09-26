@@ -5,6 +5,7 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { Paper, Tooltip, Typography } from '@mui/material';
 
 import { SECONDARY_GRAY } from '../../../constants';
+import { XRPL_META_URL } from '../../../constants/xrplmeta';
 import { XRPLMetaTokenAPIResponse } from '../../../types';
 import { formatToken } from '../../../utils';
 import { IconTextButton } from '../../atoms/IconTextButton';
@@ -48,7 +49,7 @@ export const TokenDisplay: FC<TokenDisplayProps> = ({
       if (issuer) {
         try {
           // API Reference: https://xrplmeta.org/api
-          const res: Response = await fetch(`https://s1.xrplmeta.org/token/${token}:${issuer}`);
+          const res: Response = await fetch(`${XRPL_META_URL}/token/${token}:${issuer}`);
           const json: XRPLMetaTokenAPIResponse = await res.json(); // Make sure this JSON structure conforms to XRPLMetaTokenAPIResponse
           const tokenName: string | undefined = json?.meta?.token?.name ?? token;
           const tokenIconUrl: string | undefined =
