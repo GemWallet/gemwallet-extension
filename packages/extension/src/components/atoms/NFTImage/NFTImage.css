@@ -1,8 +1,4 @@
-.pulse-on-hover:hover {
-  animation: pulse 0.2s linear;
-}
-
-@keyframes pulse {
+@keyframes pulse-nft {
   0% {
     transform: scale(1);
   }
