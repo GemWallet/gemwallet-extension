@@ -43,10 +43,7 @@ export const NFTDetails: FC<NFTDetailsProps> = ({ NFTData, handleClose }) => {
         </Toolbar>
       </AppBar>
       <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <NFTImage
-          imageURL={NFTData.image}
-          style={{ marginTop: 30, animation: 'pulse-nft 1s linear' }}
-        />
+        <NFTImage imageURL={NFTData.image} style={{ marginTop: 30 }} pulseDuration={1} />
       </div>
       <List sx={{ width: '100%', wordBreak: 'break-word' }}>
         <ListItem style={listItemStyle}>
