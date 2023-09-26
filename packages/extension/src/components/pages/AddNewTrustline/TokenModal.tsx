@@ -91,7 +91,7 @@ export const TokenModal: FC<TokenModalProps> = ({
             No data found
           </Typography>
         ) : (
-          <List style={{ maxHeight: '280px', overflow: 'auto', paddingTop: 0 }}>
+          <List style={{ maxHeight: '240px', overflow: 'auto', paddingTop: 0 }}>
             {tokens.map((token, index) => (
               <ListItem button key={index} onClick={() => onSelectToken(token)}>
                 <ListItemAvatar>
@@ -133,7 +133,9 @@ export const TokenModal: FC<TokenModalProps> = ({
         )}
         <DialogActions
           style={{
-            backgroundColor: '#272727'
+            backgroundColor: '#272727',
+            height: '30px',
+            paddingTop: '0'
           }}
         >
           <Button onClick={onClose} color="primary">
