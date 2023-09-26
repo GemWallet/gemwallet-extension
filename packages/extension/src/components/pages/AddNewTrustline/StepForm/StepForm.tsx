@@ -1,13 +1,16 @@
 import { FC, FocusEvent, useCallback, useMemo, useState } from 'react';
 
-import { Button, TextField, Typography } from '@mui/material';
-import { Checkbox, FormControlLabel } from '@mui/material';
+import { Button, TextField, Typography, Checkbox, FormControlLabel } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { isValidAddress } from 'xrpl';
 
-import { HOME_PATH, MAX_TOKEN_LENGTH } from '../../../constants';
-import { NumericInput } from '../../atoms';
-import { PageWithReturn } from '../../templates';
+import { Network } from '@gemwallet/constants';
+
+import { HOME_PATH, MAX_TOKEN_LENGTH } from '../../../../constants';
+import { useNetwork } from '../../../../contexts';
+import { NumericInput } from '../../../atoms';
+import { PageWithReturn } from '../../../templates';
+import { SearchToken } from './SearchToken';
 
 interface InitialValues {
   issuer: string;
@@ -16,7 +19,7 @@ interface InitialValues {
   noRipple: boolean;
 }
 
-interface StepFormProps {
+export interface StepFormProps {
   onTrustlineSubmit: (
     issuer: string,
     token: string,
@@ -36,7 +39,9 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
   const [errorIssuer, setErrorIssuer] = useState<string>('');
   const [errorToken, setErrorToken] = useState<string>('');
   const [errorLimit, setErrorLimit] = useState<string>('');
+
   const navigate = useNavigate();
+  const { networkName } = useNetwork();
 
   const handleBack = useCallback(() => {
     navigate(HOME_PATH);
@@ -63,14 +68,14 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
   }, []);
 
   const handleLimitChange = useCallback((e: FocusEvent<HTMLInputElement>) => {
-    if (Number(e.target.value) < 0 && e.target.value !== '') {
-      setErrorLimit('The limit cannot be a negative number');
-    } else {
-      setErrorLimit('');
-    }
+    const inputValue = e.target.value;
+    const isNegative = Number(inputValue) < 0;
 
-    if (!Number.isNaN(Number(e.target.value))) {
-      setLimit(e.target.value);
+    if (inputValue !== '' && !isNegative && !Number.isNaN(Number(inputValue))) {
+      setErrorLimit('');
+      setLimit(inputValue);
+    } else {
+      setErrorLimit(isNegative ? 'The limit cannot be a negative number' : 'Invalid input');
     }
   }, []);
 
@@ -92,6 +97,10 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
   const handleAddTrustline = useCallback(() => {
     onTrustlineSubmit(issuer, token, limit, noRipple, false, false);
   }, [noRipple, issuer, limit, onTrustlineSubmit, token]);
+
+  const canSearchTokens = useMemo(() => {
+    return networkName === Network.MAINNET && !initialValues;
+  }, [initialValues, networkName]);
 
   return (
     <PageWithReturn
@@ -117,6 +126,18 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
         </div>
       ) : null}
       <div style={{ margin: '20px' }}>
+        {canSearchTokens ? <SearchToken setIssuer={setIssuer} setToken={setToken} /> : null}
+        {!initialValues ? (
+          <Typography
+            variant="h6"
+            style={{
+              marginTop: canSearchTokens ? '15px' : '0',
+              marginBottom: '5px'
+            }}
+          >
+            Enter details manually
+          </Typography>
+        ) : null}
         <TextField
           label="Issuer"
           id="issuer"

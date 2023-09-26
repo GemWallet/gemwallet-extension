@@ -182,6 +182,18 @@ describe('Trustline', () => {
     });
   });
 
+  it(`Search for a trustline from the UI`, () => {
+    navigate(HOME_URL, PASSWORD);
+
+    cy.contains('button', 'Add trustline').click();
+
+    // Should be on the Add Trustline Page
+    cy.get('p').should('have.text', 'Add trustline');
+
+    // Because we are on the testnet, "Search token" text should not exist
+    cy.contains('Search token').should('not.exist');
+  });
+
   it('Edit the trustline by disabling No Ripple', () => {
     const newLimit = '5';
     navigate(HOME_URL, PASSWORD);

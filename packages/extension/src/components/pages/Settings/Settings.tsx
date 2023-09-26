@@ -57,7 +57,7 @@ export const Settings: FC = () => {
       },
       {
         name: 'About',
-        type: 'link',
+        type: 'button',
         onClick: () => navigate(ABOUT_PATH)
       }
     ],

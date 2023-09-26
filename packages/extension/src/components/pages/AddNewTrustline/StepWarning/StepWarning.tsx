@@ -3,7 +3,7 @@ import { FC } from 'react';
 import WarningIcon from '@mui/icons-material/Warning';
 import { Button, Container, Typography } from '@mui/material';
 
-import { PageWithTitle } from '../../templates';
+import { PageWithTitle } from '../../../templates';
 
 interface StepWarningProps {
   onReject: () => void;

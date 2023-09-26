@@ -35,8 +35,10 @@ import {
   parseBaseParamsFromURLParams
 } from '../../../utils/baseParams';
 import { serializeError } from '../../../utils/errors';
-import { StepForm, StepWarning, StepConfirm } from '../../pages';
 import { AsyncTransaction } from '../../templates';
+import { StepConfirm } from './StepConfirm';
+import { StepForm } from './StepForm';
+import { StepWarning } from './StepWarning';
 
 type STEP = 'WARNING' | 'TRANSACTION';
 
