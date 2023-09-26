@@ -4,7 +4,7 @@ import { BottomNavigation, BottomNavigationAction } from '@mui/material';
 import { styled } from '@mui/system';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { navigation } from '../../../constants';
+import { GEMWALLET_BLUE, navigation } from '../../../constants';
 
 const defaultDecoration = {
   '--decoration-left': '50%',
@@ -24,7 +24,7 @@ const StyledBottomNavigation = styled(BottomNavigation)`
     left: var(--decoration-left);
     width: var(--decoration-width);
     height: 2px;
-    background: skyblue;
+    background: ${GEMWALLET_BLUE};
     transition: 300ms;
     border-radius: 2px;
   }
