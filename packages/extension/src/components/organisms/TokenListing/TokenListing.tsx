@@ -1,4 +1,4 @@
-import { useState, useEffect, FC, forwardRef, useCallback } from 'react';
+import { FC, forwardRef, useCallback, useEffect, useState } from 'react';
 
 import CloseIcon from '@mui/icons-material/Close';
 import {
@@ -14,8 +14,8 @@ import {
 import { TransitionProps } from '@mui/material/transitions';
 import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
-import { TrustSetFlags as TrustSetFlagsBitmask } from 'xrpl';
 import { AccountLinesTrustline } from 'xrpl';
+import { TrustSetFlags as TrustSetFlagsBitmask } from 'xrpl';
 
 import { Network } from '@gemwallet/constants';
 
@@ -235,6 +235,7 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
           <TokenDisplay
             balance={Number(trustedLine.value)}
             token={currencyToDisplay}
+            issuer={trustedLine.issuer}
             key={`${trustedLine.issuer}|${currencyToDisplay}`}
             trustlineLimit={
               trustedLine.trustlineDetails?.limit ? trustedLine.trustlineDetails?.limit : 0
