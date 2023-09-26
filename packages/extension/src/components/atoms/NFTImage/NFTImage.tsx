@@ -5,6 +5,8 @@ import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 import { GemWallet } from '../index';
 
+import './NFTImage.css';
+
 interface NFTImageProps {
   imageURL?: string;
   height?: number;
@@ -21,7 +23,10 @@ export const NFTImage: FC<NFTImageProps> = ({
   fallbackScale = 2
 }) => {
   return imageURL ? (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', ...style }}>
+    <div
+      className="pulse-on-hover"
+      style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', ...style }}
+    >
       <LazyLoadImage
         alt="NFT"
         height={height}
@@ -34,6 +39,7 @@ export const NFTImage: FC<NFTImageProps> = ({
     </div>
   ) : (
     <div
+      className="pulse-on-hover"
       style={{
         display: 'flex',
         justifyContent: 'center',
