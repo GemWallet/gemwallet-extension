@@ -1,9 +1,10 @@
-import { FC, useCallback, useEffect, useState } from 'react';
+import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 
 import * as Sentry from '@sentry/react';
 
 import { AccountNFTokenResponse } from '@gemwallet/constants';
 
+import { navigation, NFT_VIEWER_PATH } from '../../../constants';
 import { useLedger } from '../../../contexts';
 import { NFTListing } from '../../organisms';
 import { PageWithHeader } from '../../templates';
@@ -46,13 +47,18 @@ export const NFTViewer: FC = () => {
     }
   }, [NFTs, getNFTs]);
 
+  const indexDefaultNav = useMemo(
+    () => navigation.findIndex((link) => link.pathname === NFT_VIEWER_PATH),
+    []
+  );
+
   useEffect(() => {
     fetchNFTs();
     // eslint-disable-next-line react-hooks/exhaustive-deps -- we only want to fetch once
   }, []);
 
   return (
-    <PageWithHeader styles={{ container: { marginTop: '10px' } }}>
+    <PageWithHeader styles={{ container: { marginTop: '10px' } }} indexDefaultNav={indexDefaultNav}>
       <NFTListing
         {...{
           ...NFTs,

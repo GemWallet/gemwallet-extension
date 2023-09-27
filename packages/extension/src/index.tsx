@@ -17,6 +17,7 @@ import App from './App';
 import {
   BrowserProvider,
   LedgerProvider,
+  NavBarPositionProvider,
   NetworkProvider,
   ServerProvider,
   TransactionProgressProvider,
@@ -85,7 +86,9 @@ ReactDOM.render(
                 <LedgerProvider>
                   <ServerProvider>
                     <TransactionProgressProvider>
-                      <App />
+                      <NavBarPositionProvider>
+                        <App />
+                      </NavBarPositionProvider>
                     </TransactionProgressProvider>
                   </ServerProvider>
                 </LedgerProvider>

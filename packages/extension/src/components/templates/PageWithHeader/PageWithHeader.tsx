@@ -16,9 +16,15 @@ export interface PageWithHeaderProps {
     root?: CSSProperties;
     container?: CSSProperties;
   };
+  indexDefaultNav?: number;
 }
 
-export const PageWithHeader: FC<PageWithHeaderProps> = ({ children, styles, title }) => {
+export const PageWithHeader: FC<PageWithHeaderProps> = ({
+  children,
+  styles,
+  title,
+  indexDefaultNav
+}) => {
   const { wallets, selectedWallet } = useWallet();
   const { hasOfflineBanner } = useNetwork();
 
@@ -59,7 +65,7 @@ export const PageWithHeader: FC<PageWithHeaderProps> = ({ children, styles, titl
         )}
         {children}
       </Container>
-      <NavMenu />
+      <NavMenu indexDefaultNav={indexDefaultNav} />
     </div>
   );
 };

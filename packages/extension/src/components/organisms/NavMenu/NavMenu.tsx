@@ -1,10 +1,11 @@
-import { FC, MouseEvent, useState, useEffect, useMemo } from 'react';
+import { CSSProperties, FC, MouseEvent, useEffect, useMemo } from 'react';
 
 import { BottomNavigation, BottomNavigationAction } from '@mui/material';
 import { styled } from '@mui/system';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { GEMWALLET_BLUE, navigation } from '../../../constants';
+import { useNavBarPosition } from '../../../contexts';
 
 const defaultDecoration = {
   '--decoration-left': '50%',
@@ -42,7 +43,7 @@ export interface NavMenuProps {
 export const NavMenu: FC<NavMenuProps> = ({ indexDefaultNav }) => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const [styleValues, setStyleValues] = useState(defaultDecoration);
+  const { navBarPosition, setNavBarPosition } = useNavBarPosition();
 
   const value = useMemo(
     () => indexDefaultNav ?? navigation.findIndex((link) => link.pathname === pathname),
@@ -57,31 +58,31 @@ export const NavMenu: FC<NavMenuProps> = ({ indexDefaultNav }) => {
       if (element) {
         const reducedWidth = element.offsetWidth * 0.75;
         const adjustedLeft = element.offsetLeft + (element.offsetWidth - reducedWidth) / 2;
-        setStyleValues({
-          '--decoration-left': `${adjustedLeft}px`,
-          '--decoration-width': `${reducedWidth}px`
+        setNavBarPosition({
+          left: `${adjustedLeft}px`,
+          width: `${reducedWidth}px`
         });
       }
     }
-  }, [value]);
+  }, [setNavBarPosition, value]);
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>, newValue: number) => {
     const { pathname } = navigation[newValue];
     navigate(pathname);
   };
 
+  const style: CSSProperties & { [key: string]: string | number } = {
+    position: 'fixed',
+    left: 0,
+    bottom: 0,
+    width: '100%',
+    backgroundColor: '#272727',
+    '--decoration-left': navBarPosition.left,
+    '--decoration-width': navBarPosition.width
+  };
+
   return (
-    <StyledBottomNavigation
-      value={value}
-      style={{
-        position: 'fixed',
-        left: 0,
-        bottom: 0,
-        width: '100%',
-        backgroundColor: '#272727',
-        ...styleValues
-      }}
-    >
+    <StyledBottomNavigation value={value} style={style}>
       {navigation.map(({ label, icon }, index) => (
         <StyledBottomNavigationAction
           key={label}

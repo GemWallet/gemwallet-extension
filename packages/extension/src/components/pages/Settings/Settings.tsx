@@ -10,8 +10,10 @@ import {
   FAQ_LINK,
   FEEDBACK_LINK,
   NAV_MENU_HEIGHT,
+  navigation,
   PERMISSIONS_PATH,
   RESET_PASSWORD_PATH,
+  SETTINGS_PATH,
   TRUSTED_APPS_PATH
 } from '../../../constants';
 import { useWallet } from '../../../contexts';
@@ -80,8 +82,13 @@ export const Settings: FC = () => {
     [navigate]
   );
 
+  const indexDefaultNav = useMemo(
+    () => navigation.findIndex((link) => link.pathname === SETTINGS_PATH),
+    []
+  );
+
   return (
-    <PageWithHeader>
+    <PageWithHeader indexDefaultNav={indexDefaultNav}>
       <div
         style={{
           display: 'flex',
