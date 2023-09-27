@@ -7,7 +7,7 @@ import { HISTORY_PATH, HOME_PATH, NFT_VIEWER_PATH, SETTINGS_PATH } from './paths
 
 export const navigation = [
   {
-    label: 'Wallets',
+    label: 'Tokens',
     pathname: HOME_PATH,
     icon: <AccountBalanceWalletIcon />
   },
