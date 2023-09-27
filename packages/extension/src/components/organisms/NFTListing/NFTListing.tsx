@@ -29,7 +29,7 @@ export const NFTListing: FC<NFTListingProps> = ({ isLoading, account_nfts, onLoa
 
   return (
     <div style={{ position: 'relative', overflow: 'auto' }} id={'scrollableDiv'}>
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '10px' }}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
         <Tooltip title="Large Layout">
           <IconButton
             size="small"

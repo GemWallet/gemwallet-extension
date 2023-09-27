@@ -58,7 +58,7 @@ export const NFTViewer: FC = () => {
   }, []);
 
   return (
-    <PageWithHeader styles={{ container: { marginTop: '10px' } }} indexDefaultNav={indexDefaultNav}>
+    <PageWithHeader indexDefaultNav={indexDefaultNav}>
       <NFTListing
         {...{
           ...NFTs,
