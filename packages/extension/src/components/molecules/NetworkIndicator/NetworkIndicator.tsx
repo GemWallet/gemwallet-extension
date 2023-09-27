@@ -1,20 +1,7 @@
-import { FC, forwardRef, useCallback, useEffect, useMemo, useState } from 'react';
+import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 
-import {
-  Close as CloseIcon,
-  FiberManualRecord as FiberManualRecordIcon
-} from '@mui/icons-material';
-import {
-  AppBar,
-  Button,
-  Chip,
-  Dialog,
-  IconButton,
-  Slide,
-  Toolbar,
-  Typography
-} from '@mui/material';
-import { TransitionProps } from '@mui/material/transitions';
+import { FiberManualRecord as FiberManualRecordIcon } from '@mui/icons-material';
+import { Button, Chip } from '@mui/material';
 import * as Sentry from '@sentry/react';
 
 import { NETWORK, Network } from '@gemwallet/constants';
@@ -22,21 +9,12 @@ import { NetworkData } from '@gemwallet/constants/src/network/network.types';
 
 import { useNetwork } from '../../../contexts';
 import { loadCustomNetworks, loadNetwork, replaceCustomNetworks } from '../../../utils';
-import { LoadingOverlay } from '../../templates';
+import { DialogPage, LoadingOverlay } from '../../templates';
 import { ActiveNetworkDeleteDialog } from './ActiveNetworkDeleteDialog';
 import { AddCustomNetworkDialog } from './AddCustomNetworkDialog';
 import { DeleteNetworkDialog } from './DeleteNetworkDialog';
 import { ErrorSwitchNetworkDialog } from './ErrorSwitchNetworkDialog';
 import { NetworkDisplay } from './NetworkDisplay';
-
-const Transition = forwardRef(function Transition(
-  props: TransitionProps & {
-    children: React.ReactElement;
-  },
-  ref: React.Ref<unknown>
-) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
 
 export const NetworkIndicator: FC = () => {
   const { client, networkName, switchNetwork } = useNetwork();
@@ -215,23 +193,12 @@ export const NetworkIndicator: FC = () => {
             currentNetworkName={currentNetworkName}
             closeActiveNetworkDeleteDialog={() => setActiveNetworkDeleteDialogOpen(false)}
           />
-          <Dialog
-            fullScreen
-            open={explanationOpen}
+          <DialogPage
+            title="Change Network"
             onClose={handleClose}
-            TransitionComponent={Transition}
+            open={explanationOpen}
             data-testid="network-indicator-dialog"
           >
-            <AppBar sx={{ position: 'relative' }}>
-              <Toolbar>
-                <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
-                  <CloseIcon />
-                </IconButton>
-                <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="p">
-                  Change Network
-                </Typography>
-              </Toolbar>
-            </AppBar>
             <div style={{ overflowY: 'scroll', height: '544px', margin: '20px 20px 0 20px' }}>
               <div style={{ paddingBottom: '40px' }}>
                 {preDefinedNetworks}
@@ -260,7 +227,7 @@ export const NetworkIndicator: FC = () => {
                 </div>
               }
             </div>
-          </Dialog>
+          </DialogPage>
         </>
       )}
     </>

@@ -1,28 +1,9 @@
-import { FC, FocusEvent, forwardRef, useCallback, useMemo, useState } from 'react';
+import { FC, FocusEvent, useCallback, useMemo, useState } from 'react';
 
-import CloseIcon from '@mui/icons-material/Close';
-import {
-  AppBar,
-  Button,
-  Dialog,
-  IconButton,
-  Slide,
-  TextField,
-  Toolbar,
-  Typography
-} from '@mui/material';
-import { TransitionProps } from '@mui/material/transitions';
+import { Button, TextField } from '@mui/material';
 
 import { saveCustomNetwork } from '../../../utils';
-
-const Transition = forwardRef(function Transition(
-  props: TransitionProps & {
-    children: React.ReactElement;
-  },
-  ref: React.Ref<unknown>
-) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
+import { DialogPage } from '../../templates';
 
 interface AddCustomNetworkDialogProps {
   dialogOpen: boolean;
@@ -91,17 +72,7 @@ export const AddCustomNetworkDialog: FC<AddCustomNetworkDialogProps> = ({
   }, [networkName, networkNames, server, serverError]);
 
   return (
-    <Dialog fullScreen open={dialogOpen} onClose={handleClose} TransitionComponent={Transition}>
-      <AppBar sx={{ position: 'relative' }}>
-        <Toolbar>
-          <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
-            <CloseIcon />
-          </IconButton>
-          <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="p">
-            Add custom network
-          </Typography>
-        </Toolbar>
-      </AppBar>
+    <DialogPage title="Add custom network" onClose={handleClose} open={dialogOpen}>
       <div style={{ margin: '20px' }}>
         <TextField
           label="Network Name"
@@ -141,6 +112,6 @@ export const AddCustomNetworkDialog: FC<AddCustomNetworkDialogProps> = ({
           Add network
         </Button>
       </div>
-    </Dialog>
+    </DialogPage>
   );
 };

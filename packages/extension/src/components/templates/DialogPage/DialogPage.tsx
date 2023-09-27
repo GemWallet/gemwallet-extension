@@ -14,28 +14,21 @@ const Transition = forwardRef(function Transition(
 });
 
 export interface DialogPageProps {
-  onClickClose: (event: React.MouseEvent<HTMLButtonElement>) => void;
-  onClose: (event: React.SyntheticEvent, reason: 'backdropClick' | 'escapeKeyDown') => void;
+  onClose: (event: React.MouseEvent<HTMLButtonElement>) => void;
   open: boolean;
   title: string;
 }
 
-export const DialogPage: FC<DialogPageProps> = ({
-  onClickClose,
-  onClose,
-  open,
-  title,
-  children
-}) => {
+export const DialogPage: FC<DialogPageProps> = ({ onClose, open, title, children, ...props }) => {
   return (
-    <Dialog open={open} onClose={onClose} fullScreen TransitionComponent={Transition}>
+    <Dialog open={open} onClose={onClose} fullScreen TransitionComponent={Transition} {...props}>
       <AppBar sx={{ position: 'relative' }}>
         <Toolbar>
           <IconButton
             edge="start"
             color="inherit"
             aria-label="close"
-            onClick={onClickClose}
+            onClick={onClose}
             style={{ cursor: 'pointer' }}
             data-testid="close-button"
           >

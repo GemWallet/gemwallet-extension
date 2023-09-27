@@ -1,17 +1,6 @@
-import { FC, forwardRef, useCallback, useEffect, useState } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
 
-import CloseIcon from '@mui/icons-material/Close';
-import {
-  AppBar,
-  Button,
-  Dialog,
-  IconButton,
-  Link,
-  Slide,
-  Toolbar,
-  Typography
-} from '@mui/material';
-import { TransitionProps } from '@mui/material/transitions';
+import { Button, Link, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
 import { AccountLinesTrustline } from 'xrpl';
@@ -30,6 +19,7 @@ import { convertHexCurrencyString } from '../../../utils';
 import { TokenLoader } from '../../atoms';
 import { InformationMessage } from '../../molecules/InformationMessage';
 import { TokenDisplay } from '../../molecules/TokenDisplay';
+import { DialogPage } from '../../templates';
 
 const LOADING_STATE = 'Loading...';
 const ERROR_STATE = 'Error';
@@ -47,15 +37,6 @@ interface TrustLineBalance {
 export interface TokenListingProps {
   address: string;
 }
-
-const Transition = forwardRef(function Transition(
-  props: TransitionProps & {
-    children: React.ReactElement;
-  },
-  ref: React.Ref<unknown>
-) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
 
 export const TokenListing: FC<TokenListingProps> = ({ address }) => {
   const [XRPBalance, setXRPBalance] = useState<string>(LOADING_STATE);
@@ -256,22 +237,7 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
         );
       })}
       <div style={{ height: '60px' }} />
-      <Dialog
-        fullScreen
-        open={explanationOpen}
-        onClose={handleClose}
-        TransitionComponent={Transition}
-      >
-        <AppBar sx={{ position: 'relative' }}>
-          <Toolbar>
-            <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
-              <CloseIcon />
-            </IconButton>
-            <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="p">
-              Account balance
-            </Typography>
-          </Toolbar>
-        </AppBar>
+      <DialogPage title="Account balance" onClose={handleClose} open={explanationOpen}>
         <div style={{ margin: '20px' }}>
           <InformationMessage
             title="Information"
@@ -300,7 +266,7 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
           <Typography style={{ margin: '20px 0 10px 0' }}>Owner reserve</Typography>
           <TokenDisplay balance={ownerReserve} isXRPToken token="XRP" />
         </div>
-      </Dialog>
+      </DialogPage>
       <div
         style={{
           display: 'flex',
