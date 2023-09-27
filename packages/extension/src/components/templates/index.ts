@@ -1,4 +1,5 @@
 export * from './AsyncTransaction';
+export * from './DialogPage';
 export * from './ErrorBoundary';
 export * from './LoadingOverlay';
 export * from './PageWithHeader';
