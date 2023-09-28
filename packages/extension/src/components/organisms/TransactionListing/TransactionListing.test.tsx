@@ -56,6 +56,25 @@ describe('TransactionListing', () => {
     expect(transaction).toBeInTheDocument();
   });
 
+  test('filters the transactions by type', async () => {
+    const screen = render(<TransactionListing transactions={mockTransactions} />);
+    const paymentTx = await screen.findByText('Payment sent - 20 XRP');
+    expect(paymentTx).toBeInTheDocument();
+
+    // Filter by transaction type = TrustSet
+    const filterButton = screen.getByTestId('filter-button');
+    expect(filterButton).toBeInTheDocument();
+    await user.click(filterButton);
+    const setTrustlineFilter = await screen.findByText('TrustSet');
+    expect(setTrustlineFilter).toBeInTheDocument();
+
+    // Check that the filter is applied
+    await user.click(setTrustlineFilter);
+    expect(paymentTx).not.toBeInTheDocument();
+    const trustlineTx = await screen.findByText('TrustLine transaction');
+    expect(trustlineTx).toBeInTheDocument();
+  });
+
   test('dialog renders properly', async () => {
     const screen = render(<TransactionListing transactions={mockTransactions} />);
     const transaction = await screen.findByText('Payment sent - 20 XRP');

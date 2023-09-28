@@ -33,7 +33,12 @@ export const TransactionFilters: FC<TransactionFiltersProps> = ({
 
   return (
     <div style={{ position: 'relative', margin: '0' }}>
-      <IconButton onClick={() => setDialogOpen(true)} style={{ float: 'right' }} size="small">
+      <IconButton
+        onClick={() => setDialogOpen(true)}
+        style={{ float: 'right' }}
+        size="small"
+        data-testid="filter-button"
+      >
         <FilterListIcon style={{ fontSize: '18px' }} />
       </IconButton>
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
