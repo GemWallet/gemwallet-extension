@@ -28,7 +28,7 @@ export const NFTListing: FC<NFTListingProps> = ({ isLoading, account_nfts, onLoa
   }
 
   return (
-    <div style={{ position: 'relative' }}>
+    <div style={{ position: 'relative', overflow: 'auto' }} id={'scrollableDiv'}>
       <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '10px' }}>
         <Tooltip title="Large Layout">
           <IconButton
@@ -62,7 +62,7 @@ export const NFTListing: FC<NFTListingProps> = ({ isLoading, account_nfts, onLoa
         dataLength={account_nfts.length}
         next={onLoadMoreClick}
         hasMore={account_nfts.length >= MAX_FETCHED_NFTS}
-        height={account_nfts.length >= MAX_FETCHED_NFTS ? 450 : 'auto'}
+        scrollableTarget={'scrollableDiv'}
         loader={<h4>Loading...</h4>}
       >
         <List dense style={{ paddingTop: 0 }}>
