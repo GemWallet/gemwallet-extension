@@ -1,12 +1,8 @@
 import React, { FC, useCallback, useState } from 'react';
 
 import TransactionIcon from '@mui/icons-material/CompareArrows';
-import FilterListIcon from '@mui/icons-material/FilterList';
 import {
   Dialog,
-  DialogActions,
-  DialogContent,
-  IconButton,
   List,
   ListItem,
   ListItemIcon,
@@ -15,7 +11,6 @@ import {
   Slide,
   Typography
 } from '@mui/material';
-import { Button, FormControlLabel, Checkbox } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 import { unix } from 'moment';
 import { DepositPreauth, Payment, SetRegularKey } from 'xrpl';
@@ -26,6 +21,7 @@ import { formatAmount } from '../../../utils';
 import { InformationMessage } from '../../molecules';
 import { PageWithSpinner } from '../../templates';
 import { TransactionDetails } from './TransactionDetails';
+import { TransactionFilters } from './TransactionFilters';
 
 export interface TransactionListingProps {
   transactions: AccountTransaction[];
@@ -111,7 +107,6 @@ export const TransactionListing: FC<TransactionListingProps> = ({ transactions }
 
   const { getCurrentWallet } = useWallet();
   const wallet = getCurrentWallet();
-  const transactionTypes = [...new Set(transactions.map((tx) => tx.tx?.TransactionType))].sort();
 
   const handleClick = useCallback((transaction: AccountTransaction) => {
     setOpenedTx(transaction);
@@ -159,54 +154,13 @@ export const TransactionListing: FC<TransactionListingProps> = ({ transactions }
 
   return (
     <>
-      <div style={{ position: 'relative', margin: '0' }}>
-        <IconButton onClick={() => setDialogOpen(true)} style={{ float: 'right' }} size="small">
-          <FilterListIcon style={{ fontSize: '18px' }} />
-        </IconButton>
-        <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
-          <DialogContent style={{ maxHeight: '250px', minWidth: '220px', overflowY: 'auto' }}>
-            <Typography variant="h6" style={{ marginBottom: '5px' }}>
-              Transaction types
-            </Typography>
-            {transactionTypes.map((type) => (
-              <div key={type}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      size="small"
-                      color="primary"
-                      value={type}
-                      checked={filterTypes.includes(type as string)}
-                      onChange={(e) => {
-                        const checked = e.target.checked;
-                        if (type) {
-                          setFilterTypes((prev) =>
-                            checked ? [...prev, type] : prev.filter((t) => t !== type)
-                          );
-                        }
-                      }}
-                    />
-                  }
-                  label={type}
-                />
-              </div>
-            ))}
-          </DialogContent>
-          <DialogActions>
-            <Button
-              onClick={() => {
-                setFilterTypes([]);
-              }}
-              color="secondary"
-            >
-              Reset Filters
-            </Button>
-            <Button onClick={() => setDialogOpen(false)} color="primary">
-              Close
-            </Button>
-          </DialogActions>
-        </Dialog>
-      </div>
+      <TransactionFilters
+        transactions={transactions}
+        filterTypes={filterTypes}
+        setFilterTypes={setFilterTypes}
+        dialogOpen={dialogOpen}
+        setDialogOpen={setDialogOpen}
+      />
       <List dense style={{ paddingTop: 0 }}>
         {Array.from(groupTransactionsByDate(filteredTransactions)).map(
           ([date, transactionsForDate]) => (
