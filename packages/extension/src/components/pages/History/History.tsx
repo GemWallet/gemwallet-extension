@@ -1,9 +1,8 @@
-import { FC, useEffect, useMemo, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 
 import { Button, CircularProgress, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
 
-import { HISTORY_PATH, navigation } from '../../../constants';
 import { LEDGER_CONNECTION_ERROR, useLedger, useNetwork } from '../../../contexts';
 import { AccountTransaction } from '../../../types';
 import { InformationMessage } from '../../molecules';
@@ -16,11 +15,6 @@ export const History: FC = () => {
 
   const [transactions, setTransactions] = useState<AccountTransaction[] | null>(null);
   const [isTxFailed, setIsTxFailed] = useState<boolean>(false);
-
-  const indexDefaultNav = useMemo(
-    () => navigation.findIndex((link) => link.pathname === HISTORY_PATH),
-    []
-  );
 
   useEffect(() => {
     const getTx = async () => {
@@ -40,7 +34,7 @@ export const History: FC = () => {
 
   if (isTxFailed) {
     return (
-      <PageWithHeader indexDefaultNav={indexDefaultNav}>
+      <PageWithHeader>
         <InformationMessage
           title="Failed to connect to the network"
           style={{
@@ -66,7 +60,7 @@ export const History: FC = () => {
   }
 
   return (
-    <PageWithHeader indexDefaultNav={indexDefaultNav}>
+    <PageWithHeader>
       {transactions === null ? (
         <div
           style={{

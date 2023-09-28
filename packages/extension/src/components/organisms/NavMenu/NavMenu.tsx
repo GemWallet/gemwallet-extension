@@ -1,8 +1,8 @@
-import { CSSProperties, FC, MouseEvent, useEffect, useMemo } from 'react';
+import { CSSProperties, FC, MouseEvent, useEffect } from 'react';
 
 import { BottomNavigation, BottomNavigationAction } from '@mui/material';
 import { styled } from '@mui/system';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { GEMWALLET_BLUE, navigation } from '../../../constants';
 import { useNavBarPosition } from '../../../contexts';
@@ -37,23 +37,17 @@ const StyledBottomNavigationAction = styled(BottomNavigationAction)`
 `;
 
 export interface NavMenuProps {
-  indexDefaultNav?: number;
+  indexDefaultNav: number;
 }
 
 export const NavMenu: FC<NavMenuProps> = ({ indexDefaultNav }) => {
   const navigate = useNavigate();
-  const { pathname } = useLocation();
   const { navBarPosition, setNavBarPosition } = useNavBarPosition();
 
-  const value = useMemo(
-    () => indexDefaultNav ?? navigation.findIndex((link) => link.pathname === pathname),
-    [indexDefaultNav, pathname]
-  );
-
   useEffect(() => {
-    if (value !== -1) {
+    if (indexDefaultNav !== -1) {
       const element = document.querySelectorAll('.MuiBottomNavigationAction-root')[
-        value
+        indexDefaultNav
       ] as HTMLElement;
       if (element) {
         const reducedWidth = element.offsetWidth * 0.75;
@@ -64,9 +58,9 @@ export const NavMenu: FC<NavMenuProps> = ({ indexDefaultNav }) => {
         });
       }
     }
-  }, [setNavBarPosition, value]);
+  }, [setNavBarPosition, indexDefaultNav]);
 
-  const handleClick = (event: MouseEvent<HTMLButtonElement>, newValue: number) => {
+  const handleClick = (_: MouseEvent<HTMLButtonElement>, newValue: number) => {
     const { pathname } = navigation[newValue];
     navigate(pathname);
   };
@@ -82,7 +76,7 @@ export const NavMenu: FC<NavMenuProps> = ({ indexDefaultNav }) => {
   };
 
   return (
-    <StyledBottomNavigation value={value} style={style}>
+    <StyledBottomNavigation value={indexDefaultNav} style={style}>
       {navigation.map(({ label, icon }, index) => (
         <StyledBottomNavigationAction
           key={label}
