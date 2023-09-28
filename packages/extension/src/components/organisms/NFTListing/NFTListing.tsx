@@ -62,7 +62,7 @@ export const NFTListing: FC<NFTListingProps> = ({ isLoading, account_nfts, onLoa
         dataLength={account_nfts.length}
         next={onLoadMoreClick}
         hasMore={account_nfts.length >= MAX_FETCHED_NFTS}
-        height={450}
+        height={account_nfts.length >= MAX_FETCHED_NFTS ? 450 : 'auto'}
         loader={<h4>Loading...</h4>}
       >
         <List dense style={{ paddingTop: 0 }}>
