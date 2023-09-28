@@ -5,7 +5,7 @@ import { useNetwork } from '../../../contexts';
 import { NavMenu } from '../../organisms';
 
 export interface PageWithNavMenuProps {
-  indexDefaultNav?: number;
+  indexDefaultNav: number;
 }
 
 export const PageWithNavMenu: FC<PageWithNavMenuProps> = ({ children, indexDefaultNav }) => {

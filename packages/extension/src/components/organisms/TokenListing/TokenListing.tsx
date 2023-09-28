@@ -309,8 +309,7 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
           bottom: 57,
           left: 0,
           right: 0,
-          zIndex: 1,
-          backgroundColor: '#1d1d1d'
+          zIndex: 1
         }}
       >
         <Button

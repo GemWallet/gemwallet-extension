@@ -1,9 +1,15 @@
-import { CSSProperties, FC } from 'react';
+import { CSSProperties, FC, useMemo } from 'react';
 
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
+import { useLocation } from 'react-router-dom';
 
-import { HEADER_HEIGHT, NAV_MENU_HEIGHT, NETWORK_BANNER_HEIGHT } from '../../../constants';
+import {
+  HEADER_HEIGHT,
+  NAV_MENU_HEIGHT,
+  NETWORK_BANNER_HEIGHT,
+  navigation
+} from '../../../constants';
 import { useNetwork, useWallet } from '../../../contexts';
 import { Header, NavMenu } from '../../organisms';
 
@@ -21,6 +27,11 @@ export interface PageWithHeaderProps {
 export const PageWithHeader: FC<PageWithHeaderProps> = ({ children, styles, title }) => {
   const { wallets, selectedWallet } = useWallet();
   const { hasOfflineBanner } = useNetwork();
+  const location = useLocation();
+  const indexDefaultNav = useMemo(
+    () => navigation.findIndex((item) => item.pathname === location.pathname),
+    [location.pathname]
+  );
 
   if (!wallets?.[selectedWallet]) {
     return null;
@@ -59,7 +70,7 @@ export const PageWithHeader: FC<PageWithHeaderProps> = ({ children, styles, titl
         )}
         {children}
       </Container>
-      <NavMenu />
+      <NavMenu indexDefaultNav={indexDefaultNav} />
     </div>
   );
 };
