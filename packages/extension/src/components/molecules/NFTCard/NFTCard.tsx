@@ -1,8 +1,7 @@
-import { FC, forwardRef, ReactElement, Ref, useCallback, useEffect, useState } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
 
 import { OpenInNewOutlined } from '@mui/icons-material';
-import { Button, CircularProgress, Dialog, Paper, Slide, Tooltip } from '@mui/material';
-import { TransitionProps } from '@mui/material/transitions';
+import { Button, CircularProgress, Paper, Tooltip } from '@mui/material';
 import * as Sentry from '@sentry/react';
 import { convertHexToString } from 'xrpl';
 
@@ -11,6 +10,7 @@ import { AccountNFToken, NFTData } from '@gemwallet/constants';
 import { useLedger } from '../../../contexts';
 import { NFTImage, TruncatedText } from '../../atoms';
 import { NFTDetails } from '../../organisms';
+import { DialogPage } from '../../templates';
 
 export type NFTCardLayout = 'large' | 'small' | 'list';
 
@@ -18,15 +18,6 @@ export interface NFTCardProps {
   NFT: AccountNFToken;
   layout: NFTCardLayout;
 }
-
-const Transition = forwardRef(function Transition(
-  props: TransitionProps & {
-    children: ReactElement;
-  },
-  ref: Ref<unknown>
-) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
 
 export const NFTCard: FC<NFTCardProps> = ({ NFT, layout = 'large' }) => {
   const { getNFTData } = useLedger();
@@ -69,14 +60,9 @@ export const NFTCard: FC<NFTCardProps> = ({ NFT, layout = 'large' }) => {
 
   return (
     <>
-      <Dialog
-        open={dialogOpen}
-        onClose={handleCloseDialog}
-        fullScreen
-        TransitionComponent={Transition}
-      >
-        <NFTDetails NFTData={NFTData} handleClose={handleCloseDialog} />
-      </Dialog>
+      <DialogPage title="NFT Details" open={dialogOpen} onClose={handleCloseDialog}>
+        <NFTDetails NFTData={NFTData} />
+      </DialogPage>
       <Paper
         elevation={5}
         style={{
