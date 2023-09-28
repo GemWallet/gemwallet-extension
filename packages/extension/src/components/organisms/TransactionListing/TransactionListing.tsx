@@ -1,14 +1,11 @@
 import React, { FC, useCallback, useState } from 'react';
 
-import CloseIcon from '@mui/icons-material/Close';
 import TransactionIcon from '@mui/icons-material/CompareArrows';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import {
-  AppBar,
   Dialog,
   DialogActions,
   DialogContent,
-  Divider,
   IconButton,
   List,
   ListItem,
@@ -16,26 +13,22 @@ import {
   ListItemText,
   Paper,
   Slide,
-  Toolbar,
   Typography
 } from '@mui/material';
 import { Button, FormControlLabel, Checkbox } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 import { unix } from 'moment';
-import { convertHexToString, DepositPreauth, dropsToXrp, Payment, SetRegularKey } from 'xrpl';
+import { DepositPreauth, Payment, SetRegularKey } from 'xrpl';
 
 import { useWallet } from '../../../contexts';
 import { AccountTransaction, TransactionTypes } from '../../../types';
-import { formatAmount, formatFlagsToNumber } from '../../../utils';
+import { formatAmount } from '../../../utils';
 import { InformationMessage } from '../../molecules';
 import { PageWithSpinner } from '../../templates';
+import { TransactionDetails } from './TransactionDetails';
 
 export interface TransactionListingProps {
   transactions: AccountTransaction[];
-}
-
-interface ExtendedAccountTransaction extends AccountTransaction {
-  touched: boolean;
 }
 
 const Transition = React.forwardRef(function Transition(
@@ -92,7 +85,10 @@ const transactionMappers: Record<TransactionTypes, TransactionFormatter> = {
   [TransactionTypes.NFTokenAcceptOffer]: () => 'Accept NFT offer'
 };
 
-const formatTransaction = (transaction: AccountTransaction, publicAddress: string): string => {
+export const formatTransaction = (
+  transaction: AccountTransaction,
+  publicAddress: string
+): string => {
   if (!transaction.tx) {
     return 'Unsupported transaction';
   }
@@ -104,25 +100,12 @@ const formatTransaction = (transaction: AccountTransaction, publicAddress: strin
   return formatter ? formatter(transaction, publicAddress) : txType;
 };
 
-const renderDestinationField = (transaction: AccountTransaction): JSX.Element | null => {
-  if (transaction.tx && 'Destination' in transaction.tx) {
-    return (
-      <ListItem style={{ padding: '8px 24px' }}>
-        <ListItemText primary="Destination" secondary={transaction.tx?.Destination} />
-      </ListItem>
-    );
-  }
-  return null;
-};
-
-const formatDate = (unixTimestamp: number): string => {
+export const formatDate = (unixTimestamp: number): string => {
   return unix(946684800 + unixTimestamp).format('MMM DD, YYYY - HH:mm');
 };
 
 export const TransactionListing: FC<TransactionListingProps> = ({ transactions }) => {
-  const [tx, setTx] = useState<ExtendedAccountTransaction[]>(
-    transactions.length > 0 ? transactions.map((t) => ({ ...t, touched: false })) : []
-  );
+  const [openedTx, setOpenedTx] = useState<AccountTransaction | null>(null);
   const [filterTypes, setFilterTypes] = useState<string[]>([]);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
 
@@ -130,24 +113,17 @@ export const TransactionListing: FC<TransactionListingProps> = ({ transactions }
   const wallet = getCurrentWallet();
   const transactionTypes = [...new Set(transactions.map((tx) => tx.tx?.TransactionType))].sort();
 
-  const handleClick = useCallback(
-    (index: number) => {
-      const newTx = [...tx];
-      newTx[index].touched = !newTx[index].touched;
-      setTx(newTx);
-    },
-    [tx]
-  );
+  const handleClick = useCallback((transaction: AccountTransaction) => {
+    setOpenedTx(transaction);
+  }, []);
 
   const handleClose = useCallback(() => {
-    const newTx = [...tx];
-    newTx.map((t) => (t.touched = false));
-    setTx(newTx);
-  }, [tx]);
+    setOpenedTx(null);
+  }, []);
 
   const groupTransactionsByDate = useCallback(
-    (transactions: ExtendedAccountTransaction[]): Map<string, ExtendedAccountTransaction[]> => {
-      const grouped = new Map<string, ExtendedAccountTransaction[]>();
+    (transactions: AccountTransaction[]): Map<string, AccountTransaction[]> => {
+      const grouped = new Map<string, AccountTransaction[]>();
 
       transactions.forEach((transaction) => {
         const date = transaction.tx?.date
@@ -167,7 +143,7 @@ export const TransactionListing: FC<TransactionListingProps> = ({ transactions }
     return <PageWithSpinner />;
   }
 
-  if (tx.length === 0) {
+  if (transactions.length === 0) {
     return (
       <InformationMessage title="No transactions to show">
         <div style={{ marginBottom: '5px' }}>
@@ -178,8 +154,8 @@ export const TransactionListing: FC<TransactionListingProps> = ({ transactions }
   }
 
   const filteredTransactions = filterTypes.length
-    ? tx.filter((tx) => filterTypes.includes(tx.tx?.TransactionType || ''))
-    : tx;
+    ? transactions.filter((tx) => filterTypes.includes(tx.tx?.TransactionType || ''))
+    : transactions;
 
   return (
     <>
@@ -252,7 +228,7 @@ export const TransactionListing: FC<TransactionListingProps> = ({ transactions }
                       marginBottom: '10px',
                       cursor: 'pointer'
                     }}
-                    onClick={() => handleClick(index)}
+                    onClick={() => handleClick(transaction)}
                   >
                     <ListItem>
                       <ListItemIcon>
@@ -266,143 +242,24 @@ export const TransactionListing: FC<TransactionListingProps> = ({ transactions }
                       />
                     </ListItem>
                   </Paper>
-                  <Dialog
-                    open={transaction.touched}
-                    TransitionComponent={Transition}
-                    fullScreen
-                    data-testid="dialog"
-                  >
-                    <AppBar sx={{ position: 'relative' }}>
-                      <Toolbar>
-                        <IconButton
-                          edge="start"
-                          color="inherit"
-                          aria-label="close"
-                          onClick={() => handleClose()}
-                          style={{ cursor: 'pointer' }}
-                          data-testid="close-button"
-                        >
-                          <CloseIcon />
-                        </IconButton>
-                        <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="p">
-                          Transaction Details
-                        </Typography>
-                      </Toolbar>
-                    </AppBar>
-                    <List sx={{ width: '100%', wordBreak: 'break-word' }}>
-                      <ListItem style={{ padding: '8px 24px' }}>
-                        <ListItemText primary="Account" secondary={transaction.tx?.Account} />
-                      </ListItem>
-                      <Divider light />
-                      {renderDestinationField(transaction)}
-                      <Divider light />
-                      <ListItem style={{ padding: '8px 24px' }}>
-                        <ListItemText
-                          primary="Transaction"
-                          secondary={formatTransaction(transaction, wallet.publicAddress)}
-                        />
-                      </ListItem>
-                      <Divider light />
-                      <ListItem style={{ padding: '8px 24px' }}>
-                        <ListItemText
-                          primary="Fees"
-                          secondary={dropsToXrp(Number(transaction.tx?.Fee))}
-                        />
-                      </ListItem>
-                      <Divider light />
-                      <ListItem style={{ padding: '8px 24px' }}>
-                        <ListItemText
-                          primary="Date"
-                          secondary={
-                            transaction.tx?.date ? formatDate(transaction.tx?.date) : undefined
-                          }
-                        />
-                      </ListItem>
-                      <Divider light />
-                      {transaction.tx?.Memos?.[0]?.Memo?.MemoData ? (
-                        <>
-                          <ListItem style={{ padding: '8px 24px' }}>
-                            <ListItemText
-                              primary="Memo"
-                              secondary={convertHexToString(
-                                transaction.tx?.Memos?.[0]?.Memo?.MemoData
-                              )}
-                            />
-                          </ListItem>
-                          <Divider light />
-                        </>
-                      ) : null}
-                      {transaction.meta &&
-                      typeof transaction.meta === 'object' &&
-                      'nftoken_id' in transaction.meta ? (
-                        <>
-                          <ListItem style={{ padding: '8px 24px' }}>
-                            <ListItemText
-                              primary="NFT Token ID"
-                              secondary={(transaction.meta as any).nftoken_id}
-                            />
-                          </ListItem>
-                          <Divider light />
-                        </>
-                      ) : null}
-                      {transaction.meta &&
-                      typeof transaction.meta === 'object' &&
-                      'offer_id' in transaction.meta ? (
-                        <>
-                          <ListItem style={{ padding: '8px 24px' }}>
-                            <ListItemText
-                              primary="Offer ID"
-                              secondary={(transaction.meta as any).offer_id}
-                            />
-                          </ListItem>
-                          <Divider light />
-                        </>
-                      ) : null}
-                      <ListItem style={{ padding: '8px 24px' }}>
-                        <ListItemText primary="Transaction Hash" secondary={transaction.tx?.hash} />
-                      </ListItem>
-                      <Divider light />
-                      {transaction.tx &&
-                      'DestinationTag' in transaction.tx &&
-                      transaction.tx?.DestinationTag ? (
-                        <>
-                          <ListItem style={{ padding: '8px 24px' }}>
-                            <ListItemText
-                              primary="Destination Tag"
-                              secondary={transaction.tx?.DestinationTag}
-                            />
-                          </ListItem>
-                          <Divider light />
-                        </>
-                      ) : null}
-                      {transaction.tx && 'Flags' in transaction.tx && transaction.tx?.Flags ? (
-                        <>
-                          <ListItem style={{ padding: '8px 24px' }}>
-                            <ListItemText
-                              primary="Flags"
-                              secondary={formatFlagsToNumber(transaction.tx)}
-                            />
-                          </ListItem>
-                          <Divider light />
-                        </>
-                      ) : null}
-                      <ListItem style={{ padding: '8px 24px' }}>
-                        <ListItemText
-                          primary="Ledger Index"
-                          secondary={transaction.tx?.ledger_index}
-                        />
-                      </ListItem>
-                      <ListItem style={{ padding: '8px 24px' }}>
-                        <ListItemText primary="Sequence" secondary={transaction.tx?.Sequence} />
-                      </ListItem>
-                    </List>
-                  </Dialog>
                 </div>
               ))}
             </div>
           )
         )}
       </List>
+      <Dialog
+        open={openedTx !== null}
+        TransitionComponent={Transition}
+        fullScreen
+        data-testid="dialog"
+      >
+        <TransactionDetails
+          transaction={openedTx}
+          publicAddress={wallet.publicAddress}
+          handleClose={handleClose}
+        />
+      </Dialog>
     </>
   );
 };
