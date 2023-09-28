@@ -16,7 +16,7 @@ const StyledBottomNavigation = styled(BottomNavigation)`
   ${defaultDecoration}
   position: relative;
   border-top: none !important;
-  box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.35);
 
   &::after {
     content: '';
