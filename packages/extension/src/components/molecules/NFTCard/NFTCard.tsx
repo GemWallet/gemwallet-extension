@@ -104,8 +104,7 @@ export const NFTCard: FC<NFTCardProps> = ({ NFT, layout = 'large' }) => {
                   overflow: 'hidden',
                   whiteSpace: 'nowrap',
                   textOverflow: 'ellipsis',
-                  color: 'grey',
-                  cursor: 'pointer'
+                  color: 'grey'
                 }}
               >
                 <TruncatedText sx={{ fontSize: '14px' }}>{NFTData.NFTokenID}</TruncatedText>
@@ -144,8 +143,7 @@ export const NFTCard: FC<NFTCardProps> = ({ NFT, layout = 'large' }) => {
                 whiteSpace: 'nowrap',
                 textOverflow: 'ellipsis',
                 color: 'grey',
-                marginTop: '10px',
-                cursor: 'pointer'
+                marginTop: '10px'
               }}
             >
               <TruncatedText
