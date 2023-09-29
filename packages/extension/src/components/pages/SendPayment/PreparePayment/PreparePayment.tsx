@@ -441,7 +441,7 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
           </span>
         </Typography>
         <TextField
-          label="Memo (optional)"
+          label="Notes (optional)" // Named "Notes" to avoid confusion with the Destination Tag
           id="memo"
           name="memo"
           fullWidth
