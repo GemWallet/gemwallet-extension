@@ -1,7 +1,7 @@
 import { FC, useCallback, useEffect, useState } from 'react';
 
 import { OpenInNewOutlined } from '@mui/icons-material';
-import { Button, CircularProgress, Paper, Tooltip } from '@mui/material';
+import { Button, CircularProgress, Paper } from '@mui/material';
 import * as Sentry from '@sentry/react';
 import { convertHexToString } from 'xrpl';
 
@@ -52,10 +52,6 @@ export const NFTCard: FC<NFTCardProps> = ({ NFT, layout = 'large' }) => {
     setDialogOpen(false);
   }, []);
 
-  const handleTokenIdClick = useCallback((tokenId: string) => {
-    navigator.clipboard.writeText(tokenId);
-  }, []);
-
   if (!NFTData) return null;
 
   return (
@@ -101,25 +97,18 @@ export const NFTCard: FC<NFTCardProps> = ({ NFT, layout = 'large' }) => {
             )}
 
             <div style={{ width: 'calc(100% - 80px)', maxWidth: 'calc(100% - 80px)' }}>
-              <Tooltip title={NFTData.NFTokenID || ''}>
-                <div
-                  onClick={(e) => {
-                    handleTokenIdClick(NFTData.NFTokenID || '');
-                    e.stopPropagation(); // Prevents the parent div's onClick from being triggered
-                  }}
-                  style={{
-                    display: 'block',
-                    maxWidth: '100%',
-                    overflow: 'hidden',
-                    whiteSpace: 'nowrap',
-                    textOverflow: 'ellipsis',
-                    color: 'grey',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <TruncatedText sx={{ fontSize: '14px' }}>{NFTData.NFTokenID}</TruncatedText>
-                </div>
-              </Tooltip>
+              <div
+                style={{
+                  display: 'block',
+                  maxWidth: '100%',
+                  overflow: 'hidden',
+                  whiteSpace: 'nowrap',
+                  textOverflow: 'ellipsis',
+                  color: 'grey'
+                }}
+              >
+                <TruncatedText sx={{ fontSize: '14px' }}>{NFTData.NFTokenID}</TruncatedText>
+              </div>
               <TruncatedText
                 isMultiline={true}
                 maxLines={'1'}
@@ -145,32 +134,28 @@ export const NFTCard: FC<NFTCardProps> = ({ NFT, layout = 'large' }) => {
               />
             )}
 
-            <Tooltip title={NFTData.NFTokenID || ''}>
-              <div
-                onClick={() => handleTokenIdClick(NFTData.NFTokenID || '')}
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  maxWidth: '100%',
-                  overflow: 'hidden',
-                  whiteSpace: 'nowrap',
-                  textOverflow: 'ellipsis',
-                  color: 'grey',
-                  marginTop: '10px',
-                  cursor: 'pointer'
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                maxWidth: '100%',
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+                textOverflow: 'ellipsis',
+                color: 'grey',
+                marginTop: '10px'
+              }}
+            >
+              <TruncatedText
+                sx={{
+                  fontSize: layout === 'small' ? '12px' : '14px',
+                  textAlign: 'center',
+                  maxWidth: '90%'
                 }}
               >
-                <TruncatedText
-                  sx={{
-                    fontSize: layout === 'small' ? '12px' : '14px',
-                    textAlign: 'center',
-                    maxWidth: '90%'
-                  }}
-                >
-                  {NFTData.NFTokenID}
-                </TruncatedText>
-              </div>
-            </Tooltip>
+                {NFTData.NFTokenID}
+              </TruncatedText>
+            </div>
             <TruncatedText
               sx={{
                 fontSize: layout === 'small' ? '12px' : '16px',
