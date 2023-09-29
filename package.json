@@ -4,7 +4,7 @@
   "description": "Monorepo related to the GemWallet extension",
   "private": true,
   "scripts": {
-    "build": "yarn workspace @gemwallet/extension build",
+    "build": "NODE_OPTIONS=--openssl-legacy-provider yarn workspace @gemwallet/extension build",
     "build:api:cdn": "yarn workspace @gemwallet/api build:cdn",
     "build:api:npm": "yarn workspace @gemwallet/api build:npm",
     "cypress": "yarn workspace @gemwallet/extension cypress:e2e",
@@ -12,7 +12,7 @@
     "prepare": "husky install",
     "prettier": "prettier --write **/*.{js,ts,tsx}",
     "release:api:npm": "cd packages/api/dist && npm publish --access=public",
-    "start": "yarn workspace @gemwallet/extension start",
+    "start": "NODE_OPTIONS=--openssl-legacy-provider yarn workspace @gemwallet/extension start",
     "start:api": "yarn workspace @gemwallet/api start",
     "test": "TZ=UTC yarn workspaces run test --runInBand"
   },
@@ -45,8 +45,8 @@
     ]
   },
   "engines": {
-    "node": ">=16.15.0",
-    "npm": ">=8.5.5",
+    "node": ">=18.18.0",
+    "npm": ">=9.8.1",
     "yarn": "^1.22.5"
   }
 }
