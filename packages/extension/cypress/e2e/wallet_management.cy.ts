@@ -612,6 +612,8 @@ describe('Switch wallet', () => {
 });
 
 describe('Reset password', () => {
+  const PASSWORD = 'SECRET_PASSWORD';
+
   beforeEach(() => {
     // Mock the localStorage with a wallet already loaded
     cy.window().then((win) => {
@@ -646,18 +648,26 @@ describe('Reset password', () => {
   it('Reset password', () => {
     // Go on the reset password page
     cy.contains('Reset Password').click();
+
+    // Enter password
+    cy.get('input[name="password"]').clear();
+    cy.get('input[name="password"]').type(PASSWORD);
+    cy.get('input[name="password"]').type('{enter}');
+
     cy.contains('Resetting your password will remove your secret seeds').should('be.visible');
     cy.contains(
       'This will remove all existing wallets and replace them with new ones. Make sure you have your existing private secret seeds backed up.'
     ).should('be.visible');
 
-    // Cancel should return to login page
+    // Cancel should return to settings
     cy.contains('button', 'Cancel').click();
-    cy.contains('GemWallet').should('be.visible');
-    cy.contains('Your gateway to the XRPL').should('be.visible');
+    cy.contains('Danger zone').should('exist');
 
     // Reset the password
     cy.contains('Reset Password').click();
+    cy.get('input[name="password"]').clear();
+    cy.get('input[name="password"]').type(PASSWORD);
+    cy.get('input[name="password"]').type('{enter}');
     cy.contains('button', 'Continue').click();
 
     // Onboarding screen of GemWallet
