@@ -19,17 +19,25 @@ import { isValidAddress } from 'xrpl';
 
 import { Memo } from '@gemwallet/constants';
 
-import { DEFAULT_RESERVE, HOME_PATH, RESERVE_PER_OWNER, navigation } from '../../../../constants';
+import {
+  DEFAULT_RESERVE,
+  HOME_PATH,
+  RESERVE_PER_OWNER,
+  navigation,
+  GEMWALLET_BLUE
+} from '../../../../constants';
 import { useLedger, useNetwork, useServer, useWallet } from '../../../../contexts';
 import { convertHexCurrencyString } from '../../../../utils';
 import { buildDefaultMemos } from '../../../../utils/transaction';
 import { NumericInput } from '../../../atoms';
 import { InformationMessage } from '../../../molecules';
 import { PageWithNavMenu, PageWithReturn, PageWithSpinner } from '../../../templates';
+import { DestinationTagInfoModal } from '../DestinationTagInfoModal';
 
 const MAX_MEMO_LENGTH = 300;
 const MAX_DESTINATION_TAG_LENGTH = 10;
 const INDEX_DEFAULT_NAV = navigation.findIndex((link) => link.pathname === HOME_PATH);
+const BOTTOM_SPACING = '24px';
 
 export interface PreparePaymentProps {
   onSendPaymentClick: ({
@@ -72,6 +80,12 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
   const [errorTokens, setErrorTokens] = useState<string>('');
   const [isWalletActivated, setIsWalletActivated] = useState<boolean>(true);
   const [ownerCount, setOwnerCount] = useState<number>(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const toggleModal = useCallback(() => {
+    setIsModalOpen(!isModalOpen);
+  }, [isModalOpen]);
+
   const tokenRef = useRef<HTMLInputElement | null>(null);
 
   const baseReserve = useMemo(
@@ -358,10 +372,10 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
           helperText={errorAddress}
           onChange={handleAddressChange}
           onBlur={handleAddressBlur}
-          style={{ marginTop: '20px', marginBottom: errorAddress === '' ? '33px' : '10px' }}
+          style={{ marginTop: '20px', marginBottom: errorAddress === '' ? BOTTOM_SPACING : '10px' }}
           autoComplete="off"
         />
-        <FormControl fullWidth style={{ marginBottom: '33px' }}>
+        <FormControl fullWidth style={{ marginBottom: BOTTOM_SPACING }}>
           <InputLabel id="token-label">Token</InputLabel>
           <Select
             labelId="token-label"
@@ -386,21 +400,10 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
           id="amount"
           name="amount"
           fullWidth
-          style={{ marginBottom: '33px' }}
+          style={{ marginBottom: BOTTOM_SPACING }}
           error={!!errorAmount}
           helperText={errorAmount}
           onChange={handleAmountChange}
-          autoComplete="off"
-        />
-        <TextField
-          label="Memo (optional)"
-          id="memo"
-          name="memo"
-          fullWidth
-          style={{ marginBottom: '33px' }}
-          error={!!errorMemo}
-          helperText={errorMemo}
-          onChange={handleMemoChange}
           autoComplete="off"
         />
         <NumericInput
@@ -408,10 +411,43 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
           id="destination-tag"
           name="destination-tag"
           fullWidth
-          style={{ marginBottom: '33px' }}
+          style={{ marginBottom: '5px' }}
           error={!!errorDestinationTag}
           helperText={errorDestinationTag}
           onChange={handleDestinationTagChange}
+          autoComplete="off"
+        />
+        <Typography
+          variant="caption"
+          component="div"
+          style={{ color: 'grey', marginBottom: '10px' }}
+        >
+          If you are sending funds to an exchange, you{' '}
+          <span style={{ fontWeight: 'bold', textDecoration: 'underline', fontSize: '14px' }}>
+            must
+          </span>{' '}
+          provide a destination tag -{' '}
+          <span
+            style={{
+              cursor: 'pointer',
+              color: GEMWALLET_BLUE,
+              textDecoration: 'underline',
+              display: 'inline',
+              marginLeft: '4px'
+            }}
+            onClick={toggleModal}
+          >
+            Learn more
+          </span>
+        </Typography>
+        <TextField
+          label="Memo (optional)"
+          id="memo"
+          name="memo"
+          fullWidth
+          error={!!errorMemo}
+          helperText={errorMemo}
+          onChange={handleMemoChange}
           autoComplete="off"
         />
       </div>
@@ -423,6 +459,7 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
       >
         Send Payment
       </Button>
+      {isModalOpen ? <DestinationTagInfoModal open={isModalOpen} onClose={toggleModal} /> : null}
     </PageWithReturn>
   );
 };
