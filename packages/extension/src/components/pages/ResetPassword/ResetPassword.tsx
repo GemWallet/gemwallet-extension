@@ -1,4 +1,4 @@
-import { FC, useCallback } from 'react';
+import { FC, useCallback, useState } from 'react';
 
 import WarningIcon from '@mui/icons-material/Warning';
 import { Button, Typography } from '@mui/material';
@@ -8,11 +8,18 @@ import { SETTINGS_PATH } from '../../../constants';
 import { useNetwork, useWallet } from '../../../contexts';
 import { removeWallets } from '../../../utils';
 import { PageWithReturn } from '../../templates';
+import { EnterPasswordDanger } from '../EnterPasswordDanger';
 
 export const ResetPassword: FC = () => {
   const navigate = useNavigate();
   const { signOut } = useWallet();
   const { resetNetwork } = useNetwork();
+
+  const [passwordVerified, setPasswordVerified] = useState(false);
+
+  const handlePasswordVerified = useCallback(() => {
+    setPasswordVerified(true);
+  }, []);
 
   const handleBack = useCallback(() => {
     navigate(SETTINGS_PATH);
@@ -23,6 +30,10 @@ export const ResetPassword: FC = () => {
     await resetNetwork();
     signOut();
   }, [resetNetwork, signOut]);
+
+  if (!passwordVerified) {
+    return <EnterPasswordDanger onConfirmPassword={handlePasswordVerified} onCancel={handleBack} />;
+  }
 
   return (
     <PageWithReturn title="Reset Password" onBackClick={handleBack}>
