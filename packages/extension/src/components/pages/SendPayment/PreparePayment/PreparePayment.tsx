@@ -32,7 +32,7 @@ import { buildDefaultMemos } from '../../../../utils/transaction';
 import { NumericInput } from '../../../atoms';
 import { InformationMessage } from '../../../molecules';
 import { PageWithNavMenu, PageWithReturn, PageWithSpinner } from '../../../templates';
-import { DestinationTagInfoModal } from '../DestinationTagInfoModal';
+import { DestinationTagInfoModal } from './DestinationTagInfoModal';
 
 const MAX_MEMO_LENGTH = 300;
 const MAX_DESTINATION_TAG_LENGTH = 10;
@@ -457,7 +457,7 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
       >
         Send Payment
       </Button>
-      {isModalOpen ? <DestinationTagInfoModal open={isModalOpen} onClose={toggleModal} /> : null}
+      <DestinationTagInfoModal open={isModalOpen} onClose={toggleModal} />
     </PageWithReturn>
   );
 };
