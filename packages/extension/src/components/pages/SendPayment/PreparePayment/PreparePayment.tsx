@@ -423,10 +423,8 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
           style={{ color: 'grey', marginBottom: '10px' }}
         >
           If you are sending funds to an exchange, you{' '}
-          <span style={{ fontWeight: 'bold', textDecoration: 'underline', fontSize: '14px' }}>
-            must
-          </span>{' '}
-          provide a destination tag -{' '}
+          <span style={{ fontWeight: 'bold', textDecoration: 'underline' }}>must</span> provide a
+          destination tag -{' '}
           <span
             style={{
               cursor: 'pointer',
