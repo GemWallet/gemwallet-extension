@@ -24,7 +24,7 @@ export const DestinationTagInfoModal: FC<DestinationTagInfoModalProps> = ({ open
           destination tag is a numeric value that will associate your transaction with your user
           account on the exchange. Some exchanges call it "memo".
         </DialogContentText>
-        <DialogContentText>
+        <DialogContentText style={{ paddingTop: '16px' }}>
           Failing to include a destination tag can result in the loss of your funds, as the exchange
           won't be able to associate the incoming funds with your user account. Always verify the
           destination tag given by the exchange and enter it correctly before confirming the
