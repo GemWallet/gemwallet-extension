@@ -11,20 +11,22 @@ import {
   ResponseType
 } from '@gemwallet/constants';
 
-import { SECONDARY_GRAY } from '../../../constants';
+import { NETWORK_BANNER_HEIGHT, SECONDARY_GRAY } from '../../../constants';
 import {
   TransactionProgressStatus,
   useBrowser,
   useLedger,
+  useNetwork,
   useTransactionProgress
 } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
 import { serializeError } from '../../../utils/errors';
-import { AsyncTransaction, PageWithTitle } from '../../templates';
+import { AsyncTransaction } from '../../templates';
 
 export const SignMessage: FC = () => {
   const { signMessage } = useLedger();
   const { window: extensionWindow, closeExtension } = useBrowser();
+  const { hasOfflineBanner } = useNetwork();
   const { setTransactionProgress } = useTransactionProgress();
   const [isParamsMissing, setIsParamsMissing] = useState(false);
 
@@ -33,7 +35,6 @@ export const SignMessage: FC = () => {
     const urlParams = new URLSearchParams(queryString);
 
     const url = urlParams.get('url');
-    const title = urlParams.get('title');
     const favicon = urlParams.get('favicon');
     const message = urlParams.get('message');
 
@@ -44,7 +45,6 @@ export const SignMessage: FC = () => {
     return {
       id: Number(urlParams.get('id')) || 0,
       url,
-      title,
       favicon: favicon || undefined,
       message: message || ''
     };
@@ -58,7 +58,7 @@ export const SignMessage: FC = () => {
       : 'RECEIVE_SIGN_MESSAGE';
   }, []);
 
-  const { id, url, title, favicon, message } = payload;
+  const { id, url, favicon, message } = payload;
 
   const handleSendMessage = useCallback(
     (messagePayload: { signedMessage: string | null | undefined; error?: Error }) => {
@@ -149,35 +149,54 @@ export const SignMessage: FC = () => {
   }
 
   return (
-    <PageWithTitle title="Sign Message">
-      <Paper
-        elevation={24}
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          padding: '10px'
-        }}
-      >
-        <Avatar src={favicon} variant="rounded" />
-        <Typography variant="h6">{title}</Typography>
-        <Typography style={{ color: SECONDARY_GRAY }}>{url}</Typography>
-      </Paper>
-
+    <Container
+      component="main"
+      style={{
+        ...(hasOfflineBanner ? { position: 'fixed', top: NETWORK_BANNER_HEIGHT } : {}),
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        height: hasOfflineBanner ? `calc(100vh - ${NETWORK_BANNER_HEIGHT}px)` : '100vh',
+        padding: '20px 16px',
+        overflowY: 'auto'
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <Avatar src={favicon} sx={{ bgcolor: '#2b2b2b', padding: '5px' }} variant="rounded" />
+        <div style={{ marginLeft: '10px' }}>
+          <Typography
+            variant="h6"
+            component="h1"
+            style={{ fontSize: '1.75rem' }}
+            data-testid="page-title"
+          >
+            Sign Message
+          </Typography>
+          <Typography component="h2" style={{ color: SECONDARY_GRAY }}>
+            {url}
+          </Typography>
+        </div>
+      </div>
+      <Typography style={{ color: SECONDARY_GRAY }}>
+        Signing this message will prove you have ownership of the selected account.
+      </Typography>
       <Paper elevation={24} style={{ padding: '10px' }}>
-        <Typography variant="body1">You are signing:</Typography>
+        <Typography variant="body1">Message:</Typography>
         <Divider style={{ margin: '10px 0' }} />
         <div style={{ overflowY: 'scroll', height: '200px' }}>
-          <Typography variant="body2" style={{ color: SECONDARY_GRAY }}>
+          <Typography
+            variant="body2"
+            style={{ color: SECONDARY_GRAY, whiteSpace: 'pre-wrap', overflowWrap: 'break-word' }}
+          >
             {message}
           </Typography>
         </div>
       </Paper>
-
       <div style={{ display: 'flex', justifyContent: 'center', color: SECONDARY_GRAY }}>
-        <Typography>Only sign messages with a website you trust</Typography>
+        <Typography variant="body2" align="center">
+          Only sign messages with a website you trust.
+        </Typography>
       </div>
-
       <Container style={{ display: 'flex', justifyContent: 'space-evenly' }}>
         <Button variant="contained" color="secondary" onClick={handleReject}>
           Reject
@@ -186,6 +205,6 @@ export const SignMessage: FC = () => {
           Sign
         </Button>
       </Container>
-    </PageWithTitle>
+    </Container>
   );
 };
