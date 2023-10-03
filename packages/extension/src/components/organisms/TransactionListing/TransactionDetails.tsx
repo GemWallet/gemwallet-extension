@@ -1,16 +1,6 @@
 import React, { FC } from 'react';
 
-import CloseIcon from '@mui/icons-material/Close';
-import {
-  AppBar,
-  Divider,
-  IconButton,
-  List,
-  ListItem,
-  ListItemText,
-  Toolbar,
-  Typography
-} from '@mui/material';
+import { Divider, List, ListItem, ListItemText } from '@mui/material';
 import { convertHexToString, dropsToXrp } from 'xrpl';
 
 import { AccountTransaction } from '../../../types';
@@ -20,7 +10,6 @@ import { formatDate, formatTransaction } from './TransactionListing';
 interface TransactionDetailsProps {
   transaction: AccountTransaction | null;
   publicAddress: string;
-  handleClose: () => void;
 }
 
 const renderDestinationField = (transaction: AccountTransaction): JSX.Element | null => {
@@ -34,34 +23,13 @@ const renderDestinationField = (transaction: AccountTransaction): JSX.Element | 
   return null;
 };
 
-export const TransactionDetails: FC<TransactionDetailsProps> = ({
-  transaction,
-  publicAddress,
-  handleClose
-}) => {
+export const TransactionDetails: FC<TransactionDetailsProps> = ({ transaction, publicAddress }) => {
   if (!transaction) {
     return null;
   }
 
   return (
     <>
-      <AppBar sx={{ position: 'relative' }}>
-        <Toolbar>
-          <IconButton
-            edge="start"
-            color="inherit"
-            aria-label="close"
-            onClick={() => handleClose()}
-            style={{ cursor: 'pointer' }}
-            data-testid="close-button"
-          >
-            <CloseIcon />
-          </IconButton>
-          <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="p">
-            Transaction Details
-          </Typography>
-        </Toolbar>
-      </AppBar>
       <List sx={{ width: '100%', wordBreak: 'break-word' }}>
         <ListItem style={{ padding: '8px 24px' }}>
           <ListItemText primary="Account" secondary={transaction.tx?.Account} />

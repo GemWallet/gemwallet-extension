@@ -1,17 +1,7 @@
 import React, { FC, useCallback, useState } from 'react';
 
 import TransactionIcon from '@mui/icons-material/CompareArrows';
-import {
-  Dialog,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Paper,
-  Slide,
-  Typography
-} from '@mui/material';
-import { TransitionProps } from '@mui/material/transitions';
+import { List, ListItem, ListItemIcon, ListItemText, Paper, Typography } from '@mui/material';
 import { unix } from 'moment';
 import { DepositPreauth, Payment, SetRegularKey } from 'xrpl';
 
@@ -19,23 +9,13 @@ import { useWallet } from '../../../contexts';
 import { AccountTransaction, TransactionTypes } from '../../../types';
 import { formatAmount } from '../../../utils';
 import { InformationMessage } from '../../molecules';
-import { PageWithSpinner } from '../../templates';
+import { DialogPage, PageWithSpinner } from '../../templates';
 import { TransactionDetails } from './TransactionDetails';
 import { TransactionFilters } from './TransactionFilters';
 
 export interface TransactionListingProps {
   transactions: AccountTransaction[];
 }
-
-const Transition = React.forwardRef(function Transition(
-  props: TransitionProps & {
-    children: React.ReactElement;
-  },
-  ref: React.Ref<unknown>
-) {
-  const { children, ...otherProps } = props;
-  return <Slide direction="up" ref={ref} {...otherProps} children={children} />;
-});
 
 type TransactionFormatter = (transaction: AccountTransaction, publicAddress: string) => string;
 
@@ -202,18 +182,14 @@ export const TransactionListing: FC<TransactionListingProps> = ({ transactions }
           )
         )}
       </List>
-      <Dialog
+      <DialogPage
+        title="Transaction Details"
+        onClose={handleClose}
         open={openedTx !== null}
-        TransitionComponent={Transition}
-        fullScreen
         data-testid="dialog"
       >
-        <TransactionDetails
-          transaction={openedTx}
-          publicAddress={wallet.publicAddress}
-          handleClose={handleClose}
-        />
-      </Dialog>
+        <TransactionDetails transaction={openedTx} publicAddress={wallet.publicAddress} />
+      </DialogPage>
     </>
   );
 };
