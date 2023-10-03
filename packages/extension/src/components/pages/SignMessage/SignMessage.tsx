@@ -2,7 +2,7 @@ import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Avatar, Button, Container, IconButton, Paper, Typography } from '@mui/material';
+import { Avatar, Button, Container, Grid, IconButton, Paper, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
 
 import {
@@ -24,6 +24,8 @@ import {
 import { TransactionStatus } from '../../../types';
 import { serializeError } from '../../../utils/errors';
 import { AsyncTransaction } from '../../templates';
+
+const BUTTONS_SIZE = '150px';
 
 export const SignMessage: FC = () => {
   const { signMessage } = useLedger();
@@ -294,13 +296,24 @@ export const SignMessage: FC = () => {
             Only sign messages with a website you trust.
           </Typography>
         </div>
-        <Container style={{ display: 'flex', justifyContent: 'space-evenly' }}>
-          <Button variant="contained" color="secondary" onClick={handleReject}>
-            Reject
-          </Button>
-          <Button variant="contained" onClick={handleSign}>
-            Sign
-          </Button>
+        <Container>
+          <Grid container spacing={2} justifyContent="center">
+            <Grid item>
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={handleReject}
+                style={{ minWidth: BUTTONS_SIZE }}
+              >
+                Reject
+              </Button>
+            </Grid>
+            <Grid item>
+              <Button variant="contained" onClick={handleSign} style={{ minWidth: BUTTONS_SIZE }}>
+                Sign
+              </Button>
+            </Grid>
+          </Grid>
         </Container>
       </div>
     </>
