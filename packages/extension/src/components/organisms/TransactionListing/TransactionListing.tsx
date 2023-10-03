@@ -1,136 +1,124 @@
-import { FC, useCallback, useState } from 'react';
+import React, { FC, useCallback, useState } from 'react';
 
 import TransactionIcon from '@mui/icons-material/CompareArrows';
-import { Divider, List, ListItem, ListItemIcon, ListItemText, Paper } from '@mui/material';
+import { List, ListItem, ListItemIcon, ListItemText, Paper, Typography } from '@mui/material';
 import { unix } from 'moment';
-import { convertHexToString, dropsToXrp } from 'xrpl';
+import { DepositPreauth, Payment, SetRegularKey } from 'xrpl';
 
 import { useWallet } from '../../../contexts';
 import { AccountTransaction, TransactionTypes } from '../../../types';
-import { formatAmount, formatFlagsToNumber } from '../../../utils';
+import { formatAmount } from '../../../utils';
 import { InformationMessage } from '../../molecules';
 import { DialogPage, PageWithSpinner } from '../../templates';
+import { TransactionDetails } from './TransactionDetails';
+import { TransactionFilters } from './TransactionFilters';
 
 export interface TransactionListingProps {
   transactions: AccountTransaction[];
 }
 
-const formatTransaction = (transaction: AccountTransaction, publicAddress: string): string => {
-  switch (transaction.tx?.TransactionType) {
-    case TransactionTypes.Payment:
-      // Might need to handle more use case
-      const amount = formatAmount(transaction.tx.Amount);
-      if (transaction.tx.Destination === publicAddress) {
-        return `Payment received - ${amount}`;
-      }
-      return `Payment sent - ${amount}`;
-    case TransactionTypes.TrustSet: {
-      // Might need to handle more use case
-      return 'TrustLine transaction';
+type TransactionFormatter = (transaction: AccountTransaction, publicAddress: string) => string;
+
+const transactionMappers: Record<TransactionTypes, TransactionFormatter> = {
+  [TransactionTypes.Payment]: (transaction, publicAddress) => {
+    const amount = formatAmount((transaction.tx as Payment).Amount);
+    return (transaction.tx as Payment).Destination === publicAddress
+      ? `Payment received - ${amount}`
+      : `Payment sent - ${amount}`;
+  },
+  [TransactionTypes.TrustSet]: () => 'TrustLine transaction',
+  [TransactionTypes.EscrowCreate]: () => 'Create escrow',
+  [TransactionTypes.EscrowFinish]: () => 'Finish escrow',
+  [TransactionTypes.EscrowCancel]: () => 'Cancel escrow',
+  [TransactionTypes.AccountSet]: () => 'Edit account',
+  [TransactionTypes.SignerListSet]: () => 'Set Signer List',
+  [TransactionTypes.OfferCreate]: () => 'Create offer',
+  [TransactionTypes.OfferCancel]: () => 'Cancel offer',
+  [TransactionTypes.AccountDelete]: () => 'Delete Account',
+  [TransactionTypes.SetRegularKey]: (transaction) => {
+    if ((transaction.tx as SetRegularKey).RegularKey) {
+      return 'Set Regular Key';
     }
-    case TransactionTypes.EscrowCreate:
-      return 'Create escrow';
-    case TransactionTypes.EscrowFinish:
-      return 'Finish escrow';
-    case TransactionTypes.EscrowCancel:
-      return 'Cancel escrow';
-    case TransactionTypes.AccountSet:
-      // Might need to handle more use cases here
-      return 'Edit account';
-    case TransactionTypes.SignerListSet:
-      return 'Set Signer List';
-    case TransactionTypes.OfferCreate:
-      // Might need to handle more use cases here
-      return 'Create offer';
-    case TransactionTypes.OfferCancel:
-      return 'Cancel offer';
-    case TransactionTypes.AccountDelete:
-      return 'Delete Account';
-    case TransactionTypes.SetRegularKey:
-      if (transaction.tx.RegularKey) {
-        return 'Set Regular Key';
-      }
-      return 'Remove Regular Key';
-    case TransactionTypes.DepositPreauth:
-      if (transaction.tx.Authorize) {
-        return 'Authorize deposit';
-      }
-      return 'Unauthorize deposit';
-    case TransactionTypes.CheckCreate:
-      return 'Create check';
-    case TransactionTypes.CheckCash:
-      return 'Cash check';
-    case TransactionTypes.CheckCancel:
-      return 'Cancel check';
-    case TransactionTypes.TicketCreate:
-      return 'Create ticket';
-    case TransactionTypes.PaymentChannelCreate:
-      return 'Create payment channel';
-    case TransactionTypes.PaymentChannelClaim:
-      return 'Claim payment channel';
-    case TransactionTypes.PaymentChannelFund:
-      return 'Fund payment channel';
-    case TransactionTypes.NFTokenMint:
-      return 'Mint NFT';
-    case TransactionTypes.NFTokenBurn:
-      return 'Burn NFT';
-    case TransactionTypes.NFTokenCreateOffer:
-      return 'Create NFT offer';
-    case TransactionTypes.NFTokenCancelOffer:
-      return 'Cancel NFT offer';
-    case TransactionTypes.NFTokenAcceptOffer:
-      return 'Accept NFT offer';
-    default:
-      return 'Unsupported transaction';
-  }
+    return 'Remove Regular Key';
+  },
+  [TransactionTypes.DepositPreauth]: (transaction) => {
+    if ((transaction.tx as DepositPreauth).Authorize) {
+      return 'Authorize Deposit';
+    }
+    return 'Unauthorize Deposit';
+  },
+  [TransactionTypes.CheckCreate]: () => 'Create check',
+  [TransactionTypes.CheckCash]: () => 'Cash check',
+  [TransactionTypes.CheckCancel]: () => 'Cancel check',
+  [TransactionTypes.TicketCreate]: () => 'Create ticket',
+  [TransactionTypes.PaymentChannelCreate]: () => 'Create payment channel',
+  [TransactionTypes.PaymentChannelClaim]: () => 'Claim payment channel',
+  [TransactionTypes.PaymentChannelFund]: () => 'Fund payment channel',
+  [TransactionTypes.NFTokenMint]: () => 'Mint NFT',
+  [TransactionTypes.NFTokenBurn]: () => 'Burn NFT',
+  [TransactionTypes.NFTokenCreateOffer]: () => 'Create NFT offer',
+  [TransactionTypes.NFTokenCancelOffer]: () => 'Cancel NFT offer',
+  [TransactionTypes.NFTokenAcceptOffer]: () => 'Accept NFT offer'
 };
 
-const renderDestinationField = (transaction: AccountTransaction): JSX.Element | null => {
-  if (transaction.tx && 'Destination' in transaction.tx) {
-    return (
-      <ListItem style={{ padding: '8px 24px' }}>
-        <ListItemText primary="Destination" secondary={transaction.tx?.Destination} />
-      </ListItem>
-    );
+export const formatTransaction = (
+  transaction: AccountTransaction,
+  publicAddress: string
+): string => {
+  if (!transaction.tx) {
+    return 'Unsupported transaction';
   }
-  return null;
+
+  const txType = transaction.tx.TransactionType;
+  const formatter = transactionMappers[txType as keyof typeof transactionMappers];
+
+  // If formatter doesn't exist for this txType, return the txType as default message
+  return formatter ? formatter(transaction, publicAddress) : txType;
 };
 
-const formatDate = (unixTimestamp: number): string => {
-  return unix(946684800 + unixTimestamp).format('DD MMMM YYYY - HH:mm');
+export const formatDate = (unixTimestamp: number): string => {
+  return unix(946684800 + unixTimestamp).format('MMM DD, YYYY - HH:mm');
 };
 
 export const TransactionListing: FC<TransactionListingProps> = ({ transactions }) => {
-  const { getCurrentWallet } = useWallet();
+  const [openedTx, setOpenedTx] = useState<AccountTransaction | null>(null);
+  const [filterTypes, setFilterTypes] = useState<string[]>([]);
+  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
 
-  const [tx, setTx] = useState(
-    transactions.length > 0 ? transactions.map((t) => ({ ...t, touched: false })) : []
-  );
+  const { getCurrentWallet } = useWallet();
   const wallet = getCurrentWallet();
 
-  const handleClick = useCallback(
-    (index: number) => {
-      const newTx = [...tx];
-      newTx[index].touched = !newTx[index].touched;
-      setTx(newTx);
-    },
-    [tx]
-  );
+  const handleClick = useCallback((transaction: AccountTransaction) => {
+    setOpenedTx(transaction);
+  }, []);
 
-  const handleClose = useCallback(
-    (index: number) => {
-      const newTx = [...tx];
-      newTx[index].touched = false;
-      setTx(newTx);
+  const handleClose = useCallback(() => {
+    setOpenedTx(null);
+  }, []);
+
+  const groupTransactionsByDate = useCallback(
+    (transactions: AccountTransaction[]): Map<string, AccountTransaction[]> => {
+      const grouped = new Map<string, AccountTransaction[]>();
+
+      transactions.forEach((transaction) => {
+        const date = transaction.tx?.date
+          ? unix(946684800 + transaction.tx.date).format('MMM DD, YYYY')
+          : 'Unknown Date';
+        const group = grouped.get(date) || [];
+        group.push(transaction);
+        grouped.set(date, group);
+      });
+
+      return grouped;
     },
-    [tx]
+    []
   );
 
   if (!wallet) {
     return <PageWithSpinner />;
   }
 
-  if (tx.length === 0) {
+  if (transactions.length === 0) {
     return (
       <InformationMessage title="No transactions to show">
         <div style={{ marginBottom: '5px' }}>
@@ -140,135 +128,68 @@ export const TransactionListing: FC<TransactionListingProps> = ({ transactions }
     );
   }
 
+  const filteredTransactions = filterTypes.length
+    ? transactions.filter((tx) => filterTypes.includes(tx.tx?.TransactionType || ''))
+    : transactions;
+
   return (
-    <List dense style={{ paddingTop: 0 }}>
-      {tx.map((transaction, index) => (
-        <div key={transaction.tx?.hash ?? index}>
-          <Paper
-            elevation={5}
-            style={{
-              padding: '10px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              marginBottom: '10px',
-              cursor: 'pointer'
-            }}
-            onClick={() => handleClick(index)}
-          >
-            <ListItem>
-              <ListItemIcon>
-                <TransactionIcon />
-              </ListItemIcon>
-              <ListItemText
-                primary={formatTransaction(transaction, wallet.publicAddress)}
-                secondary={transaction.tx?.date ? formatDate(transaction.tx?.date) : undefined}
-              />
-            </ListItem>
-          </Paper>
-          <DialogPage
-            title="Transaction Details"
-            onClose={() => handleClose(index)}
-            open={transaction.touched}
-            data-testid="dialog"
-          >
-            <List sx={{ width: '100%', wordBreak: 'break-word' }}>
-              <ListItem style={{ padding: '8px 24px' }}>
-                <ListItemText primary="Account" secondary={transaction.tx?.Account} />
-              </ListItem>
-              <Divider light />
-              {renderDestinationField(transaction)}
-              <Divider light />
-              <ListItem style={{ padding: '8px 24px' }}>
-                <ListItemText
-                  primary="Transaction"
-                  secondary={formatTransaction(transaction, wallet.publicAddress)}
-                />
-              </ListItem>
-              <Divider light />
-              <ListItem style={{ padding: '8px 24px' }}>
-                <ListItemText primary="Fees" secondary={dropsToXrp(Number(transaction.tx?.Fee))} />
-              </ListItem>
-              <Divider light />
-              <ListItem style={{ padding: '8px 24px' }}>
-                <ListItemText
-                  primary="Date"
-                  secondary={transaction.tx?.date ? formatDate(transaction.tx?.date) : undefined}
-                />
-              </ListItem>
-              <Divider light />
-              {transaction.tx?.Memos?.[0]?.Memo?.MemoData ? (
-                <>
-                  <ListItem style={{ padding: '8px 24px' }}>
-                    <ListItemText
-                      primary="Memo"
-                      secondary={convertHexToString(transaction.tx?.Memos?.[0]?.Memo?.MemoData)}
-                    />
-                  </ListItem>
-                  <Divider light />
-                </>
-              ) : null}
-              {transaction.meta &&
-              typeof transaction.meta === 'object' &&
-              'nftoken_id' in transaction.meta ? (
-                <>
-                  <ListItem style={{ padding: '8px 24px' }}>
-                    <ListItemText
-                      primary="NFT Token ID"
-                      secondary={(transaction.meta as any).nftoken_id}
-                    />
-                  </ListItem>
-                  <Divider light />
-                </>
-              ) : null}
-              {transaction.meta &&
-              typeof transaction.meta === 'object' &&
-              'offer_id' in transaction.meta ? (
-                <>
-                  <ListItem style={{ padding: '8px 24px' }}>
-                    <ListItemText
-                      primary="Offer ID"
-                      secondary={(transaction.meta as any).offer_id}
-                    />
-                  </ListItem>
-                  <Divider light />
-                </>
-              ) : null}
-              <ListItem style={{ padding: '8px 24px' }}>
-                <ListItemText primary="Transaction Hash" secondary={transaction.tx?.hash} />
-              </ListItem>
-              <Divider light />
-              {transaction.tx &&
-              'DestinationTag' in transaction.tx &&
-              transaction.tx?.DestinationTag ? (
-                <>
-                  <ListItem style={{ padding: '8px 24px' }}>
-                    <ListItemText
-                      primary="Destination Tag"
-                      secondary={transaction.tx?.DestinationTag}
-                    />
-                  </ListItem>
-                  <Divider light />
-                </>
-              ) : null}
-              {transaction.tx && 'Flags' in transaction.tx && transaction.tx?.Flags ? (
-                <>
-                  <ListItem style={{ padding: '8px 24px' }}>
-                    <ListItemText primary="Flags" secondary={formatFlagsToNumber(transaction.tx)} />
-                  </ListItem>
-                  <Divider light />
-                </>
-              ) : null}
-              <ListItem style={{ padding: '8px 24px' }}>
-                <ListItemText primary="Ledger Index" secondary={transaction.tx?.ledger_index} />
-              </ListItem>
-              <ListItem style={{ padding: '8px 24px' }}>
-                <ListItemText primary="Sequence" secondary={transaction.tx?.Sequence} />
-              </ListItem>
-            </List>
-          </DialogPage>
-        </div>
-      ))}
-    </List>
+    <>
+      <TransactionFilters
+        transactions={transactions}
+        filterTypes={filterTypes}
+        setFilterTypes={setFilterTypes}
+        dialogOpen={dialogOpen}
+        setDialogOpen={setDialogOpen}
+      />
+      <List dense style={{ paddingTop: 0 }}>
+        {Array.from(groupTransactionsByDate(filteredTransactions)).map(
+          ([date, transactionsForDate]) => (
+            <div key={date}>
+              <Typography
+                style={{ marginTop: '0', marginBottom: '5px', fontSize: '14px', fontWeight: '400' }}
+              >
+                {date}
+              </Typography>
+              {transactionsForDate.map((transaction, index) => (
+                <div key={transaction.tx?.hash ?? index}>
+                  <Paper
+                    elevation={5}
+                    style={{
+                      padding: '10px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      marginBottom: '10px',
+                      cursor: 'pointer'
+                    }}
+                    onClick={() => handleClick(transaction)}
+                  >
+                    <ListItem>
+                      <ListItemIcon>
+                        <TransactionIcon />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={formatTransaction(transaction, wallet.publicAddress)}
+                        secondary={
+                          transaction.tx?.date ? formatDate(transaction.tx?.date) : undefined
+                        }
+                      />
+                    </ListItem>
+                  </Paper>
+                </div>
+              ))}
+            </div>
+          )
+        )}
+      </List>
+      <DialogPage
+        title="Transaction Details"
+        onClose={handleClose}
+        open={openedTx !== null}
+        data-testid="dialog"
+      >
+        <TransactionDetails transaction={openedTx} publicAddress={wallet.publicAddress} />
+      </DialogPage>
+    </>
   );
 };
