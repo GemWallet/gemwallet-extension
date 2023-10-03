@@ -1,7 +1,22 @@
-import { FC, useCallback, useState } from 'react';
+import React, { FC, useCallback, useState } from 'react';
 
+import CloseIcon from '@mui/icons-material/Close';
 import TransactionIcon from '@mui/icons-material/CompareArrows';
-import { Divider, List, ListItem, ListItemIcon, ListItemText, Paper } from '@mui/material';
+import {
+  AppBar,
+  Dialog,
+  Divider,
+  IconButton,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Paper,
+  Slide,
+  Toolbar,
+  Typography
+} from '@mui/material';
+import { TransitionProps } from '@mui/material/transitions';
 import { unix } from 'moment';
 import { convertHexToString, dropsToXrp } from 'xrpl';
 
@@ -9,11 +24,20 @@ import { useWallet } from '../../../contexts';
 import { AccountTransaction, TransactionTypes } from '../../../types';
 import { formatAmount, formatFlagsToNumber } from '../../../utils';
 import { InformationMessage } from '../../molecules';
-import { DialogPage, PageWithSpinner } from '../../templates';
+import { PageWithSpinner } from '../../templates';
 
 export interface TransactionListingProps {
   transactions: AccountTransaction[];
 }
+
+const Transition = React.forwardRef(function Transition(
+  props: TransitionProps & {
+    children: React.ReactElement;
+  },
+  ref: React.Ref<unknown>
+) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 const formatTransaction = (transaction: AccountTransaction, publicAddress: string): string => {
   switch (transaction.tx?.TransactionType) {
@@ -166,12 +190,29 @@ export const TransactionListing: FC<TransactionListingProps> = ({ transactions }
               />
             </ListItem>
           </Paper>
-          <DialogPage
-            title="Transaction Details"
-            onClose={() => handleClose(index)}
+          <Dialog
             open={transaction.touched}
+            TransitionComponent={Transition}
+            fullScreen
             data-testid="dialog"
           >
+            <AppBar sx={{ position: 'relative' }}>
+              <Toolbar>
+                <IconButton
+                  edge="start"
+                  color="inherit"
+                  aria-label="close"
+                  onClick={() => handleClose(index)}
+                  style={{ cursor: 'pointer' }}
+                  data-testid="close-button"
+                >
+                  <CloseIcon />
+                </IconButton>
+                <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="p">
+                  Transaction Details
+                </Typography>
+              </Toolbar>
+            </AppBar>
             <List sx={{ width: '100%', wordBreak: 'break-word' }}>
               <ListItem style={{ padding: '8px 24px' }}>
                 <ListItemText primary="Account" secondary={transaction.tx?.Account} />
@@ -266,7 +307,7 @@ export const TransactionListing: FC<TransactionListingProps> = ({ transactions }
                 <ListItemText primary="Sequence" secondary={transaction.tx?.Sequence} />
               </ListItem>
             </List>
-          </DialogPage>
+          </Dialog>
         </div>
       ))}
     </List>
