@@ -1,6 +1,8 @@
-import { FC, useCallback, useMemo, useState } from 'react';
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { Avatar, Button, Container, Divider, Paper, Typography } from '@mui/material';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { Avatar, Button, Container, IconButton, Paper, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
 
 import {
@@ -29,6 +31,17 @@ export const SignMessage: FC = () => {
   const { hasOfflineBanner } = useNetwork();
   const { setTransactionProgress } = useTransactionProgress();
   const [isParamsMissing, setIsParamsMissing] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpandable, setIsExpandable] = useState(false);
+  const messageBoxRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (messageBoxRef.current && messageBoxRef.current.offsetHeight > 120) {
+      setIsExpandable(true);
+    } else {
+      setIsExpandable(false);
+    }
+  }, []);
 
   const payload = useMemo(() => {
     const queryString = window.location.search;
@@ -149,62 +162,147 @@ export const SignMessage: FC = () => {
   }
 
   return (
-    <Container
-      component="main"
-      style={{
-        ...(hasOfflineBanner ? { position: 'fixed', top: NETWORK_BANNER_HEIGHT } : {}),
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        height: hasOfflineBanner ? `calc(100vh - ${NETWORK_BANNER_HEIGHT}px)` : '100vh',
-        padding: '20px 16px',
-        overflowY: 'auto'
-      }}
-    >
-      <div style={{ display: 'flex', alignItems: 'center' }}>
-        <Avatar src={favicon} sx={{ bgcolor: '#2b2b2b', padding: '5px' }} variant="rounded" />
-        <div style={{ marginLeft: '10px' }}>
-          <Typography
-            variant="h6"
-            component="h1"
-            style={{ fontSize: '1.75rem' }}
-            data-testid="page-title"
-          >
-            Sign Message
-          </Typography>
-          <Typography component="h2" style={{ color: SECONDARY_GRAY }}>
-            {url}
-          </Typography>
+    <>
+      <Container
+        component="main"
+        style={{
+          ...(hasOfflineBanner ? { position: 'fixed', top: NETWORK_BANNER_HEIGHT } : {}),
+          display: 'flex',
+          flexDirection: 'column',
+          paddingTop: '24px',
+          paddingLeft: '18px',
+          paddingRight: '18px',
+          overflowY: 'auto',
+          height: 'auto',
+          paddingBottom: '100px',
+          backgroundColor: '#121212',
+          backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05))'
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <Avatar src={favicon} sx={{ bgcolor: '#2b2b2b', padding: '6px' }} variant="rounded" />
+          <div style={{ marginLeft: '10px' }}>
+            <Typography
+              variant="h6"
+              component="h1"
+              style={{ fontSize: '1.5rem', lineHeight: '1.2' }}
+              data-testid="page-title"
+            >
+              Sign Message
+            </Typography>
+            <Typography
+              component="h2"
+              style={{
+                color: SECONDARY_GRAY,
+                fontSize: '0.9rem',
+                overflow: 'hidden'
+              }}
+            >
+              {url}
+            </Typography>
+          </div>
         </div>
-      </div>
-      <Typography style={{ color: SECONDARY_GRAY }}>
-        Signing this message will prove you have ownership of the selected account.
-      </Typography>
-      <Paper elevation={24} style={{ padding: '10px' }}>
-        <Typography variant="body1">Message:</Typography>
-        <Divider style={{ margin: '10px 0' }} />
-        <div style={{ overflowY: 'scroll', height: '200px' }}>
-          <Typography
-            variant="body2"
-            style={{ color: SECONDARY_GRAY, whiteSpace: 'pre-wrap', overflowWrap: 'break-word' }}
-          >
-            {message}
-          </Typography>
-        </div>
-      </Paper>
-      <div style={{ display: 'flex', justifyContent: 'center', color: SECONDARY_GRAY }}>
-        <Typography variant="body2" align="center">
-          Only sign messages with a website you trust.
+        <Typography style={{ color: SECONDARY_GRAY, marginTop: '20px' }}>
+          Signing this message will prove your ownership of the wallet.
         </Typography>
-      </div>
-      <Container style={{ display: 'flex', justifyContent: 'space-evenly' }}>
-        <Button variant="contained" color="secondary" onClick={handleReject}>
-          Reject
-        </Button>
-        <Button variant="contained" onClick={handleSign}>
-          Sign
-        </Button>
+        <Paper
+          elevation={24}
+          style={{
+            padding: '15px',
+            marginTop: '30px',
+            borderRadius: '15px',
+            backgroundColor: '#000000'
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              marginLeft: isExpandable ? '-12px' : '0'
+            }}
+          >
+            {isExpandable ? (
+              <IconButton onClick={() => setIsExpanded(!isExpanded)}>
+                {isExpanded ? (
+                  <ExpandMoreIcon style={{ fontSize: '20px' }} />
+                ) : (
+                  <ChevronRightIcon style={{ fontSize: '20px' }} />
+                )}
+              </IconButton>
+            ) : null}
+            <Typography variant="body1">Message</Typography>
+          </div>
+          <div
+            ref={messageBoxRef}
+            style={{
+              position: 'relative',
+              overflowY: 'auto',
+              maxHeight: isExpanded ? 'none' : '120px',
+              borderRadius: '10px',
+              paddingBottom: '4px'
+            }}
+          >
+            <Typography
+              variant="body2"
+              style={{
+                color: SECONDARY_GRAY,
+                whiteSpace: 'pre-wrap',
+                overflowWrap: 'break-word',
+                borderRadius: '10px',
+                marginTop: '8px'
+              }}
+            >
+              {message}
+            </Typography>
+            {!isExpanded && isExpandable ? (
+              <div
+                style={{
+                  content: '',
+                  display: 'block',
+                  position: 'absolute',
+                  bottom: '0',
+                  left: '0',
+                  right: '0',
+                  height: '20px',
+                  backgroundImage: 'linear-gradient(to top, rgba(40, 40, 40), rgba(0, 0, 0, 0))'
+                }}
+              />
+            ) : null}
+          </div>
+        </Paper>
       </Container>
-    </Container>
+      <div
+        style={{
+          backgroundColor: '#272727',
+          position: 'fixed',
+          width: '100%',
+          bottom: 0,
+          paddingTop: '10px',
+          paddingBottom: '10px',
+          boxShadow: '0 -2px 15px rgba(0, 0, 0, 0.35)'
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            color: SECONDARY_GRAY,
+            paddingBottom: '10px'
+          }}
+        >
+          <Typography variant="body2" align="center">
+            Only sign messages with a website you trust.
+          </Typography>
+        </div>
+        <Container style={{ display: 'flex', justifyContent: 'space-evenly' }}>
+          <Button variant="contained" color="secondary" onClick={handleReject}>
+            Reject
+          </Button>
+          <Button variant="contained" onClick={handleSign}>
+            Sign
+          </Button>
+        </Container>
+      </div>
+    </>
   );
 };
