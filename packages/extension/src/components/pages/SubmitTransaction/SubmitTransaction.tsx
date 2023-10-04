@@ -197,14 +197,14 @@ export const SubmitTransaction: FC = () => {
                 <TransactionTextDescription text={'Please review the transaction below.'} />
                 <DataCard
                   formattedData={<DisplayXRPLTransaction tx={txParam} />}
-                  dataName={'Transaction'}
+                  dataName={'Transaction details'}
                   isExpanded={isTxExpanded}
                   setIsExpanded={setIsTxExpanded}
                   paddingTop={10}
                 />
                 <DataCard
                   formattedData={<RawTransaction transaction={txParam} />}
-                  dataName={'Full transaction details'}
+                  dataName={'Raw transaction'}
                   isExpanded={isRawTxExpanded}
                   setIsExpanded={setIsRawTxExpanded}
                   thresholdHeight={50}

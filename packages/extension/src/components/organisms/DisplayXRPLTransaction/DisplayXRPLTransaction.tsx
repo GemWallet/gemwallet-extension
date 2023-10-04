@@ -1,6 +1,6 @@
 import { FC } from 'react';
 
-import { Paper, Tooltip, Typography } from '@mui/material';
+import { Tooltip, Typography, TypographyProps } from '@mui/material';
 import { convertHexToString, Transaction } from 'xrpl';
 import { Amount, Memo, Signer } from 'xrpl/dist/npm/models/common';
 import { GlobalFlags } from 'xrpl/dist/npm/models/transactions/common';
@@ -11,122 +11,166 @@ type XRPLTxProps = {
   tx: Transaction;
 };
 
+interface KeyValueDisplayProps {
+  keyName: string;
+  value: string;
+  keyTypographyProps?: TypographyProps;
+  valueTypographyProps?: TypographyProps;
+  hasTooltip?: boolean;
+}
+
+const valueTypoStyle = {
+  marginBottom: '10px'
+};
+
+const KeyValueDisplay: FC<KeyValueDisplayProps> = ({
+  keyName,
+  value,
+  keyTypographyProps,
+  valueTypographyProps,
+  hasTooltip
+}) => (
+  <>
+    <Typography {...keyTypographyProps}>{keyName}:</Typography>
+    {hasTooltip ? (
+      <Tooltip title={value}>
+        <Typography {...valueTypographyProps} style={valueTypoStyle}>
+          <pre style={{ margin: 0, color: 'white', fontFamily: 'Arial, sans-serif' }}>{value}</pre>
+        </Typography>
+      </Tooltip>
+    ) : (
+      <Typography {...valueTypographyProps} style={valueTypoStyle}>
+        <pre style={{ margin: 0, color: 'white', fontFamily: 'Arial, sans-serif' }}>{value}</pre>
+      </Typography>
+    )}
+  </>
+);
+
 export const DisplayXRPLTransaction: FC<XRPLTxProps> = ({ tx }) => {
-  const keyMap: Record<string, (value: any) => JSX.Element | null> = {
-    TransactionType: (value: string) => renderSimpleText('Transaction Type', value),
-    Amount: (value: Amount) => renderAmount('Amount', value),
-    NFTokenID: (value: string) => renderSimpleText('NFT Token ID', value),
-    Destination: (value: string) => renderSimpleText('Destination', value),
-    DestinationTag: (value?: number) => renderSimpleText('Destination Tag', value),
-    Flags: (value?: GlobalFlags) =>
-      value !== undefined ? renderSimpleText('Flags', formatFlags(value)) : null,
-    Memos: (value?: Memo[]) => renderMemos(value),
-    NFTokenOffers: (value: string[]) => renderArray('Offer IDs', value),
-    Signers: (value?: Signer[]) => renderArray('Signers', value),
-    LimitAmount: (value) => renderAmount('Limit Amount', value as Amount),
-    NFTokenSellOffer: (value?: string) =>
-      value !== undefined ? renderSimpleText('NFT Token Sell Offer', value) : null,
-    NFTokenBuyOffer: (value?: string) =>
-      value !== undefined ? renderSimpleText('NFT Token Buy Offer', value) : null,
-    NFTokenBrokerFee: (value?: Amount) =>
-      value !== undefined ? renderAmount('NFT Token Broker Fee', value) : null,
-    NFTokenMinter: (value?: string) =>
-      value !== undefined ? renderSimpleText('NFT Token Minter', value) : null,
-    URI: (value?: string | null) =>
-      value !== undefined
-        ? renderSimpleText('URI', value ? convertHexToString(value as string) : '', true)
-        : null,
-    Fee: () => null, // Fee is rendered in the BaseTransaction component
-    TakerGets: (value: Amount) => renderAmount('Taker Gets', value),
-    TakerPays: (value: Amount) => renderAmount('Taker Pays', value),
-    TransferFee: (value?: number) =>
-      renderSimpleText('Transfer Fee', value ? `${formatTransferFee(value)}%` : '')
+  const largeValueTypoStyle = {
+    fontSize: '1.2rem'
   };
 
-  const renderSimpleText = (title: string, value: any, tooltip?: boolean): JSX.Element | null => {
+  const keyMap: Record<string, (value: any) => JSX.Element | null> = {
+    TransactionType: (value: string) =>
+      renderSimpleText({
+        title: 'Transaction Type',
+        value,
+        valueTypographyProps: largeValueTypoStyle
+      }),
+    Amount: (value: Amount) =>
+      renderAmount({
+        title: 'Amount',
+        value,
+        valueTypographyProps: largeValueTypoStyle
+      }),
+    Account: (value: string) => renderSimpleText({ title: 'Account', value, hasTooltip: true }),
+    NFTokenID: (value: string) => renderSimpleText({ title: 'NFT Token ID', value }),
+    Destination: (value: string) =>
+      renderSimpleText({ title: 'Destination', value, hasTooltip: true }),
+    DestinationTag: (value?: number) => renderSimpleText({ title: 'Destination Tag', value }),
+    Flags: (value?: GlobalFlags) =>
+      value !== undefined ? renderSimpleText({ title: 'Flags', value: formatFlags(value) }) : null,
+    Memos: (value?: Memo[]) => renderMemos(value),
+    NFTokenOffers: (value: string[]) => renderArray({ title: 'Offer IDs', value }),
+    Signers: (value?: Signer[]) => renderArray({ title: 'Signers', value }),
+    LimitAmount: (value) => renderAmount({ title: 'Limit Amount', value: value as Amount }),
+    NFTokenSellOffer: (value?: string) =>
+      value !== undefined ? renderSimpleText({ title: 'NFT Token Sell Offer', value }) : null,
+    NFTokenBuyOffer: (value?: string) =>
+      value !== undefined ? renderSimpleText({ title: 'NFT Token Buy Offer', value }) : null,
+    NFTokenBrokerFee: (value?: Amount) =>
+      value !== undefined ? renderAmount({ title: 'NFT Token Broker Fee', value }) : null,
+    NFTokenMinter: (value?: string) =>
+      value !== undefined ? renderSimpleText({ title: 'NFT Token Minter', value }) : null,
+    URI: (value?: string | null) =>
+      value !== undefined
+        ? renderSimpleText({
+            title: 'URI',
+            value: value ? convertHexToString(value as string) : '',
+            hasTooltip: true
+          })
+        : null,
+    Fee: () => null, // Fee is rendered in the BaseTransaction component
+    TakerGets: (value: Amount) => renderAmount({ title: 'Taker Gets', value }),
+    TakerPays: (value: Amount) => renderAmount({ title: 'Taker Pays', value }),
+    TransferFee: (value?: number) =>
+      renderSimpleText({
+        title: 'Transfer Fee',
+        value: value ? `${formatTransferFee(value)}%` : ''
+      })
+  };
+
+  const renderSimpleText = (params: {
+    title: string;
+    value: any;
+    hasTooltip?: boolean;
+    valueTypographyProps?: TypographyProps;
+  }): JSX.Element | null => {
+    const { title, value, hasTooltip, valueTypographyProps } = params;
+
     if (value === undefined) {
       return null;
     }
-    const strValue = String(value);
-    const typo = (
-      <Typography
-        variant="body2"
-        style={{
-          whiteSpace: 'nowrap',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          maxWidth: '100%'
-        }}
-      >
-        <pre style={{ margin: 0 }}>{strValue}</pre>
-      </Typography>
-    );
+
     return (
-      <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-        <Typography variant="body1">{title}:</Typography>
-        {tooltip ? <Tooltip title={strValue}>{typo}</Tooltip> : typo}
-      </Paper>
+      <KeyValueDisplay
+        keyName={title}
+        value={String(value)}
+        hasTooltip={hasTooltip}
+        valueTypographyProps={valueTypographyProps}
+      />
     );
   };
 
-  const renderAmount = (title: string, value: Amount) => (
-    <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-      <Typography variant="body1">{title}:</Typography>
-      <Typography variant="h6" component="h1" align="right">
-        {formatAmount(value)}
-      </Typography>
-    </Paper>
-  );
+  const renderAmount = (params: {
+    title: string;
+    value: Amount;
+    valueTypographyProps?: TypographyProps;
+  }) => {
+    const { title, value, valueTypographyProps } = params;
+
+    return (
+      <KeyValueDisplay
+        keyName={title}
+        value={formatAmount(value)}
+        valueTypographyProps={valueTypographyProps}
+      />
+    );
+  };
 
   const renderMemos = (memos?: Memo[]) => {
-    if (memos === undefined) {
+    if (memos === undefined || memos.length === 0) {
       return null;
     }
+
     return (
-      <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-        <Typography variant="body1">Memos:</Typography>
-        {memos.map((memo, index) => (
-          <div key={index} style={{ marginBottom: index === memos.length - 1 ? 0 : '8px' }}>
-            <Typography
-              variant="body2"
-              style={{
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                maxWidth: '100%'
-              }}
-            >
-              {memo.Memo.MemoData
-                ? Buffer.from(memo.Memo.MemoData, 'hex').toString('utf8')
-                : memo.Memo.MemoData}
-            </Typography>
-          </div>
-        ))}
-      </Paper>
+      <>
+        {memos.map((memo, index) => {
+          const memoData = memo.Memo.MemoData
+            ? Buffer.from(memo.Memo.MemoData, 'hex').toString('utf8')
+            : memo.Memo.MemoData;
+
+          return (
+            <KeyValueDisplay key={index} keyName={`Memo ${index + 1}`} value={memoData || ''} />
+          );
+        })}
+      </>
     );
   };
 
-  const renderArray = (title: string, value: unknown) => {
+  const renderArray = (params: { title: string; value: unknown }) => {
+    const { title, value } = params;
+
     if (!Array.isArray(value)) {
-      return renderSimpleText(title, JSON.stringify(value));
+      return renderSimpleText({ title, value: JSON.stringify(value) });
     }
 
     return (
-      <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-        <Typography variant="body1">{title}:</Typography>
-        {value.map((offer, index) => (
-          <div key={index} style={{ marginBottom: index === value.length - 1 ? 0 : '8px' }}>
-            <Typography
-              variant="body2"
-              style={{
-                wordBreak: 'break-word'
-              }}
-            >
-              {offer}
-            </Typography>
-          </div>
-        ))}
-      </Paper>
+      <KeyValueDisplay
+        keyName={title}
+        value={value.map((offer) => JSON.stringify(offer)).join(', ')}
+      />
     );
   };
 
@@ -181,14 +225,7 @@ export const DisplayXRPLTransaction: FC<XRPLTxProps> = ({ tx }) => {
         displayValue = String(value);
       }
 
-      return (
-        <Paper key={key} elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-          <Typography variant="body1">{key}:</Typography>
-          <Typography variant="body2">
-            <pre style={{ margin: 0 }}>{displayValue}</pre>
-          </Typography>
-        </Paper>
-      );
+      return <KeyValueDisplay keyName={key} value={displayValue} />;
     });
   };
 
