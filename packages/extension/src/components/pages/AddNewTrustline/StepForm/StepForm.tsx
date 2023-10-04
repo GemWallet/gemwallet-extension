@@ -70,10 +70,20 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
   const handleLimitChange = useCallback((e: FocusEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
     const isNegative = Number(inputValue) < 0;
+    const isValidNumber = /^\d*\.?\d*$/.test(inputValue);
+    const [, fractionalPart] = inputValue.split('.');
 
-    if (inputValue !== '' && !isNegative && !Number.isNaN(Number(inputValue))) {
+    if (
+      inputValue !== '' &&
+      !isNegative &&
+      isValidNumber &&
+      (fractionalPart === undefined ||
+        (/^\d*\.?\d*$/.test(fractionalPart) && fractionalPart.length <= 6))
+    ) {
       setErrorLimit('');
       setLimit(inputValue);
+    } else if (/^\d*\.?\d*$/.test(fractionalPart) && fractionalPart.length > 6) {
+      setErrorLimit('Fractional part should have at most 6 digits');
     } else {
       setErrorLimit(isNegative ? 'The limit cannot be a negative number' : 'Invalid input');
     }
