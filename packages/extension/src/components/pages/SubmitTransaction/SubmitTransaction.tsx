@@ -1,8 +1,6 @@
 import { FC, useCallback, useEffect, useState } from 'react';
 
-import ErrorIcon from '@mui/icons-material/Error';
-import { Paper, Typography } from '@mui/material';
-import ReactJson from 'react-json-view';
+import { Container } from '@mui/material';
 import { Transaction } from 'xrpl';
 
 import {
@@ -12,7 +10,7 @@ import {
   ResponseType
 } from '@gemwallet/constants';
 
-import { ERROR_RED } from '../../../constants';
+import { NETWORK_BANNER_HEIGHT } from '../../../constants';
 import {
   TransactionProgressStatus,
   useLedger,
@@ -23,10 +21,11 @@ import { useFees, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
 import { parseTransactionParam } from '../../../utils';
 import { serializeError } from '../../../utils/errors';
-import { ActionButtons } from '../../molecules';
+import { TransactionTextDescription } from '../../atoms';
+import { ActionButtons, InsufficientFundsWarning, TransactionHeader } from '../../molecules';
+import { RawTransaction } from '../../molecules/RawTransaction';
 import { Fee } from '../../organisms';
 import DisplayXRPLTransaction from '../../organisms/DisplayXRPLTransaction/DisplayXRPLTransaction';
-import { PageWithTitle } from '../../templates';
 
 interface Params {
   id: number;
@@ -44,7 +43,7 @@ export const SubmitTransaction: FC = () => {
   const [isParamsMissing, setIsParamsMissing] = useState(false);
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
   const { submitTransaction } = useLedger();
-  const { networkName } = useNetwork();
+  const { networkName, hasOfflineBanner } = useNetwork();
   const { setTransactionProgress } = useTransactionProgress();
   const { estimatedFees, errorFees, difference } = useFees(
     params.txParam ?? {
@@ -159,63 +158,44 @@ export const SubmitTransaction: FC = () => {
 
   return (
     <>
-      <style>{`
-        .react-json-view .string-value {
-          white-space: pre-wrap; /* allow text to break onto the next line */
-          word-break: break-all; /* break long strings */
-        }
-      `}</style>
       {transactionStatusComponent ? (
         <div>{transactionStatusComponent}</div>
       ) : (
-        <PageWithTitle
-          title="Confirm Transaction"
-          styles={{ container: { justifyContent: 'initial' } }}
-        >
-          <div style={{ marginBottom: '40px' }}>
-            {!hasEnoughFunds ? (
-              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                <ErrorIcon style={{ color: ERROR_RED }} />
-                <Typography variant="body1" style={{ marginLeft: '10px', color: ERROR_RED }}>
-                  Insufficient funds.
-                </Typography>
-              </div>
-            ) : null}
-            {txParam ? (
-              <div style={{ marginTop: '5px', marginBottom: '15px' }}>
-                <Typography variant="body2" color="textSecondary" style={{ marginTop: '5px' }}>
-                  Please review the transaction below.
-                </Typography>
-              </div>
-            ) : null}
-            {txParam?.Account ? <DisplayXRPLTransaction tx={txParam} /> : null}
+        <>
+          <Container
+            component="main"
+            style={{
+              ...(hasOfflineBanner ? { position: 'fixed', top: NETWORK_BANNER_HEIGHT } : {}),
+              display: 'flex',
+              flexDirection: 'column',
+              paddingTop: '24px',
+              paddingLeft: '18px',
+              paddingRight: '18px',
+              overflowY: 'auto',
+              height: 'auto',
+              paddingBottom: '80px',
+              backgroundColor: '#121212',
+              backgroundImage:
+                'linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05))'
+            }}
+          >
+            <TransactionHeader title={'Submit Transaction'} />
+            <InsufficientFundsWarning hasEnoughFunds={hasEnoughFunds} />
             {txParam?.Account ? (
-              <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-                <Typography variant="body1">Raw Transaction:</Typography>
-                <ReactJson
-                  src={txParam}
-                  theme="summerfruit"
-                  name={null}
-                  enableClipboard={false}
-                  collapsed={false}
-                  shouldCollapse={false}
-                  onEdit={false}
-                  onAdd={false}
-                  onDelete={false}
-                  displayDataTypes={false}
-                  displayObjectSize={false}
-                  indentWidth={2}
+              <>
+                <TransactionTextDescription text={'Please review the transaction below.'} />
+                <DisplayXRPLTransaction tx={txParam} />
+                <RawTransaction transaction={txParam} />
+                <Fee
+                  errorFees={errorFees}
+                  estimatedFees={estimatedFees}
+                  fee={txParam?.Fee ? Number(txParam?.Fee) : null}
                 />
-              </Paper>
+              </>
             ) : null}
-            <Fee
-              errorFees={errorFees}
-              estimatedFees={estimatedFees}
-              fee={txParam?.Fee ? Number(txParam?.Fee) : null}
-            />
-          </div>
+          </Container>
           <ActionButtons onClickReject={handleReject} onClickApprove={handleConfirm} />
-        </PageWithTitle>
+        </>
       )}
     </>
   );
