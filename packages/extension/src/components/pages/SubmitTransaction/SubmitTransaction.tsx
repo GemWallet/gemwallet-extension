@@ -22,7 +22,12 @@ import { TransactionStatus } from '../../../types';
 import { parseTransactionParam } from '../../../utils';
 import { serializeError } from '../../../utils/errors';
 import { TransactionTextDescription } from '../../atoms';
-import { ActionButtons, InsufficientFundsWarning, TransactionHeader } from '../../molecules';
+import {
+  ActionButtons,
+  DataCard,
+  InsufficientFundsWarning,
+  TransactionHeader
+} from '../../molecules';
 import { RawTransaction } from '../../molecules/RawTransaction';
 import { Fee } from '../../organisms';
 import DisplayXRPLTransaction from '../../organisms/DisplayXRPLTransaction/DisplayXRPLTransaction';
@@ -42,6 +47,12 @@ export const SubmitTransaction: FC = () => {
   const [errorRequestRejection, setErrorRequestRejection] = useState<Error>();
   const [isParamsMissing, setIsParamsMissing] = useState(false);
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
+  const [isTxExpanded, setIsTxExpanded] = useState(false);
+  // const [isTxExpandable, setIsTxExpandable] = useState(false);
+  const [isRawTxExpanded, setIsRawTxExpanded] = useState(false);
+  // const [isRawTxExpandable, setIsRawTxExpandable] = useState(false);
+  const [isFeeExpanded, setIsFeeExpanded] = useState(false);
+  // const [isFeeExpandable, setIsFeeExpandable] = useState(false);
   const { submitTransaction } = useLedger();
   const { networkName, hasOfflineBanner } = useNetwork();
   const { setTransactionProgress } = useTransactionProgress();
@@ -184,12 +195,32 @@ export const SubmitTransaction: FC = () => {
             {txParam?.Account ? (
               <>
                 <TransactionTextDescription text={'Please review the transaction below.'} />
-                <DisplayXRPLTransaction tx={txParam} />
-                <RawTransaction transaction={txParam} />
-                <Fee
-                  errorFees={errorFees}
-                  estimatedFees={estimatedFees}
-                  fee={txParam?.Fee ? Number(txParam?.Fee) : null}
+                <DataCard
+                  formattedData={<DisplayXRPLTransaction tx={txParam} />}
+                  dataName={'Transaction'}
+                  isExpanded={isTxExpanded}
+                  setIsExpanded={setIsTxExpanded}
+                  paddingTop={10}
+                />
+                <DataCard
+                  formattedData={<RawTransaction transaction={txParam} />}
+                  dataName={'Full transaction details'}
+                  isExpanded={isRawTxExpanded}
+                  setIsExpanded={setIsRawTxExpanded}
+                  thresholdHeight={50}
+                  paddingTop={10}
+                />
+                <DataCard
+                  formattedData={
+                    <Fee
+                      errorFees={errorFees}
+                      estimatedFees={estimatedFees}
+                      fee={txParam?.Fee ? Number(txParam?.Fee) : null}
+                    />
+                  }
+                  isExpanded={isFeeExpanded}
+                  setIsExpanded={setIsFeeExpanded}
+                  paddingTop={10}
                 />
               </>
             ) : null}

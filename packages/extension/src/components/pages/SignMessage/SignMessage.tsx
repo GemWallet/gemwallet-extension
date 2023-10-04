@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FC, useCallback, useMemo, useState } from 'react';
 
 import { Container } from '@mui/material';
 import * as Sentry from '@sentry/react';
@@ -32,16 +32,6 @@ export const SignMessage: FC = () => {
   const { setTransactionProgress } = useTransactionProgress();
   const [isParamsMissing, setIsParamsMissing] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [isExpandable, setIsExpandable] = useState(false);
-  const messageBoxRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (messageBoxRef.current && messageBoxRef.current.offsetHeight > 120) {
-      setIsExpandable(true);
-    } else {
-      setIsExpandable(false);
-    }
-  }, []);
 
   const payload = useMemo(() => {
     const queryString = window.location.search;
@@ -186,7 +176,6 @@ export const SignMessage: FC = () => {
         <DataCard
           formattedData={message}
           dataName={'Message'}
-          isExpandable={isExpandable}
           isExpanded={isExpanded}
           setIsExpanded={setIsExpanded}
         />
