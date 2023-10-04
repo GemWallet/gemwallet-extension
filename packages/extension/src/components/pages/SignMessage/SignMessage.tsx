@@ -2,7 +2,7 @@ import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Avatar, Button, Container, Grid, IconButton, Paper, Typography } from '@mui/material';
+import { Avatar, Container, IconButton, Paper, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
 
 import {
@@ -23,9 +23,8 @@ import {
 } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
 import { serializeError } from '../../../utils/errors';
+import { ActionButtons } from '../../molecules';
 import { AsyncTransaction } from '../../templates';
-
-const BUTTONS_SIZE = '150px';
 
 export const SignMessage: FC = () => {
   const { signMessage } = useLedger();
@@ -273,49 +272,11 @@ export const SignMessage: FC = () => {
           </div>
         </Paper>
       </Container>
-      <div
-        style={{
-          backgroundColor: '#272727',
-          position: 'fixed',
-          width: '100%',
-          bottom: 0,
-          paddingTop: '10px',
-          paddingBottom: '10px',
-          boxShadow: '0 -2px 15px rgba(0, 0, 0, 0.35)'
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            color: SECONDARY_GRAY,
-            paddingBottom: '10px'
-          }}
-        >
-          <Typography variant="body2" align="center">
-            Only sign messages with a website you trust.
-          </Typography>
-        </div>
-        <Container>
-          <Grid container spacing={2} justifyContent="center">
-            <Grid item>
-              <Button
-                variant="contained"
-                color="secondary"
-                onClick={handleReject}
-                style={{ minWidth: BUTTONS_SIZE }}
-              >
-                Reject
-              </Button>
-            </Grid>
-            <Grid item>
-              <Button variant="contained" onClick={handleSign} style={{ minWidth: BUTTONS_SIZE }}>
-                Sign
-              </Button>
-            </Grid>
-          </Grid>
-        </Container>
-      </div>
+      <ActionButtons
+        onClickReject={handleReject}
+        onClickApprove={handleSign}
+        headerText={'Only sign messages with a website you trust.'}
+      />
     </>
   );
 };
