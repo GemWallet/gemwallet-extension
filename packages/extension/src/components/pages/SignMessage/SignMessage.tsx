@@ -1,6 +1,6 @@
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { Container, Typography } from '@mui/material';
+import { Container } from '@mui/material';
 import * as Sentry from '@sentry/react';
 
 import {
@@ -11,7 +11,7 @@ import {
   ResponseType
 } from '@gemwallet/constants';
 
-import { NETWORK_BANNER_HEIGHT, SECONDARY_GRAY } from '../../../constants';
+import { NETWORK_BANNER_HEIGHT } from '../../../constants';
 import {
   TransactionProgressStatus,
   useBrowser,
@@ -21,7 +21,8 @@ import {
 } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
 import { serializeError } from '../../../utils/errors';
-import { ActionButtons, DAppInfosHeader, DataCard } from '../../molecules';
+import { TransactionTextDescription } from '../../atoms';
+import { ActionButtons, TransactionHeader, DataCard } from '../../molecules';
 import { AsyncTransaction } from '../../templates';
 
 export const SignMessage: FC = () => {
@@ -178,10 +179,10 @@ export const SignMessage: FC = () => {
           backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05))'
         }}
       >
-        <DAppInfosHeader title={'Sign Message'} favicon={favicon} url={url} />
-        <Typography style={{ color: SECONDARY_GRAY, marginTop: '20px' }}>
-          Signing this message will prove your ownership of the wallet.
-        </Typography>
+        <TransactionHeader title={'Sign Message'} favicon={favicon} url={url} />
+        <TransactionTextDescription
+          text={'Signing this message will prove your ownership of the wallet.'}
+        />
         <DataCard
           formattedData={message}
           dataName={'Message'}
