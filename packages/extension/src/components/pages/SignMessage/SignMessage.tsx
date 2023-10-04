@@ -1,6 +1,6 @@
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { Avatar, Container, Typography } from '@mui/material';
+import { Container, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
 
 import {
@@ -21,7 +21,7 @@ import {
 } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
 import { serializeError } from '../../../utils/errors';
-import { ActionButtons, DataCard } from '../../molecules';
+import { ActionButtons, DAppInfosHeader, DataCard } from '../../molecules';
 import { AsyncTransaction } from '../../templates';
 
 export const SignMessage: FC = () => {
@@ -178,29 +178,7 @@ export const SignMessage: FC = () => {
           backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05))'
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <Avatar src={favicon} sx={{ bgcolor: '#2b2b2b', padding: '6px' }} variant="rounded" />
-          <div style={{ marginLeft: '10px' }}>
-            <Typography
-              variant="h6"
-              component="h1"
-              style={{ fontSize: '1.5rem', lineHeight: '1.2' }}
-              data-testid="page-title"
-            >
-              Sign Message
-            </Typography>
-            <Typography
-              component="h2"
-              style={{
-                color: SECONDARY_GRAY,
-                fontSize: '0.9rem',
-                overflow: 'hidden'
-              }}
-            >
-              {url}
-            </Typography>
-          </div>
-        </div>
+        <DAppInfosHeader title={'Sign Message'} favicon={favicon} url={url} />
         <Typography style={{ color: SECONDARY_GRAY, marginTop: '20px' }}>
           Signing this message will prove your ownership of the wallet.
         </Typography>

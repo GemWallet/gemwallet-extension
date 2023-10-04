@@ -1,7 +1,7 @@
 import { FC, useCallback, useEffect, useState } from 'react';
 
 import ErrorIcon from '@mui/icons-material/Error';
-import { Button, Container, Paper, Typography } from '@mui/material';
+import { Paper, Typography } from '@mui/material';
 import ReactJson from 'react-json-view';
 import { Transaction } from 'xrpl';
 
@@ -23,6 +23,7 @@ import { useFees, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
 import { parseTransactionParam } from '../../../utils';
 import { serializeError } from '../../../utils/errors';
+import { ActionButtons } from '../../molecules';
 import { Fee } from '../../organisms';
 import DisplayXRPLTransaction from '../../organisms/DisplayXRPLTransaction/DisplayXRPLTransaction';
 import { PageWithTitle } from '../../templates';
@@ -213,26 +214,7 @@ export const SubmitTransaction: FC = () => {
               fee={txParam?.Fee ? Number(txParam?.Fee) : null}
             />
           </div>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              position: 'fixed',
-              bottom: 0,
-              left: 0,
-              right: 0,
-              backgroundColor: '#1d1d1d'
-            }}
-          >
-            <Container style={{ display: 'flex', justifyContent: 'space-evenly', margin: '10px' }}>
-              <Button variant="contained" color="secondary" onClick={handleReject}>
-                Reject
-              </Button>
-              <Button variant="contained" onClick={handleConfirm} disabled={!hasEnoughFunds}>
-                Confirm
-              </Button>
-            </Container>
-          </div>
+          <ActionButtons onClickReject={handleReject} onClickApprove={handleConfirm} />
         </PageWithTitle>
       )}
     </>
