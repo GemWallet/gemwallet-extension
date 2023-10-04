@@ -188,7 +188,7 @@ export const SubmitTransaction: FC = () => {
               <>
                 <TransactionTextDescription text={'Please review the transaction below.'} />
                 <DataCard
-                  formattedData={<DisplayXRPLTransaction tx={txParam} />}
+                  formattedData={<DisplayXRPLTransaction tx={txParam} useLegacy={false} />}
                   dataName={'Transaction details'}
                   isExpanded={isTxExpanded}
                   setIsExpanded={setIsTxExpanded}
