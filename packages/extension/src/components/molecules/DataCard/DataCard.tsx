@@ -65,7 +65,7 @@ export const DataCard: FC<DataCardProps> = ({
         ref={messageBoxRef}
         style={{
           position: 'relative',
-          overflowY: 'auto',
+          overflowY: isExpanded ? 'auto' : 'hidden',
           maxHeight: isExpanded ? 'none' : `${thresholdHeight}px`,
           borderRadius: '10px',
           paddingBottom: '4px'
