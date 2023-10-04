@@ -1,4 +1,5 @@
 export * from './ActionButtons';
+export * from './DataCard';
 export * from './InformationMessage';
 export * from './NetworkIndicator';
 export * from './NFTCard';

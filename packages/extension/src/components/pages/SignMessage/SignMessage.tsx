@@ -1,8 +1,6 @@
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Avatar, Container, IconButton, Paper, Typography } from '@mui/material';
+import { Avatar, Container, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
 
 import {
@@ -23,7 +21,7 @@ import {
 } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
 import { serializeError } from '../../../utils/errors';
-import { ActionButtons } from '../../molecules';
+import { ActionButtons, DataCard } from '../../molecules';
 import { AsyncTransaction } from '../../templates';
 
 export const SignMessage: FC = () => {
@@ -206,71 +204,13 @@ export const SignMessage: FC = () => {
         <Typography style={{ color: SECONDARY_GRAY, marginTop: '20px' }}>
           Signing this message will prove your ownership of the wallet.
         </Typography>
-        <Paper
-          elevation={24}
-          style={{
-            padding: '15px',
-            marginTop: '30px',
-            borderRadius: '15px',
-            backgroundColor: '#000000'
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              marginLeft: isExpandable ? '-12px' : '0'
-            }}
-          >
-            {isExpandable ? (
-              <IconButton onClick={() => setIsExpanded(!isExpanded)}>
-                {isExpanded ? (
-                  <ExpandMoreIcon style={{ fontSize: '20px' }} />
-                ) : (
-                  <ChevronRightIcon style={{ fontSize: '20px' }} />
-                )}
-              </IconButton>
-            ) : null}
-            <Typography variant="body1">Message</Typography>
-          </div>
-          <div
-            ref={messageBoxRef}
-            style={{
-              position: 'relative',
-              overflowY: 'auto',
-              maxHeight: isExpanded ? 'none' : '120px',
-              borderRadius: '10px',
-              paddingBottom: '4px'
-            }}
-          >
-            <Typography
-              variant="body2"
-              style={{
-                color: SECONDARY_GRAY,
-                whiteSpace: 'pre-wrap',
-                overflowWrap: 'break-word',
-                borderRadius: '10px',
-                marginTop: '8px'
-              }}
-            >
-              {message}
-            </Typography>
-            {!isExpanded && isExpandable ? (
-              <div
-                style={{
-                  content: '',
-                  display: 'block',
-                  position: 'absolute',
-                  bottom: '0',
-                  left: '0',
-                  right: '0',
-                  height: '20px',
-                  backgroundImage: 'linear-gradient(to top, rgba(40, 40, 40), rgba(0, 0, 0, 0))'
-                }}
-              />
-            ) : null}
-          </div>
-        </Paper>
+        <DataCard
+          formattedData={message}
+          dataName={'Message'}
+          isExpandable={isExpandable}
+          isExpanded={isExpanded}
+          setIsExpanded={setIsExpanded}
+        />
       </Container>
       <ActionButtons
         onClickReject={handleReject}
