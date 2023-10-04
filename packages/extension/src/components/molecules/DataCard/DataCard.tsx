@@ -71,18 +71,20 @@ export const DataCard: FC<DataCardProps> = ({
           paddingBottom: '4px'
         }}
       >
-        <Typography
-          variant="body2"
+        <pre
           style={{
             color: SECONDARY_GRAY,
             whiteSpace: 'pre-wrap',
             overflowWrap: 'break-word',
             borderRadius: '10px',
-            marginTop: '8px'
+            marginTop: '8px',
+            marginBottom: '0',
+            fontFamily: 'inherit', // To keep the font consistent with the rest of the design
+            fontSize: '15px'
           }}
         >
           {formattedData}
-        </Typography>
+        </pre>
         {!isExpanded && isExpandable ? (
           <div
             style={{
