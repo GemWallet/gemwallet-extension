@@ -48,21 +48,13 @@ export const SubmitTransaction: FC = () => {
   const [isParamsMissing, setIsParamsMissing] = useState(false);
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
   const [isTxExpanded, setIsTxExpanded] = useState(false);
-  // const [isTxExpandable, setIsTxExpandable] = useState(false);
   const [isRawTxExpanded, setIsRawTxExpanded] = useState(false);
-  // const [isRawTxExpandable, setIsRawTxExpandable] = useState(false);
   const [isFeeExpanded, setIsFeeExpanded] = useState(false);
-  // const [isFeeExpandable, setIsFeeExpandable] = useState(false);
   const { submitTransaction } = useLedger();
   const { networkName, hasOfflineBanner } = useNetwork();
   const { setTransactionProgress } = useTransactionProgress();
   const { estimatedFees, errorFees, difference } = useFees(
-    params.txParam ?? {
-      TransactionType: 'Payment',
-      Account: '',
-      Destination: '',
-      Amount: ''
-    },
+    params.txParam ?? [],
     params.txParam?.Fee ?? null
   );
 

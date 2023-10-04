@@ -13,7 +13,9 @@ export const InsufficientFundsWarning: FC<InsufficientFundsWarningProps> = ({ ha
   if (hasEnoughFunds) return null;
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+    <div
+      style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '10px' }}
+    >
       <ErrorIcon style={{ color: ERROR_RED }} />
       <Typography variant="body1" style={{ marginLeft: '10px', color: ERROR_RED }}>
         Insufficient funds.
