@@ -39,6 +39,7 @@ type FeeProps = {
   errorFees: string | undefined;
   estimatedFees: string;
   isBulk?: boolean;
+  useLegacy?: boolean;
 };
 
 export const BaseTransaction: FC<BaseTransactionProps> = ({
@@ -81,36 +82,72 @@ export const BaseTransaction: FC<BaseTransactionProps> = ({
   </>
 );
 
-export const Fee: FC<FeeProps> = ({ errorFees, estimatedFees, fee, isBulk }) => (
-  <>
-    <Typography variant="body1" style={{ display: 'flex', alignItems: 'center' }}>
-      <Tooltip
-        title={
-          isBulk
-            ? 'These are the total fees to submit all the transactions over the network'
-            : 'These are the fees to submit the transaction over the network'
-        }
-      >
-        <IconButton size="small">
-          <ErrorIcon />
-        </IconButton>
-      </Tooltip>
-      {isBulk ? `Total network fees` : `Network fees`}:
-    </Typography>
-    <Typography variant="body2" gutterBottom align="right">
-      {errorFees ? (
-        <Typography variant="caption" style={{ color: ERROR_RED }}>
-          {errorFees}
+export const Fee: FC<FeeProps> = ({ errorFees, estimatedFees, fee, isBulk, useLegacy = true }) => {
+  if (useLegacy) {
+    return (
+      <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
+        <Typography variant="body1" style={{ display: 'flex', alignItems: 'center' }}>
+          <Tooltip
+            title={
+              isBulk
+                ? 'These are the total fees to submit all the transactions over the network'
+                : 'These are the fees to submit the transaction over the network'
+            }
+          >
+            <IconButton size="small">
+              <ErrorIcon />
+            </IconButton>
+          </Tooltip>
+          {isBulk ? `Total network fees` : `Network fees`}:
         </Typography>
-      ) : estimatedFees === DEFAULT_FEES ? (
-        <TileLoader secondLineOnly />
-      ) : fee ? (
-        formatToken(fee, 'XRP (manual)', true)
-      ) : (
-        formatAmount(estimatedFees)
-      )}
-    </Typography>
-  </>
-);
+        <Typography variant="body2" gutterBottom align="right">
+          {errorFees ? (
+            <Typography variant="caption" style={{ color: ERROR_RED }}>
+              {errorFees}
+            </Typography>
+          ) : estimatedFees === DEFAULT_FEES ? (
+            <TileLoader secondLineOnly />
+          ) : fee ? (
+            formatToken(fee, 'XRP (manual)', true)
+          ) : (
+            formatAmount(estimatedFees)
+          )}
+        </Typography>
+      </Paper>
+    );
+  }
+
+  return (
+    <>
+      <Typography variant="body1" style={{ display: 'flex', alignItems: 'center' }}>
+        <Tooltip
+          title={
+            isBulk
+              ? 'These are the total fees to submit all the transactions over the network'
+              : 'These are the fees to submit the transaction over the network'
+          }
+        >
+          <IconButton size="small">
+            <ErrorIcon />
+          </IconButton>
+        </Tooltip>
+        {isBulk ? `Total network fees` : `Network fees`}:
+      </Typography>
+      <Typography variant="body2" gutterBottom align="right">
+        {errorFees ? (
+          <Typography variant="caption" style={{ color: ERROR_RED }}>
+            {errorFees}
+          </Typography>
+        ) : estimatedFees === DEFAULT_FEES ? (
+          <TileLoader secondLineOnly />
+        ) : fee ? (
+          formatToken(fee, 'XRP (manual)', true)
+        ) : (
+          formatAmount(estimatedFees)
+        )}
+      </Typography>
+    </>
+  );
+};
 
 export default BaseTransaction;

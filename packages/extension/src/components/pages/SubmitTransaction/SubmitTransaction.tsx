@@ -216,6 +216,7 @@ export const SubmitTransaction: FC = () => {
                       errorFees={errorFees}
                       estimatedFees={estimatedFees}
                       fee={txParam?.Fee ? Number(txParam?.Fee) : null}
+                      useLegacy={false}
                     />
                   }
                   isExpanded={isFeeExpanded}
