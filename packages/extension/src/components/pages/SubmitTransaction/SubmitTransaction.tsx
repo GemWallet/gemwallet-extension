@@ -218,7 +218,12 @@ export const SubmitTransaction: FC = () => {
               </>
             ) : null}
           </Container>
-          <ActionButtons onClickReject={handleReject} onClickApprove={handleConfirm} />
+          <ActionButtons
+            onClickReject={handleReject}
+            onClickApprove={handleConfirm}
+            approveButtonText={'Submit'}
+            isApproveEnabled={hasEnoughFunds}
+          />
         </>
       )}
     </>

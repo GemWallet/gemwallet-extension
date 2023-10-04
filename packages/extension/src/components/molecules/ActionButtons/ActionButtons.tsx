@@ -10,12 +10,16 @@ interface ActionButtonsProps {
   onClickApprove: () => void;
   onClickReject: () => void;
   headerText?: string;
+  isApproveEnabled?: boolean;
+  approveButtonText?: string;
 }
 
 export const ActionButtons: FC<ActionButtonsProps> = ({
   onClickApprove,
   onClickReject,
-  headerText
+  headerText,
+  isApproveEnabled = true,
+  approveButtonText = 'Sign'
 }) => {
   const buttonStyle = {
     minWidth: BUTTONS_WIDTH,
@@ -61,8 +65,13 @@ export const ActionButtons: FC<ActionButtonsProps> = ({
             </Button>
           </Grid>
           <Grid item>
-            <Button variant="contained" onClick={onClickApprove} style={buttonStyle}>
-              Sign
+            <Button
+              variant="contained"
+              onClick={onClickApprove}
+              style={buttonStyle}
+              disabled={!isApproveEnabled}
+            >
+              {approveButtonText}
             </Button>
           </Grid>
         </Grid>
