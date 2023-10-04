@@ -1,6 +1,6 @@
-import { FC, useCallback, useMemo, useState } from 'react';
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { Avatar, Button, Container, Divider, Paper, Typography } from '@mui/material';
+import { Avatar, Container, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
 
 import {
@@ -11,29 +11,42 @@ import {
   ResponseType
 } from '@gemwallet/constants';
 
-import { SECONDARY_GRAY } from '../../../constants';
+import { NETWORK_BANNER_HEIGHT, SECONDARY_GRAY } from '../../../constants';
 import {
   TransactionProgressStatus,
   useBrowser,
   useLedger,
+  useNetwork,
   useTransactionProgress
 } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
 import { serializeError } from '../../../utils/errors';
-import { AsyncTransaction, PageWithTitle } from '../../templates';
+import { ActionButtons, DataCard } from '../../molecules';
+import { AsyncTransaction } from '../../templates';
 
 export const SignMessage: FC = () => {
   const { signMessage } = useLedger();
   const { window: extensionWindow, closeExtension } = useBrowser();
+  const { hasOfflineBanner } = useNetwork();
   const { setTransactionProgress } = useTransactionProgress();
   const [isParamsMissing, setIsParamsMissing] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpandable, setIsExpandable] = useState(false);
+  const messageBoxRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (messageBoxRef.current && messageBoxRef.current.offsetHeight > 120) {
+      setIsExpandable(true);
+    } else {
+      setIsExpandable(false);
+    }
+  }, []);
 
   const payload = useMemo(() => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
 
     const url = urlParams.get('url');
-    const title = urlParams.get('title');
     const favicon = urlParams.get('favicon');
     const message = urlParams.get('message');
 
@@ -44,7 +57,6 @@ export const SignMessage: FC = () => {
     return {
       id: Number(urlParams.get('id')) || 0,
       url,
-      title,
       favicon: favicon || undefined,
       message: message || ''
     };
@@ -58,7 +70,7 @@ export const SignMessage: FC = () => {
       : 'RECEIVE_SIGN_MESSAGE';
   }, []);
 
-  const { id, url, title, favicon, message } = payload;
+  const { id, url, favicon, message } = payload;
 
   const handleSendMessage = useCallback(
     (messagePayload: { signedMessage: string | null | undefined; error?: Error }) => {
@@ -149,43 +161,62 @@ export const SignMessage: FC = () => {
   }
 
   return (
-    <PageWithTitle title="Sign Message">
-      <Paper
-        elevation={24}
+    <>
+      <Container
+        component="main"
         style={{
+          ...(hasOfflineBanner ? { position: 'fixed', top: NETWORK_BANNER_HEIGHT } : {}),
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'center',
-          padding: '10px'
+          paddingTop: '24px',
+          paddingLeft: '18px',
+          paddingRight: '18px',
+          overflowY: 'auto',
+          height: 'auto',
+          paddingBottom: '100px',
+          backgroundColor: '#121212',
+          backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05))'
         }}
       >
-        <Avatar src={favicon} variant="rounded" />
-        <Typography variant="h6">{title}</Typography>
-        <Typography style={{ color: SECONDARY_GRAY }}>{url}</Typography>
-      </Paper>
-
-      <Paper elevation={24} style={{ padding: '10px' }}>
-        <Typography variant="body1">You are signing:</Typography>
-        <Divider style={{ margin: '10px 0' }} />
-        <div style={{ overflowY: 'scroll', height: '200px' }}>
-          <Typography variant="body2" style={{ color: SECONDARY_GRAY }}>
-            {message}
-          </Typography>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <Avatar src={favicon} sx={{ bgcolor: '#2b2b2b', padding: '6px' }} variant="rounded" />
+          <div style={{ marginLeft: '10px' }}>
+            <Typography
+              variant="h6"
+              component="h1"
+              style={{ fontSize: '1.5rem', lineHeight: '1.2' }}
+              data-testid="page-title"
+            >
+              Sign Message
+            </Typography>
+            <Typography
+              component="h2"
+              style={{
+                color: SECONDARY_GRAY,
+                fontSize: '0.9rem',
+                overflow: 'hidden'
+              }}
+            >
+              {url}
+            </Typography>
+          </div>
         </div>
-      </Paper>
-
-      <div style={{ display: 'flex', justifyContent: 'center', color: SECONDARY_GRAY }}>
-        <Typography>Only sign messages with a website you trust</Typography>
-      </div>
-
-      <Container style={{ display: 'flex', justifyContent: 'space-evenly' }}>
-        <Button variant="contained" color="secondary" onClick={handleReject}>
-          Reject
-        </Button>
-        <Button variant="contained" onClick={handleSign}>
-          Sign
-        </Button>
+        <Typography style={{ color: SECONDARY_GRAY, marginTop: '20px' }}>
+          Signing this message will prove your ownership of the wallet.
+        </Typography>
+        <DataCard
+          formattedData={message}
+          dataName={'Message'}
+          isExpandable={isExpandable}
+          isExpanded={isExpanded}
+          setIsExpanded={setIsExpanded}
+        />
       </Container>
-    </PageWithTitle>
+      <ActionButtons
+        onClickReject={handleReject}
+        onClickApprove={handleSign}
+        headerText={'Only sign messages with a website you trust.'}
+      />
+    </>
   );
 };
