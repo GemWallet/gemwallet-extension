@@ -24,17 +24,18 @@ describe('Submit Transaction', () => {
     const url = `http://localhost:3000?transaction=%7B%22TransactionType%22%3A%22Payment%22%2C%22Destination%22%3A%22rhikRdkFw28csKw9z7fVoBjWncz1HSoQij%22%2C%22Amount%22%3A%22100000%22%7D&id=210329246&requestMessage=undefined&submit=transaction`;
     navigate(url, PASSWORD);
 
-    cy.get('h1[data-testid="page-title"]').should('have.text', 'Confirm Transaction');
+    cy.get('h1[data-testid="page-title"]').should('have.text', 'Submit Transaction');
 
-    cy.contains('Transaction:')
-      .next()
-      .should(
-        'have.text',
-        '{"TransactionType":"Payment""Destination":"rhikRdkFw28csKw9z7fVoBjWncz1HSoQij""Amount":"100000""Account":"rB3JmRd5m292YjCsCr65tc8dwZz2WN7HQu"}'
-      );
+    cy.get('[data-cy=expandButton]').each(($btn) => {
+      cy.wrap($btn).click();
+    });
+
+    cy.contains(
+      '{"TransactionType":"Payment""Destination":"rhikRdkFw28csKw9z7fVoBjWncz1HSoQij""Amount":"100000""Account":"rB3JmRd5m292YjCsCr65tc8dwZz2WN7HQu"}'
+    );
 
     // Confirm
-    cy.contains('button', 'Confirm').click();
+    cy.contains('button', 'Submit').click();
 
     cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction in progress');
     cy.get('p[data-testid="transaction-subtitle"]').should(
@@ -69,23 +70,24 @@ describe('Submit Transaction', () => {
     const url = `http://localhost:3000?transaction=${transaction}&requestMessage=undefined&submit=transaction`;
     navigate(url, PASSWORD);
 
-    cy.get('h1[data-testid="page-title"]').should('have.text', 'Confirm Transaction');
+    cy.get('h1[data-testid="page-title"]').should('have.text', 'Submit Transaction');
 
-    cy.contains('Transaction:')
-      .next()
-      .should(
-        'have.text',
-        '{"TransactionType":"TrustSet""LimitAmount":{"currency":"534F4C4F00000000000000000000000000000000""issuer":"rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN""value":"10000000"}"Memos":[0:{"Memo":{"MemoType":"4465736372697074696f6e""MemoData":"54657374206d656d6f"}}]"Fee":"199""Account":"rB3JmRd5m292YjCsCr65tc8dwZz2WN7HQu"}'
-      );
+    cy.get('[data-cy=expandButton]').each(($btn) => {
+      cy.wrap($btn).click();
+    });
+
+    cy.contains(
+      '{"TransactionType":"TrustSet""LimitAmount":{"currency":"534F4C4F00000000000000000000000000000000""issuer":"rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN""value":"10000000"}"Memos":[0:{"Memo":{"MemoType":"4465736372697074696f6e""MemoData":"54657374206d656d6f"}}]"Fee":"199""Account":"rB3JmRd5m292YjCsCr65tc8dwZz2WN7HQu"}'
+    );
 
     cy.contains('Transaction Type:').next().should('have.text', 'TrustSet');
     cy.contains('Account:').next().should('have.text', 'rB3JmRd5m292YjCsCr65tc8dwZz2WN7HQu');
     cy.contains('Limit Amount:').next().should('have.text', '10,000,000 SOLO');
-    cy.contains('Memos:').next().should('have.text', 'Test memo');
+    cy.contains('Memo 1:').next().should('have.text', 'Test memo');
     cy.contains('Network fees:').next().should('have.text', '0.000199 XRP (MANUAL)');
 
     // Confirm
-    cy.contains('button', 'Confirm').click();
+    cy.contains('button', 'Submit').click();
 
     cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction in progress');
     cy.get('p[data-testid="transaction-subtitle"]').should(

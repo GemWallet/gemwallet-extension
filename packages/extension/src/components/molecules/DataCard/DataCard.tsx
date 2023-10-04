@@ -55,7 +55,7 @@ export const DataCard: FC<DataCardProps> = forwardRef(
           }}
         >
           {isExpandable ? (
-            <IconButton onClick={() => setIsExpanded(!isExpanded)}>
+            <IconButton data-cy="expandButton" onClick={() => setIsExpanded(!isExpanded)}>
               {isExpanded ? (
                 <ExpandMoreIcon style={{ fontSize: '20px' }} />
               ) : (
