@@ -131,7 +131,7 @@ export const Fee: FC<FeeProps> = ({ errorFees, estimatedFees, fee, isBulk, useLe
             <ErrorIcon />
           </IconButton>
         </Tooltip>
-        {isBulk ? `Total network fees` : `Network fees`}:
+        {isBulk ? `Total network fees` : `Network fees`}
       </Typography>
       <Typography variant="body2" gutterBottom align="right">
         {errorFees ? (

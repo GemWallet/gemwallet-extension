@@ -22,30 +22,24 @@ interface KeyValueDisplayProps {
 }
 
 const valueTypoStyle = {
-  marginBottom: '10px'
+  marginBottom: '10px',
+  fontSize: '1.1rem'
 };
 
-const KeyValueDisplay: FC<KeyValueDisplayProps> = ({
-  keyName,
-  value,
-  keyTypographyProps,
-  valueTypographyProps,
-  hasTooltip,
-  useLegacy
-}) => {
+const KeyValueDisplay: FC<KeyValueDisplayProps> = ({ keyName, value, hasTooltip, useLegacy }) => {
   if (useLegacy) {
     return (
       <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-        <Typography {...keyTypographyProps}>{keyName}:</Typography>
+        <Typography>{keyName}:</Typography>
         {hasTooltip ? (
           <Tooltip title={value}>
-            <Typography {...valueTypographyProps} style={valueTypoStyle}>
+            <Typography style={valueTypoStyle}>
               <pre
                 style={{
                   margin: 0,
                   color: 'white',
                   fontFamily: 'Arial, sans-serif',
-                  maxWidth: '100%', // Set your max-width here
+                  maxWidth: '100%',
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis'
@@ -56,7 +50,7 @@ const KeyValueDisplay: FC<KeyValueDisplayProps> = ({
             </Typography>
           </Tooltip>
         ) : (
-          <Typography {...valueTypographyProps} style={valueTypoStyle}>
+          <Typography style={valueTypoStyle}>
             <pre
               style={{
                 margin: 0,
@@ -78,17 +72,17 @@ const KeyValueDisplay: FC<KeyValueDisplayProps> = ({
 
   return (
     <>
-      <Typography {...keyTypographyProps}>{keyName}:</Typography>
+      <Typography>{keyName}</Typography>
       {hasTooltip ? (
         <Tooltip title={value}>
-          <Typography {...valueTypographyProps} style={valueTypoStyle}>
+          <Typography style={valueTypoStyle}>
             <pre style={{ margin: 0, color: 'white', fontFamily: 'Arial, sans-serif' }}>
               {value}
             </pre>
           </Typography>
         </Tooltip>
       ) : (
-        <Typography {...valueTypographyProps} style={valueTypoStyle}>
+        <Typography style={valueTypoStyle}>
           <pre style={{ margin: 0, color: 'white', fontFamily: 'Arial, sans-serif' }}>{value}</pre>
         </Typography>
       )}
@@ -97,23 +91,17 @@ const KeyValueDisplay: FC<KeyValueDisplayProps> = ({
 };
 
 export const DisplayXRPLTransaction: FC<XRPLTxProps> = ({ tx, useLegacy = true }) => {
-  const largeValueTypoStyle = {
-    fontSize: '1.2rem'
-  };
-
   const keyMap: Record<string, (value: any) => JSX.Element | null> = {
     TransactionType: (value: string) =>
       renderSimpleText({
         title: 'Transaction Type',
         value,
-        valueTypographyProps: largeValueTypoStyle,
         useLegacy
       }),
     Amount: (value: Amount) =>
       renderAmount({
         title: 'Amount',
         value,
-        valueTypographyProps: largeValueTypoStyle,
         useLegacy
       }),
     Account: (value: string) =>
@@ -172,10 +160,9 @@ export const DisplayXRPLTransaction: FC<XRPLTxProps> = ({ tx, useLegacy = true }
     title: string;
     value: any;
     hasTooltip?: boolean;
-    valueTypographyProps?: TypographyProps;
     useLegacy: boolean;
   }): JSX.Element | null => {
-    const { title, value, hasTooltip, valueTypographyProps } = params;
+    const { title, value, hasTooltip } = params;
 
     if (value === undefined) {
       return null;
@@ -186,7 +173,6 @@ export const DisplayXRPLTransaction: FC<XRPLTxProps> = ({ tx, useLegacy = true }
         keyName={title}
         value={String(value)}
         hasTooltip={hasTooltip}
-        valueTypographyProps={valueTypographyProps}
         useLegacy={useLegacy}
       />
     );
@@ -226,7 +212,7 @@ export const DisplayXRPLTransaction: FC<XRPLTxProps> = ({ tx, useLegacy = true }
           return (
             <KeyValueDisplay
               key={index}
-              keyName={`Memo ${index + 1}`}
+              keyName={memos.length > 1 ? `Memo ${index + 1}` : 'Memo'}
               value={memoData || ''}
               useLegacy={useLegacy}
             />
