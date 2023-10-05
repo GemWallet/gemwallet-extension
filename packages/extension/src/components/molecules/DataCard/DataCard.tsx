@@ -40,7 +40,7 @@ export const DataCard: FC<DataCardProps> = ({
       style={{
         padding: '15px',
         marginTop: `${paddingTop}px`,
-        borderRadius: '15px',
+        borderRadius: '8px',
         backgroundColor: '#000000'
       }}
     >
