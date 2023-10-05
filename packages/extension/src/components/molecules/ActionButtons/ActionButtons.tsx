@@ -6,7 +6,7 @@ import { SECONDARY_GRAY } from '../../../constants';
 
 const BUTTONS_WIDTH = '150px';
 
-interface ActionButtonsProps {
+export interface ActionButtonsProps {
   onClickApprove: () => void;
   onClickReject: () => void;
   headerText?: string;

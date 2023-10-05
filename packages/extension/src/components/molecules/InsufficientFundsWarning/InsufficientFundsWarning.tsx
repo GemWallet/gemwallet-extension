@@ -5,7 +5,7 @@ import { Typography } from '@mui/material';
 
 import { ERROR_RED } from '../../../constants';
 
-interface InsufficientFundsWarningProps {
+export interface InsufficientFundsWarningProps {
   hasEnoughFunds: boolean;
 }
 

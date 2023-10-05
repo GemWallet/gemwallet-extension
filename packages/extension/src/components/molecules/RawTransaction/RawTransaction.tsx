@@ -3,7 +3,7 @@ import React, { FC } from 'react';
 import ReactJson from 'react-json-view';
 import { Transaction } from 'xrpl';
 
-interface RawTransactionProps {
+export interface RawTransactionProps {
   transaction: Transaction;
 }
 

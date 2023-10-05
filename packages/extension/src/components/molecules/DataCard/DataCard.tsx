@@ -6,7 +6,7 @@ import { IconButton, Paper, Typography } from '@mui/material';
 
 import { SECONDARY_GRAY } from '../../../constants';
 
-interface DataCardProps {
+export interface DataCardProps {
   formattedData: any;
   dataName?: string;
   isExpanded: boolean;

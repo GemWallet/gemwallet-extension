@@ -4,7 +4,7 @@ import { Typography } from '@mui/material';
 
 import { SECONDARY_GRAY } from '../../../constants';
 
-interface TransactionTextDescriptionProps {
+export interface TransactionTextDescriptionProps {
   text: string;
 }
 

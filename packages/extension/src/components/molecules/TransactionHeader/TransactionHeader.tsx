@@ -1,19 +1,22 @@
-import { FC } from 'react';
+import { FC, useMemo } from 'react';
 
 import { Avatar, Typography } from '@mui/material';
 
 import { SECONDARY_GRAY } from '../../../constants';
 
-interface TransactionHeaderProps {
+export interface TransactionHeaderProps {
   title: string;
   favicon?: string | undefined;
   url?: string | null;
 }
 
 export const TransactionHeader: FC<TransactionHeaderProps> = ({ title, favicon, url }) => {
-  const titleStyle = {
-    marginLeft: favicon ? '10px' : '0px'
-  };
+  const titleStyle = useMemo(
+    () => ({
+      marginLeft: favicon ? '10px' : '0px'
+    }),
+    [favicon]
+  );
 
   return (
     <div style={{ display: 'flex', alignItems: 'center' }}>
