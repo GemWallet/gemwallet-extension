@@ -1,7 +1,6 @@
 import { FC, useCallback, useEffect, useState } from 'react';
 
-import { OpenInNewOutlined } from '@mui/icons-material';
-import { Button, CircularProgress, Paper } from '@mui/material';
+import { CircularProgress, Paper } from '@mui/material';
 import * as Sentry from '@sentry/react';
 import { convertHexToString } from 'xrpl';
 
@@ -69,124 +68,125 @@ export const NFTCard: FC<NFTCardProps> = ({ NFT, layout = 'large' }) => {
           flexDirection: layout === 'list' ? 'row' : 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          marginBottom: '10px'
+          marginBottom: '10px',
+          cursor: 'pointer'
         }}
+        onClick={handleViewNFTClick}
       >
-        {/* Details for 'list' layout */}
-        {layout === 'list' ? (
-          <div
-            onClick={handleViewNFTClick}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              width: '100%',
-              cursor: 'pointer'
-            }}
-          >
-            {/* NFT Image */}
-            {isLoading ? (
-              <CircularProgress data-testid="progressbar" />
-            ) : (
-              <NFTImage
-                imageURL={NFTData.image}
-                height={60}
-                width={60}
-                style={{ marginRight: '20px' }}
-                fallbackScale={1}
-              />
-            )}
+        <div
+          style={{
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center'
+          }}
+        >
+          {/* Details for 'list' layout */}
+          {layout === 'list' ? (
+            <div
+              onClick={handleViewNFTClick}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                width: '100%',
+                cursor: 'pointer'
+              }}
+            >
+              {/* NFT Image */}
+              {isLoading ? (
+                <CircularProgress data-testid="progressbar" />
+              ) : (
+                <NFTImage
+                  imageURL={NFTData.image}
+                  height={60}
+                  width={60}
+                  style={{ marginRight: '20px' }}
+                  fallbackScale={1}
+                />
+              )}
 
-            <div style={{ width: 'calc(100% - 80px)', maxWidth: 'calc(100% - 80px)' }}>
+              <div style={{ width: 'calc(100% - 80px)', maxWidth: 'calc(100% - 80px)' }}>
+                <div
+                  style={{
+                    display: 'block',
+                    maxWidth: '100%',
+                    overflow: 'hidden',
+                    whiteSpace: 'nowrap',
+                    textOverflow: 'ellipsis',
+                    color: 'grey'
+                  }}
+                >
+                  <TruncatedText sx={{ fontSize: '14px' }}>{NFTData.NFTokenID}</TruncatedText>
+                </div>
+                <TruncatedText
+                  isMultiline={true}
+                  maxLines={'1'}
+                  sx={{ color: 'white', fontSize: '14px' }}
+                  data-testid="nft_name"
+                >
+                  {NFTData.name}
+                </TruncatedText>
+              </div>
+            </div>
+          ) : null}
+
+          {/* Details for 'large' and 'small' layouts */}
+          {layout !== 'list' ? (
+            <>
+              {isLoading ? (
+                <CircularProgress data-testid="progressbar" />
+              ) : (
+                <NFTImage
+                  imageURL={NFTData.image}
+                  height={layout === 'large' ? 150 : 120}
+                  width={layout === 'large' ? 150 : 120}
+                />
+              )}
+
               <div
                 style={{
-                  display: 'block',
+                  display: 'flex',
+                  justifyContent: 'center',
                   maxWidth: '100%',
                   overflow: 'hidden',
                   whiteSpace: 'nowrap',
                   textOverflow: 'ellipsis',
-                  color: 'grey'
+                  color: 'grey',
+                  marginTop: '10px'
                 }}
               >
-                <TruncatedText sx={{ fontSize: '14px' }}>{NFTData.NFTokenID}</TruncatedText>
+                <TruncatedText
+                  sx={{
+                    fontSize: layout === 'small' ? '12px' : '14px',
+                    textAlign: 'center',
+                    maxWidth: '90%'
+                  }}
+                >
+                  {NFTData.NFTokenID}
+                </TruncatedText>
               </div>
               <TruncatedText
-                isMultiline={true}
-                maxLines={'1'}
-                sx={{ color: 'white', fontSize: '14px' }}
+                sx={{
+                  fontSize: layout === 'small' ? '12px' : '16px',
+                  color: 'white',
+                  marginTop: layout === 'large' ? '10px' : '4px',
+                  textAlign: 'center'
+                }}
                 data-testid="nft_name"
               >
                 {NFTData.name}
               </TruncatedText>
-            </div>
-          </div>
-        ) : null}
-
-        {/* Details for 'large' and 'small' layouts */}
-        {layout !== 'list' ? (
-          <>
-            {isLoading ? (
-              <CircularProgress data-testid="progressbar" />
-            ) : (
-              <NFTImage
-                imageURL={NFTData.image}
-                height={layout === 'large' ? 150 : 120}
-                width={layout === 'large' ? 150 : 120}
-              />
-            )}
-
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                maxWidth: '100%',
-                overflow: 'hidden',
-                whiteSpace: 'nowrap',
-                textOverflow: 'ellipsis',
-                color: 'grey',
-                marginTop: '10px'
-              }}
-            >
-              <TruncatedText
-                sx={{
-                  fontSize: layout === 'small' ? '12px' : '14px',
-                  textAlign: 'center',
-                  maxWidth: '90%'
-                }}
-              >
-                {NFTData.NFTokenID}
-              </TruncatedText>
-            </div>
-            <TruncatedText
-              sx={{
-                fontSize: layout === 'small' ? '12px' : '16px',
-                color: 'white',
-                marginTop: layout === 'large' ? '10px' : '4px',
-                textAlign: 'center'
-              }}
-              data-testid="nft_name"
-            >
-              {NFTData.name}
-            </TruncatedText>
-            {layout === 'large' && (
-              <TruncatedText
-                sx={{ fontSize: '14px', color: 'grey', marginTop: '10px', textAlign: 'center' }}
-                isMultiline={true}
-              >
-                {NFTData.description}
-              </TruncatedText>
-            )}
-            <Button
-              variant="outlined"
-              style={{
-                marginTop: '10px',
-                fontSize: layout === 'large' ? '14px' : '10px'
-              }}
-              onClick={handleViewNFTClick}
-            >
-              View <OpenInNewOutlined style={{ fontSize: layout === 'large' ? '16px' : '12px' }} />
-            </Button>
-          </>
-        ) : null}
+              {layout === 'large' && (
+                <TruncatedText
+                  sx={{ fontSize: '14px', color: 'grey', marginTop: '10px', textAlign: 'center' }}
+                  isMultiline={true}
+                >
+                  {NFTData.description}
+                </TruncatedText>
+              )}
+            </>
+          ) : null}
+        </div>
       </Paper>
     </>
   );
