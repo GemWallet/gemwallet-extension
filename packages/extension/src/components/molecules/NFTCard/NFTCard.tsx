@@ -59,6 +59,7 @@ export const NFTCard: FC<NFTCardProps> = ({ NFT, layout = 'large' }) => {
         <NFTDetails NFTData={NFTData} />
       </DialogPage>
       <Paper
+        data-testid="nft-card"
         elevation={5}
         style={{
           maxWidth: '100%',

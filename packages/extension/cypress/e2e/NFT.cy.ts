@@ -64,7 +64,7 @@ describe('Mint', () => {
     cy.contains('button', 'NFTs').click();
 
     // Find a NFT and open the details
-    cy.get('[data-testid="OpenInNewOutlinedIcon"]').parent('button').first().click();
+    cy.get('[data-testid="nft-card"]').first().click();
 
     // Check that the details view is open
     cy.contains('NFT Details');
