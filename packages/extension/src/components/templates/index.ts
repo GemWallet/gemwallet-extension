@@ -9,3 +9,4 @@ export * from './PageWithSpinner';
 export * from './PageWithStepper';
 export * from './PageWithTitle';
 export * from './SharingPage';
+export * from './TransactionPage';

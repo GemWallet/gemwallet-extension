@@ -1,6 +1,5 @@
 import { FC, useCallback, useMemo, useState } from 'react';
 
-import { Container } from '@mui/material';
 import * as Sentry from '@sentry/react';
 
 import {
@@ -11,24 +10,20 @@ import {
   ResponseType
 } from '@gemwallet/constants';
 
-import { NETWORK_BANNER_HEIGHT } from '../../../constants';
 import {
   TransactionProgressStatus,
   useBrowser,
   useLedger,
-  useNetwork,
   useTransactionProgress
 } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
 import { serializeError } from '../../../utils/errors';
-import { TransactionTextDescription } from '../../atoms';
-import { ActionButtons, TransactionHeader, DataCard } from '../../molecules';
-import { AsyncTransaction } from '../../templates';
+import { DataCard } from '../../molecules';
+import { AsyncTransaction, TransactionPage } from '../../templates';
 
 export const SignMessage: FC = () => {
   const { signMessage } = useLedger();
   const { window: extensionWindow, closeExtension } = useBrowser();
-  const { hasOfflineBanner } = useNetwork();
   const { setTransactionProgress } = useTransactionProgress();
   const [isParamsMissing, setIsParamsMissing] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -152,39 +147,20 @@ export const SignMessage: FC = () => {
   }
 
   return (
-    <>
-      <Container
-        component="main"
-        style={{
-          ...(hasOfflineBanner ? { position: 'fixed', top: NETWORK_BANNER_HEIGHT } : {}),
-          display: 'flex',
-          flexDirection: 'column',
-          paddingTop: '24px',
-          paddingLeft: '18px',
-          paddingRight: '18px',
-          overflowY: 'auto',
-          height: 'auto',
-          paddingBottom: '100px',
-          backgroundColor: '#121212',
-          backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05))'
-        }}
-      >
-        <TransactionHeader title={'Sign Message'} favicon={favicon} url={url} />
-        <TransactionTextDescription
-          text={'Signing this message will prove your ownership of the wallet.'}
-        />
-        <DataCard
-          formattedData={message}
-          dataName={'Message'}
-          isExpanded={isExpanded}
-          setIsExpanded={setIsExpanded}
-        />
-      </Container>
-      <ActionButtons
-        onClickReject={handleReject}
-        onClickApprove={handleSign}
-        headerText={'Only sign messages with a website you trust.'}
+    <TransactionPage
+      title="Sign Message"
+      description="Signing this message will prove your ownership of the wallet."
+      url={url}
+      favicon={favicon}
+      onClickApprove={handleSign}
+      onClickReject={handleReject}
+    >
+      <DataCard
+        formattedData={message}
+        dataName={'Message'}
+        isExpanded={isExpanded}
+        setIsExpanded={setIsExpanded}
       />
-    </>
+    </TransactionPage>
   );
 };
