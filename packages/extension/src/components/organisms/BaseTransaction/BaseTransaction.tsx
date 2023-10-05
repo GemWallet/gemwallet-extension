@@ -119,7 +119,7 @@ export const Fee: FC<FeeProps> = ({ errorFees, estimatedFees, fee, isBulk, useLe
 
   return (
     <>
-      <Typography variant="body1" style={{ display: 'flex', alignItems: 'center' }}>
+      <Typography variant="body1" style={{ display: 'flex', alignItems: 'center', color: 'white' }}>
         <Tooltip
           title={
             isBulk
