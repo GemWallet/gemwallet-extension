@@ -6,5 +6,6 @@ export * from './PrivateRoute';
 export * from './TileLoader';
 export * from './TokenLoader';
 export * from './Tokens';
+export * from './TransactionTextDescription';
 export * from './TruncatedText';
 export * from './WalletIcon';

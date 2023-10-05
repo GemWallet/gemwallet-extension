@@ -1,6 +1,6 @@
-import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FC, useCallback, useMemo, useState } from 'react';
 
-import { Avatar, Container, Typography } from '@mui/material';
+import { Container } from '@mui/material';
 import * as Sentry from '@sentry/react';
 
 import {
@@ -11,7 +11,7 @@ import {
   ResponseType
 } from '@gemwallet/constants';
 
-import { NETWORK_BANNER_HEIGHT, SECONDARY_GRAY } from '../../../constants';
+import { NETWORK_BANNER_HEIGHT } from '../../../constants';
 import {
   TransactionProgressStatus,
   useBrowser,
@@ -21,7 +21,8 @@ import {
 } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
 import { serializeError } from '../../../utils/errors';
-import { ActionButtons, DataCard } from '../../molecules';
+import { TransactionTextDescription } from '../../atoms';
+import { ActionButtons, TransactionHeader, DataCard } from '../../molecules';
 import { AsyncTransaction } from '../../templates';
 
 export const SignMessage: FC = () => {
@@ -31,16 +32,6 @@ export const SignMessage: FC = () => {
   const { setTransactionProgress } = useTransactionProgress();
   const [isParamsMissing, setIsParamsMissing] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [isExpandable, setIsExpandable] = useState(false);
-  const messageBoxRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (messageBoxRef.current && messageBoxRef.current.offsetHeight > 120) {
-      setIsExpandable(true);
-    } else {
-      setIsExpandable(false);
-    }
-  }, []);
 
   const payload = useMemo(() => {
     const queryString = window.location.search;
@@ -178,36 +169,13 @@ export const SignMessage: FC = () => {
           backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05))'
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <Avatar src={favicon} sx={{ bgcolor: '#2b2b2b', padding: '6px' }} variant="rounded" />
-          <div style={{ marginLeft: '10px' }}>
-            <Typography
-              variant="h6"
-              component="h1"
-              style={{ fontSize: '1.5rem', lineHeight: '1.2' }}
-              data-testid="page-title"
-            >
-              Sign Message
-            </Typography>
-            <Typography
-              component="h2"
-              style={{
-                color: SECONDARY_GRAY,
-                fontSize: '0.9rem',
-                overflow: 'hidden'
-              }}
-            >
-              {url}
-            </Typography>
-          </div>
-        </div>
-        <Typography style={{ color: SECONDARY_GRAY, marginTop: '20px' }}>
-          Signing this message will prove your ownership of the wallet.
-        </Typography>
+        <TransactionHeader title={'Sign Message'} favicon={favicon} url={url} />
+        <TransactionTextDescription
+          text={'Signing this message will prove your ownership of the wallet.'}
+        />
         <DataCard
           formattedData={message}
           dataName={'Message'}
-          isExpandable={isExpandable}
           isExpanded={isExpanded}
           setIsExpanded={setIsExpanded}
         />

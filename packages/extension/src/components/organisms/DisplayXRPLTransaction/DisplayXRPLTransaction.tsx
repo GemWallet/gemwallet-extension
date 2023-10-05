@@ -1,6 +1,6 @@
 import { FC } from 'react';
 
-import { Paper, Tooltip, Typography } from '@mui/material';
+import { Paper, Tooltip, Typography, TypographyProps } from '@mui/material';
 import { convertHexToString, Transaction } from 'xrpl';
 import { Amount, Memo, Signer } from 'xrpl/dist/npm/models/common';
 import { GlobalFlags } from 'xrpl/dist/npm/models/transactions/common';
@@ -9,128 +9,236 @@ import { formatAmount, formatFlags, formatTransferFee } from '../../../utils';
 
 type XRPLTxProps = {
   tx: Transaction;
+  useLegacy?: boolean;
 };
 
-export const DisplayXRPLTransaction: FC<XRPLTxProps> = ({ tx }) => {
+interface KeyValueDisplayProps {
+  keyName: string;
+  value: string;
+  keyTypographyProps?: TypographyProps;
+  valueTypographyProps?: TypographyProps;
+  hasTooltip?: boolean;
+  useLegacy?: boolean;
+}
+
+const valueTypoStyle = {
+  marginBottom: '10px',
+  fontSize: '1.1rem'
+};
+
+const KeyValueDisplay: FC<KeyValueDisplayProps> = ({ keyName, value, hasTooltip, useLegacy }) => {
+  if (useLegacy) {
+    return (
+      <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
+        <Typography>{keyName}:</Typography>
+        {hasTooltip ? (
+          <Tooltip title={value}>
+            <Typography style={valueTypoStyle}>
+              <pre
+                style={{
+                  margin: 0,
+                  color: 'white',
+                  fontFamily: 'Arial, sans-serif',
+                  maxWidth: '100%',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
+                }}
+              >
+                {value}
+              </pre>
+            </Typography>
+          </Tooltip>
+        ) : (
+          <Typography style={valueTypoStyle}>
+            <pre
+              style={{
+                margin: 0,
+                color: 'white',
+                fontFamily: 'Arial, sans-serif',
+                maxWidth: '100%',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis'
+              }}
+            >
+              {value}
+            </pre>
+          </Typography>
+        )}
+      </Paper>
+    );
+  }
+
+  return (
+    <>
+      <Typography>{keyName}</Typography>
+      {hasTooltip ? (
+        <Tooltip title={value}>
+          <Typography style={valueTypoStyle}>
+            <pre style={{ margin: 0, color: 'white', fontFamily: 'Arial, sans-serif' }}>
+              {value}
+            </pre>
+          </Typography>
+        </Tooltip>
+      ) : (
+        <Typography style={valueTypoStyle}>
+          <pre style={{ margin: 0, color: 'white', fontFamily: 'Arial, sans-serif' }}>{value}</pre>
+        </Typography>
+      )}
+    </>
+  );
+};
+
+export const DisplayXRPLTransaction: FC<XRPLTxProps> = ({ tx, useLegacy = true }) => {
   const keyMap: Record<string, (value: any) => JSX.Element | null> = {
-    TransactionType: (value: string) => renderSimpleText('Transaction Type', value),
-    Amount: (value: Amount) => renderAmount('Amount', value),
-    NFTokenID: (value: string) => renderSimpleText('NFT Token ID', value),
-    Destination: (value: string) => renderSimpleText('Destination', value),
-    DestinationTag: (value?: number) => renderSimpleText('Destination Tag', value),
+    TransactionType: (value: string) =>
+      renderSimpleText({
+        title: 'Transaction Type',
+        value,
+        useLegacy
+      }),
+    Amount: (value: Amount) =>
+      renderAmount({
+        title: 'Amount',
+        value,
+        useLegacy
+      }),
+    Account: (value: string) =>
+      renderSimpleText({ title: 'Account', value, hasTooltip: true, useLegacy }),
+    NFTokenID: (value: string) => renderSimpleText({ title: 'NFT Token ID', value, useLegacy }),
+    Destination: (value: string) =>
+      renderSimpleText({ title: 'Destination', value, hasTooltip: true, useLegacy }),
+    DestinationTag: (value?: number) =>
+      renderSimpleText({ title: 'Destination Tag', value, useLegacy }),
     Flags: (value?: GlobalFlags) =>
-      value !== undefined ? renderSimpleText('Flags', formatFlags(value)) : null,
-    Memos: (value?: Memo[]) => renderMemos(value),
-    NFTokenOffers: (value: string[]) => renderArray('Offer IDs', value),
-    Signers: (value?: Signer[]) => renderArray('Signers', value),
-    LimitAmount: (value) => renderAmount('Limit Amount', value as Amount),
+      value !== undefined
+        ? renderSimpleText({ title: 'Flags', value: formatFlags(value), useLegacy })
+        : null,
+    Memos: (value?: Memo[]) => renderMemos({ memos: value, useLegacy }),
+    NFTokenOffers: (value: string[]) => renderArray({ title: 'Offer IDs', value, useLegacy }),
+    Signers: (value?: Signer[]) => renderArray({ title: 'Signers', value, useLegacy }),
+    LimitAmount: (value) =>
+      renderAmount({ title: 'Limit Amount', value: value as Amount, useLegacy }),
     NFTokenSellOffer: (value?: string) =>
-      value !== undefined ? renderSimpleText('NFT Token Sell Offer', value) : null,
+      value !== undefined
+        ? renderSimpleText({ title: 'NFT Token Sell Offer', value, useLegacy })
+        : null,
     NFTokenBuyOffer: (value?: string) =>
-      value !== undefined ? renderSimpleText('NFT Token Buy Offer', value) : null,
+      value !== undefined
+        ? renderSimpleText({ title: 'NFT Token Buy Offer', value, useLegacy })
+        : null,
     NFTokenBrokerFee: (value?: Amount) =>
-      value !== undefined ? renderAmount('NFT Token Broker Fee', value) : null,
+      value !== undefined
+        ? renderAmount({ title: 'NFT Token Broker Fee', value, useLegacy })
+        : null,
     NFTokenMinter: (value?: string) =>
-      value !== undefined ? renderSimpleText('NFT Token Minter', value) : null,
+      value !== undefined
+        ? renderSimpleText({ title: 'NFT Token Minter', value, useLegacy })
+        : null,
     URI: (value?: string | null) =>
       value !== undefined
-        ? renderSimpleText('URI', value ? convertHexToString(value as string) : '', true)
+        ? renderSimpleText({
+            title: 'URI',
+            value: value ? convertHexToString(value as string) : '',
+            hasTooltip: true,
+            useLegacy
+          })
         : null,
     Fee: () => null, // Fee is rendered in the BaseTransaction component
-    TakerGets: (value: Amount) => renderAmount('Taker Gets', value),
-    TakerPays: (value: Amount) => renderAmount('Taker Pays', value),
+    TakerGets: (value: Amount) => renderAmount({ title: 'Taker Gets', value, useLegacy }),
+    TakerPays: (value: Amount) => renderAmount({ title: 'Taker Pays', value, useLegacy }),
     TransferFee: (value?: number) =>
-      renderSimpleText('Transfer Fee', value ? `${formatTransferFee(value)}%` : '')
+      renderSimpleText({
+        title: 'Transfer Fee',
+        value: value ? `${formatTransferFee(value)}%` : '',
+        useLegacy
+      })
   };
 
-  const renderSimpleText = (title: string, value: any, tooltip?: boolean): JSX.Element | null => {
+  const renderSimpleText = (params: {
+    title: string;
+    value: any;
+    hasTooltip?: boolean;
+    useLegacy: boolean;
+  }): JSX.Element | null => {
+    const { title, value, hasTooltip } = params;
+
     if (value === undefined) {
       return null;
     }
-    const strValue = String(value);
-    const typo = (
-      <Typography
-        variant="body2"
-        style={{
-          whiteSpace: 'nowrap',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          maxWidth: '100%'
-        }}
-      >
-        <pre style={{ margin: 0 }}>{strValue}</pre>
-      </Typography>
-    );
+
     return (
-      <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-        <Typography variant="body1">{title}:</Typography>
-        {tooltip ? <Tooltip title={strValue}>{typo}</Tooltip> : typo}
-      </Paper>
+      <KeyValueDisplay
+        keyName={title}
+        value={String(value)}
+        hasTooltip={hasTooltip}
+        useLegacy={useLegacy}
+      />
     );
   };
 
-  const renderAmount = (title: string, value: Amount) => (
-    <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-      <Typography variant="body1">{title}:</Typography>
-      <Typography variant="h6" component="h1" align="right">
-        {formatAmount(value)}
-      </Typography>
-    </Paper>
-  );
+  const renderAmount = (params: {
+    title: string;
+    value: Amount;
+    valueTypographyProps?: TypographyProps;
+    useLegacy: boolean;
+  }) => {
+    const { title, value, valueTypographyProps } = params;
 
-  const renderMemos = (memos?: Memo[]) => {
-    if (memos === undefined) {
+    return (
+      <KeyValueDisplay
+        keyName={title}
+        value={formatAmount(value)}
+        valueTypographyProps={valueTypographyProps}
+        useLegacy={useLegacy}
+      />
+    );
+  };
+
+  const renderMemos = (params: { memos?: Memo[]; useLegacy: boolean }) => {
+    const { memos, useLegacy } = params;
+    if (memos === undefined || memos.length === 0) {
       return null;
     }
+
     return (
-      <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-        <Typography variant="body1">Memos:</Typography>
-        {memos.map((memo, index) => (
-          <div key={index} style={{ marginBottom: index === memos.length - 1 ? 0 : '8px' }}>
-            <Typography
-              variant="body2"
-              style={{
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                maxWidth: '100%'
-              }}
-            >
-              {memo.Memo.MemoData
-                ? Buffer.from(memo.Memo.MemoData, 'hex').toString('utf8')
-                : memo.Memo.MemoData}
-            </Typography>
-          </div>
-        ))}
-      </Paper>
+      <>
+        {memos.map((memo, index) => {
+          const memoData = memo.Memo.MemoData
+            ? Buffer.from(memo.Memo.MemoData, 'hex').toString('utf8')
+            : memo.Memo.MemoData;
+
+          return (
+            <KeyValueDisplay
+              key={index}
+              keyName={memos.length > 1 ? `Memo ${index + 1}` : 'Memo'}
+              value={memoData || ''}
+              useLegacy={useLegacy}
+            />
+          );
+        })}
+      </>
     );
   };
 
-  const renderArray = (title: string, value: unknown) => {
+  const renderArray = (params: { title: string; value: unknown; useLegacy: boolean }) => {
+    const { title, value } = params;
+
     if (!Array.isArray(value)) {
-      return renderSimpleText(title, JSON.stringify(value));
+      return renderSimpleText({ title, value: JSON.stringify(value), useLegacy });
     }
 
     return (
-      <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-        <Typography variant="body1">{title}:</Typography>
-        {value.map((offer, index) => (
-          <div key={index} style={{ marginBottom: index === value.length - 1 ? 0 : '8px' }}>
-            <Typography
-              variant="body2"
-              style={{
-                wordBreak: 'break-word'
-              }}
-            >
-              {offer}
-            </Typography>
-          </div>
-        ))}
-      </Paper>
+      <KeyValueDisplay
+        keyName={title}
+        value={value.map((offer) => JSON.stringify(offer)).join(', ')}
+        useLegacy={useLegacy}
+      />
     );
   };
 
-  const renderKeys = () => {
+  const renderKeys = (useLegacy: boolean) => {
     // Ensure the order of the fields to be displayed
     // The keys that are not in this array will be displayed at the end in the order they appear in the tx object
     const order = [
@@ -181,18 +289,11 @@ export const DisplayXRPLTransaction: FC<XRPLTxProps> = ({ tx }) => {
         displayValue = String(value);
       }
 
-      return (
-        <Paper key={key} elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-          <Typography variant="body1">{key}:</Typography>
-          <Typography variant="body2">
-            <pre style={{ margin: 0 }}>{displayValue}</pre>
-          </Typography>
-        </Paper>
-      );
+      return <KeyValueDisplay keyName={key} value={displayValue} useLegacy={useLegacy} />;
     });
   };
 
-  return <>{renderKeys()}</>;
+  return <>{renderKeys(useLegacy)}</>;
 };
 
 export default DisplayXRPLTransaction;

@@ -6,13 +6,13 @@ import { IconButton, Paper, Typography } from '@mui/material';
 
 import { SECONDARY_GRAY } from '../../../constants';
 
-interface DataCardProps {
+export interface DataCardProps {
   formattedData: any;
-  dataName: string;
-  isExpandable: boolean;
+  dataName?: string;
   isExpanded: boolean;
   setIsExpanded: (value: boolean) => void;
   thresholdHeight?: number;
+  paddingTop?: number;
 }
 
 export const DataCard: FC<DataCardProps> = ({
@@ -20,7 +20,8 @@ export const DataCard: FC<DataCardProps> = ({
   dataName,
   isExpanded,
   setIsExpanded,
-  thresholdHeight = 120
+  thresholdHeight = 120,
+  paddingTop = 30
 }) => {
   const messageBoxRef = useRef<HTMLDivElement>(null);
   const [isExpandable, setIsExpandable] = useState(false);
@@ -38,8 +39,8 @@ export const DataCard: FC<DataCardProps> = ({
       elevation={24}
       style={{
         padding: '15px',
-        marginTop: '30px',
-        borderRadius: '15px',
+        marginTop: `${paddingTop}px`,
+        borderRadius: '8px',
         backgroundColor: '#000000'
       }}
     >
@@ -51,7 +52,7 @@ export const DataCard: FC<DataCardProps> = ({
         }}
       >
         {isExpandable ? (
-          <IconButton onClick={() => setIsExpanded(!isExpanded)}>
+          <IconButton data-cy="expandButton" onClick={() => setIsExpanded(!isExpanded)}>
             {isExpanded ? (
               <ExpandMoreIcon style={{ fontSize: '20px' }} />
             ) : (
@@ -59,7 +60,7 @@ export const DataCard: FC<DataCardProps> = ({
             )}
           </IconButton>
         ) : null}
-        <Typography variant="body1">{dataName}</Typography>
+        {dataName ? <Typography variant="body1">{dataName}</Typography> : null}
       </div>
       <div
         ref={messageBoxRef}

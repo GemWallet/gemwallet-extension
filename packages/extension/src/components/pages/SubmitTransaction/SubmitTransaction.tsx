@@ -1,8 +1,6 @@
 import { FC, useCallback, useEffect, useState } from 'react';
 
-import ErrorIcon from '@mui/icons-material/Error';
-import { Button, Container, Paper, Typography } from '@mui/material';
-import ReactJson from 'react-json-view';
+import { Container } from '@mui/material';
 import { Transaction } from 'xrpl';
 
 import {
@@ -12,7 +10,7 @@ import {
   ResponseType
 } from '@gemwallet/constants';
 
-import { ERROR_RED } from '../../../constants';
+import { NETWORK_BANNER_HEIGHT } from '../../../constants';
 import {
   TransactionProgressStatus,
   useLedger,
@@ -23,9 +21,16 @@ import { useFees, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
 import { parseTransactionParam } from '../../../utils';
 import { serializeError } from '../../../utils/errors';
+import { TransactionTextDescription } from '../../atoms';
+import {
+  ActionButtons,
+  DataCard,
+  InsufficientFundsWarning,
+  TransactionHeader
+} from '../../molecules';
+import { RawTransaction } from '../../molecules/RawTransaction';
 import { Fee } from '../../organisms';
 import DisplayXRPLTransaction from '../../organisms/DisplayXRPLTransaction/DisplayXRPLTransaction';
-import { PageWithTitle } from '../../templates';
 
 interface Params {
   id: number;
@@ -42,16 +47,14 @@ export const SubmitTransaction: FC = () => {
   const [errorRequestRejection, setErrorRequestRejection] = useState<Error>();
   const [isParamsMissing, setIsParamsMissing] = useState(false);
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
+  const [isTxExpanded, setIsTxExpanded] = useState(false);
+  const [isRawTxExpanded, setIsRawTxExpanded] = useState(false);
+  const [isFeeExpanded, setIsFeeExpanded] = useState(false);
   const { submitTransaction } = useLedger();
-  const { networkName } = useNetwork();
+  const { networkName, hasOfflineBanner } = useNetwork();
   const { setTransactionProgress } = useTransactionProgress();
   const { estimatedFees, errorFees, difference } = useFees(
-    params.txParam ?? {
-      TransactionType: 'Payment',
-      Account: '',
-      Destination: '',
-      Amount: ''
-    },
+    params.txParam ?? [],
     params.txParam?.Fee ?? null
   );
 
@@ -158,82 +161,70 @@ export const SubmitTransaction: FC = () => {
 
   return (
     <>
-      <style>{`
-        .react-json-view .string-value {
-          white-space: pre-wrap; /* allow text to break onto the next line */
-          word-break: break-all; /* break long strings */
-        }
-      `}</style>
       {transactionStatusComponent ? (
         <div>{transactionStatusComponent}</div>
       ) : (
-        <PageWithTitle
-          title="Confirm Transaction"
-          styles={{ container: { justifyContent: 'initial' } }}
-        >
-          <div style={{ marginBottom: '40px' }}>
-            {!hasEnoughFunds ? (
-              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                <ErrorIcon style={{ color: ERROR_RED }} />
-                <Typography variant="body1" style={{ marginLeft: '10px', color: ERROR_RED }}>
-                  Insufficient funds.
-                </Typography>
-              </div>
-            ) : null}
-            {txParam ? (
-              <div style={{ marginTop: '5px', marginBottom: '15px' }}>
-                <Typography variant="body2" color="textSecondary" style={{ marginTop: '5px' }}>
-                  Please review the transaction below.
-                </Typography>
-              </div>
-            ) : null}
-            {txParam?.Account ? <DisplayXRPLTransaction tx={txParam} /> : null}
-            {txParam?.Account ? (
-              <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-                <Typography variant="body1">Raw Transaction:</Typography>
-                <ReactJson
-                  src={txParam}
-                  theme="summerfruit"
-                  name={null}
-                  enableClipboard={false}
-                  collapsed={false}
-                  shouldCollapse={false}
-                  onEdit={false}
-                  onAdd={false}
-                  onDelete={false}
-                  displayDataTypes={false}
-                  displayObjectSize={false}
-                  indentWidth={2}
-                />
-              </Paper>
-            ) : null}
-            <Fee
-              errorFees={errorFees}
-              estimatedFees={estimatedFees}
-              fee={txParam?.Fee ? Number(txParam?.Fee) : null}
-            />
-          </div>
-          <div
+        <>
+          <Container
+            component="main"
             style={{
+              ...(hasOfflineBanner ? { position: 'fixed', top: NETWORK_BANNER_HEIGHT } : {}),
               display: 'flex',
-              justifyContent: 'center',
-              position: 'fixed',
-              bottom: 0,
-              left: 0,
-              right: 0,
-              backgroundColor: '#1d1d1d'
+              flexDirection: 'column',
+              paddingTop: '24px',
+              paddingLeft: '18px',
+              paddingRight: '18px',
+              overflowY: 'auto',
+              height: 'auto',
+              paddingBottom: '80px',
+              backgroundColor: '#121212',
+              backgroundImage:
+                'linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05))'
             }}
           >
-            <Container style={{ display: 'flex', justifyContent: 'space-evenly', margin: '10px' }}>
-              <Button variant="contained" color="secondary" onClick={handleReject}>
-                Reject
-              </Button>
-              <Button variant="contained" onClick={handleConfirm} disabled={!hasEnoughFunds}>
-                Confirm
-              </Button>
-            </Container>
-          </div>
-        </PageWithTitle>
+            <TransactionHeader title={'Submit Transaction'} />
+            <InsufficientFundsWarning hasEnoughFunds={hasEnoughFunds} />
+            {txParam?.Account ? (
+              <>
+                <TransactionTextDescription text={'Please review the transaction below.'} />
+                <DataCard
+                  formattedData={<DisplayXRPLTransaction tx={txParam} useLegacy={false} />}
+                  dataName={'Transaction details'}
+                  isExpanded={isTxExpanded}
+                  setIsExpanded={setIsTxExpanded}
+                  paddingTop={10}
+                />
+                <DataCard
+                  formattedData={<RawTransaction transaction={txParam} />}
+                  dataName={'Raw transaction'}
+                  isExpanded={isRawTxExpanded}
+                  setIsExpanded={setIsRawTxExpanded}
+                  thresholdHeight={50}
+                  paddingTop={10}
+                />
+                <DataCard
+                  formattedData={
+                    <Fee
+                      errorFees={errorFees}
+                      estimatedFees={estimatedFees}
+                      fee={txParam?.Fee ? Number(txParam?.Fee) : null}
+                      useLegacy={false}
+                    />
+                  }
+                  isExpanded={isFeeExpanded}
+                  setIsExpanded={setIsFeeExpanded}
+                  paddingTop={10}
+                />
+              </>
+            ) : null}
+          </Container>
+          <ActionButtons
+            onClickReject={handleReject}
+            onClickApprove={handleConfirm}
+            approveButtonText={'Submit'}
+            isApproveEnabled={hasEnoughFunds}
+          />
+        </>
       )}
     </>
   );
