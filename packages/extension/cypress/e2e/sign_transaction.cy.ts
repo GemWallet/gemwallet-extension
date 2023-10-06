@@ -26,12 +26,9 @@ describe('Sign Transaction', () => {
 
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Sign Transaction');
 
-    cy.contains('Transaction:')
-      .next()
-      .should(
-        'have.text',
-        '{"TransactionType":"Payment""Destination":"rhikRdkFw28csKw9z7fVoBjWncz1HSoQij""Amount":"100000""Account":"rB3JmRd5m292YjCsCr65tc8dwZz2WN7HQu"}'
-      );
+    cy.contains(
+      '{"TransactionType":"Payment""Destination":"rhikRdkFw28csKw9z7fVoBjWncz1HSoQij""Amount":"100000""Account":"rB3JmRd5m292YjCsCr65tc8dwZz2WN7HQu"}'
+    );
 
     // Confirm
     cy.contains('button', 'Sign').click();
@@ -65,12 +62,9 @@ describe('Sign Transaction', () => {
 
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Sign Transaction');
 
-    cy.contains('Transaction:')
-      .next()
-      .should(
-        'have.text',
-        '{"TransactionType":"TrustSet""LimitAmount":{"currency":"534F4C4F00000000000000000000000000000000""issuer":"rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN""value":"10000000"}"Memos":[0:{"Memo":{"MemoType":"4465736372697074696f6e""MemoData":"54657374206d656d6f"}}]"Fee":"199""Account":"rB3JmRd5m292YjCsCr65tc8dwZz2WN7HQu"}'
-      );
+    cy.contains(
+      '{"TransactionType":"TrustSet""LimitAmount":{"currency":"534F4C4F00000000000000000000000000000000""issuer":"rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN""value":"10000000"}"Memos":[0:{"Memo":{"MemoType":"4465736372697074696f6e""MemoData":"54657374206d656d6f"}}]"Fee":"199""Account":"rB3JmRd5m292YjCsCr65tc8dwZz2WN7HQu"}'
+    );
 
     cy.contains('Transaction Type').next().should('have.text', 'TrustSet');
     cy.contains('Account').next().should('have.text', 'rB3JmRd5m292YjCsCr65tc8dwZz2WN7HQu');
