@@ -72,11 +72,15 @@ export const NFTCard: FC<NFTCardProps> = ({ NFT, layout = 'large' }) => {
           marginBottom: '10px',
           cursor: 'pointer'
         }}
-        sx={{
-          '&:hover': {
-            backgroundColor: 'rgba(255, 255, 255, 0.08)'
-          }
-        }}
+        sx={
+          layout !== 'large'
+            ? {
+                '&:hover': {
+                  backgroundColor: 'rgba(255, 255, 255, 0.08)'
+                }
+              }
+            : {}
+        }
         onClick={handleViewNFTClick}
       >
         <div
