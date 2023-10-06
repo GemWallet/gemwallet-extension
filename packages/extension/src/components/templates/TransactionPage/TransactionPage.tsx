@@ -5,13 +5,16 @@ import { Container } from '@mui/material';
 import { NETWORK_BANNER_HEIGHT } from '../../../constants';
 import { useNetwork } from '../../../contexts';
 import { TransactionTextDescription } from '../../atoms';
-import { ActionButtons, TransactionHeader } from '../../molecules';
+import { ActionButtons, InsufficientFundsWarning, TransactionHeader } from '../../molecules';
 
 export interface TransactionPageProps {
   title: string;
   description?: string;
   url?: string | null;
   favicon?: string;
+  actionButtonsDescription?: string;
+  approveButtonText?: string;
+  hasEnoughFunds?: boolean;
   onClickApprove: () => void;
   onClickReject: () => void;
 }
@@ -21,9 +24,12 @@ export const TransactionPage: FC<TransactionPageProps> = ({
   description,
   url,
   favicon,
-  children,
+  actionButtonsDescription,
+  approveButtonText,
+  hasEnoughFunds,
+  onClickApprove,
   onClickReject,
-  onClickApprove
+  children
 }) => {
   const { hasOfflineBanner } = useNetwork();
 
@@ -47,12 +53,15 @@ export const TransactionPage: FC<TransactionPageProps> = ({
       >
         <TransactionHeader title={title} favicon={favicon} url={url} />
         {description ? <TransactionTextDescription text={description} /> : null}
+        <InsufficientFundsWarning hasEnoughFunds={hasEnoughFunds} />
         {children}
       </Container>
       <ActionButtons
         onClickReject={onClickReject}
         onClickApprove={onClickApprove}
-        headerText="Only sign messages with a website you trust."
+        headerText={actionButtonsDescription}
+        approveButtonText={approveButtonText}
+        isApproveEnabled={hasEnoughFunds !== false}
       />
     </>
   );

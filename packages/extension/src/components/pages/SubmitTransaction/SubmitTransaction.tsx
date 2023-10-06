@@ -1,6 +1,5 @@
 import { FC, useCallback, useEffect, useState } from 'react';
 
-import { Container } from '@mui/material';
 import { Transaction } from 'xrpl';
 
 import {
@@ -10,7 +9,6 @@ import {
   ResponseType
 } from '@gemwallet/constants';
 
-import { NETWORK_BANNER_HEIGHT } from '../../../constants';
 import {
   TransactionProgressStatus,
   useLedger,
@@ -21,16 +19,11 @@ import { useFees, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
 import { parseTransactionParam } from '../../../utils';
 import { serializeError } from '../../../utils/errors';
-import { TransactionTextDescription } from '../../atoms';
-import {
-  ActionButtons,
-  DataCard,
-  InsufficientFundsWarning,
-  TransactionHeader
-} from '../../molecules';
+import { DataCard } from '../../molecules';
 import { RawTransaction } from '../../molecules/RawTransaction';
 import { Fee } from '../../organisms';
 import DisplayXRPLTransaction from '../../organisms/DisplayXRPLTransaction/DisplayXRPLTransaction';
+import { TransactionPage } from '../../templates';
 
 interface Params {
   id: number;
@@ -51,7 +44,7 @@ export const SubmitTransaction: FC = () => {
   const [isRawTxExpanded, setIsRawTxExpanded] = useState(false);
   const [isFeeExpanded, setIsFeeExpanded] = useState(false);
   const { submitTransaction } = useLedger();
-  const { networkName, hasOfflineBanner } = useNetwork();
+  const { networkName } = useNetwork();
   const { setTransactionProgress } = useTransactionProgress();
   const { estimatedFees, errorFees, difference } = useFees(
     params.txParam ?? [],
@@ -165,28 +158,16 @@ export const SubmitTransaction: FC = () => {
         <div>{transactionStatusComponent}</div>
       ) : (
         <>
-          <Container
-            component="main"
-            style={{
-              ...(hasOfflineBanner ? { position: 'fixed', top: NETWORK_BANNER_HEIGHT } : {}),
-              display: 'flex',
-              flexDirection: 'column',
-              paddingTop: '24px',
-              paddingLeft: '18px',
-              paddingRight: '18px',
-              overflowY: 'auto',
-              height: 'auto',
-              paddingBottom: '80px',
-              backgroundColor: '#121212',
-              backgroundImage:
-                'linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05))'
-            }}
+          <TransactionPage
+            title="Submit Transaction"
+            description="Please review the transaction below."
+            approveButtonText="Submit"
+            hasEnoughFunds={hasEnoughFunds}
+            onClickApprove={handleConfirm}
+            onClickReject={handleReject}
           >
-            <TransactionHeader title={'Submit Transaction'} />
-            <InsufficientFundsWarning hasEnoughFunds={hasEnoughFunds} />
             {txParam?.Account ? (
               <>
-                <TransactionTextDescription text={'Please review the transaction below.'} />
                 <DataCard
                   formattedData={<DisplayXRPLTransaction tx={txParam} useLegacy={false} />}
                   dataName={'Transaction details'}
@@ -217,13 +198,7 @@ export const SubmitTransaction: FC = () => {
                 />
               </>
             ) : null}
-          </Container>
-          <ActionButtons
-            onClickReject={handleReject}
-            onClickApprove={handleConfirm}
-            approveButtonText={'Submit'}
-            isApproveEnabled={hasEnoughFunds}
-          />
+          </TransactionPage>
         </>
       )}
     </>
