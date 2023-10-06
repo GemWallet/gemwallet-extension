@@ -90,7 +90,7 @@ const KeyValueDisplay: FC<KeyValueDisplayProps> = ({ keyName, value, hasTooltip,
   );
 };
 
-export const DisplayXRPLTransaction: FC<XRPLTxProps> = ({ tx, useLegacy = true }) => {
+export const XRPLTransaction: FC<XRPLTxProps> = ({ tx, useLegacy = true }) => {
   const keyMap: Record<string, (value: any) => JSX.Element | null> = {
     TransactionType: (value: string) =>
       renderSimpleText({
@@ -295,5 +295,3 @@ export const DisplayXRPLTransaction: FC<XRPLTxProps> = ({ tx, useLegacy = true }
 
   return <>{renderKeys(useLegacy)}</>;
 };
-
-export default DisplayXRPLTransaction;

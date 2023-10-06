@@ -24,8 +24,8 @@ import { useFees, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
 import { parseTransactionParam } from '../../../utils';
 import { serializeError } from '../../../utils/errors';
+import { XRPLTransaction } from '../../molecules';
 import { Fee } from '../../organisms';
-import DisplayXRPLTransaction from '../../organisms/DisplayXRPLTransaction/DisplayXRPLTransaction';
 import { PageWithTitle } from '../../templates';
 
 interface Params {
@@ -203,7 +203,7 @@ export const SignTransaction: FC = () => {
                 </Typography>
               </div>
             ) : null}
-            {txParam?.Account ? <DisplayXRPLTransaction tx={txParam} /> : null}
+            {txParam?.Account ? <XRPLTransaction tx={txParam} /> : null}
             {txParam?.Account ? (
               <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
                 <Typography variant="body1">Raw Transaction:</Typography>

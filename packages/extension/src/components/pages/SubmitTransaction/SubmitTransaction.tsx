@@ -19,11 +19,8 @@ import { useFees, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
 import { parseTransactionParam } from '../../../utils';
 import { serializeError } from '../../../utils/errors';
-import { DataCard } from '../../molecules';
-import { RawTransaction } from '../../molecules/RawTransaction';
-import { Fee } from '../../organisms';
-import DisplayXRPLTransaction from '../../organisms/DisplayXRPLTransaction/DisplayXRPLTransaction';
-import { LoadingOverlay, TransactionPage } from '../../templates';
+import { TransactionDetails } from '../../organisms';
+import { TransactionPage } from '../../templates';
 
 interface Params {
   id: number;
@@ -40,9 +37,6 @@ export const SubmitTransaction: FC = () => {
   const [errorRequestRejection, setErrorRequestRejection] = useState<Error>();
   const [isParamsMissing, setIsParamsMissing] = useState(false);
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
-  const [isTxExpanded, setIsTxExpanded] = useState(false);
-  const [isRawTxExpanded, setIsRawTxExpanded] = useState(false);
-  const [isFeeExpanded, setIsFeeExpanded] = useState(false);
   const { submitTransaction } = useLedger();
   const { networkName } = useNetwork();
   const { setTransactionProgress } = useTransactionProgress();
@@ -157,51 +151,20 @@ export const SubmitTransaction: FC = () => {
       {transactionStatusComponent ? (
         <div>{transactionStatusComponent}</div>
       ) : (
-        <>
-          <TransactionPage
-            title="Submit Transaction"
-            description="Please review the transaction below."
-            approveButtonText="Submit"
-            hasEnoughFunds={hasEnoughFunds}
-            onClickApprove={handleConfirm}
-            onClickReject={handleReject}
-          >
-            {txParam?.Account ? (
-              <>
-                <DataCard
-                  formattedData={<DisplayXRPLTransaction tx={txParam} useLegacy={false} />}
-                  dataName={'Transaction details'}
-                  isExpanded={isTxExpanded}
-                  setIsExpanded={setIsTxExpanded}
-                  paddingTop={10}
-                />
-                <DataCard
-                  formattedData={<RawTransaction transaction={txParam} fontSize={12} />}
-                  dataName={'Raw transaction'}
-                  isExpanded={isRawTxExpanded}
-                  setIsExpanded={setIsRawTxExpanded}
-                  thresholdHeight={50}
-                  paddingTop={10}
-                />
-                <DataCard
-                  formattedData={
-                    <Fee
-                      errorFees={errorFees}
-                      estimatedFees={estimatedFees}
-                      fee={txParam?.Fee ? Number(txParam?.Fee) : null}
-                      useLegacy={false}
-                    />
-                  }
-                  isExpanded={isFeeExpanded}
-                  setIsExpanded={setIsFeeExpanded}
-                  paddingTop={10}
-                />
-              </>
-            ) : (
-              <LoadingOverlay />
-            )}
-          </TransactionPage>
-        </>
+        <TransactionPage
+          title="Submit Transaction"
+          description="Please review the transaction below."
+          approveButtonText="Submit"
+          hasEnoughFunds={hasEnoughFunds}
+          onClickApprove={handleConfirm}
+          onClickReject={handleReject}
+        >
+          <TransactionDetails
+            txParam={txParam}
+            estimatedFees={estimatedFees}
+            errorFees={errorFees}
+          />
+        </TransactionPage>
       )}
     </>
   );
