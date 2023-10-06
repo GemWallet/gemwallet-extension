@@ -1,8 +1,5 @@
 import { FC, useCallback, useEffect, useState } from 'react';
 
-import ErrorIcon from '@mui/icons-material/Error';
-import { Button, Container, Paper, Typography } from '@mui/material';
-import ReactJson from 'react-json-view';
 import { Transaction } from 'xrpl';
 
 import {
@@ -12,7 +9,6 @@ import {
   ResponseType
 } from '@gemwallet/constants';
 
-import { ERROR_RED, SECONDARY_GRAY } from '../../../constants';
 import {
   TransactionProgressStatus,
   useLedger,
@@ -24,9 +20,8 @@ import { useFees, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
 import { parseTransactionParam } from '../../../utils';
 import { serializeError } from '../../../utils/errors';
-import { XRPLTransaction } from '../../molecules';
-import { Fee } from '../../organisms';
-import { PageWithTitle } from '../../templates';
+import { TransactionDetails } from '../../organisms';
+import { TransactionPage } from '../../templates';
 
 interface Params {
   id: number;
@@ -178,93 +173,21 @@ export const SignTransaction: FC = () => {
       {transactionStatusComponent ? (
         <div>{transactionStatusComponent}</div>
       ) : (
-        <PageWithTitle
+        <TransactionPage
           title="Sign Transaction"
-          styles={{ container: { justifyContent: 'initial' } }}
+          description="You are about to sign a transaction, which means that you will grant permission to the third party that initiated this transaction, to submit it to the XRP Ledger on your behalf later."
+          actionButtonsDescription="Only sign transactions with a website you trust."
+          hasEnoughFunds={hasEnoughFunds}
+          onClickApprove={handleSign}
+          onClickReject={handleReject}
         >
-          <div style={{ marginBottom: '70px' }}>
-            {!hasEnoughFunds ? (
-              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                <ErrorIcon style={{ color: ERROR_RED }} />
-                <Typography variant="body1" style={{ marginLeft: '10px', color: ERROR_RED }}>
-                  Insufficient funds.
-                </Typography>
-              </div>
-            ) : null}
-            {txParam ? (
-              <div style={{ marginTop: '5px', marginBottom: '15px' }}>
-                <Typography variant="body2" color="textSecondary" style={{ marginTop: '5px' }}>
-                  You are about to sign a transaction, which means that you will grant permission to
-                  the third party that initiated this transaction, to submit it to the XRP Ledger on
-                  your behalf later.
-                </Typography>
-                <Typography variant="body2" color="textSecondary" style={{ marginTop: '15px' }}>
-                  Please review the transaction below.
-                </Typography>
-              </div>
-            ) : null}
-            {txParam?.Account ? <XRPLTransaction tx={txParam} /> : null}
-            {txParam?.Account ? (
-              <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-                <Typography variant="body1">Raw Transaction:</Typography>
-                <ReactJson
-                  src={txParam}
-                  theme="summerfruit"
-                  name={null}
-                  enableClipboard={false}
-                  collapsed={false}
-                  shouldCollapse={false}
-                  onEdit={false}
-                  onAdd={false}
-                  onDelete={false}
-                  displayDataTypes={false}
-                  displayObjectSize={false}
-                  indentWidth={2}
-                />
-              </Paper>
-            ) : null}
-            {isConnectionFailed ? null : (
-              <Fee
-                errorFees={errorFees}
-                estimatedFees={estimatedFees}
-                fee={txParam?.Fee ? Number(txParam?.Fee) : null}
-              />
-            )}
-          </div>
-          <div
-            style={{
-              position: 'fixed',
-              bottom: 0,
-              left: 0,
-              right: 0,
-              backgroundColor: '#1d1d1d',
-              padding: '10px 0'
-            }}
-          >
-            <Container>
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}
-              >
-                <Typography style={{ color: SECONDARY_GRAY, marginBottom: '10px' }}>
-                  Only sign with a website you trust
-                </Typography>
-                <div style={{ display: 'flex', justifyContent: 'space-evenly', width: '100%' }}>
-                  <Button variant="contained" color="secondary" onClick={handleReject}>
-                    Reject
-                  </Button>
-                  <Button variant="contained" onClick={handleSign} disabled={!hasEnoughFunds}>
-                    Sign
-                  </Button>
-                </div>
-              </div>
-            </Container>
-          </div>
-        </PageWithTitle>
+          <TransactionDetails
+            txParam={txParam}
+            estimatedFees={estimatedFees}
+            errorFees={errorFees}
+            isConnectionFailed={isConnectionFailed}
+          />
+        </TransactionPage>
       )}
     </>
   );

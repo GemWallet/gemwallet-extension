@@ -10,12 +10,14 @@ interface TransactionDetailsProps {
   txParam: Transaction | null;
   estimatedFees: string;
   errorFees?: string;
+  isConnectionFailed?: boolean;
 }
 
 export const TransactionDetails: FC<TransactionDetailsProps> = ({
   txParam,
   errorFees,
-  estimatedFees
+  estimatedFees,
+  isConnectionFailed
 }) => {
   const [isTxExpanded, setIsTxExpanded] = useState(false);
   const [isRawTxExpanded, setIsRawTxExpanded] = useState(false);
@@ -42,19 +44,21 @@ export const TransactionDetails: FC<TransactionDetailsProps> = ({
         thresholdHeight={50}
         paddingTop={10}
       />
-      <DataCard
-        formattedData={
-          <Fee
-            errorFees={errorFees}
-            estimatedFees={estimatedFees}
-            fee={txParam?.Fee ? Number(txParam?.Fee) : null}
-            useLegacy={false}
-          />
-        }
-        isExpanded={isFeeExpanded}
-        setIsExpanded={setIsFeeExpanded}
-        paddingTop={10}
-      />
+      {isConnectionFailed ? null : (
+        <DataCard
+          formattedData={
+            <Fee
+              errorFees={errorFees}
+              estimatedFees={estimatedFees}
+              fee={txParam?.Fee ? Number(txParam?.Fee) : null}
+              useLegacy={false}
+            />
+          }
+          isExpanded={isFeeExpanded}
+          setIsExpanded={setIsFeeExpanded}
+          paddingTop={10}
+        />
+      )}
     </>
   );
 };
