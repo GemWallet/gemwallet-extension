@@ -152,6 +152,7 @@ export const SignMessage: FC = () => {
       description="Signing this message will prove your ownership of the wallet."
       url={url}
       favicon={favicon}
+      actionButtonsDescription="Only sign messages with a website you trust."
       onClickApprove={handleSign}
       onClickReject={handleReject}
     >
