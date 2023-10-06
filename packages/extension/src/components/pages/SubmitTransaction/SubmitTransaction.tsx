@@ -176,7 +176,7 @@ export const SubmitTransaction: FC = () => {
                   paddingTop={10}
                 />
                 <DataCard
-                  formattedData={<RawTransaction transaction={txParam} />}
+                  formattedData={<RawTransaction transaction={txParam} fontSize={12} />}
                   dataName={'Raw transaction'}
                   isExpanded={isRawTxExpanded}
                   setIsExpanded={setIsRawTxExpanded}
