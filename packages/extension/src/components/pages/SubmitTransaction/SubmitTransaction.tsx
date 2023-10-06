@@ -23,7 +23,7 @@ import { DataCard } from '../../molecules';
 import { RawTransaction } from '../../molecules/RawTransaction';
 import { Fee } from '../../organisms';
 import DisplayXRPLTransaction from '../../organisms/DisplayXRPLTransaction/DisplayXRPLTransaction';
-import { TransactionPage } from '../../templates';
+import { LoadingOverlay, TransactionPage } from '../../templates';
 
 interface Params {
   id: number;
@@ -197,7 +197,9 @@ export const SubmitTransaction: FC = () => {
                   paddingTop={10}
                 />
               </>
-            ) : null}
+            ) : (
+              <LoadingOverlay />
+            )}
           </TransactionPage>
         </>
       )}
