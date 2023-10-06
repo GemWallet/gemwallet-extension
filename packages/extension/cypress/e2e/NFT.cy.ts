@@ -221,10 +221,10 @@ describe('Mint', () => {
     // Confirm
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Accept NFT Offer');
 
-    cy.contains('NFT Token Sell Offer:').next().should('have.text', this.OfferID);
+    cy.contains('NFT Token Sell Offer').next().should('have.text', this.OfferID);
 
     // Confirm
-    cy.contains('button', 'Confirm').click();
+    cy.contains('button', 'Submit').click();
 
     cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction in progress');
     cy.get('p[data-testid="transaction-subtitle"]').should(
@@ -252,12 +252,12 @@ describe('Mint', () => {
     // Confirm
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Accept NFT Offer');
 
-    cy.contains('NFT Token Sell Offer:').next().should('have.text', this.OfferID);
+    cy.contains('NFT Token Sell Offer').next().should('have.text', this.OfferID);
 
-    cy.contains('Broker Fee:').next().should('have.text', '0.1 SOLO');
+    cy.contains('NFT Token Broker Fee').next().should('have.text', '0.1 SOLO');
 
     // Confirm
-    cy.contains('button', 'Confirm').click();
+    cy.contains('button', 'Submit').click();
 
     // Since we are trying to accept our own offer, we should get an error
     // But this means that the transaction was submitted successfully
@@ -279,12 +279,12 @@ describe('Mint', () => {
     // Confirm
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Accept NFT Offer');
 
-    cy.contains('NFT Token Sell Offer:').next().should('have.text', this.OfferID);
+    cy.contains('NFT Token Sell Offer').next().should('have.text', this.OfferID);
 
-    cy.contains('Broker Fee:').next().should('have.text', '0.1 SOLO');
+    cy.contains('NFT Token Broker Fee').next().should('have.text', '0.1 SOLO');
 
     // Confirm
-    cy.contains('button', 'Confirm').click();
+    cy.contains('button', 'Submit').click();
 
     // Since we are trying to accept our own offer, we should get an error
     // But this means that the transaction was submitted successfully

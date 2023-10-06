@@ -26,13 +26,10 @@ import {
 } from 'xrpl';
 import { AccountInfoResponse } from 'xrpl/dist/npm/models/methods/accountInfo';
 import { NFTInfoResponse } from 'xrpl/dist/npm/models/methods/nftInfo';
-import { BaseTransaction } from 'xrpl/dist/npm/models/transactions/common';
 
 import {
-  AcceptNFTOfferRequest,
   AccountNFToken,
   AccountNFTokenResponse,
-  BaseTransactionRequest,
   BurnNFTRequest,
   CancelNFTOfferRequest,
   CancelOfferRequest,
@@ -54,12 +51,12 @@ import {
   TransactionWithID
 } from '@gemwallet/constants';
 
-import { AccountTransaction, WalletLedger } from '../../types';
-import { toXRPLMemos, toXRPLSigners } from '../../utils';
+import { AccountTransaction } from '../../types';
 import { toUIError } from '../../utils/errors';
 import { resolveNFTData } from '../../utils/NFTDataResolver';
 import { useNetwork } from '../NetworkContext';
 import { useWallet } from '../WalletContext';
+import { buildBaseTransaction } from './utils/buildXRPLTransaction';
 import { connectToLedger } from './utils/connectToLedger';
 
 interface FundWalletResponse {
@@ -130,7 +127,7 @@ export interface LedgerContextType {
   mintNFT: (payload: MintNFTRequest) => Promise<NFTokenIDResponse>;
   createNFTOffer: (payload: CreateNFTOfferRequest) => Promise<CreateNFTOfferResponse>;
   cancelNFTOffer: (payload: CancelNFTOfferRequest) => Promise<CancelNFTOfferResponse>;
-  acceptNFTOffer: (payload: AcceptNFTOfferRequest) => Promise<AcceptNFTOfferResponse>;
+  acceptNFTOffer: (payload: NFTokenAcceptOffer) => Promise<AcceptNFTOfferResponse>;
   burnNFT: (payload: BurnNFTRequest) => Promise<BurnNFTResponse>;
   setAccount: (payload: SetAccountRequest) => Promise<SetAccountResponse>;
   createOffer: (payload: CreateOfferRequest) => Promise<CreateOfferResponse>;
@@ -505,7 +502,7 @@ const LedgerProvider: FC = ({ children }) => {
   );
 
   const acceptNFTOffer = useCallback(
-    async (payload: AcceptNFTOfferRequest) => {
+    async (payload: NFTokenAcceptOffer) => {
       const wallet = getCurrentWallet();
       if (!client) {
         throw new Error('You need to be connected to a ledger');
@@ -513,19 +510,7 @@ const LedgerProvider: FC = ({ children }) => {
         throw new Error('You need to have a wallet connected');
       } else {
         try {
-          const tx = await client.submitAndWait(
-            {
-              ...(buildBaseTransaction(
-                payload,
-                wallet,
-                'NFTokenAcceptOffer'
-              ) as NFTokenAcceptOffer),
-              ...(payload.NFTokenSellOffer && { NFTokenSellOffer: payload.NFTokenSellOffer }),
-              ...(payload.NFTokenBuyOffer && { NFTokenBuyOffer: payload.NFTokenBuyOffer }),
-              ...(payload.NFTokenBrokerFee && { NFTokenBrokerFee: payload.NFTokenBrokerFee })
-            },
-            { wallet: wallet.wallet }
-          );
+          const tx = await client.submitAndWait(payload, { wallet: wallet.wallet });
 
           if (!tx.result.hash) {
             throw new Error("Couldn't accept the NFT offer");
@@ -975,36 +960,6 @@ const LedgerProvider: FC = ({ children }) => {
     },
     [client]
   );
-
-  const buildBaseTransaction = (
-    payload: BaseTransactionRequest,
-    wallet: WalletLedger,
-    txType:
-      | 'NFTokenMint'
-      | 'Payment'
-      | 'TrustSet'
-      | 'NFTokenCreateOffer'
-      | 'NFTokenCancelOffer'
-      | 'NFTokenAcceptOffer'
-      | 'NFTokenBurn'
-      | 'AccountSet'
-      | 'OfferCreate'
-      | 'OfferCancel'
-      | 'AccountDelete'
-  ): BaseTransaction => ({
-    TransactionType: txType,
-    Account: wallet.publicAddress,
-    ...(payload.fee && { Fee: payload.fee }),
-    ...(payload.sequence && { Sequence: payload.sequence }),
-    ...(payload.accountTxnID && { AccountTxnID: payload.accountTxnID }),
-    ...(payload.lastLedgerSequence && { LastLedgerSequence: payload.lastLedgerSequence }),
-    ...(payload.memos && { Memos: toXRPLMemos(payload.memos) }), // Each field of each memo is hex encoded
-    ...(payload.signers && { Signers: toXRPLSigners(payload.signers) }),
-    ...(payload.sourceTag && { SourceTag: payload.sourceTag }),
-    ...(payload.signingPubKey && { SigningPubKey: payload.signingPubKey }),
-    ...(payload.ticketSequence && { TicketSequence: payload.ticketSequence }),
-    ...(payload.txnSignature && { TxnSignature: payload.txnSignature })
-  });
 
   const getNFTData = useCallback(
     async ({ NFT }: NFTImageRequest) => {

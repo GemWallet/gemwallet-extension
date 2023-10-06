@@ -9,6 +9,7 @@ import { formatAmount, formatFlags, formatTransferFee } from '../../../utils';
 
 type XRPLTxProps = {
   tx: Transaction;
+  displayTransactionType?: boolean;
   useLegacy?: boolean;
 };
 
@@ -90,7 +91,11 @@ const KeyValueDisplay: FC<KeyValueDisplayProps> = ({ keyName, value, hasTooltip,
   );
 };
 
-export const XRPLTransaction: FC<XRPLTxProps> = ({ tx, useLegacy = true }) => {
+export const XRPLTransaction: FC<XRPLTxProps> = ({
+  tx,
+  displayTransactionType = true,
+  useLegacy = true
+}) => {
   const keyMap: Record<string, (value: any) => JSX.Element | null> = {
     TransactionType: (value: string) =>
       renderSimpleText({
@@ -273,6 +278,10 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({ tx, useLegacy = true }) => {
     return orderedEntries.map(([key, value]) => {
       // Do not display null values
       if (!value) {
+        return null;
+      }
+
+      if (key === 'TransactionType' && !displayTransactionType) {
         return null;
       }
 
