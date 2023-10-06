@@ -61,7 +61,9 @@ describe('NFTCard', () => {
     renderNFTCard({ NFT: mockNFT });
 
     await waitFor(() => expect(mockGetNFTData).toHaveBeenCalled());
-    expect(screen.getByTestId('OpenInNewOutlinedIcon')).toBeInTheDocument();
+    expect(
+      screen.getByText("Room #1 of Ekiserrepe's Oniric Lo-Fi Rooms Vol.1")
+    ).toBeInTheDocument();
   });
 
   test('handles error when fetching NFT data', async () => {
