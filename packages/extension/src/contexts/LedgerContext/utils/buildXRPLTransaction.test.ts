@@ -2,8 +2,15 @@ import { WalletLedger } from '../../../types';
 import {
   buildBaseTransaction,
   buildNFTokenAcceptOffer,
+  buildNFTokenBurn,
   buildNFTokenCancelOffer
 } from './buildXRPLTransaction';
+
+const wallet: WalletLedger = {
+  name: 'name',
+  publicAddress: 'publicAddress',
+  wallet: {} as any
+};
 
 describe('buildBaseTransaction', () => {
   it('should build base transaction correctly', () => {
@@ -12,12 +19,6 @@ describe('buildBaseTransaction', () => {
       sequence: 1,
       accountTxnID: 'txn123',
       lastLedgerSequence: 1000
-    };
-
-    const wallet: WalletLedger = {
-      name: 'name',
-      publicAddress: 'publicAddress',
-      wallet: {} as any
     };
 
     const txType = 'Payment';
@@ -40,12 +41,6 @@ describe('buildNFTokenAcceptOffer', () => {
       NFTokenBrokerFee: 'brokerFee'
     };
 
-    const wallet: WalletLedger = {
-      name: 'name',
-      publicAddress: 'publicAddress',
-      wallet: {} as any
-    };
-
     const result = buildNFTokenAcceptOffer(params, wallet);
 
     expect(result.TransactionType).toEqual('NFTokenAcceptOffer');
@@ -56,16 +51,28 @@ describe('buildNFTokenAcceptOffer', () => {
   });
 });
 
+describe('buildNFTokenBurn', () => {
+  it('should build NFTokenBurn with NFTokenID and Owner correctly', () => {
+    const params = {
+      NFTokenID: 'tokenId',
+      owner: 'ownerAddress'
+    };
+
+    const result = buildNFTokenBurn(params, wallet);
+
+    expect(result.NFTokenID).toEqual('tokenId');
+    expect(result.Owner).toEqual('ownerAddress');
+
+    const result2 = buildNFTokenBurn({ NFTokenID: 'tokenId' }, wallet);
+    expect(result2.NFTokenID).toEqual('tokenId');
+    expect(result2.Owner).toEqual(undefined);
+  });
+});
+
 describe('buildNFTokenCancelOffer', () => {
   it('should build NFTokenCancelOffer correctly', () => {
     const params = {
       NFTokenOffers: ['offer1', 'offer2']
-    };
-
-    const wallet: WalletLedger = {
-      name: 'name',
-      publicAddress: 'publicAddress',
-      wallet: {} as any
     };
 
     const result = buildNFTokenCancelOffer(params, wallet);

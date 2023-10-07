@@ -324,10 +324,10 @@ describe('Mint', () => {
     // Confirm
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Burn NFT');
 
-    cy.contains('NFT Token ID:').next().should('have.text', this.NFTokenID);
+    cy.contains('NFT Token ID').next().should('have.text', this.NFTokenID);
 
     // Confirm
-    cy.contains('button', 'Confirm').click();
+    cy.contains('button', 'Submit').click();
 
     cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction in progress');
     cy.get('p[data-testid="transaction-subtitle"]').should(

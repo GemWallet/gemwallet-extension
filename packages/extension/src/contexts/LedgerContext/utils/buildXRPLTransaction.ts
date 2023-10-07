@@ -1,9 +1,10 @@
-import { NFTokenAcceptOffer, NFTokenCancelOffer } from 'xrpl';
+import { NFTokenAcceptOffer, NFTokenBurn, NFTokenCancelOffer } from 'xrpl';
 import { BaseTransaction } from 'xrpl/dist/npm/models/transactions/common';
 
 import {
   AcceptNFTOfferRequest,
   BaseTransactionRequest,
+  BurnNFTRequest,
   CancelNFTOfferRequest
 } from '@gemwallet/constants';
 
@@ -23,6 +24,14 @@ export const buildNFTokenAcceptOffer = (
     ...(params.NFTokenSellOffer && { NFTokenSellOffer: params.NFTokenSellOffer }),
     ...(params.NFTokenBuyOffer && { NFTokenBuyOffer: params.NFTokenBuyOffer }),
     ...(params.NFTokenBrokerFee && { NFTokenBrokerFee: params.NFTokenBrokerFee })
+  };
+};
+
+export const buildNFTokenBurn = (params: BurnNFTRequest, wallet: WalletLedger): NFTokenBurn => {
+  return {
+    ...(buildBaseTransaction(params, wallet, 'NFTokenBurn') as NFTokenBurn),
+    ...(params.NFTokenID && { NFTokenID: params.NFTokenID }),
+    ...(params.owner && { Owner: params.owner })
   };
 };
 

@@ -111,7 +111,8 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
       }),
     Account: (value: string) =>
       renderSimpleText({ title: 'Account', value, hasTooltip: true, useLegacy }),
-    NFTokenID: (value: string) => renderSimpleText({ title: 'NFT Token ID', value, useLegacy }),
+    NFTokenID: (value: string) =>
+      renderSimpleText({ title: 'NFT Token ID', value, hasTooltip: true, useLegacy }),
     Destination: (value: string) =>
       renderSimpleText({ title: 'Destination', value, hasTooltip: true, useLegacy }),
     DestinationTag: (value?: number) =>

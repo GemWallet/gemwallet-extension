@@ -30,7 +30,6 @@ import { NFTInfoResponse } from 'xrpl/dist/npm/models/methods/nftInfo';
 import {
   AccountNFToken,
   AccountNFTokenResponse,
-  BurnNFTRequest,
   CancelOfferRequest,
   CreateNFTOfferRequest,
   CreateOfferRequest,
@@ -127,7 +126,7 @@ export interface LedgerContextType {
   createNFTOffer: (payload: CreateNFTOfferRequest) => Promise<CreateNFTOfferResponse>;
   cancelNFTOffer: (payload: NFTokenCancelOffer) => Promise<CancelNFTOfferResponse>;
   acceptNFTOffer: (payload: NFTokenAcceptOffer) => Promise<AcceptNFTOfferResponse>;
-  burnNFT: (payload: BurnNFTRequest) => Promise<BurnNFTResponse>;
+  burnNFT: (payload: NFTokenBurn) => Promise<BurnNFTResponse>;
   setAccount: (payload: SetAccountRequest) => Promise<SetAccountResponse>;
   createOffer: (payload: CreateOfferRequest) => Promise<CreateOfferResponse>;
   cancelOffer: (payload: CancelOfferRequest) => Promise<CancelOfferResponse>;
@@ -525,7 +524,7 @@ const LedgerProvider: FC = ({ children }) => {
   );
 
   const burnNFT = useCallback(
-    async (payload: BurnNFTRequest) => {
+    async (payload: NFTokenBurn) => {
       const wallet = getCurrentWallet();
       if (!client) {
         throw new Error('You need to be connected to a ledger');
@@ -533,14 +532,7 @@ const LedgerProvider: FC = ({ children }) => {
         throw new Error('You need to have a wallet connected');
       } else {
         try {
-          const tx = await client.submitAndWait(
-            {
-              ...(buildBaseTransaction(payload, wallet, 'NFTokenBurn') as NFTokenBurn),
-              NFTokenID: payload.NFTokenID,
-              ...(payload.owner && { Owner: payload.owner })
-            },
-            { wallet: wallet.wallet }
-          );
+          const tx = await client.submitAndWait(payload, { wallet: wallet.wallet });
 
           if (!tx.result.hash) {
             throw new Error("Couldn't burn the NFT");
