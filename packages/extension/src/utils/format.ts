@@ -64,6 +64,9 @@ export const formatToken = (value: number, currency: string = 'XRP', isDrops = f
   return `${formatValue(value)} ${currency.toUpperCase()}`;
 };
 
+const LABEL_OFFER_TYPE = 'Offer type';
+const LABEL_SELL_OFFER = 'Sell offer';
+const LABEL_BUY_OFFER = 'Buy offer';
 export const formatFlags = (
   flags:
     | PaymentFlags
@@ -72,8 +75,32 @@ export const formatFlags = (
     | CreateNFTOfferFlags
     | SetAccountFlags
     | CreateOfferFlags
-    | GlobalFlags
+    | GlobalFlags,
+  flagsType?: 'NFTokenCreateOffer' | string
 ) => {
+  if (flagsType === 'NFTokenCreateOffer') {
+    if (typeof flags === 'number') {
+      if (flags & 0x00000001) {
+        return `${LABEL_OFFER_TYPE}: ${LABEL_SELL_OFFER}`;
+      }
+      if (flags & 0x00000000) {
+        return `${LABEL_OFFER_TYPE}: ${LABEL_BUY_OFFER}`;
+      }
+    }
+
+    if (typeof flags === 'object') {
+      return Object.entries(flags)
+        .map(([key, value]) => {
+          if (key === 'tfSellNFToken') {
+            return `${LABEL_OFFER_TYPE}: ${value ? LABEL_SELL_OFFER : LABEL_BUY_OFFER}`;
+          }
+          return `${key}: ${value}`;
+        })
+        .join('\n');
+    }
+  }
+
+  // Fallback
   if (typeof flags === 'object') {
     return Object.entries(flags)
       .map(([key, value]) => `${key}: ${value}`)

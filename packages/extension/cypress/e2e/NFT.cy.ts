@@ -100,15 +100,15 @@ describe('Mint', () => {
     // Confirm
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Create NFT Offer');
 
-    cy.contains('NFT Token ID:').next().should('have.text', this.NFTokenID);
-    cy.contains('Amount:').next().should('have.text', '50 XRP');
-    cy.contains('Memos:').next().should('have.text', 'Test memo');
-    cy.contains('Flags:')
+    cy.contains('NFT Token ID').next().should('have.text', this.NFTokenID);
+    cy.contains('Amount').next().should('have.text', '50 XRP');
+    cy.contains('Memo').next().should('have.text', 'Test memo');
+    cy.contains('Flags')
       .next()
-      .should('have.text', formatFlags({ tfSellNFToken: true }));
+      .should('have.text', formatFlags({ tfSellNFToken: true }, 'NFTokenCreateOffer'));
 
     // Confirm
-    cy.contains('button', 'Confirm').click();
+    cy.contains('button', 'Submit').click();
 
     cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction in progress');
     cy.get('p[data-testid="transaction-subtitle"]').should(
@@ -135,15 +135,15 @@ describe('Mint', () => {
     // Confirm
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Create NFT Offer');
 
-    cy.contains('NFT Token ID:').next().should('have.text', this.NFTokenID);
-    cy.contains('Amount:').next().should('have.text', '0.4 SOLO');
-    cy.contains('Memos:').next().should('have.text', 'Test memo');
-    cy.contains('Flags:')
+    cy.contains('NFT Token ID').next().should('have.text', this.NFTokenID);
+    cy.contains('Amount').next().should('have.text', '0.4 SOLO');
+    cy.contains('Memo').next().should('have.text', 'Test memo');
+    cy.contains('Flags')
       .next()
-      .should('have.text', formatFlags({ tfSellNFToken: true }));
+      .should('have.text', formatFlags({ tfSellNFToken: true }, 'NFTokenCreateOffer'));
 
     // Confirm
-    cy.contains('button', 'Confirm').click();
+    cy.contains('button', 'Submit').click();
 
     cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction in progress');
     cy.get('p[data-testid="transaction-subtitle"]').should(
@@ -170,15 +170,15 @@ describe('Mint', () => {
     // Confirm
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Create NFT Offer');
 
-    cy.contains('NFT Token ID:').next().should('have.text', this.NFTokenID);
-    cy.contains('Amount:').next().should('have.text', '0.4 SOLO');
-    cy.contains('Memos:').next().should('have.text', 'Test memo');
-    cy.contains('Flags:')
+    cy.contains('NFT Token ID').next().should('have.text', this.NFTokenID);
+    cy.contains('Amount').next().should('have.text', '0.4 SOLO');
+    cy.contains('Memo').next().should('have.text', 'Test memo');
+    cy.contains('Flags')
       .next()
-      .should('have.text', formatFlags({ tfSellNFToken: true }));
+      .should('have.text', formatFlags({ tfSellNFToken: true }, 'NFTokenCreateOffer'));
 
     // Confirm
-    cy.contains('button', 'Confirm').click();
+    cy.contains('button', 'Submit').click();
 
     cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction in progress');
     cy.get('p[data-testid="transaction-subtitle"]').should(

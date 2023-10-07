@@ -1,15 +1,21 @@
-import { NFTokenAcceptOffer, NFTokenBurn, NFTokenCancelOffer } from 'xrpl';
+import { NFTokenAcceptOffer, NFTokenBurn, NFTokenCancelOffer, NFTokenCreateOffer } from 'xrpl';
 import { BaseTransaction } from 'xrpl/dist/npm/models/transactions/common';
 
 import {
   AcceptNFTOfferRequest,
   BaseTransactionRequest,
   BurnNFTRequest,
-  CancelNFTOfferRequest
+  CancelNFTOfferRequest,
+  CreateNFTOfferRequest
 } from '@gemwallet/constants';
 
 import { WalletLedger } from '../../../types';
-import { handleAmountHexCurrency, toXRPLMemos, toXRPLSigners } from '../../../utils';
+import {
+  createNFTOfferFlagsToNumber,
+  handleAmountHexCurrency,
+  toXRPLMemos,
+  toXRPLSigners
+} from '../../../utils';
 
 export const buildNFTokenAcceptOffer = (
   params: AcceptNFTOfferRequest,
@@ -42,6 +48,29 @@ export const buildNFTokenCancelOffer = (
   return {
     ...(buildBaseTransaction(params, wallet, 'NFTokenCancelOffer') as NFTokenCancelOffer),
     ...(params.NFTokenOffers && { NFTokenOffers: params.NFTokenOffers })
+  };
+};
+
+export const buildNFTokenCreateOffer = (
+  params: CreateNFTOfferRequest,
+  wallet: WalletLedger
+): NFTokenCreateOffer => {
+  // Need to send the flags as number to xrpl.js, otherwise they won't be recognized
+  const formattedFlags =
+    params.flags && typeof params.flags === 'object'
+      ? createNFTOfferFlagsToNumber(params.flags)
+      : params.flags;
+
+  handleAmountHexCurrency(params.amount);
+
+  return {
+    ...(buildBaseTransaction(params, wallet, 'NFTokenCreateOffer') as NFTokenCreateOffer),
+    ...(params.NFTokenID && { NFTokenID: params.NFTokenID }),
+    ...(params.amount && { Amount: params.amount }),
+    ...(params.owner && { Owner: params.owner }),
+    ...(params.expiration && { Expiration: params.expiration }),
+    ...(params.destination && { Destination: params.destination }),
+    Flags: formattedFlags
   };
 };
 

@@ -31,7 +31,6 @@ import {
   AccountNFToken,
   AccountNFTokenResponse,
   CancelOfferRequest,
-  CreateNFTOfferRequest,
   CreateOfferRequest,
   GetNFTRequest,
   MintNFTRequest,
@@ -123,7 +122,7 @@ export interface LedgerContextType {
   getTransactions: () => Promise<AccountTransaction[]>;
   fundWallet: () => Promise<FundWalletResponse>;
   mintNFT: (payload: MintNFTRequest) => Promise<NFTokenIDResponse>;
-  createNFTOffer: (payload: CreateNFTOfferRequest) => Promise<CreateNFTOfferResponse>;
+  createNFTOffer: (payload: NFTokenCreateOffer) => Promise<CreateNFTOfferResponse>;
   cancelNFTOffer: (payload: NFTokenCancelOffer) => Promise<CancelNFTOfferResponse>;
   acceptNFTOffer: (payload: NFTokenAcceptOffer) => Promise<AcceptNFTOfferResponse>;
   burnNFT: (payload: NFTokenBurn) => Promise<BurnNFTResponse>;
@@ -407,7 +406,7 @@ const LedgerProvider: FC = ({ children }) => {
   }, [client, getCurrentWallet]);
 
   const createNFTOffer = useCallback(
-    async (payload: CreateNFTOfferRequest) => {
+    async (payload: NFTokenCreateOffer) => {
       const wallet = getCurrentWallet();
       if (!client) {
         throw new Error('You need to be connected to a ledger');
@@ -415,22 +414,7 @@ const LedgerProvider: FC = ({ children }) => {
         throw new Error('You need to have a wallet connected');
       } else {
         try {
-          const tx = await client.submitAndWait(
-            {
-              ...(buildBaseTransaction(
-                payload,
-                wallet,
-                'NFTokenCreateOffer'
-              ) as NFTokenCreateOffer),
-              NFTokenID: payload.NFTokenID,
-              Amount: payload.amount,
-              ...(payload.owner && { Owner: payload.owner }),
-              ...(payload.expiration && { Expiration: payload.expiration }),
-              ...(payload.destination && { Destination: payload.destination }),
-              ...(payload.flags && { Flags: payload.flags })
-            },
-            { wallet: wallet.wallet }
-          );
+          const tx = await client.submitAndWait(payload, { wallet: wallet.wallet });
 
           if (!tx.result.hash) {
             throw new Error("Couldn't create the NFT offer");

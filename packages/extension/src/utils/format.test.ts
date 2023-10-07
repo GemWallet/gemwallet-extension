@@ -107,6 +107,28 @@ describe('formatFlags', () => {
     const expectedResult = '';
     expect(formatFlags(flags)).toBe(expectedResult);
   });
+
+  it('should format flags as number for other flag types', () => {
+    expect(formatFlags(123456, 'otherFlagType')).toBe(123456);
+  });
+
+  it('should format NFTokenCreateOffer flags correctly', () => {
+    const flags = { tfSellNFToken: true };
+    const expectedResult = 'Offer type: Sell offer';
+    expect(formatFlags(flags, 'NFTokenCreateOffer')).toBe(expectedResult);
+  });
+
+  it('should format NFTokenCreateOffer flags (number) correctly', () => {
+    const flags = 1;
+    const expectedResult = 'Offer type: Sell offer';
+    expect(formatFlags(flags, 'NFTokenCreateOffer')).toBe(expectedResult);
+  });
+
+  it('should format NFTokenCreateOffer flags as buy offer when false', () => {
+    const flags = { tfSellNFToken: false };
+    const expectedResult = 'Offer type: Buy offer';
+    expect(formatFlags(flags, 'NFTokenCreateOffer')).toBe(expectedResult);
+  });
 });
 
 describe('formatFlagsToNumber', () => {

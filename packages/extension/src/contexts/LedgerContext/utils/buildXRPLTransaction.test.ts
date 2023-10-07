@@ -3,7 +3,8 @@ import {
   buildBaseTransaction,
   buildNFTokenAcceptOffer,
   buildNFTokenBurn,
-  buildNFTokenCancelOffer
+  buildNFTokenCancelOffer,
+  buildNFTokenCreateOffer
 } from './buildXRPLTransaction';
 
 const wallet: WalletLedger = {
@@ -78,5 +79,26 @@ describe('buildNFTokenCancelOffer', () => {
     const result = buildNFTokenCancelOffer(params, wallet);
 
     expect(result.NFTokenOffers).toEqual(['offer1', 'offer2']);
+  });
+});
+
+describe('buildNFTokenCreateOffer', () => {
+  it('should build NFTokenCreateOffer with all optional fields provided', () => {
+    const params = {
+      NFTokenID: 'tokenId',
+      amount: '1000',
+      owner: 'ownerAddress',
+      expiration: 123456,
+      destination: 'destinationAddress'
+    };
+
+    const result = buildNFTokenCreateOffer(params, wallet);
+
+    expect(result.NFTokenID).toEqual('tokenId');
+    expect(result.Amount).toEqual('1000');
+    expect(result.Owner).toEqual('ownerAddress');
+    expect(result.Expiration).toEqual(123456);
+    expect(result.Destination).toEqual('destinationAddress');
+    expect(result.Flags).toBeUndefined();
   });
 });

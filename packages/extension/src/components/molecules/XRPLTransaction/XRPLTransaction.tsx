@@ -119,7 +119,11 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
       renderSimpleText({ title: 'Destination Tag', value, useLegacy }),
     Flags: (value?: GlobalFlags) =>
       value !== undefined
-        ? renderSimpleText({ title: 'Flags', value: formatFlags(value), useLegacy })
+        ? renderSimpleText({
+            title: 'Flags',
+            value: formatFlags(value, tx.TransactionType),
+            useLegacy
+          })
         : null,
     Memos: (value?: Memo[]) => renderMemos({ memos: value, useLegacy }),
     NFTokenOffers: (value: string[]) => renderArray({ title: 'Offer ID', value, useLegacy }),
