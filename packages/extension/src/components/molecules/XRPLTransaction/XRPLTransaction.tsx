@@ -290,8 +290,8 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
     });
 
     return orderedEntries.map(([key, value]) => {
-      // Do not display null values
-      if (!value) {
+      // Do not display empty values
+      if (value === undefined || value === null) {
         return null;
       }
 

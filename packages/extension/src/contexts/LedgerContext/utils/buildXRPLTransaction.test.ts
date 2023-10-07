@@ -1,10 +1,15 @@
+import { NFTokenMint } from 'xrpl/dist/npm/models/transactions/NFTokenMint';
+
+import { MintNFTRequest } from '@gemwallet/constants';
+
 import { WalletLedger } from '../../../types';
 import {
   buildBaseTransaction,
   buildNFTokenAcceptOffer,
   buildNFTokenBurn,
   buildNFTokenCancelOffer,
-  buildNFTokenCreateOffer
+  buildNFTokenCreateOffer,
+  buildNFTokenMint
 } from './buildXRPLTransaction';
 
 const wallet: WalletLedger = {
@@ -100,5 +105,23 @@ describe('buildNFTokenCreateOffer', () => {
     expect(result.Expiration).toEqual(123456);
     expect(result.Destination).toEqual('destinationAddress');
     expect(result.Flags).toBeUndefined();
+  });
+
+  it('should build NFTokenMint with given parameters', () => {
+    const params: MintNFTRequest = {
+      NFTokenTaxon: 0,
+      issuer: 'rXYZ...',
+      transferFee: 10,
+      URI: 'someURI',
+      flags: 0
+    };
+
+    const result: NFTokenMint = buildNFTokenMint(params, wallet);
+
+    expect(result.NFTokenTaxon).toEqual(params.NFTokenTaxon);
+    expect(result.Issuer).toEqual(params.issuer);
+    expect(result.TransferFee).toEqual(params.transferFee);
+    expect(result.URI).toEqual(params.URI);
+    expect(result.Flags).toEqual(params.flags);
   });
 });

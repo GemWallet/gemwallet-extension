@@ -67,6 +67,10 @@ export const formatToken = (value: number, currency: string = 'XRP', isDrops = f
 const LABEL_OFFER_TYPE = 'Offer type';
 const LABEL_SELL_OFFER = 'Sell offer';
 const LABEL_BUY_OFFER = 'Buy offer';
+const LABEL_BURNABLE = 'Burnable';
+const LABEL_ONLY_XRP = 'Only XRP';
+const LABEL_MINT_TF_TRUSTLINE = 'tfTrustLine';
+const LABEL_TRANSFERABLE = 'Transferable';
 export const formatFlags = (
   flags:
     | PaymentFlags
@@ -76,7 +80,7 @@ export const formatFlags = (
     | SetAccountFlags
     | CreateOfferFlags
     | GlobalFlags,
-  flagsType?: 'NFTokenCreateOffer' | string
+  flagsType?: 'NFTokenCreateOffer' | 'NFTokenMint' | string
 ) => {
   if (flagsType === 'NFTokenCreateOffer') {
     if (typeof flags === 'number') {
@@ -96,6 +100,50 @@ export const formatFlags = (
           }
           return `${key}: ${value}`;
         })
+        .join('\n');
+    }
+  }
+
+  if (flagsType === 'NFTokenMint') {
+    if (typeof flags === 'number') {
+      let flagDescriptions: string[] = [];
+
+      if (flags & 0x00000001) {
+        flagDescriptions.push(LABEL_BURNABLE);
+      }
+      if (flags & 0x00000002) {
+        flagDescriptions.push(LABEL_ONLY_XRP);
+      }
+      if (flags & 0x00000004) {
+        flagDescriptions.push(LABEL_MINT_TF_TRUSTLINE);
+      }
+      if (flags & 0x00000008) {
+        flagDescriptions.push(LABEL_TRANSFERABLE);
+      }
+      return flagDescriptions.join('\n');
+    }
+
+    if (typeof flags === 'object') {
+      return Object.entries(flags)
+        .map(([key, value]) => {
+          if (key === 'tfBurnable' && value) {
+            return `${LABEL_BURNABLE}`;
+          }
+          if (key === 'tfOnlyXRP' && value) {
+            return `${LABEL_ONLY_XRP}`;
+          }
+          if (key === 'tfTrustLine' && value) {
+            return `${LABEL_MINT_TF_TRUSTLINE}`;
+          }
+          if (key === 'tfTransferable' && value) {
+            return `${LABEL_TRANSFERABLE}`;
+          }
+          if (['tfBurnable', 'tfOnlyXRP', 'tfTrustLine', 'tfTransferable'].includes(key)) {
+            return null;
+          }
+          return `${key}: ${value}`;
+        })
+        .filter((flag) => flag !== null)
         .join('\n');
     }
   }

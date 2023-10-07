@@ -1,81 +1,58 @@
 import { FC, useCallback, useEffect, useState } from 'react';
 
-import ErrorIcon from '@mui/icons-material/Error';
-import { Button, Container, Paper, Tooltip, Typography } from '@mui/material';
-import { convertHexToString } from 'xrpl';
+import { NFTokenMint } from 'xrpl/dist/npm/models/transactions/NFTokenMint';
 
 import {
   API_ERROR_BAD_REQUEST,
   GEM_WALLET,
-  MintNFTFlags,
   ReceiveMintNFTBackgroundMessage,
   ResponseType
 } from '@gemwallet/constants';
 
-import { ERROR_RED } from '../../../constants';
 import {
+  buildNFTokenMint,
   TransactionProgressStatus,
   useLedger,
   useNetwork,
-  useTransactionProgress
+  useTransactionProgress,
+  useWallet
 } from '../../../contexts';
 import { useFees, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
-import {
-  formatTransferFee,
-  fromHexMemos,
-  mintNFTFlagsToNumber,
-  parseMintNFTFlags
-} from '../../../utils';
-import {
-  BaseTransactionParams,
-  getBaseFromParams,
-  initialBaseTransactionParams,
-  parseBaseParamsFromURLParams
-} from '../../../utils/baseParams';
+import { parseMintNFTFlags } from '../../../utils';
+import { parseBaseParamsFromURLParamsNew } from '../../../utils/baseParams';
 import { serializeError } from '../../../utils/errors';
-import { BaseTransaction } from '../../organisms';
-import { PageWithTitle } from '../../templates';
+import { TransactionDetails } from '../../organisms';
+import { TransactionPage } from '../../templates';
 
-interface Params extends BaseTransactionParams {
+interface Params {
   id: number;
-  // MintNFT fields
-  URI: string | null;
-  flags: MintNFTFlags | null;
-  transferFee: number | null;
-  NFTokenTaxon: number;
-  issuer: string | null;
+  transaction: NFTokenMint | null;
 }
 
 export const MintNFT: FC = () => {
   const [params, setParams] = useState<Params>({
     id: 0,
-    // BaseTransaction fields
-    ...initialBaseTransactionParams,
-    // MintNFT fields
-    URI: null,
-    flags: null,
-    transferFee: null,
-    NFTokenTaxon: 0,
-    issuer: null
+    transaction: null
   });
   const [errorRequestRejection, setErrorRequestRejection] = useState<Error>();
   const [isParamsMissing, setIsParamsMissing] = useState(false);
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
   const { mintNFT } = useLedger();
+  const { getCurrentWallet } = useWallet();
   const { networkName } = useNetwork();
   const { setTransactionProgress } = useTransactionProgress();
   const { estimatedFees, errorFees, difference } = useFees(
     {
       TransactionType: 'NFTokenMint',
       Account: '',
-      ...(params.URI && { URI: params.URI }),
-      ...(params.flags && { Flags: params.flags }),
-      ...(params.transferFee && { TransferFee: params.transferFee }),
-      NFTokenTaxon: params.NFTokenTaxon,
-      ...(params.issuer && { Issuer: params.issuer })
+      NFTokenTaxon: params.transaction?.NFTokenTaxon ?? 0,
+      ...(params.transaction?.URI && { URI: params.transaction.URI }),
+      ...(params.transaction?.Flags && { Flags: params.transaction.Flags }),
+      ...(params.transaction?.TransferFee && { TransferFee: params.transaction.TransferFee }),
+      ...(params.transaction?.Issuer && { Issuer: params.transaction.Issuer })
     },
-    params.fee
+    params.transaction?.Fee
   );
 
   const sendMessageToBackground = useCallback(
@@ -138,54 +115,42 @@ export const MintNFT: FC = () => {
     const urlParams = new URLSearchParams(queryString);
     const id = Number(urlParams.get('id')) || 0;
 
-    // BaseTransaction fields
-    const {
-      fee,
-      sequence,
-      accountTxnID,
-      lastLedgerSequence,
-      memos,
-      signers,
-      sourceTag,
-      signingPubKey,
-      ticketSequence,
-      txnSignature
-    } = parseBaseParamsFromURLParams(urlParams);
-
     // MintNFT fields
     const URI = urlParams.get('URI');
     const flags = parseMintNFTFlags(urlParams.get('flags'));
     const transferFee = urlParams.get('transferFee') ? Number(urlParams.get('transferFee')) : null;
     const NFTokenTaxon = Number(urlParams.get('NFTokenTaxon')) ?? 0;
     const issuer = urlParams.get('issuer');
+    const wallet = getCurrentWallet();
 
-    if (!URI && !flags && !transferFee && !fee) {
+    if (!URI && !flags && !transferFee && !issuer) {
       // At least one parameter should be present to mint an NFT
       // It would still work, but we assume it's an error from the caller
       setIsParamsMissing(true);
     }
 
+    if (!wallet) {
+      setIsParamsMissing(true);
+      return;
+    }
+
+    const transaction = buildNFTokenMint(
+      {
+        ...parseBaseParamsFromURLParamsNew(urlParams),
+        NFTokenTaxon: NFTokenTaxon,
+        ...(issuer && { issuer }),
+        ...(transferFee && { transferFee }),
+        ...(URI && { URI }),
+        ...(flags && { flags })
+      },
+      wallet
+    );
+
     setParams({
       id,
-      // BaseTransaction fields
-      fee,
-      sequence,
-      accountTxnID,
-      lastLedgerSequence,
-      memos,
-      signers,
-      sourceTag,
-      signingPubKey,
-      ticketSequence,
-      txnSignature,
-      // MintNFT fields
-      URI,
-      flags,
-      transferFee,
-      NFTokenTaxon,
-      issuer
+      transaction
     });
-  }, []);
+  }, [getCurrentWallet]);
 
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);
@@ -197,25 +162,10 @@ export const MintNFT: FC = () => {
   }, [createMessage, sendMessageToBackground]);
 
   const handleConfirm = useCallback(() => {
-    // Need to send the flags as number to xrpl.js, otherwise they won't be recognized
-    const formattedFlags =
-      params.flags && typeof params.flags === 'object'
-        ? mintNFTFlagsToNumber(params.flags)
-        : params.flags;
-
     setTransaction(TransactionStatus.Pending);
     // Amount and Destination will be present because if not,
     // we won't be able to go to the confirm transaction state
-    mintNFT({
-      // BaseTransaction fields
-      ...getBaseFromParams(params),
-      // MintNFT fields
-      URI: params.URI || undefined,
-      flags: formattedFlags || undefined,
-      transferFee: params.transferFee || undefined,
-      NFTokenTaxon: params.NFTokenTaxon,
-      issuer: params.issuer || undefined
-    })
+    mintNFT(params.transaction as NFTokenMint)
       .then((response) => {
         setTransaction(TransactionStatus.Success);
         sendMessageToBackground(createMessage(response));
@@ -232,100 +182,25 @@ export const MintNFT: FC = () => {
       });
   }, [params, mintNFT, sendMessageToBackground, createMessage]);
 
-  const {
-    // Base transaction params
-    fee,
-    memos,
-    // Mint NFT params
-    URI,
-    flags,
-    transferFee,
-    NFTokenTaxon,
-    issuer
-  } = params;
-
-  const decodedMemos = fromHexMemos(memos || []) || [];
+  if (transactionStatusComponent) {
+    return <div>{transactionStatusComponent}</div>;
+  }
 
   return (
-    <>
-      {transactionStatusComponent ? (
-        <div>{transactionStatusComponent}</div>
-      ) : (
-        <PageWithTitle title="Mint NFT" styles={{ container: { justifyContent: 'initial' } }}>
-          <div style={{ marginBottom: '40px' }}>
-            {!hasEnoughFunds ? (
-              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                <ErrorIcon style={{ color: ERROR_RED }} />
-                <Typography variant="body1" style={{ marginLeft: '10px', color: ERROR_RED }}>
-                  Insufficient funds.
-                </Typography>
-              </div>
-            ) : null}
-            {URI ? (
-              <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-                <Typography variant="body1">URI:</Typography>
-                <Tooltip title={convertHexToString(URI)}>
-                  <Typography
-                    variant="body2"
-                    style={{
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      maxWidth: '100%'
-                    }}
-                  >
-                    <pre style={{ margin: 0 }}>{convertHexToString(URI)}</pre>
-                  </Typography>
-                </Tooltip>
-              </Paper>
-            ) : null}
-            {transferFee ? (
-              <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-                <Typography variant="body1">Transfer Fee:</Typography>
-                <Typography variant="body2">{`${formatTransferFee(transferFee)}%`}</Typography>
-              </Paper>
-            ) : null}
-            {issuer ? (
-              <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-                <Typography variant="body1">Issuer:</Typography>
-                <Typography variant="body2">{issuer}</Typography>
-              </Paper>
-            ) : null}
-            <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-              <Typography variant="body1">NFT Taxon:</Typography>
-              <Typography variant="body2">{NFTokenTaxon}</Typography>
-            </Paper>
-
-            <BaseTransaction
-              fee={fee ? Number(fee) : null}
-              memos={decodedMemos}
-              flags={flags}
-              errorFees={errorFees}
-              estimatedFees={estimatedFees}
-            />
-          </div>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              position: 'fixed',
-              bottom: 0,
-              left: 0,
-              right: 0,
-              backgroundColor: '#1d1d1d'
-            }}
-          >
-            <Container style={{ display: 'flex', justifyContent: 'space-evenly', margin: '10px' }}>
-              <Button variant="contained" color="secondary" onClick={handleReject}>
-                Reject
-              </Button>
-              <Button variant="contained" onClick={handleConfirm} disabled={!hasEnoughFunds}>
-                Confirm
-              </Button>
-            </Container>
-          </div>
-        </PageWithTitle>
-      )}
-    </>
+    <TransactionPage
+      title="Mint NFT"
+      description="Please review the transaction below."
+      approveButtonText="Submit"
+      hasEnoughFunds={hasEnoughFunds}
+      onClickApprove={handleConfirm}
+      onClickReject={handleReject}
+    >
+      <TransactionDetails
+        txParam={params.transaction}
+        estimatedFees={estimatedFees}
+        errorFees={errorFees}
+        displayTransactionType={false}
+      />
+    </TransactionPage>
   );
 };

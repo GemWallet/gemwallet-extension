@@ -33,7 +33,6 @@ import {
   CancelOfferRequest,
   CreateOfferRequest,
   GetNFTRequest,
-  MintNFTRequest,
   Network,
   NFTData,
   NFTokenIDResponse,
@@ -53,7 +52,7 @@ import { toUIError } from '../../utils/errors';
 import { resolveNFTData } from '../../utils/NFTDataResolver';
 import { useNetwork } from '../NetworkContext';
 import { useWallet } from '../WalletContext';
-import { buildBaseTransaction } from './utils/buildXRPLTransaction';
+import { buildBaseTransaction } from './utils';
 import { connectToLedger } from './utils/connectToLedger';
 
 interface FundWalletResponse {
@@ -121,7 +120,7 @@ export interface LedgerContextType {
   getNFTs: (payload?: GetNFTRequest) => Promise<AccountNFTokenResponse>;
   getTransactions: () => Promise<AccountTransaction[]>;
   fundWallet: () => Promise<FundWalletResponse>;
-  mintNFT: (payload: MintNFTRequest) => Promise<NFTokenIDResponse>;
+  mintNFT: (payload: NFTokenMint) => Promise<NFTokenIDResponse>;
   createNFTOffer: (payload: NFTokenCreateOffer) => Promise<CreateNFTOfferResponse>;
   cancelNFTOffer: (payload: NFTokenCancelOffer) => Promise<CancelNFTOfferResponse>;
   acceptNFTOffer: (payload: NFTokenAcceptOffer) => Promise<AcceptNFTOfferResponse>;
@@ -248,7 +247,7 @@ const LedgerProvider: FC = ({ children }) => {
   }, [client, getCurrentWallet]);
 
   const mintNFT = useCallback(
-    async (payload: MintNFTRequest) => {
+    async (payload: NFTokenMint) => {
       const wallet = getCurrentWallet();
       if (!client) {
         throw new Error('You need to be connected to a ledger to mint an NFT');
@@ -256,17 +255,7 @@ const LedgerProvider: FC = ({ children }) => {
         throw new Error('You need to have a wallet connected to mint an NFT');
       } else {
         try {
-          const tx = await client.submitAndWait(
-            {
-              ...(buildBaseTransaction(payload, wallet, 'NFTokenMint') as NFTokenMint),
-              NFTokenTaxon: payload.NFTokenTaxon,
-              ...(payload.issuer && { Issuer: payload.issuer }),
-              ...(payload.transferFee && { TransferFee: payload.transferFee }),
-              ...(payload.URI && { URI: payload.URI }), // Must be hex encoded
-              ...(payload.flags && { Flags: payload.flags })
-            },
-            { wallet: wallet.wallet }
-          );
+          const tx = await client.submitAndWait(payload, { wallet: wallet.wallet });
 
           if (!tx.result.hash) {
             throw new Error("Couldn't mint the NFT");

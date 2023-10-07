@@ -1,18 +1,21 @@
 import { NFTokenAcceptOffer, NFTokenBurn, NFTokenCancelOffer, NFTokenCreateOffer } from 'xrpl';
 import { BaseTransaction } from 'xrpl/dist/npm/models/transactions/common';
+import { NFTokenMint } from 'xrpl/dist/npm/models/transactions/NFTokenMint';
 
 import {
   AcceptNFTOfferRequest,
   BaseTransactionRequest,
   BurnNFTRequest,
   CancelNFTOfferRequest,
-  CreateNFTOfferRequest
+  CreateNFTOfferRequest,
+  MintNFTRequest
 } from '@gemwallet/constants';
 
 import { WalletLedger } from '../../../types';
 import {
   createNFTOfferFlagsToNumber,
   handleAmountHexCurrency,
+  mintNFTFlagsToNumber,
   toXRPLMemos,
   toXRPLSigners
 } from '../../../utils';
@@ -70,6 +73,23 @@ export const buildNFTokenCreateOffer = (
     ...(params.owner && { Owner: params.owner }),
     ...(params.expiration && { Expiration: params.expiration }),
     ...(params.destination && { Destination: params.destination }),
+    Flags: formattedFlags
+  };
+};
+
+export const buildNFTokenMint = (params: MintNFTRequest, wallet: WalletLedger): NFTokenMint => {
+  // Need to send the flags as number to xrpl.js, otherwise they won't be recognized
+  const formattedFlags =
+    params.flags && typeof params.flags === 'object'
+      ? mintNFTFlagsToNumber(params.flags)
+      : params.flags;
+
+  return {
+    ...(buildBaseTransaction(params, wallet, 'NFTokenMint') as NFTokenMint),
+    NFTokenTaxon: params.NFTokenTaxon,
+    ...(params.issuer && { Issuer: params.issuer }),
+    ...(params.transferFee && { TransferFee: params.transferFee }),
+    ...(params.URI && { URI: params.URI }),
     Flags: formattedFlags
   };
 };
