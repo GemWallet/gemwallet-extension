@@ -31,7 +31,6 @@ import {
   AccountNFToken,
   AccountNFTokenResponse,
   BurnNFTRequest,
-  CancelNFTOfferRequest,
   CancelOfferRequest,
   CreateNFTOfferRequest,
   CreateOfferRequest,
@@ -126,7 +125,7 @@ export interface LedgerContextType {
   fundWallet: () => Promise<FundWalletResponse>;
   mintNFT: (payload: MintNFTRequest) => Promise<NFTokenIDResponse>;
   createNFTOffer: (payload: CreateNFTOfferRequest) => Promise<CreateNFTOfferResponse>;
-  cancelNFTOffer: (payload: CancelNFTOfferRequest) => Promise<CancelNFTOfferResponse>;
+  cancelNFTOffer: (payload: NFTokenCancelOffer) => Promise<CancelNFTOfferResponse>;
   acceptNFTOffer: (payload: NFTokenAcceptOffer) => Promise<AcceptNFTOfferResponse>;
   burnNFT: (payload: BurnNFTRequest) => Promise<BurnNFTResponse>;
   setAccount: (payload: SetAccountRequest) => Promise<SetAccountResponse>;
@@ -458,7 +457,7 @@ const LedgerProvider: FC = ({ children }) => {
   );
 
   const cancelNFTOffer = useCallback(
-    async (payload: CancelNFTOfferRequest) => {
+    async (payload: NFTokenCancelOffer) => {
       const wallet = getCurrentWallet();
       if (!client) {
         throw new Error('You need to be connected to a ledger');
@@ -466,17 +465,7 @@ const LedgerProvider: FC = ({ children }) => {
         throw new Error('You need to have a wallet connected');
       } else {
         try {
-          const tx = await client.submitAndWait(
-            {
-              ...(buildBaseTransaction(
-                payload,
-                wallet,
-                'NFTokenCancelOffer'
-              ) as NFTokenCancelOffer),
-              NFTokenOffers: payload.NFTokenOffers
-            },
-            { wallet: wallet.wallet }
-          );
+          const tx = await client.submitAndWait(payload, { wallet: wallet.wallet });
 
           if (!tx.result.hash) {
             throw new Error("Couldn't cancel the NFT offer");

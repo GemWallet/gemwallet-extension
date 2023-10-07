@@ -121,8 +121,8 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
         ? renderSimpleText({ title: 'Flags', value: formatFlags(value), useLegacy })
         : null,
     Memos: (value?: Memo[]) => renderMemos({ memos: value, useLegacy }),
-    NFTokenOffers: (value: string[]) => renderArray({ title: 'Offer IDs', value, useLegacy }),
-    Signers: (value?: Signer[]) => renderArray({ title: 'Signers', value, useLegacy }),
+    NFTokenOffers: (value: string[]) => renderArray({ title: 'Offer ID', value, useLegacy }),
+    Signers: (value?: Signer[]) => renderArray({ title: 'Signer', value, useLegacy }),
     LimitAmount: (value) =>
       renderAmount({ title: 'Limit Amount', value: value as Amount, useLegacy }),
     NFTokenSellOffer: (value?: string) =>
@@ -220,6 +220,7 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
               keyName={memos.length > 1 ? `Memo ${index + 1}` : 'Memo'}
               value={memoData || ''}
               useLegacy={useLegacy}
+              hasTooltip={true}
             />
           );
         })}
@@ -235,11 +236,19 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
     }
 
     return (
-      <KeyValueDisplay
-        keyName={title}
-        value={value.map((offer) => JSON.stringify(offer)).join(', ')}
-        useLegacy={useLegacy}
-      />
+      <>
+        {value.map((val, index) => {
+          return (
+            <KeyValueDisplay
+              key={index}
+              keyName={value.length > 1 ? `${title} ${index + 1}` : title}
+              value={val}
+              useLegacy={useLegacy}
+              hasTooltip={true}
+            />
+          );
+        })}
+      </>
     );
   };
 

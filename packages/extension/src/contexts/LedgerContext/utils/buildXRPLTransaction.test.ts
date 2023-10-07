@@ -1,5 +1,9 @@
 import { WalletLedger } from '../../../types';
-import { buildBaseTransaction, buildNFTokenAcceptOffer } from './buildXRPLTransaction';
+import {
+  buildBaseTransaction,
+  buildNFTokenAcceptOffer,
+  buildNFTokenCancelOffer
+} from './buildXRPLTransaction';
 
 describe('buildBaseTransaction', () => {
   it('should build base transaction correctly', () => {
@@ -49,5 +53,23 @@ describe('buildNFTokenAcceptOffer', () => {
     expect(result.NFTokenSellOffer).toEqual('sellOffer');
     expect(result.NFTokenBuyOffer).toEqual('buyOffer');
     expect(result.NFTokenBrokerFee).toEqual('brokerFee');
+  });
+});
+
+describe('buildNFTokenCancelOffer', () => {
+  it('should build NFTokenCancelOffer correctly', () => {
+    const params = {
+      NFTokenOffers: ['offer1', 'offer2']
+    };
+
+    const wallet: WalletLedger = {
+      name: 'name',
+      publicAddress: 'publicAddress',
+      wallet: {} as any
+    };
+
+    const result = buildNFTokenCancelOffer(params, wallet);
+
+    expect(result.NFTokenOffers).toEqual(['offer1', 'offer2']);
   });
 });

@@ -300,10 +300,10 @@ describe('Mint', () => {
     // Confirm
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Cancel NFT Offer');
 
-    cy.contains('Offer IDs:').next().should('have.text', this.OfferID);
+    cy.contains('Offer ID').next().should('have.text', this.OfferID);
 
     // Confirm
-    cy.contains('button', 'Confirm').click();
+    cy.contains('button', 'Submit').click();
 
     cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction in progress');
     cy.get('p[data-testid="transaction-subtitle"]').should(
