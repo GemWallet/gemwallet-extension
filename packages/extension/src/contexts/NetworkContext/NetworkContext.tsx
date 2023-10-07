@@ -44,6 +44,8 @@ const NetworkContext = createContext<ContextType>({
   hasOfflineBanner: false
 });
 
+const MAX_RETRIES = 2;
+
 const NetworkProvider: FC = ({ children }) => {
   const { pathname } = useLocation();
 
@@ -54,23 +56,35 @@ const NetworkProvider: FC = ({ children }) => {
 
   useEffect(() => {
     let retryCount = 0;
-    const maxRetries = 3;
+    let nodeIndex = 0;
 
     const connectToNetwork = async () => {
       const network = loadNetwork();
       setNetworkName(network.name);
+      let node = network.server;
+      if (nodeIndex !== 0 && network.nodes?.[nodeIndex]) {
+        node = network.nodes[nodeIndex];
+      }
       try {
-        const ws = await connectToLedger(network.server);
+        const ws = await connectToLedger(node);
+        setIsConnectionFailed(false);
         setClient(ws);
       } catch (err) {
         setClient(null);
         setIsConnectionFailed(true);
-        // If connect fails, retry up to maxRetries times
-        if (retryCount < maxRetries) {
+        // If connection fails, change the node, up to MAX_RETRIES times
+        if (network.nodes && nodeIndex <= network.nodes.length) {
+          nodeIndex += 1;
+          setTimeout(connectToNetwork, 1000);
+        } else if (retryCount < MAX_RETRIES) {
           retryCount += 1;
+          nodeIndex = 0;
           setTimeout(connectToNetwork, 1000);
         }
-        if (!RECOGNIZED_CONNECTION_ERRORS.includes((err as Error).message)) {
+        if (
+          retryCount > MAX_RETRIES &&
+          !RECOGNIZED_CONNECTION_ERRORS.includes((err as Error).message)
+        ) {
           Sentry.captureException(err);
         }
       }
@@ -187,13 +201,13 @@ const NetworkProvider: FC = ({ children }) => {
       hasOfflineBanner
     };
   }, [
-    reconnectToNetwork,
-    switchNetwork,
-    resetNetwork,
     client,
-    networkName,
+    hasOfflineBanner,
     isConnectionFailed,
-    hasOfflineBanner
+    networkName,
+    reconnectToNetwork,
+    resetNetwork,
+    switchNetwork
   ]);
 
   return (

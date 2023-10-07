@@ -13,7 +13,7 @@
   "[json]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "cSpell.words": ["gemwallet", "xrpl"],
+  "cSpell.words": ["gemwallet", "Trustline", "xrpl"],
   "[typescriptreact]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   }

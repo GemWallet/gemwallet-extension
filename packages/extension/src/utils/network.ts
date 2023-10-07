@@ -1,4 +1,4 @@
-import { NETWORK, Network } from '@gemwallet/constants';
+import { NETWORK, Network, NetworkNode } from '@gemwallet/constants';
 import { NetworkData } from '@gemwallet/constants/src/network/network.types';
 
 import { STORAGE_CUSTOM_NETWORKS, STORAGE_NETWORK } from '../constants/storage';
@@ -70,14 +70,15 @@ export const loadNetwork = () => {
       return NETWORK[Network.MAINNET];
     }
 
-    const parsedData = JSON.parse(data);
+    const parsedData: NetworkNode = JSON.parse(data);
     if (NETWORK[parsedData.name as Network]) {
       return NETWORK[parsedData.name as Network];
     }
 
     return {
       name: parsedData.name,
-      server: parsedData.server
+      server: parsedData.server,
+      description: 'Custom network'
     };
   } catch (error) {
     return NETWORK[Network.MAINNET];

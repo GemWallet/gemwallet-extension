@@ -20,9 +20,9 @@ const BrowserContext = createContext<ContextType>({
 const BrowserProvider: FC = ({ children }) => {
   const [window, setWindow] = useState<chrome.windows.Window | undefined>();
 
-  const getCurrentWindow = useCallback(async () => {
+  const getCurrentWindow = useCallback(() => {
     if (chrome?.windows) {
-      await chrome.windows.getCurrent((_window) => setWindow(_window));
+      chrome.windows.getCurrent((_window) => setWindow(_window));
     }
   }, []);
 
