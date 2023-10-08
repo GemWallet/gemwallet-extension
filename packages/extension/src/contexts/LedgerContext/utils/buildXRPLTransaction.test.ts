@@ -5,6 +5,7 @@ import { CancelOfferRequest, CreateOfferRequest, MintNFTRequest } from '@gemwall
 
 import { WalletLedger } from '../../../types';
 import {
+  buildAccountSet,
   buildBaseTransaction,
   buildNFTokenAcceptOffer,
   buildNFTokenBurn,
@@ -169,5 +170,55 @@ describe('buildOfferCancel', () => {
       expect(result.TakerPays).toEqual(takerPays);
       expect(result.Flags).toBeUndefined();
     });
+  });
+});
+
+describe('buildAccountSet', () => {
+  it('should build AccountSet with all optional fields provided', () => {
+    const params = {
+      flags: 123456,
+      clearFlag: 2,
+      domain: 'example.com',
+      emailHash: 'abc123',
+      messageKey: 'msgKey',
+      setFlag: 1,
+      transferRate: 1000,
+      tickSize: 10,
+      NFTokenMinter: 'minterAddress'
+    };
+
+    const expectedResult = {
+      Flags: 123456,
+      ClearFlag: 2,
+      Domain: 'example.com',
+      EmailHash: 'abc123',
+      MessageKey: 'msgKey',
+      SetFlag: 1,
+      TransferRate: 1000,
+      TickSize: 10,
+      NFTokenMinter: 'minterAddress',
+      TransactionType: 'AccountSet',
+      Account: 'publicAddress'
+    };
+
+    expect(buildAccountSet(params, wallet)).toEqual(expectedResult);
+  });
+
+  it('should build AccountSet with some optional fields omitted', () => {
+    const params = {
+      flags: 123456,
+      domain: 'example.com',
+      emailHash: 'abc123'
+    };
+
+    const expectedResult = {
+      Flags: 123456,
+      Domain: 'example.com',
+      EmailHash: 'abc123',
+      TransactionType: 'AccountSet',
+      Account: 'publicAddress'
+    };
+
+    expect(buildAccountSet(params, wallet)).toEqual(expectedResult);
   });
 });

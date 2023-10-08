@@ -1,88 +1,66 @@
 import { FC, useCallback, useEffect, useState } from 'react';
 
-import ErrorIcon from '@mui/icons-material/Error';
-import { Button, Container, Paper, Typography } from '@mui/material';
-import { AccountSetAsfFlags } from 'xrpl';
+import { AccountSet } from 'xrpl';
 
 import {
   API_ERROR_BAD_REQUEST,
   GEM_WALLET,
   ReceiveSetAccountBackgroundMessage,
-  ResponseType,
-  SetAccountFlags
+  ResponseType
 } from '@gemwallet/constants';
 
-import { ERROR_RED } from '../../../constants';
 import {
+  buildAccountSet,
   TransactionProgressStatus,
   useLedger,
   useNetwork,
-  useTransactionProgress
+  useTransactionProgress,
+  useWallet
 } from '../../../contexts';
 import { useFees, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
-import { fromHexMemos, parseSetAccountFlags } from '../../../utils';
-import {
-  BaseTransactionParams,
-  getBaseFromParams,
-  initialBaseTransactionParams,
-  parseBaseParamsFromURLParams
-} from '../../../utils/baseParams';
+import { parseSetAccountFlags } from '../../../utils';
+import { parseBaseParamsFromURLParamsNew } from '../../../utils/baseParams';
 import { serializeError } from '../../../utils/errors';
-import { BaseTransaction } from '../../organisms/BaseTransaction/BaseTransaction';
-import { PageWithTitle } from '../../templates';
+import { TransactionDetails } from '../../organisms';
+import { TransactionPage } from '../../templates';
 
-interface Params extends BaseTransactionParams {
+interface Params {
   id: number;
-  // SetAccount fields
-  flags: SetAccountFlags | null;
-  clearFlag: number | null;
-  domain: string | null;
-  emailHash: string | null;
-  messageKey: string | null;
-  NFTokenMinter: string | null;
-  setFlag: AccountSetAsfFlags | null;
-  transferRate: number | null;
-  tickSize: number | null;
+  transaction: AccountSet | null;
 }
 
 export const SetAccount: FC = () => {
   const [params, setParams] = useState<Params>({
     id: 0,
-    // BaseTransaction fields
-    ...initialBaseTransactionParams,
-    // SetAccount fields
-    flags: null,
-    clearFlag: null,
-    domain: null,
-    emailHash: null,
-    messageKey: null,
-    NFTokenMinter: null,
-    setFlag: null,
-    transferRate: null,
-    tickSize: null
+    transaction: null
   });
   const [errorRequestRejection, setErrorRequestRejection] = useState<Error>();
   const [isParamsMissing, setIsParamsMissing] = useState(false);
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
   const { setAccount } = useLedger();
+  const { getCurrentWallet } = useWallet();
   const { networkName } = useNetwork();
   const { setTransactionProgress } = useTransactionProgress();
   const { estimatedFees, errorFees, difference } = useFees(
     {
       TransactionType: 'AccountSet',
       Account: '',
-      ...(params.flags ? { Flags: params.flags } : {}),
-      ...(params.clearFlag ? { ClearFlag: params.clearFlag } : {}),
-      ...(params.domain ? { Domain: params.domain } : {}),
-      ...(params.emailHash ? { EmailHash: params.emailHash } : {}),
-      ...(params.messageKey ? { MessageKey: params.messageKey } : {}),
-      ...(params.NFTokenMinter ? { NFTokenMinter: params.NFTokenMinter } : {}),
-      ...(params.setFlag ? { SetFlag: params.setFlag } : {}),
-      ...(params.transferRate ? { TransferRate: params.transferRate } : {}),
-      ...(params.tickSize ? { TickSize: params.tickSize } : {})
+      ...(params.transaction?.Flags ? { Flags: params.transaction.Flags } : {}),
+      ...(params.transaction?.ClearFlag ? { ClearFlag: params.transaction.ClearFlag } : {}),
+      ...(params.transaction?.Domain ? { Domain: params.transaction.Domain } : {}),
+      ...(params.transaction?.EmailHash ? { EmailHash: params.transaction.EmailHash } : {}),
+      ...(params.transaction?.MessageKey ? { MessageKey: params.transaction.MessageKey } : {}),
+      ...(params.transaction?.NFTokenMinter
+        ? { NFTokenMinter: params.transaction.NFTokenMinter }
+        : {}),
+      ...(params.transaction?.SetFlag ? { SetFlag: params.transaction.SetFlag } : {}),
+      ...(params.transaction?.TransferRate
+        ? { TransferRate: params.transaction.TransferRate }
+        : {}),
+      ...(params.transaction?.TickSize ? { TickSize: params.transaction.TickSize } : {})
     },
-    params.fee
+    params.transaction?.Fee
   );
 
   const sendMessageToBackground = useCallback(
@@ -142,20 +120,6 @@ export const SetAccount: FC = () => {
     const urlParams = new URLSearchParams(queryString);
     const id = Number(urlParams.get('id')) || 0;
 
-    // BaseTransaction fields
-    const {
-      fee,
-      sequence,
-      accountTxnID,
-      lastLedgerSequence,
-      memos,
-      signers,
-      sourceTag,
-      signingPubKey,
-      ticketSequence,
-      txnSignature
-    } = parseBaseParamsFromURLParams(urlParams);
-
     // SetAccount fields
     const flags = parseSetAccountFlags(urlParams.get('flags'));
     const clearFlag = Number(urlParams.get('clearFlag')) || null;
@@ -166,6 +130,7 @@ export const SetAccount: FC = () => {
     const setFlag = Number(urlParams.get('setFlag')) || null;
     const transferRate = Number(urlParams.get('transferRate')) || null;
     const tickSize = Number(urlParams.get('tickSize')) || null;
+    const wallet = getCurrentWallet();
 
     if (
       !flags &&
@@ -181,31 +146,32 @@ export const SetAccount: FC = () => {
       setIsParamsMissing(true);
     }
 
+    if (!wallet) {
+      setIsParamsMissing(true);
+      return;
+    }
+
+    const transaction = buildAccountSet(
+      {
+        ...parseBaseParamsFromURLParamsNew(urlParams),
+        ...(flags && { flags }),
+        ...(clearFlag && { clearFlag }),
+        ...(domain && { domain }),
+        ...(emailHash && { emailHash }),
+        ...(messageKey && { messageKey }),
+        ...(setFlag && { setFlag }),
+        ...(transferRate && { transferRate }),
+        ...(tickSize && { tickSize }),
+        ...(NFTokenMinter && { NFTokenMinter })
+      },
+      wallet
+    );
+
     setParams({
       id,
-      // BaseTransaction fields
-      fee,
-      sequence,
-      accountTxnID,
-      lastLedgerSequence,
-      memos,
-      signers,
-      sourceTag,
-      signingPubKey,
-      ticketSequence,
-      txnSignature,
-      // SetAccount fields
-      flags,
-      clearFlag,
-      domain,
-      emailHash,
-      messageKey,
-      NFTokenMinter,
-      setFlag,
-      transferRate,
-      tickSize
+      transaction
     });
-  }, []);
+  }, [getCurrentWallet]);
 
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);
@@ -219,20 +185,7 @@ export const SetAccount: FC = () => {
     setTransaction(TransactionStatus.Pending);
     // NFTokenID will be present because if not,
     // we won't be able to go to the confirm transaction state
-    setAccount({
-      // BaseTransaction fields
-      ...getBaseFromParams(params),
-      // SetAccount fields
-      flags: params.flags || undefined,
-      clearFlag: params.clearFlag || undefined,
-      domain: params.domain || undefined,
-      emailHash: params.emailHash || undefined,
-      messageKey: params.messageKey || undefined,
-      NFTokenMinter: params.NFTokenMinter || undefined,
-      setFlag: params.setFlag || undefined,
-      transferRate: params.transferRate || undefined,
-      tickSize: params.tickSize || undefined
-    })
+    setAccount(params.transaction as AccountSet)
       .then((response) => {
         setTransaction(TransactionStatus.Success);
         sendMessageToBackground(createMessage(response));
@@ -248,124 +201,25 @@ export const SetAccount: FC = () => {
       });
   }, [setAccount, params, sendMessageToBackground, createMessage]);
 
-  const {
-    // Base transaction params
-    fee,
-    memos,
-    // SetAccount params
-    flags,
-    clearFlag,
-    domain,
-    emailHash,
-    messageKey,
-    NFTokenMinter,
-    setFlag,
-    transferRate,
-    tickSize
-  } = params;
-
-  const decodedMemos = fromHexMemos(memos || []) || [];
+  if (transactionStatusComponent) {
+    return <div>{transactionStatusComponent}</div>;
+  }
 
   return (
-    <>
-      {transactionStatusComponent ? (
-        <div>{transactionStatusComponent}</div>
-      ) : (
-        <PageWithTitle title="Set Account" styles={{ container: { justifyContent: 'initial' } }}>
-          {!hasEnoughFunds ? (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              <ErrorIcon style={{ color: ERROR_RED }} />
-              <Typography variant="body1" style={{ marginLeft: '10px', color: ERROR_RED }}>
-                Insufficient funds.
-              </Typography>
-            </div>
-          ) : null}
-          {clearFlag ? (
-            <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-              <Typography variant="body1">Flag to be cleared:</Typography>
-              <Typography variant="body2">{clearFlag}</Typography>
-            </Paper>
-          ) : null}
-          {setFlag ? (
-            <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-              <Typography variant="body1">Flag to be set:</Typography>
-              <Typography variant="body2">{setFlag}</Typography>
-            </Paper>
-          ) : null}
-          {domain ? (
-            <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-              <Typography variant="body1">Domain:</Typography>
-              <Typography variant="body2">{domain}</Typography>
-            </Paper>
-          ) : null}
-          {emailHash ? (
-            <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-              <Typography variant="body1">Email hash:</Typography>
-              <Typography variant="body2">{emailHash}</Typography>
-            </Paper>
-          ) : null}
-          {messageKey ? (
-            <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-              <Typography variant="body1">Message key:</Typography>
-              <Typography variant="body2">{messageKey}</Typography>
-            </Paper>
-          ) : null}
-          {NFTokenMinter ? (
-            <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-              <Typography variant="body1">NFT Token Minter:</Typography>
-              <Typography
-                variant="body2"
-                style={{
-                  wordBreak: 'break-word'
-                }}
-              >
-                {NFTokenMinter}
-              </Typography>
-            </Paper>
-          ) : null}
-          {transferRate ? (
-            <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-              <Typography variant="body1">Transfer rate:</Typography>
-              <Typography variant="body2">{transferRate}</Typography>
-            </Paper>
-          ) : null}
-          {tickSize ? (
-            <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-              <Typography variant="body1">Tick size:</Typography>
-              <Typography variant="body2">{tickSize}</Typography>
-            </Paper>
-          ) : null}
-          <div style={{ marginBottom: '40px' }}>
-            <BaseTransaction
-              fee={fee ? Number(fee) : null}
-              memos={decodedMemos}
-              flags={flags}
-              errorFees={errorFees}
-              estimatedFees={estimatedFees}
-            />
-          </div>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              position: 'fixed',
-              bottom: 0,
-              left: 0,
-              right: 0,
-              backgroundColor: '#1d1d1d'
-            }}
-          >
-            <Container style={{ display: 'flex', justifyContent: 'space-evenly', margin: '10px' }}>
-              <Button variant="contained" color="secondary" onClick={handleReject}>
-                Reject
-              </Button>
-              <Button variant="contained" onClick={handleConfirm} disabled={!hasEnoughFunds}>
-                Confirm
-              </Button>
-            </Container>
-          </div>
-        </PageWithTitle>
-      )}
-    </>
+    <TransactionPage
+      title="Set Account"
+      description="Please review the transaction below."
+      approveButtonText="Submit"
+      hasEnoughFunds={hasEnoughFunds}
+      onClickApprove={handleConfirm}
+      onClickReject={handleReject}
+    >
+      <TransactionDetails
+        txParam={params.transaction}
+        estimatedFees={estimatedFees}
+        errorFees={errorFees}
+        displayTransactionType={false}
+      />
+    </TransactionPage>
   );
 };

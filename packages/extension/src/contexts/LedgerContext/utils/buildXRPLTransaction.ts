@@ -1,4 +1,5 @@
 import {
+  AccountSet,
   NFTokenAcceptOffer,
   NFTokenBurn,
   NFTokenCancelOffer,
@@ -20,7 +21,8 @@ import {
   CreateNFTOfferRequest,
   CreateOfferRequest,
   MintNFTRequest,
-  SendPaymentRequest
+  SendPaymentRequest,
+  SetAccountRequest
 } from '@gemwallet/constants';
 
 import { WalletLedger } from '../../../types';
@@ -136,6 +138,21 @@ export const buildPayment = (params: SendPaymentRequest, wallet: WalletLedger): 
     Destination: params.destination,
     ...(params.destinationTag && { DestinationTag: params.destinationTag }),
     ...(params.flags !== undefined && { Flags: params.flags })
+  };
+};
+
+export const buildAccountSet = (params: SetAccountRequest, wallet: WalletLedger): AccountSet => {
+  return {
+    ...(buildBaseTransaction(params, wallet, 'AccountSet') as AccountSet),
+    ...(params.flags !== undefined && { Flags: params.flags }),
+    ...(params.clearFlag && { ClearFlag: params.clearFlag }),
+    ...(params.domain && { Domain: params.domain }),
+    ...(params.emailHash && { EmailHash: params.emailHash }),
+    ...(params.messageKey && { MessageKey: params.messageKey }),
+    ...(params.setFlag && { SetFlag: params.setFlag }),
+    ...(params.transferRate && { TransferRate: params.transferRate }),
+    ...(params.tickSize && { TickSize: params.tickSize }),
+    ...(params.NFTokenMinter && { NFTokenMinter: params.NFTokenMinter })
   };
 };
 

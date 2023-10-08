@@ -89,6 +89,13 @@ const LABEL_SELL = 'Sell';
 const LABEL_NO_DIRECT_RIPPLE = 'No Direct Ripple';
 const LABEL_PARTIAL_PAYMENT = 'Partial Payment';
 const LABEL_LIMIT_QUALITY = 'Limit Quality';
+// AccountSet
+const LABEL_REQUIRE_DEST_TAG = 'Require Dest Tag';
+const LABEL_OPTIONAL_DEST_TAG = 'Optional Dest Tag';
+const LABEL_REQUIRE_AUTH = 'Require Auth';
+const LABEL_OPTIONAL_AUTH = 'Optional Auth';
+const LABEL_DISALLOW_XRP = 'Disallow XRP';
+const LABEL_ALLOW_XRP = 'Allow XRP';
 export const formatFlags = (
   flags:
     | PaymentFlags
@@ -173,16 +180,16 @@ export const formatFlags = (
     if (typeof flags === 'number') {
       let flagDescriptions: string[] = [];
 
-      if (flags & 0x00010000) {
+      if (flags & OfferCreateFlags.tfPassive) {
         flagDescriptions.push(LABEL_PASSIVE);
       }
-      if (flags & 0x00020000) {
+      if (flags & OfferCreateFlags.tfImmediateOrCancel) {
         flagDescriptions.push(LABEL_IMMEDIATE_OR_CANCEL);
       }
-      if (flags & 0x00040000) {
+      if (flags & OfferCreateFlags.tfFillOrKill) {
         flagDescriptions.push(LABEL_FILL_OR_KILL);
       }
-      if (flags & 0x00080000) {
+      if (flags & OfferCreateFlags.tfSell) {
         flagDescriptions.push(LABEL_SELL);
       }
 
@@ -190,28 +197,27 @@ export const formatFlags = (
     }
 
     if (typeof flags === 'object') {
-      const formattedFlags = Object.entries(flags)
+      return Object.entries(flags)
         .map(([key, value]) => {
           if (key === 'tfPassive' && value) {
-            return `${LABEL_PASSIVE}`;
+            return LABEL_PASSIVE;
           }
           if (key === 'tfImmediateOrCancel' && value) {
-            return `${LABEL_IMMEDIATE_OR_CANCEL}`;
+            return LABEL_IMMEDIATE_OR_CANCEL;
           }
           if (key === 'tfFillOrKill' && value) {
-            return `${LABEL_FILL_OR_KILL}`;
+            return LABEL_FILL_OR_KILL;
           }
           if (key === 'tfSell' && value) {
-            return `${LABEL_SELL}`;
+            return LABEL_SELL;
           }
           if (['tfPassive', 'tfImmediateOrCancel', 'tfFillOrKill', 'tfSell'].includes(key)) {
             return null;
           }
           return `${key}: ${value}`;
         })
-        .filter((flag) => flag !== null);
-
-      return formattedFlags.length > 0 ? formattedFlags.join('\n') : 'None';
+        .filter((flag) => flag !== null)
+        .join('\n');
     }
   }
 
@@ -255,48 +261,70 @@ export const formatFlags = (
     }
   }
 
-  if (flagsType === 'OfferCreate') {
+  if (flagsType === 'AccountSet') {
     if (typeof flags === 'number') {
       let flagDescriptions: string[] = [];
 
-      if (flags & OfferCreateFlags.tfPassive) {
-        flagDescriptions.push(LABEL_PASSIVE);
+      if (flags & 0x00010000) {
+        flagDescriptions.push(LABEL_REQUIRE_DEST_TAG);
       }
-      if (flags & OfferCreateFlags.tfImmediateOrCancel) {
-        flagDescriptions.push(LABEL_IMMEDIATE_OR_CANCEL);
+      if (flags & 0x00020000) {
+        flagDescriptions.push(LABEL_OPTIONAL_DEST_TAG);
       }
-      if (flags & OfferCreateFlags.tfFillOrKill) {
-        flagDescriptions.push(LABEL_FILL_OR_KILL);
+      if (flags & 0x00040000) {
+        flagDescriptions.push(LABEL_REQUIRE_AUTH);
       }
-      if (flags & OfferCreateFlags.tfSell) {
-        flagDescriptions.push(LABEL_SELL);
+      if (flags & 0x00080000) {
+        flagDescriptions.push(LABEL_OPTIONAL_AUTH);
+      }
+      if (flags & 0x00100000) {
+        flagDescriptions.push(LABEL_DISALLOW_XRP);
+      }
+      if (flags & 0x00200000) {
+        flagDescriptions.push(LABEL_ALLOW_XRP);
       }
 
-      return flagDescriptions.join('\n');
+      return flagDescriptions.length > 0 ? flagDescriptions.join('\n') : 'None';
     }
 
     if (typeof flags === 'object') {
-      return Object.entries(flags)
+      const formattedFlags = Object.entries(flags)
         .map(([key, value]) => {
-          if (key === 'tfPassive' && value) {
-            return LABEL_PASSIVE;
+          if (key === 'tfRequireDestTag' && value) {
+            return `${LABEL_REQUIRE_DEST_TAG}`;
           }
-          if (key === 'tfImmediateOrCancel' && value) {
-            return LABEL_IMMEDIATE_OR_CANCEL;
+          if (key === 'tfOptionalDestTag' && value) {
+            return `${LABEL_OPTIONAL_DEST_TAG}`;
           }
-          if (key === 'tfFillOrKill' && value) {
-            return LABEL_FILL_OR_KILL;
+          if (key === 'tfRequireAuth' && value) {
+            return `${LABEL_REQUIRE_AUTH}`;
           }
-          if (key === 'tfSell' && value) {
-            return LABEL_SELL;
+          if (key === 'tfOptionalAuth' && value) {
+            return `${LABEL_OPTIONAL_AUTH}`;
           }
-          if (['tfPassive', 'tfImmediateOrCancel', 'tfFillOrKill', 'tfSell'].includes(key)) {
+          if (key === 'tfDisallowXRP' && value) {
+            return `${LABEL_DISALLOW_XRP}`;
+          }
+          if (key === 'tfAllowXRP' && value) {
+            return `${LABEL_ALLOW_XRP}`;
+          }
+          if (
+            [
+              'tfRequireDestTag',
+              'tfOptionalDestTag',
+              'tfRequireAuth',
+              'tfOptionalAuth',
+              'tfDisallowXRP',
+              'tfAllowXRP'
+            ].includes(key)
+          ) {
             return null;
           }
           return `${key}: ${value}`;
         })
-        .filter((flag) => flag !== null)
-        .join('\n');
+        .filter((flag) => flag !== null);
+
+      return formattedFlags.length > 0 ? formattedFlags.join('\n') : 'None';
     }
   }
 

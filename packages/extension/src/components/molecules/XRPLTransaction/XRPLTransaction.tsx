@@ -169,7 +169,8 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
         useLegacy
       }),
     OfferSequence: (value?: number) =>
-      renderSimpleText({ title: 'Offer Sequence', value, useLegacy })
+      renderSimpleText({ title: 'Offer Sequence', value, useLegacy }),
+    EmailHash: (value?: string) => renderSimpleText({ title: 'Email Hash', value, useLegacy })
   };
 
   const renderSimpleText = (params: {

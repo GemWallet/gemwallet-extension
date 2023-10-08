@@ -208,6 +208,51 @@ describe('formatFlags', () => {
     };
     expect(formatFlags(flags, 'Payment')).toBe('Limit Quality');
   });
+
+  it('should format Payment flags to "None" when no flags are set', () => {
+    const flags = {
+      tfNoDirectRipple: false,
+      tfPartialPayment: false,
+      tfLimitQuality: false
+    };
+    expect(formatFlags(flags, 'Payment')).toBe('None');
+  });
+
+  it('should format AccountSet flags correctly when given as a number', () => {
+    const flags = 327680; // tfRequireDestTag and tfRequireAuth flags are set
+    const expectedResult = 'Require Dest Tag\nRequire Auth';
+    expect(formatFlags(flags, 'AccountSet')).toBe(expectedResult);
+  });
+
+  it('should format AccountSet flags correctly when given as an object', () => {
+    const flags = {
+      tfRequireDestTag: true,
+      tfOptionalDestTag: false,
+      tfRequireAuth: true,
+      tfOptionalAuth: false,
+      tfDisallowXRP: false,
+      tfAllowXRP: true
+    };
+    const expectedResult = 'Require Dest Tag\nRequire Auth\nAllow XRP';
+    expect(formatFlags(flags, 'AccountSet')).toBe(expectedResult);
+  });
+
+  it('should not show false flags for AccountSet', () => {
+    const flags = {
+      tfRequireDestTag: false,
+      tfOptionalDestTag: false,
+      tfRequireAuth: false,
+      tfOptionalAuth: false,
+      tfDisallowXRP: false,
+      tfAllowXRP: false
+    };
+    expect(formatFlags(flags, 'AccountSet')).toBe('None');
+  });
+
+  it('should format AccountSet flags to "None" when no flags are set as a number', () => {
+    const flags = 0; // no flags are set
+    expect(formatFlags(flags, 'AccountSet')).toBe('None');
+  });
 });
 
 describe('formatFlagsToNumber', () => {
