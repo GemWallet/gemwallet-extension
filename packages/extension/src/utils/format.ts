@@ -1,4 +1,10 @@
-import { dropsToXrp, setTransactionFlagsToNumber, Transaction } from 'xrpl';
+import {
+  dropsToXrp,
+  NFTokenCreateOfferFlags,
+  NFTokenMintFlags,
+  setTransactionFlagsToNumber,
+  Transaction
+} from 'xrpl';
 import { Amount, IssuedCurrencyAmount } from 'xrpl/dist/npm/models/common';
 import { GlobalFlags } from 'xrpl/dist/npm/models/transactions/common';
 
@@ -69,7 +75,7 @@ const LABEL_SELL_OFFER = 'Sell offer';
 const LABEL_BUY_OFFER = 'Buy offer';
 const LABEL_BURNABLE = 'Burnable';
 const LABEL_ONLY_XRP = 'Only XRP';
-const LABEL_MINT_TF_TRUSTLINE = 'tfTrustLine';
+const LABEL_MINT_TF_TRUSTLINE = 'Create trustline (deprecated)';
 const LABEL_TRANSFERABLE = 'Transferable';
 export const formatFlags = (
   flags:
@@ -84,7 +90,7 @@ export const formatFlags = (
 ) => {
   if (flagsType === 'NFTokenCreateOffer') {
     if (typeof flags === 'number') {
-      if (flags & 0x00000001) {
+      if (flags & NFTokenCreateOfferFlags.tfSellNFToken) {
         return `${LABEL_OFFER_TYPE}: ${LABEL_SELL_OFFER}`;
       }
       if (flags & 0x00000000) {
@@ -108,16 +114,16 @@ export const formatFlags = (
     if (typeof flags === 'number') {
       let flagDescriptions: string[] = [];
 
-      if (flags & 0x00000001) {
+      if (flags & NFTokenMintFlags.tfBurnable) {
         flagDescriptions.push(LABEL_BURNABLE);
       }
-      if (flags & 0x00000002) {
+      if (flags & NFTokenMintFlags.tfOnlyXRP) {
         flagDescriptions.push(LABEL_ONLY_XRP);
       }
-      if (flags & 0x00000004) {
+      if (flags & NFTokenMintFlags.tfTrustLine) {
         flagDescriptions.push(LABEL_MINT_TF_TRUSTLINE);
       }
-      if (flags & 0x00000008) {
+      if (flags & NFTokenMintFlags.tfTransferable) {
         flagDescriptions.push(LABEL_TRANSFERABLE);
       }
       return flagDescriptions.join('\n');
@@ -125,18 +131,18 @@ export const formatFlags = (
 
     if (typeof flags === 'object') {
       return Object.entries(flags)
-        .map(([key, value]) => {
+        .map(([key, value]: [key: string, value: boolean]) => {
           if (key === 'tfBurnable' && value) {
-            return `${LABEL_BURNABLE}`;
+            return LABEL_BURNABLE;
           }
           if (key === 'tfOnlyXRP' && value) {
-            return `${LABEL_ONLY_XRP}`;
+            return LABEL_ONLY_XRP;
           }
           if (key === 'tfTrustLine' && value) {
-            return `${LABEL_MINT_TF_TRUSTLINE}`;
+            return LABEL_MINT_TF_TRUSTLINE;
           }
           if (key === 'tfTransferable' && value) {
-            return `${LABEL_TRANSFERABLE}`;
+            return LABEL_TRANSFERABLE;
           }
           if (['tfBurnable', 'tfOnlyXRP', 'tfTrustLine', 'tfTransferable'].includes(key)) {
             return null;
