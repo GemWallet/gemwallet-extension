@@ -5,6 +5,7 @@ import { convertHexToString, Transaction } from 'xrpl';
 import { Amount, Memo, Signer } from 'xrpl/dist/npm/models/common';
 import { GlobalFlags } from 'xrpl/dist/npm/models/transactions/common';
 
+import { useWallet } from '../../../contexts';
 import { formatAmount, formatFlags, formatTransferFee } from '../../../utils';
 
 type XRPLTxProps = {
@@ -96,6 +97,7 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
   displayTransactionType = true,
   useLegacy = true
 }) => {
+  const { selectedWallet, wallets } = useWallet();
   const keyMap: Record<string, (value: any) => JSX.Element | null> = {
     TransactionType: (value: string) =>
       renderSimpleText({
@@ -110,7 +112,9 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
         useLegacy
       }),
     Account: (value: string) =>
-      renderSimpleText({ title: 'Account', value, hasTooltip: true, useLegacy }),
+      wallets[selectedWallet].publicAddress === value
+        ? null
+        : renderSimpleText({ title: 'Account', value, hasTooltip: true, useLegacy }),
     NFTokenID: (value: string) =>
       renderSimpleText({ title: 'NFT Token ID', value, hasTooltip: true, useLegacy }),
     Destination: (value: string) =>
