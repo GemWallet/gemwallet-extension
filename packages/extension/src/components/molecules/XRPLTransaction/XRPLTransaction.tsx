@@ -111,18 +111,23 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
       }),
     Account: (value: string) =>
       renderSimpleText({ title: 'Account', value, hasTooltip: true, useLegacy }),
-    NFTokenID: (value: string) => renderSimpleText({ title: 'NFT Token ID', value, useLegacy }),
+    NFTokenID: (value: string) =>
+      renderSimpleText({ title: 'NFT Token ID', value, hasTooltip: true, useLegacy }),
     Destination: (value: string) =>
       renderSimpleText({ title: 'Destination', value, hasTooltip: true, useLegacy }),
     DestinationTag: (value?: number) =>
       renderSimpleText({ title: 'Destination Tag', value, useLegacy }),
     Flags: (value?: GlobalFlags) =>
       value !== undefined
-        ? renderSimpleText({ title: 'Flags', value: formatFlags(value), useLegacy })
+        ? renderSimpleText({
+            title: 'Flags',
+            value: formatFlags(value, tx.TransactionType),
+            useLegacy
+          })
         : null,
     Memos: (value?: Memo[]) => renderMemos({ memos: value, useLegacy }),
-    NFTokenOffers: (value: string[]) => renderArray({ title: 'Offer IDs', value, useLegacy }),
-    Signers: (value?: Signer[]) => renderArray({ title: 'Signers', value, useLegacy }),
+    NFTokenOffers: (value: string[]) => renderArray({ title: 'Offer ID', value, useLegacy }),
+    Signers: (value?: Signer[]) => renderArray({ title: 'Signer', value, useLegacy }),
     LimitAmount: (value) =>
       renderAmount({ title: 'Limit Amount', value: value as Amount, useLegacy }),
     NFTokenSellOffer: (value?: string) =>
@@ -220,6 +225,7 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
               keyName={memos.length > 1 ? `Memo ${index + 1}` : 'Memo'}
               value={memoData || ''}
               useLegacy={useLegacy}
+              hasTooltip={true}
             />
           );
         })}
@@ -235,11 +241,19 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
     }
 
     return (
-      <KeyValueDisplay
-        keyName={title}
-        value={value.map((offer) => JSON.stringify(offer)).join(', ')}
-        useLegacy={useLegacy}
-      />
+      <>
+        {value.map((val, index) => {
+          return (
+            <KeyValueDisplay
+              key={index}
+              keyName={value.length > 1 ? `${title} ${index + 1}` : title}
+              value={val}
+              useLegacy={useLegacy}
+              hasTooltip={true}
+            />
+          );
+        })}
+      </>
     );
   };
 
@@ -276,8 +290,8 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
     });
 
     return orderedEntries.map(([key, value]) => {
-      // Do not display null values
-      if (!value) {
+      // Do not display empty values
+      if (value === undefined || value === null) {
         return null;
       }
 

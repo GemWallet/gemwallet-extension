@@ -1,4 +1,10 @@
-import { dropsToXrp, setTransactionFlagsToNumber, Transaction } from 'xrpl';
+import {
+  dropsToXrp,
+  NFTokenCreateOfferFlags,
+  NFTokenMintFlags,
+  setTransactionFlagsToNumber,
+  Transaction
+} from 'xrpl';
 import { Amount, IssuedCurrencyAmount } from 'xrpl/dist/npm/models/common';
 import { GlobalFlags } from 'xrpl/dist/npm/models/transactions/common';
 
@@ -64,6 +70,13 @@ export const formatToken = (value: number, currency: string = 'XRP', isDrops = f
   return `${formatValue(value)} ${currency.toUpperCase()}`;
 };
 
+const LABEL_OFFER_TYPE = 'Offer type';
+const LABEL_SELL_OFFER = 'Sell offer';
+const LABEL_BUY_OFFER = 'Buy offer';
+const LABEL_BURNABLE = 'Burnable';
+const LABEL_ONLY_XRP = 'Only XRP';
+const LABEL_MINT_TF_TRUSTLINE = 'Create trustline (deprecated)';
+const LABEL_TRANSFERABLE = 'Transferable';
 export const formatFlags = (
   flags:
     | PaymentFlags
@@ -72,8 +85,76 @@ export const formatFlags = (
     | CreateNFTOfferFlags
     | SetAccountFlags
     | CreateOfferFlags
-    | GlobalFlags
+    | GlobalFlags,
+  flagsType?: 'NFTokenCreateOffer' | 'NFTokenMint' | string
 ) => {
+  if (flagsType === 'NFTokenCreateOffer') {
+    if (typeof flags === 'number') {
+      if (flags & NFTokenCreateOfferFlags.tfSellNFToken) {
+        return `${LABEL_OFFER_TYPE}: ${LABEL_SELL_OFFER}`;
+      }
+      if (flags & 0x00000000) {
+        return `${LABEL_OFFER_TYPE}: ${LABEL_BUY_OFFER}`;
+      }
+    }
+
+    if (typeof flags === 'object') {
+      return Object.entries(flags)
+        .map(([key, value]) => {
+          if (key === 'tfSellNFToken') {
+            return `${LABEL_OFFER_TYPE}: ${value ? LABEL_SELL_OFFER : LABEL_BUY_OFFER}`;
+          }
+          return `${key}: ${value}`;
+        })
+        .join('\n');
+    }
+  }
+
+  if (flagsType === 'NFTokenMint') {
+    if (typeof flags === 'number') {
+      let flagDescriptions: string[] = [];
+
+      if (flags & NFTokenMintFlags.tfBurnable) {
+        flagDescriptions.push(LABEL_BURNABLE);
+      }
+      if (flags & NFTokenMintFlags.tfOnlyXRP) {
+        flagDescriptions.push(LABEL_ONLY_XRP);
+      }
+      if (flags & NFTokenMintFlags.tfTrustLine) {
+        flagDescriptions.push(LABEL_MINT_TF_TRUSTLINE);
+      }
+      if (flags & NFTokenMintFlags.tfTransferable) {
+        flagDescriptions.push(LABEL_TRANSFERABLE);
+      }
+      return flagDescriptions.join('\n');
+    }
+
+    if (typeof flags === 'object') {
+      return Object.entries(flags)
+        .map(([key, value]: [key: string, value: boolean]) => {
+          if (key === 'tfBurnable' && value) {
+            return LABEL_BURNABLE;
+          }
+          if (key === 'tfOnlyXRP' && value) {
+            return LABEL_ONLY_XRP;
+          }
+          if (key === 'tfTrustLine' && value) {
+            return LABEL_MINT_TF_TRUSTLINE;
+          }
+          if (key === 'tfTransferable' && value) {
+            return LABEL_TRANSFERABLE;
+          }
+          if (['tfBurnable', 'tfOnlyXRP', 'tfTrustLine', 'tfTransferable'].includes(key)) {
+            return null;
+          }
+          return `${key}: ${value}`;
+        })
+        .filter((flag) => flag !== null)
+        .join('\n');
+    }
+  }
+
+  // Fallback
   if (typeof flags === 'object') {
     return Object.entries(flags)
       .map(([key, value]) => `${key}: ${value}`)

@@ -2,8 +2,6 @@
 
 import { Network, NETWORK } from '@gemwallet/constants';
 
-import { formatFlags } from '../../src/utils';
-
 describe('Mint', () => {
   // deepcode ignore NoHardcodedPasswords: password used for testing purposes
   const PASSWORD = 'SECRET_PASSWORD';
@@ -30,17 +28,15 @@ describe('Mint', () => {
 
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Mint NFT');
 
-    cy.contains('Transfer Fee:').next().should('have.text', '3%');
-    cy.contains('NFT Taxon:').next().should('have.text', '0');
-    cy.contains('Memos:').next().should('have.text', 'Test memo');
-    cy.contains('Flags:')
-      .next()
-      .should('have.text', formatFlags({ tfOnlyXRP: false, tfTransferable: true }));
-    cy.contains('Network fees:').next().should('have.text', '0.000199 XRP (MANUAL)');
-    cy.contains('Memos:').next().should('have.text', 'Test memo');
+    cy.contains('Transfer Fee').next().should('have.text', '3%');
+    cy.contains('NFTokenTaxon').next().should('have.text', '0');
+    cy.contains('Memo').next().should('have.text', 'Test memo');
+    cy.contains('Flags').next().should('have.text', 'Transferable');
+    cy.contains('Network fees').next().should('have.text', '0.000199 XRP (MANUAL)');
+    cy.contains('Memo').next().should('have.text', 'Test memo');
 
     // Confirm
-    cy.contains('button', 'Confirm').click();
+    cy.contains('button', 'Submit').click();
 
     cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction in progress');
     cy.get('p[data-testid="transaction-subtitle"]').should(
@@ -100,15 +96,13 @@ describe('Mint', () => {
     // Confirm
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Create NFT Offer');
 
-    cy.contains('NFT Token ID:').next().should('have.text', this.NFTokenID);
-    cy.contains('Amount:').next().should('have.text', '50 XRP');
-    cy.contains('Memos:').next().should('have.text', 'Test memo');
-    cy.contains('Flags:')
-      .next()
-      .should('have.text', formatFlags({ tfSellNFToken: true }));
+    cy.contains('NFT Token ID').next().should('have.text', this.NFTokenID);
+    cy.contains('Amount').next().should('have.text', '50 XRP');
+    cy.contains('Memo').next().should('have.text', 'Test memo');
+    cy.contains('Flags').next().should('have.text', 'Offer type: Sell offer', 'NFTokenMint');
 
     // Confirm
-    cy.contains('button', 'Confirm').click();
+    cy.contains('button', 'Submit').click();
 
     cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction in progress');
     cy.get('p[data-testid="transaction-subtitle"]').should(
@@ -135,15 +129,13 @@ describe('Mint', () => {
     // Confirm
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Create NFT Offer');
 
-    cy.contains('NFT Token ID:').next().should('have.text', this.NFTokenID);
-    cy.contains('Amount:').next().should('have.text', '0.4 SOLO');
-    cy.contains('Memos:').next().should('have.text', 'Test memo');
-    cy.contains('Flags:')
-      .next()
-      .should('have.text', formatFlags({ tfSellNFToken: true }));
+    cy.contains('NFT Token ID').next().should('have.text', this.NFTokenID);
+    cy.contains('Amount').next().should('have.text', '0.4 SOLO');
+    cy.contains('Memo').next().should('have.text', 'Test memo');
+    cy.contains('Flags').next().should('have.text', 'Offer type: Sell offer');
 
     // Confirm
-    cy.contains('button', 'Confirm').click();
+    cy.contains('button', 'Submit').click();
 
     cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction in progress');
     cy.get('p[data-testid="transaction-subtitle"]').should(
@@ -170,15 +162,13 @@ describe('Mint', () => {
     // Confirm
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Create NFT Offer');
 
-    cy.contains('NFT Token ID:').next().should('have.text', this.NFTokenID);
-    cy.contains('Amount:').next().should('have.text', '0.4 SOLO');
-    cy.contains('Memos:').next().should('have.text', 'Test memo');
-    cy.contains('Flags:')
-      .next()
-      .should('have.text', formatFlags({ tfSellNFToken: true }));
+    cy.contains('NFT Token ID').next().should('have.text', this.NFTokenID);
+    cy.contains('Amount').next().should('have.text', '0.4 SOLO');
+    cy.contains('Memo').next().should('have.text', 'Test memo');
+    cy.contains('Flags').next().should('have.text', 'Offer type: Sell offer');
 
     // Confirm
-    cy.contains('button', 'Confirm').click();
+    cy.contains('button', 'Submit').click();
 
     cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction in progress');
     cy.get('p[data-testid="transaction-subtitle"]').should(
@@ -300,10 +290,10 @@ describe('Mint', () => {
     // Confirm
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Cancel NFT Offer');
 
-    cy.contains('Offer IDs:').next().should('have.text', this.OfferID);
+    cy.contains('Offer ID').next().should('have.text', this.OfferID);
 
     // Confirm
-    cy.contains('button', 'Confirm').click();
+    cy.contains('button', 'Submit').click();
 
     cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction in progress');
     cy.get('p[data-testid="transaction-subtitle"]').should(
@@ -324,10 +314,10 @@ describe('Mint', () => {
     // Confirm
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Burn NFT');
 
-    cy.contains('NFT Token ID:').next().should('have.text', this.NFTokenID);
+    cy.contains('NFT Token ID').next().should('have.text', this.NFTokenID);
 
     // Confirm
-    cy.contains('button', 'Confirm').click();
+    cy.contains('button', 'Submit').click();
 
     cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction in progress');
     cy.get('p[data-testid="transaction-subtitle"]').should(

@@ -1,5 +1,22 @@
+import { NFTokenMint } from 'xrpl/dist/npm/models/transactions/NFTokenMint';
+
+import { MintNFTRequest } from '@gemwallet/constants';
+
 import { WalletLedger } from '../../../types';
-import { buildBaseTransaction, buildNFTokenAcceptOffer } from './buildXRPLTransaction';
+import {
+  buildBaseTransaction,
+  buildNFTokenAcceptOffer,
+  buildNFTokenBurn,
+  buildNFTokenCancelOffer,
+  buildNFTokenCreateOffer,
+  buildNFTokenMint
+} from './buildXRPLTransaction';
+
+const wallet: WalletLedger = {
+  name: 'name',
+  publicAddress: 'publicAddress',
+  wallet: {} as any
+};
 
 describe('buildBaseTransaction', () => {
   it('should build base transaction correctly', () => {
@@ -8,12 +25,6 @@ describe('buildBaseTransaction', () => {
       sequence: 1,
       accountTxnID: 'txn123',
       lastLedgerSequence: 1000
-    };
-
-    const wallet: WalletLedger = {
-      name: 'name',
-      publicAddress: 'publicAddress',
-      wallet: {} as any
     };
 
     const txType = 'Payment';
@@ -36,12 +47,6 @@ describe('buildNFTokenAcceptOffer', () => {
       NFTokenBrokerFee: 'brokerFee'
     };
 
-    const wallet: WalletLedger = {
-      name: 'name',
-      publicAddress: 'publicAddress',
-      wallet: {} as any
-    };
-
     const result = buildNFTokenAcceptOffer(params, wallet);
 
     expect(result.TransactionType).toEqual('NFTokenAcceptOffer');
@@ -49,5 +54,74 @@ describe('buildNFTokenAcceptOffer', () => {
     expect(result.NFTokenSellOffer).toEqual('sellOffer');
     expect(result.NFTokenBuyOffer).toEqual('buyOffer');
     expect(result.NFTokenBrokerFee).toEqual('brokerFee');
+  });
+});
+
+describe('buildNFTokenBurn', () => {
+  it('should build NFTokenBurn with NFTokenID and Owner correctly', () => {
+    const params = {
+      NFTokenID: 'tokenId',
+      owner: 'ownerAddress'
+    };
+
+    const result = buildNFTokenBurn(params, wallet);
+
+    expect(result.NFTokenID).toEqual('tokenId');
+    expect(result.Owner).toEqual('ownerAddress');
+
+    const result2 = buildNFTokenBurn({ NFTokenID: 'tokenId' }, wallet);
+    expect(result2.NFTokenID).toEqual('tokenId');
+    expect(result2.Owner).toEqual(undefined);
+  });
+});
+
+describe('buildNFTokenCancelOffer', () => {
+  it('should build NFTokenCancelOffer correctly', () => {
+    const params = {
+      NFTokenOffers: ['offer1', 'offer2']
+    };
+
+    const result = buildNFTokenCancelOffer(params, wallet);
+
+    expect(result.NFTokenOffers).toEqual(['offer1', 'offer2']);
+  });
+});
+
+describe('buildNFTokenCreateOffer', () => {
+  it('should build NFTokenCreateOffer with all optional fields provided', () => {
+    const params = {
+      NFTokenID: 'tokenId',
+      amount: '1000',
+      owner: 'ownerAddress',
+      expiration: 123456,
+      destination: 'destinationAddress'
+    };
+
+    const result = buildNFTokenCreateOffer(params, wallet);
+
+    expect(result.NFTokenID).toEqual('tokenId');
+    expect(result.Amount).toEqual('1000');
+    expect(result.Owner).toEqual('ownerAddress');
+    expect(result.Expiration).toEqual(123456);
+    expect(result.Destination).toEqual('destinationAddress');
+    expect(result.Flags).toBeUndefined();
+  });
+
+  it('should build NFTokenMint with given parameters', () => {
+    const params: MintNFTRequest = {
+      NFTokenTaxon: 0,
+      issuer: 'rXYZ...',
+      transferFee: 10,
+      URI: 'someURI',
+      flags: 0
+    };
+
+    const result: NFTokenMint = buildNFTokenMint(params, wallet);
+
+    expect(result.NFTokenTaxon).toEqual(params.NFTokenTaxon);
+    expect(result.Issuer).toEqual(params.issuer);
+    expect(result.TransferFee).toEqual(params.transferFee);
+    expect(result.URI).toEqual(params.URI);
+    expect(result.Flags).toEqual(params.flags);
   });
 });

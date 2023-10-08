@@ -1,7 +1,6 @@
 import { FC, useCallback, useEffect, useState } from 'react';
 
-import ErrorIcon from '@mui/icons-material/Error';
-import { Button, Container, Paper, Typography } from '@mui/material';
+import { NFTokenCancelOffer } from 'xrpl';
 
 import {
   API_ERROR_BAD_REQUEST,
@@ -10,53 +9,46 @@ import {
   ResponseType
 } from '@gemwallet/constants';
 
-import { ERROR_RED } from '../../../constants';
 import {
+  buildNFTokenCancelOffer,
   TransactionProgressStatus,
   useLedger,
   useNetwork,
-  useTransactionProgress
+  useTransactionProgress,
+  useWallet
 } from '../../../contexts';
 import { useFees, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
-import { fromHexMemos, parseArray } from '../../../utils';
-import {
-  BaseTransactionParams,
-  getBaseFromParams,
-  initialBaseTransactionParams,
-  parseBaseParamsFromURLParams
-} from '../../../utils/baseParams';
+import { parseArray } from '../../../utils';
+import { parseBaseParamsFromURLParamsNew } from '../../../utils/baseParams';
 import { serializeError } from '../../../utils/errors';
-import { BaseTransaction } from '../../organisms/BaseTransaction/BaseTransaction';
-import { PageWithTitle } from '../../templates';
+import { TransactionDetails } from '../../organisms';
+import { TransactionPage } from '../../templates';
 
-interface Params extends BaseTransactionParams {
+interface Params {
   id: number;
-  // CancelNFTOffer fields
-  NFTokenOffers: string[] | null;
+  transaction: NFTokenCancelOffer | null;
 }
 
 export const CancelNFTOffer: FC = () => {
   const [params, setParams] = useState<Params>({
     id: 0,
-    // BaseTransaction fields
-    ...initialBaseTransactionParams,
-    // CancelNFTOffer fields
-    NFTokenOffers: null
+    transaction: null
   });
   const [errorRequestRejection, setErrorRequestRejection] = useState<Error>();
   const [isParamsMissing, setIsParamsMissing] = useState(false);
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
   const { cancelNFTOffer } = useLedger();
+  const { getCurrentWallet } = useWallet();
   const { networkName } = useNetwork();
   const { setTransactionProgress } = useTransactionProgress();
   const { estimatedFees, errorFees, difference } = useFees(
     {
       TransactionType: 'NFTokenCancelOffer',
       Account: '',
-      NFTokenOffers: params.NFTokenOffers ?? []
+      NFTokenOffers: params.transaction?.NFTokenOffers ?? []
     },
-    params.fee
+    params.transaction?.Fee
   );
 
   const sendMessageToBackground = useCallback(
@@ -116,44 +108,32 @@ export const CancelNFTOffer: FC = () => {
     const urlParams = new URLSearchParams(queryString);
     const id = Number(urlParams.get('id')) || 0;
 
-    // BaseTransaction fields
-    const {
-      fee,
-      sequence,
-      accountTxnID,
-      lastLedgerSequence,
-      memos,
-      signers,
-      sourceTag,
-      signingPubKey,
-      ticketSequence,
-      txnSignature
-    } = parseBaseParamsFromURLParams(urlParams);
-
     // CancelNFTOffer fields
     const NFTokenOffers = parseArray(urlParams.get('NFTokenOffers'));
+    const wallet = getCurrentWallet();
 
-    if (!NFTokenOffers) {
+    if (!NFTokenOffers || !NFTokenOffers.length) {
       setIsParamsMissing(true);
     }
 
+    if (!wallet) {
+      setIsParamsMissing(true);
+      return;
+    }
+
+    const transaction = buildNFTokenCancelOffer(
+      {
+        ...parseBaseParamsFromURLParamsNew(urlParams),
+        NFTokenOffers: NFTokenOffers ?? []
+      },
+      wallet
+    );
+
     setParams({
       id,
-      // BaseTransaction fields
-      fee,
-      sequence,
-      accountTxnID,
-      lastLedgerSequence,
-      memos,
-      signers,
-      sourceTag,
-      signingPubKey,
-      ticketSequence,
-      txnSignature,
-      // CancelNFTOffer fields
-      NFTokenOffers
+      transaction
     });
-  }, []);
+  }, [getCurrentWallet]);
 
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);
@@ -167,12 +147,7 @@ export const CancelNFTOffer: FC = () => {
     setTransaction(TransactionStatus.Pending);
     // NFTokenOffers will be present because if not,
     // we won't be able to go to the confirm transaction state
-    cancelNFTOffer({
-      // BaseTransaction fields
-      ...getBaseFromParams(params),
-      // CancelNFTOffer fields
-      NFTokenOffers: params.NFTokenOffers as string[]
-    })
+    cancelNFTOffer(params.transaction as NFTokenCancelOffer)
       .then((response) => {
         setTransaction(TransactionStatus.Success);
         sendMessageToBackground(createMessage(response));
@@ -188,82 +163,25 @@ export const CancelNFTOffer: FC = () => {
       });
   }, [cancelNFTOffer, params, sendMessageToBackground, createMessage]);
 
-  const {
-    // Base transaction params
-    fee,
-    memos,
-    // CancelNFTOffer params
-    NFTokenOffers
-  } = params;
-
-  const decodedMemos = fromHexMemos(memos || []) || [];
-  const offers = NFTokenOffers as string[];
+  if (transactionStatusComponent) {
+    return <div>{transactionStatusComponent}</div>;
+  }
 
   return (
-    <>
-      {transactionStatusComponent ? (
-        <div>{transactionStatusComponent}</div>
-      ) : (
-        <PageWithTitle
-          title="Cancel NFT Offer"
-          styles={{ container: { justifyContent: 'initial' } }}
-        >
-          {!hasEnoughFunds ? (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              <ErrorIcon style={{ color: ERROR_RED }} />
-              <Typography variant="body1" style={{ marginLeft: '10px', color: ERROR_RED }}>
-                Insufficient funds.
-              </Typography>
-            </div>
-          ) : null}
-          {offers ? (
-            <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-              <Typography variant="body1">Offer IDs:</Typography>
-              {offers.map((offer, index) => (
-                <div key={index} style={{ marginBottom: index === offer.length - 1 ? 0 : '8px' }}>
-                  <Typography
-                    variant="body2"
-                    style={{
-                      wordBreak: 'break-word'
-                    }}
-                  >
-                    {offer}
-                  </Typography>
-                </div>
-              ))}
-            </Paper>
-          ) : null}
-          <div style={{ marginBottom: '40px' }}>
-            <BaseTransaction
-              fee={fee ? Number(fee) : null}
-              memos={decodedMemos}
-              flags={null}
-              errorFees={errorFees}
-              estimatedFees={estimatedFees}
-            />
-          </div>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              position: 'fixed',
-              bottom: 0,
-              left: 0,
-              right: 0,
-              backgroundColor: '#1d1d1d'
-            }}
-          >
-            <Container style={{ display: 'flex', justifyContent: 'space-evenly', margin: '10px' }}>
-              <Button variant="contained" color="secondary" onClick={handleReject}>
-                Reject
-              </Button>
-              <Button variant="contained" onClick={handleConfirm} disabled={!hasEnoughFunds}>
-                Confirm
-              </Button>
-            </Container>
-          </div>
-        </PageWithTitle>
-      )}
-    </>
+    <TransactionPage
+      title="Cancel NFT Offer"
+      description="Please review the transaction below."
+      approveButtonText="Submit"
+      hasEnoughFunds={hasEnoughFunds}
+      onClickApprove={handleConfirm}
+      onClickReject={handleReject}
+    >
+      <TransactionDetails
+        txParam={params.transaction}
+        estimatedFees={estimatedFees}
+        errorFees={errorFees}
+        displayTransactionType={false}
+      />
+    </TransactionPage>
   );
 };

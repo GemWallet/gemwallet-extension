@@ -107,6 +107,55 @@ describe('formatFlags', () => {
     const expectedResult = '';
     expect(formatFlags(flags)).toBe(expectedResult);
   });
+
+  it('should format flags as number for other flag types', () => {
+    expect(formatFlags(123456, 'otherFlagType')).toBe(123456);
+  });
+
+  it('should format NFTokenCreateOffer flags correctly', () => {
+    const flags = { tfSellNFToken: true };
+    const expectedResult = 'Offer type: Sell offer';
+    expect(formatFlags(flags, 'NFTokenCreateOffer')).toBe(expectedResult);
+  });
+
+  it('should format NFTokenCreateOffer flags (number) correctly', () => {
+    const flags = 1;
+    const expectedResult = 'Offer type: Sell offer';
+    expect(formatFlags(flags, 'NFTokenCreateOffer')).toBe(expectedResult);
+  });
+
+  it('should format NFTokenCreateOffer flags as buy offer when false', () => {
+    const flags = { tfSellNFToken: false };
+    const expectedResult = 'Offer type: Buy offer';
+    expect(formatFlags(flags, 'NFTokenCreateOffer')).toBe(expectedResult);
+  });
+
+  it('should format NFTokenMint flags correctly when given as a number', () => {
+    const flags = 3; // both tfBurnable and tfOnlyXRP flags are set
+    const expectedResult = 'Burnable\nOnly XRP';
+    expect(formatFlags(flags, 'NFTokenMint')).toBe(expectedResult);
+  });
+
+  it('should format NFTokenMint flags correctly when given as an object', () => {
+    const flags = {
+      tfBurnable: true,
+      tfOnlyXRP: true,
+      tfTrustLine: false,
+      tfTransferable: false
+    };
+    const expectedResult = 'Burnable\nOnly XRP';
+    expect(formatFlags(flags, 'NFTokenMint')).toBe(expectedResult);
+  });
+
+  it('should not show false flags for NFTokenMint', () => {
+    const flags = {
+      tfBurnable: false,
+      tfOnlyXRP: false,
+      tfTrustLine: false,
+      tfTransferable: true
+    };
+    expect(formatFlags(flags, 'NFTokenMint')).toBe('Transferable');
+  });
 });
 
 describe('formatFlagsToNumber', () => {
