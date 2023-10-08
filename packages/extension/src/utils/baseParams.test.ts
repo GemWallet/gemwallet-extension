@@ -1,8 +1,38 @@
 import {
   getBaseFromParams,
   initialBaseTransactionParams,
-  parseBaseParamsFromURLParams
+  parseBaseParamsFromURLParams,
+  parseBaseParamsFromURLParamsNew
 } from './baseParams';
+
+describe('parseBaseParamsFromURLParamsNew', () => {
+  it('should parse all values correctly', () => {
+    const params = new URLSearchParams({
+      fee: '10',
+      sequence: '1',
+      accountTxnID: '12345',
+      lastLedgerSequence: '1000'
+    });
+
+    const result = parseBaseParamsFromURLParamsNew(params);
+
+    expect(result.fee).toEqual('10');
+    expect(result.sequence).toEqual(1);
+    expect(result.accountTxnID).toEqual('12345');
+    expect(result.lastLedgerSequence).toEqual(1000);
+  });
+
+  it('should return undefined for missing values', () => {
+    const params = new URLSearchParams({});
+
+    const result = parseBaseParamsFromURLParamsNew(params);
+
+    expect(result.fee).toBeUndefined();
+    expect(result.sequence).toBeUndefined();
+    expect(result.accountTxnID).toBeUndefined();
+    expect(result.lastLedgerSequence).toBeUndefined();
+  });
+});
 
 describe('parseBaseParamsFromURLParams', () => {
   it('should return the parsed base parameters from URL params', () => {

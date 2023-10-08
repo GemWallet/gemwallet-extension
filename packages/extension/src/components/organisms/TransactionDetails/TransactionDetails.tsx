@@ -11,13 +11,15 @@ interface TransactionDetailsProps {
   estimatedFees: string;
   errorFees?: string;
   isConnectionFailed?: boolean;
+  displayTransactionType?: boolean;
 }
 
 export const TransactionDetails: FC<TransactionDetailsProps> = ({
   txParam,
   errorFees,
   estimatedFees,
-  isConnectionFailed
+  isConnectionFailed,
+  displayTransactionType
 }) => {
   const [isTxExpanded, setIsTxExpanded] = useState(false);
   const [isRawTxExpanded, setIsRawTxExpanded] = useState(false);
@@ -30,7 +32,13 @@ export const TransactionDetails: FC<TransactionDetailsProps> = ({
   return (
     <>
       <DataCard
-        formattedData={<XRPLTransaction tx={txParam} useLegacy={false} />}
+        formattedData={
+          <XRPLTransaction
+            tx={txParam}
+            useLegacy={false}
+            displayTransactionType={displayTransactionType}
+          />
+        }
         dataName="Transaction details"
         isExpanded={isTxExpanded}
         setIsExpanded={setIsTxExpanded}
@@ -62,5 +70,3 @@ export const TransactionDetails: FC<TransactionDetailsProps> = ({
     </>
   );
 };
-
-export default TransactionDetails;

@@ -3,6 +3,59 @@ import { Memo, Signer } from '@gemwallet/constants';
 import { parseMemos, parseSigners } from './parseFromString';
 import { checkFee } from './transaction';
 
+export type BaseTransactionParamsNew = {
+  fee?: string;
+  sequence?: number;
+  accountTxnID?: string;
+  lastLedgerSequence?: number;
+  memos?: Memo[];
+  signers?: Signer[];
+  sourceTag?: number;
+  signingPubKey?: string;
+  ticketSequence?: number;
+  txnSignature?: string;
+};
+
+export const parseBaseParamsFromURLParamsNew = (
+  urlParams: URLSearchParams
+): BaseTransactionParamsNew => {
+  const result: Partial<BaseTransactionParamsNew> = {};
+
+  const addParam = <T extends keyof BaseTransactionParamsNew>(
+    key: T,
+    value: BaseTransactionParamsNew[T] | null
+  ) => {
+    if (value !== null && value !== undefined) {
+      result[key] = value;
+    }
+  };
+
+  addParam('fee', checkFee(urlParams.get('fee')));
+  addParam('sequence', urlParams.get('sequence') ? Number(urlParams.get('sequence')) : undefined);
+  addParam('accountTxnID', urlParams.get('accountTxnID'));
+  addParam(
+    'lastLedgerSequence',
+    urlParams.get('lastLedgerSequence') ? Number(urlParams.get('lastLedgerSequence')) : undefined
+  );
+  addParam('memos', parseMemos(urlParams.get('memos')));
+  addParam('signers', parseSigners(urlParams.get('signers')));
+  addParam(
+    'sourceTag',
+    urlParams.get('sourceTag') ? Number(urlParams.get('sourceTag')) : undefined
+  );
+  addParam('signingPubKey', urlParams.get('signingPubKey'));
+  addParam(
+    'ticketSequence',
+    urlParams.get('ticketSequence') ? Number(urlParams.get('ticketSequence')) : undefined
+  );
+  addParam('txnSignature', urlParams.get('txnSignature'));
+
+  return result;
+};
+
+/*
+ * Legacy part: Will be removed after all the views have been migrated.
+ */
 export type BaseTransactionParams = {
   fee: string | null;
   sequence: number | null;
