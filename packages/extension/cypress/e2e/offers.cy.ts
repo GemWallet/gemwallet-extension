@@ -209,11 +209,11 @@ describe('Offers', () => {
     // Confirm
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Cancel Offer');
 
-    cy.contains('Offer sequence:').next().should('have.text', this.sequence);
-    cy.contains('Memos:').next().should('have.text', 'Test memo');
+    cy.contains('Offer Sequence').next().should('have.text', this.sequence);
+    cy.contains('Memo').next().should('have.text', 'Test memo');
 
     // Confirm
-    cy.contains('button', 'Confirm').click();
+    cy.contains('button', 'Submit').click();
 
     cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction in progress');
     cy.get('p[data-testid="transaction-subtitle"]').should(

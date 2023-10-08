@@ -163,7 +163,9 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
         title: 'Transfer Fee',
         value: value ? `${formatTransferFee(value)}%` : '',
         useLegacy
-      })
+      }),
+    OfferSequence: (value?: number) =>
+      renderSimpleText({ title: 'Offer Sequence', value, useLegacy })
   };
 
   const renderSimpleText = (params: {

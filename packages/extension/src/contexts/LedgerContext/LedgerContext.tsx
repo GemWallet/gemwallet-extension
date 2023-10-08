@@ -30,7 +30,6 @@ import { NFTInfoResponse } from 'xrpl/dist/npm/models/methods/nftInfo';
 import {
   AccountNFToken,
   AccountNFTokenResponse,
-  CancelOfferRequest,
   CreateOfferRequest,
   GetNFTRequest,
   Network,
@@ -127,7 +126,7 @@ export interface LedgerContextType {
   burnNFT: (payload: NFTokenBurn) => Promise<BurnNFTResponse>;
   setAccount: (payload: SetAccountRequest) => Promise<SetAccountResponse>;
   createOffer: (payload: CreateOfferRequest) => Promise<CreateOfferResponse>;
-  cancelOffer: (payload: CancelOfferRequest) => Promise<CancelOfferResponse>;
+  cancelOffer: (payload: OfferCancel) => Promise<CancelOfferResponse>;
   signTransaction: (payload: SignTransactionRequest) => Promise<SignTransactionResponse>;
   submitTransaction: (payload: SubmitTransactionRequest) => Promise<SubmitTransactionResponse>;
   submitBulkTransactions: (
@@ -623,7 +622,7 @@ const LedgerProvider: FC = ({ children }) => {
   );
 
   const cancelOffer = useCallback(
-    async (payload: CancelOfferRequest) => {
+    async (payload: OfferCancel) => {
       const wallet = getCurrentWallet();
       if (!client) {
         throw new Error('You need to be connected to a ledger');
@@ -631,13 +630,7 @@ const LedgerProvider: FC = ({ children }) => {
         throw new Error('You need to have a wallet connected');
       } else {
         try {
-          const tx = await client.submitAndWait(
-            {
-              ...(buildBaseTransaction(payload, wallet, 'OfferCancel') as OfferCancel),
-              OfferSequence: payload.offerSequence
-            },
-            { wallet: wallet.wallet }
-          );
+          const tx = await client.submitAndWait(payload, { wallet: wallet.wallet });
 
           if (!tx.result.hash) {
             throw new Error("Couldn't cancel the offer");

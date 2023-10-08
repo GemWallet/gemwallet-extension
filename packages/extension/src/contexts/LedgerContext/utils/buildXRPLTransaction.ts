@@ -1,4 +1,10 @@
-import { NFTokenAcceptOffer, NFTokenBurn, NFTokenCancelOffer, NFTokenCreateOffer } from 'xrpl';
+import {
+  NFTokenAcceptOffer,
+  NFTokenBurn,
+  NFTokenCancelOffer,
+  NFTokenCreateOffer,
+  OfferCancel
+} from 'xrpl';
 import { BaseTransaction } from 'xrpl/dist/npm/models/transactions/common';
 import { NFTokenMint } from 'xrpl/dist/npm/models/transactions/NFTokenMint';
 
@@ -7,6 +13,7 @@ import {
   BaseTransactionRequest,
   BurnNFTRequest,
   CancelNFTOfferRequest,
+  CancelOfferRequest,
   CreateNFTOfferRequest,
   MintNFTRequest
 } from '@gemwallet/constants';
@@ -91,6 +98,13 @@ export const buildNFTokenMint = (params: MintNFTRequest, wallet: WalletLedger): 
     ...(params.transferFee && { TransferFee: params.transferFee }),
     ...(params.URI && { URI: params.URI }),
     Flags: formattedFlags
+  };
+};
+
+export const buildOfferCancel = (params: CancelOfferRequest, wallet: WalletLedger): OfferCancel => {
+  return {
+    ...(buildBaseTransaction(params, wallet, 'OfferCancel') as OfferCancel),
+    OfferSequence: params.offerSequence
   };
 };
 

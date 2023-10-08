@@ -1,22 +1,17 @@
 import { NFTokenMint } from 'xrpl/dist/npm/models/transactions/NFTokenMint';
 
+import { CancelOfferRequest } from '@gemwallet/constants';
 import { MintNFTRequest } from '@gemwallet/constants';
 
-import { WalletLedger } from '../../../types';
 import {
   buildBaseTransaction,
   buildNFTokenAcceptOffer,
   buildNFTokenBurn,
   buildNFTokenCancelOffer,
   buildNFTokenCreateOffer,
-  buildNFTokenMint
+  buildNFTokenMint,
+  buildOfferCancel
 } from './buildXRPLTransaction';
-
-const wallet: WalletLedger = {
-  name: 'name',
-  publicAddress: 'publicAddress',
-  wallet: {} as any
-};
 
 describe('buildBaseTransaction', () => {
   it('should build base transaction correctly', () => {
@@ -123,5 +118,19 @@ describe('buildNFTokenCreateOffer', () => {
     expect(result.TransferFee).toEqual(params.transferFee);
     expect(result.URI).toEqual(params.URI);
     expect(result.Flags).toEqual(params.flags);
+  });
+});
+
+describe('buildOfferCancel', () => {
+  it('should build OfferCancel correctly', () => {
+    const params: CancelOfferRequest = {
+      offerSequence: 123
+    };
+
+    const result = buildOfferCancel(params, wallet);
+
+    expect(result.TransactionType).toEqual('OfferCancel');
+    expect(result.Account).toEqual('publicAddress');
+    expect(result.OfferSequence).toEqual(123);
   });
 });
