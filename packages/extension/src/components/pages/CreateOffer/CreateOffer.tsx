@@ -1,82 +1,58 @@
 import { FC, useCallback, useEffect, useState } from 'react';
 
-import ErrorIcon from '@mui/icons-material/Error';
-import { Button, Container, Paper, Typography } from '@mui/material';
-import { Amount } from 'xrpl/dist/npm/models/common';
+import { OfferCreate } from 'xrpl';
 
 import {
   API_ERROR_BAD_REQUEST,
-  CreateOfferFlags,
   GEM_WALLET,
   ReceiveCreateOfferBackgroundMessage,
   ResponseType
 } from '@gemwallet/constants';
 
-import { ERROR_RED } from '../../../constants';
 import {
+  buildOfferCreate,
   TransactionProgressStatus,
   useLedger,
   useNetwork,
-  useTransactionProgress
+  useTransactionProgress,
+  useWallet
 } from '../../../contexts';
 import { useFees, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
-import {
-  formatAmount,
-  fromHexMemos,
-  handleAmountHexCurrency,
-  parseAmount,
-  parseCreateOfferFlags
-} from '../../../utils';
-import {
-  BaseTransactionParams,
-  getBaseFromParams,
-  initialBaseTransactionParams,
-  parseBaseParamsFromURLParams
-} from '../../../utils/baseParams';
+import { parseAmount, parseCreateOfferFlags } from '../../../utils';
+import { parseBaseParamsFromURLParamsNew } from '../../../utils/baseParams';
 import { serializeError } from '../../../utils/errors';
-import { BaseTransaction } from '../../organisms/BaseTransaction/BaseTransaction';
-import { PageWithTitle } from '../../templates';
+import { TransactionDetails } from '../../organisms';
+import { TransactionPage } from '../../templates';
 
-interface Params extends BaseTransactionParams {
+interface Params {
   id: number;
-  // CreateOffer fields
-  flags: CreateOfferFlags | null;
-  expiration: number | null;
-  offerSequence: number | null;
-  takerGets: Amount | null;
-  takerPays: Amount | null;
+  transaction: OfferCreate | null;
 }
 
 export const CreateOffer: FC = () => {
   const [params, setParams] = useState<Params>({
     id: 0,
-    // BaseTransaction fields
-    ...initialBaseTransactionParams,
-    // CreateOffer fields
-    flags: null,
-    expiration: null,
-    offerSequence: null,
-    takerGets: null,
-    takerPays: null
+    transaction: null
   });
   const [errorRequestRejection, setErrorRequestRejection] = useState<Error>();
   const [isParamsMissing, setIsParamsMissing] = useState(false);
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
   const { createOffer } = useLedger();
+  const { getCurrentWallet } = useWallet();
   const { networkName } = useNetwork();
   const { setTransactionProgress } = useTransactionProgress();
   const { estimatedFees, errorFees, difference } = useFees(
     {
       TransactionType: 'OfferCreate',
       Account: '',
-      ...(params.flags && { Flags: params.flags }),
-      ...(params.expiration && { Expiration: params.expiration }),
-      ...(params.offerSequence && { OfferSequence: params.offerSequence }),
-      TakerGets: params.takerGets ?? '',
-      TakerPays: params.takerPays ?? ''
+      ...(params.transaction?.Flags && { Flags: params.transaction.Flags }),
+      ...(params.transaction?.Expiration && { Expiration: params.transaction.Expiration }),
+      ...(params.transaction?.OfferSequence && { OfferSequence: params.transaction.OfferSequence }),
+      TakerGets: params.transaction?.TakerGets ?? '',
+      TakerPays: params.transaction?.TakerPays ?? ''
     },
-    params.fee
+    params.transaction?.Fee
   );
 
   const sendMessageToBackground = useCallback(
@@ -136,20 +112,6 @@ export const CreateOffer: FC = () => {
     const urlParams = new URLSearchParams(queryString);
     const id = Number(urlParams.get('id')) || 0;
 
-    // BaseTransaction fields
-    const {
-      fee,
-      sequence,
-      accountTxnID,
-      lastLedgerSequence,
-      memos,
-      signers,
-      sourceTag,
-      signingPubKey,
-      ticketSequence,
-      txnSignature
-    } = parseBaseParamsFromURLParams(urlParams);
-
     // CreateOffer fields
     const flags = parseCreateOfferFlags(urlParams.get('flags'));
     const expiration = urlParams.get('expiration') ? Number(urlParams.get('expiration')) : null;
@@ -162,32 +124,34 @@ export const CreateOffer: FC = () => {
     const takerPays = urlParams.get('takerPays')
       ? parseAmount(urlParams.get('takerPays'), null, null, '')
       : null;
+    const wallet = getCurrentWallet();
 
     if (!takerGets || !takerPays) {
       setIsParamsMissing(true);
     }
 
+    if (!wallet) {
+      setIsParamsMissing(true);
+      return;
+    }
+
+    const transaction = buildOfferCreate(
+      {
+        ...parseBaseParamsFromURLParamsNew(urlParams),
+        takerGets: takerGets ?? '0',
+        takerPays: takerPays ?? '0',
+        ...(flags && { flags }),
+        ...(expiration && { expiration }),
+        ...(offerSequence && { offerSequence })
+      },
+      wallet
+    );
+
     setParams({
       id,
-      // BaseTransaction fields
-      fee,
-      sequence,
-      accountTxnID,
-      lastLedgerSequence,
-      memos,
-      signers,
-      sourceTag,
-      signingPubKey,
-      ticketSequence,
-      txnSignature,
-      // CreateOffer fields
-      flags,
-      expiration,
-      offerSequence,
-      takerGets,
-      takerPays
+      transaction
     });
-  }, []);
+  }, [getCurrentWallet]);
 
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);
@@ -201,18 +165,7 @@ export const CreateOffer: FC = () => {
     setTransaction(TransactionStatus.Pending);
     // takerGets and takenPays will be present because if not,
     // we won't be able to go to the confirm transaction state
-    handleAmountHexCurrency(params.takerGets as Amount);
-    handleAmountHexCurrency(params.takerPays as Amount);
-    createOffer({
-      // BaseTransaction fields
-      ...getBaseFromParams(params),
-      // CreateOffer fields
-      flags: params.flags || undefined,
-      expiration: params.expiration || undefined,
-      offerSequence: params.offerSequence || undefined,
-      takerGets: params.takerGets as Amount,
-      takerPays: params.takerPays as Amount
-    })
+    createOffer(params.transaction as OfferCreate)
       .then((response) => {
         setTransaction(TransactionStatus.Success);
         sendMessageToBackground(createMessage(response));
@@ -228,89 +181,25 @@ export const CreateOffer: FC = () => {
       });
   }, [params, createOffer, sendMessageToBackground, createMessage]);
 
-  const {
-    // Base transaction params
-    fee,
-    memos,
-    // CreateOffer params
-    flags,
-    expiration,
-    offerSequence,
-    takerGets,
-    takerPays
-  } = params;
-
-  const decodedMemos = fromHexMemos(memos || []) || [];
+  if (transactionStatusComponent) {
+    return <div>{transactionStatusComponent}</div>;
+  }
 
   return (
-    <>
-      {transactionStatusComponent ? (
-        <div>{transactionStatusComponent}</div>
-      ) : (
-        <PageWithTitle title="Create Offer" styles={{ container: { justifyContent: 'initial' } }}>
-          {!hasEnoughFunds ? (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              <ErrorIcon style={{ color: ERROR_RED }} />
-              <Typography variant="body1" style={{ marginLeft: '10px', color: ERROR_RED }}>
-                Insufficient funds.
-              </Typography>
-            </div>
-          ) : null}
-          {expiration ? (
-            <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-              <Typography variant="body1">Expiration:</Typography>
-              <Typography variant="body2">{expiration}</Typography>
-            </Paper>
-          ) : null}
-          {offerSequence ? (
-            <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-              <Typography variant="body1">Offer sequence:</Typography>
-              <Typography variant="body2">{offerSequence}</Typography>
-            </Paper>
-          ) : null}
-          {takerGets ? (
-            <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-              <Typography variant="body1">Taker gets:</Typography>
-              <Typography variant="body2">{formatAmount(takerGets)}</Typography>
-            </Paper>
-          ) : null}
-          {takerPays ? (
-            <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-              <Typography variant="body1">Taker pays:</Typography>
-              <Typography variant="body2">{formatAmount(takerPays)}</Typography>
-            </Paper>
-          ) : null}
-          <div style={{ marginBottom: '40px' }}>
-            <BaseTransaction
-              fee={fee ? Number(fee) : null}
-              memos={decodedMemos}
-              flags={flags}
-              errorFees={errorFees}
-              estimatedFees={estimatedFees}
-            />
-          </div>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              position: 'fixed',
-              bottom: 0,
-              left: 0,
-              right: 0,
-              backgroundColor: '#1d1d1d'
-            }}
-          >
-            <Container style={{ display: 'flex', justifyContent: 'space-evenly', margin: '10px' }}>
-              <Button variant="contained" color="secondary" onClick={handleReject}>
-                Reject
-              </Button>
-              <Button variant="contained" onClick={handleConfirm} disabled={!hasEnoughFunds}>
-                Confirm
-              </Button>
-            </Container>
-          </div>
-        </PageWithTitle>
-      )}
-    </>
+    <TransactionPage
+      title="Create Offer"
+      description="Please review the transaction below."
+      approveButtonText="Submit"
+      hasEnoughFunds={hasEnoughFunds}
+      onClickApprove={handleConfirm}
+      onClickReject={handleReject}
+    >
+      <TransactionDetails
+        txParam={params.transaction}
+        estimatedFees={estimatedFees}
+        errorFees={errorFees}
+        displayTransactionType={false}
+      />
+    </TransactionPage>
   );
 };

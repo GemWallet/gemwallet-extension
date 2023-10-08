@@ -1,8 +1,9 @@
+import { Amount } from 'xrpl/dist/npm/models/common';
 import { NFTokenMint } from 'xrpl/dist/npm/models/transactions/NFTokenMint';
 
-import { CancelOfferRequest } from '@gemwallet/constants';
-import { MintNFTRequest } from '@gemwallet/constants';
+import { CancelOfferRequest, CreateOfferRequest, MintNFTRequest } from '@gemwallet/constants';
 
+import { WalletLedger } from '../../../types';
 import {
   buildBaseTransaction,
   buildNFTokenAcceptOffer,
@@ -10,8 +11,15 @@ import {
   buildNFTokenCancelOffer,
   buildNFTokenCreateOffer,
   buildNFTokenMint,
-  buildOfferCancel
+  buildOfferCancel,
+  buildOfferCreate
 } from './buildXRPLTransaction';
+
+const wallet: WalletLedger = {
+  name: 'name',
+  publicAddress: 'publicAddress',
+  wallet: {} as any
+};
 
 describe('buildBaseTransaction', () => {
   it('should build base transaction correctly', () => {
@@ -132,5 +140,34 @@ describe('buildOfferCancel', () => {
     expect(result.TransactionType).toEqual('OfferCancel');
     expect(result.Account).toEqual('publicAddress');
     expect(result.OfferSequence).toEqual(123);
+  });
+
+  describe('buildOfferCreate', () => {
+    it('should build OfferCreate correctly', () => {
+      const takerGets: Amount = '100';
+
+      const takerPays: Amount = {
+        currency: 'USD',
+        value: '200',
+        issuer: 'rUsDIssuer'
+      };
+
+      const params: CreateOfferRequest = {
+        takerGets,
+        takerPays,
+        expiration: 567,
+        offerSequence: 123
+      };
+
+      const result = buildOfferCreate(params, wallet);
+
+      expect(result.TransactionType).toEqual('OfferCreate');
+      expect(result.Account).toEqual('publicAddress');
+      expect(result.Expiration).toEqual(567);
+      expect(result.OfferSequence).toEqual(123);
+      expect(result.TakerGets).toEqual(takerGets);
+      expect(result.TakerPays).toEqual(takerPays);
+      expect(result.Flags).toBeUndefined();
+    });
   });
 });

@@ -3,8 +3,10 @@ import {
   NFTokenBurn,
   NFTokenCancelOffer,
   NFTokenCreateOffer,
-  OfferCancel
+  OfferCancel,
+  OfferCreate
 } from 'xrpl';
+import { Amount } from 'xrpl/dist/npm/models/common';
 import { BaseTransaction } from 'xrpl/dist/npm/models/transactions/common';
 import { NFTokenMint } from 'xrpl/dist/npm/models/transactions/NFTokenMint';
 
@@ -15,6 +17,7 @@ import {
   CancelNFTOfferRequest,
   CancelOfferRequest,
   CreateNFTOfferRequest,
+  CreateOfferRequest,
   MintNFTRequest
 } from '@gemwallet/constants';
 
@@ -105,6 +108,20 @@ export const buildOfferCancel = (params: CancelOfferRequest, wallet: WalletLedge
   return {
     ...(buildBaseTransaction(params, wallet, 'OfferCancel') as OfferCancel),
     OfferSequence: params.offerSequence
+  };
+};
+
+export const buildOfferCreate = (params: CreateOfferRequest, wallet: WalletLedger): OfferCreate => {
+  handleAmountHexCurrency(params.takerGets as Amount);
+  handleAmountHexCurrency(params.takerPays as Amount);
+
+  return {
+    ...(buildBaseTransaction(params, wallet, 'OfferCreate') as OfferCreate),
+    ...(params.expiration && { Expiration: params.expiration }),
+    ...(params.offerSequence && { OfferSequence: params.offerSequence }),
+    ...(params.takerGets && { TakerGets: params.takerGets }),
+    ...(params.takerPays && { TakerPays: params.takerPays }),
+    Flags: params.flags
   };
 };
 
