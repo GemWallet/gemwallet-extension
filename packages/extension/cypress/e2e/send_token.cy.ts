@@ -229,7 +229,7 @@ const handleTransaction = (memo?: string, destinationTag?: string) => {
   cy.contains('button', 'Send Payment').click();
 
   // Confirm the payment
-  cy.contains('button', 'Confirm').click();
+  cy.contains('button', 'Submit').click();
 
   // Make sure the transaction was successful
   cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction in progress');

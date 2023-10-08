@@ -4,7 +4,8 @@ import {
   NFTokenCancelOffer,
   NFTokenCreateOffer,
   OfferCancel,
-  OfferCreate
+  OfferCreate,
+  Payment
 } from 'xrpl';
 import { Amount } from 'xrpl/dist/npm/models/common';
 import { BaseTransaction } from 'xrpl/dist/npm/models/transactions/common';
@@ -18,7 +19,8 @@ import {
   CancelOfferRequest,
   CreateNFTOfferRequest,
   CreateOfferRequest,
-  MintNFTRequest
+  MintNFTRequest,
+  SendPaymentRequest
 } from '@gemwallet/constants';
 
 import { WalletLedger } from '../../../types';
@@ -83,7 +85,7 @@ export const buildNFTokenCreateOffer = (
     ...(params.owner && { Owner: params.owner }),
     ...(params.expiration && { Expiration: params.expiration }),
     ...(params.destination && { Destination: params.destination }),
-    Flags: formattedFlags
+    ...(formattedFlags !== undefined && { Flags: formattedFlags })
   };
 };
 
@@ -100,7 +102,7 @@ export const buildNFTokenMint = (params: MintNFTRequest, wallet: WalletLedger): 
     ...(params.issuer && { Issuer: params.issuer }),
     ...(params.transferFee && { TransferFee: params.transferFee }),
     ...(params.URI && { URI: params.URI }),
-    Flags: formattedFlags
+    ...(formattedFlags !== undefined && { Flags: formattedFlags })
   };
 };
 
@@ -121,7 +123,19 @@ export const buildOfferCreate = (params: CreateOfferRequest, wallet: WalletLedge
     ...(params.offerSequence && { OfferSequence: params.offerSequence }),
     ...(params.takerGets && { TakerGets: params.takerGets }),
     ...(params.takerPays && { TakerPays: params.takerPays }),
-    Flags: params.flags
+    ...(params.flags !== undefined && { Flags: params.flags })
+  };
+};
+
+export const buildPayment = (params: SendPaymentRequest, wallet: WalletLedger): Payment => {
+  handleAmountHexCurrency(params.amount);
+
+  return {
+    ...(buildBaseTransaction(params, wallet, 'Payment') as Payment),
+    Amount: params.amount,
+    Destination: params.destination,
+    ...(params.destinationTag && { DestinationTag: params.destinationTag }),
+    ...(params.flags !== undefined && { Flags: params.flags })
   };
 };
 

@@ -34,7 +34,6 @@ import {
   Network,
   NFTData,
   NFTokenIDResponse,
-  SendPaymentRequest,
   SetAccountRequest,
   SetTrustlineRequest,
   SignTransactionRequest,
@@ -111,7 +110,7 @@ export const LEDGER_CONNECTION_ERROR = 'You need to be connected to a ledger to 
 
 export interface LedgerContextType {
   // Return transaction hash in case of success
-  sendPayment: (payload: SendPaymentRequest) => Promise<string>;
+  sendPayment: (payload: Payment) => Promise<string>;
   setTrustline: (payload: SetTrustlineRequest) => Promise<string>;
   signMessage: (message: string) => string | undefined;
   estimateNetworkFees: (payload: Transaction) => Promise<string>;
@@ -291,7 +290,7 @@ const LedgerProvider: FC = ({ children }) => {
   );
 
   const sendPayment = useCallback(
-    async (payload: SendPaymentRequest) => {
+    async (payload: Payment) => {
       const wallet = getCurrentWallet();
       if (!client) {
         throw new Error(LEDGER_CONNECTION_ERROR);
@@ -299,14 +298,7 @@ const LedgerProvider: FC = ({ children }) => {
         throw new Error('You need to have a wallet connected to make a transaction');
       } else {
         // Prepare the transaction
-        const prepared: Payment = await client.autofill({
-          ...(buildBaseTransaction(payload, wallet, 'Payment') as Payment),
-          Amount: payload.amount,
-          Destination: payload.destination,
-          ...(payload.destinationTag &&
-            Number(payload.destinationTag) && { DestinationTag: Number(payload.destinationTag) }),
-          ...(payload.flags && { Flags: payload.flags })
-        });
+        const prepared: Payment = await client.autofill(payload);
         // Sign the transaction
         const signed = wallet.wallet.sign(prepared);
         // Submit the signed blob

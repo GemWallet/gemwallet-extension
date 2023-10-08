@@ -85,6 +85,10 @@ const LABEL_PASSIVE = 'Passive';
 const LABEL_IMMEDIATE_OR_CANCEL = 'Immediate Or Cancel';
 const LABEL_FILL_OR_KILL = 'Fill Or Kill';
 const LABEL_SELL = 'Sell';
+// Payment
+const LABEL_NO_DIRECT_RIPPLE = 'No Direct Ripple';
+const LABEL_PARTIAL_PAYMENT = 'Partial Payment';
+const LABEL_LIMIT_QUALITY = 'Limit Quality';
 export const formatFlags = (
   flags:
     | PaymentFlags
@@ -107,14 +111,16 @@ export const formatFlags = (
     }
 
     if (typeof flags === 'object') {
-      return Object.entries(flags)
+      const formattedFlags = Object.entries(flags)
         .map(([key, value]) => {
           if (key === 'tfSellNFToken') {
             return `${LABEL_OFFER_TYPE}: ${value ? LABEL_SELL_OFFER : LABEL_BUY_OFFER}`;
           }
           return `${key}: ${value}`;
         })
-        .join('\n');
+        .filter((flag) => flag !== null);
+
+      return formattedFlags.length > 0 ? formattedFlags.join('\n') : 'None';
     }
   }
 
@@ -138,7 +144,7 @@ export const formatFlags = (
     }
 
     if (typeof flags === 'object') {
-      return Object.entries(flags)
+      const formattedFlags = Object.entries(flags)
         .map(([key, value]: [key: string, value: boolean]) => {
           if (key === 'tfBurnable' && value) {
             return LABEL_BURNABLE;
@@ -157,8 +163,95 @@ export const formatFlags = (
           }
           return `${key}: ${value}`;
         })
-        .filter((flag) => flag !== null)
-        .join('\n');
+        .filter((flag) => flag !== null);
+
+      return formattedFlags.length > 0 ? formattedFlags.join('\n') : 'None';
+    }
+  }
+
+  if (flagsType === 'OfferCreate') {
+    if (typeof flags === 'number') {
+      let flagDescriptions: string[] = [];
+
+      if (flags & 0x00010000) {
+        flagDescriptions.push(LABEL_PASSIVE);
+      }
+      if (flags & 0x00020000) {
+        flagDescriptions.push(LABEL_IMMEDIATE_OR_CANCEL);
+      }
+      if (flags & 0x00040000) {
+        flagDescriptions.push(LABEL_FILL_OR_KILL);
+      }
+      if (flags & 0x00080000) {
+        flagDescriptions.push(LABEL_SELL);
+      }
+
+      return flagDescriptions.join('\n');
+    }
+
+    if (typeof flags === 'object') {
+      const formattedFlags = Object.entries(flags)
+        .map(([key, value]) => {
+          if (key === 'tfPassive' && value) {
+            return `${LABEL_PASSIVE}`;
+          }
+          if (key === 'tfImmediateOrCancel' && value) {
+            return `${LABEL_IMMEDIATE_OR_CANCEL}`;
+          }
+          if (key === 'tfFillOrKill' && value) {
+            return `${LABEL_FILL_OR_KILL}`;
+          }
+          if (key === 'tfSell' && value) {
+            return `${LABEL_SELL}`;
+          }
+          if (['tfPassive', 'tfImmediateOrCancel', 'tfFillOrKill', 'tfSell'].includes(key)) {
+            return null;
+          }
+          return `${key}: ${value}`;
+        })
+        .filter((flag) => flag !== null);
+
+      return formattedFlags.length > 0 ? formattedFlags.join('\n') : 'None';
+    }
+  }
+
+  if (flagsType === 'Payment') {
+    if (typeof flags === 'number') {
+      let flagDescriptions: string[] = [];
+
+      if (flags & 0x00010000) {
+        flagDescriptions.push(LABEL_NO_DIRECT_RIPPLE);
+      }
+      if (flags & 0x00020000) {
+        flagDescriptions.push(LABEL_PARTIAL_PAYMENT);
+      }
+      if (flags & 0x00040000) {
+        flagDescriptions.push(LABEL_LIMIT_QUALITY);
+      }
+
+      return flagDescriptions.join('\n');
+    }
+
+    if (typeof flags === 'object') {
+      const formattedFlags = Object.entries(flags)
+        .map(([key, value]) => {
+          if (key === 'tfNoDirectRipple' && value) {
+            return `${LABEL_NO_DIRECT_RIPPLE}`;
+          }
+          if (key === 'tfPartialPayment' && value) {
+            return `${LABEL_PARTIAL_PAYMENT}`;
+          }
+          if (key === 'tfLimitQuality' && value) {
+            return `${LABEL_LIMIT_QUALITY}`;
+          }
+          if (['tfNoDirectRipple', 'tfPartialPayment', 'tfLimitQuality'].includes(key)) {
+            return null;
+          }
+          return `${key}: ${value}`;
+        })
+        .filter((flag) => flag !== null);
+
+      return formattedFlags.length > 0 ? formattedFlags.join('\n') : 'None';
     }
   }
 
@@ -209,9 +302,10 @@ export const formatFlags = (
 
   // Fallback
   if (typeof flags === 'object') {
-    return Object.entries(flags)
+    const formattedFlags = Object.entries(flags)
       .map(([key, value]) => `${key}: ${value}`)
-      .join('\n');
+      .filter((flag) => flag !== null);
+    return formattedFlags.length > 0 ? formattedFlags.join('\n') : 'None';
   } else {
     return flags;
   }

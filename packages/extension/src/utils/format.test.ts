@@ -102,9 +102,9 @@ describe('formatFlags', () => {
     expect(formatFlags(trustSetFlags)).toBe(expectedResult);
   });
 
-  it('should return empty string if flags is an empty object', () => {
+  it('should return None string if flags is an empty object', () => {
     const flags = {};
-    const expectedResult = '';
+    const expectedResult = 'None';
     expect(formatFlags(flags)).toBe(expectedResult);
   });
 
@@ -182,6 +182,31 @@ describe('formatFlags', () => {
       tfSell: true
     };
     expect(formatFlags(flags, 'OfferCreate')).toBe('Sell');
+  });
+
+  it('should format Payment flags correctly when given as a number', () => {
+    const flags = 0x00010000 | 0x00020000; // both tfNoDirectRipple and tfPartialPayment flags are set
+    const expectedResult = 'No Direct Ripple\nPartial Payment';
+    expect(formatFlags(flags, 'Payment')).toBe(expectedResult);
+  });
+
+  it('should format Payment flags correctly when given as an object', () => {
+    const flags = {
+      tfNoDirectRipple: true,
+      tfPartialPayment: true,
+      tfLimitQuality: false
+    };
+    const expectedResult = 'No Direct Ripple\nPartial Payment';
+    expect(formatFlags(flags, 'Payment')).toBe(expectedResult);
+  });
+
+  it('should not show false flags for Payment', () => {
+    const flags = {
+      tfNoDirectRipple: false,
+      tfPartialPayment: false,
+      tfLimitQuality: true
+    };
+    expect(formatFlags(flags, 'Payment')).toBe('Limit Quality');
   });
 });
 
