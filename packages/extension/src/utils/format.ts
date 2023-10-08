@@ -4,7 +4,10 @@ import {
   NFTokenMintFlags,
   OfferCreateFlags,
   setTransactionFlagsToNumber,
-  Transaction
+  Transaction,
+  TrustSetFlags as TrustSetFlagsBitmask,
+  PaymentFlags as PaymentFlagsBitmask,
+  AccountSetTfFlags as AccountSetTfFlagsBitmask
 } from 'xrpl';
 import { Amount, IssuedCurrencyAmount } from 'xrpl/dist/npm/models/common';
 import { GlobalFlags } from 'xrpl/dist/npm/models/transactions/common';
@@ -43,9 +46,10 @@ export const formatCurrencyName = (currency: string) => {
   return currency.toUpperCase();
 };
 
-export const formatAmount = (amount: Amount | IssuedCurrencyAmount) => {
+export const formatAmount = (amount: Amount | IssuedCurrencyAmount, showIssuer?: boolean) => {
   let value: number;
   let currency: string;
+  let issuer: string | undefined;
 
   if (typeof amount === 'string') {
     value = Number(dropsToXrp(amount));
@@ -58,9 +62,11 @@ export const formatAmount = (amount: Amount | IssuedCurrencyAmount) => {
       currency = amount.currency;
     }
     value = Number(amount.value);
+    issuer = amount.issuer;
   }
 
-  return `${formatValue(value)} ${currency.toUpperCase()}`;
+  const formattedValue = `${formatValue(value)} ${currency.toUpperCase()}`;
+  return showIssuer && issuer ? `${formattedValue} (Issuer: ${issuer})` : formattedValue;
 };
 
 export const formatToken = (value: number, currency: string = 'XRP', isDrops = false) => {
@@ -96,6 +102,12 @@ const LABEL_REQUIRE_AUTH = 'Require Auth';
 const LABEL_OPTIONAL_AUTH = 'Optional Auth';
 const LABEL_DISALLOW_XRP = 'Disallow XRP';
 const LABEL_ALLOW_XRP = 'Allow XRP';
+// TrustSet
+const LABEL_SET_AUTH = 'Set Auth';
+const LABEL_SET_NO_RIPPLE = 'Set No Ripple';
+const LABEL_CLEAR_NO_RIPPLE = 'Clear No Ripple';
+const LABEL_SET_FREEZE = 'Set Freeze';
+const LABEL_CLEAR_FREEZE = 'Clear Freeze';
 export const formatFlags = (
   flags:
     | PaymentFlags
@@ -225,13 +237,13 @@ export const formatFlags = (
     if (typeof flags === 'number') {
       let flagDescriptions: string[] = [];
 
-      if (flags & 0x00010000) {
+      if (flags & PaymentFlagsBitmask.tfNoDirectRipple) {
         flagDescriptions.push(LABEL_NO_DIRECT_RIPPLE);
       }
-      if (flags & 0x00020000) {
+      if (flags & PaymentFlagsBitmask.tfPartialPayment) {
         flagDescriptions.push(LABEL_PARTIAL_PAYMENT);
       }
-      if (flags & 0x00040000) {
+      if (flags & PaymentFlagsBitmask.tfLimitQuality) {
         flagDescriptions.push(LABEL_LIMIT_QUALITY);
       }
 
@@ -265,22 +277,22 @@ export const formatFlags = (
     if (typeof flags === 'number') {
       let flagDescriptions: string[] = [];
 
-      if (flags & 0x00010000) {
+      if (flags & AccountSetTfFlagsBitmask.tfRequireDestTag) {
         flagDescriptions.push(LABEL_REQUIRE_DEST_TAG);
       }
-      if (flags & 0x00020000) {
+      if (flags & AccountSetTfFlagsBitmask.tfOptionalDestTag) {
         flagDescriptions.push(LABEL_OPTIONAL_DEST_TAG);
       }
-      if (flags & 0x00040000) {
+      if (flags & AccountSetTfFlagsBitmask.tfRequireAuth) {
         flagDescriptions.push(LABEL_REQUIRE_AUTH);
       }
-      if (flags & 0x00080000) {
+      if (flags & AccountSetTfFlagsBitmask.tfOptionalAuth) {
         flagDescriptions.push(LABEL_OPTIONAL_AUTH);
       }
-      if (flags & 0x00100000) {
+      if (flags & AccountSetTfFlagsBitmask.tfDisallowXRP) {
         flagDescriptions.push(LABEL_DISALLOW_XRP);
       }
-      if (flags & 0x00200000) {
+      if (flags & AccountSetTfFlagsBitmask.tfAllowXRP) {
         flagDescriptions.push(LABEL_ALLOW_XRP);
       }
 
@@ -316,6 +328,66 @@ export const formatFlags = (
               'tfOptionalAuth',
               'tfDisallowXRP',
               'tfAllowXRP'
+            ].includes(key)
+          ) {
+            return null;
+          }
+          return `${key}: ${value}`;
+        })
+        .filter((flag) => flag !== null);
+
+      return formattedFlags.length > 0 ? formattedFlags.join('\n') : 'None';
+    }
+  }
+
+  if (flagsType === 'TrustSet') {
+    if (typeof flags === 'number') {
+      let flagDescriptions: string[] = [];
+
+      if (flags & TrustSetFlagsBitmask.tfSetfAuth) {
+        flagDescriptions.push(LABEL_SET_AUTH);
+      }
+      if (flags & TrustSetFlagsBitmask.tfSetNoRipple) {
+        flagDescriptions.push(LABEL_SET_NO_RIPPLE);
+      }
+      if (flags & TrustSetFlagsBitmask.tfClearNoRipple) {
+        flagDescriptions.push(LABEL_CLEAR_NO_RIPPLE);
+      }
+      if (flags & TrustSetFlagsBitmask.tfSetFreeze) {
+        flagDescriptions.push(LABEL_SET_FREEZE);
+      }
+      if (flags & TrustSetFlagsBitmask.tfClearFreeze) {
+        flagDescriptions.push(LABEL_CLEAR_FREEZE);
+      }
+
+      return flagDescriptions.length > 0 ? flagDescriptions.join('\n') : 'None';
+    }
+
+    if (typeof flags === 'object') {
+      const formattedFlags = Object.entries(flags)
+        .map(([key, value]) => {
+          if (key === 'tfSetfAuth' && value) {
+            return `${LABEL_SET_AUTH}`;
+          }
+          if (key === 'tfSetNoRipple' && value) {
+            return `${LABEL_SET_NO_RIPPLE}`;
+          }
+          if (key === 'tfClearNoRipple' && value) {
+            return `${LABEL_CLEAR_NO_RIPPLE}`;
+          }
+          if (key === 'tfSetFreeze' && value) {
+            return `${LABEL_SET_FREEZE}`;
+          }
+          if (key === 'tfClearFreeze' && value) {
+            return `${LABEL_CLEAR_FREEZE}`;
+          }
+          if (
+            [
+              'tfSetfAuth',
+              'tfSetNoRipple',
+              'tfClearNoRipple',
+              'tfSetFreeze',
+              'tfClearFreeze'
             ].includes(key)
           ) {
             return null;

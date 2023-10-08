@@ -35,7 +35,6 @@ import {
   NFTData,
   NFTokenIDResponse,
   SetAccountRequest,
-  SetTrustlineRequest,
   SignTransactionRequest,
   SubmitTransactionRequest,
   SubmitBulkTransactionsRequest,
@@ -111,7 +110,7 @@ export const LEDGER_CONNECTION_ERROR = 'You need to be connected to a ledger to 
 export interface LedgerContextType {
   // Return transaction hash in case of success
   sendPayment: (payload: Payment) => Promise<string>;
-  setTrustline: (payload: SetTrustlineRequest) => Promise<string>;
+  setTrustline: (payload: TrustSet) => Promise<string>;
   signMessage: (message: string) => string | undefined;
   estimateNetworkFees: (payload: Transaction) => Promise<string>;
   getNFTs: (payload?: GetNFTRequest) => Promise<AccountNFTokenResponse>;
@@ -316,7 +315,7 @@ const LedgerProvider: FC = ({ children }) => {
   );
 
   const setTrustline = useCallback(
-    async (payload: SetTrustlineRequest) => {
+    async (payload: TrustSet) => {
       const wallet = getCurrentWallet();
       if (!client) {
         throw new Error('You need to be connected to a ledger to add a trustline');
@@ -325,11 +324,7 @@ const LedgerProvider: FC = ({ children }) => {
       } else {
         // Prepare the transaction
         try {
-          const prepared: TrustSet = await client.autofill({
-            ...(buildBaseTransaction(payload, wallet, 'TrustSet') as TrustSet),
-            LimitAmount: payload.limitAmount,
-            ...(payload.flags && { Flags: payload.flags })
-          });
+          const prepared: TrustSet = await client.autofill(payload);
           // Sign the transaction
           const signed = wallet.wallet.sign(prepared);
           // Submit the signed blob

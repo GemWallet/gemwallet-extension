@@ -6,7 +6,8 @@ import {
   NFTokenCreateOffer,
   OfferCancel,
   OfferCreate,
-  Payment
+  Payment,
+  TrustSet
 } from 'xrpl';
 import { Amount } from 'xrpl/dist/npm/models/common';
 import { BaseTransaction } from 'xrpl/dist/npm/models/transactions/common';
@@ -22,7 +23,8 @@ import {
   CreateOfferRequest,
   MintNFTRequest,
   SendPaymentRequest,
-  SetAccountRequest
+  SetAccountRequest,
+  SetTrustlineRequest
 } from '@gemwallet/constants';
 
 import { WalletLedger } from '../../../types';
@@ -153,6 +155,16 @@ export const buildAccountSet = (params: SetAccountRequest, wallet: WalletLedger)
     ...(params.transferRate && { TransferRate: params.transferRate }),
     ...(params.tickSize && { TickSize: params.tickSize }),
     ...(params.NFTokenMinter && { NFTokenMinter: params.NFTokenMinter })
+  };
+};
+
+export const buildTrustSet = (params: SetTrustlineRequest, wallet: WalletLedger): TrustSet => {
+  handleAmountHexCurrency(params.limitAmount);
+
+  return {
+    ...(buildBaseTransaction(params, wallet, 'TrustSet') as TrustSet),
+    LimitAmount: params.limitAmount,
+    ...(params.flags !== undefined && { Flags: params.flags })
   };
 };
 

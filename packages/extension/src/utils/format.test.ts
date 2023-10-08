@@ -253,6 +253,51 @@ describe('formatFlags', () => {
     const flags = 0; // no flags are set
     expect(formatFlags(flags, 'AccountSet')).toBe('None');
   });
+
+  it('should format TrustSet flags correctly when given as a number', () => {
+    const flags = 196608; // tfSetfAuth and tfSetNoRipple flags are set
+    const expectedResult = 'Set Auth\nSet No Ripple';
+    expect(formatFlags(flags, 'TrustSet')).toBe(expectedResult);
+  });
+
+  it('should format TrustSet flags correctly when given as an object', () => {
+    const flags = {
+      tfSetfAuth: true,
+      tfSetNoRipple: true,
+      tfClearNoRipple: false,
+      tfSetFreeze: false,
+      tfClearFreeze: false
+    };
+    const expectedResult = 'Set Auth\nSet No Ripple';
+    expect(formatFlags(flags, 'TrustSet')).toBe(expectedResult);
+  });
+
+  it('should not show false flags for TrustSet', () => {
+    const flags = {
+      tfSetfAuth: false,
+      tfSetNoRipple: false,
+      tfClearNoRipple: false,
+      tfSetFreeze: true,
+      tfClearFreeze: false
+    };
+    expect(formatFlags(flags, 'TrustSet')).toBe('Set Freeze');
+  });
+
+  it('should format TrustSet flags to "None" when no flags are set as a number', () => {
+    const flags = 0; // no flags are set
+    expect(formatFlags(flags, 'TrustSet')).toBe('None');
+  });
+
+  it('should format TrustSet flags to "None" when no flags are set as an object', () => {
+    const flags = {
+      tfSetfAuth: false,
+      tfSetNoRipple: false,
+      tfClearNoRipple: false,
+      tfSetFreeze: false,
+      tfClearFreeze: false
+    };
+    expect(formatFlags(flags, 'TrustSet')).toBe('None');
+  });
 });
 
 describe('formatFlagsToNumber', () => {

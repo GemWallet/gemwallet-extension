@@ -133,7 +133,13 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
     NFTokenOffers: (value: string[]) => renderArray({ title: 'Offer ID', value, useLegacy }),
     Signers: (value?: Signer[]) => renderArray({ title: 'Signer', value, useLegacy }),
     LimitAmount: (value) =>
-      renderAmount({ title: 'Limit Amount', value: value as Amount, useLegacy }),
+      renderAmount({
+        title: 'Limit Amount',
+        value: value as Amount,
+        useLegacy,
+        showIssuer: true,
+        hasTooltip: true
+      }),
     NFTokenSellOffer: (value?: string) =>
       value !== undefined
         ? renderSimpleText({ title: 'NFT Token Sell Offer', value, useLegacy })
@@ -198,16 +204,19 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
   const renderAmount = (params: {
     title: string;
     value: Amount;
+    showIssuer?: boolean;
+    hasTooltip?: boolean;
     valueTypographyProps?: TypographyProps;
     useLegacy: boolean;
   }) => {
-    const { title, value, valueTypographyProps } = params;
+    const { title, value, valueTypographyProps, showIssuer, hasTooltip, useLegacy } = params;
 
     return (
       <KeyValueDisplay
         keyName={title}
-        value={formatAmount(value)}
+        value={formatAmount(value, showIssuer)}
         valueTypographyProps={valueTypographyProps}
+        hasTooltip={hasTooltip}
         useLegacy={useLegacy}
       />
     );

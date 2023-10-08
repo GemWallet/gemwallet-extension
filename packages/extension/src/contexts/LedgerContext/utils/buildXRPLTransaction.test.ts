@@ -13,7 +13,8 @@ import {
   buildNFTokenCreateOffer,
   buildNFTokenMint,
   buildOfferCancel,
-  buildOfferCreate
+  buildOfferCreate,
+  buildTrustSet
 } from './buildXRPLTransaction';
 
 const wallet: WalletLedger = {
@@ -220,5 +221,31 @@ describe('buildAccountSet', () => {
     };
 
     expect(buildAccountSet(params, wallet)).toEqual(expectedResult);
+  });
+
+  describe('buildTrustSet', () => {
+    it('should build a TrustSet transaction with flags', () => {
+      const params = {
+        limitAmount: { currency: 'USD', value: '100', issuer: 'rSomeIssuer' },
+        flags: 131072
+      };
+
+      const result = buildTrustSet(params, wallet as any);
+      expect(result).toMatchObject({
+        LimitAmount: params.limitAmount,
+        Flags: params.flags
+      });
+    });
+
+    it('should build a TrustSet transaction without flags', () => {
+      const params = {
+        limitAmount: { currency: 'USD', value: '100', issuer: 'rSomeIssuer' }
+      };
+      const result = buildTrustSet(params, wallet as any);
+      expect(result).toMatchObject({
+        LimitAmount: params.limitAmount
+      });
+      expect(result.Flags).toBeUndefined();
+    });
   });
 });
