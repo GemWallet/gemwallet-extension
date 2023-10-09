@@ -137,7 +137,6 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
         title: 'Limit Amount',
         value: value as Amount,
         useLegacy,
-        showIssuer: true,
         hasTooltip: true
       }),
     NFTokenSellOffer: (value?: string) =>
