@@ -34,7 +34,6 @@ import {
   Network,
   NFTData,
   NFTokenIDResponse,
-  SetAccountRequest,
   SignTransactionRequest,
   SubmitTransactionRequest,
   SubmitBulkTransactionsRequest,
@@ -121,7 +120,7 @@ export interface LedgerContextType {
   cancelNFTOffer: (payload: NFTokenCancelOffer) => Promise<CancelNFTOfferResponse>;
   acceptNFTOffer: (payload: NFTokenAcceptOffer) => Promise<AcceptNFTOfferResponse>;
   burnNFT: (payload: NFTokenBurn) => Promise<BurnNFTResponse>;
-  setAccount: (payload: SetAccountRequest) => Promise<SetAccountResponse>;
+  setAccount: (payload: AccountSet) => Promise<SetAccountResponse>;
   createOffer: (payload: OfferCreate) => Promise<CreateOfferResponse>;
   cancelOffer: (payload: OfferCancel) => Promise<CancelOfferResponse>;
   signTransaction: (payload: SignTransactionRequest) => Promise<SignTransactionResponse>;
@@ -516,7 +515,7 @@ const LedgerProvider: FC = ({ children }) => {
   );
 
   const setAccount = useCallback(
-    async (payload: SetAccountRequest) => {
+    async (payload: AccountSet) => {
       const wallet = getCurrentWallet();
       if (!client) {
         throw new Error('You need to be connected to a ledger');
@@ -524,21 +523,7 @@ const LedgerProvider: FC = ({ children }) => {
         throw new Error('You need to have a wallet connected');
       } else {
         try {
-          const tx = await client.submitAndWait(
-            {
-              ...(buildBaseTransaction(payload, wallet, 'AccountSet') as AccountSet),
-              ...(payload.flags && { Flags: payload.flags }),
-              ...(payload.clearFlag && { ClearFlag: payload.clearFlag }),
-              ...(payload.domain && { Domain: payload.domain }),
-              ...(payload.emailHash && { EmailHash: payload.emailHash }),
-              ...(payload.messageKey && { MessageKey: payload.messageKey }),
-              ...(payload.NFTokenMinter && { NFTokenMinter: payload.NFTokenMinter }),
-              ...(payload.setFlag && { SetFlag: payload.setFlag }),
-              ...(payload.transferRate && { TransferRate: payload.transferRate }),
-              ...(payload.tickSize && { TickSize: payload.tickSize })
-            },
-            { wallet: wallet.wallet }
-          );
+          const tx = await client.submitAndWait(payload, { wallet: wallet.wallet });
 
           if (!tx.result.hash) {
             throw new Error("Couldn't set the account");
