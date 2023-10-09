@@ -66,7 +66,7 @@ export const formatAmount = (amount: Amount | IssuedCurrencyAmount, showIssuer?:
   }
 
   const formattedValue = `${formatValue(value)} ${currency.toUpperCase()}`;
-  return showIssuer && issuer ? `${formattedValue} (Issuer: ${issuer})` : formattedValue;
+  return showIssuer && issuer ? `${formattedValue}\nIssuer: ${issuer}` : formattedValue;
 };
 
 export const formatToken = (value: number, currency: string = 'XRP', isDrops = false) => {

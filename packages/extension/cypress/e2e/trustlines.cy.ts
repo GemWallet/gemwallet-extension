@@ -100,7 +100,7 @@ describe('Trustline', () => {
     // Should have the proper information
     cy.contains('Limit Amount')
       .next()
-      .should('have.text', `10,000,000 ${CURRENCY} (Issuer: ${DESTINATION_ADDRESS})`);
+      .should('have.text', `10,000,000 ${CURRENCY}\nIssuer: ${DESTINATION_ADDRESS}`);
 
     // Confirm the trustline
     cy.contains('button', 'Reject').click();
@@ -218,7 +218,7 @@ describe('Trustline', () => {
     // Check values in the confirmation page
     cy.contains('Limit Amount')
       .next()
-      .should('have.text', `${newLimit} ${CURRENCY} (Issuer: ${DESTINATION_ADDRESS})`);
+      .should('have.text', `${newLimit} ${CURRENCY}\nIssuer: ${DESTINATION_ADDRESS}`);
 
     cy.contains('button', 'Submit').click();
 
@@ -292,7 +292,7 @@ const validateTrustlineTx = (destinationAddress: string, currency: string, limit
   // Should have the proper information
   cy.contains('Limit Amount')
     .next()
-    .should('have.text', `${limit} ${currency} (Issuer: ${destinationAddress})`);
+    .should('have.text', `${limit} ${currency}\nIssuer: ${destinationAddress}`);
 
   // Confirm the trustline
   cy.contains('button', 'Submit').click();

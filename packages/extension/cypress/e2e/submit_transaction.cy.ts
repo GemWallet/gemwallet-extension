@@ -81,7 +81,9 @@ describe('Submit Transaction', () => {
     );
 
     cy.contains('Transaction Type').next().should('have.text', 'TrustSet');
-    cy.contains('Limit Amount').next().should('have.text', '10,000,000 SOLO');
+    cy.contains('Limit Amount')
+      .next()
+      .should('have.text', '10,000,000 SOLO\nIssuer: rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN');
     cy.contains('Memo').next().should('have.text', 'Test memo');
     cy.contains('Network fees').next().should('have.text', '0.000199 XRP (MANUAL)');
 
