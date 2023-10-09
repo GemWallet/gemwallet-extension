@@ -1,4 +1,12 @@
-import { NFTokenAcceptOffer, NFTokenBurn, NFTokenCancelOffer, NFTokenCreateOffer } from 'xrpl';
+import {
+  NFTokenAcceptOffer,
+  NFTokenBurn,
+  NFTokenCancelOffer,
+  NFTokenCreateOffer,
+  OfferCancel,
+  OfferCreate
+} from 'xrpl';
+import { Amount } from 'xrpl/dist/npm/models/common';
 import { BaseTransaction } from 'xrpl/dist/npm/models/transactions/common';
 import { NFTokenMint } from 'xrpl/dist/npm/models/transactions/NFTokenMint';
 
@@ -7,7 +15,9 @@ import {
   BaseTransactionRequest,
   BurnNFTRequest,
   CancelNFTOfferRequest,
+  CancelOfferRequest,
   CreateNFTOfferRequest,
+  CreateOfferRequest,
   MintNFTRequest
 } from '@gemwallet/constants';
 
@@ -91,6 +101,27 @@ export const buildNFTokenMint = (params: MintNFTRequest, wallet: WalletLedger): 
     ...(params.transferFee && { TransferFee: params.transferFee }),
     ...(params.URI && { URI: params.URI }),
     Flags: formattedFlags
+  };
+};
+
+export const buildOfferCancel = (params: CancelOfferRequest, wallet: WalletLedger): OfferCancel => {
+  return {
+    ...(buildBaseTransaction(params, wallet, 'OfferCancel') as OfferCancel),
+    OfferSequence: params.offerSequence
+  };
+};
+
+export const buildOfferCreate = (params: CreateOfferRequest, wallet: WalletLedger): OfferCreate => {
+  handleAmountHexCurrency(params.takerGets as Amount);
+  handleAmountHexCurrency(params.takerPays as Amount);
+
+  return {
+    ...(buildBaseTransaction(params, wallet, 'OfferCreate') as OfferCreate),
+    ...(params.expiration && { Expiration: params.expiration }),
+    ...(params.offerSequence && { OfferSequence: params.offerSequence }),
+    ...(params.takerGets && { TakerGets: params.takerGets }),
+    ...(params.takerPays && { TakerPays: params.takerPays }),
+    Flags: params.flags
   };
 };
 

@@ -1,7 +1,6 @@
 import { FC, useCallback, useEffect, useState } from 'react';
 
-import ErrorIcon from '@mui/icons-material/Error';
-import { Button, Container, Paper, Typography } from '@mui/material';
+import { OfferCancel } from 'xrpl';
 
 import {
   API_ERROR_BAD_REQUEST,
@@ -10,53 +9,45 @@ import {
   ResponseType
 } from '@gemwallet/constants';
 
-import { ERROR_RED } from '../../../constants';
 import {
+  buildOfferCancel,
   TransactionProgressStatus,
   useLedger,
   useNetwork,
-  useTransactionProgress
+  useTransactionProgress,
+  useWallet
 } from '../../../contexts';
 import { useFees, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
-import { fromHexMemos } from '../../../utils';
-import {
-  BaseTransactionParams,
-  getBaseFromParams,
-  initialBaseTransactionParams,
-  parseBaseParamsFromURLParams
-} from '../../../utils/baseParams';
+import { parseBaseParamsFromURLParamsNew } from '../../../utils/baseParams';
 import { serializeError } from '../../../utils/errors';
-import { BaseTransaction } from '../../organisms/BaseTransaction/BaseTransaction';
-import { PageWithTitle } from '../../templates';
+import { TransactionDetails } from '../../organisms';
+import { TransactionPage } from '../../templates';
 
-interface Params extends BaseTransactionParams {
+interface Params {
   id: number;
-  // CancelOffer fields
-  offerSequence: number | null;
+  transaction: OfferCancel | null;
 }
 
 export const CancelOffer: FC = () => {
   const [params, setParams] = useState<Params>({
     id: 0,
-    // BaseTransaction fields
-    ...initialBaseTransactionParams,
-    // CancelOffer fields
-    offerSequence: null
+    transaction: null
   });
   const [errorRequestRejection, setErrorRequestRejection] = useState<Error>();
   const [isParamsMissing, setIsParamsMissing] = useState(false);
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
   const { cancelOffer } = useLedger();
+  const { getCurrentWallet } = useWallet();
   const { networkName } = useNetwork();
   const { setTransactionProgress } = useTransactionProgress();
   const { estimatedFees, errorFees, difference } = useFees(
     {
       TransactionType: 'OfferCancel',
       Account: '',
-      OfferSequence: params.offerSequence ?? 0
+      OfferSequence: params.transaction?.OfferSequence ?? 0
     },
-    params.fee
+    params.transaction?.Fee
   );
 
   const sendMessageToBackground = useCallback(
@@ -116,46 +107,35 @@ export const CancelOffer: FC = () => {
     const urlParams = new URLSearchParams(queryString);
     const id = Number(urlParams.get('id')) || 0;
 
-    // BaseTransaction fields
-    const {
-      fee,
-      sequence,
-      accountTxnID,
-      lastLedgerSequence,
-      memos,
-      signers,
-      sourceTag,
-      signingPubKey,
-      ticketSequence,
-      txnSignature
-    } = parseBaseParamsFromURLParams(urlParams);
-
     // CancelOffer fields
     const offerSequence = urlParams.get('offerSequence')
       ? Number(urlParams.get('offerSequence'))
       : null;
+    const wallet = getCurrentWallet();
 
     if (!offerSequence) {
       setIsParamsMissing(true);
+      return;
     }
+
+    if (!wallet) {
+      setIsParamsMissing(true);
+      return;
+    }
+
+    const transaction = buildOfferCancel(
+      {
+        ...parseBaseParamsFromURLParamsNew(urlParams),
+        offerSequence
+      },
+      wallet
+    );
 
     setParams({
       id,
-      // BaseTransaction fields
-      fee,
-      sequence,
-      accountTxnID,
-      lastLedgerSequence,
-      memos,
-      signers,
-      sourceTag,
-      signingPubKey,
-      ticketSequence,
-      txnSignature,
-      // CancelOffer fields
-      offerSequence
+      transaction
     });
-  }, []);
+  }, [getCurrentWallet]);
 
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);
@@ -169,12 +149,7 @@ export const CancelOffer: FC = () => {
     setTransaction(TransactionStatus.Pending);
     // cancelOffer will be present because if not,
     // we won't be able to go to the confirm transaction state
-    cancelOffer({
-      // BaseTransaction fields
-      ...getBaseFromParams(params),
-      // CancelOffer fields
-      offerSequence: params.offerSequence as number
-    })
+    cancelOffer(params.transaction as OfferCancel)
       .then((response) => {
         setTransaction(TransactionStatus.Success);
         sendMessageToBackground(createMessage(response));
@@ -190,67 +165,25 @@ export const CancelOffer: FC = () => {
       });
   }, [cancelOffer, params, sendMessageToBackground, createMessage]);
 
-  const {
-    // Base transaction params
-    fee,
-    memos,
-    // CancelOffer params
-    offerSequence
-  } = params;
-
-  const decodedMemos = fromHexMemos(memos || []) || [];
+  if (transactionStatusComponent) {
+    return <div>{transactionStatusComponent}</div>;
+  }
 
   return (
-    <>
-      {transactionStatusComponent ? (
-        <div>{transactionStatusComponent}</div>
-      ) : (
-        <PageWithTitle title="Cancel Offer" styles={{ container: { justifyContent: 'initial' } }}>
-          {!hasEnoughFunds ? (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              <ErrorIcon style={{ color: ERROR_RED }} />
-              <Typography variant="body1" style={{ marginLeft: '10px', color: ERROR_RED }}>
-                Insufficient funds.
-              </Typography>
-            </div>
-          ) : null}
-          {offerSequence ? (
-            <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-              <Typography variant="body1">Offer sequence:</Typography>
-              <Typography variant="body2">{offerSequence}</Typography>
-            </Paper>
-          ) : null}
-          <div style={{ marginBottom: '40px' }}>
-            <BaseTransaction
-              fee={fee ? Number(fee) : null}
-              memos={decodedMemos}
-              flags={null}
-              errorFees={errorFees}
-              estimatedFees={estimatedFees}
-            />
-          </div>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              position: 'fixed',
-              bottom: 0,
-              left: 0,
-              right: 0,
-              backgroundColor: '#1d1d1d'
-            }}
-          >
-            <Container style={{ display: 'flex', justifyContent: 'space-evenly', margin: '10px' }}>
-              <Button variant="contained" color="secondary" onClick={handleReject}>
-                Reject
-              </Button>
-              <Button variant="contained" onClick={handleConfirm} disabled={!hasEnoughFunds}>
-                Confirm
-              </Button>
-            </Container>
-          </div>
-        </PageWithTitle>
-      )}
-    </>
+    <TransactionPage
+      title="Cancel Offer"
+      description="Please review the transaction below."
+      approveButtonText="Submit"
+      hasEnoughFunds={hasEnoughFunds}
+      onClickApprove={handleConfirm}
+      onClickReject={handleReject}
+    >
+      <TransactionDetails
+        txParam={params.transaction}
+        estimatedFees={estimatedFees}
+        errorFees={errorFees}
+        displayTransactionType={false}
+      />
+    </TransactionPage>
   );
 };

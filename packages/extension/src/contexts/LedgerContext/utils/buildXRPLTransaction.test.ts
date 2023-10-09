@@ -1,6 +1,7 @@
+import { Amount } from 'xrpl/dist/npm/models/common';
 import { NFTokenMint } from 'xrpl/dist/npm/models/transactions/NFTokenMint';
 
-import { MintNFTRequest } from '@gemwallet/constants';
+import { CancelOfferRequest, CreateOfferRequest, MintNFTRequest } from '@gemwallet/constants';
 
 import { WalletLedger } from '../../../types';
 import {
@@ -9,7 +10,9 @@ import {
   buildNFTokenBurn,
   buildNFTokenCancelOffer,
   buildNFTokenCreateOffer,
-  buildNFTokenMint
+  buildNFTokenMint,
+  buildOfferCancel,
+  buildOfferCreate
 } from './buildXRPLTransaction';
 
 const wallet: WalletLedger = {
@@ -123,5 +126,48 @@ describe('buildNFTokenCreateOffer', () => {
     expect(result.TransferFee).toEqual(params.transferFee);
     expect(result.URI).toEqual(params.URI);
     expect(result.Flags).toEqual(params.flags);
+  });
+});
+
+describe('buildOfferCancel', () => {
+  it('should build OfferCancel correctly', () => {
+    const params: CancelOfferRequest = {
+      offerSequence: 123
+    };
+
+    const result = buildOfferCancel(params, wallet);
+
+    expect(result.TransactionType).toEqual('OfferCancel');
+    expect(result.Account).toEqual('publicAddress');
+    expect(result.OfferSequence).toEqual(123);
+  });
+
+  describe('buildOfferCreate', () => {
+    it('should build OfferCreate correctly', () => {
+      const takerGets: Amount = '100';
+
+      const takerPays: Amount = {
+        currency: 'USD',
+        value: '200',
+        issuer: 'rUsDIssuer'
+      };
+
+      const params: CreateOfferRequest = {
+        takerGets,
+        takerPays,
+        expiration: 567,
+        offerSequence: 123
+      };
+
+      const result = buildOfferCreate(params, wallet);
+
+      expect(result.TransactionType).toEqual('OfferCreate');
+      expect(result.Account).toEqual('publicAddress');
+      expect(result.Expiration).toEqual(567);
+      expect(result.OfferSequence).toEqual(123);
+      expect(result.TakerGets).toEqual(takerGets);
+      expect(result.TakerPays).toEqual(takerPays);
+      expect(result.Flags).toBeUndefined();
+    });
   });
 });

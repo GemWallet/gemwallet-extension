@@ -2,6 +2,7 @@ import {
   dropsToXrp,
   NFTokenCreateOfferFlags,
   NFTokenMintFlags,
+  OfferCreateFlags,
   setTransactionFlagsToNumber,
   Transaction
 } from 'xrpl';
@@ -70,13 +71,20 @@ export const formatToken = (value: number, currency: string = 'XRP', isDrops = f
   return `${formatValue(value)} ${currency.toUpperCase()}`;
 };
 
+// NFTokenCreateOffer
 const LABEL_OFFER_TYPE = 'Offer type';
 const LABEL_SELL_OFFER = 'Sell offer';
 const LABEL_BUY_OFFER = 'Buy offer';
+// NFTokenMint
 const LABEL_BURNABLE = 'Burnable';
 const LABEL_ONLY_XRP = 'Only XRP';
 const LABEL_MINT_TF_TRUSTLINE = 'Create trustline (deprecated)';
 const LABEL_TRANSFERABLE = 'Transferable';
+// OfferCreate
+const LABEL_PASSIVE = 'Passive';
+const LABEL_IMMEDIATE_OR_CANCEL = 'Immediate Or Cancel';
+const LABEL_FILL_OR_KILL = 'Fill Or Kill';
+const LABEL_SELL = 'Sell';
 export const formatFlags = (
   flags:
     | PaymentFlags
@@ -145,6 +153,51 @@ export const formatFlags = (
             return LABEL_TRANSFERABLE;
           }
           if (['tfBurnable', 'tfOnlyXRP', 'tfTrustLine', 'tfTransferable'].includes(key)) {
+            return null;
+          }
+          return `${key}: ${value}`;
+        })
+        .filter((flag) => flag !== null)
+        .join('\n');
+    }
+  }
+
+  if (flagsType === 'OfferCreate') {
+    if (typeof flags === 'number') {
+      let flagDescriptions: string[] = [];
+
+      if (flags & OfferCreateFlags.tfPassive) {
+        flagDescriptions.push(LABEL_PASSIVE);
+      }
+      if (flags & OfferCreateFlags.tfImmediateOrCancel) {
+        flagDescriptions.push(LABEL_IMMEDIATE_OR_CANCEL);
+      }
+      if (flags & OfferCreateFlags.tfFillOrKill) {
+        flagDescriptions.push(LABEL_FILL_OR_KILL);
+      }
+      if (flags & OfferCreateFlags.tfSell) {
+        flagDescriptions.push(LABEL_SELL);
+      }
+
+      return flagDescriptions.join('\n');
+    }
+
+    if (typeof flags === 'object') {
+      return Object.entries(flags)
+        .map(([key, value]) => {
+          if (key === 'tfPassive' && value) {
+            return LABEL_PASSIVE;
+          }
+          if (key === 'tfImmediateOrCancel' && value) {
+            return LABEL_IMMEDIATE_OR_CANCEL;
+          }
+          if (key === 'tfFillOrKill' && value) {
+            return LABEL_FILL_OR_KILL;
+          }
+          if (key === 'tfSell' && value) {
+            return LABEL_SELL;
+          }
+          if (['tfPassive', 'tfImmediateOrCancel', 'tfFillOrKill', 'tfSell'].includes(key)) {
             return null;
           }
           return `${key}: ${value}`;

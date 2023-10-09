@@ -30,8 +30,6 @@ import { NFTInfoResponse } from 'xrpl/dist/npm/models/methods/nftInfo';
 import {
   AccountNFToken,
   AccountNFTokenResponse,
-  CancelOfferRequest,
-  CreateOfferRequest,
   GetNFTRequest,
   Network,
   NFTData,
@@ -126,8 +124,8 @@ export interface LedgerContextType {
   acceptNFTOffer: (payload: NFTokenAcceptOffer) => Promise<AcceptNFTOfferResponse>;
   burnNFT: (payload: NFTokenBurn) => Promise<BurnNFTResponse>;
   setAccount: (payload: SetAccountRequest) => Promise<SetAccountResponse>;
-  createOffer: (payload: CreateOfferRequest) => Promise<CreateOfferResponse>;
-  cancelOffer: (payload: CancelOfferRequest) => Promise<CancelOfferResponse>;
+  createOffer: (payload: OfferCreate) => Promise<CreateOfferResponse>;
+  cancelOffer: (payload: OfferCancel) => Promise<CancelOfferResponse>;
   signTransaction: (payload: SignTransactionRequest) => Promise<SignTransactionResponse>;
   submitTransaction: (payload: SubmitTransactionRequest) => Promise<SubmitTransactionResponse>;
   submitBulkTransactions: (
@@ -579,7 +577,7 @@ const LedgerProvider: FC = ({ children }) => {
   );
 
   const createOffer = useCallback(
-    async (payload: CreateOfferRequest) => {
+    async (payload: OfferCreate) => {
       const wallet = getCurrentWallet();
       if (!client) {
         throw new Error('You need to be connected to a ledger');
@@ -587,17 +585,7 @@ const LedgerProvider: FC = ({ children }) => {
         throw new Error('You need to have a wallet connected');
       } else {
         try {
-          const tx = await client.submitAndWait(
-            {
-              ...(buildBaseTransaction(payload, wallet, 'OfferCreate') as OfferCreate),
-              ...(payload.flags && { Flags: payload.flags }),
-              ...(payload.expiration && { Expiration: payload.expiration }),
-              ...(payload.offerSequence && { OfferSequence: payload.offerSequence }),
-              TakerGets: payload.takerGets,
-              TakerPays: payload.takerPays
-            },
-            { wallet: wallet.wallet }
-          );
+          const tx = await client.submitAndWait(payload, { wallet: wallet.wallet });
 
           if (!tx.result.hash) {
             throw new Error("Couldn't create the offer");
@@ -623,7 +611,7 @@ const LedgerProvider: FC = ({ children }) => {
   );
 
   const cancelOffer = useCallback(
-    async (payload: CancelOfferRequest) => {
+    async (payload: OfferCancel) => {
       const wallet = getCurrentWallet();
       if (!client) {
         throw new Error('You need to be connected to a ledger');
@@ -631,13 +619,7 @@ const LedgerProvider: FC = ({ children }) => {
         throw new Error('You need to have a wallet connected');
       } else {
         try {
-          const tx = await client.submitAndWait(
-            {
-              ...(buildBaseTransaction(payload, wallet, 'OfferCancel') as OfferCancel),
-              OfferSequence: payload.offerSequence
-            },
-            { wallet: wallet.wallet }
-          );
+          const tx = await client.submitAndWait(payload, { wallet: wallet.wallet });
 
           if (!tx.result.hash) {
             throw new Error("Couldn't cancel the offer");
