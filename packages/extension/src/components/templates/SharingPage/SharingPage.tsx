@@ -1,21 +1,12 @@
-import { FC, useMemo } from 'react';
+import { FC, useMemo, useState } from 'react';
 
 import CheckIcon from '@mui/icons-material/Check';
-import {
-  Container,
-  Typography,
-  Button,
-  Paper,
-  List,
-  ListItem,
-  ListItemText,
-  Avatar
-} from '@mui/material';
+import { List, ListItem, ListItemText } from '@mui/material';
 
-import { SECONDARY_GRAY } from '../../../constants';
 import { useWallet } from '../../../contexts';
 import { loadTrustedApps, Permission, checkPermissions } from '../../../utils';
-import { PageWithSpinner, PageWithTitle } from '../../templates';
+import { DataCard } from '../../molecules';
+import { PageWithSpinner, TransactionPage } from '../../templates';
 
 export interface SharingPageProps {
   title: string;
@@ -33,6 +24,7 @@ export const SharingPage: FC<SharingPageProps> = ({
   handleReject
 }) => {
   const { selectedWallet } = useWallet();
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const trustedApps = useMemo(() => {
     return loadTrustedApps(selectedWallet);
@@ -49,7 +41,7 @@ export const SharingPage: FC<SharingPageProps> = ({
     };
   }, []);
 
-  const { url, title, favicon } = payload;
+  const { url, favicon } = payload;
 
   const trustedApp = useMemo(() => {
     return trustedApps.filter((trustedApp) => trustedApp.url === url)[0];
@@ -61,47 +53,33 @@ export const SharingPage: FC<SharingPageProps> = ({
   }
 
   return (
-    <PageWithTitle title={titlePage}>
-      <Paper
-        elevation={24}
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          padding: '10px'
-        }}
-      >
-        <Avatar src={favicon} variant="rounded" />
-        <Typography variant="h6">{title}</Typography>
-        <Typography style={{ color: SECONDARY_GRAY }}>{url}</Typography>
-      </Paper>
-
-      <Paper elevation={24} style={{ padding: '10px' }}>
-        <Typography variant="body1">This app would like to:</Typography>
-        <List>
-          {permissionDetails.map((permDetail) => {
-            return (
-              <ListItem style={{ padding: '0 16px' }} key={permDetail}>
-                <CheckIcon color="success" />
-                <ListItemText style={{ marginLeft: '10px' }} primary={permDetail} />
-              </ListItem>
-            );
-          })}
-        </List>
-      </Paper>
-
-      <div style={{ display: 'flex', justifyContent: 'center', color: SECONDARY_GRAY }}>
-        <Typography>Only connect to website you trust</Typography>
-      </div>
-
-      <Container style={{ display: 'flex', justifyContent: 'space-evenly' }}>
-        <Button variant="contained" color="secondary" onClick={handleReject}>
-          Reject
-        </Button>
-        <Button variant="contained" onClick={handleShare}>
-          Share
-        </Button>
-      </Container>
-    </PageWithTitle>
+    <TransactionPage
+      title={titlePage}
+      url={url}
+      favicon={favicon}
+      approveButtonText="Share"
+      actionButtonsDescription="Only connect with a website you trust."
+      onClickApprove={handleShare}
+      onClickReject={handleReject}
+    >
+      <DataCard
+        formattedData={
+          <List>
+            {permissionDetails.map((permDetail) => {
+              return (
+                <ListItem style={{ padding: '0 16px' }} key={permDetail}>
+                  <CheckIcon color="success" />
+                  <ListItemText style={{ marginLeft: '10px' }} primary={permDetail} />
+                </ListItem>
+              );
+            })}
+          </List>
+        }
+        dataName="This app would like to"
+        isExpanded={isExpanded}
+        setIsExpanded={setIsExpanded}
+        thresholdHeight={300}
+      />
+    </TransactionPage>
   );
 };
