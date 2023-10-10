@@ -168,7 +168,9 @@ describe('Make payment - ETH', () => {
 
     // Should have the proper information
     cy.contains('Destination').next().should('have.text', DESTINATION_ADDRESS);
-    cy.contains('Amount').next().should('have.text', `${VALUE} ${TOKEN}`);
+    cy.contains('Amount')
+      .next()
+      .should('have.text', `${VALUE} ${TOKEN}\nIssuer: ${DESTINATION_ADDRESS}`);
 
     // Confirm the payment
     cy.contains('button', 'Submit').click();
@@ -195,7 +197,9 @@ describe('Make payment - ETH', () => {
 
     // Should have the proper information
     cy.contains('Destination').next().should('have.text', DESTINATION_ADDRESS);
-    cy.contains('Amount').next().should('have.text', `${VALUE} ${TOKEN}`);
+    cy.contains('Amount')
+      .next()
+      .should('have.text', `${VALUE} ${TOKEN}\nIssuer: ${DESTINATION_ADDRESS}`);
 
     // Reject the payment
     cy.contains('button', 'Reject').click();
@@ -265,7 +269,9 @@ describe('Make payment - SOLO', () => {
 
     // Should have the proper information
     cy.contains('Destination').next().should('have.text', DESTINATION_ADDRESS);
-    cy.contains('Amount').next().should('have.text', `${VALUE} ${TOKEN}`);
+    cy.contains('Amount')
+      .next()
+      .should('have.text', `${VALUE} ${TOKEN}\nIssuer: ${DESTINATION_ADDRESS}`);
   });
 
   it('Check the payment information (hex)', () => {
@@ -312,7 +318,9 @@ describe('Make payment - SOLO', () => {
 
     // Should have the proper information
     cy.contains('Destination').next().should('have.text', DESTINATION_ADDRESS);
-    cy.contains('Amount').next().should('have.text', `${VALUE} SOLO`);
+    cy.contains('Amount')
+      .next()
+      .should('have.text', `${VALUE} SOLO\nIssuer: ${DESTINATION_ADDRESS}`);
   });
 });
 

@@ -27,7 +27,9 @@ describe('Offers', () => {
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Create Offer');
 
     cy.contains('Taker Gets').next().should('have.text', '10 XRP');
-    cy.contains('Taker Pays').next().should('have.text', '0.1 ETH');
+    cy.contains('Taker Pays')
+      .next()
+      .should('have.text', '0.1 ETH\nIssuer: rnm76Qgz4G9G4gZBJVuXVvkbt7gVD7szey');
     cy.contains('Network fees').next().should('have.text', '0.000199 XRP (MANUAL)');
     cy.contains('Memo').next().should('have.text', 'Test memo');
     cy.contains('Flags').next().should('have.text', 'Passive');
@@ -60,7 +62,9 @@ describe('Offers', () => {
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Create Offer');
 
     cy.contains('Taker Gets').next().should('have.text', '10 XRP');
-    cy.contains('Taker Pays').next().should('have.text', '0.1 SOLO');
+    cy.contains('Taker Pays')
+      .next()
+      .should('have.text', '0.1 SOLO\nIssuer: rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN');
     cy.contains('Network fees').next().should('have.text', '0.000199 XRP (MANUAL)');
     cy.contains('Memo').next().should('have.text', 'Test memo');
     cy.contains('Flags').next().should('have.text', 'Passive');
@@ -93,7 +97,9 @@ describe('Offers', () => {
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Create Offer');
 
     cy.contains('Taker Pays').next().should('have.text', '10 XRP');
-    cy.contains('Taker Gets').next().should('have.text', '0.1 SOLO');
+    cy.contains('Taker Gets')
+      .next()
+      .should('have.text', '0.1 SOLO\nIssuer: rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN');
     cy.contains('Network fees').next().should('have.text', '0.000199 XRP (MANUAL)');
     cy.contains('Memo').next().should('have.text', 'Test memo');
     cy.contains('Flags').next().should('have.text', 'Passive');
@@ -126,7 +132,9 @@ describe('Offers', () => {
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Create Offer');
 
     cy.contains('Taker Gets').next().should('have.text', '10 XRP');
-    cy.contains('Taker Pays').next().should('have.text', '0.1 SOLO');
+    cy.contains('Taker Pays')
+      .next()
+      .should('have.text', '0.1 SOLO\nIssuer: rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN');
     cy.contains('Network fees').next().should('have.text', '0.000199 XRP (MANUAL)');
     cy.contains('Memo').next().should('have.text', 'Test memo');
     cy.contains('Flags').next().should('have.text', 'Passive');
@@ -159,7 +167,9 @@ describe('Offers', () => {
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Create Offer');
 
     cy.contains('Taker Pays').next().should('have.text', '10 XRP');
-    cy.contains('Taker Gets').next().should('have.text', '0.1 SOLO');
+    cy.contains('Taker Gets')
+      .next()
+      .should('have.text', '0.1 SOLO\nIssuer: rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN');
     cy.contains('Network fees').next().should('have.text', '0.000199 XRP (MANUAL)');
     cy.contains('Memo').next().should('have.text', 'Test memo');
     cy.contains('Flags').next().should('have.text', 'Passive');
