@@ -208,7 +208,7 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
     valueTypographyProps?: TypographyProps;
     useLegacy: boolean;
   }) => {
-    const { title, value, valueTypographyProps, showIssuer, hasTooltip, useLegacy } = params;
+    const { title, value, valueTypographyProps, showIssuer = true, hasTooltip, useLegacy } = params;
 
     return (
       <KeyValueDisplay

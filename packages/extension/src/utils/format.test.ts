@@ -158,7 +158,7 @@ describe('formatFlags', () => {
   });
 
   it('should format OfferCreate flags correctly when given as a number', () => {
-    const flags = 0x00010000 | 0x00020000; // both tfPassive and tfImmediateOrCancel flags are set
+    const flags = 196608; // both tfPassive and tfImmediateOrCancel flags are set
     const expectedResult = 'Passive\nImmediate Or Cancel';
     expect(formatFlags(flags, 'OfferCreate')).toBe(expectedResult);
   });
@@ -185,7 +185,7 @@ describe('formatFlags', () => {
   });
 
   it('should format Payment flags correctly when given as a number', () => {
-    const flags = 0x00010000 | 0x00020000; // both tfNoDirectRipple and tfPartialPayment flags are set
+    const flags = 196608; // both tfNoDirectRipple and tfPartialPayment flags are set
     const expectedResult = 'No Direct Ripple\nPartial Payment';
     expect(formatFlags(flags, 'Payment')).toBe(expectedResult);
   });

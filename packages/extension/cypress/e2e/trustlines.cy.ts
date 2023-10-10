@@ -98,7 +98,9 @@ describe('Trustline', () => {
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Set Trustline');
 
     // Should have the proper information
-    cy.contains('Limit Amount').next().should('have.text', `10,000,000 ${CURRENCY}`);
+    cy.contains('Limit Amount')
+      .next()
+      .should('have.text', `10,000,000 ${CURRENCY}\nIssuer: ${DESTINATION_ADDRESS}`);
 
     // Confirm the trustline
     cy.contains('button', 'Reject').click();
@@ -214,7 +216,9 @@ describe('Trustline', () => {
     cy.contains('button', 'Continue').click();
 
     // Check values in the confirmation page
-    cy.contains('Limit Amount').next().should('have.text', `${newLimit} ${CURRENCY}`);
+    cy.contains('Limit Amount')
+      .next()
+      .should('have.text', `${newLimit} ${CURRENCY}\nIssuer: ${DESTINATION_ADDRESS}`);
 
     cy.contains('button', 'Submit').click();
 
@@ -286,7 +290,9 @@ const validateTrustlineTx = (destinationAddress: string, currency: string, limit
   cy.get('h1[data-testid="page-title"]').should('have.text', 'Set Trustline');
 
   // Should have the proper information
-  cy.contains('Limit Amount').next().should('have.text', `${limit} ${currency}`);
+  cy.contains('Limit Amount')
+    .next()
+    .should('have.text', `${limit} ${currency}\nIssuer: ${destinationAddress}`);
 
   // Confirm the trustline
   cy.contains('button', 'Submit').click();

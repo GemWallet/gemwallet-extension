@@ -293,7 +293,7 @@ export const AddNewTrustline: FC = () => {
       limit: Number(params.transaction.LimitAmount.value),
       noRipple
     };
-  }, [params.transaction]);
+  }, [params.transaction?.Flags, params.transaction?.LimitAmount]);
 
   const updateFlags = useCallback(
     (noRipple: boolean) => {
