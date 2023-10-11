@@ -46,27 +46,40 @@ export const formatCurrencyName = (currency: string) => {
   return currency.toUpperCase();
 };
 
-export const formatAmount = (amount: Amount | IssuedCurrencyAmount, showIssuer?: boolean) => {
+export const formatAmount = (amount: Amount | IssuedCurrencyAmount) => {
+  const res = parseAmountObject(amount);
+  return `${res.amount} ${res.currency}`;
+};
+
+export const parseAmountObject = (
+  amount: Amount | IssuedCurrencyAmount
+): {
+  amount: string;
+  currency: string;
+  issuer?: string;
+} => {
   let value: number;
   let currency: string;
-  let issuer: string | undefined;
 
   if (typeof amount === 'string') {
     value = Number(dropsToXrp(amount));
-    currency = 'XRP';
-  } else {
-    if (amount.currency.length === 40) {
-      // Hex representation of currency
-      currency = convertHexCurrencyString(amount.currency);
-    } else {
-      currency = amount.currency;
-    }
-    value = Number(amount.value);
-    issuer = amount.issuer;
+    return {
+      amount: formatValue(value),
+      currency: 'XRP'
+    };
   }
 
-  const formattedValue = `${formatValue(value)} ${currency.toUpperCase()}`;
-  return showIssuer && issuer ? `${formattedValue}\nIssuer: ${issuer}` : formattedValue;
+  if (amount.currency.length === 40) {
+    // Hex representation of currency
+    currency = convertHexCurrencyString(amount.currency);
+  } else {
+    currency = amount.currency;
+  }
+
+  value = Number(amount.value);
+  const issuer = amount.issuer;
+
+  return { amount: formatValue(value), issuer: issuer, currency: currency };
 };
 
 export const formatToken = (value: number, currency: string = 'XRP', isDrops = false) => {

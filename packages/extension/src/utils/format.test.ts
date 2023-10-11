@@ -6,7 +6,8 @@ import {
   formatFlags,
   formatFlagsToNumber,
   formatToken,
-  formatTransferFee
+  formatTransferFee,
+  parseAmountObject
 } from './format';
 
 describe('Format util', () => {
@@ -356,5 +357,44 @@ describe('formatCurrencyName', () => {
     const formattedCurrency = formatCurrencyName(currency);
 
     expect(formattedCurrency).toEqual('ETH');
+  });
+});
+
+describe('parseAmountObject', () => {
+  it('should correctly parse XRP amount when input is a string', () => {
+    const amount = '1000000';
+    const result = parseAmountObject(amount);
+    expect(result).toEqual({
+      amount: '1',
+      currency: 'XRP'
+    });
+  });
+
+  it('should correctly parse issued currency amount when input is an object', () => {
+    const amount = {
+      value: '100',
+      currency: 'USD',
+      issuer: 'rB3gZey7VWHYRqJHLoHDEJXJ2pEPNieKiS'
+    };
+    const result = parseAmountObject(amount);
+    expect(result).toEqual({
+      amount: '100',
+      currency: 'USD',
+      issuer: 'rB3gZey7VWHYRqJHLoHDEJXJ2pEPNieKiS'
+    });
+  });
+
+  it('should correctly convert hex currency to string if currency is in hex', () => {
+    const amount = {
+      value: '200',
+      currency: '534F4C4F00000000000000000000000000000000',
+      issuer: 'rB3gZey7VWHYRqJHLoHDEJXJ2pEPNieKiS'
+    };
+    const result = parseAmountObject(amount);
+    expect(result).toEqual({
+      amount: '200',
+      currency: 'SOLO',
+      issuer: 'rB3gZey7VWHYRqJHLoHDEJXJ2pEPNieKiS'
+    });
   });
 });

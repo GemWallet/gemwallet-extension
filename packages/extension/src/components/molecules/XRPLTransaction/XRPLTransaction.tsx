@@ -6,7 +6,7 @@ import { Amount, Memo, Signer } from 'xrpl/dist/npm/models/common';
 import { GlobalFlags } from 'xrpl/dist/npm/models/transactions/common';
 
 import { useWallet } from '../../../contexts';
-import { formatAmount, formatFlags, formatTransferFee } from '../../../utils';
+import { formatFlags, formatTransferFee, parseAmountObject } from '../../../utils';
 
 type XRPLTxProps = {
   tx: Transaction;
@@ -136,8 +136,7 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
       renderAmount({
         title: 'Limit Amount',
         value: value as Amount,
-        useLegacy,
-        hasTooltip: true
+        useLegacy
       }),
     NFTokenSellOffer: (value?: string) =>
       value !== undefined
@@ -203,21 +202,29 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
   const renderAmount = (params: {
     title: string;
     value: Amount;
-    showIssuer?: boolean;
-    hasTooltip?: boolean;
     valueTypographyProps?: TypographyProps;
     useLegacy: boolean;
   }) => {
-    const { title, value, valueTypographyProps, showIssuer = true, hasTooltip, useLegacy } = params;
-
+    const { title, value, valueTypographyProps, useLegacy } = params;
+    const res = parseAmountObject(value);
     return (
-      <KeyValueDisplay
-        keyName={title}
-        value={formatAmount(value, showIssuer)}
-        valueTypographyProps={valueTypographyProps}
-        hasTooltip={hasTooltip}
-        useLegacy={useLegacy}
-      />
+      <>
+        <KeyValueDisplay
+          keyName={title}
+          value={`${res.amount} ${res.currency}`}
+          valueTypographyProps={valueTypographyProps}
+          useLegacy={useLegacy}
+        />
+        {res.issuer ? (
+          <KeyValueDisplay
+            keyName="Trustline"
+            value={res.issuer}
+            valueTypographyProps={valueTypographyProps}
+            hasTooltip={true}
+            useLegacy={useLegacy}
+          />
+        ) : null}
+      </>
     );
   };
 
