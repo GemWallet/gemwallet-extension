@@ -6,7 +6,7 @@ import { Amount, Memo, Signer } from 'xrpl/dist/npm/models/common';
 import { GlobalFlags } from 'xrpl/dist/npm/models/transactions/common';
 
 import { useWallet } from '../../../contexts';
-import { formatAmount, formatFlags, formatTransferFee } from '../../../utils';
+import { formatFlags, formatTransferFee, parseAmountObject } from '../../../utils';
 
 type XRPLTxProps = {
   tx: Transaction;
@@ -133,7 +133,11 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
     NFTokenOffers: (value: string[]) => renderArray({ title: 'Offer ID', value, useLegacy }),
     Signers: (value?: Signer[]) => renderArray({ title: 'Signer', value, useLegacy }),
     LimitAmount: (value) =>
-      renderAmount({ title: 'Limit Amount', value: value as Amount, useLegacy }),
+      renderAmount({
+        title: 'Limit Amount',
+        value: value as Amount,
+        useLegacy
+      }),
     NFTokenSellOffer: (value?: string) =>
       value !== undefined
         ? renderSimpleText({ title: 'NFT Token Sell Offer', value, useLegacy })
@@ -169,7 +173,8 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
         useLegacy
       }),
     OfferSequence: (value?: number) =>
-      renderSimpleText({ title: 'Offer Sequence', value, useLegacy })
+      renderSimpleText({ title: 'Offer Sequence', value, useLegacy }),
+    EmailHash: (value?: string) => renderSimpleText({ title: 'Email Hash', value, useLegacy })
   };
 
   const renderSimpleText = (params: {
@@ -200,15 +205,26 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
     valueTypographyProps?: TypographyProps;
     useLegacy: boolean;
   }) => {
-    const { title, value, valueTypographyProps } = params;
-
+    const { title, value, valueTypographyProps, useLegacy } = params;
+    const res = parseAmountObject(value);
     return (
-      <KeyValueDisplay
-        keyName={title}
-        value={formatAmount(value)}
-        valueTypographyProps={valueTypographyProps}
-        useLegacy={useLegacy}
-      />
+      <>
+        <KeyValueDisplay
+          keyName={title}
+          value={`${res.amount} ${res.currency}`}
+          valueTypographyProps={valueTypographyProps}
+          useLegacy={useLegacy}
+        />
+        {res.issuer ? (
+          <KeyValueDisplay
+            keyName="Trustline"
+            value={res.issuer}
+            valueTypographyProps={valueTypographyProps}
+            hasTooltip={true}
+            useLegacy={useLegacy}
+          />
+        ) : null}
+      </>
     );
   };
 

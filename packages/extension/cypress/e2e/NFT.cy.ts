@@ -131,6 +131,7 @@ describe('Mint', () => {
 
     cy.contains('NFT Token ID').next().should('have.text', this.NFTokenID);
     cy.contains('Amount').next().should('have.text', '0.4 SOLO');
+    cy.contains('Trustline').next().should('have.text', 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN');
     cy.contains('Memo').next().should('have.text', 'Test memo');
     cy.contains('Flags').next().should('have.text', 'Offer type: Sell offer');
 
@@ -164,6 +165,7 @@ describe('Mint', () => {
 
     cy.contains('NFT Token ID').next().should('have.text', this.NFTokenID);
     cy.contains('Amount').next().should('have.text', '0.4 SOLO');
+    cy.contains('Trustline').next().should('have.text', 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN');
     cy.contains('Memo').next().should('have.text', 'Test memo');
     cy.contains('Flags').next().should('have.text', 'Offer type: Sell offer');
 
@@ -245,6 +247,7 @@ describe('Mint', () => {
     cy.contains('NFT Token Sell Offer').next().should('have.text', this.OfferID);
 
     cy.contains('NFT Token Broker Fee').next().should('have.text', '0.1 SOLO');
+    cy.contains('Trustline').next().should('have.text', 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN');
 
     // Confirm
     cy.contains('button', 'Submit').click();
@@ -272,6 +275,7 @@ describe('Mint', () => {
     cy.contains('NFT Token Sell Offer').next().should('have.text', this.OfferID);
 
     cy.contains('NFT Token Broker Fee').next().should('have.text', '0.1 SOLO');
+    cy.contains('Trustline').next().should('have.text', 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN');
 
     // Confirm
     cy.contains('button', 'Submit').click();

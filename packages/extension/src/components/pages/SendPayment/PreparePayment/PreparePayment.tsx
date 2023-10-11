@@ -27,8 +27,7 @@ import {
   GEMWALLET_BLUE
 } from '../../../../constants';
 import { useLedger, useNetwork, useServer, useWallet } from '../../../../contexts';
-import { convertHexCurrencyString } from '../../../../utils';
-import { buildDefaultMemos } from '../../../../utils/transaction';
+import { buildDefaultMemos, convertHexCurrencyString } from '../../../../utils';
 import { NumericInput } from '../../../atoms';
 import { InformationMessage } from '../../../molecules';
 import { PageWithNavMenu, PageWithReturn, PageWithSpinner } from '../../../templates';
@@ -51,7 +50,7 @@ export interface PreparePaymentProps {
     token: string;
     value: string;
     memos?: Memo[];
-    destinationTag?: string;
+    destinationTag?: number;
   }) => void;
 }
 
@@ -64,7 +63,7 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
   const [address, setAddress] = useState<string>('');
   const [amount, setAmount] = useState<string>('');
   const [memos, setMemos] = useState<Memo[] | undefined>(undefined);
-  const [destinationTag, setDestinationTag] = useState<string | undefined>(undefined);
+  const [destinationTag, setDestinationTag] = useState<number | undefined>(undefined);
   const [errorAddress, setErrorAddress] = useState<string>('');
   const [errorAmount, setErrorAmount] = useState<string>('');
   const [errorMemo, setErrorMemo] = useState<string>('');
@@ -279,7 +278,7 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
       }
 
       if (Number(e.target.value)) {
-        setDestinationTag(e.target.value);
+        setDestinationTag(Number(e.target.value));
       }
     },
     [hasValidDestinationTag]

@@ -62,14 +62,14 @@ describe('Make payment - XRP', () => {
       return false;
     });
     // Should be on the Confirm Transaction Page
-    cy.get('h1[data-testid="page-title"]').should('have.text', 'Confirm Payment');
+    cy.get('h1[data-testid="page-title"]').should('have.text', 'Send Payment');
 
     // Should have the proper information
-    cy.contains('Destination:').next().should('have.text', DESTINATION_ADDRESS);
-    cy.contains('Amount:').next().should('have.text', `${AMOUNT} XRP`);
+    cy.contains('Destination').next().should('have.text', DESTINATION_ADDRESS);
+    cy.contains('Amount').next().should('have.text', `${AMOUNT} XRP`);
 
     // Confirm the payment
-    cy.contains('button', 'Confirm').click();
+    cy.contains('button', 'Submit').click();
 
     cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction in progress');
     cy.get('p[data-testid="transaction-subtitle"]').should(
@@ -89,11 +89,11 @@ describe('Make payment - XRP', () => {
       return false;
     });
     // Should be on the Confirm Transaction Page
-    cy.get('h1[data-testid="page-title"]').should('have.text', 'Confirm Payment');
+    cy.get('h1[data-testid="page-title"]').should('have.text', 'Send Payment');
 
     // Should have the proper information
-    cy.contains('Destination:').next().should('have.text', DESTINATION_ADDRESS);
-    cy.contains('Amount:').next().should('have.text', `${AMOUNT} XRP`);
+    cy.contains('Destination').next().should('have.text', DESTINATION_ADDRESS);
+    cy.contains('Amount').next().should('have.text', `${AMOUNT} XRP`);
 
     // Reject the payment
     cy.contains('button', 'Reject').click();
@@ -164,14 +164,15 @@ describe('Make payment - ETH', () => {
       return false;
     });
     // Should be on the Confirm Transaction Page
-    cy.get('h1[data-testid="page-title"]').should('have.text', 'Confirm Payment');
+    cy.get('h1[data-testid="page-title"]').should('have.text', 'Send Payment');
 
     // Should have the proper information
-    cy.contains('Destination:').next().should('have.text', DESTINATION_ADDRESS);
-    cy.contains('Amount:').next().should('have.text', `${VALUE} ${TOKEN}`);
+    cy.contains('Destination').next().should('have.text', DESTINATION_ADDRESS);
+    cy.contains('Amount').next().should('have.text', `${VALUE} ${TOKEN}`);
+    cy.contains('Trustline').next().should('have.text', DESTINATION_ADDRESS);
 
     // Confirm the payment
-    cy.contains('button', 'Confirm').click();
+    cy.contains('button', 'Submit').click();
 
     cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction in progress');
     cy.get('p[data-testid="transaction-subtitle"]').should(
@@ -191,11 +192,12 @@ describe('Make payment - ETH', () => {
       return false;
     });
     // Should be on the Confirm Transaction Page
-    cy.get('h1[data-testid="page-title"]').should('have.text', 'Confirm Payment');
+    cy.get('h1[data-testid="page-title"]').should('have.text', 'Send Payment');
 
     // Should have the proper information
-    cy.contains('Destination:').next().should('have.text', DESTINATION_ADDRESS);
-    cy.contains('Amount:').next().should('have.text', `${VALUE} ${TOKEN}`);
+    cy.contains('Destination').next().should('have.text', DESTINATION_ADDRESS);
+    cy.contains('Amount').next().should('have.text', `${VALUE} ${TOKEN}`);
+    cy.contains('Trustline').next().should('have.text', DESTINATION_ADDRESS);
 
     // Reject the payment
     cy.contains('button', 'Reject').click();
@@ -261,11 +263,12 @@ describe('Make payment - SOLO', () => {
       return false;
     });
     // Should be on the Confirm Transaction Page
-    cy.get('h1[data-testid="page-title"]').should('have.text', 'Confirm Payment');
+    cy.get('h1[data-testid="page-title"]').should('have.text', 'Send Payment');
 
     // Should have the proper information
-    cy.contains('Destination:').next().should('have.text', DESTINATION_ADDRESS);
-    cy.contains('Amount:').next().should('have.text', `${VALUE} ${TOKEN}`);
+    cy.contains('Destination').next().should('have.text', DESTINATION_ADDRESS);
+    cy.contains('Amount').next().should('have.text', `${VALUE} ${TOKEN}`);
+    cy.contains('Trustline').next().should('have.text', DESTINATION_ADDRESS);
   });
 
   it('Check the payment information (hex)', () => {
@@ -308,11 +311,12 @@ describe('Make payment - SOLO', () => {
       return false;
     });
     // Should be on the Confirm Transaction Page
-    cy.get('h1[data-testid="page-title"]').should('have.text', 'Confirm Payment');
+    cy.get('h1[data-testid="page-title"]').should('have.text', 'Send Payment');
 
     // Should have the proper information
-    cy.contains('Destination:').next().should('have.text', DESTINATION_ADDRESS);
-    cy.contains('Amount:').next().should('have.text', `${VALUE} SOLO`);
+    cy.contains('Destination').next().should('have.text', DESTINATION_ADDRESS);
+    cy.contains('Amount').next().should('have.text', `${VALUE} SOLO`);
+    cy.contains('Trustline').next().should('have.text', DESTINATION_ADDRESS);
   });
 });
 
@@ -386,7 +390,7 @@ describe('Make payment from the UI', () => {
     cy.get('button').contains('Send Payment').click();
 
     // Confirm the payment
-    cy.contains('button', 'Confirm').click();
+    cy.contains('button', 'Submit').click();
 
     cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction in progress');
     cy.get('p[data-testid="transaction-subtitle"]').should(

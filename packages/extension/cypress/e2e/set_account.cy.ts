@@ -50,12 +50,12 @@ describe('Set Account', () => {
 
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Set Account');
 
-    cy.contains('Email hash:').next().should('have.text', '1D1382344586ECFF844DACFF698C2EFB');
-    cy.contains('Network fees:').next().should('have.text', '0.000199 XRP (MANUAL)');
-    cy.contains('Memos:').next().should('have.text', 'Test memo');
-    cy.contains('Flags:').next().should('have.text', 'tfAllowXRP: true');
+    cy.contains('Email Hash').next().should('have.text', '1D1382344586ECFF844DACFF698C2EFB');
+    cy.contains('Network fees').next().should('have.text', '0.000199 XRP (MANUAL)');
+    cy.contains('Memo').next().should('have.text', 'Test memo');
+    cy.contains('Flags').next().should('have.text', 'Allow XRP');
     // Confirm
-    cy.contains('button', 'Confirm').click();
+    cy.contains('button', 'Submit').click();
 
     cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction in progress');
     cy.get('p[data-testid="transaction-subtitle"]').should(

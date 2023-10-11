@@ -19,7 +19,7 @@ export const SendPayment: FC = () => {
   }, []);
 
   if (payment) {
-    return <ConfirmPayment payment={payment} onClickBack={() => setPayment(null)} />;
+    return <ConfirmPayment payment={payment} />;
   }
   return <PreparePayment onSendPaymentClick={handlePreparePayment} />;
 };

@@ -1,82 +1,60 @@
 import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 
-import ErrorIcon from '@mui/icons-material/Error';
-import { Button, Container, Paper, Typography } from '@mui/material';
-import { isValidAddress } from 'xrpl';
-import { Amount } from 'xrpl/dist/npm/models/common';
+import { isValidAddress, Payment } from 'xrpl';
 
 import {
   API_ERROR_BAD_REQUEST,
   GEM_WALLET,
-  PaymentFlags,
   ReceiveSendPaymentBackgroundMessage,
   ReceiveSendPaymentBackgroundMessageDeprecated,
   ResponseType
 } from '@gemwallet/constants';
 
-import { API_ERROR_BAD_DESTINATION, ERROR_RED } from '../../../constants';
+import { API_ERROR_BAD_DESTINATION } from '../../../constants';
 import {
+  buildPayment,
   TransactionProgressStatus,
   useLedger,
   useNetwork,
-  useTransactionProgress
+  useTransactionProgress,
+  useWallet
 } from '../../../contexts';
 import { useFees, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
-import {
-  formatAmount,
-  fromHexMemos,
-  handleAmountHexCurrency,
-  parseAmount,
-  parsePaymentFlags,
-  toXRPLMemos
-} from '../../../utils';
-import {
-  BaseTransactionParams,
-  initialBaseTransactionParams,
-  parseBaseParamsFromURLParams
-} from '../../../utils/baseParams';
+import { parseAmount, parsePaymentFlags } from '../../../utils';
+import { parseBaseParamsFromURLParamsNew } from '../../../utils/baseParams';
 import { serializeError } from '../../../utils/errors';
-import { BaseTransaction } from '../../organisms/BaseTransaction/BaseTransaction';
-import { AsyncTransaction, PageWithTitle } from '../../templates';
+import { TransactionDetails } from '../../organisms';
+import { AsyncTransaction, TransactionPage } from '../../templates';
 
-interface Params extends BaseTransactionParams {
+interface Params {
   id: number;
-  // SendPayment fields
-  amount: Amount | null;
-  destination: string | null;
-  destinationTag: number | null;
-  flags: PaymentFlags | null;
+  transaction: Payment | null;
 }
 
 export const Transaction: FC = () => {
   const [params, setParams] = useState<Params>({
     id: 0,
-    // BaseTransaction fields
-    ...initialBaseTransactionParams,
-    // SendPayment fields
-    amount: null,
-    destination: null,
-    destinationTag: null,
-    flags: null
+    transaction: null
   });
   const [errorRequestRejection, setErrorRequestRejection] = useState<Error>();
   const [isParamsMissing, setIsParamsMissing] = useState(false);
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
   const { sendPayment } = useLedger();
+  const { getCurrentWallet } = useWallet();
   const { networkName } = useNetwork();
   const { setTransactionProgress } = useTransactionProgress();
   const { estimatedFees, errorFees, difference } = useFees(
     {
       TransactionType: 'Payment',
       Account: '',
-      Amount: params.amount ?? '',
-      Destination: params.destination ?? '',
-      Memos: params.memos ? toXRPLMemos(params.memos) : undefined,
-      DestinationTag: params.destinationTag ?? undefined,
-      Flags: params.flags ?? undefined
+      Amount: params.transaction?.Amount ?? '',
+      Destination: params.transaction?.Destination ?? '',
+      Memos: params.transaction?.Memos ?? undefined,
+      DestinationTag: params.transaction?.DestinationTag ?? undefined,
+      Flags: params.transaction?.Flags ?? undefined
     },
-    params.fee
+    params.transaction?.Fee
   );
 
   const { messageType, receivingMessage } = useMemo(() => {
@@ -152,20 +130,6 @@ export const Transaction: FC = () => {
     const urlParams = new URLSearchParams(queryString);
     const id = Number(urlParams.get('id')) || 0;
 
-    // BaseTransaction fields
-    const {
-      fee,
-      sequence,
-      accountTxnID,
-      lastLedgerSequence,
-      memos,
-      signers,
-      sourceTag,
-      signingPubKey,
-      ticketSequence,
-      txnSignature
-    } = parseBaseParamsFromURLParams(urlParams);
-
     // SendPayment fields
     const amount = parseAmount(
       urlParams.get('amount'),
@@ -178,42 +142,44 @@ export const Transaction: FC = () => {
       ? Number(urlParams.get('destinationTag'))
       : null;
     const flags = parsePaymentFlags(urlParams.get('flags'));
+    const wallet = getCurrentWallet();
 
     if (amount === null || destination === null) {
       setIsParamsMissing(true);
     }
 
+    if (!wallet) {
+      setIsParamsMissing(true);
+      return;
+    }
+
+    const transaction = buildPayment(
+      {
+        ...parseBaseParamsFromURLParamsNew(urlParams),
+        amount: amount ?? '0',
+        destination: destination ?? '',
+        ...(destinationTag && { destinationTag }),
+        ...(flags && { flags })
+      },
+      wallet
+    );
+
     setParams({
       id,
-      // BaseTransaction fields
-      fee,
-      sequence,
-      accountTxnID,
-      lastLedgerSequence,
-      memos,
-      signers,
-      sourceTag,
-      signingPubKey,
-      ticketSequence,
-      txnSignature,
-      // SendPayment fields
-      amount,
-      destination,
-      destinationTag,
-      flags
+      transaction
     });
-  }, [messageType, setTransactionProgress]);
+  }, [getCurrentWallet, messageType]);
 
   const isValidDestination = useMemo(() => {
-    if (params.destination && isValidAddress(params.destination)) {
+    if (params.transaction?.Destination && isValidAddress(params.transaction.Destination)) {
       return true;
     }
     return false;
-  }, [params.destination]);
+  }, [params.transaction?.Destination]);
 
   useEffect(() => {
     // We want to send a bad request error message only when we have parsed the destination from the params
-    if (params.destination && !isValidDestination) {
+    if (params.transaction?.Destination && !isValidDestination) {
       sendMessageToBackground(
         createMessage({
           transactionHash: undefined,
@@ -224,7 +190,7 @@ export const Transaction: FC = () => {
   }, [
     createMessage,
     isValidDestination,
-    params.destination,
+    params.transaction?.Destination,
     sendMessageToBackground,
     setTransactionProgress
   ]);
@@ -238,15 +204,7 @@ export const Transaction: FC = () => {
     setTransaction(TransactionStatus.Pending);
     // Amount and Destination will be present because if not,
     // we won't be able to go to the confirm transaction state
-    handleAmountHexCurrency(params.amount as Amount);
-    sendPayment({
-      amount: params.amount as Amount,
-      destination: params.destination as string,
-      memos: params.memos ?? undefined,
-      destinationTag: params.destinationTag ?? undefined,
-      fee: params.fee ?? undefined,
-      flags: params.flags ?? undefined
-    })
+    sendPayment(params.transaction as Payment)
       .then((transactionHash) => {
         setTransaction(TransactionStatus.Success);
         sendMessageToBackground(createMessage({ transactionHash }));
@@ -256,17 +214,7 @@ export const Transaction: FC = () => {
         setTransaction(TransactionStatus.Rejected);
         sendMessageToBackground(createMessage({ transactionHash: undefined, error: e }));
       });
-  }, [
-    params.amount,
-    params.destination,
-    params.memos,
-    params.destinationTag,
-    params.fee,
-    params.flags,
-    sendPayment,
-    sendMessageToBackground,
-    createMessage
-  ]);
+  }, [sendPayment, params.transaction, sendMessageToBackground, createMessage]);
 
   if (!isValidDestination) {
     return (
@@ -284,80 +232,25 @@ export const Transaction: FC = () => {
     );
   }
 
-  const {
-    // BaseTransaction fields
-    fee,
-    memos,
-    // SendPayment fields
-    amount,
-    destination,
-    destinationTag,
-    flags
-  } = params;
-
-  const decodedMemos = fromHexMemos(memos || []) || [];
+  if (transactionStatusComponent) {
+    return <div>{transactionStatusComponent}</div>;
+  }
 
   return (
-    <>
-      {transactionStatusComponent ? (
-        <div>{transactionStatusComponent}</div>
-      ) : (
-        <PageWithTitle title="Confirm Payment">
-          {!hasEnoughFunds ? (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              <ErrorIcon style={{ color: ERROR_RED }} />
-              <Typography variant="body1" style={{ marginLeft: '10px', color: ERROR_RED }}>
-                Insufficient funds.
-              </Typography>
-            </div>
-          ) : null}
-          <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-            <Typography variant="body1">Destination:</Typography>
-            <Typography variant="body2">{destination}</Typography>
-          </Paper>
-          {destinationTag ? (
-            <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-              <Typography variant="body1">Destination Tag:</Typography>
-              <Typography variant="body2">{destinationTag}</Typography>
-            </Paper>
-          ) : null}
-          <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-            <Typography variant="body1">Amount:</Typography>
-            <Typography variant="h6" component="h1" align="right">
-              {amount ? formatAmount(amount) : 'Not found'}
-            </Typography>
-          </Paper>
-          <div style={{ marginBottom: '40px' }}>
-            <BaseTransaction
-              fee={fee ? Number(fee) : null}
-              memos={decodedMemos}
-              flags={flags}
-              errorFees={errorFees}
-              estimatedFees={estimatedFees}
-            />
-          </div>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              position: 'fixed',
-              bottom: 0,
-              left: 0,
-              right: 0,
-              backgroundColor: '#1d1d1d'
-            }}
-          >
-            <Container style={{ display: 'flex', justifyContent: 'space-evenly', margin: '10px' }}>
-              <Button variant="contained" color="secondary" onClick={handleReject}>
-                Reject
-              </Button>
-              <Button variant="contained" onClick={handleConfirm} disabled={!hasEnoughFunds}>
-                Confirm
-              </Button>
-            </Container>
-          </div>
-        </PageWithTitle>
-      )}
-    </>
+    <TransactionPage
+      title="Send Payment"
+      description="Please review the transaction below."
+      approveButtonText="Submit"
+      hasEnoughFunds={hasEnoughFunds}
+      onClickApprove={handleConfirm}
+      onClickReject={handleReject}
+    >
+      <TransactionDetails
+        txParam={params.transaction}
+        estimatedFees={estimatedFees}
+        errorFees={errorFees}
+        displayTransactionType={false}
+      />
+    </TransactionPage>
   );
 };

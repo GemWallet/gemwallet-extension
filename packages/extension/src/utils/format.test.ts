@@ -6,7 +6,8 @@ import {
   formatFlags,
   formatFlagsToNumber,
   formatToken,
-  formatTransferFee
+  formatTransferFee,
+  parseAmountObject
 } from './format';
 
 describe('Format util', () => {
@@ -102,9 +103,9 @@ describe('formatFlags', () => {
     expect(formatFlags(trustSetFlags)).toBe(expectedResult);
   });
 
-  it('should return empty string if flags is an empty object', () => {
+  it('should return None string if flags is an empty object', () => {
     const flags = {};
-    const expectedResult = '';
+    const expectedResult = 'None';
     expect(formatFlags(flags)).toBe(expectedResult);
   });
 
@@ -158,7 +159,7 @@ describe('formatFlags', () => {
   });
 
   it('should format OfferCreate flags correctly when given as a number', () => {
-    const flags = 0x00010000 | 0x00020000; // both tfPassive and tfImmediateOrCancel flags are set
+    const flags = 196608; // both tfPassive and tfImmediateOrCancel flags are set
     const expectedResult = 'Passive\nImmediate Or Cancel';
     expect(formatFlags(flags, 'OfferCreate')).toBe(expectedResult);
   });
@@ -182,6 +183,121 @@ describe('formatFlags', () => {
       tfSell: true
     };
     expect(formatFlags(flags, 'OfferCreate')).toBe('Sell');
+  });
+
+  it('should format Payment flags correctly when given as a number', () => {
+    const flags = 196608; // both tfNoDirectRipple and tfPartialPayment flags are set
+    const expectedResult = 'No Direct Ripple\nPartial Payment';
+    expect(formatFlags(flags, 'Payment')).toBe(expectedResult);
+  });
+
+  it('should format Payment flags correctly when given as an object', () => {
+    const flags = {
+      tfNoDirectRipple: true,
+      tfPartialPayment: true,
+      tfLimitQuality: false
+    };
+    const expectedResult = 'No Direct Ripple\nPartial Payment';
+    expect(formatFlags(flags, 'Payment')).toBe(expectedResult);
+  });
+
+  it('should not show false flags for Payment', () => {
+    const flags = {
+      tfNoDirectRipple: false,
+      tfPartialPayment: false,
+      tfLimitQuality: true
+    };
+    expect(formatFlags(flags, 'Payment')).toBe('Limit Quality');
+  });
+
+  it('should format Payment flags to "None" when no flags are set', () => {
+    const flags = {
+      tfNoDirectRipple: false,
+      tfPartialPayment: false,
+      tfLimitQuality: false
+    };
+    expect(formatFlags(flags, 'Payment')).toBe('None');
+  });
+
+  it('should format AccountSet flags correctly when given as a number', () => {
+    const flags = 327680; // tfRequireDestTag and tfRequireAuth flags are set
+    const expectedResult = 'Require Dest Tag\nRequire Auth';
+    expect(formatFlags(flags, 'AccountSet')).toBe(expectedResult);
+  });
+
+  it('should format AccountSet flags correctly when given as an object', () => {
+    const flags = {
+      tfRequireDestTag: true,
+      tfOptionalDestTag: false,
+      tfRequireAuth: true,
+      tfOptionalAuth: false,
+      tfDisallowXRP: false,
+      tfAllowXRP: true
+    };
+    const expectedResult = 'Require Dest Tag\nRequire Auth\nAllow XRP';
+    expect(formatFlags(flags, 'AccountSet')).toBe(expectedResult);
+  });
+
+  it('should not show false flags for AccountSet', () => {
+    const flags = {
+      tfRequireDestTag: false,
+      tfOptionalDestTag: false,
+      tfRequireAuth: false,
+      tfOptionalAuth: false,
+      tfDisallowXRP: false,
+      tfAllowXRP: false
+    };
+    expect(formatFlags(flags, 'AccountSet')).toBe('None');
+  });
+
+  it('should format AccountSet flags to "None" when no flags are set as a number', () => {
+    const flags = 0; // no flags are set
+    expect(formatFlags(flags, 'AccountSet')).toBe('None');
+  });
+
+  it('should format TrustSet flags correctly when given as a number', () => {
+    const flags = 196608; // tfSetfAuth and tfSetNoRipple flags are set
+    const expectedResult = 'Set Auth\nSet No Ripple';
+    expect(formatFlags(flags, 'TrustSet')).toBe(expectedResult);
+  });
+
+  it('should format TrustSet flags correctly when given as an object', () => {
+    const flags = {
+      tfSetfAuth: true,
+      tfSetNoRipple: true,
+      tfClearNoRipple: false,
+      tfSetFreeze: false,
+      tfClearFreeze: false
+    };
+    const expectedResult = 'Set Auth\nSet No Ripple';
+    expect(formatFlags(flags, 'TrustSet')).toBe(expectedResult);
+  });
+
+  it('should not show false flags for TrustSet', () => {
+    const flags = {
+      tfSetfAuth: false,
+      tfSetNoRipple: false,
+      tfClearNoRipple: false,
+      tfSetFreeze: true,
+      tfClearFreeze: false
+    };
+    expect(formatFlags(flags, 'TrustSet')).toBe('Set Freeze');
+  });
+
+  it('should format TrustSet flags to "None" when no flags are set as a number', () => {
+    const flags = 0; // no flags are set
+    expect(formatFlags(flags, 'TrustSet')).toBe('None');
+  });
+
+  it('should format TrustSet flags to "None" when no flags are set as an object', () => {
+    const flags = {
+      tfSetfAuth: false,
+      tfSetNoRipple: false,
+      tfClearNoRipple: false,
+      tfSetFreeze: false,
+      tfClearFreeze: false
+    };
+    expect(formatFlags(flags, 'TrustSet')).toBe('None');
   });
 });
 
@@ -241,5 +357,44 @@ describe('formatCurrencyName', () => {
     const formattedCurrency = formatCurrencyName(currency);
 
     expect(formattedCurrency).toEqual('ETH');
+  });
+});
+
+describe('parseAmountObject', () => {
+  it('should correctly parse XRP amount when input is a string', () => {
+    const amount = '1000000';
+    const result = parseAmountObject(amount);
+    expect(result).toEqual({
+      amount: '1',
+      currency: 'XRP'
+    });
+  });
+
+  it('should correctly parse issued currency amount when input is an object', () => {
+    const amount = {
+      value: '100',
+      currency: 'USD',
+      issuer: 'rB3gZey7VWHYRqJHLoHDEJXJ2pEPNieKiS'
+    };
+    const result = parseAmountObject(amount);
+    expect(result).toEqual({
+      amount: '100',
+      currency: 'USD',
+      issuer: 'rB3gZey7VWHYRqJHLoHDEJXJ2pEPNieKiS'
+    });
+  });
+
+  it('should correctly convert hex currency to string if currency is in hex', () => {
+    const amount = {
+      value: '200',
+      currency: '534F4C4F00000000000000000000000000000000',
+      issuer: 'rB3gZey7VWHYRqJHLoHDEJXJ2pEPNieKiS'
+    };
+    const result = parseAmountObject(amount);
+    expect(result).toEqual({
+      amount: '200',
+      currency: 'SOLO',
+      issuer: 'rB3gZey7VWHYRqJHLoHDEJXJ2pEPNieKiS'
+    });
   });
 });

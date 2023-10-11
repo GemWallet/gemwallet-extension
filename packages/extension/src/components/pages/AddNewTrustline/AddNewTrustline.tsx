@@ -1,39 +1,29 @@
 import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useNavigate } from 'react-router-dom';
-import { isValidAddress, TrustSetFlags as TrustSetFlagsBitmask } from 'xrpl';
-import { IssuedCurrencyAmount } from 'xrpl/dist/npm/models/common';
+import { isValidAddress, TrustSet, TrustSetFlags as TrustSetFlagsBitmask } from 'xrpl';
 
 import {
   API_ERROR_BAD_REQUEST,
   GEM_WALLET,
   ReceiveSetTrustlineBackgroundMessage,
   ReceiveSetTrustlineBackgroundMessageDeprecated,
-  ResponseType,
-  TrustSetFlags
+  ResponseType
 } from '@gemwallet/constants';
 
 import { API_ERROR_BAD_ISSUER, HOME_PATH } from '../../../constants';
 import {
+  buildTrustSet,
   TransactionProgressStatus,
   useLedger,
   useNetwork,
-  useTransactionProgress
+  useTransactionProgress,
+  useWallet
 } from '../../../contexts';
 import { useFees, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
-import {
-  handleAmountHexCurrency,
-  parseLimitAmount,
-  parseTrustSetFlags,
-  toXRPLMemos
-} from '../../../utils';
-import {
-  BaseTransactionParams,
-  getBaseFromParams,
-  initialBaseTransactionParams,
-  parseBaseParamsFromURLParams
-} from '../../../utils/baseParams';
+import { parseLimitAmount, parseTrustSetFlags } from '../../../utils';
+import { parseBaseParamsFromURLParamsNew } from '../../../utils/baseParams';
 import { serializeError } from '../../../utils/errors';
 import { AsyncTransaction } from '../../templates';
 import { StepConfirm } from './StepConfirm';
@@ -42,11 +32,9 @@ import { StepWarning } from './StepWarning';
 
 type STEP = 'WARNING' | 'TRANSACTION';
 
-export interface Params extends BaseTransactionParams {
+export interface Params {
   id: number;
-  // SetTrustline fields
-  limitAmount: IssuedCurrencyAmount | null;
-  flags: TrustSetFlags | null;
+  transaction: TrustSet | null;
   // UI specific fields
   inAppCall: boolean;
   showForm: boolean;
@@ -59,11 +47,7 @@ export const AddNewTrustline: FC = () => {
 
   const [params, setParams] = useState<Params>({
     id: 0,
-    // BaseTransaction fields
-    ...initialBaseTransactionParams,
-    // SetTrustline fields
-    limitAmount: null,
-    flags: null,
+    transaction: null,
     // UI specific fields
     inAppCall,
     showForm: false
@@ -74,22 +58,22 @@ export const AddNewTrustline: FC = () => {
   const [step, setStep] = useState<STEP>('WARNING');
   const [errorValue, setErrorValue] = useState<string>('');
   const { setTrustline } = useLedger();
+  const { getCurrentWallet } = useWallet();
   const { networkName } = useNetwork();
   const { setTransactionProgress } = useTransactionProgress();
   const { estimatedFees, errorFees, difference } = useFees(
     {
       TransactionType: 'TrustSet',
       Account: '',
-      Fee: params.fee || undefined,
-      LimitAmount: params.limitAmount || {
+      LimitAmount: params.transaction?.LimitAmount || {
         currency: '',
         issuer: '',
         value: '0'
       },
-      Memos: params.memos ? toXRPLMemos(params.memos) : undefined,
-      Flags: params.flags ?? undefined
+      ...(params.transaction?.Memos && { Memos: params.transaction?.Memos }),
+      ...(params.transaction?.Flags && { Flags: params.transaction.Flags })
     },
-    params.fee
+    params.transaction?.Fee
   );
 
   const receivingMessage = useMemo(() => {
@@ -170,20 +154,6 @@ export const AddNewTrustline: FC = () => {
     const urlParams = new URLSearchParams(queryString);
     const id = Number(urlParams.get('id')) || 0;
 
-    // BaseTransaction fields
-    const {
-      fee,
-      sequence,
-      accountTxnID,
-      lastLedgerSequence,
-      memos,
-      signers,
-      sourceTag,
-      signingPubKey,
-      ticketSequence,
-      txnSignature
-    } = parseBaseParamsFromURLParams(urlParams);
-
     // SetTrustline fields
     const limitAmount = parseLimitAmount(
       urlParams.get('limitAmount'),
@@ -192,6 +162,7 @@ export const AddNewTrustline: FC = () => {
       urlParams.get('issuer')
     );
     const flags = parseTrustSetFlags(urlParams.get('flags'));
+    const wallet = getCurrentWallet();
 
     // UI specific fields
     const showForm = urlParams.get('showForm') === 'true' || false;
@@ -204,34 +175,37 @@ export const AddNewTrustline: FC = () => {
       setErrorValue('The value must be a number, the value provided was not a number.');
     }
 
+    if (!wallet) {
+      setIsParamsMissing(true);
+      return;
+    }
+
+    const transaction = limitAmount
+      ? buildTrustSet(
+          {
+            ...parseBaseParamsFromURLParamsNew(urlParams),
+            ...(flags && { flags }),
+            limitAmount: limitAmount
+          },
+          wallet
+        )
+      : null;
+
     setParams({
       id,
-      // BaseTransaction fields
-      fee,
-      sequence,
-      accountTxnID,
-      lastLedgerSequence,
-      memos,
-      signers,
-      sourceTag,
-      signingPubKey,
-      ticketSequence,
-      txnSignature,
-      // SetTrustline fields
-      limitAmount,
-      flags,
+      transaction,
       // UI specific fields
       inAppCall,
       showForm
     });
-  }, [createMessage, inAppCall]);
+  }, [createMessage, getCurrentWallet, inAppCall]);
 
   const isValidIssuer = useMemo(() => {
-    if (params.limitAmount && isValidAddress(params.limitAmount?.issuer)) {
+    if (params.transaction?.LimitAmount && isValidAddress(params.transaction.LimitAmount?.issuer)) {
       return true;
     }
     return false;
-  }, [params.limitAmount]);
+  }, [params.transaction?.LimitAmount]);
 
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);
@@ -244,17 +218,10 @@ export const AddNewTrustline: FC = () => {
     setTransaction(TransactionStatus.Pending);
     // Value, currency and issuer will be present because if not,
     // we won't be able to go to the confirm transaction state
-    if (params.limitAmount === null) {
+    if (params.transaction?.LimitAmount === null || params.transaction?.LimitAmount === undefined) {
       setIsParamsMissing(true);
     } else {
-      handleAmountHexCurrency(params.limitAmount);
-      setTrustline({
-        // BaseTransaction fields
-        ...getBaseFromParams(params),
-        // SetTrustline fields
-        limitAmount: params.limitAmount,
-        flags: params.flags || undefined
-      })
+      setTrustline(params.transaction)
         .then((transactionHash) => {
           setTransaction(TransactionStatus.Success);
           if (!params.inAppCall) {
@@ -285,77 +252,75 @@ export const AddNewTrustline: FC = () => {
     isParamsMissing: boolean
   ) => {
     const flags = updateFlags(noRipple);
-    setParams({
-      id: params.id,
-      // BaseTransaction fields
-      fee: null,
-      sequence: null,
-      accountTxnID: null,
-      lastLedgerSequence: null,
-      memos: null,
-      signers: null,
-      sourceTag: null,
-      signingPubKey: null,
-      ticketSequence: null,
-      txnSignature: null,
-      // SetTrustline fields
-      limitAmount: {
-        currency: token,
-        issuer: issuer,
-        value: limit
-      },
-      flags: flags,
-      // UI specific fields
-      showForm: showForm,
-      inAppCall: true
-    });
+    const wallet = getCurrentWallet();
+    if (wallet) {
+      setParams({
+        id: params.id,
+        // BaseTransaction fields
+        transaction: buildTrustSet(
+          {
+            ...params.transaction,
+            ...(flags && { flags }),
+            limitAmount: {
+              currency: token,
+              issuer: issuer,
+              value: limit
+            }
+          },
+          wallet
+        ),
+        // UI specific fields
+        showForm: showForm,
+        inAppCall: true
+      });
+    }
 
     setIsParamsMissing(isParamsMissing);
   };
 
   const formInitialValues = useMemo(() => {
-    if (!params.limitAmount) return undefined;
+    if (!params.transaction?.LimitAmount) return undefined;
 
-    const noRipple = params.flags
-      ? typeof params.flags === 'object'
-        ? params.flags.tfSetNoRipple ?? false
-        : !!(params.flags & TrustSetFlagsBitmask.tfSetNoRipple)
+    const noRipple = params.transaction?.Flags
+      ? typeof params.transaction?.Flags === 'object'
+        ? params.transaction.Flags.tfSetNoRipple ?? false
+        : !!(params.transaction.Flags & TrustSetFlagsBitmask.tfSetNoRipple)
       : false;
 
     return {
-      issuer: params.limitAmount.issuer,
-      token: params.limitAmount.currency,
-      limit: Number(params.limitAmount.value),
+      issuer: params.transaction?.LimitAmount.issuer,
+      token: params.transaction?.LimitAmount.currency,
+      limit: Number(params.transaction.LimitAmount.value),
       noRipple
     };
-  }, [params.limitAmount, params.flags]);
+  }, [params.transaction?.Flags, params.transaction?.LimitAmount]);
 
   const updateFlags = useCallback(
     (noRipple: boolean) => {
-      if (!params.flags) {
+      if (!params.transaction?.Flags) {
         return noRipple ? TrustSetFlagsBitmask.tfSetNoRipple : TrustSetFlagsBitmask.tfClearNoRipple;
       }
 
       // No Ripple
       if (noRipple) {
-        if (typeof params.flags === 'object') {
-          params.flags.tfSetNoRipple = true;
-          params.flags.tfClearNoRipple = false;
+        if (typeof params.transaction?.Flags === 'object') {
+          params.transaction.Flags.tfSetNoRipple = true;
+          params.transaction.Flags.tfClearNoRipple = false;
         } else {
-          params.flags |= TrustSetFlagsBitmask.tfSetNoRipple;
-          params.flags &= ~TrustSetFlagsBitmask.tfClearNoRipple;
+          params.transaction.Flags |= TrustSetFlagsBitmask.tfSetNoRipple;
+          params.transaction.Flags &= ~TrustSetFlagsBitmask.tfClearNoRipple;
         }
       } else {
-        if (typeof params.flags === 'object') {
-          params.flags.tfClearNoRipple = true;
-          params.flags.tfSetNoRipple = false;
+        if (typeof params.transaction.Flags === 'object') {
+          params.transaction.Flags.tfClearNoRipple = true;
+          params.transaction.Flags.tfSetNoRipple = false;
         } else {
-          params.flags |= TrustSetFlagsBitmask.tfClearNoRipple;
-          params.flags &= ~TrustSetFlagsBitmask.tfSetNoRipple;
+          params.transaction.Flags |= TrustSetFlagsBitmask.tfClearNoRipple;
+          params.transaction.Flags &= ~TrustSetFlagsBitmask.tfSetNoRipple;
         }
       }
 
-      return params.flags;
+      return params.transaction.Flags;
     },
     [params]
   );

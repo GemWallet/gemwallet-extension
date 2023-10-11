@@ -34,9 +34,6 @@ import {
   Network,
   NFTData,
   NFTokenIDResponse,
-  SendPaymentRequest,
-  SetAccountRequest,
-  SetTrustlineRequest,
   SignTransactionRequest,
   SubmitTransactionRequest,
   SubmitBulkTransactionsRequest,
@@ -111,8 +108,8 @@ export const LEDGER_CONNECTION_ERROR = 'You need to be connected to a ledger to 
 
 export interface LedgerContextType {
   // Return transaction hash in case of success
-  sendPayment: (payload: SendPaymentRequest) => Promise<string>;
-  setTrustline: (payload: SetTrustlineRequest) => Promise<string>;
+  sendPayment: (payload: Payment) => Promise<string>;
+  setTrustline: (payload: TrustSet) => Promise<string>;
   signMessage: (message: string) => string | undefined;
   estimateNetworkFees: (payload: Transaction) => Promise<string>;
   getNFTs: (payload?: GetNFTRequest) => Promise<AccountNFTokenResponse>;
@@ -123,7 +120,7 @@ export interface LedgerContextType {
   cancelNFTOffer: (payload: NFTokenCancelOffer) => Promise<CancelNFTOfferResponse>;
   acceptNFTOffer: (payload: NFTokenAcceptOffer) => Promise<AcceptNFTOfferResponse>;
   burnNFT: (payload: NFTokenBurn) => Promise<BurnNFTResponse>;
-  setAccount: (payload: SetAccountRequest) => Promise<SetAccountResponse>;
+  setAccount: (payload: AccountSet) => Promise<SetAccountResponse>;
   createOffer: (payload: OfferCreate) => Promise<CreateOfferResponse>;
   cancelOffer: (payload: OfferCancel) => Promise<CancelOfferResponse>;
   signTransaction: (payload: SignTransactionRequest) => Promise<SignTransactionResponse>;
@@ -291,7 +288,7 @@ const LedgerProvider: FC = ({ children }) => {
   );
 
   const sendPayment = useCallback(
-    async (payload: SendPaymentRequest) => {
+    async (payload: Payment) => {
       const wallet = getCurrentWallet();
       if (!client) {
         throw new Error(LEDGER_CONNECTION_ERROR);
@@ -299,14 +296,7 @@ const LedgerProvider: FC = ({ children }) => {
         throw new Error('You need to have a wallet connected to make a transaction');
       } else {
         // Prepare the transaction
-        const prepared: Payment = await client.autofill({
-          ...(buildBaseTransaction(payload, wallet, 'Payment') as Payment),
-          Amount: payload.amount,
-          Destination: payload.destination,
-          ...(payload.destinationTag &&
-            Number(payload.destinationTag) && { DestinationTag: Number(payload.destinationTag) }),
-          ...(payload.flags && { Flags: payload.flags })
-        });
+        const prepared: Payment = await client.autofill(payload);
         // Sign the transaction
         const signed = wallet.wallet.sign(prepared);
         // Submit the signed blob
@@ -324,7 +314,7 @@ const LedgerProvider: FC = ({ children }) => {
   );
 
   const setTrustline = useCallback(
-    async (payload: SetTrustlineRequest) => {
+    async (payload: TrustSet) => {
       const wallet = getCurrentWallet();
       if (!client) {
         throw new Error('You need to be connected to a ledger to add a trustline');
@@ -333,11 +323,7 @@ const LedgerProvider: FC = ({ children }) => {
       } else {
         // Prepare the transaction
         try {
-          const prepared: TrustSet = await client.autofill({
-            ...(buildBaseTransaction(payload, wallet, 'TrustSet') as TrustSet),
-            LimitAmount: payload.limitAmount,
-            ...(payload.flags && { Flags: payload.flags })
-          });
+          const prepared: TrustSet = await client.autofill(payload);
           // Sign the transaction
           const signed = wallet.wallet.sign(prepared);
           // Submit the signed blob
@@ -529,7 +515,7 @@ const LedgerProvider: FC = ({ children }) => {
   );
 
   const setAccount = useCallback(
-    async (payload: SetAccountRequest) => {
+    async (payload: AccountSet) => {
       const wallet = getCurrentWallet();
       if (!client) {
         throw new Error('You need to be connected to a ledger');
@@ -537,21 +523,7 @@ const LedgerProvider: FC = ({ children }) => {
         throw new Error('You need to have a wallet connected');
       } else {
         try {
-          const tx = await client.submitAndWait(
-            {
-              ...(buildBaseTransaction(payload, wallet, 'AccountSet') as AccountSet),
-              ...(payload.flags && { Flags: payload.flags }),
-              ...(payload.clearFlag && { ClearFlag: payload.clearFlag }),
-              ...(payload.domain && { Domain: payload.domain }),
-              ...(payload.emailHash && { EmailHash: payload.emailHash }),
-              ...(payload.messageKey && { MessageKey: payload.messageKey }),
-              ...(payload.NFTokenMinter && { NFTokenMinter: payload.NFTokenMinter }),
-              ...(payload.setFlag && { SetFlag: payload.setFlag }),
-              ...(payload.transferRate && { TransferRate: payload.transferRate }),
-              ...(payload.tickSize && { TickSize: payload.tickSize })
-            },
-            { wallet: wallet.wallet }
-          );
+          const tx = await client.submitAndWait(payload, { wallet: wallet.wallet });
 
           if (!tx.result.hash) {
             throw new Error("Couldn't set the account");
