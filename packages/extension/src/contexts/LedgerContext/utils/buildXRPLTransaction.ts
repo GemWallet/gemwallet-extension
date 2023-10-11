@@ -7,7 +7,8 @@ import {
   OfferCancel,
   OfferCreate,
   Payment,
-  TrustSet
+  TrustSet,
+  SetRegularKey
 } from 'xrpl';
 import { Amount } from 'xrpl/dist/npm/models/common';
 import { BaseTransaction } from 'xrpl/dist/npm/models/transactions/common';
@@ -24,7 +25,8 @@ import {
   MintNFTRequest,
   SendPaymentRequest,
   SetAccountRequest,
-  SetTrustlineRequest
+  SetTrustlineRequest,
+  SetRegularKeyRequest
 } from '@gemwallet/constants';
 
 import { WalletLedger } from '../../../types';
@@ -174,6 +176,16 @@ export const buildTrustSet = (params: SetTrustlineRequest, wallet: WalletLedger)
   };
 };
 
+export const buildSetRegularKey = (
+  params: SetRegularKeyRequest,
+  wallet: WalletLedger
+): SetRegularKey => {
+  return {
+    ...(buildBaseTransaction(params, wallet, 'SetRegularKey') as SetRegularKey),
+    ...(params.regularKey && { RegularKey: params.regularKey })
+  };
+};
+
 export const buildBaseTransaction = (
   payload: BaseTransactionRequest,
   wallet: WalletLedger,
@@ -189,6 +201,7 @@ export const buildBaseTransaction = (
     | 'OfferCreate'
     | 'OfferCancel'
     | 'AccountDelete'
+    | 'SetRegularKey'
 ): BaseTransaction => ({
   TransactionType: txType,
   Account: wallet.publicAddress,

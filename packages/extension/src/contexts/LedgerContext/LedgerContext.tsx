@@ -37,7 +37,6 @@ import {
   MAINNET_CLIO_NODES,
   NFTData,
   NFTokenIDResponse,
-  SetRegularKeyRequest,
   SignTransactionRequest,
   SubmitBulkTransactionsRequest,
   SubmitTransactionRequest,
@@ -135,7 +134,7 @@ export interface LedgerContextType {
   acceptNFTOffer: (payload: NFTokenAcceptOffer) => Promise<AcceptNFTOfferResponse>;
   burnNFT: (payload: NFTokenBurn) => Promise<BurnNFTResponse>;
   setAccount: (payload: AccountSet) => Promise<SetAccountResponse>;
-  setRegularKey: (payload: SetRegularKeyRequest) => Promise<SetRegularKeyResponse>;
+  setRegularKey: (payload: SetRegularKey) => Promise<SetRegularKeyResponse>;
   createOffer: (payload: OfferCreate) => Promise<CreateOfferResponse>;
   cancelOffer: (payload: OfferCancel) => Promise<CancelOfferResponse>;
   signTransaction: (payload: SignTransactionRequest) => Promise<SignTransactionResponse>;
@@ -436,7 +435,7 @@ const LedgerProvider: FC = ({ children }) => {
   );
 
   const setRegularKey = useCallback(
-    async (payload: SetRegularKeyRequest) => {
+    async (payload: SetRegularKey) => {
       const wallet = getCurrentWallet();
       if (!client) {
         throw new Error('You need to be connected to a ledger');
@@ -444,13 +443,7 @@ const LedgerProvider: FC = ({ children }) => {
         throw new Error('You need to have a wallet connected');
       } else {
         try {
-          const tx = await client.submitAndWait(
-            {
-              ...(buildBaseTransaction(payload, wallet, 'SetRegularKey') as SetRegularKey),
-              ...(payload.regularKey && { RegularKey: payload.regularKey })
-            },
-            { wallet: wallet.wallet, autofill: true }
-          );
+          const tx = await client.submitAndWait(payload, { wallet: wallet.wallet, autofill: true });
 
           if (!tx.result.hash) {
             throw new Error("Couldn't set the account");

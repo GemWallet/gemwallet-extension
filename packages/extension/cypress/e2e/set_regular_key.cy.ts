@@ -50,11 +50,13 @@ describe('Set Regular Key', () => {
 
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Set Regular Key');
 
-    cy.contains('Regular Key:').next().should('have.text', 'rNvFCZXpDtGeQ3bVas95wGLN6N2stGmA9o');
-    cy.contains('Memos:').next().should('have.text', 'Test memo');
+    cy.contains('p', 'Regular Key')
+      .next()
+      .should('have.text', 'rNvFCZXpDtGeQ3bVas95wGLN6N2stGmA9o');
+    cy.contains('Memo').next().should('have.text', 'Test memo');
 
     // Confirm
-    cy.contains('button', 'Confirm').click();
+    cy.contains('button', 'Submit').click();
 
     cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction in progress');
     cy.get('p[data-testid="transaction-subtitle"]').should(
@@ -82,15 +84,15 @@ describe('Set Regular Key', () => {
     cy.get('input[name="regularKey"]').type('fake');
     cy.get('input[name="regularKey"]').blur();
     cy.get('#regularKey-helper-text').should('have.text', 'The regular key is not a valid address');
-    cy.contains('button', 'Confirm').should('be.disabled');
+    cy.contains('button', 'Submit').should('be.disabled');
 
     // Enter Regular Key
     cy.get('input[name="regularKey"]').clear();
     cy.get('input[name="regularKey"]').type('rNvFCZXpDtGeQ3bVas95wGLN6N2stGmA9o');
-    cy.contains('button', 'Confirm').should('be.enabled');
+    cy.contains('button', 'Submit').should('be.enabled');
 
     // Confirm
-    cy.contains('button', 'Confirm').click();
+    cy.contains('button', 'Submit').click();
 
     cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction in progress');
     cy.get('p[data-testid="transaction-subtitle"]').should(
@@ -118,10 +120,10 @@ describe('Set Regular Key', () => {
 
     // Check the checkbox
     cy.get('input[name="deleteRegularKey"]').click();
-    cy.contains('button', 'Confirm').should('be.enabled');
+    cy.contains('button', 'Submit').should('be.enabled');
 
     // Confirm
-    cy.contains('button', 'Confirm').click();
+    cy.contains('button', 'Submit').click();
 
     cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction in progress');
     cy.get('p[data-testid="transaction-subtitle"]').should(

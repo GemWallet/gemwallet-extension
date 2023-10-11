@@ -1,4 +1,4 @@
-import { Path } from 'xrpl';
+import { Path, SetRegularKey } from 'xrpl';
 import { Amount } from 'xrpl/dist/npm/models/common';
 import { NFTokenMint } from 'xrpl/dist/npm/models/transactions/NFTokenMint';
 
@@ -6,7 +6,8 @@ import {
   CancelOfferRequest,
   CreateOfferRequest,
   MintNFTRequest,
-  SendPaymentRequest
+  SendPaymentRequest,
+  SetRegularKeyRequest
 } from '@gemwallet/constants';
 
 import { WalletLedger } from '../../../types';
@@ -21,6 +22,7 @@ import {
   buildOfferCancel,
   buildOfferCreate,
   buildPayment,
+  buildSetRegularKey,
   buildTrustSet
 } from './buildXRPLTransaction';
 
@@ -180,6 +182,54 @@ describe('buildOfferCreate', () => {
     expect(result.TakerGets).toEqual(takerGets);
     expect(result.TakerPays).toEqual(takerPays);
     expect(result.Flags).toBeUndefined();
+  });
+
+  describe('buildSetRegularKey', () => {
+    it('should build SetRegularKey transaction with RegularKey', () => {
+      const params: SetRegularKeyRequest = {
+        regularKey: 'myRegularKey'
+      };
+
+      const result = buildSetRegularKey(params, wallet);
+
+      expect(result.TransactionType).toEqual('SetRegularKey');
+      expect(result.Account).toEqual(wallet.publicAddress);
+      expect(result.RegularKey).toEqual('myRegularKey');
+    });
+
+    it('should build SetRegularKey transaction without RegularKey if not provided', () => {
+      const params: SetRegularKeyRequest = {};
+
+      const result: SetRegularKey = buildSetRegularKey(params, wallet);
+
+      expect(result.TransactionType).toEqual('SetRegularKey');
+      expect(result.Account).toEqual(wallet.publicAddress);
+      expect(result.RegularKey).toBeUndefined();
+    });
+  });
+
+  describe('buildSetRegularKey', () => {
+    it('should build SetRegularKey transaction with RegularKey', () => {
+      const params: SetRegularKeyRequest = {
+        regularKey: 'myRegularKey'
+      };
+
+      const result = buildSetRegularKey(params, wallet);
+
+      expect(result.TransactionType).toEqual('SetRegularKey');
+      expect(result.Account).toEqual(wallet.publicAddress);
+      expect(result.RegularKey).toEqual('myRegularKey');
+    });
+
+    it('should build SetRegularKey transaction without RegularKey if not provided', () => {
+      const params: SetRegularKeyRequest = {};
+
+      const result: SetRegularKey = buildSetRegularKey(params, wallet);
+
+      expect(result.TransactionType).toEqual('SetRegularKey');
+      expect(result.Account).toEqual(wallet.publicAddress);
+      expect(result.RegularKey).toBeUndefined();
+    });
   });
 });
 

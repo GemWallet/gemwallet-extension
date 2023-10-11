@@ -14,6 +14,7 @@ export interface ActionButtonsProps {
   headerText?: string;
   isApproveEnabled?: boolean;
   approveButtonText?: string;
+  rejectButtonText?: string;
   navigation?: NavigationProps;
 }
 
@@ -31,6 +32,7 @@ export const ActionButtons: FC<ActionButtonsProps> = ({
   headerText,
   isApproveEnabled = true,
   approveButtonText = 'Sign',
+  rejectButtonText = 'Reject',
   navigation
 }) => {
   const buttonStyle = {
@@ -73,7 +75,7 @@ export const ActionButtons: FC<ActionButtonsProps> = ({
               onClick={onClickReject}
               style={buttonStyle}
             >
-              Reject
+              {rejectButtonText}
             </Button>
           </Grid>
           {navigation?.isNavigationEnabled ? (
