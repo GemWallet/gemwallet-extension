@@ -29,7 +29,7 @@ describe('Mint', () => {
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Mint NFT');
 
     cy.contains('Transfer Fee').next().should('have.text', '3%');
-    cy.contains('NFTokenTaxon').next().should('have.text', '0');
+    cy.contains('Taxon').next().should('have.text', '0');
     cy.contains('Memo').next().should('have.text', 'Test memo');
     cy.contains('Flags').next().should('have.text', 'Transferable');
     cy.contains('Network fees').next().should('have.text', '0.000199 XRP (MANUAL)');
@@ -96,7 +96,7 @@ describe('Mint', () => {
     // Confirm
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Create NFT Offer');
 
-    cy.contains('NFT Token ID').next().should('have.text', this.NFTokenID);
+    cy.contains('p', 'NFT').next().should('have.text', this.NFTokenID);
     cy.contains('Amount').next().should('have.text', '50 XRP');
     cy.contains('Memo').next().should('have.text', 'Test memo');
     cy.contains('Flags').next().should('have.text', 'Offer type: Sell offer', 'NFTokenMint');
@@ -129,7 +129,7 @@ describe('Mint', () => {
     // Confirm
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Create NFT Offer');
 
-    cy.contains('NFT Token ID').next().should('have.text', this.NFTokenID);
+    cy.contains('p', 'NFT').next().should('have.text', this.NFTokenID);
     cy.contains('Amount').next().should('have.text', '0.4 SOLO');
     cy.contains('Trustline').next().should('have.text', 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN');
     cy.contains('Memo').next().should('have.text', 'Test memo');
@@ -163,7 +163,7 @@ describe('Mint', () => {
     // Confirm
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Create NFT Offer');
 
-    cy.contains('NFT Token ID').next().should('have.text', this.NFTokenID);
+    cy.contains('p', 'NFT').next().should('have.text', this.NFTokenID);
     cy.contains('Amount').next().should('have.text', '0.4 SOLO');
     cy.contains('Trustline').next().should('have.text', 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN');
     cy.contains('Memo').next().should('have.text', 'Test memo');
@@ -213,7 +213,7 @@ describe('Mint', () => {
     // Confirm
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Accept NFT Offer');
 
-    cy.contains('NFT Token Sell Offer').next().should('have.text', this.OfferID);
+    cy.contains('Sell Offer').next().should('have.text', this.OfferID);
 
     // Confirm
     cy.contains('button', 'Submit').click();
@@ -244,9 +244,9 @@ describe('Mint', () => {
     // Confirm
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Accept NFT Offer');
 
-    cy.contains('NFT Token Sell Offer').next().should('have.text', this.OfferID);
+    cy.contains('Sell Offer').next().should('have.text', this.OfferID);
 
-    cy.contains('NFT Token Broker Fee').next().should('have.text', '0.1 SOLO');
+    cy.contains('Broker Fee').next().should('have.text', '0.1 SOLO');
     cy.contains('Trustline').next().should('have.text', 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN');
 
     // Confirm
@@ -272,9 +272,9 @@ describe('Mint', () => {
     // Confirm
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Accept NFT Offer');
 
-    cy.contains('NFT Token Sell Offer').next().should('have.text', this.OfferID);
+    cy.contains('Sell Offer').next().should('have.text', this.OfferID);
 
-    cy.contains('NFT Token Broker Fee').next().should('have.text', '0.1 SOLO');
+    cy.contains('Broker Fee').next().should('have.text', '0.1 SOLO');
     cy.contains('Trustline').next().should('have.text', 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN');
 
     // Confirm
@@ -294,7 +294,7 @@ describe('Mint', () => {
     // Confirm
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Cancel NFT Offer');
 
-    cy.contains('Offer ID').next().should('have.text', this.OfferID);
+    cy.contains('p', 'Offer').next().should('have.text', this.OfferID);
 
     // Confirm
     cy.contains('button', 'Submit').click();
@@ -318,7 +318,7 @@ describe('Mint', () => {
     // Confirm
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Burn NFT');
 
-    cy.contains('NFT Token ID').next().should('have.text', this.NFTokenID);
+    cy.contains('p', 'NFT').next().should('have.text', this.NFTokenID);
 
     // Confirm
     cy.contains('button', 'Submit').click();

@@ -116,7 +116,7 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
         ? null
         : renderSimpleText({ title: 'Account', value, hasTooltip: true, useLegacy }),
     NFTokenID: (value: string) =>
-      renderSimpleText({ title: 'NFT Token ID', value, hasTooltip: true, useLegacy }),
+      renderSimpleText({ title: 'NFT', value, hasTooltip: true, useLegacy }),
     Destination: (value: string) =>
       renderSimpleText({ title: 'Destination', value, hasTooltip: true, useLegacy }),
     DestinationTag: (value?: number) =>
@@ -130,7 +130,7 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
           })
         : null,
     Memos: (value?: Memo[]) => renderMemos({ memos: value, useLegacy }),
-    NFTokenOffers: (value: string[]) => renderArray({ title: 'Offer ID', value, useLegacy }),
+    NFTokenOffers: (value: string[]) => renderArray({ title: 'Offer', value, useLegacy }),
     Signers: (value?: Signer[]) => renderArray({ title: 'Signer', value, useLegacy }),
     LimitAmount: (value) =>
       renderAmount({
@@ -139,21 +139,13 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
         useLegacy
       }),
     NFTokenSellOffer: (value?: string) =>
-      value !== undefined
-        ? renderSimpleText({ title: 'NFT Token Sell Offer', value, useLegacy })
-        : null,
+      value !== undefined ? renderSimpleText({ title: 'Sell Offer', value, useLegacy }) : null,
     NFTokenBuyOffer: (value?: string) =>
-      value !== undefined
-        ? renderSimpleText({ title: 'NFT Token Buy Offer', value, useLegacy })
-        : null,
+      value !== undefined ? renderSimpleText({ title: 'Buy Offer', value, useLegacy }) : null,
     NFTokenBrokerFee: (value?: Amount) =>
-      value !== undefined
-        ? renderAmount({ title: 'NFT Token Broker Fee', value, useLegacy })
-        : null,
+      value !== undefined ? renderAmount({ title: 'Broker Fee', value, useLegacy }) : null,
     NFTokenMinter: (value?: string) =>
-      value !== undefined
-        ? renderSimpleText({ title: 'NFT Token Minter', value, useLegacy })
-        : null,
+      value !== undefined ? renderSimpleText({ title: 'Minter', value, useLegacy }) : null,
     URI: (value?: string | null) =>
       value !== undefined
         ? renderSimpleText({
@@ -174,7 +166,8 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
       }),
     OfferSequence: (value?: number) =>
       renderSimpleText({ title: 'Offer Sequence', value, useLegacy }),
-    EmailHash: (value?: string) => renderSimpleText({ title: 'Email Hash', value, useLegacy })
+    EmailHash: (value?: string) => renderSimpleText({ title: 'Email Hash', value, useLegacy }),
+    NFTokenTaxon: (value?: string) => renderSimpleText({ title: 'Taxon', value, useLegacy })
   };
 
   const renderSimpleText = (params: {
@@ -299,6 +292,8 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
       'NFTokenMinter',
       'Signers',
       'Flags',
+      'TransferFee',
+      'NFTokenTaxon',
       'Memos'
     ];
 
