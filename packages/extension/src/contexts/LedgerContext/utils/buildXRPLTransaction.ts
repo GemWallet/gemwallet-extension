@@ -139,6 +139,10 @@ export const buildPayment = (params: SendPaymentRequest, wallet: WalletLedger): 
     Amount: params.amount,
     Destination: params.destination,
     ...(params.destinationTag && { DestinationTag: params.destinationTag }),
+    ...(params.invoiceID && { InvoiceID: params.invoiceID }),
+    ...(params.paths && { Paths: params.paths }),
+    ...(params.sendMax && { SendMax: params.sendMax }),
+    ...(params.deliverMin && { DeliverMin: params.deliverMin }),
     ...(params.flags !== undefined && { Flags: params.flags })
   };
 };

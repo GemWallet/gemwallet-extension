@@ -23,7 +23,7 @@ import {
 } from '../../../contexts';
 import { useFees, useFetchFromSessionStorage, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
-import { parseAmount, parsePaymentFlags } from '../../../utils';
+import { parseAmount, parsePaymentFlags, parsePaymentPaths } from '../../../utils';
 import { parseBaseParamsFromStoredData } from '../../../utils/baseParams';
 import { serializeError } from '../../../utils/errors';
 import { TransactionDetails } from '../../organisms';
@@ -147,6 +147,16 @@ export const Transaction: FC = () => {
     const destination = 'destination' in fetchedData ? fetchedData.destination : undefined;
     const destinationTag =
       'destinationTag' in fetchedData ? Number(fetchedData.destinationTag) : undefined;
+    const invoiceID = 'invoiceID' in fetchedData ? fetchedData.invoiceID : undefined;
+    const paths = 'paths' in fetchedData ? parsePaymentPaths(fetchedData.paths) : undefined;
+    const sendMax =
+      'sendMax' in fetchedData
+        ? parseAmount(fetchedData.sendMax, null, null, messageType)
+        : undefined;
+    const deliverMin =
+      'deliverMin' in fetchedData
+        ? parseAmount(fetchedData.deliverMin, null, null, messageType)
+        : undefined;
     const flags = 'flags' in fetchedData ? parsePaymentFlags(fetchedData.flags) : undefined;
 
     if (amount === null || destination === null) {
@@ -159,6 +169,10 @@ export const Transaction: FC = () => {
         amount: amount ?? '0',
         destination: destination ?? '',
         ...(destinationTag && { destinationTag }),
+        ...(invoiceID && { invoiceID }),
+        ...(paths && { paths }),
+        ...(sendMax && { sendMax }),
+        ...(deliverMin && { deliverMin }),
         ...(flags && { flags })
       },
       wallet
