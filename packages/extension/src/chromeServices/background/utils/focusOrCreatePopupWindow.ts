@@ -9,8 +9,10 @@ import {
 import { MAIN_FILE } from '../../../constants/paths';
 import { STORAGE_CURRENT_WINDOW_ID } from '../../../constants/storage';
 
-const NOTIFICATION_HEIGHT = 620;
-const NOTIFICATION_WIDTH = 360;
+export const NOTIFICATION_HEIGHT = 620;
+export const NOTIFICATION_WIDTH = 360;
+
+const isWindows = navigator.userAgent.includes('Win');
 
 /**
  * Return a promise which will resolve the window object
@@ -46,8 +48,8 @@ export const focusOrCreatePopupWindow = async ({
   requestMessage,
   receivingMessage,
   errorPayload,
-  width = NOTIFICATION_WIDTH,
-  height = NOTIFICATION_HEIGHT
+  width = isWindows ? NOTIFICATION_WIDTH + 16 : NOTIFICATION_WIDTH,
+  height = isWindows ? NOTIFICATION_HEIGHT + 16 : NOTIFICATION_HEIGHT
 }: FocusOrCreatePopupWindowParam): Promise<void> => {
   try {
     const openedWindows = await chrome.windows.getAll();
@@ -65,8 +67,8 @@ export const focusOrCreatePopupWindow = async ({
           requestMessage: requestMessage
         })}&${parameter}`,
         type: 'popup',
-        width,
-        height,
+        width: width,
+        height: height,
         left:
           lastFocusedWindow?.left && lastFocusedWindow?.width
             ? lastFocusedWindow.left + (lastFocusedWindow.width - NOTIFICATION_WIDTH)

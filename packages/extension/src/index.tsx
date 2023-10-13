@@ -15,6 +15,10 @@ import {
 
 import App from './App';
 import {
+  NOTIFICATION_HEIGHT,
+  NOTIFICATION_WIDTH
+} from './chromeServices/background/utils/focusOrCreatePopupWindow';
+import {
   BrowserProvider,
   LedgerProvider,
   NavBarPositionProvider,
@@ -78,7 +82,7 @@ Sentry.init({
 ReactDOM.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
-      <Paper style={{ height: '600px', width: '357px' }}>
+      <Paper style={{ height: NOTIFICATION_HEIGHT, width: NOTIFICATION_WIDTH }}>
         <BrowserRouter>
           <BrowserProvider>
             <WalletProvider>
