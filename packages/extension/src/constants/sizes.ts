@@ -4,3 +4,6 @@ export const HEADER_HEIGHT = HEADER_HEIGHT_WITHOUT_PADDING + HEADER_VERTICAL_PAD
 export const MAX_TOKEN_LENGTH = 30;
 export const NAV_MENU_HEIGHT = 56;
 export const NETWORK_BANNER_HEIGHT = 56;
+export const WINDOWS_POPUP_PADDING = 16;
+export const POPUP_HEIGHT = 620;
+export const POPUP_WIDTH = 360;

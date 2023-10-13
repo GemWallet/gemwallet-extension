@@ -7,10 +7,10 @@ import {
 } from '@gemwallet/constants';
 
 import { MAIN_FILE } from '../../../constants/paths';
+import { POPUP_HEIGHT, POPUP_WIDTH, WINDOWS_POPUP_PADDING } from '../../../constants/sizes';
 import { STORAGE_CURRENT_WINDOW_ID } from '../../../constants/storage';
 
-const NOTIFICATION_HEIGHT = 620;
-const NOTIFICATION_WIDTH = 360;
+const isWindows = navigator.userAgent.includes('Win');
 
 /**
  * Return a promise which will resolve the window object
@@ -46,8 +46,8 @@ export const focusOrCreatePopupWindow = async ({
   requestMessage,
   receivingMessage,
   errorPayload,
-  width = NOTIFICATION_WIDTH,
-  height = NOTIFICATION_HEIGHT
+  width = isWindows ? POPUP_WIDTH + WINDOWS_POPUP_PADDING : POPUP_WIDTH,
+  height = isWindows ? POPUP_HEIGHT + WINDOWS_POPUP_PADDING : POPUP_HEIGHT
 }: FocusOrCreatePopupWindowParam): Promise<void> => {
   try {
     const openedWindows = await chrome.windows.getAll();
@@ -69,7 +69,7 @@ export const focusOrCreatePopupWindow = async ({
         height,
         left:
           lastFocusedWindow?.left && lastFocusedWindow?.width
-            ? lastFocusedWindow.left + (lastFocusedWindow.width - NOTIFICATION_WIDTH)
+            ? lastFocusedWindow.left + (lastFocusedWindow.width - POPUP_WIDTH)
             : undefined,
         top: lastFocusedWindow?.top
       });

@@ -14,6 +14,7 @@ import {
 } from 'react-router-dom';
 
 import App from './App';
+import { POPUP_HEIGHT, POPUP_WIDTH } from './constants';
 import {
   BrowserProvider,
   LedgerProvider,
@@ -78,7 +79,7 @@ Sentry.init({
 ReactDOM.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
-      <Paper style={{ height: '600px', width: '357px' }}>
+      <Paper style={{ height: POPUP_HEIGHT - 20, width: POPUP_WIDTH }}>
         <BrowserRouter>
           <BrowserProvider>
             <WalletProvider>
