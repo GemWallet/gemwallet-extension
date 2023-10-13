@@ -230,8 +230,7 @@ export const Login: FC = () => {
         style={{
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'space-between',
-          height: '180px'
+          justifyContent: 'space-between'
         }}
       >
         <TextField
