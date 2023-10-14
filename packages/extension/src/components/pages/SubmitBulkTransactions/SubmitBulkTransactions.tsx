@@ -138,7 +138,6 @@ export const SubmitBulkTransactions: FC = () => {
     }
   };
   const handleBack = () => setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  const handleReset = () => setActiveStep(0);
 
   useEffect(() => {
     const loadInitialData = async () => {
@@ -336,7 +335,6 @@ export const SubmitBulkTransactions: FC = () => {
           handleReject={handleReject}
           handleNext={handleNext}
           handleConfirm={handleConfirm}
-          handleReset={handleReset}
         />
       )}
     </>

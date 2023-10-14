@@ -5,7 +5,12 @@ import { Container } from '@mui/material';
 import { NETWORK_BANNER_HEIGHT } from '../../../constants';
 import { useNetwork } from '../../../contexts';
 import { TransactionTextDescription } from '../../atoms';
-import { ActionButtons, InsufficientFundsWarning, TransactionHeader } from '../../molecules';
+import {
+  ActionButtons,
+  InsufficientFundsWarning,
+  NavigationProps,
+  TransactionHeader
+} from '../../molecules';
 
 export interface TransactionPageProps {
   title: string;
@@ -17,6 +22,7 @@ export interface TransactionPageProps {
   hasEnoughFunds?: boolean;
   onClickApprove: () => void;
   onClickReject: () => void;
+  navigation?: NavigationProps;
 }
 
 export const TransactionPage: FC<TransactionPageProps> = ({
@@ -29,6 +35,7 @@ export const TransactionPage: FC<TransactionPageProps> = ({
   hasEnoughFunds,
   onClickApprove,
   onClickReject,
+  navigation,
   children
 }) => {
   const { hasOfflineBanner } = useNetwork();
@@ -62,6 +69,7 @@ export const TransactionPage: FC<TransactionPageProps> = ({
         headerText={actionButtonsDescription}
         approveButtonText={approveButtonText}
         isApproveEnabled={hasEnoughFunds !== false}
+        navigation={navigation}
       />
     </>
   );

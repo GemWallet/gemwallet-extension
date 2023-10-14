@@ -6,9 +6,16 @@ import { Transaction } from 'xrpl';
 export interface RawTransactionProps {
   transaction: Transaction;
   fontSize?: number;
+  collapsed?: boolean;
+  key?: number;
 }
 
-export const RawTransaction: FC<RawTransactionProps> = ({ transaction, fontSize }) => {
+export const RawTransaction: FC<RawTransactionProps> = ({
+  transaction,
+  fontSize,
+  collapsed,
+  key
+}) => {
   const style: CSSProperties = {
     fontSize: fontSize ? `${fontSize}px` : 'inherit'
   };
@@ -28,7 +35,7 @@ export const RawTransaction: FC<RawTransactionProps> = ({ transaction, fontSize 
           theme="summerfruit"
           name={null}
           enableClipboard={false}
-          collapsed={false}
+          collapsed={collapsed}
           shouldCollapse={false}
           onEdit={false}
           onAdd={false}
@@ -36,6 +43,7 @@ export const RawTransaction: FC<RawTransactionProps> = ({ transaction, fontSize 
           displayDataTypes={false}
           displayObjectSize={false}
           indentWidth={2}
+          key={key}
         />
       </div>
     </>
