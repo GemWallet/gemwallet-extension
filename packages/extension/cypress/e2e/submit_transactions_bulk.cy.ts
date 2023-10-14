@@ -103,13 +103,9 @@ describe('Submit Transactions (Bulk)', () => {
     // Check recap view data
     cy.contains('Total number of transactions').next().should('have.text', '4');
 
-    cy.contains('Types of transactions:')
-      .next()
-      .should('have.text', 'Payment: 3')
-      .next()
-      .should('have.text', 'TrustSet: 1');
+    cy.contains('Types of transactions').next().should('have.text', 'Payment: 3\nTrustSet: 1');
 
-    cy.contains('Total network fees:')
+    cy.contains('Total network fees')
       .next()
       .should('have.text', '0.000235 XRP', { timeout: 10000 });
 
@@ -117,8 +113,8 @@ describe('Submit Transactions (Bulk)', () => {
     cy.contains('button', 'Begin').click();
 
     // Submit transactions
-    cy.contains('button', 'Submit all').click();
-    cy.contains('You are about to submit 4 transactions in bulk. Are you sure?');
+    cy.contains('button', 'Submit All').click();
+    cy.contains('You are about to submit 4 transactions at once.').should('be.visible');
     cy.contains('button', 'OK').click();
 
     cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transactions in progress');
