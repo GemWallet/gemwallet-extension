@@ -9,7 +9,7 @@ import { ActionButtons, InsufficientFundsWarning, TransactionHeader } from '../.
 
 export interface TransactionPageProps {
   title: string;
-  description?: string;
+  description?: string | string[];
   url?: string | null;
   favicon?: string;
   actionButtonsDescription?: string;

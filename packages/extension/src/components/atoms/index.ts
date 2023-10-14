@@ -1,4 +1,5 @@
 export * from './ButtonOption';
+export * from './KeyValueDisplay';
 export * from './Logo';
 export * from './NFTImage';
 export * from './NumericInput';

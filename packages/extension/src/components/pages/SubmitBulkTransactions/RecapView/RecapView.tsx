@@ -1,16 +1,14 @@
-import React from 'react';
-
-import ErrorIcon from '@mui/icons-material/Error';
-import { Button, Container, Paper, Typography } from '@mui/material';
+import React, { useState } from 'react';
 
 import { TransactionWithID } from '@gemwallet/constants';
 
-import { ERROR_RED } from '../../../../constants';
+import { KeyValueDisplay } from '../../../atoms';
+import { DataCard } from '../../../molecules';
 import { Fee } from '../../../organisms';
-import { PageWithTitle } from '../../../templates';
+import { TransactionPage } from '../../../templates';
 
 interface RecapProps {
-  transactionsListParam: TransactionWithID[] | null;
+  transactionsListParam: TransactionWithID[];
   estimatedFees: any;
   errorFees: any;
   hasEnoughFunds: boolean;
@@ -26,6 +24,9 @@ export const RecapView: React.FC<RecapProps> = ({
   handleReject,
   beginProcess
 }) => {
+  const [isDataExpanded, setIsDataExpanded] = useState(false);
+  const [isFeeExpanded, setIsFeeExpanded] = useState(false);
+
   const getTransactionCountsByType = () => {
     return transactionsListParam?.reduce<{ [key: string]: number }>((acc, transaction) => {
       const type = transaction.TransactionType;
@@ -39,81 +40,57 @@ export const RecapView: React.FC<RecapProps> = ({
   };
 
   return (
-    <PageWithTitle title="Bulk Transactions" styles={{ container: { justifyContent: 'initial' } }}>
-      <div style={{ marginBottom: '40px' }}>
-        {!hasEnoughFunds ? (
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <ErrorIcon style={{ color: ERROR_RED }} />
-            <Typography variant="body1" style={{ marginLeft: '10px', color: ERROR_RED }}>
-              Insufficient funds.
-            </Typography>
-          </div>
-        ) : null}
-        <div style={{ marginTop: '5px', marginBottom: '15px' }}>
-          <Typography variant="body2" color="textSecondary" style={{ marginTop: '5px' }}>
-            You are about to submit multiple transactions in bulk. Please find the recap below.
-          </Typography>
-          <Typography variant="body2" color="textSecondary" style={{ marginTop: '5px' }}>
-            In the next steps, you will be able to review each transaction individually, before
-            submitting all of them at once.
-          </Typography>
-          <Typography variant="body2" color="textSecondary" style={{ marginTop: '5px' }}>
-            Please take a moment to review the transactions before submitting them. Only submit bulk
-            transactions from third parties you trust.
-          </Typography>
-        </div>
-        <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-          <Typography variant="body1">Total number of transactions:</Typography>
-          <Typography
-            variant="body2"
-            style={{
-              wordBreak: 'break-word'
-            }}
-          >
-            {transactionsListParam?.length}
-          </Typography>
-        </Paper>
-        <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
-          <Typography variant="body1">Types of transactions:</Typography>
-          {Object.entries(getTransactionCountsByType() ?? {}).map(([type, count]) => (
-            <Typography
-              variant="body2"
-              style={{
-                wordBreak: 'break-word'
-              }}
-              key={type}
-            >
-              {type}: {count}
-            </Typography>
-          ))}
-        </Paper>
-        <Fee errorFees={errorFees} estimatedFees={estimatedFees} fee={null} isBulk={true} />
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            position: 'fixed',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            backgroundColor: '#1d1d1d'
-          }}
-        >
-          <Container style={{ display: 'flex', justifyContent: 'space-evenly', margin: '10px' }}>
-            <Button variant="contained" color="secondary" onClick={handleReject}>
-              Reject
-            </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={beginProcess}
-              disabled={!hasEnoughFunds}
-            >
-              Begin
-            </Button>
-          </Container>
-        </div>
-      </div>
-    </PageWithTitle>
+    <TransactionPage
+      title="Bulk Transactions"
+      description={[
+        'You are about to submit multiple transactions at once.',
+        'In the next step, you will be able to review each transaction individually.'
+      ]}
+      approveButtonText="Begin"
+      hasEnoughFunds={hasEnoughFunds}
+      actionButtonsDescription="Only submit transactions from third parties you trust."
+      onClickApprove={beginProcess}
+      onClickReject={handleReject}
+    >
+      <>
+        <DataCard
+          dataName="Recap"
+          formattedData={
+            <>
+              <KeyValueDisplay
+                keyName="Total number of transactions"
+                value={transactionsListParam.length.toString()}
+                useLegacy={false}
+              />
+              <KeyValueDisplay
+                keyName="Types of transactions"
+                value={Object.entries(getTransactionCountsByType() ?? {})
+                  .map(([type, count]) => `${type}: ${count}`)
+                  .join('\n')}
+                useLegacy={false}
+              />
+            </>
+          }
+          isExpanded={isDataExpanded}
+          setIsExpanded={setIsDataExpanded}
+          paddingTop={10}
+          thresholdHeight={150}
+        />
+        <DataCard
+          formattedData={
+            <Fee
+              errorFees={errorFees}
+              estimatedFees={estimatedFees}
+              fee={null}
+              isBulk={true}
+              useLegacy={false}
+            />
+          }
+          isExpanded={isFeeExpanded}
+          setIsExpanded={setIsFeeExpanded}
+          paddingTop={10}
+        />
+      </>
+    </TransactionPage>
   );
 };
