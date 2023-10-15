@@ -1,5 +1,6 @@
 import React, { FC, CSSProperties } from 'react';
 
+import { Typography } from '@mui/material';
 import ReactJson from 'react-json-view';
 import { Transaction } from 'xrpl';
 
@@ -7,14 +8,14 @@ export interface RawTransactionProps {
   transaction: Transaction;
   fontSize?: number;
   collapsed?: boolean;
-  key?: number;
+  title?: string;
 }
 
 export const RawTransaction: FC<RawTransactionProps> = ({
   transaction,
   fontSize,
   collapsed,
-  key
+  title
 }) => {
   const style: CSSProperties = {
     fontSize: fontSize ? `${fontSize}px` : 'inherit'
@@ -29,6 +30,7 @@ export const RawTransaction: FC<RawTransactionProps> = ({
           font-size: ${fontSize ? `${fontSize}px` : 'inherit'};
         }
       `}</style>
+      {title ? <Typography>{title}</Typography> : null}
       <div style={style}>
         <ReactJson
           src={transaction}
@@ -43,7 +45,6 @@ export const RawTransaction: FC<RawTransactionProps> = ({
           displayDataTypes={false}
           displayObjectSize={false}
           indentWidth={2}
-          key={key}
         />
       </div>
     </>

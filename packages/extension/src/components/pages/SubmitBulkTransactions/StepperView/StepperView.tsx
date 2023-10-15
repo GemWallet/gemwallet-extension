@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useMemo, useState } from 'react';
 
-import { Typography, Button } from '@mui/material';
+import { Typography } from '@mui/material';
 import { NFTokenAcceptOffer, NFTokenBurn, NFTokenCancelOffer, NFTokenCreateOffer } from 'xrpl';
 import { Amount } from 'xrpl/dist/npm/models/common';
 import { NFTokenMint } from 'xrpl/dist/npm/models/transactions/NFTokenMint';
@@ -43,17 +43,10 @@ export const StepperView: FC<StepperViewProps> = ({
   handleNext,
   handleConfirm
 }) => {
-  const [collapsed, setCollapsed] = useState<boolean>(true);
   const [open, setOpen] = useState<boolean>(false);
-  const [renderKey, setRenderKey] = useState<number>(0);
   const [txNFTData, setTxNFTData] = useState<Record<number, TxNFTData>>({}); // Key is the transaction index
   const { networkName } = useNetwork();
   const { getNFTInfo, getLedgerEntry, getAccountInfo } = useLedger();
-
-  const handleCollapseToggle = () => {
-    setCollapsed(!collapsed);
-    setRenderKey((prevKey) => prevKey + 1); // Update key to re-render ReactJson
-  };
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -187,24 +180,7 @@ export const StepperView: FC<StepperViewProps> = ({
     >
       <StepperPagination navigable={navigable} steps={steps} activeStep={activeStep} />
       <div>
-        <Button
-          variant="outlined"
-          onClick={handleCollapseToggle}
-          style={{
-            marginTop: '20px',
-            marginBottom: '20px',
-            padding: '6px 12px',
-            fontSize: '0.875em'
-          }}
-        >
-          {collapsed ? 'Expand All' : 'Collapse All'}
-        </Button>
-        <TransactionsDisplay
-          transactionsToDisplay={transactionsToDisplay}
-          txNFTData={txNFTData}
-          collapsed={collapsed}
-          renderKey={renderKey}
-        />
+        <TransactionsDisplay transactionsToDisplay={transactionsToDisplay} txNFTData={txNFTData} />
         {errorRequestRejection ? (
           <Typography color="error">{errorRequestRejection.message}</Typography>
         ) : null}

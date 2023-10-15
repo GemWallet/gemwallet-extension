@@ -1,52 +1,73 @@
-import React, { useState } from 'react';
+import React, { FC, useMemo, useState } from 'react';
 
-import { Typography, Card, CardMedia } from '@mui/material';
+import { Typography, Card, CardMedia, Button } from '@mui/material';
 import { Amount } from 'xrpl/dist/npm/models/common';
 
 import { TransactionWithID } from '@gemwallet/constants';
 
 import { formatAmount } from '../../../../utils';
-import { DataCard, RawTransaction } from '../../../molecules';
+import { DataCard, RawTransaction, XRPLTransaction } from '../../../molecules';
 
 interface TransactionsDisplayProps {
   transactionsToDisplay: Record<number, TransactionWithID>;
   txNFTData: Record<number, any>;
-  collapsed: boolean;
-  renderKey: number;
 }
 
-export const TransactionsDisplay: React.FC<TransactionsDisplayProps> = ({
+export const TransactionsDisplay: FC<TransactionsDisplayProps> = ({
   transactionsToDisplay,
-  txNFTData,
-  collapsed,
-  renderKey
+  txNFTData
 }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [expandedStates, setExpandedStates] = useState<Record<string, boolean>>({});
+  const [areAllExpanded, setAreAllExpanded] = useState<boolean>(false);
+
+  const transactions = useMemo(
+    () => Object.entries(transactionsToDisplay || {}),
+    [transactionsToDisplay]
+  );
+
+  const handleToggleExpand = (key: string) => {
+    setExpandedStates((prev) => ({
+      ...prev,
+      [key]: !prev[key]
+    }));
+  };
+
+  const handleExpandCollapseAll = () => {
+    const newState = !areAllExpanded;
+    setAreAllExpanded(newState);
+
+    const updatedExpandedStates = transactions.reduce((acc, [key]) => {
+      acc[key] = newState;
+      return acc;
+    }, {} as Record<string, boolean>);
+
+    setExpandedStates(updatedExpandedStates);
+  };
 
   return (
-    <DataCard
-      isExpanded={isExpanded}
-      setIsExpanded={setIsExpanded}
-      paddingTop={0}
-      alwaysExpand={true}
-      formattedData={
-        <>
-          {Object.entries(transactionsToDisplay || {}).map(([key, tx]) => {
-            const { ID, ...txWithoutID } = tx;
-            return (
+    <>
+      <Button
+        variant="outlined"
+        onClick={handleExpandCollapseAll}
+        style={{
+          marginTop: '20px',
+          marginBottom: '20px',
+          padding: '6px 12px',
+          fontSize: '0.875em'
+        }}
+      >
+        {areAllExpanded ? 'Collapse All' : 'Expand All'}
+      </Button>
+      {transactions.map(([key, tx], index) => {
+        const { ID, ...txWithoutID } = tx;
+        return (
+          <DataCard
+            dataName={`${Number(key) + 1} - ${tx.TransactionType}`}
+            isExpanded={expandedStates[key] ?? areAllExpanded}
+            setIsExpanded={() => handleToggleExpand(key)}
+            paddingTop={10}
+            formattedData={
               <div key={key} style={{ marginBottom: '20px' }}>
-                <Typography
-                  variant="body1"
-                  color="textPrimary"
-                  style={{ marginTop: '5px', fontSize: '1.1em' }}
-                >
-                  {Number(key) + 1} - {tx.TransactionType}
-                </Typography>
-                {'Amount' in txWithoutID && txWithoutID.Amount ? (
-                  <Typography variant="body2" color="textSecondary">
-                    {formatAmount(txWithoutID.Amount)}
-                  </Typography>
-                ) : null}
                 {txNFTData[Number(key)] && txNFTData[Number(key)].amount ? (
                   <Typography variant="body2" color="textSecondary">
                     {formatAmount(txNFTData[Number(key)].amount as Amount)}
@@ -78,17 +99,22 @@ export const TransactionsDisplay: React.FC<TransactionsDisplayProps> = ({
                     </Card>
                   </div>
                 ) : null}
+                <XRPLTransaction
+                  tx={txWithoutID}
+                  displayTransactionType={false}
+                  useLegacy={false}
+                />
                 <RawTransaction
                   transaction={txWithoutID}
-                  collapsed={collapsed}
-                  key={renderKey}
                   fontSize={12}
+                  collapsed={true}
+                  title="Raw Transaction"
                 />
               </div>
-            );
-          })}
-        </>
-      }
-    />
+            }
+          />
+        );
+      })}
+    </>
   );
 };
