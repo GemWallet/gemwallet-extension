@@ -5,10 +5,11 @@ import { NFTokenAcceptOffer, NFTokenBurn, NFTokenCancelOffer, NFTokenCreateOffer
 import { Amount } from 'xrpl/dist/npm/models/common';
 import { NFTokenMint } from 'xrpl/dist/npm/models/transactions/NFTokenMint';
 
-import { NFTData, TransactionWithID } from '@gemwallet/constants';
+import { TransactionWithID } from '@gemwallet/constants';
 
 import { useLedger, useNetwork } from '../../../../contexts';
 import { resolveNFTData } from '../../../../utils/NFTDataResolver';
+import { TxNFTData } from '../../../molecules';
 import { TransactionPage } from '../../../templates';
 import { ConfirmationDialog } from '../ConfirmationDialog';
 import StepperPagination from './StepperNavigation';
@@ -26,10 +27,6 @@ interface StepperViewProps {
   handleNext: () => void;
   handleConfirm: () => void;
 }
-
-type TxNFTData = NFTData & {
-  amount?: Amount; // For NFT offers
-};
 
 export const StepperView: FC<StepperViewProps> = ({
   activeStep,

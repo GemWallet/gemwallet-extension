@@ -1,16 +1,20 @@
 import React, { FC, useMemo, useState } from 'react';
 
-import { Typography, Card, CardMedia, Button } from '@mui/material';
-import { Amount } from 'xrpl/dist/npm/models/common';
+import { Button } from '@mui/material';
 
 import { TransactionWithID } from '@gemwallet/constants';
 
-import { formatAmount } from '../../../../utils';
-import { DataCard, RawTransaction, XRPLTransaction } from '../../../molecules';
+import {
+  DataCard,
+  RawTransaction,
+  TransactionNFTDisplay,
+  TxNFTData,
+  XRPLTransaction
+} from '../../../molecules';
 
 interface TransactionsDisplayProps {
   transactionsToDisplay: Record<number, TransactionWithID>;
-  txNFTData: Record<number, any>;
+  txNFTData: Record<number, TxNFTData>;
 }
 
 export const TransactionsDisplay: FC<TransactionsDisplayProps> = ({
@@ -68,36 +72,8 @@ export const TransactionsDisplay: FC<TransactionsDisplayProps> = ({
             paddingTop={10}
             formattedData={
               <div key={key} style={{ marginBottom: '20px' }}>
-                {txNFTData[Number(key)] && txNFTData[Number(key)].amount ? (
-                  <Typography variant="body2" color="textSecondary">
-                    {formatAmount(txNFTData[Number(key)].amount as Amount)}
-                  </Typography>
-                ) : null}
-                {txNFTData[Number(key)] && txNFTData[Number(key)].name ? (
-                  <Typography
-                    variant="body2"
-                    color="textSecondary"
-                    style={{
-                      marginTop: '5px',
-                      fontWeight: 'lighter',
-                      fontStyle: 'italic',
-                      fontSize: '0.9em'
-                    }}
-                  >
-                    {txNFTData[Number(key)].name}
-                  </Typography>
-                ) : null}
-                {txNFTData[Number(key)] && txNFTData[Number(key)].image ? (
-                  <div style={{ display: 'flex', justifyContent: 'center', margin: '10px 0' }}>
-                    <Card sx={{ maxWidth: 300 }}>
-                      <CardMedia
-                        component="img"
-                        height="140"
-                        image={txNFTData[Number(key)].image}
-                        alt="NFT Image"
-                      />
-                    </Card>
-                  </div>
+                {txNFTData[Number(key)] ? (
+                  <TransactionNFTDisplay nftData={txNFTData[Number(key)]} />
                 ) : null}
                 <XRPLTransaction
                   tx={txWithoutID}
