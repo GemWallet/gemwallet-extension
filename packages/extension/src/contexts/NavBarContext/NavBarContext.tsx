@@ -1,6 +1,8 @@
-import { createContext, FC, useContext, useState } from 'react';
+import { createContext, FC, useContext, useMemo, useState } from 'react';
 
 import * as Sentry from '@sentry/react';
+
+import { useFeatureFlags } from '../../hooks';
 
 interface NavBarPosition {
   left: string;
@@ -10,6 +12,7 @@ interface NavBarPosition {
 interface NavBarPositionContextType {
   setNavBarPosition: (position: NavBarPosition) => void;
   navBarPosition: NavBarPosition;
+  isHalloween: boolean;
 }
 
 const defaultPosition = {
@@ -19,15 +22,22 @@ const defaultPosition = {
 
 const NavBarPositionContext = createContext<NavBarPositionContextType>({
   setNavBarPosition: () => {},
-  navBarPosition: defaultPosition
+  navBarPosition: defaultPosition,
+  isHalloween: false
 });
 
 const NavBarPositionProvider: FC = ({ children }) => {
   const [navBarPosition, setNavBarPosition] = useState<NavBarPosition>(defaultPosition);
+  const { featureFlags } = useFeatureFlags();
+
+  const isHalloween = useMemo<boolean>(() => {
+    return (featureFlags as any)['CITROUILLE_2K23'];
+  }, [featureFlags]);
 
   const contextValue: NavBarPositionContextType = {
     navBarPosition,
-    setNavBarPosition
+    setNavBarPosition,
+    isHalloween
   };
 
   return (

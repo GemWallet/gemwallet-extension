@@ -17,7 +17,7 @@ import {
   SEND_PATH,
   RECEIVE_PATH
 } from '../../../constants';
-import { useTimeout } from '../../../hooks';
+import { useFeatureFlags, useTimeout } from '../../../hooks';
 import { WalletLedger } from '../../../types';
 import { truncateAddress, truncateWalletName } from '../../../utils';
 import { WalletIcon } from '../../atoms';
@@ -40,14 +40,15 @@ export interface HeaderProps {
 export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => {
   const navigate = useNavigate();
   const setTimeout = useTimeout(2000);
+  const { featureFlags } = useFeatureFlags();
 
   const [isCopied, setIsCopied] = useState(false);
 
   const truncatedAddress = useMemo(() => truncateAddress(publicAddress), [publicAddress]);
 
   const isHalloween = useMemo(() => {
-    return process.env.REACT_APP_IS_HALLOWEEN === 'true';
-  }, []);
+    return (featureFlags as any)['CITROUILLE_2K23'];
+  }, [featureFlags]);
 
   const handleShare = useCallback(() => {
     copyToClipboard(publicAddress);

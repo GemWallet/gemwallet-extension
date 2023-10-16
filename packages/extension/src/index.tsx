@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import Paper from '@mui/material/Paper';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
@@ -24,10 +24,9 @@ import {
   TransactionProgressProvider,
   WalletProvider
 } from './contexts';
+import { useFeatureFlags } from './hooks';
 import reportWebVitals from './reportWebVitals';
 import './index.css';
-
-const isHalloween = process.env.REACT_APP_IS_HALLOWEEN === 'true';
 
 const halloweenTheme = createTheme({
   palette: {
@@ -42,34 +41,6 @@ const halloweenTheme = createTheme({
       main: '#D32F2F' // A dark red color for errors, warnings, or important notifications
     }
   }
-});
-
-const theme = createTheme({
-  ...{
-    palette: {
-      mode: 'dark'
-    },
-    components: {
-      MuiBottomNavigation: {
-        styleOverrides: {
-          root: {
-            backgroundColor: 'transparent',
-            borderTop: 'solid 1px #bcbcbc'
-          }
-        }
-      },
-      MuiBottomNavigationAction: {
-        styleOverrides: {
-          root: {
-            '&.Mui-selected': {
-              color: '#ffffff'
-            }
-          }
-        }
-      }
-    }
-  },
-  ...(isHalloween ? halloweenTheme : {})
 });
 
 Sentry.init({
@@ -96,32 +67,68 @@ Sentry.init({
   replaysOnErrorSampleRate: process.env.NODE_ENV === 'development' ? 0.0 : 1.0
 });
 
-ReactDOM.render(
-  <React.StrictMode>
-    <ThemeProvider theme={theme}>
-      <Paper style={{ height: POPUP_HEIGHT - 20, width: POPUP_WIDTH }}>
-        <BrowserRouter>
-          <BrowserProvider>
-            <WalletProvider>
-              <NetworkProvider>
-                <LedgerProvider>
-                  <ServerProvider>
-                    <TransactionProgressProvider>
-                      <NavBarPositionProvider>
-                        <App />
-                      </NavBarPositionProvider>
-                    </TransactionProgressProvider>
-                  </ServerProvider>
-                </LedgerProvider>
-              </NetworkProvider>
-            </WalletProvider>
-          </BrowserProvider>
-        </BrowserRouter>
-      </Paper>
-    </ThemeProvider>
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+const GemWallet = () => {
+  const { featureFlags } = useFeatureFlags();
+  const theme = useMemo(
+    () =>
+      createTheme({
+        ...{
+          palette: {
+            mode: 'dark'
+          },
+          components: {
+            MuiBottomNavigation: {
+              styleOverrides: {
+                root: {
+                  backgroundColor: 'transparent',
+                  borderTop: 'solid 1px #bcbcbc'
+                }
+              }
+            },
+            MuiBottomNavigationAction: {
+              styleOverrides: {
+                root: {
+                  '&.Mui-selected': {
+                    color: '#ffffff'
+                  }
+                }
+              }
+            }
+          }
+        },
+        ...((featureFlags as any)['CITROUILLE_2K23'] ? halloweenTheme : {})
+      }),
+    [featureFlags]
+  );
+
+  return (
+    <React.StrictMode>
+      <ThemeProvider theme={theme}>
+        <Paper style={{ height: POPUP_HEIGHT - 20, width: POPUP_WIDTH }}>
+          <BrowserRouter>
+            <BrowserProvider>
+              <WalletProvider>
+                <NetworkProvider>
+                  <LedgerProvider>
+                    <ServerProvider>
+                      <TransactionProgressProvider>
+                        <NavBarPositionProvider>
+                          <App />
+                        </NavBarPositionProvider>
+                      </TransactionProgressProvider>
+                    </ServerProvider>
+                  </LedgerProvider>
+                </NetworkProvider>
+              </WalletProvider>
+            </BrowserProvider>
+          </BrowserRouter>
+        </Paper>
+      </ThemeProvider>
+    </React.StrictMode>
+  );
+};
+
+ReactDOM.render(<GemWallet />, document.getElementById('root'));
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
