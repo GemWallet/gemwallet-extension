@@ -46,66 +46,6 @@ const halloweenTheme = createTheme({
   },
   shape: {
     borderRadius: 8 // Adjust as needed
-  },
-  typography: {
-    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
-    fontWeightRegular: 400,
-    fontWeightMedium: 500,
-    fontWeightBold: 700,
-    h1: {
-      fontSize: '2.5rem',
-      fontWeight: 700
-    },
-    h2: {
-      fontSize: '2rem',
-      fontWeight: 700
-    },
-    h3: {
-      fontSize: '1.8rem',
-      fontWeight: 700
-    },
-    h4: {
-      fontSize: '1.5rem',
-      fontWeight: 700
-    },
-    h5: {
-      fontSize: '1.2rem',
-      fontWeight: 700
-    },
-    h6: {
-      fontSize: '1rem',
-      fontWeight: 700
-    },
-    subtitle1: {
-      fontSize: '1rem',
-      fontWeight: 400
-    },
-    subtitle2: {
-      fontSize: '0.9rem',
-      fontWeight: 500
-    },
-    body1: {
-      fontSize: '1rem',
-      fontWeight: 400
-    },
-    body2: {
-      fontSize: '0.9rem',
-      fontWeight: 400
-    },
-    button: {
-      fontSize: '1rem',
-      fontWeight: 700,
-      textTransform: 'uppercase'
-    },
-    caption: {
-      fontSize: '0.8rem',
-      fontWeight: 400
-    },
-    overline: {
-      fontSize: '0.7rem',
-      fontWeight: 400,
-      textTransform: 'uppercase'
-    }
   }
 });
 
