@@ -4,8 +4,11 @@ import { BottomNavigation, BottomNavigationAction } from '@mui/material';
 import { styled } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
 
-import { GEMWALLET_BLUE, navigation } from '../../../constants';
+import { GEMWALLET_BLUE, GEMWALLET_HALLOWEEN_ORANGE, navigation } from '../../../constants';
 import { useNavBarPosition } from '../../../contexts';
+
+const isHalloween = process.env.REACT_APP_IS_HALLOWEEN === 'true';
+const backgroundColor = isHalloween ? GEMWALLET_HALLOWEEN_ORANGE : GEMWALLET_BLUE;
 
 const defaultDecoration = {
   '--decoration-left': '50%',
@@ -25,7 +28,7 @@ const StyledBottomNavigation = styled(BottomNavigation)`
     left: var(--decoration-left);
     width: var(--decoration-width);
     height: 2px;
-    background: ${GEMWALLET_BLUE};
+    background: ${backgroundColor};
     transition: 300ms;
     border-radius: 2px;
   }

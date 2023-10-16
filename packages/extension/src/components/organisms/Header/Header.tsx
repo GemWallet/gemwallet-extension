@@ -6,6 +6,8 @@ import OutboundIcon from '@mui/icons-material/Outbound';
 import { AppBar, Box, Button, IconButton, Toolbar, Tooltip, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import copyToClipboard from 'copy-to-clipboard';
+import { GiHangingSpider } from 'react-icons/gi';
+import { SiGhostery } from 'react-icons/si';
 import { useNavigate } from 'react-router-dom';
 
 import {
@@ -42,6 +44,10 @@ export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => 
   const [isCopied, setIsCopied] = useState(false);
 
   const truncatedAddress = useMemo(() => truncateAddress(publicAddress), [publicAddress]);
+
+  const isHalloween = useMemo(() => {
+    return process.env.REACT_APP_IS_HALLOWEEN === 'true';
+  }, []);
 
   const handleShare = useCallback(() => {
     copyToClipboard(publicAddress);
@@ -117,12 +123,16 @@ export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => 
                   alignItems: 'center'
                 }}
               >
-                <OutboundIcon
-                  style={{
-                    transform: 'rotate(-45deg)',
-                    color: 'white'
-                  }}
-                />
+                {isHalloween ? (
+                  <SiGhostery size={20} color="white" />
+                ) : (
+                  <OutboundIcon
+                    style={{
+                      transform: 'rotate(-45deg)',
+                      color: 'white'
+                    }}
+                  />
+                )}
                 <Typography color="white" variant="caption">
                   Send
                 </Typography>
@@ -137,12 +147,16 @@ export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => 
                 }}
                 onClick={handleReceive}
               >
-                <OutboundIcon
-                  style={{
-                    transform: 'rotate(135deg)',
-                    color: 'white'
-                  }}
-                />
+                {isHalloween ? (
+                  <GiHangingSpider size={20} color="white" /> // Halloween icon
+                ) : (
+                  <OutboundIcon
+                    style={{
+                      transform: 'rotate(135deg)',
+                      color: 'white'
+                    }}
+                  />
+                )}
                 <Typography color="white" variant="caption">
                   Receive
                 </Typography>

@@ -14,7 +14,7 @@ import {
 } from 'react-router-dom';
 
 import App from './App';
-import { POPUP_HEIGHT, POPUP_WIDTH } from './constants';
+import { GEMWALLET_HALLOWEEN_ORANGE, POPUP_HEIGHT, POPUP_WIDTH } from './constants';
 import {
   BrowserProvider,
   LedgerProvider,
@@ -27,25 +27,20 @@ import {
 import reportWebVitals from './reportWebVitals';
 import './index.css';
 
+const isHalloween = process.env.REACT_APP_IS_HALLOWEEN === 'true';
+
 const halloweenTheme = createTheme({
   palette: {
+    mode: 'dark',
     primary: {
-      main: '#FF7518' // Vibrant Halloween orange
+      main: GEMWALLET_HALLOWEEN_ORANGE // Orange color for Halloween theme
     },
     secondary: {
-      main: '#FFA500' // Standard orange
+      main: '#793D0D' // Darker brownish color for contrast with the orange
     },
-    text: {
-      primary: '#FFFFFF', // White text
-      secondary: '#FFD700' // Gold text
-    },
-    background: {
-      default: '#121212', // Dark background
-      paper: '#1E1E1E' // Slightly lighter background for paper elements
+    error: {
+      main: '#D32F2F' // A dark red color for errors, warnings, or important notifications
     }
-  },
-  shape: {
-    borderRadius: 8 // Adjust as needed
   }
 });
 
@@ -74,7 +69,7 @@ const theme = createTheme({
       }
     }
   },
-  ...halloweenTheme
+  ...(isHalloween ? halloweenTheme : {})
 });
 
 Sentry.init({
