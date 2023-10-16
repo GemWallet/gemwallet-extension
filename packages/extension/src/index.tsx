@@ -27,29 +27,114 @@ import {
 import reportWebVitals from './reportWebVitals';
 import './index.css';
 
-const theme = createTheme({
+const halloweenTheme = createTheme({
   palette: {
-    mode: 'dark'
-  },
-  components: {
-    MuiBottomNavigation: {
-      styleOverrides: {
-        root: {
-          backgroundColor: 'transparent',
-          borderTop: 'solid 1px #bcbcbc'
-        }
-      }
+    primary: {
+      main: '#FF7518' // Vibrant Halloween orange
     },
-    MuiBottomNavigationAction: {
-      styleOverrides: {
-        root: {
-          '&.Mui-selected': {
-            color: '#ffffff'
+    secondary: {
+      main: '#FFA500' // Standard orange
+    },
+    text: {
+      primary: '#FFFFFF', // White text
+      secondary: '#FFD700' // Gold text
+    },
+    background: {
+      default: '#121212', // Dark background
+      paper: '#1E1E1E' // Slightly lighter background for paper elements
+    }
+  },
+  shape: {
+    borderRadius: 8 // Adjust as needed
+  },
+  typography: {
+    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+    fontWeightRegular: 400,
+    fontWeightMedium: 500,
+    fontWeightBold: 700,
+    h1: {
+      fontSize: '2.5rem',
+      fontWeight: 700
+    },
+    h2: {
+      fontSize: '2rem',
+      fontWeight: 700
+    },
+    h3: {
+      fontSize: '1.8rem',
+      fontWeight: 700
+    },
+    h4: {
+      fontSize: '1.5rem',
+      fontWeight: 700
+    },
+    h5: {
+      fontSize: '1.2rem',
+      fontWeight: 700
+    },
+    h6: {
+      fontSize: '1rem',
+      fontWeight: 700
+    },
+    subtitle1: {
+      fontSize: '1rem',
+      fontWeight: 400
+    },
+    subtitle2: {
+      fontSize: '0.9rem',
+      fontWeight: 500
+    },
+    body1: {
+      fontSize: '1rem',
+      fontWeight: 400
+    },
+    body2: {
+      fontSize: '0.9rem',
+      fontWeight: 400
+    },
+    button: {
+      fontSize: '1rem',
+      fontWeight: 700,
+      textTransform: 'uppercase'
+    },
+    caption: {
+      fontSize: '0.8rem',
+      fontWeight: 400
+    },
+    overline: {
+      fontSize: '0.7rem',
+      fontWeight: 400,
+      textTransform: 'uppercase'
+    }
+  }
+});
+
+const theme = createTheme({
+  ...{
+    palette: {
+      mode: 'dark'
+    },
+    components: {
+      MuiBottomNavigation: {
+        styleOverrides: {
+          root: {
+            backgroundColor: 'transparent',
+            borderTop: 'solid 1px #bcbcbc'
+          }
+        }
+      },
+      MuiBottomNavigationAction: {
+        styleOverrides: {
+          root: {
+            '&.Mui-selected': {
+              color: '#ffffff'
+            }
           }
         }
       }
     }
-  }
+  },
+  ...halloweenTheme
 });
 
 Sentry.init({
