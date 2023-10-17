@@ -1,5 +1,6 @@
 import { FC, useCallback, useEffect, useState } from 'react';
 
+import * as Sentry from '@sentry/react';
 import { Transaction } from 'xrpl';
 
 import {
@@ -18,7 +19,7 @@ import {
 } from '../../../contexts';
 import { useFees, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
-import { parseTransactionParam } from '../../../utils';
+import { loadFromChromeSessionStorage } from '../../../utils';
 import { serializeError } from '../../../utils/errors';
 import { TransactionDetails } from '../../organisms';
 import { TransactionPage } from '../../templates';
@@ -109,25 +110,38 @@ export const SignTransaction: FC = () => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const id = Number(urlParams.get('id')) || 0;
-    const txParam = parseTransactionParam(urlParams.get('transaction'));
 
-    if (!txParam) {
-      setIsParamsMissing(true);
-    }
+    let parsedTransaction: Transaction | null = null;
 
-    if (
-      txParam !== null &&
-      wallet?.publicAddress &&
-      (!txParam?.Account || txParam?.Account === '')
-    ) {
-      txParam.Account = wallet.publicAddress;
-    }
+    const fetchData = async () => {
+      try {
+        const storageKey = urlParams.get('storageKey');
 
-    setParams({
-      id,
-      txParam
-    });
-  }, [wallet?.publicAddress]);
+        if (storageKey) {
+          const storedData = await loadFromChromeSessionStorage(storageKey, true);
+          if (storedData) {
+            const parsedStoredData = JSON.parse(storedData);
+            if ('transaction' in parsedStoredData) {
+              parsedTransaction = parsedStoredData.transaction;
+            }
+          }
+        }
+      } catch (error) {
+        Sentry.captureException(error);
+      }
+
+      if (!parsedTransaction) {
+        setIsParamsMissing(true);
+      }
+
+      setParams({
+        id,
+        txParam: parsedTransaction
+      });
+    };
+
+    fetchData();
+  }, []);
 
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);
