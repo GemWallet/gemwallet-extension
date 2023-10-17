@@ -2,6 +2,7 @@
 export const STORAGE_CURRENT_WINDOW_ID = 'currentWindowId';
 export const STORAGE_CUSTOM_NETWORKS = 'customNetworks';
 export const STORAGE_FEATURE_FLAGS = 'featureFlags';
+export const STORAGE_MESSAGING_KEY = 'storageKey';
 export const STORAGE_NETWORK = 'network';
 export const STORAGE_PERMISSION_SUBMIT_BULK = 'permissionSubmitBulkTransactions';
 export const STORAGE_REMEMBER_SESSION = 'rememberSession';

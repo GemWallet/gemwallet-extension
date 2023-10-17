@@ -10,6 +10,7 @@ import {
   ResponseType
 } from '@gemwallet/constants';
 
+import { STORAGE_MESSAGING_KEY } from '../../../constants';
 import {
   TransactionProgressStatus,
   useLedger,
@@ -115,7 +116,7 @@ export const SignTransaction: FC = () => {
 
     const fetchData = async () => {
       try {
-        const storageKey = urlParams.get('storageKey');
+        const storageKey = urlParams.get(STORAGE_MESSAGING_KEY);
 
         if (storageKey) {
           const storedData = await loadFromChromeSessionStorage(storageKey, true);
