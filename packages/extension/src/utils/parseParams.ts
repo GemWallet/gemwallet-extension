@@ -12,19 +12,25 @@ import {
   CreateNFTOfferFlags,
   CreateOfferFlags,
   Memo,
+  MintNFTFlags,
   PaymentFlags,
   SetAccountFlags,
   Signer,
   TrustSetFlags
 } from '@gemwallet/constants';
 
-export const parseArray = (str: string | null): string[] | null => {
-  if (!str) {
+export const parseArray = (input: Array<any> | string | null): string[] | null => {
+  if (!input) {
     return null;
   }
 
+  if (typeof input === 'object') {
+    return input;
+  }
+
+  // For API version < 3.6
   try {
-    const parsed = JSON.parse(str);
+    const parsed = JSON.parse(input);
 
     if (Array.isArray(parsed)) {
       return parsed as string[];
@@ -35,17 +41,21 @@ export const parseArray = (str: string | null): string[] | null => {
 };
 
 export const parseAmount = (
-  amountString: string | null,
+  input: Amount | string | null,
   deprecatedCurrencyString: string | null,
   deprecatedIssuerString: string | null,
   messageType: string
 ): Amount | null => {
-  if (!amountString) {
+  if (!input) {
     return null;
   }
 
+  if (typeof input === 'object') {
+    return input;
+  }
+
   try {
-    const parsedAmount = JSON.parse(amountString);
+    const parsedAmount = JSON.parse(input);
 
     if (
       typeof parsedAmount === 'object' &&
@@ -76,7 +86,7 @@ export const parseAmount = (
     }
   } catch (error) {}
 
-  return amountString;
+  return input;
 };
 
 export const parseLimitAmount = (
@@ -114,13 +124,18 @@ export const parseLimitAmount = (
   return null;
 };
 
-export const parseMemos = (memosString: string | null): Memo[] | null => {
-  if (!memosString) {
+export const parseMemos = (input: Memo[] | string | null): Memo[] | null => {
+  if (!input) {
     return null;
   }
 
+  if (typeof input === 'object' && Array.isArray(input)) {
+    return input;
+  }
+
+  // For API version < 3.6
   try {
-    const parsedMemos = JSON.parse(memosString);
+    const parsedMemos = JSON.parse(input);
 
     if (Array.isArray(parsedMemos)) {
       return parsedMemos as Memo[];
@@ -130,13 +145,18 @@ export const parseMemos = (memosString: string | null): Memo[] | null => {
   return null;
 };
 
-export const parseSigners = (signersString: string | null): Signer[] | null => {
-  if (!signersString) {
+export const parseSigners = (input: Signer[] | string | null): Signer[] | null => {
+  if (!input) {
     return null;
   }
 
+  if (typeof input === 'object' && Array.isArray(input)) {
+    return input;
+  }
+
+  // For API version < 3.6
   try {
-    const parsedSigners = JSON.parse(signersString);
+    const parsedSigners = JSON.parse(input);
 
     if (Array.isArray(parsedSigners)) {
       return parsedSigners as Signer[];
@@ -239,6 +259,43 @@ export const parseSetAccountFlags = (flagsString: string | null): SetAccountFlag
         tfOptionalAuth?: boolean;
         tfDisallowXRP?: boolean;
         tfAllowXRP?: boolean;
+      };
+    }
+  } catch (error) {}
+
+  return null;
+};
+
+export const parseMintNFTFlags = (flagsString?: MintNFTFlags | string): MintNFTFlags | null => {
+  if (!flagsString) {
+    return null;
+  }
+
+  if (typeof flagsString === 'object' || typeof flagsString === 'number') {
+    return flagsString;
+  }
+
+  if (Number(flagsString)) {
+    return Number(flagsString);
+  }
+
+  // For API version < 3.6
+  try {
+    const parsedFlags = JSON.parse(flagsString);
+
+    if (
+      typeof parsedFlags === 'object' &&
+      parsedFlags !== null &&
+      ('tfBurnable' in parsedFlags ||
+        'tfOnlyXRP' in parsedFlags ||
+        'tfTrustLine' in parsedFlags ||
+        'tfTransferable' in parsedFlags)
+    ) {
+      return parsedFlags as {
+        tfBurnable?: boolean;
+        tfOnlyXRP?: boolean;
+        tfTrustLine?: boolean;
+        tfTransferable?: boolean;
       };
     }
   } catch (error) {}

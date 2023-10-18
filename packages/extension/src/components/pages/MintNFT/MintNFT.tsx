@@ -21,6 +21,7 @@ import {
 } from '../../../contexts';
 import { useFees, useFetchFromSessionStorage, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
+import { parseMintNFTFlags } from '../../../utils';
 import { parseBaseParamsFromStoredData } from '../../../utils/baseParams';
 import { serializeError } from '../../../utils/errors';
 import { TransactionDetails } from '../../organisms';
@@ -135,7 +136,7 @@ export const MintNFT: FC = () => {
     }
 
     const URI = 'URI' in fetchedData ? fetchedData.URI : undefined;
-    const flags = 'flags' in fetchedData ? fetchedData.flags : undefined;
+    const flags = 'flags' in fetchedData ? parseMintNFTFlags(fetchedData.flags) : undefined;
     const transferFee = 'transferFee' in fetchedData ? fetchedData.transferFee : undefined;
     const NFTokenTaxon = 'NFTokenTaxon' in fetchedData ? fetchedData.NFTokenTaxon : undefined;
     const issuer = 'issuer' in fetchedData ? fetchedData.issuer : undefined;

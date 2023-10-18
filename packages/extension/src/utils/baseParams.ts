@@ -72,8 +72,8 @@ export const parseBaseParamsFromStoredData = (storedObject: any): BaseTransactio
     'lastLedgerSequence',
     'lastLedgerSequence' in storedObject ? Number(storedObject.lastLedgerSequence) : undefined
   );
-  addParam('memos', 'memos' in storedObject ? storedObject.memos : undefined);
-  addParam('signers', 'signers' in storedObject ? storedObject.signers : undefined);
+  addParam('memos', 'memos' in storedObject ? parseMemos(storedObject.memos) : undefined);
+  addParam('signers', 'signers' in storedObject ? parseSigners(storedObject.signers) : undefined);
   addParam('sourceTag', 'sourceTag' in storedObject ? Number(storedObject.sourceTag) : undefined);
   addParam(
     'signingPubKey',

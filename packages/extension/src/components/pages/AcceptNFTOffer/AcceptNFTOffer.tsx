@@ -21,6 +21,7 @@ import {
 import { buildNFTokenAcceptOffer } from '../../../contexts';
 import { useFees, useFetchFromSessionStorage, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
+import { parseAmount } from '../../../utils';
 import { parseBaseParamsFromStoredData } from '../../../utils/baseParams';
 import { serializeError } from '../../../utils/errors';
 import { TransactionDetails } from '../../organisms';
@@ -140,7 +141,9 @@ export const AcceptNFTOffer: FC = () => {
     const NFTokenBuyOffer =
       'NFTokenBuyOffer' in fetchedData ? fetchedData.NFTokenBuyOffer : undefined;
     const NFTokenBrokerFee =
-      'NFTokenBrokerFee' in fetchedData ? fetchedData.NFTokenBrokerFee : undefined;
+      'NFTokenBrokerFee' in fetchedData
+        ? parseAmount(fetchedData.NFTokenBrokerFee ?? null, null, null, '')
+        : undefined;
 
     if (!NFTokenSellOffer && !NFTokenBuyOffer && !NFTokenBrokerFee) {
       // At least one of the fields must be present
