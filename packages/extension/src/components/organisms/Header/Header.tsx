@@ -149,7 +149,7 @@ export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => 
                 onClick={handleReceive}
               >
                 {isHalloween ? (
-                  <GiHangingSpider size={20} color="white" /> // Halloween icon
+                  <GiHangingSpider size={20} color="white" />
                 ) : (
                   <OutboundIcon
                     style={{

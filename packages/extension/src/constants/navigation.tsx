@@ -1,5 +1,3 @@
-import React from 'react';
-
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import HistoryIcon from '@mui/icons-material/History';
 import PhotoCameraBackIcon from '@mui/icons-material/PhotoCameraBack';

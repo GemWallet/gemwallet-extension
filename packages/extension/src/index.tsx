@@ -32,13 +32,13 @@ const halloweenTheme = createTheme({
   palette: {
     mode: 'dark',
     primary: {
-      main: GEMWALLET_HALLOWEEN_ORANGE // Orange color for Halloween theme
+      main: GEMWALLET_HALLOWEEN_ORANGE
     },
     secondary: {
-      main: '#793D0D' // Darker brownish color for contrast with the orange
+      main: '#793D0D'
     },
     error: {
-      main: '#D32F2F' // A dark red color for errors, warnings, or important notifications
+      main: '#D32F2F'
     }
   }
 });
