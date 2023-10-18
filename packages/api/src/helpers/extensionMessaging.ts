@@ -100,9 +100,5 @@ const serializeMessage = (msg: APIMessages): any => {
     modifiedMsg.payload.takerPays = JSON.stringify(modifiedMsg.payload.takerPays);
   }
 
-  if (modifiedMsg.payload?.NFTokenOffers) {
-    modifiedMsg.payload.NFTokenOffers = JSON.stringify(modifiedMsg.payload.NFTokenOffers);
-  }
-
   return modifiedMsg;
 };

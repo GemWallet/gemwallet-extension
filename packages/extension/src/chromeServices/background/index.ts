@@ -313,16 +313,15 @@ chrome.runtime.onMessage.addListener(
         }
       });
     } else if (type === 'REQUEST_CANCEL_NFT_OFFER/V3') {
-      handleTransactionRequest({
-        payload: message.payload,
-        sender,
-        parameter: PARAMETER_TRANSACTION_CANCEL_NFT_OFFER,
-        receivingMessage: 'RECEIVE_CANCEL_NFT_OFFER/V3',
-        errorPayload: {
-          type: ResponseType.Reject,
-          result: undefined
-        }
-      });
+      const { payload } = message;
+      try {
+        sendInMemoryMessage({
+          payload,
+          parameter: PARAMETER_TRANSACTION_CANCEL_NFT_OFFER,
+          receivingMessage: 'RECEIVE_CANCEL_NFT_OFFER/V3',
+          sender
+        });
+      } catch (e) {}
     } else if (type === 'REQUEST_ACCEPT_NFT_OFFER/V3') {
       const { payload } = message;
       try {
