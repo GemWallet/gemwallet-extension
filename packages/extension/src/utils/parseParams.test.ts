@@ -15,7 +15,6 @@ import {
   parseCreateOfferFlags,
   parseLimitAmount,
   parseMemos,
-  parseMintNFTFlags,
   parsePaymentFlags,
   parseSetAccountFlags,
   parseSigners,
@@ -183,25 +182,6 @@ describe('parseTrustSetFlags', () => {
       tfClearNoRipple: true,
       tfSetFreeze: true,
       tfClearFreeze: true
-    });
-  });
-});
-
-describe('parseMintNFTFlags', () => {
-  test('parse flags', () => {
-    expect(parseMintNFTFlags('123')).toEqual(123);
-  });
-
-  test('parse flags object', () => {
-    expect(
-      parseMintNFTFlags(
-        '{"tfBurnable":false,"tfOnlyXRP":false,"tfTrustLine":true,"tfTransferable":true}'
-      )
-    ).toEqual({
-      tfBurnable: false,
-      tfOnlyXRP: false,
-      tfTrustLine: true,
-      tfTransferable: true
     });
   });
 });

@@ -12,7 +12,6 @@ import {
   CreateNFTOfferFlags,
   CreateOfferFlags,
   Memo,
-  MintNFTFlags,
   PaymentFlags,
   SetAccountFlags,
   Signer,
@@ -240,38 +239,6 @@ export const parseSetAccountFlags = (flagsString: string | null): SetAccountFlag
         tfOptionalAuth?: boolean;
         tfDisallowXRP?: boolean;
         tfAllowXRP?: boolean;
-      };
-    }
-  } catch (error) {}
-
-  return null;
-};
-
-export const parseMintNFTFlags = (flagsString: string | null): MintNFTFlags | null => {
-  if (!flagsString) {
-    return null;
-  }
-
-  if (Number(flagsString)) {
-    return Number(flagsString);
-  }
-
-  try {
-    const parsedFlags = JSON.parse(flagsString);
-
-    if (
-      typeof parsedFlags === 'object' &&
-      parsedFlags !== null &&
-      ('tfBurnable' in parsedFlags ||
-        'tfOnlyXRP' in parsedFlags ||
-        'tfTrustLine' in parsedFlags ||
-        'tfTransferable' in parsedFlags)
-    ) {
-      return parsedFlags as {
-        tfBurnable?: boolean;
-        tfOnlyXRP?: boolean;
-        tfTrustLine?: boolean;
-        tfTransferable?: boolean;
       };
     }
   } catch (error) {}

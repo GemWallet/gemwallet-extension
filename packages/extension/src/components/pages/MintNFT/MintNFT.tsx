@@ -5,10 +5,12 @@ import { NFTokenMint } from 'xrpl/dist/npm/models/transactions/NFTokenMint';
 import {
   API_ERROR_BAD_REQUEST,
   GEM_WALLET,
+  MintNFTRequest,
   ReceiveMintNFTBackgroundMessage,
   ResponseType
 } from '@gemwallet/constants';
 
+import { STORAGE_MESSAGING_KEY } from '../../../constants';
 import {
   buildNFTokenMint,
   TransactionProgressStatus,
@@ -17,10 +19,9 @@ import {
   useTransactionProgress,
   useWallet
 } from '../../../contexts';
-import { useFees, useTransactionStatus } from '../../../hooks';
+import { useFees, useFetchFromSessionStorage, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
-import { parseMintNFTFlags } from '../../../utils';
-import { parseBaseParamsFromURLParamsNew } from '../../../utils/baseParams';
+import { parseBaseParamsFromStoredData } from '../../../utils/baseParams';
 import { serializeError } from '../../../utils/errors';
 import { TransactionDetails } from '../../organisms';
 import { TransactionPage } from '../../templates';
@@ -54,6 +55,14 @@ export const MintNFT: FC = () => {
     },
     params.transaction?.Fee
   );
+
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  const { fetchedData } = useFetchFromSessionStorage(
+    urlParams.get(STORAGE_MESSAGING_KEY) ?? undefined
+  ) as {
+    fetchedData: MintNFTRequest | undefined;
+  };
 
   const sendMessageToBackground = useCallback(
     (message: ReceiveMintNFTBackgroundMessage) => {
@@ -114,14 +123,22 @@ export const MintNFT: FC = () => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const id = Number(urlParams.get('id')) || 0;
-
-    // MintNFT fields
-    const URI = urlParams.get('URI');
-    const flags = parseMintNFTFlags(urlParams.get('flags'));
-    const transferFee = urlParams.get('transferFee') ? Number(urlParams.get('transferFee')) : null;
-    const NFTokenTaxon = Number(urlParams.get('NFTokenTaxon')) ?? 0;
-    const issuer = urlParams.get('issuer');
     const wallet = getCurrentWallet();
+
+    if (!wallet) {
+      setIsParamsMissing(true);
+      return;
+    }
+
+    if (!fetchedData) {
+      return;
+    }
+
+    const URI = 'URI' in fetchedData ? fetchedData.URI : undefined;
+    const flags = 'flags' in fetchedData ? fetchedData.flags : undefined;
+    const transferFee = 'transferFee' in fetchedData ? fetchedData.transferFee : undefined;
+    const NFTokenTaxon = 'NFTokenTaxon' in fetchedData ? fetchedData.NFTokenTaxon : undefined;
+    const issuer = 'issuer' in fetchedData ? fetchedData.issuer : undefined;
 
     if (!URI && !flags && !transferFee && !issuer) {
       // At least one parameter should be present to mint an NFT
@@ -129,15 +146,10 @@ export const MintNFT: FC = () => {
       setIsParamsMissing(true);
     }
 
-    if (!wallet) {
-      setIsParamsMissing(true);
-      return;
-    }
-
     const transaction = buildNFTokenMint(
       {
-        ...parseBaseParamsFromURLParamsNew(urlParams),
-        NFTokenTaxon: NFTokenTaxon,
+        ...parseBaseParamsFromStoredData(fetchedData),
+        NFTokenTaxon: NFTokenTaxon ?? 0,
         ...(issuer && { issuer }),
         ...(transferFee && { transferFee }),
         ...(URI && { URI }),
@@ -150,7 +162,7 @@ export const MintNFT: FC = () => {
       id,
       transaction
     });
-  }, [getCurrentWallet]);
+  }, [fetchedData, getCurrentWallet]);
 
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);

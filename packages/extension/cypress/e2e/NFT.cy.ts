@@ -2,10 +2,33 @@
 
 import { Network, NETWORK } from '@gemwallet/constants';
 
+import { navigate } from '../utils/navigation';
+
+// deepcode ignore NoHardcodedPasswords: password used for testing purposes
+const PASSWORD = 'SECRET_PASSWORD';
+
 describe('Mint', () => {
-  // deepcode ignore NoHardcodedPasswords: password used for testing purposes
-  const PASSWORD = 'SECRET_PASSWORD';
-  const MINT_NFT_URL = `http://localhost:3000?URI=4d696e746564207468726f7567682047656d57616c6c657421&flags=%7B%22tfOnlyXRP%22%3Afalse%2C%22tfTransferable%22%3Atrue%7D&fee=199&transferFee=3000&NFTokenTaxon=0&memos=%5B%7B%22memo%22%3A%7B%22memoType%22%3A%224465736372697074696f6e%22%2C%22memoData%22%3A%2254657374206d656d6f%22%7D%7D%5D&id=210324818&requestMessage=undefined&transaction=mintNFT`;
+  const MINT_NFT_URL =
+    'http://localhost:3000?mint-nft&storageKey=1693425372955.3833&id=210401976&requestMessage=undefined&transaction=mintNFT';
+
+  const params = {
+    fee: '199',
+    transferFee: 3000,
+    NFTokenTaxon: 0,
+    memos: [
+      {
+        memo: {
+          memoType: '4465736372697074696f6e',
+          memoData: '54657374206d656d6f'
+        }
+      }
+    ],
+    flags: {
+      tfOnlyXRP: false,
+      tfTransferable: true
+    },
+    URI: '4d696e746564207468726f7567682047656d57616c6c657421'
+  };
 
   beforeEach(() => {
     // Mock the localStorage with a wallet already loaded
@@ -24,7 +47,7 @@ describe('Mint', () => {
   });
 
   it('Mint NFT', () => {
-    navigate(MINT_NFT_URL, PASSWORD);
+    navigate(MINT_NFT_URL, PASSWORD, '1693425372955.3833', params);
 
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Mint NFT');
 
@@ -334,30 +357,4 @@ describe('Mint', () => {
     });
     cy.get('p[data-testid="transaction-subtitle"]').should('have.text', 'Transaction Successful');
   });
-
-  const navigate = (url: string, password: string) => {
-    cy.visit(url, {
-      onBeforeLoad(win) {
-        (win as any).chrome = (win as any).chrome || {};
-        (win as any).chrome.runtime = {
-          sendMessage(message, cb) {}
-        };
-
-        (win as any).chrome.storage = {
-          local: {
-            get(key, cb) {},
-            set(obj, cb) {
-              if (cb) cb();
-            }
-          }
-        };
-
-        cy.stub((win as any).chrome.runtime, 'sendMessage').resolves({});
-      }
-    });
-
-    // Login
-    cy.get('input[name="password"]').type(password);
-    cy.contains('button', 'Unlock').click();
-  };
 });

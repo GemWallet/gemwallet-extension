@@ -80,10 +80,6 @@ export const sendMessageToContentScript = (msg: APIMessages): Promise<any> => {
  */
 const serializeMessage = (msg: APIMessages): any => {
   const modifiedMsg: any = { ...msg };
-  if (modifiedMsg.payload?.memos) {
-    modifiedMsg.payload.memos = JSON.stringify(modifiedMsg.payload.memos);
-  }
-
   if (modifiedMsg.payload?.signers) {
     modifiedMsg.payload.signers = JSON.stringify(modifiedMsg.payload.signers);
   }
@@ -106,10 +102,6 @@ const serializeMessage = (msg: APIMessages): any => {
 
   if (typeof modifiedMsg.payload?.NFTokenBrokerFee === 'object') {
     modifiedMsg.payload.NFTokenBrokerFee = JSON.stringify(modifiedMsg.payload.NFTokenBrokerFee);
-  }
-
-  if (typeof modifiedMsg.payload?.flags === 'object') {
-    modifiedMsg.payload.flags = JSON.stringify(modifiedMsg.payload.flags);
   }
 
   if (modifiedMsg.payload?.NFTokenOffers) {
