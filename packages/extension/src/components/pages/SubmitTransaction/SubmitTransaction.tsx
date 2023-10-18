@@ -1,13 +1,13 @@
 import { FC, useCallback, useEffect, useState } from 'react';
 
-import * as Sentry from '@sentry/react';
 import { Transaction } from 'xrpl';
 
 import {
   API_ERROR_BAD_REQUEST,
   GEM_WALLET,
   ReceiveSubmitTransactionBackgroundMessage,
-  ResponseType
+  ResponseType,
+  SubmitTransactionRequest
 } from '@gemwallet/constants';
 
 import { STORAGE_MESSAGING_KEY } from '../../../constants';
@@ -17,9 +17,8 @@ import {
   useNetwork,
   useTransactionProgress
 } from '../../../contexts';
-import { useFees, useTransactionStatus } from '../../../hooks';
+import { useFees, useFetchFromSessionStorage, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
-import { loadFromChromeSessionStorage } from '../../../utils';
 import { serializeError } from '../../../utils/errors';
 import { TransactionDetails } from '../../organisms';
 import { TransactionPage } from '../../templates';
@@ -46,6 +45,14 @@ export const SubmitTransaction: FC = () => {
     params.txParam ?? [],
     params.txParam?.Fee ?? null
   );
+
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  const { fetchedData } = useFetchFromSessionStorage(
+    urlParams.get(STORAGE_MESSAGING_KEY) ?? undefined
+  ) as {
+    fetchedData: SubmitTransactionRequest | undefined;
+  };
 
   const sendMessageToBackground = useCallback(
     (message: ReceiveSubmitTransactionBackgroundMessage) => {
@@ -104,37 +111,21 @@ export const SubmitTransaction: FC = () => {
     const urlParams = new URLSearchParams(queryString);
     const id = Number(urlParams.get('id')) || 0;
 
-    let parsedTransaction: Transaction | null = null;
+    if (!fetchedData) {
+      return;
+    }
 
-    const fetchData = async () => {
-      try {
-        const storageKey = urlParams.get(STORAGE_MESSAGING_KEY);
+    const transaction = 'transaction' in fetchedData ? fetchedData.transaction : null;
 
-        if (storageKey) {
-          const storedData = await loadFromChromeSessionStorage(storageKey, true);
-          if (storedData) {
-            const parsedStoredData = JSON.parse(storedData);
-            if ('transaction' in parsedStoredData) {
-              parsedTransaction = parsedStoredData.transaction;
-            }
-          }
-        }
-      } catch (error) {
-        Sentry.captureException(error);
-      }
+    if (!transaction) {
+      setIsParamsMissing(true);
+    }
 
-      if (!parsedTransaction) {
-        setIsParamsMissing(true);
-      }
-
-      setParams({
-        id,
-        txParam: parsedTransaction
-      });
-    };
-
-    fetchData();
-  }, []);
+    setParams({
+      id,
+      txParam: transaction
+    });
+  }, [fetchedData]);
 
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);
