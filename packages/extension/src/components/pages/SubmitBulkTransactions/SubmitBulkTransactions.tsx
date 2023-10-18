@@ -6,7 +6,7 @@ import {
   GEM_WALLET,
   ReceiveSubmitBulkTransactionsBackgroundMessage,
   ResponseType,
-  SubmitBulkTransactionsRequest,
+  SubmitBulkTransactionsWithKeysRequest,
   TransactionBulkResponse,
   TransactionErrorHandling,
   TransactionWithID
@@ -21,11 +21,7 @@ import {
 } from '../../../contexts';
 import { useFees, useFetchFromSessionStorage, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
-import {
-  loadFromChromeLocalStorage,
-  parseTransactionsBulkMap,
-  saveInChromeLocalStorage
-} from '../../../utils';
+import { loadFromChromeLocalStorage, saveInChromeLocalStorage } from '../../../utils';
 import { serializeError } from '../../../utils/errors';
 import { PermissionRequiredView } from './PermissionRequiredView';
 import { RecapView } from './RecapView';
@@ -70,7 +66,7 @@ export const SubmitBulkTransactions: FC = () => {
   const { fetchedData } = useFetchFromSessionStorage(
     urlParams.get(STORAGE_MESSAGING_KEY) ?? undefined
   ) as {
-    fetchedData: SubmitBulkTransactionsRequest | undefined;
+    fetchedData: SubmitBulkTransactionsWithKeysRequest | undefined;
   };
 
   const sendMessageToBackground = useCallback(
@@ -165,8 +161,7 @@ export const SubmitBulkTransactions: FC = () => {
       return;
     }
 
-    const parsedTransactionsMap =
-      'transactions' in fetchedData ? parseTransactionsBulkMap(fetchedData.transactions) : null;
+    const parsedTransactionsMap = 'transactions' in fetchedData ? fetchedData.transactions : null;
 
     if (!parsedTransactionsMap) {
       setIsParamsMissing(true);

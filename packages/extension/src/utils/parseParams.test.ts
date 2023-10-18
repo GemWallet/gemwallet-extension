@@ -1,6 +1,11 @@
-import { NFTokenCreateOfferFlags, NFTokenMintFlags, NFTokenMintFlagsInterface } from 'xrpl';
+import {
+  NFTokenCreateOfferFlags,
+  NFTokenMintFlags,
+  NFTokenMintFlagsInterface,
+  Transaction
+} from 'xrpl';
 
-import { Signer, TransactionWithID } from '@gemwallet/constants';
+import { Signer } from '@gemwallet/constants';
 
 import {
   createNFTOfferFlagsToNumber,
@@ -14,9 +19,9 @@ import {
   parsePaymentFlags,
   parseSetAccountFlags,
   parseSigners,
-  parseTransactionsBulkMap,
+  parseTransactionParam,
   parseTrustSetFlags
-} from './parseFromString';
+} from './parseParams';
 
 describe('parseAmount', () => {
   test('parse amount in drops', () => {
@@ -357,21 +362,40 @@ describe('createNFTOfferFlagsToNumber', () => {
   });
 });
 
-describe('parseTransactionsBulkMap', () => {
-  it('should return null if input is null', () => {
-    expect(parseTransactionsBulkMap(null)).toBeNull();
+describe('parseTransactionParam', () => {
+  it('should return null if the input is null', () => {
+    expect(parseTransactionParam(null)).toBe(null);
   });
 
-  it('should return the same object if it is of type Record<number, TransactionWithID>', () => {
-    const mockTransaction = { id: '123', amount: 456 };
-    const input: Record<number, TransactionWithID> = { 0: mockTransaction as any };
-
-    expect(parseTransactionsBulkMap(input)).toEqual(input);
+  it('should return null if the input is an empty string', () => {
+    expect(parseTransactionParam('')).toBe(null);
   });
 
-  it('should return the object even if it does not strictly match Record<number, TransactionWithID>', () => {
-    const input = { key: 'value' }; // This doesn't match the type but our function should still return it
+  it('should return null if the input is not valid JSON', () => {
+    expect(parseTransactionParam('This is not a JSON string')).toBe(null);
+  });
 
-    expect(parseTransactionsBulkMap(input as any)).toEqual(input);
+  it('should return a Transaction object if the input is a valid JSON string representing a Transaction', () => {
+    const transactionJson = '{"id": "123", "amount": 456}';
+    const expectedTransaction = { id: '123', amount: 456 };
+
+    expect(parseTransactionParam(transactionJson)).toEqual(expectedTransaction);
+  });
+
+  it('should return null if the input is a JSON string representing a non-object value', () => {
+    const notAnObject = '"This is a JSON string, but not an object"';
+
+    expect(parseTransactionParam(notAnObject)).toBe(null);
+  });
+
+  it('should return the same object if the input is already a Transaction object', () => {
+    const mockTransaction: Transaction = {
+      Account: '123',
+      TransactionType: 'Payment',
+      Amount: '456',
+      Destination: '789'
+    };
+
+    expect(parseTransactionParam(mockTransaction)).toEqual(mockTransaction);
   });
 });

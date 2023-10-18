@@ -20,6 +20,7 @@ import {
 import { useFees, useFetchFromSessionStorage, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
 import { serializeError } from '../../../utils/errors';
+import { parseTransactionParam } from '../../../utils/parseParams';
 import { TransactionDetails } from '../../organisms';
 import { TransactionPage } from '../../templates';
 
@@ -115,7 +116,8 @@ export const SubmitTransaction: FC = () => {
       return;
     }
 
-    const transaction = 'transaction' in fetchedData ? fetchedData.transaction : null;
+    const transaction =
+      'transaction' in fetchedData ? parseTransactionParam(fetchedData.transaction) : null;
 
     if (!transaction) {
       setIsParamsMissing(true);

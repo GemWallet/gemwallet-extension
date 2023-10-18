@@ -3,6 +3,7 @@ import {
   NFTokenCreateOfferFlagsInterface,
   NFTokenMintFlags,
   NFTokenMintFlagsInterface,
+  Transaction,
   xrpToDrops
 } from 'xrpl';
 import { Amount, IssuedCurrencyAmount } from 'xrpl/dist/npm/models/common';
@@ -15,7 +16,6 @@ import {
   PaymentFlags,
   SetAccountFlags,
   Signer,
-  TransactionWithID,
   TrustSetFlags
 } from '@gemwallet/constants';
 
@@ -362,16 +362,25 @@ export const createNFTOfferFlagsToNumber = (flags: NFTokenCreateOfferFlagsInterf
   return result;
 };
 
-export const parseTransactionsBulkMap = (
-  json: object | null
-): Record<number, TransactionWithID> | null => {
-  if (!json) {
+export const parseTransactionParam = (input: Transaction | string | null): Transaction | null => {
+  if (!input) {
     return null;
   }
 
+  if (typeof input === 'object') {
+    return input;
+  }
+
+  // For API version < 3.6
   try {
-    return json as Record<number, TransactionWithID>;
+    const parsedTransaction = JSON.parse(input);
+
+    if (typeof parsedTransaction === 'object' && parsedTransaction !== null) {
+      return parsedTransaction as Transaction;
+    }
   } catch (error) {
     return null;
   }
+
+  return null;
 };
