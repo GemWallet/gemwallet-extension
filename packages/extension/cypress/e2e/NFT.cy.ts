@@ -113,8 +113,26 @@ describe('Mint', () => {
   });
 
   it('Create NFT Offer (50 XRP)', function () {
-    const url = `http://localhost:3000?amount=50000000&NFTokenID=${this.NFTokenID}&fee=199&flags=%7B%22tfSellNFToken%22%3Atrue%7D&memos=%5B%7B%22memo%22%3A%7B%22memoType%22%3A%224465736372697074696f6e%22%2C%22memoData%22%3A%2254657374206d656d6f%22%7D%7D%5D&id=210325582&requestMessage=undefined&transaction=createNFTOffer`;
-    navigate(url, PASSWORD);
+    const url = `http://localhost:3000?create-nft-offer&storageKey=${STORAGE_KEY}&id=210403222&requestMessage=undefined&transaction=createNFTOffer`;
+
+    const params = {
+      amount: '50000000',
+      fee: '199',
+      flags: {
+        tfSellNFToken: true
+      },
+      memos: [
+        {
+          memo: {
+            memoType: '4465736372697074696f6e',
+            memoData: '54657374206d656d6f'
+          }
+        }
+      ],
+      NFTokenID: this.NFTokenID
+    };
+
+    navigate(url, PASSWORD, STORAGE_KEY, params);
 
     // Confirm
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Create NFT Offer');
@@ -140,14 +158,30 @@ describe('Mint', () => {
   });
 
   it('Create NFT Offer (0.4 SOLO (non hex)', function () {
-    const amount = JSON.stringify({
-      currency: 'SOLO',
-      issuer: 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN',
-      value: '0.4'
-    });
+    const url = `http://localhost:3000?create-nft-offer&storageKey=${STORAGE_KEY}&id=210403222&requestMessage=undefined&transaction=createNFTOffer`;
 
-    const url = `http://localhost:3000?NFTokenID=${this.NFTokenID}&amount=${amount}&fee=199&flags=%7B%22tfSellNFToken%22%3Atrue%7D&memos=%5B%7B%22memo%22%3A%7B%22memoType%22%3A%224465736372697074696f6e%22%2C%22memoData%22%3A%2254657374206d656d6f%22%7D%7D%5D&id=210340212&requestMessage=undefined&transaction=createNFTOffer`;
-    navigate(url, PASSWORD);
+    const params = {
+      amount: {
+        currency: 'SOLO',
+        issuer: 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN',
+        value: '0.4'
+      },
+      fee: '199',
+      flags: {
+        tfSellNFToken: true
+      },
+      memos: [
+        {
+          memo: {
+            memoType: '4465736372697074696f6e',
+            memoData: '54657374206d656d6f'
+          }
+        }
+      ],
+      NFTokenID: this.NFTokenID
+    };
+
+    navigate(url, PASSWORD, STORAGE_KEY, params);
 
     // Confirm
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Create NFT Offer');
@@ -174,14 +208,30 @@ describe('Mint', () => {
   });
 
   it('Create NFT Offer (0.4 SOLO (hex)', function () {
-    const amount = JSON.stringify({
-      currency: '534F4C4F00000000000000000000000000000000',
-      issuer: 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN',
-      value: '0.4'
-    });
+    const url = `http://localhost:3000?create-nft-offer&storageKey=${STORAGE_KEY}&id=210403222&requestMessage=undefined&transaction=createNFTOffer`;
 
-    const url = `http://localhost:3000?NFTokenID=${this.NFTokenID}&amount=${amount}&fee=199&flags=%7B%22tfSellNFToken%22%3Atrue%7D&memos=%5B%7B%22memo%22%3A%7B%22memoType%22%3A%224465736372697074696f6e%22%2C%22memoData%22%3A%2254657374206d656d6f%22%7D%7D%5D&id=210340212&requestMessage=undefined&transaction=createNFTOffer`;
-    navigate(url, PASSWORD);
+    const params = {
+      amount: {
+        currency: '534F4C4F00000000000000000000000000000000',
+        issuer: 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN',
+        value: '0.4'
+      },
+      fee: '199',
+      flags: {
+        tfSellNFToken: true
+      },
+      memos: [
+        {
+          memo: {
+            memoType: '4465736372697074696f6e',
+            memoData: '54657374206d656d6f'
+          }
+        }
+      ],
+      NFTokenID: this.NFTokenID
+    };
+
+    navigate(url, PASSWORD, STORAGE_KEY, params);
 
     // Confirm
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Create NFT Offer');

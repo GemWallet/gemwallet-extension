@@ -266,22 +266,22 @@ export const parseSetAccountFlags = (flagsString: string | null): SetAccountFlag
   return null;
 };
 
-export const parseMintNFTFlags = (flagsString?: MintNFTFlags | string): MintNFTFlags | null => {
-  if (!flagsString) {
+export const parseMintNFTFlags = (input?: MintNFTFlags | string): MintNFTFlags | null => {
+  if (!input) {
     return null;
   }
 
-  if (typeof flagsString === 'object' || typeof flagsString === 'number') {
-    return flagsString;
+  if (typeof input === 'object' || typeof input === 'number') {
+    return input;
   }
 
-  if (Number(flagsString)) {
-    return Number(flagsString);
+  if (Number(input)) {
+    return Number(input);
   }
 
   // For API version < 3.6
   try {
-    const parsedFlags = JSON.parse(flagsString);
+    const parsedFlags = JSON.parse(input);
 
     if (
       typeof parsedFlags === 'object' &&
@@ -304,18 +304,23 @@ export const parseMintNFTFlags = (flagsString?: MintNFTFlags | string): MintNFTF
 };
 
 export const parseCreateNFTOfferFlags = (
-  flagsString: string | null
+  input?: CreateNFTOfferFlags | string
 ): CreateNFTOfferFlags | null => {
-  if (!flagsString) {
+  if (!input) {
     return null;
   }
 
-  if (Number(flagsString)) {
-    return Number(flagsString);
+  if (typeof input === 'object' || typeof input === 'number') {
+    return input;
   }
 
+  if (Number(input)) {
+    return Number(input);
+  }
+
+  // For API version < 3.6
   try {
-    const parsedFlags = JSON.parse(flagsString);
+    const parsedFlags = JSON.parse(input);
 
     if (typeof parsedFlags === 'object' && parsedFlags !== null && 'tfSellNFToken' in parsedFlags) {
       return parsedFlags as {

@@ -12,6 +12,7 @@ import {
   mintNFTFlagsToNumber,
   parseAmount,
   parseArray,
+  parseCreateNFTOfferFlags,
   parseCreateOfferFlags,
   parseLimitAmount,
   parseMemos,
@@ -232,6 +233,26 @@ describe('parseMintNFTFlags', () => {
       tfOnlyXRP: false,
       tfTrustLine: true,
       tfTransferable: true
+    });
+  });
+});
+
+describe('parseCreateNFTOfferFlags', () => {
+  test('parse flags', () => {
+    expect(parseCreateNFTOfferFlags('123')).toEqual(123);
+  });
+
+  test('parse flags object', () => {
+    expect(parseCreateNFTOfferFlags('{"tfSellNFToken":true}')).toEqual({
+      tfSellNFToken: true
+    });
+
+    expect(
+      parseCreateNFTOfferFlags({
+        tfSellNFToken: true
+      })
+    ).toEqual({
+      tfSellNFToken: true
     });
   });
 });
