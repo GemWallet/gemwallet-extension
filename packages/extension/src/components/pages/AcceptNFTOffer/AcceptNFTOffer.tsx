@@ -3,12 +3,14 @@ import { FC, useCallback, useEffect, useState } from 'react';
 import { NFTokenAcceptOffer } from 'xrpl';
 
 import {
+  AcceptNFTOfferRequest,
   API_ERROR_BAD_REQUEST,
   GEM_WALLET,
   ReceiveAcceptNFTOfferBackgroundMessage,
   ResponseType
 } from '@gemwallet/constants';
 
+import { STORAGE_MESSAGING_KEY } from '../../../constants';
 import {
   TransactionProgressStatus,
   useLedger,
@@ -17,10 +19,9 @@ import {
   useWallet
 } from '../../../contexts';
 import { buildNFTokenAcceptOffer } from '../../../contexts';
-import { useFees, useTransactionStatus } from '../../../hooks';
+import { useFees, useFetchFromSessionStorage, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
-import { parseAmount } from '../../../utils';
-import { parseBaseParamsFromURLParamsNew } from '../../../utils/baseParams';
+import { parseBaseParamsFromStoredData } from '../../../utils/baseParams';
 import { serializeError } from '../../../utils/errors';
 import { TransactionDetails } from '../../organisms';
 import { TransactionPage } from '../../templates';
@@ -58,6 +59,14 @@ export const AcceptNFTOffer: FC = () => {
     },
     params.transaction?.Fee
   );
+
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  const { fetchedData } = useFetchFromSessionStorage(
+    urlParams.get(STORAGE_MESSAGING_KEY) ?? undefined
+  ) as {
+    fetchedData: AcceptNFTOfferRequest | undefined;
+  };
 
   const sendMessageToBackground = useCallback(
     (message: ReceiveAcceptNFTOfferBackgroundMessage) => {
@@ -115,26 +124,32 @@ export const AcceptNFTOffer: FC = () => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const id = Number(urlParams.get('id')) || 0;
-
-    // AcceptNFTOffer fields
-    const NFTokenSellOffer = urlParams.get('NFTokenSellOffer');
-    const NFTokenBuyOffer = urlParams.get('NFTokenBuyOffer');
-    const NFTokenBrokerFee = parseAmount(urlParams.get('NFTokenBrokerFee'), null, null, '');
     const wallet = getCurrentWallet();
-
-    if (!NFTokenSellOffer && !NFTokenBuyOffer && !NFTokenBrokerFee) {
-      // At least one of the fields must be present
-      setIsParamsMissing(true);
-    }
 
     if (!wallet) {
       setIsParamsMissing(true);
       return;
     }
 
+    if (!fetchedData) {
+      return;
+    }
+
+    const NFTokenSellOffer =
+      'NFTokenSellOffer' in fetchedData ? fetchedData.NFTokenSellOffer : undefined;
+    const NFTokenBuyOffer =
+      'NFTokenBuyOffer' in fetchedData ? fetchedData.NFTokenBuyOffer : undefined;
+    const NFTokenBrokerFee =
+      'NFTokenBrokerFee' in fetchedData ? fetchedData.NFTokenBrokerFee : undefined;
+
+    if (!NFTokenSellOffer && !NFTokenBuyOffer && !NFTokenBrokerFee) {
+      // At least one of the fields must be present
+      setIsParamsMissing(true);
+    }
+
     const transaction = buildNFTokenAcceptOffer(
       {
-        ...parseBaseParamsFromURLParamsNew(urlParams),
+        ...parseBaseParamsFromStoredData(fetchedData),
         ...(NFTokenSellOffer && { NFTokenSellOffer }),
         ...(NFTokenBuyOffer && { NFTokenBuyOffer }),
         ...(NFTokenBrokerFee && { NFTokenBrokerFee })
@@ -146,7 +161,7 @@ export const AcceptNFTOffer: FC = () => {
       id,
       transaction
     });
-  }, [getCurrentWallet]);
+  }, [fetchedData, getCurrentWallet]);
 
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);
