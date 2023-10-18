@@ -374,8 +374,22 @@ describe('Mint', () => {
   });
 
   it('Burn NFT', function () {
-    const url = `http://localhost:3000?NFTokenID=${this.NFTokenID}&fee=199&memos=%5B%7B%22memo%22%3A%7B%22memoType%22%3A%224465736372697074696f6e%22%2C%22memoData%22%3A%2254657374206d656d6f%22%7D%7D%5D&id=210325959&requestMessage=undefined&transaction=burnNFT`;
-    navigate(url, PASSWORD);
+    const url = `http://localhost:3000?burn-nft&storageKey=${STORAGE_KEY}&id=210402654&requestMessage=undefined&transaction=burnNFT`;
+
+    const params = {
+      NFTokenID: this.NFTokenID,
+      fee: '199',
+      memos: [
+        {
+          memo: {
+            memoType: '4465736372697074696f6e',
+            memoData: '54657374206d656d6f'
+          }
+        }
+      ]
+    };
+
+    navigate(url, PASSWORD, STORAGE_KEY, params);
 
     // Confirm
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Burn NFT');

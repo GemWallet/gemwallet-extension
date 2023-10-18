@@ -334,16 +334,15 @@ chrome.runtime.onMessage.addListener(
         });
       } catch (e) {}
     } else if (type === 'REQUEST_BURN_NFT/V3') {
-      handleTransactionRequest({
-        payload: message.payload,
-        sender,
-        parameter: PARAMETER_TRANSACTION_BURN_NFT,
-        receivingMessage: 'RECEIVE_BURN_NFT/V3',
-        errorPayload: {
-          type: ResponseType.Reject,
-          result: undefined
-        }
-      });
+      const { payload } = message;
+      try {
+        sendInMemoryMessage({
+          payload,
+          parameter: PARAMETER_TRANSACTION_BURN_NFT,
+          receivingMessage: 'RECEIVE_BURN_NFT/V3',
+          sender
+        });
+      } catch (e) {}
     } else if (type === 'REQUEST_SET_ACCOUNT/V3') {
       handleTransactionRequest({
         payload: message.payload,
