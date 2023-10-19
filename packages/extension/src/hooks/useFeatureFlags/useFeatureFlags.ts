@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 
 import { STORAGE_FEATURE_FLAGS, TTL_FEATURE_FLAGS } from '../../constants';
+import { loadFromChromeSessionStorage, saveInChromeSessionStorage } from '../../utils';
 
 interface FeatureFlagsData {
   data: Record<string, boolean>;
@@ -28,7 +29,7 @@ const fetchAndSaveFeatureFlags = async (): Promise<Record<string, boolean>> => {
     expiration: new Date().getTime() + TTL_FEATURE_FLAGS
   };
 
-  localStorage.setItem(STORAGE_FEATURE_FLAGS, JSON.stringify(featureFlagsData));
+  saveInChromeSessionStorage(STORAGE_FEATURE_FLAGS, JSON.stringify(featureFlagsData));
   return data;
 };
 
@@ -39,7 +40,7 @@ export const useFeatureFlags = () => {
   useEffect(() => {
     const fetchFeatureFlags = async () => {
       try {
-        const cachedData = localStorage.getItem(STORAGE_FEATURE_FLAGS);
+        const cachedData = await loadFromChromeSessionStorage(STORAGE_FEATURE_FLAGS);
 
         if (cachedData) {
           const parsedData: FeatureFlagsData = JSON.parse(cachedData);
