@@ -1,10 +1,30 @@
-import { FC, SVGProps } from 'react';
+import { FC, SVGProps, useMemo } from 'react';
+
+import { useFeatureFlags } from '../../../hooks';
 
 interface LogoProps extends SVGProps<SVGSVGElement> {
   isAnimated?: boolean;
 }
 
 export const Logo: FC<LogoProps> = ({ isAnimated, ...rest }) => {
+  const { featureFlags } = useFeatureFlags();
+
+  const colors = useMemo(() => {
+    if ((featureFlags as any)['CITROUILLE_2K23']) {
+      return {
+        primary: '#FF7518',
+        secondary: '#FFA500',
+        tertiary: '#FFD700'
+      };
+    }
+    //TODO: In another MR these colors will need to come from the template
+    return {
+      primary: '#00A8EA',
+      secondary: '#33D3F4',
+      tertiary: '#40EEFF'
+    };
+  }, [featureFlags]);
+
   if (isAnimated) {
     return (
       <svg
@@ -23,17 +43,17 @@ export const Logo: FC<LogoProps> = ({ isAnimated, ...rest }) => {
           }
         </style>
         <path
-          fill="#00a8ea"
+          fill={colors.primary}
           d="M20 34.578.593 12.088h38.814z"
           style={{
             animation: 'emDoUNTzlg85_c_o 2000ms linear infinite normal forwards'
           }}
           transform="translate(-.593 4.622)"
         />
-        <path fill="#33d3f4" d="M32.593 4.622H6.223L0 16.712h38.815z" />
-        <path fill="#40eeff" d="M19.407 39.2 12.37 16.711h14.074z" />
+        <path fill={colors.secondary} d="M32.593 4.622H6.223L0 16.712h38.815z" />
+        <path fill={colors.tertiary} d="M19.407 39.2 12.37 16.711h14.074z" />
         <path
-          fill="#40eeff"
+          fill={colors.tertiary}
           d="M14.222 14.4 8.667 5.333H20z"
           opacity={0.1}
           style={{
@@ -42,7 +62,7 @@ export const Logo: FC<LogoProps> = ({ isAnimated, ...rest }) => {
           transform="translate(-.593 -.711)"
         />
         <path
-          fill="#40eeff"
+          fill={colors.tertiary}
           d="M25.481 14.4 20 5.333h11.333z"
           opacity={0.1}
           style={{
@@ -79,10 +99,10 @@ export const Logo: FC<LogoProps> = ({ isAnimated, ...rest }) => {
   return (
     <svg width={40} height={40} xmlns="http://www.w3.org/2000/svg" {...rest}>
       <g fill="none">
-        <path fill="#00A8EA" d="M20 39.911.593 17.422h38.814z" />
-        <path fill="#33D3F4" d="M33.185 5.333H6.815L.593 17.423h38.814z" />
+        <path fill={colors.primary} d="M20 39.911.593 17.422h38.814z" />
+        <path fill={colors.secondary} d="M33.185 5.333H6.815L.593 17.423h38.814z" />
         <path
-          fill="#40EEFF"
+          fill={colors.tertiary}
           d="m20 39.911-7.037-22.489h14.074zM14.222 14.4 8.667 5.333H20zm11.259 0L20 5.333h11.333z"
         />
         <path
