@@ -71,7 +71,7 @@ export const DataCard: FC<DataCardProps> = ({
         style={{
           position: 'relative',
           overflowY: isExpanded ? 'auto' : 'hidden',
-          maxHeight: alwaysExpand ? 'none' : isExpanded ? 'none' : `${thresholdHeight}px`,
+          maxHeight: alwaysExpand || isExpanded ? 'none' : `${thresholdHeight}px`,
           borderRadius: '10px',
           paddingBottom: '4px'
         }}
