@@ -363,16 +363,15 @@ chrome.runtime.onMessage.addListener(
         });
       } catch (e) {}
     } else if (type === 'REQUEST_CANCEL_OFFER/V3') {
-      handleTransactionRequest({
-        payload: message.payload,
-        sender,
-        parameter: PARAMETER_TRANSACTION_CANCEL_OFFER,
-        receivingMessage: 'RECEIVE_CANCEL_OFFER/V3',
-        errorPayload: {
-          type: ResponseType.Reject,
-          result: undefined
-        }
-      });
+      const { payload } = message;
+      try {
+        sendInMemoryMessage({
+          payload,
+          parameter: PARAMETER_TRANSACTION_CANCEL_OFFER,
+          receivingMessage: 'RECEIVE_CANCEL_OFFER/V3',
+          sender
+        });
+      } catch (e) {}
     } else if (type === 'REQUEST_SET_TRUSTLINE/V3') {
       handleTransactionRequest({
         payload: message.payload,

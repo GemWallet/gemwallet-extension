@@ -295,10 +295,25 @@ describe('Offers', () => {
   });
 
   it('Cancel offer', function () {
-    navigate(
-      `http://localhost:3000?offerSequence=${this.sequence}&fee=199&memos=%5B%7B%22memo%22%3A%7B%22memoType%22%3A%224465736372697074696f6e%22%2C%22memoData%22%3A%2254657374206d656d6f%22%7D%7D%5D&id=210328126&requestMessage=undefined&transaction=cancelOffer`,
-      PASSWORD
-    );
+    const url = `http://localhost:3000?cancel-offer&storageKey=${STORAGE_KEY}&id=210404997&requestMessage=undefined&transaction=cancelOffer`;
+
+    const params = {
+      offerSequence: this.sequence,
+      fee: '199',
+      memos: [
+        {
+          memo: {
+            memoType: '4465736372697074696f6e',
+            memoData: '54657374206d656d6f'
+          }
+        }
+      ],
+      flags: {
+        tfPassive: true
+      }
+    };
+
+    navigate(url, PASSWORD, STORAGE_KEY, params);
 
     // Confirm
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Cancel Offer');

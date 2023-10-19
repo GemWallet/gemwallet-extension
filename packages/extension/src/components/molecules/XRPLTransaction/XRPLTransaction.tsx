@@ -213,6 +213,7 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
       'NFTokenBrokerFee',
       'URI',
       'NFTokenMinter',
+      'OfferSequence',
       'Signers',
       'Flags',
       'TransferFee',

@@ -4,11 +4,13 @@ import { OfferCancel } from 'xrpl';
 
 import {
   API_ERROR_BAD_REQUEST,
+  CancelOfferRequest,
   GEM_WALLET,
   ReceiveCancelOfferBackgroundMessage,
   ResponseType
 } from '@gemwallet/constants';
 
+import { STORAGE_MESSAGING_KEY } from '../../../constants';
 import {
   buildOfferCancel,
   TransactionProgressStatus,
@@ -17,9 +19,9 @@ import {
   useTransactionProgress,
   useWallet
 } from '../../../contexts';
-import { useFees, useTransactionStatus } from '../../../hooks';
+import { useFees, useFetchFromSessionStorage, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
-import { parseBaseParamsFromURLParamsNew } from '../../../utils/baseParams';
+import { parseBaseParamsFromStoredData } from '../../../utils/baseParams';
 import { serializeError } from '../../../utils/errors';
 import { TransactionDetails } from '../../organisms';
 import { TransactionPage } from '../../templates';
@@ -49,6 +51,14 @@ export const CancelOffer: FC = () => {
     },
     params.transaction?.Fee
   );
+
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  const { fetchedData } = useFetchFromSessionStorage(
+    urlParams.get(STORAGE_MESSAGING_KEY) ?? undefined
+  ) as {
+    fetchedData: CancelOfferRequest | undefined;
+  };
 
   const sendMessageToBackground = useCallback(
     (message: ReceiveCancelOfferBackgroundMessage) => {
@@ -106,26 +116,27 @@ export const CancelOffer: FC = () => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const id = Number(urlParams.get('id')) || 0;
-
-    // CancelOffer fields
-    const offerSequence = urlParams.get('offerSequence')
-      ? Number(urlParams.get('offerSequence'))
-      : null;
     const wallet = getCurrentWallet();
-
-    if (!offerSequence) {
-      setIsParamsMissing(true);
-      return;
-    }
 
     if (!wallet) {
       setIsParamsMissing(true);
       return;
     }
 
+    if (!fetchedData) {
+      return;
+    }
+
+    const offerSequence = 'offerSequence' in fetchedData ? Number(fetchedData.offerSequence) : null;
+
+    if (offerSequence === null || offerSequence === undefined) {
+      setIsParamsMissing(true);
+      return;
+    }
+
     const transaction = buildOfferCancel(
       {
-        ...parseBaseParamsFromURLParamsNew(urlParams),
+        ...parseBaseParamsFromStoredData(fetchedData),
         offerSequence
       },
       wallet
@@ -135,7 +146,7 @@ export const CancelOffer: FC = () => {
       id,
       transaction
     });
-  }, [getCurrentWallet]);
+  }, [fetchedData, getCurrentWallet]);
 
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);
