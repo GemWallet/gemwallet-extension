@@ -13,6 +13,7 @@ export interface DataCardProps {
   setIsExpanded: (value: boolean) => void;
   thresholdHeight?: number;
   paddingTop?: number;
+  alwaysExpand?: boolean;
 }
 
 export const DataCard: FC<DataCardProps> = ({
@@ -21,18 +22,21 @@ export const DataCard: FC<DataCardProps> = ({
   isExpanded,
   setIsExpanded,
   thresholdHeight = 120,
-  paddingTop = 30
+  paddingTop = 30,
+  alwaysExpand = false
 }) => {
   const messageBoxRef = useRef<HTMLDivElement>(null);
   const [isExpandable, setIsExpandable] = useState(false);
 
   useEffect(() => {
-    if (messageBoxRef.current && messageBoxRef.current.offsetHeight > thresholdHeight) {
+    if (alwaysExpand) {
+      setIsExpandable(false);
+    } else if (messageBoxRef.current && messageBoxRef.current.offsetHeight > thresholdHeight) {
       setIsExpandable(true);
     } else {
       setIsExpandable(false);
     }
-  }, [formattedData, thresholdHeight]);
+  }, [formattedData, thresholdHeight, alwaysExpand]);
 
   return (
     <Paper
@@ -67,7 +71,7 @@ export const DataCard: FC<DataCardProps> = ({
         style={{
           position: 'relative',
           overflowY: isExpanded ? 'auto' : 'hidden',
-          maxHeight: isExpanded ? 'none' : `${thresholdHeight}px`,
+          maxHeight: alwaysExpand || isExpanded ? 'none' : `${thresholdHeight}px`,
           borderRadius: '10px',
           paddingBottom: '4px'
         }}

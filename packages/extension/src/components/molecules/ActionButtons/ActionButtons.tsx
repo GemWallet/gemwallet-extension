@@ -1,5 +1,7 @@
 import { FC } from 'react';
 
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { Button, Container, Grid, Typography } from '@mui/material';
 
 import { SECONDARY_GRAY } from '../../../constants';
@@ -12,6 +14,15 @@ export interface ActionButtonsProps {
   headerText?: string;
   isApproveEnabled?: boolean;
   approveButtonText?: string;
+  navigation?: NavigationProps;
+}
+
+export interface NavigationProps {
+  isNavigationEnabled?: boolean;
+  isNavigationPreviousEnabled?: boolean;
+  isNavigationNextEnabled?: boolean;
+  onNavigationPrevious?: () => void;
+  onNavigationNext?: () => void;
 }
 
 export const ActionButtons: FC<ActionButtonsProps> = ({
@@ -19,10 +30,11 @@ export const ActionButtons: FC<ActionButtonsProps> = ({
   onClickReject,
   headerText,
   isApproveEnabled = true,
-  approveButtonText = 'Sign'
+  approveButtonText = 'Sign',
+  navigation
 }) => {
   const buttonStyle = {
-    minWidth: BUTTONS_WIDTH,
+    minWidth: navigation?.isNavigationEnabled ? undefined : BUTTONS_WIDTH,
     height: headerText ? undefined : '42px'
   };
 
@@ -64,6 +76,22 @@ export const ActionButtons: FC<ActionButtonsProps> = ({
               Reject
             </Button>
           </Grid>
+          {navigation?.isNavigationEnabled ? (
+            <Grid item>
+              <Button
+                style={{ ...buttonStyle, minWidth: '0' }}
+                disabled={!navigation?.isNavigationPreviousEnabled}
+                onClick={navigation?.onNavigationPrevious}
+                startIcon={<ArrowBackIcon />}
+              />
+              <Button
+                style={{ ...buttonStyle, minWidth: '0' }}
+                disabled={!navigation?.isNavigationNextEnabled}
+                onClick={navigation?.onNavigationNext}
+                endIcon={<ArrowForwardIcon />}
+              />
+            </Grid>
+          ) : null}
           <Grid item>
             <Button
               variant="contained"

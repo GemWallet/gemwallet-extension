@@ -1,14 +1,22 @@
 import React, { FC, CSSProperties } from 'react';
 
+import { Typography } from '@mui/material';
 import ReactJson from 'react-json-view';
 import { Transaction } from 'xrpl';
 
 export interface RawTransactionProps {
   transaction: Transaction;
   fontSize?: number;
+  collapsed?: boolean;
+  title?: string;
 }
 
-export const RawTransaction: FC<RawTransactionProps> = ({ transaction, fontSize }) => {
+export const RawTransaction: FC<RawTransactionProps> = ({
+  transaction,
+  fontSize,
+  collapsed,
+  title
+}) => {
   const style: CSSProperties = {
     fontSize: fontSize ? `${fontSize}px` : 'inherit'
   };
@@ -22,13 +30,14 @@ export const RawTransaction: FC<RawTransactionProps> = ({ transaction, fontSize 
           font-size: ${fontSize ? `${fontSize}px` : 'inherit'};
         }
       `}</style>
+      {title ? <Typography>{title}</Typography> : null}
       <div style={style}>
         <ReactJson
           src={transaction}
           theme="summerfruit"
           name={null}
           enableClipboard={false}
-          collapsed={false}
+          collapsed={collapsed}
           shouldCollapse={false}
           onEdit={false}
           onAdd={false}
