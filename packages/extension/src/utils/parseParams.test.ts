@@ -173,10 +173,20 @@ describe('parseSigners', () => {
 describe('parsePaymentFlags', () => {
   test('parse flags', () => {
     expect(parsePaymentFlags('123')).toEqual(123);
+    expect(parsePaymentFlags(123)).toEqual(123);
+  });
+  test('parse flags json', () => {
+    expect(
+      parsePaymentFlags('{"tfNoDirectRipple":true,"tfPartialPayment":true,"tfLimitQuality":false}')
+    ).toEqual({
+      tfNoDirectRipple: true,
+      tfPartialPayment: true,
+      tfLimitQuality: false
+    });
   });
   test('parse flags object', () => {
     expect(
-      parsePaymentFlags('{"tfNoDirectRipple":true,"tfPartialPayment":true,"tfLimitQuality":false}')
+      parsePaymentFlags({ tfNoDirectRipple: true, tfPartialPayment: true, tfLimitQuality: false })
     ).toEqual({
       tfNoDirectRipple: true,
       tfPartialPayment: true,

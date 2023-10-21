@@ -166,17 +166,22 @@ export const parseSigners = (input: Signer[] | string | null): Signer[] | null =
   return null;
 };
 
-export const parsePaymentFlags = (flagsString: string | null): PaymentFlags | null => {
-  if (!flagsString) {
+export const parsePaymentFlags = (input?: PaymentFlags | string): PaymentFlags | null => {
+  if (!input) {
     return null;
   }
 
-  if (Number(flagsString)) {
-    return Number(flagsString);
+  if (typeof input === 'object' || typeof input === 'number') {
+    return input;
   }
 
+  if (Number(input)) {
+    return Number(input);
+  }
+
+  // For API version < 3.6
   try {
-    const parsedFlags = JSON.parse(flagsString);
+    const parsedFlags = JSON.parse(input);
 
     if (
       typeof parsedFlags === 'object' &&
