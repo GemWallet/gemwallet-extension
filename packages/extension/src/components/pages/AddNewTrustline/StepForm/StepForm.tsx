@@ -1,4 +1,4 @@
-import { FC, FocusEvent, useCallback, useMemo, useState } from 'react';
+import { FC, FocusEvent, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Button, TextField, Typography, Checkbox, FormControlLabel } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
@@ -111,6 +111,15 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
   const canSearchTokens = useMemo(() => {
     return networkName === Network.MAINNET && !initialValues;
   }, [initialValues, networkName]);
+
+  useEffect(() => {
+    if (initialValues) {
+      setIssuer(initialValues.issuer);
+      setToken(initialValues.token);
+      setLimit(initialValues.limit.toString());
+      setNoRipple(initialValues.noRipple);
+    }
+  }, [initialValues]);
 
   return (
     <PageWithReturn

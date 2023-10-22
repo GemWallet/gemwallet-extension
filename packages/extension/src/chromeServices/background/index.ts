@@ -383,28 +383,31 @@ chrome.runtime.onMessage.addListener(
         });
       } catch (e) {}
     } else if (type === 'REQUEST_SET_TRUSTLINE/V3') {
-      handleTransactionRequest({
-        payload: message.payload,
-        sender,
-        parameter: PARAMETER_TRANSACTION_TRUSTLINE,
-        requestMessage: message.type,
-        receivingMessage: 'RECEIVE_SET_TRUSTLINE/V3',
-        errorPayload: {
-          type: ResponseType.Reject,
-          result: undefined
-        }
-      });
+      const { payload } = message;
+      try {
+        sendInMemoryMessage({
+          payload,
+          parameter: PARAMETER_TRANSACTION_TRUSTLINE,
+          receivingMessage: 'RECEIVE_SET_TRUSTLINE/V3',
+          requestMessage: message.type,
+          sender
+        });
+      } catch (e) {}
     } else if (type === 'REQUEST_ADD_TRUSTLINE') {
-      // Deprecated
-      handleTransactionRequest({
-        payload: message.payload,
-        sender,
-        parameter: PARAMETER_TRANSACTION_TRUSTLINE,
-        receivingMessage: 'RECEIVE_TRUSTLINE_HASH',
-        errorPayload: {
-          hash: undefined
-        }
-      });
+      const { payload } = message;
+      try {
+        // Deprecated
+        sendInMemoryMessage({
+          payload,
+          parameter: PARAMETER_TRANSACTION_TRUSTLINE,
+          receivingMessage: 'RECEIVE_TRUSTLINE_HASH',
+          requestMessage: message.type,
+          sender,
+          errorPayload: {
+            hash: undefined
+          }
+        });
+      } catch (e) {}
     } else if (type === 'REQUEST_SIGN_MESSAGE/V3') {
       handleTransactionRequest({
         payload: message.payload,

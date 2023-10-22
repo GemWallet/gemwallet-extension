@@ -2,9 +2,30 @@
 
 import { Network, NETWORK } from '@gemwallet/constants';
 
+import { navigate } from '../utils/navigation';
+
+beforeEach(() => {
+  // Mock the localStorage with a wallet already loaded
+  cy.window().then((win) => {
+    win.localStorage.setItem(
+      'wallets',
+      'U2FsdGVkX19VA07d7tVhAAtUbt+YVbw0xQY7OZMykOW4YI4nRZK9iZ7LT3+xHvrj4kwlPKEcRg0S1GjbIWSFaMzg3Mw8fklZrZLL9QZvnbF821SeDB5lBBj/F9PBg8A07uZhYz1p4sTDsWAOFvrnKJjmlWIqXzN5MFFbWBb3os2xGtAGTslFVUXuTp6eM9X9'
+    );
+    win.localStorage.setItem(
+      'network',
+      JSON.stringify({
+        name: NETWORK[Network.TESTNET].name
+      })
+    );
+  });
+});
+
+// deepcode ignore NoHardcodedPasswords: password used for testing purposes
+const PASSWORD = 'SECRET_PASSWORD';
+const STORAGE_KEY = '1693425372955.3833';
+const URL = `http://localhost:3000/add-new-trustline?storageKey=${STORAGE_KEY}&id=210405959&requestMessage=undefined&transaction=trustSet`;
+
 describe('Trustline', () => {
-  // deepcode ignore NoHardcodedPasswords: password used for testing purposes
-  const PASSWORD = 'SECRET_PASSWORD';
   const CURRENCY = 'USD';
   const DESTINATION_ADDRESS = 'rwtDvu9QDfCskWuyE2TSEt3s56RbiWUKJN';
   const VALUE = '10000000';
@@ -16,27 +37,15 @@ describe('Trustline', () => {
   const FLAGS = JSON.stringify({
     tfSetNoRipple: true
   });
-  const HOME_URL = `http://localhost:3000`;
-  const SET_TRUSTLINE_URL = `${HOME_URL}?limitAmount=${AMOUNT}&flags=${FLAGS}&id=93376196&requestMessage=REQUEST_SET_TRUSTLINE/V3&inAppCall=true&transaction=trustSet`;
-
-  beforeEach(() => {
-    // Mock the localStorage with a wallet already loaded
-    cy.window().then((win) => {
-      win.localStorage.setItem(
-        'wallets',
-        'U2FsdGVkX19VA07d7tVhAAtUbt+YVbw0xQY7OZMykOW4YI4nRZK9iZ7LT3+xHvrj4kwlPKEcRg0S1GjbIWSFaMzg3Mw8fklZrZLL9QZvnbF821SeDB5lBBj/F9PBg8A07uZhYz1p4sTDsWAOFvrnKJjmlWIqXzN5MFFbWBb3os2xGtAGTslFVUXuTp6eM9X9'
-      );
-      win.localStorage.setItem(
-        'network',
-        JSON.stringify({
-          name: NETWORK[Network.TESTNET].name
-        })
-      );
-    });
-  });
 
   it("Reject the trustline's warning", () => {
-    navigate(SET_TRUSTLINE_URL, PASSWORD);
+    const params = {
+      limitAmount: AMOUNT,
+      flags: FLAGS,
+      inAppCall: true
+    };
+
+    navigate(URL, PASSWORD, STORAGE_KEY, params);
 
     cy.on('uncaught:exception', (err, runnable) => {
       // Continue with the test
@@ -63,7 +72,7 @@ describe('Trustline', () => {
   });
 
   it('Confirm the trustline', () => {
-    navigate(SET_TRUSTLINE_URL, PASSWORD);
+    navigate(URL, PASSWORD);
 
     cy.on('uncaught:exception', (err, runnable) => {
       // Continue with the test
@@ -73,7 +82,7 @@ describe('Trustline', () => {
   });
 
   it('Reject the trustline', () => {
-    navigate(SET_TRUSTLINE_URL, PASSWORD);
+    navigate(URL, PASSWORD);
 
     cy.on('uncaught:exception', (err, runnable) => {
       // Continue with the test
@@ -117,8 +126,14 @@ describe('Trustline', () => {
       value: '10000000',
       issuer: 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN'
     });
-    const url = `${HOME_URL}?limitAmount=${amount}&flags=${FLAGS}&id=93376196&requestMessage=REQUEST_SET_TRUSTLINE/V3&inAppCall=true&transaction=trustSet`;
-    navigate(url, PASSWORD);
+
+    const params = {
+      limitAmount: amount,
+      flags: FLAGS,
+      inAppCall: true
+    };
+
+    navigate(URL, PASSWORD, STORAGE_KEY, params);
 
     cy.on('uncaught:exception', (err, runnable) => {
       // Continue with the test
@@ -133,8 +148,14 @@ describe('Trustline', () => {
       value: '10000000',
       issuer: 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN'
     });
-    const url = `${HOME_URL}?limitAmount=${amount}&flags=${FLAGS}&id=93376196&requestMessage=REQUEST_SET_TRUSTLINE/V3&inAppCall=true&transaction=trustSet`;
-    navigate(url, PASSWORD);
+
+    const params = {
+      limitAmount: amount,
+      flags: FLAGS,
+      inAppCall: true
+    };
+
+    navigate(URL, PASSWORD, STORAGE_KEY, params);
 
     cy.on('uncaught:exception', (err, runnable) => {
       // Continue with the test
@@ -160,7 +181,7 @@ describe('Trustline', () => {
 
   testCases.forEach((testCase) => {
     it(`Set a trustline from the UI with ${testCase.token}`, () => {
-      navigate(HOME_URL, PASSWORD);
+      navigate('http://localhost:3000', PASSWORD);
 
       cy.contains('button', 'Add trustline').click();
 
@@ -182,7 +203,7 @@ describe('Trustline', () => {
   });
 
   it(`Search for a trustline from the UI`, () => {
-    navigate(HOME_URL, PASSWORD);
+    navigate('http://localhost:3000', PASSWORD);
 
     cy.contains('button', 'Add trustline').click();
 
@@ -195,7 +216,7 @@ describe('Trustline', () => {
 
   it('Edit the trustline by disabling No Ripple', () => {
     const newLimit = '5';
-    navigate(HOME_URL, PASSWORD);
+    navigate('http://localhost:3000', PASSWORD);
 
     // Find the trustline to edit
     cy.contains(CURRENCY).closest('.MuiPaper-root').find('button').contains('Edit').click();
@@ -242,32 +263,6 @@ describe('Trustline', () => {
     cy.get('input[name="noRipple"]').should('not.be.checked');
   });
 });
-
-const navigate = (url: string, password: string) => {
-  cy.visit(url, {
-    onBeforeLoad(win) {
-      (win as any).chrome = (win as any).chrome || {};
-      (win as any).chrome.runtime = {
-        sendMessage(message, cb) {}
-      };
-
-      (win as any).chrome.storage = {
-        local: {
-          get(key, cb) {},
-          set(obj, cb) {
-            if (cb) cb();
-          }
-        }
-      };
-
-      cy.stub((win as any).chrome.runtime, 'sendMessage').resolves({});
-    }
-  });
-
-  // Login
-  cy.get('input[name="password"]').type(password);
-  cy.contains('button', 'Unlock').click();
-};
 
 const validateTrustlineTx = (destinationAddress: string, currency: string, limit: string) => {
   // Should be on the Warning Trustline Page

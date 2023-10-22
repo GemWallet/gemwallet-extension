@@ -198,12 +198,30 @@ describe('parsePaymentFlags', () => {
 describe('parseTrustSetFlags', () => {
   test('parse flags', () => {
     expect(parsePaymentFlags('123')).toEqual(123);
+    expect(parsePaymentFlags(123)).toEqual(123);
   });
-  test('parse flags object', () => {
+  test('parse flags json', () => {
     expect(
       parseTrustSetFlags(
         '{"tfSetfAuth":true,"tfSetNoRipple":false,"tfClearNoRipple":true,"tfSetFreeze":true,"tfClearFreeze":true}'
       )
+    ).toEqual({
+      tfSetfAuth: true,
+      tfSetNoRipple: false,
+      tfClearNoRipple: true,
+      tfSetFreeze: true,
+      tfClearFreeze: true
+    });
+  });
+  test('parse flags object', () => {
+    expect(
+      parseTrustSetFlags({
+        tfSetfAuth: true,
+        tfSetNoRipple: false,
+        tfClearNoRipple: true,
+        tfSetFreeze: true,
+        tfClearFreeze: true
+      })
     ).toEqual({
       tfSetfAuth: true,
       tfSetNoRipple: false,

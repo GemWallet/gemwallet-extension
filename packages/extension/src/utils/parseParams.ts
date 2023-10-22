@@ -90,12 +90,12 @@ export const parseAmount = (
 };
 
 export const parseLimitAmount = (
-  amountString: string | null,
+  input: IssuedCurrencyAmount | string | null,
   deprecatedAmountString: string | null,
   deprecatedCurrencyString: string | null,
   deprecatedIssuerString: string | null
 ): IssuedCurrencyAmount | null => {
-  if (!amountString) {
+  if (!input) {
     if (deprecatedAmountString && deprecatedCurrencyString && deprecatedIssuerString) {
       return {
         value: deprecatedAmountString,
@@ -107,8 +107,12 @@ export const parseLimitAmount = (
     return null;
   }
 
+  if (typeof input === 'object') {
+    return input;
+  }
+
   try {
-    const parsedAmount = JSON.parse(amountString);
+    const parsedAmount = JSON.parse(input);
 
     if (
       typeof parsedAmount === 'object' &&
@@ -201,17 +205,22 @@ export const parsePaymentFlags = (input?: PaymentFlags | string): PaymentFlags |
   return null;
 };
 
-export const parseTrustSetFlags = (flagsString: string | null): TrustSetFlags | null => {
-  if (!flagsString) {
+export const parseTrustSetFlags = (input?: TrustSetFlags | string): TrustSetFlags | null => {
+  if (!input) {
     return null;
   }
 
-  if (Number(flagsString)) {
-    return Number(flagsString);
+  if (typeof input === 'object' || typeof input === 'number') {
+    return input;
   }
 
+  if (Number(input)) {
+    return Number(input);
+  }
+
+  // For API version < 3.6
   try {
-    const parsedFlags = JSON.parse(flagsString);
+    const parsedFlags = JSON.parse(input);
 
     if (
       typeof parsedFlags === 'object' &&
