@@ -244,17 +244,22 @@ export const parseTrustSetFlags = (input?: TrustSetFlags | string): TrustSetFlag
   return null;
 };
 
-export const parseSetAccountFlags = (flagsString: string | null): SetAccountFlags | null => {
-  if (!flagsString) {
+export const parseSetAccountFlags = (input?: SetAccountFlags | string): SetAccountFlags | null => {
+  if (!input) {
     return null;
   }
 
-  if (Number(flagsString)) {
-    return Number(flagsString);
+  if (typeof input === 'object' || typeof input === 'number') {
+    return input;
   }
 
+  if (Number(input)) {
+    return Number(input);
+  }
+
+  // For API version < 3.6
   try {
-    const parsedFlags = JSON.parse(flagsString);
+    const parsedFlags = JSON.parse(input);
 
     if (
       typeof parsedFlags === 'object' &&

@@ -6,9 +6,11 @@ import {
   API_ERROR_BAD_REQUEST,
   GEM_WALLET,
   ReceiveSetAccountBackgroundMessage,
-  ResponseType
+  ResponseType,
+  SetAccountRequest
 } from '@gemwallet/constants';
 
+import { STORAGE_MESSAGING_KEY } from '../../../constants';
 import {
   buildAccountSet,
   TransactionProgressStatus,
@@ -17,10 +19,10 @@ import {
   useTransactionProgress,
   useWallet
 } from '../../../contexts';
-import { useFees, useTransactionStatus } from '../../../hooks';
+import { useFees, useFetchFromSessionStorage, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
 import { parseSetAccountFlags } from '../../../utils';
-import { parseBaseParamsFromURLParamsNew } from '../../../utils/baseParams';
+import { parseBaseParamsFromStoredData } from '../../../utils/baseParams';
 import { serializeError } from '../../../utils/errors';
 import { TransactionDetails } from '../../organisms';
 import { TransactionPage } from '../../templates';
@@ -62,6 +64,14 @@ export const SetAccount: FC = () => {
     },
     params.transaction?.Fee
   );
+
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  const { fetchedData } = useFetchFromSessionStorage(
+    urlParams.get(STORAGE_MESSAGING_KEY) ?? undefined
+  ) as {
+    fetchedData: SetAccountRequest | undefined;
+  };
 
   const sendMessageToBackground = useCallback(
     (message: ReceiveSetAccountBackgroundMessage) => {
@@ -119,18 +129,27 @@ export const SetAccount: FC = () => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const id = Number(urlParams.get('id')) || 0;
-
-    // SetAccount fields
-    const flags = parseSetAccountFlags(urlParams.get('flags'));
-    const clearFlag = Number(urlParams.get('clearFlag')) || null;
-    const domain = urlParams.get('domain');
-    const emailHash = urlParams.get('emailHash');
-    const messageKey = urlParams.get('messageKey');
-    const NFTokenMinter = urlParams.get('NFTokenMinter');
-    const setFlag = Number(urlParams.get('setFlag')) || null;
-    const transferRate = Number(urlParams.get('transferRate')) || null;
-    const tickSize = Number(urlParams.get('tickSize')) || null;
     const wallet = getCurrentWallet();
+
+    if (!wallet) {
+      setIsParamsMissing(true);
+      return;
+    }
+
+    if (!fetchedData) {
+      return;
+    }
+
+    const flags = 'flags' in fetchedData ? parseSetAccountFlags(fetchedData.flags) : undefined;
+    const clearFlag = 'clearFlag' in fetchedData ? Number(fetchedData.clearFlag) : undefined;
+    const domain = 'domain' in fetchedData ? fetchedData.domain : undefined;
+    const emailHash = 'emailHash' in fetchedData ? fetchedData.emailHash : undefined;
+    const messageKey = 'messageKey' in fetchedData ? fetchedData.messageKey : undefined;
+    const NFTokenMinter = 'NFTokenMinter' in fetchedData ? fetchedData.NFTokenMinter : undefined;
+    const setFlag = 'setFlag' in fetchedData ? Number(fetchedData.setFlag) : undefined;
+    const transferRate =
+      'transferRate' in fetchedData ? Number(fetchedData.transferRate) : undefined;
+    const tickSize = 'tickSize' in fetchedData ? Number(fetchedData.tickSize) : undefined;
 
     if (
       !flags &&
@@ -146,14 +165,9 @@ export const SetAccount: FC = () => {
       setIsParamsMissing(true);
     }
 
-    if (!wallet) {
-      setIsParamsMissing(true);
-      return;
-    }
-
     const transaction = buildAccountSet(
       {
-        ...parseBaseParamsFromURLParamsNew(urlParams),
+        ...parseBaseParamsFromStoredData(fetchedData),
         ...(flags && { flags }),
         ...(clearFlag && { clearFlag }),
         ...(domain && { domain }),
@@ -171,7 +185,7 @@ export const SetAccount: FC = () => {
       id,
       transaction
     });
-  }, [getCurrentWallet]);
+  }, [fetchedData, getCurrentWallet]);
 
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);

@@ -430,8 +430,22 @@ describe('createNFTOfferFlagsToNumber', () => {
       expect(result).toBe(12345);
     });
 
+    it('returns a number if input is numeric', () => {
+      const result = parseSetAccountFlags(12345);
+      expect(result).toBe(12345);
+    });
+
     it('returns parsed flags object if input is a valid flags JSON string', () => {
       const validFlags = '{"tfRequireDestTag": true, "tfAllowXRP": false}';
+      const result = parseSetAccountFlags(validFlags);
+      expect(result).toEqual({
+        tfRequireDestTag: true,
+        tfAllowXRP: false
+      });
+    });
+
+    it('returns parsed flags object if input is a valid flags object', () => {
+      const validFlags = { tfRequireDestTag: true, tfAllowXRP: false };
       const result = parseSetAccountFlags(validFlags);
       expect(result).toEqual({
         tfRequireDestTag: true,

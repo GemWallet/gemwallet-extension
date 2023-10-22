@@ -352,16 +352,15 @@ chrome.runtime.onMessage.addListener(
         });
       } catch (e) {}
     } else if (type === 'REQUEST_SET_ACCOUNT/V3') {
-      handleTransactionRequest({
-        payload: message.payload,
-        sender,
-        parameter: PARAMETER_TRANSACTION_SET_ACCOUNT,
-        receivingMessage: 'RECEIVE_SET_ACCOUNT/V3',
-        errorPayload: {
-          type: ResponseType.Reject,
-          result: undefined
-        }
-      });
+      const { payload } = message;
+      try {
+        sendInMemoryMessage({
+          payload,
+          parameter: PARAMETER_TRANSACTION_SET_ACCOUNT,
+          receivingMessage: 'RECEIVE_SET_ACCOUNT/V3',
+          sender
+        });
+      } catch (e) {}
     } else if (type === 'REQUEST_CREATE_OFFER/V3') {
       const { payload } = message;
       try {
