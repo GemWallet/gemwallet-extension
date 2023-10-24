@@ -16,6 +16,9 @@ export const TESTNET_NODES = ['wss://s.altnet.rippletest.net:51233', 'wss://test
 export const DEVNET_NODES = ['wss://s.devnet.rippletest.net:51233'];
 export const XAHAU_TESTNET_NODES = ['wss://xahau-test.net'];
 
+// Faucets
+export const FAUCET_XAHAU_TESTNET = 'https://xahau-test.net/accounts';
+
 export type Network = XRPLNetwork;
 
 export interface NetworkNode {

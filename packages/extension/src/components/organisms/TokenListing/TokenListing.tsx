@@ -123,7 +123,11 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
   const hasFundWallet = useMemo(() => {
     switch (chainName) {
       case Chain.XRPL:
-        return networkName === XRPLNetwork.TESTNET || networkName === XRPLNetwork.DEVNET;
+        return (
+          networkName === XRPLNetwork.TESTNET ||
+          networkName === XRPLNetwork.DEVNET ||
+          networkName === XahauNetwork.XAHAU_TESTNET
+        );
       default:
         return false;
     }
