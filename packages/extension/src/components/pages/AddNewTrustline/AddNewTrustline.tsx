@@ -8,10 +8,12 @@ import {
   GEM_WALLET,
   ReceiveSetTrustlineBackgroundMessage,
   ReceiveSetTrustlineBackgroundMessageDeprecated,
-  ResponseType
+  ResponseType,
+  SetTrustlineRequest,
+  SetTrustlineRequestDeprecated
 } from '@gemwallet/constants';
 
-import { API_ERROR_BAD_ISSUER, HOME_PATH } from '../../../constants';
+import { API_ERROR_BAD_ISSUER, HOME_PATH, STORAGE_MESSAGING_KEY } from '../../../constants';
 import {
   buildTrustSet,
   TransactionProgressStatus,
@@ -20,10 +22,10 @@ import {
   useTransactionProgress,
   useWallet
 } from '../../../contexts';
-import { useFees, useTransactionStatus } from '../../../hooks';
+import { useFees, useFetchFromSessionStorage, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
 import { parseLimitAmount, parseTrustSetFlags } from '../../../utils';
-import { parseBaseParamsFromURLParamsNew } from '../../../utils/baseParams';
+import { parseBaseParamsFromStoredData } from '../../../utils/baseParams';
 import { serializeError } from '../../../utils/errors';
 import { AsyncTransaction } from '../../templates';
 import { StepConfirm } from './StepConfirm';
@@ -41,16 +43,16 @@ export interface Params {
 }
 
 export const AddNewTrustline: FC = () => {
-  const queryString = window.location.search;
-  const urlParams = new URLSearchParams(queryString);
+  const urlParams = new URLSearchParams(window.location.search);
   const inAppCall = urlParams.get('inAppCall') === 'true' || false;
+  const showForm = urlParams.get('showForm') === 'true' || false;
 
   const [params, setParams] = useState<Params>({
     id: 0,
     transaction: null,
     // UI specific fields
     inAppCall,
-    showForm: false
+    showForm
   });
   const [errorRequestRejection, setErrorRequestRejection] = useState<Error>();
   const [isParamsMissing, setIsParamsMissing] = useState(false);
@@ -77,13 +79,18 @@ export const AddNewTrustline: FC = () => {
   );
 
   const receivingMessage = useMemo(() => {
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
+    const urlParams = new URLSearchParams(window.location.search);
 
     return urlParams.get('requestMessage') === 'REQUEST_SET_TRUSTLINE/V3'
       ? 'RECEIVE_SET_TRUSTLINE/V3'
       : 'RECEIVE_TRUSTLINE_HASH';
   }, []);
+
+  const { fetchedData } = useFetchFromSessionStorage(
+    urlParams.get(STORAGE_MESSAGING_KEY) ?? undefined
+  ) as {
+    fetchedData: SetTrustlineRequest | SetTrustlineRequestDeprecated | undefined;
+  };
 
   const sendMessageToBackground = useCallback(
     (
@@ -150,22 +157,31 @@ export const AddNewTrustline: FC = () => {
   });
 
   useEffect(() => {
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
+    const urlParams = new URLSearchParams(window.location.search);
     const id = Number(urlParams.get('id')) || 0;
-
-    // SetTrustline fields
-    const limitAmount = parseLimitAmount(
-      urlParams.get('limitAmount'),
-      urlParams.get('value'),
-      urlParams.get('currency'),
-      urlParams.get('issuer')
-    );
-    const flags = parseTrustSetFlags(urlParams.get('flags'));
     const wallet = getCurrentWallet();
 
-    // UI specific fields
-    const showForm = urlParams.get('showForm') === 'true' || false;
+    if (!wallet) {
+      setIsParamsMissing(true);
+      return;
+    }
+
+    if (!fetchedData) {
+      return;
+    }
+
+    const rawLimitAmount = 'limitAmount' in fetchedData ? fetchedData.limitAmount : undefined;
+    const value = 'value' in fetchedData ? fetchedData.value : undefined;
+    const currency = 'currency' in fetchedData ? fetchedData.currency : undefined;
+    const issuer = 'issuer' in fetchedData ? fetchedData.issuer : undefined;
+
+    const limitAmount = parseLimitAmount(
+      rawLimitAmount ?? null,
+      value ?? null,
+      currency ?? null,
+      issuer ?? null
+    );
+    const flags = 'flags' in fetchedData ? parseTrustSetFlags(fetchedData.flags) : undefined;
 
     if (limitAmount === null) {
       setIsParamsMissing(true);
@@ -175,15 +191,10 @@ export const AddNewTrustline: FC = () => {
       setErrorValue('The value must be a number, the value provided was not a number.');
     }
 
-    if (!wallet) {
-      setIsParamsMissing(true);
-      return;
-    }
-
     const transaction = limitAmount
       ? buildTrustSet(
           {
-            ...parseBaseParamsFromURLParamsNew(urlParams),
+            ...parseBaseParamsFromStoredData(fetchedData),
             ...(flags && { flags }),
             limitAmount: limitAmount
           },
@@ -198,7 +209,7 @@ export const AddNewTrustline: FC = () => {
       inAppCall,
       showForm
     });
-  }, [createMessage, getCurrentWallet, inAppCall]);
+  }, [createMessage, fetchedData, getCurrentWallet, inAppCall, showForm]);
 
   const isValidIssuer = useMemo(() => {
     if (params.transaction?.LimitAmount && isValidAddress(params.transaction.LimitAmount?.issuer)) {

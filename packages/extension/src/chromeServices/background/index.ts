@@ -16,11 +16,12 @@ import {
   ReceiveGetAddressContentMessageDeprecated,
   ReceiveGetNFTContentMessage,
   ReceiveGetNFTContentMessageDeprecated,
-  ReceiveMintNFTContentMessage,
   ReceiveGetNetworkContentMessage,
   ReceiveGetNetworkContentMessageDeprecated,
   ReceiveGetPublicKeyContentMessage,
   ReceiveGetPublicKeyContentMessageDeprecated,
+  ReceiveMessage,
+  ReceiveMintNFTContentMessage,
   ReceiveSendPaymentContentMessage,
   ReceiveSendPaymentContentMessageDeprecated,
   ReceiveSetAccountContentMessage,
@@ -29,9 +30,10 @@ import {
   ReceiveSignMessageContentMessage,
   ReceiveSignTransactionContentMessage,
   ReceiveSubmitTransactionContentMessage,
+  ResponsePayload,
   ResponseType,
-  RequestPayload,
-  ReceiveMessage
+  RequestMessage,
+  RequestPayload
 } from '@gemwallet/constants';
 
 import {
@@ -84,12 +86,16 @@ const sendMessageInMemory = ({
   payload,
   parameter,
   receivingMessage,
-  sender
+  sender,
+  errorPayload,
+  requestMessage
 }: {
   payload: RequestPayload;
   parameter: string;
   receivingMessage: ReceiveMessage;
   sender: chrome.runtime.MessageSender;
+  errorPayload?: ResponsePayload;
+  requestMessage?: RequestMessage;
 }) => {
   const key = generateKey();
   saveInChromeSessionStorage(key, JSON.stringify(payload)).then((r) =>
@@ -100,7 +106,8 @@ const sendMessageInMemory = ({
       sender,
       parameter,
       receivingMessage,
-      errorPayload: {
+      requestMessage,
+      errorPayload: errorPayload ?? {
         type: ResponseType.Reject,
         result: undefined
       }
@@ -269,28 +276,31 @@ chrome.runtime.onMessage.addListener(
         }
       });
     } else if (type === 'REQUEST_SEND_PAYMENT/V3') {
-      handleTransactionRequest({
-        payload: message.payload,
-        sender,
-        parameter: PARAMETER_TRANSACTION_PAYMENT,
-        requestMessage: message.type,
-        receivingMessage: 'RECEIVE_SEND_PAYMENT/V3',
-        errorPayload: {
-          type: ResponseType.Reject,
-          result: undefined
-        }
-      });
+      const { payload } = message;
+      try {
+        sendMessageInMemory({
+          payload,
+          parameter: PARAMETER_TRANSACTION_PAYMENT,
+          receivingMessage: 'RECEIVE_SEND_PAYMENT/V3',
+          requestMessage: message.type,
+          sender
+        });
+      } catch (e) {}
     } else if (type === 'SEND_PAYMENT') {
-      // Deprecated
-      handleTransactionRequest({
-        payload: message.payload,
-        sender,
-        parameter: PARAMETER_TRANSACTION_PAYMENT,
-        receivingMessage: 'RECEIVE_PAYMENT_HASH',
-        errorPayload: {
-          hash: undefined
-        }
-      });
+      const { payload } = message;
+      try {
+        // Deprecated
+        sendMessageInMemory({
+          payload,
+          parameter: PARAMETER_TRANSACTION_PAYMENT,
+          receivingMessage: 'RECEIVE_PAYMENT_HASH',
+          requestMessage: message.type,
+          sender,
+          errorPayload: {
+            hash: undefined
+          }
+        });
+      } catch (e) {}
     } else if (type === 'REQUEST_MINT_NFT/V3') {
       const { payload } = message;
       try {
@@ -342,16 +352,15 @@ chrome.runtime.onMessage.addListener(
         });
       } catch (e) {}
     } else if (type === 'REQUEST_SET_ACCOUNT/V3') {
-      handleTransactionRequest({
-        payload: message.payload,
-        sender,
-        parameter: PARAMETER_TRANSACTION_SET_ACCOUNT,
-        receivingMessage: 'RECEIVE_SET_ACCOUNT/V3',
-        errorPayload: {
-          type: ResponseType.Reject,
-          result: undefined
-        }
-      });
+      const { payload } = message;
+      try {
+        sendMessageInMemory({
+          payload,
+          parameter: PARAMETER_TRANSACTION_SET_ACCOUNT,
+          receivingMessage: 'RECEIVE_SET_ACCOUNT/V3',
+          sender
+        });
+      } catch (e) {}
     } else if (type === 'REQUEST_CREATE_OFFER/V3') {
       const { payload } = message;
       try {
@@ -373,51 +382,57 @@ chrome.runtime.onMessage.addListener(
         });
       } catch (e) {}
     } else if (type === 'REQUEST_SET_TRUSTLINE/V3') {
-      handleTransactionRequest({
-        payload: message.payload,
-        sender,
-        parameter: PARAMETER_TRANSACTION_TRUSTLINE,
-        requestMessage: message.type,
-        receivingMessage: 'RECEIVE_SET_TRUSTLINE/V3',
-        errorPayload: {
-          type: ResponseType.Reject,
-          result: undefined
-        }
-      });
+      const { payload } = message;
+      try {
+        sendMessageInMemory({
+          payload,
+          parameter: PARAMETER_TRANSACTION_TRUSTLINE,
+          receivingMessage: 'RECEIVE_SET_TRUSTLINE/V3',
+          requestMessage: message.type,
+          sender
+        });
+      } catch (e) {}
     } else if (type === 'REQUEST_ADD_TRUSTLINE') {
-      // Deprecated
-      handleTransactionRequest({
-        payload: message.payload,
-        sender,
-        parameter: PARAMETER_TRANSACTION_TRUSTLINE,
-        receivingMessage: 'RECEIVE_TRUSTLINE_HASH',
-        errorPayload: {
-          hash: undefined
-        }
-      });
+      const { payload } = message;
+      try {
+        // Deprecated
+        sendMessageInMemory({
+          payload,
+          parameter: PARAMETER_TRANSACTION_TRUSTLINE,
+          receivingMessage: 'RECEIVE_TRUSTLINE_HASH',
+          requestMessage: message.type,
+          sender,
+          errorPayload: {
+            hash: undefined
+          }
+        });
+      } catch (e) {}
     } else if (type === 'REQUEST_SIGN_MESSAGE/V3') {
-      handleTransactionRequest({
-        payload: message.payload,
-        sender,
-        parameter: PARAMETER_SIGN_MESSAGE,
-        requestMessage: message.type,
-        receivingMessage: 'RECEIVE_SIGN_MESSAGE/V3',
-        errorPayload: {
-          type: ResponseType.Reject,
-          result: undefined
-        }
-      });
+      const { payload } = message;
+      try {
+        sendMessageInMemory({
+          payload,
+          parameter: PARAMETER_SIGN_MESSAGE,
+          receivingMessage: 'RECEIVE_SIGN_MESSAGE/V3',
+          requestMessage: message.type,
+          sender
+        });
+      } catch (e) {}
     } else if (type === 'REQUEST_SIGN_MESSAGE') {
-      // Deprecated
-      handleTransactionRequest({
-        payload: message.payload,
-        sender,
-        parameter: PARAMETER_SIGN_MESSAGE,
-        receivingMessage: 'RECEIVE_SIGN_MESSAGE',
-        errorPayload: {
-          signedMessage: undefined
-        }
-      });
+      const { payload } = message;
+      try {
+        // Deprecated
+        sendMessageInMemory({
+          payload,
+          parameter: PARAMETER_SIGN_MESSAGE,
+          receivingMessage: 'RECEIVE_SIGN_MESSAGE',
+          requestMessage: message.type,
+          sender,
+          errorPayload: {
+            signedMessage: undefined
+          }
+        });
+      } catch (e) {}
     } else if (type === 'REQUEST_SUBMIT_TRANSACTION/V3') {
       const { payload } = message;
       try {

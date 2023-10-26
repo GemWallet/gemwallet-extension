@@ -12,10 +12,11 @@ import {
   ADD_NEW_TRUSTLINE_PATH,
   DEFAULT_RESERVE,
   ERROR_RED,
-  RESERVE_PER_OWNER
+  RESERVE_PER_OWNER,
+  STORAGE_MESSAGING_KEY
 } from '../../../constants';
 import { useLedger, useNetwork, useServer } from '../../../contexts';
-import { convertHexCurrencyString } from '../../../utils';
+import { convertHexCurrencyString, generateKey, saveInChromeSessionStorage } from '../../../utils';
 import { TokenLoader } from '../../atoms';
 import { InformationMessage } from '../../molecules/InformationMessage';
 import { TokenDisplay } from '../../molecules/TokenDisplay';
@@ -210,7 +211,7 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
         const limitAmount = {
           currency: convertHexCurrencyString(trustedLine.currency),
           issuer: trustedLine.issuer,
-          value: limit
+          value: limit.toString()
         };
         return (
           <TokenDisplay
@@ -225,12 +226,20 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
             // Show the Edit Trustline button if the trustline is not revoked or if the trustline has a non-zero balance
             onTrustlineDetailsClick={
               canBeEdited
-                ? () =>
-                    navigate(
-                      `${ADD_NEW_TRUSTLINE_PATH}?showForm=true&inAppCall=true&limitAmount=${JSON.stringify(
-                        limitAmount
-                      )}&flags=${flags}`
-                    )
+                ? () => {
+                    const key = generateKey();
+                    saveInChromeSessionStorage(
+                      key,
+                      JSON.stringify({
+                        limitAmount,
+                        flags
+                      })
+                    ).then(() => {
+                      navigate(
+                        `${ADD_NEW_TRUSTLINE_PATH}?showForm=true&inAppCall=true&${STORAGE_MESSAGING_KEY}=${key}`
+                      );
+                    });
+                  }
                 : undefined
             }
           />

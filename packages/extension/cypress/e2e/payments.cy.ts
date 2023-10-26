@@ -4,59 +4,40 @@ import { xrpToDrops } from 'xrpl';
 
 import { Network, NETWORK } from '@gemwallet/constants';
 
-const HOME_URL = 'http://localhost:3000';
+import { navigate } from '../utils/navigation';
+
+// deepcode ignore NoHardcodedPasswords: password used for testing purposes
 const PASSWORD = 'SECRET_PASSWORD';
+const STORAGE_KEY = '1693425372955.3833';
+const URL = `http://localhost:3000/transaction?storageKey=${STORAGE_KEY}&id=210405959&requestMessage=REQUEST_SEND_PAYMENT%2FV3&transaction=payment`;
 const DESTINATION_ADDRESS = 'rNvFCZXpDtGeQ3bVas95wGLN6N2stGmA9o';
 
-describe('Make payment - XRP', () => {
-  // deepcode ignore NoHardcodedPasswords: password used for testing purposes
-  const PASSWORD = 'SECRET_PASSWORD';
-  const AMOUNT = '0.01';
-  beforeEach(() => {
-    // Mock the localStorage with a wallet already loaded
-    cy.window().then((win) => {
-      win.localStorage.setItem(
-        'wallets',
-        'U2FsdGVkX19VA07d7tVhAAtUbt+YVbw0xQY7OZMykOW4YI4nRZK9iZ7LT3+xHvrj4kwlPKEcRg0S1GjbIWSFaMzg3Mw8fklZrZLL9QZvnbF821SeDB5lBBj/F9PBg8A07uZhYz1p4sTDsWAOFvrnKJjmlWIqXzN5MFFbWBb3os2xGtAGTslFVUXuTp6eM9X9'
-      );
-      win.localStorage.setItem(
-        'network',
-        JSON.stringify({
-          name: NETWORK[Network.TESTNET].name
-        })
-      );
-    });
-    cy.visit(
-      `http://localhost:3000?amount=${xrpToDrops(
-        AMOUNT
-      )}&destination=${DESTINATION_ADDRESS}&id=93376012&requestMessage=REQUEST_SEND_PAYMENT%2FV3&transaction=payment`,
-      {
-        onBeforeLoad(win) {
-          (win as any).chrome = (win as any).chrome || {};
-          (win as any).chrome.runtime = {
-            sendMessage(message, cb) {}
-          };
-
-          (win as any).chrome.storage = {
-            local: {
-              get(key, cb) {},
-              set(obj, cb) {
-                if (cb) cb();
-              }
-            }
-          };
-
-          cy.stub((win as any).chrome.runtime, 'sendMessage').resolves({});
-        }
-      }
+beforeEach(() => {
+  // Mock the localStorage with a wallet already loaded
+  cy.window().then((win) => {
+    win.localStorage.setItem(
+      'wallets',
+      'U2FsdGVkX19VA07d7tVhAAtUbt+YVbw0xQY7OZMykOW4YI4nRZK9iZ7LT3+xHvrj4kwlPKEcRg0S1GjbIWSFaMzg3Mw8fklZrZLL9QZvnbF821SeDB5lBBj/F9PBg8A07uZhYz1p4sTDsWAOFvrnKJjmlWIqXzN5MFFbWBb3os2xGtAGTslFVUXuTp6eM9X9'
     );
-
-    // Login
-    cy.get('input[name="password"]').type(PASSWORD);
-    cy.contains('button', 'Unlock').click();
+    win.localStorage.setItem(
+      'network',
+      JSON.stringify({
+        name: NETWORK[Network.TESTNET].name
+      })
+    );
   });
+});
+
+describe('Make payment - XRP', () => {
+  const AMOUNT = '0.01';
+  const params = {
+    amount: xrpToDrops(AMOUNT),
+    destination: DESTINATION_ADDRESS
+  };
 
   it('Confirm the payment', () => {
+    navigate(URL, PASSWORD, STORAGE_KEY, params);
+
     cy.on('uncaught:exception', (err, runnable) => {
       // Continue with the test
       return false;
@@ -84,6 +65,8 @@ describe('Make payment - XRP', () => {
   });
 
   it('Reject the payment', () => {
+    navigate(URL, PASSWORD, STORAGE_KEY, params);
+
     cy.on('uncaught:exception', (err, runnable) => {
       // Continue with the test
       return false;
@@ -106,8 +89,6 @@ describe('Make payment - XRP', () => {
 });
 
 describe('Make payment - ETH', () => {
-  // deepcode ignore NoHardcodedPasswords: password used for testing purposes
-  const PASSWORD = 'SECRET_PASSWORD';
   const TOKEN = 'ETH';
   const VALUE = '0.01';
   const DESTINATION_ADDRESS = 'rnm76Qgz4G9G4gZBJVuXVvkbt7gVD7szey';
@@ -116,49 +97,15 @@ describe('Make payment - ETH', () => {
     value: VALUE,
     issuer: DESTINATION_ADDRESS
   });
-  beforeEach(() => {
-    // Mock the localStorage with a wallet already loaded
-    cy.window().then((win) => {
-      win.localStorage.setItem(
-        'wallets',
-        'U2FsdGVkX19VA07d7tVhAAtUbt+YVbw0xQY7OZMykOW4YI4nRZK9iZ7LT3+xHvrj4kwlPKEcRg0S1GjbIWSFaMzg3Mw8fklZrZLL9QZvnbF821SeDB5lBBj/F9PBg8A07uZhYz1p4sTDsWAOFvrnKJjmlWIqXzN5MFFbWBb3os2xGtAGTslFVUXuTp6eM9X9'
-      );
-      win.localStorage.setItem(
-        'network',
-        JSON.stringify({
-          name: NETWORK[Network.TESTNET].name
-        })
-      );
-    });
-    cy.visit(
-      `http://localhost:3000?amount=${AMOUNT}&destination=${DESTINATION_ADDRESS}&id=93376135&requestMessage=REQUEST_SEND_PAYMENT%2FV3&transaction=payment`,
-      {
-        onBeforeLoad(win) {
-          (win as any).chrome = (win as any).chrome || {};
-          (win as any).chrome.runtime = {
-            sendMessage(message, cb) {}
-          };
 
-          (win as any).chrome.storage = {
-            local: {
-              get(key, cb) {},
-              set(obj, cb) {
-                if (cb) cb();
-              }
-            }
-          };
-
-          cy.stub((win as any).chrome.runtime, 'sendMessage').resolves({});
-        }
-      }
-    );
-
-    // Login
-    cy.get('input[name="password"]').type(PASSWORD);
-    cy.contains('button', 'Unlock').click();
-  });
+  const params = {
+    amount: AMOUNT,
+    destination: DESTINATION_ADDRESS
+  };
 
   it('Confirm the payment', () => {
+    navigate(URL, PASSWORD, STORAGE_KEY, params);
+
     cy.on('uncaught:exception', (err, runnable) => {
       // Continue with the test
       return false;
@@ -187,6 +134,8 @@ describe('Make payment - ETH', () => {
   });
 
   it('Reject the payment', () => {
+    navigate(URL, PASSWORD, STORAGE_KEY, params);
+
     cy.on('uncaught:exception', (err, runnable) => {
       // Continue with the test
       return false;
@@ -210,19 +159,6 @@ describe('Make payment - ETH', () => {
 });
 
 describe('Make payment - SOLO', () => {
-  // deepcode ignore NoHardcodedPasswords: password used for testing purposes
-  const PASSWORD = 'SECRET_PASSWORD';
-  beforeEach(() => {
-    // Mock the localStorage with a wallet already loaded
-    cy.window().then((win) => {
-      win.localStorage.setItem(
-        'wallets',
-        'U2FsdGVkX19VA07d7tVhAAtUbt+YVbw0xQY7OZMykOW4YI4nRZK9iZ7LT3+xHvrj4kwlPKEcRg0S1GjbIWSFaMzg3Mw8fklZrZLL9QZvnbF821SeDB5lBBj/F9PBg8A07uZhYz1p4sTDsWAOFvrnKJjmlWIqXzN5MFFbWBb3os2xGtAGTslFVUXuTp6eM9X9'
-      );
-      win.localStorage.setItem('network', JSON.stringify({ name: NETWORK[Network.TESTNET].name }));
-    });
-  });
-
   it('Check the payment information (non hex)', () => {
     const TOKEN = 'SOLO';
     const VALUE = '0.01';
@@ -233,30 +169,12 @@ describe('Make payment - SOLO', () => {
       issuer: DESTINATION_ADDRESS
     });
 
-    cy.visit(
-      `http://localhost:3000?amount=${AMOUNT}&destination=${DESTINATION_ADDRESS}&id=93376135&requestMessage=REQUEST_SEND_PAYMENT%2FV3&transaction=payment`,
-      {
-        onBeforeLoad(win) {
-          (win as any).chrome = (win as any).chrome || {};
-          (win as any).chrome.runtime = {
-            sendMessage(message, cb) {}
-          };
+    const params = {
+      amount: AMOUNT,
+      destination: DESTINATION_ADDRESS
+    };
 
-          (win as any).chrome.storage = {
-            local: {
-              get(key, cb) {},
-              set(obj, cb) {
-                if (cb) cb();
-              }
-            }
-          };
-        }
-      }
-    );
-
-    // Login
-    cy.get('input[name="password"]').type(PASSWORD);
-    cy.contains('button', 'Unlock').click();
+    navigate(URL, PASSWORD, STORAGE_KEY, params);
 
     cy.on('uncaught:exception', (err, runnable) => {
       // Continue with the test
@@ -281,30 +199,12 @@ describe('Make payment - SOLO', () => {
       issuer: DESTINATION_ADDRESS
     });
 
-    cy.visit(
-      `http://localhost:3000?amount=${AMOUNT}&destination=${DESTINATION_ADDRESS}&id=93376135&requestMessage=REQUEST_SEND_PAYMENT%2FV3&transaction=payment`,
-      {
-        onBeforeLoad(win) {
-          (win as any).chrome = (win as any).chrome || {};
-          (win as any).chrome.runtime = {
-            sendMessage(message, cb) {}
-          };
+    const params = {
+      amount: AMOUNT,
+      destination: DESTINATION_ADDRESS
+    };
 
-          (win as any).chrome.storage = {
-            local: {
-              get(key, cb) {},
-              set(obj, cb) {
-                if (cb) cb();
-              }
-            }
-          };
-        }
-      }
-    );
-
-    // Login
-    cy.get('input[name="password"]').type(PASSWORD);
-    cy.contains('button', 'Unlock').click();
+    navigate(URL, PASSWORD, STORAGE_KEY, params);
 
     cy.on('uncaught:exception', (err, runnable) => {
       // Continue with the test
@@ -320,51 +220,9 @@ describe('Make payment - SOLO', () => {
   });
 });
 
-const navigate = (url: string, password: string) => {
-  cy.visit(url, {
-    onBeforeLoad(win) {
-      (win as any).chrome = (win as any).chrome || {};
-      (win as any).chrome.runtime = {
-        sendMessage(message, cb) {}
-      };
-
-      (win as any).chrome.storage = {
-        local: {
-          get(key, cb) {},
-          set(obj, cb) {
-            if (cb) cb();
-          }
-        }
-      };
-
-      cy.stub((win as any).chrome.runtime, 'sendMessage').resolves({});
-
-      // Login
-      cy.get('input[name="password"]').type(PASSWORD);
-      cy.contains('button', 'Unlock').click();
-    }
-  });
-};
-
 describe('Make payment from the UI', () => {
-  beforeEach(() => {
-    // Mock the localStorage with a wallet already loaded
-    cy.window().then((win) => {
-      win.localStorage.setItem(
-        'wallets',
-        'U2FsdGVkX19VA07d7tVhAAtUbt+YVbw0xQY7OZMykOW4YI4nRZK9iZ7LT3+xHvrj4kwlPKEcRg0S1GjbIWSFaMzg3Mw8fklZrZLL9QZvnbF821SeDB5lBBj/F9PBg8A07uZhYz1p4sTDsWAOFvrnKJjmlWIqXzN5MFFbWBb3os2xGtAGTslFVUXuTp6eM9X9'
-      );
-      win.localStorage.setItem(
-        'network',
-        JSON.stringify({
-          name: NETWORK[Network.TESTNET].name
-        })
-      );
-    });
-  });
-
   it('Should fill in the payment details and submit', () => {
-    navigate(HOME_URL, PASSWORD);
+    navigate('http://localhost:3000', PASSWORD);
 
     cy.contains('button', 'Send').click();
 

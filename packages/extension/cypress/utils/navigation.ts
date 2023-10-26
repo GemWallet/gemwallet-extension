@@ -21,7 +21,7 @@ export const navigate = (url: string, password: string, storageKey?: string, dat
             if (cb) cb();
           },
           get(key, cb) {
-            cb(mockSessionStorage[key]);
+            cb({ [key]: mockSessionStorage[key] });
           },
           remove(key, cb) {
             delete mockSessionStorage[key];
@@ -32,7 +32,7 @@ export const navigate = (url: string, password: string, storageKey?: string, dat
 
       if (storageKey && data) {
         (win as any).chrome.storage.session.set({
-          [storageKey]: { [storageKey]: JSON.stringify(data) }
+          [storageKey]: JSON.stringify(data)
         });
       }
 

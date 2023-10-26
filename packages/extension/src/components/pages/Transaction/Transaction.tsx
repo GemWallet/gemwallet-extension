@@ -7,10 +7,12 @@ import {
   GEM_WALLET,
   ReceiveSendPaymentBackgroundMessage,
   ReceiveSendPaymentBackgroundMessageDeprecated,
-  ResponseType
+  ResponseType,
+  SendPaymentRequest,
+  SendPaymentRequestDeprecated
 } from '@gemwallet/constants';
 
-import { API_ERROR_BAD_DESTINATION } from '../../../constants';
+import { API_ERROR_BAD_DESTINATION, STORAGE_MESSAGING_KEY } from '../../../constants';
 import {
   buildPayment,
   TransactionProgressStatus,
@@ -19,10 +21,10 @@ import {
   useTransactionProgress,
   useWallet
 } from '../../../contexts';
-import { useFees, useTransactionStatus } from '../../../hooks';
+import { useFees, useFetchFromSessionStorage, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
 import { parseAmount, parsePaymentFlags } from '../../../utils';
-import { parseBaseParamsFromURLParamsNew } from '../../../utils/baseParams';
+import { parseBaseParamsFromStoredData } from '../../../utils/baseParams';
 import { serializeError } from '../../../utils/errors';
 import { TransactionDetails } from '../../organisms';
 import { AsyncTransaction, TransactionPage } from '../../templates';
@@ -57,9 +59,15 @@ export const Transaction: FC = () => {
     params.transaction?.Fee
   );
 
+  const urlParams = new URLSearchParams(window.location.search);
+  const { fetchedData } = useFetchFromSessionStorage(
+    urlParams.get(STORAGE_MESSAGING_KEY) ?? undefined
+  ) as {
+    fetchedData: SendPaymentRequest | SendPaymentRequestDeprecated | undefined;
+  };
+
   const { messageType, receivingMessage } = useMemo(() => {
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
+    const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get('requestMessage') === 'REQUEST_SEND_PAYMENT/V3'
       ? { messageType: 'REQUEST_SEND_PAYMENT/V3', receivingMessage: 'RECEIVE_SEND_PAYMENT/V3' }
       : { messageType: 'SEND_PAYMENT', receivingMessage: 'RECEIVE_PAYMENT_HASH' };
@@ -126,36 +134,36 @@ export const Transaction: FC = () => {
   });
 
   useEffect(() => {
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
+    const urlParams = new URLSearchParams(window.location.search);
     const id = Number(urlParams.get('id')) || 0;
-
-    // SendPayment fields
-    const amount = parseAmount(
-      urlParams.get('amount'),
-      urlParams.get('currency'),
-      urlParams.get('issuer'),
-      messageType
-    );
-    const destination = urlParams.get('destination');
-    const destinationTag = urlParams.get('destinationTag')
-      ? Number(urlParams.get('destinationTag'))
-      : null;
-    const flags = parsePaymentFlags(urlParams.get('flags'));
     const wallet = getCurrentWallet();
-
-    if (amount === null || destination === null) {
-      setIsParamsMissing(true);
-    }
 
     if (!wallet) {
       setIsParamsMissing(true);
       return;
     }
 
+    if (!fetchedData) {
+      return;
+    }
+
+    const rawAmount = 'amount' in fetchedData ? fetchedData.amount : undefined;
+    const currency = 'currency' in fetchedData ? fetchedData.currency : undefined;
+    const issuer = 'issuer' in fetchedData ? fetchedData.issuer : undefined;
+
+    const amount = parseAmount(rawAmount ?? null, currency ?? null, issuer ?? null, messageType);
+    const destination = 'destination' in fetchedData ? fetchedData.destination : undefined;
+    const destinationTag =
+      'destinationTag' in fetchedData ? Number(fetchedData.destinationTag) : undefined;
+    const flags = 'flags' in fetchedData ? parsePaymentFlags(fetchedData.flags) : undefined;
+
+    if (amount === null || destination === null) {
+      setIsParamsMissing(true);
+    }
+
     const transaction = buildPayment(
       {
-        ...parseBaseParamsFromURLParamsNew(urlParams),
+        ...parseBaseParamsFromStoredData(fetchedData),
         amount: amount ?? '0',
         destination: destination ?? '',
         ...(destinationTag && { destinationTag }),
@@ -168,7 +176,7 @@ export const Transaction: FC = () => {
       id,
       transaction
     });
-  }, [getCurrentWallet, messageType]);
+  }, [fetchedData, getCurrentWallet, messageType]);
 
   const isValidDestination = useMemo(() => {
     if (params.transaction?.Destination && isValidAddress(params.transaction.Destination)) {

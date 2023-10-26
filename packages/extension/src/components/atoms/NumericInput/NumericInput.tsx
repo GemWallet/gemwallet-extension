@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, useCallback, useState } from 'react';
+import { ChangeEvent, FC, useCallback, useEffect, useState } from 'react';
 
 import { TextField, TextFieldProps } from '@mui/material';
 
@@ -19,6 +19,10 @@ export const NumericInput: FC<NumericInputProps> = ({ initialValue, ...props }) 
     },
     [props]
   );
+
+  useEffect(() => {
+    setValue(initialValue || '');
+  }, [initialValue]);
 
   return <TextField value={value} {...props} onChange={handleChange} />;
 };

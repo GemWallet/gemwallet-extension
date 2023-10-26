@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo, useState } from 'react';
+import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 
 import * as Sentry from '@sentry/react';
 
@@ -7,19 +7,26 @@ import {
   GEM_WALLET,
   ReceiveSignMessageBackgroundMessage,
   ReceiveSignMessageBackgroundMessageDeprecated,
-  ResponseType
+  ResponseType,
+  SignMessageRequest
 } from '@gemwallet/constants';
 
+import { STORAGE_MESSAGING_KEY } from '../../../constants';
 import {
   TransactionProgressStatus,
   useBrowser,
   useLedger,
   useTransactionProgress
 } from '../../../contexts';
+import { useFetchFromSessionStorage } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
 import { serializeError } from '../../../utils/errors';
 import { DataCard } from '../../molecules';
 import { AsyncTransaction, TransactionPage } from '../../templates';
+
+interface Params {
+  message: string | null;
+}
 
 export const SignMessage: FC = () => {
   const { signMessage } = useLedger();
@@ -28,35 +35,55 @@ export const SignMessage: FC = () => {
   const [isParamsMissing, setIsParamsMissing] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
 
+  const [params, setParams] = useState<Params>({
+    message: null
+  });
+
   const payload = useMemo(() => {
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
+    const urlParams = new URLSearchParams(window.location.search);
 
     const url = urlParams.get('url');
     const favicon = urlParams.get('favicon');
-    const message = urlParams.get('message');
-
-    if (message === null) {
-      setIsParamsMissing(true);
-    }
 
     return {
       id: Number(urlParams.get('id')) || 0,
       url,
-      favicon: favicon || undefined,
-      message: message || ''
+      favicon: favicon || undefined
     };
   }, []);
 
+  const { id, url, favicon } = payload;
+
   const receivingMessage = useMemo(() => {
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
+    const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get('requestMessage') === 'REQUEST_SIGN_MESSAGE/V3'
       ? 'RECEIVE_SIGN_MESSAGE/V3'
       : 'RECEIVE_SIGN_MESSAGE';
   }, []);
 
-  const { id, url, favicon, message } = payload;
+  const urlParams = new URLSearchParams(window.location.search);
+  const { fetchedData } = useFetchFromSessionStorage(
+    urlParams.get(STORAGE_MESSAGING_KEY) ?? undefined
+  ) as {
+    fetchedData: SignMessageRequest | undefined;
+  };
+
+  useEffect(() => {
+    if (!fetchedData) {
+      return;
+    }
+
+    const message = 'message' in fetchedData ? fetchedData.message : undefined;
+
+    if (!message) {
+      setIsParamsMissing(true);
+      return;
+    }
+
+    setParams({
+      message
+    });
+  }, [fetchedData]);
 
   const handleSendMessage = useCallback(
     (messagePayload: { signedMessage: string | null | undefined; error?: Error }) => {
@@ -111,12 +138,13 @@ export const SignMessage: FC = () => {
 
   const handleSign = useCallback(() => {
     try {
-      const signature = signMessage(message);
+      // The message will be a string, otherwise the transaction would have been rejected already
+      const signature = signMessage(params.message as string);
       handleSendMessage({ signedMessage: signature });
     } catch (e) {
       handleSendMessage({ signedMessage: undefined, error: e as Error });
     }
-  }, [handleSendMessage, message, signMessage]);
+  }, [handleSendMessage, params.message, signMessage]);
 
   if (isParamsMissing) {
     chrome.runtime.sendMessage<
@@ -157,7 +185,7 @@ export const SignMessage: FC = () => {
       onClickReject={handleReject}
     >
       <DataCard
-        formattedData={message}
+        formattedData={params.message}
         dataName={'Message'}
         isExpanded={isExpanded}
         setIsExpanded={setIsExpanded}
