@@ -294,7 +294,7 @@ chrome.runtime.onMessage.addListener(
     } else if (type === 'REQUEST_MINT_NFT/V3') {
       const { payload } = message;
       try {
-        sendInMemoryMessage({
+        sendMessageInMemory({
           payload,
           parameter: PARAMETER_TRANSACTION_MINT_NFT,
           receivingMessage: 'RECEIVE_MINT_NFT/V3',
@@ -304,7 +304,7 @@ chrome.runtime.onMessage.addListener(
     } else if (type === 'REQUEST_CREATE_NFT_OFFER/V3') {
       const { payload } = message;
       try {
-        sendInMemoryMessage({
+        sendMessageInMemory({
           payload,
           parameter: PARAMETER_TRANSACTION_CREATE_NFT_OFFER,
           receivingMessage: 'RECEIVE_CREATE_NFT_OFFER/V3',
@@ -314,7 +314,7 @@ chrome.runtime.onMessage.addListener(
     } else if (type === 'REQUEST_CANCEL_NFT_OFFER/V3') {
       const { payload } = message;
       try {
-        sendInMemoryMessage({
+        sendMessageInMemory({
           payload,
           parameter: PARAMETER_TRANSACTION_CANCEL_NFT_OFFER,
           receivingMessage: 'RECEIVE_CANCEL_NFT_OFFER/V3',
@@ -324,7 +324,7 @@ chrome.runtime.onMessage.addListener(
     } else if (type === 'REQUEST_ACCEPT_NFT_OFFER/V3') {
       const { payload } = message;
       try {
-        sendInMemoryMessage({
+        sendMessageInMemory({
           payload,
           parameter: PARAMETER_TRANSACTION_ACCEPT_NFT_OFFER,
           receivingMessage: 'RECEIVE_ACCEPT_NFT_OFFER/V3',
@@ -334,7 +334,7 @@ chrome.runtime.onMessage.addListener(
     } else if (type === 'REQUEST_BURN_NFT/V3') {
       const { payload } = message;
       try {
-        sendInMemoryMessage({
+        sendMessageInMemory({
           payload,
           parameter: PARAMETER_TRANSACTION_BURN_NFT,
           receivingMessage: 'RECEIVE_BURN_NFT/V3',

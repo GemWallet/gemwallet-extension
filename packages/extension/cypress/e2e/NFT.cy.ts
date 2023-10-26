@@ -9,7 +9,7 @@ const PASSWORD = 'SECRET_PASSWORD';
 const STORAGE_KEY = '1693425372955.3833';
 
 describe('Mint', () => {
-  const MINT_NFT_URL = `http://localhost:3000?mint-nft&storageKey=${STORAGE_KEY}&id=210401976&requestMessage=undefined&transaction=mintNFT`;
+  const MINT_NFT_URL = `http://localhost:3000/mint-nft?storageKey=${STORAGE_KEY}&id=210401976&requestMessage=undefined&transaction=mintNFT`;
 
   const params = {
     fee: '199',
@@ -113,7 +113,7 @@ describe('Mint', () => {
   });
 
   it('Create NFT Offer (50 XRP)', function () {
-    const url = `http://localhost:3000?create-nft-offer&storageKey=${STORAGE_KEY}&id=210403222&requestMessage=undefined&transaction=createNFTOffer`;
+    const url = `http://localhost:3000/create-nft-offer?storageKey=${STORAGE_KEY}&id=210403222&requestMessage=undefined&transaction=createNFTOffer`;
 
     const params = {
       amount: '50000000',
@@ -158,7 +158,7 @@ describe('Mint', () => {
   });
 
   it('Create NFT Offer (0.4 SOLO (non hex)', function () {
-    const url = `http://localhost:3000?create-nft-offer&storageKey=${STORAGE_KEY}&id=210403222&requestMessage=undefined&transaction=createNFTOffer`;
+    const url = `http://localhost:3000/create-nft-offer?storageKey=${STORAGE_KEY}&id=210403222&requestMessage=undefined&transaction=createNFTOffer`;
 
     const params = {
       amount: {
@@ -208,7 +208,7 @@ describe('Mint', () => {
   });
 
   it('Create NFT Offer (0.4 SOLO (hex)', function () {
-    const url = `http://localhost:3000?create-nft-offer&storageKey=${STORAGE_KEY}&id=210403222&requestMessage=undefined&transaction=createNFTOffer`;
+    const url = `http://localhost:3000/create-nft-offer?storageKey=${STORAGE_KEY}&id=210403222&requestMessage=undefined&transaction=createNFTOffer`;
 
     const params = {
       amount: {
@@ -279,7 +279,7 @@ describe('Mint', () => {
   });
 
   it('Accept NFT Offer', function () {
-    const url = `http://localhost:3000?accept-nft-offer&storageKey=${STORAGE_KEY}&id=210402654&requestMessage=undefined&transaction=acceptNFTOffer`;
+    const url = `http://localhost:3000/accept-nft-offer?storageKey=${STORAGE_KEY}&id=210402654&requestMessage=undefined&transaction=acceptNFTOffer`;
 
     const params = {
       NFTokenSellOffer: this.OfferID,
@@ -318,7 +318,7 @@ describe('Mint', () => {
   });
 
   it('Accept NFT Offer (Brokered, SOLO non hex)', function () {
-    const url = `http://localhost:3000?accept-nft-offer&storageKey=${STORAGE_KEY}&id=210402654&requestMessage=undefined&transaction=acceptNFTOffer`;
+    const url = `http://localhost:3000/accept-nft-offer?storageKey=${STORAGE_KEY}&id=210402654&requestMessage=undefined&transaction=acceptNFTOffer`;
 
     const params = {
       NFTokenSellOffer: this.OfferID,
@@ -359,7 +359,7 @@ describe('Mint', () => {
   });
 
   it('Accept NFT Offer (Brokered, SOLO hex)', function () {
-    const url = `http://localhost:3000?accept-nft-offer&storageKey=${STORAGE_KEY}&id=210402654&requestMessage=undefined&transaction=acceptNFTOffer`;
+    const url = `http://localhost:3000/accept-nft-offer?storageKey=${STORAGE_KEY}&id=210402654&requestMessage=undefined&transaction=acceptNFTOffer`;
 
     const params = {
       NFTokenSellOffer: this.OfferID,
@@ -438,7 +438,7 @@ describe('Mint', () => {
   });
 
   it('Burn NFT', function () {
-    const url = `http://localhost:3000?burn-nft&storageKey=${STORAGE_KEY}&id=210402654&requestMessage=undefined&transaction=burnNFT`;
+    const url = `http://localhost:3000/burn-nft?storageKey=${STORAGE_KEY}&id=210402654&requestMessage=undefined&transaction=burnNFT`;
 
     const params = {
       NFTokenID: this.NFTokenID,
