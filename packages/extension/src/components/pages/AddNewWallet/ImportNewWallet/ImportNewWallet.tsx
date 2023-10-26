@@ -3,6 +3,9 @@ import { FC, useCallback, useState } from 'react';
 import { Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
+import { ImportMnemonic } from './ImportMnemonic';
+import { ImportSecretNumbers } from './ImportSecretNumbers';
+import { ImportSeed } from './ImportSeed';
 import {
   IMPORT_MNEMONIC_PATH,
   IMPORT_SECRET_NUMBERS_PATH,
@@ -11,9 +14,6 @@ import {
 } from '../../../../constants';
 import { ButtonOption } from '../../../atoms';
 import { PageWithStepper } from '../../../templates';
-import { ImportMnemonic } from './ImportMnemonic';
-import { ImportSecretNumbers } from './ImportSecretNumbers';
-import { ImportSeed } from './ImportSeed';
 
 const SECRET_TYPES = [
   {

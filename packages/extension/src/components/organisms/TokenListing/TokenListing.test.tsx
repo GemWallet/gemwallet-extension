@@ -4,9 +4,9 @@ import userEvent from '@testing-library/user-event';
 
 import { Network } from '@gemwallet/constants';
 
+import { TokenListing, TokenListingProps } from './TokenListing';
 import { DEFAULT_RESERVE, RESERVE_PER_OWNER } from '../../../constants';
 import { formatToken } from '../../../utils';
-import { TokenListing, TokenListingProps } from './TokenListing';
 
 const user = userEvent.setup();
 
@@ -107,9 +107,9 @@ describe('TokenListing', () => {
     render(<TokenListing {...props} />);
     await waitFor(() => {
       expect(screen.getByText(`${100 - reserve} XRP`)).toBeInTheDocument();
-      expect(screen.getByText('50 USD')).toBeInTheDocument();
-      expect(screen.getByText('20 ETH')).toBeInTheDocument();
     });
+    expect(screen.getByText('50 USD')).toBeInTheDocument();
+    expect(screen.getByText('20 ETH')).toBeInTheDocument();
   });
 
   test('should display an error message when there is an error fetching the balances', async () => {
@@ -119,8 +119,8 @@ describe('TokenListing', () => {
     render(<TokenListing {...props} />);
     await waitFor(() => {
       expect(screen.getByText('Account not activated')).toBeVisible();
-      expect(Sentry.captureException).toHaveBeenCalled();
     });
+    expect(Sentry.captureException).toHaveBeenCalled();
   });
 
   test('should open the explanation dialog when the explain button is clicked', async () => {

@@ -2,10 +2,10 @@ import { FC, useCallback, useState, FocusEvent } from 'react';
 
 import { Grid, TextField, Typography } from '@mui/material';
 
+import styles from './styles.module.css';
 import { ERROR_RED } from '../../../../constants';
 import { useNetwork, useWallet } from '../../../../contexts';
 import { PageWithStepper } from '../../../templates';
-import styles from './styles.module.css';
 
 const schemaInput = new RegExp(/^[0-9]{6}$/);
 

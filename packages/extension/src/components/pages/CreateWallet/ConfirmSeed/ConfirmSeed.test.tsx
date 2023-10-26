@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { generateWalletContext, WALLET_SEED } from '../../../../mocks';
 import { ConfirmSeed, ConfirmSeedProps } from './ConfirmSeed';
+import { generateWalletContext, WALLET_SEED } from '../../../../mocks';
 
 const user = userEvent.setup();
 
@@ -34,15 +34,15 @@ describe('CreateWallet - ConfirmSeed', () => {
   });
 
   test('Should render an error if seed is not confirmed', async () => {
-    const renderedElements = render(<ConfirmSeed {...defaultProps} />);
+    render(<ConfirmSeed {...defaultProps} />);
 
     const confirmButton = screen.getByRole('button', { name: 'Confirm' });
     await user.click(confirmButton);
     expect(screen.getByText('Seed incorrect')).toBeVisible();
     expect(mockedSetActiveStep).toHaveBeenCalledTimes(0);
 
-    const seedInput = renderedElements.container.querySelector('#seed');
-    await user.type(seedInput as Element, WALLET_SEED);
+    const seedInput = screen.getByLabelText('Seed');
+    await user.type(seedInput, WALLET_SEED);
     await user.click(confirmButton);
     expect(mockedSetActiveStep).toHaveBeenCalledTimes(1);
   });

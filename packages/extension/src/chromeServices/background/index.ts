@@ -37,6 +37,13 @@ import {
 } from '@gemwallet/constants';
 
 import {
+  FocusOrCreatePopupWindowParam,
+  focusOrCreatePopupWindow
+} from './utils/focusOrCreatePopupWindow';
+import { createOffscreen } from './utils/offscreen';
+import { buildRejectMessage } from './utils/rejectOnClose';
+import { Session } from './utils/session';
+import {
   PARAMETER_SHARE_ADDRESS,
   PARAMETER_SHARE_NETWORK,
   PARAMETER_SHARE_NFT,
@@ -62,13 +69,6 @@ import {
   loadFromChromeSessionStorage,
   saveInChromeSessionStorage
 } from '../../utils/storageChromeSession';
-import {
-  FocusOrCreatePopupWindowParam,
-  focusOrCreatePopupWindow
-} from './utils/focusOrCreatePopupWindow';
-import { createOffscreen } from './utils/offscreen';
-import { buildRejectMessage } from './utils/rejectOnClose';
-import { Session } from './utils/session';
 
 const sendMessageToTab = <T>(tabId: number | undefined, message: any) => {
   chrome.tabs.sendMessage<T>(tabId ?? 0, message);

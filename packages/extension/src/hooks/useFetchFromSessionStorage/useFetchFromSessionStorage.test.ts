@@ -1,7 +1,7 @@
 import { renderHook } from '@testing-library/react-hooks';
 
-import { loadFromChromeSessionStorage } from '../../utils';
 import { useFetchFromSessionStorage } from './useFetchFromSessionStorage';
+import { loadFromChromeSessionStorage } from '../../utils';
 
 // Mock the utilities
 jest.mock('../../utils', () => ({

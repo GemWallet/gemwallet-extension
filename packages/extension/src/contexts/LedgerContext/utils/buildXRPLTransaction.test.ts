@@ -3,7 +3,6 @@ import { NFTokenMint } from 'xrpl/dist/npm/models/transactions/NFTokenMint';
 
 import { CancelOfferRequest, CreateOfferRequest, MintNFTRequest } from '@gemwallet/constants';
 
-import { WalletLedger } from '../../../types';
 import {
   buildAccountSet,
   buildBaseTransaction,
@@ -16,6 +15,7 @@ import {
   buildOfferCreate,
   buildTrustSet
 } from './buildXRPLTransaction';
+import { WalletLedger } from '../../../types';
 
 const wallet: WalletLedger = {
   name: 'name',

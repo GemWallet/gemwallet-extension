@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { generateWalletContext } from '../../../../mocks';
 import { ShowSecret, ShowSecretProps } from './ShowSecret';
+import { generateWalletContext } from '../../../../mocks';
 
 const passwordTest = 'test-password';
 
@@ -108,7 +108,7 @@ describe('ShowSecret', () => {
     mockWalletContext = generateWalletContext({ isPasswordCorrect: () => false });
     await user.type(screen.getByLabelText('Password'), incorrectPassword);
     await user.click(screen.getByText('Show'));
-    expect(screen.queryByText('Incorrect password')).toBeInTheDocument();
+    expect(screen.getByText('Incorrect password')).toBeInTheDocument();
     await user.type(screen.getByLabelText('Password'), passwordTest);
     expect(screen.queryByText('Incorrect password')).not.toBeInTheDocument();
   });

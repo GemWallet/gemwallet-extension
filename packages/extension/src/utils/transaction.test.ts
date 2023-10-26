@@ -1,6 +1,5 @@
 import { Signer } from '@gemwallet/constants';
 
-import { DEFAULT_MEMO_TYPE } from '../constants/payload';
 import {
   buildDefaultMemos,
   buildDestinationTag,
@@ -11,6 +10,7 @@ import {
   checkFee,
   toXRPLSigners
 } from './transaction';
+import { DEFAULT_MEMO_TYPE } from '../constants/payload';
 
 describe('buildDefaultMemos', () => {
   test('returns undefined when memoData is undefined or an empty string', () => {

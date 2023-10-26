@@ -2,14 +2,14 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 
-import { WALLET_MNEMONIC } from '../../../mocks';
 import { ImportMnemonic } from './ImportMnemonic';
+import { WALLET_MNEMONIC } from '../../../mocks';
 
 const user = userEvent.setup();
 
 describe('ImportMnemonic Page', () => {
   test('Should go back', async () => {
-    const renderedElements = render(
+    render(
       <BrowserRouter>
         <ImportMnemonic />
       </BrowserRouter>
@@ -18,7 +18,7 @@ describe('ImportMnemonic Page', () => {
     const nextButton = screen.getByRole('button', { name: 'Next' });
 
     // Going to Screen 1
-    const mnemonicInput = renderedElements.container.querySelector('#mnemonic');
+    const mnemonicInput = screen.getByLabelText('Mnemonic');
     await user.type(mnemonicInput, WALLET_MNEMONIC);
     await user.click(nextButton);
 

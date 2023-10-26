@@ -3,10 +3,10 @@ import { FC, useCallback, useState, FocusEvent } from 'react';
 import { Grid, TextField, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
+import styles from './styles.module.css';
 import { ERROR_RED, LIST_WALLETS_PATH } from '../../../../../constants';
 import { useWallet } from '../../../../../contexts';
 import { PageWithStepper } from '../../../../templates';
-import styles from './styles.module.css';
 
 const schemaInput = new RegExp(/^[0-9]{6}$/);
 

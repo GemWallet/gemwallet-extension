@@ -6,10 +6,10 @@ import { useNavigate } from 'react-router-dom';
 
 import { EventWalletChangedBackgroundMessage, GEM_WALLET } from '@gemwallet/constants';
 
+import { Wallet } from './Wallet';
 import { ADD_NEW_WALLET_PATH, HOME_PATH } from '../../../constants';
 import { useWallet } from '../../../contexts';
 import { PageWithReturn } from '../../templates';
-import { Wallet } from './Wallet';
 
 export const ListWallets: FC = () => {
   const navigate = useNavigate();

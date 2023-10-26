@@ -13,6 +13,9 @@ import {
   SetTrustlineRequestDeprecated
 } from '@gemwallet/constants';
 
+import { StepConfirm } from './StepConfirm';
+import { StepForm } from './StepForm';
+import { StepWarning } from './StepWarning';
 import { API_ERROR_BAD_ISSUER, HOME_PATH, STORAGE_MESSAGING_KEY } from '../../../constants';
 import {
   buildTrustSet,
@@ -28,9 +31,6 @@ import { parseLimitAmount, parseTrustSetFlags } from '../../../utils';
 import { parseBaseParamsFromStoredData } from '../../../utils/baseParams';
 import { serializeError } from '../../../utils/errors';
 import { AsyncTransaction } from '../../templates';
-import { StepConfirm } from './StepConfirm';
-import { StepForm } from './StepForm';
-import { StepWarning } from './StepWarning';
 
 type STEP = 'WARNING' | 'TRANSACTION';
 

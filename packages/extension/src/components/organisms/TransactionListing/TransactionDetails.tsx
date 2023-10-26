@@ -3,9 +3,9 @@ import { FC } from 'react';
 import { Divider, List, ListItem, ListItemText } from '@mui/material';
 import { convertHexToString, dropsToXrp } from 'xrpl';
 
+import { formatDate, formatTransaction } from './format.util';
 import { AccountTransaction } from '../../../types';
 import { formatFlagsToNumber } from '../../../utils';
-import { formatDate, formatTransaction } from './format.util';
 
 export interface TransactionDetailsProps {
   transaction: AccountTransaction | null;

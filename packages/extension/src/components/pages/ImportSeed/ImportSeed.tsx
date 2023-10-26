@@ -2,10 +2,10 @@ import { FC, useCallback, useState } from 'react';
 
 import { Wallet } from 'xrpl';
 
+import { SecretSeed } from './SecretSeed';
 import { WalletToSave } from '../../../utils';
 import { Congratulations } from '../Congratulations';
 import { CreatePassword } from '../CreatePassword';
-import { SecretSeed } from './SecretSeed';
 
 const STEPS = 2;
 

@@ -42,13 +42,13 @@ import {
   MAINNET_CLIO_NODES
 } from '@gemwallet/constants';
 
+import { buildBaseTransaction } from './utils';
+import { connectToLedger } from './utils/connectToLedger';
 import { AccountTransaction } from '../../types';
 import { toUIError } from '../../utils/errors';
 import { resolveNFTData } from '../../utils/NFTDataResolver';
 import { useNetwork } from '../NetworkContext';
 import { useWallet } from '../WalletContext';
-import { buildBaseTransaction } from './utils';
-import { connectToLedger } from './utils/connectToLedger';
 
 interface FundWalletResponse {
   wallet: Wallet;

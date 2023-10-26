@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 
 import { ServerProvider, useServer } from './ServerContext';
 
@@ -21,24 +21,20 @@ function TestComponent() {
 }
 describe('ServerProvider', () => {
   test('renders children elements', () => {
-    act(() => {
-      render(
-        <ServerProvider>
-          <div>Test</div>
-        </ServerProvider>
-      );
-    });
+    render(
+      <ServerProvider>
+        <div>Test</div>
+      </ServerProvider>
+    );
     expect(screen.getByText('Test')).toBeInTheDocument();
   });
 
   test('provides the correct context value', async () => {
-    act(() => {
-      render(
-        <ServerProvider>
-          <TestComponent />
-        </ServerProvider>
-      );
-    });
+    render(
+      <ServerProvider>
+        <TestComponent />
+      </ServerProvider>
+    );
     // Use WaitFor as we are waiting for an asynchronous operation
     await waitFor(() => {
       expect(screen.getByText('serverTest')).toBeInTheDocument();

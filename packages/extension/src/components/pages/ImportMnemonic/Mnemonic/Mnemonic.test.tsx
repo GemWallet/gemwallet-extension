@@ -6,8 +6,8 @@ import { Mnemonic, MnemonicProps } from './Mnemonic';
 const defaultProps: MnemonicProps = {
   activeStep: 0,
   steps: 4,
-  handleBack: jest.fn(),
-  setActiveStep: jest.fn()
+  onBack: jest.fn(),
+  onNext: jest.fn()
 };
 
 describe('Import Mnemonic - Mnemonic Page', () => {

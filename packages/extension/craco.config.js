@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+
 const webpack = require("webpack");
 
 const extensionDirectory = fs.realpathSync(process.cwd());
@@ -70,7 +71,7 @@ module.exports = {
 
       // This is deprecated in webpack 5 but alias false does not seem to work
       webpackConfig.module.rules.push({
-        test: /node_modules[\\\/]https-proxy-agent[\\\/]/,
+        test: /node_modules[\\/]https-proxy-agent[\\/]/,
         use: "null-loader",
       });
 

@@ -7,13 +7,13 @@ import { NFTokenMint } from 'xrpl/dist/npm/models/transactions/NFTokenMint';
 
 import { TransactionWithID } from '@gemwallet/constants';
 
+import StepperPagination from './StepperNavigation';
+import { TransactionsDisplay } from './TransactionsDisplay';
 import { useLedger, useNetwork } from '../../../../contexts';
 import { resolveNFTData } from '../../../../utils/NFTDataResolver';
 import { TxNFTData } from '../../../molecules';
 import { TransactionPage } from '../../../templates';
 import { ConfirmationDialog } from '../ConfirmationDialog';
-import StepperPagination from './StepperNavigation';
-import { TransactionsDisplay } from './TransactionsDisplay';
 
 interface StepperViewProps {
   activeStep: number;

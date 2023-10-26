@@ -1,4 +1,3 @@
-import { STORAGE_SELECTED_WALLET, STORAGE_WALLETS } from '../constants';
 import { encrypt } from './crypto';
 import {
   loadSelectedWallet,
@@ -7,6 +6,7 @@ import {
   saveSelectedWallet,
   saveWallet
 } from './wallet';
+import { STORAGE_SELECTED_WALLET, STORAGE_WALLETS } from '../constants';
 
 // Mock the localStorage object and its methods
 const localStorageMock = {

@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter, MemoryRouter } from 'react-router-dom';
 
+import { Congratulations } from './Congratulations';
 import {
   HOME_PATH,
   IMPORT_SEED_PATH,
@@ -9,7 +10,6 @@ import {
   TRANSACTION_PATH
 } from '../../../constants';
 import { generateWalletContext } from '../../../mocks';
-import { Congratulations } from './Congratulations';
 
 const mockWalletContext = generateWalletContext();
 jest.mock('../../../contexts', () => ({

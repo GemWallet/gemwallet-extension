@@ -286,8 +286,8 @@ describe('parseCreateNFTOfferFlags', () => {
 });
 
 describe('parseCreateOfferFlags', () => {
-  test('should return null when flagsString is null', () => {
-    const result = parseCreateOfferFlags(null);
+  test('should return null when flagsString is undefined', () => {
+    const result = parseCreateOfferFlags();
     expect(result).toBeNull();
   });
 
@@ -420,8 +420,8 @@ describe('createNFTOfferFlagsToNumber', () => {
   });
 
   describe('parseSetAccountFlags', () => {
-    it('returns null if input is null', () => {
-      const result = parseSetAccountFlags(null);
+    it('returns null if input is undefined', () => {
+      const result = parseSetAccountFlags();
       expect(result).toBeNull();
     });
 

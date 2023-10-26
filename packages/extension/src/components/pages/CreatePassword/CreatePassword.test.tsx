@@ -2,8 +2,8 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 
-import { generateWalletContext } from '../../../mocks';
 import { CreatePassword, CreatePasswordProps } from './CreatePassword';
+import { generateWalletContext } from '../../../mocks';
 
 const user = userEvent.setup();
 const generatedWallet = generateWalletContext().getCurrentWallet();
@@ -31,49 +31,49 @@ jest.mock('../../../contexts', () => ({
 
 describe('CreatePassword Page', () => {
   test('Should render the proper elements', () => {
-    const { getByRole } = render(
+    render(
       <BrowserRouter>
         <CreatePassword {...defaultProps} />
       </BrowserRouter>
     );
 
-    expect(getByRole('heading', { name: 'Create a password' })).toBeVisible();
+    expect(screen.getByRole('heading', { name: 'Create a password' })).toBeVisible();
   });
 
   test('Should render an error if password is less than 8 characters', async () => {
-    const { getByRole, getByText, container } = render(
+    render(
       <BrowserRouter>
         <CreatePassword {...defaultProps} />
       </BrowserRouter>
     );
 
-    const nextButton = getByRole('button', { name: 'Next' });
+    const nextButton = screen.getByRole('button', { name: 'Next' });
 
-    const passwordInput = container.querySelector('#password');
-    const passwordConfirmInput = container.querySelector('#confirm-password');
-    await user.type(passwordInput as Element, '1234567');
-    await user.type(passwordConfirmInput as Element, '1234567');
+    const passwordInput = screen.getByLabelText('Password');
+    const passwordConfirmInput = screen.getByLabelText('Confirm Password');
+    await user.type(passwordInput, '1234567');
+    await user.type(passwordConfirmInput, '1234567');
     await user.click(nextButton);
 
-    expect(getByText('Password must be at least 8 characters long')).toBeVisible();
+    expect(screen.getByText('Password must be at least 8 characters long')).toBeVisible();
   });
 
   test('Should render an error if passwords do not match', async () => {
-    const { getByRole, getByText, container } = render(
+    render(
       <BrowserRouter>
         <CreatePassword {...defaultProps} />
       </BrowserRouter>
     );
 
-    const nextButton = getByRole('button', { name: 'Next' });
+    const nextButton = screen.getByRole('button', { name: 'Next' });
 
-    const passwordInput = container.querySelector('#password');
-    const passwordConfirmInput = container.querySelector('#confirm-password');
-    await user.type(passwordInput as Element, '12345678');
-    await user.type(passwordConfirmInput as Element, '12345679');
+    const passwordInput = screen.getByLabelText('Password');
+    const passwordConfirmInput = screen.getByLabelText('Confirm Password');
+    await user.type(passwordInput, '12345678');
+    await user.type(passwordConfirmInput, '12345679');
     await user.click(nextButton);
 
-    expect(getByText('Passwords must match')).toBeVisible();
+    expect(screen.getByText('Passwords must match')).toBeVisible();
   });
 
   test('should show/hide password when the eye icon is clicked', async () => {

@@ -4,6 +4,7 @@ import LockIcon from '@mui/icons-material/Lock';
 import { Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
+import { ItemMenuGroup, MenuGroup } from './MenuGroup';
 import {
   ABOUT_PATH,
   DELETE_ACCOUNT_PATH,
@@ -17,7 +18,6 @@ import {
 import { useWallet } from '../../../contexts';
 import { openExternalLink } from '../../../utils';
 import { PageWithHeader } from '../../templates';
-import { ItemMenuGroup, MenuGroup } from './MenuGroup';
 
 export const Settings: FC = () => {
   const navigate = useNavigate();

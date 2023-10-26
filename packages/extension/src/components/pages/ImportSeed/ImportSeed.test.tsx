@@ -2,14 +2,14 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 
-import { WALLET_SEED } from '../../../mocks';
 import { ImportSeed } from './ImportSeed';
+import { WALLET_SEED } from '../../../mocks';
 
 const user = userEvent.setup();
 
 describe('ImportSeed Page', () => {
   test('Should go back', async () => {
-    const renderedElements = render(
+    render(
       <BrowserRouter>
         <ImportSeed />
       </BrowserRouter>
@@ -18,7 +18,7 @@ describe('ImportSeed Page', () => {
     const nextButton = screen.getByRole('button', { name: 'Next' });
 
     // Going to Screen 1
-    const seedInput = renderedElements.container.querySelector('#seed');
+    const seedInput = screen.getByLabelText('Seed');
     await user.type(seedInput, WALLET_SEED);
     await user.click(nextButton);
 

@@ -4,11 +4,11 @@ import EditIcon from '@mui/icons-material/Edit';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { Paper, Typography } from '@mui/material';
 
+import { TokenInfo } from './TokenInfo';
 import { SECONDARY_GRAY } from '../../../constants';
 import { XRPL_META_URL } from '../../../constants/xrplmeta';
 import { XRPLMetaTokenAPIResponse } from '../../../types';
 import { IconTextButton } from '../../atoms/IconTextButton';
-import { TokenInfo } from './TokenInfo';
 
 export interface TokenDisplayProps {
   balance: number;

@@ -1,5 +1,5 @@
-import { STORAGE_TRUSTED_APPS } from '../constants/storage';
 import { loadData, removeData, saveData } from './storageLocal';
+import { STORAGE_TRUSTED_APPS } from '../constants/storage';
 
 export enum Permission {
   Address = 'address',

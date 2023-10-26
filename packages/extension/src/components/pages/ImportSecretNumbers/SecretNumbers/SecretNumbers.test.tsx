@@ -6,8 +6,8 @@ import { SecretNumbers, SecretNumbersProps } from './SecretNumbers';
 const defaultProps: SecretNumbersProps = {
   activeStep: 0,
   steps: 4,
-  handleBack: jest.fn(),
-  setActiveStep: jest.fn()
+  onBack: jest.fn(),
+  onNext: jest.fn()
 };
 
 describe('SecretNumbers - ImportSecretNumbers Page', () => {

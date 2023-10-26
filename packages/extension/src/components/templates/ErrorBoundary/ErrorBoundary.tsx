@@ -4,9 +4,9 @@ import { Container, Typography, Button } from '@mui/material';
 import * as Sentry from '@sentry/browser';
 import { Extras } from '@sentry/types';
 
+import { WarningIcon } from './WarningIcon';
 import { NETWORK_BANNER_HEIGHT } from '../../../constants';
 import { useNetwork } from '../../../contexts';
-import { WarningIcon } from './WarningIcon';
 
 export interface ErrorBoundaryProps {
   children: ReactNode;

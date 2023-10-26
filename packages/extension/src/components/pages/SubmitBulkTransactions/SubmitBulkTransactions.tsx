@@ -12,6 +12,9 @@ import {
   TransactionWithID
 } from '@gemwallet/constants';
 
+import { PermissionRequiredView } from './PermissionRequiredView';
+import { RecapView } from './RecapView';
+import { StepperView } from './StepperView';
 import { STORAGE_MESSAGING_KEY, STORAGE_PERMISSION_SUBMIT_BULK } from '../../../constants';
 import {
   TransactionProgressStatus,
@@ -23,9 +26,6 @@ import { useFees, useFetchFromSessionStorage, useTransactionStatus } from '../..
 import { TransactionStatus } from '../../../types';
 import { loadFromChromeLocalStorage, saveInChromeLocalStorage } from '../../../utils';
 import { serializeError } from '../../../utils/errors';
-import { PermissionRequiredView } from './PermissionRequiredView';
-import { RecapView } from './RecapView';
-import { StepperView } from './StepperView';
 
 interface Params {
   id: number;

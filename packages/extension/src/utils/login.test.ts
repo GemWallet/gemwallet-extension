@@ -1,6 +1,6 @@
-import { STORAGE_REMEMBER_SESSION } from '../constants';
 import { loadRememberSessionState, saveRememberSessionState } from './login';
 import { saveInChromeLocalStorage, loadFromChromeLocalStorage } from './storageChromeLocal';
+import { STORAGE_REMEMBER_SESSION } from '../constants';
 
 jest.mock('./storageChromeLocal', () => ({
   saveInChromeLocalStorage: jest.fn(),
@@ -9,7 +9,7 @@ jest.mock('./storageChromeLocal', () => ({
 
 describe('saveRememberSessionState', () => {
   beforeEach(() => {
-    saveInChromeLocalStorage.mockClear();
+    (saveInChromeLocalStorage as jest.Mock).mockClear();
   });
 
   test('should save the remember session state to chrome storage', async () => {
@@ -24,7 +24,7 @@ describe('saveRememberSessionState', () => {
 
 describe('loadRememberSessionState', () => {
   beforeEach(() => {
-    loadFromChromeLocalStorage.mockClear();
+    (loadFromChromeLocalStorage as jest.Mock).mockClear();
   });
 
   test('should load the remember session state from chrome storage', async () => {

@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 
-import { generateWalletContext } from '../../../../mocks';
 import { SecretSeed, SecretSeedProps } from './SecretSeed';
+import { generateWalletContext } from '../../../../mocks';
 
 const defaultProps: SecretSeedProps = {
   activeStep: 0,

@@ -1,7 +1,7 @@
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 
-import { generateWalletContext } from '../../../mocks';
 import { PrivateRoute } from './PrivateRoute';
+import { generateWalletContext } from '../../../mocks';
 
 let mockWalletContext = generateWalletContext();
 jest.mock('../../../contexts', () => ({
@@ -24,24 +24,24 @@ describe('PrivateRoute Atom', () => {
 
   test('Should redirect if there is at least one wallet found', () => {
     const CHILD_TEXT = 'Hello world!';
-    const { getByText } = render(
+    render(
       <PrivateRoute>
         <div>{CHILD_TEXT}</div>
       </PrivateRoute>
     );
 
-    expect(getByText(CHILD_TEXT)).toBeInTheDocument();
+    expect(screen.getByText(CHILD_TEXT)).toBeInTheDocument();
   });
 
   test('Should redirect to welcome page with the proper arguments if there are no wallets found', () => {
     mockWalletContext = generateWalletContext({ wallets: [] });
-    const { getByText, queryByText } = render(
+    render(
       <PrivateRoute>
         <div>Private</div>
       </PrivateRoute>
     );
 
-    expect(getByText('Navigation')).toBeInTheDocument();
-    expect(queryByText('Private')).not.toBeInTheDocument();
+    expect(screen.getByText('Navigation')).toBeInTheDocument();
+    expect(screen.queryByText('Private')).not.toBeInTheDocument();
   });
 });

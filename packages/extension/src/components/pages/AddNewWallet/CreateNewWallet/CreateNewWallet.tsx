@@ -3,13 +3,13 @@ import { useState, useEffect, FC, useCallback } from 'react';
 import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
 
+import { STEPS } from './constants';
 import { LIST_WALLETS_PATH } from '../../../../constants';
 import { useWallet } from '../../../../contexts';
 import { WalletToSave } from '../../../../utils';
 import { PageWithSpinner } from '../../../templates';
 import { ConfirmSeed } from '../../CreateWallet/ConfirmSeed';
 import { SecretSeed } from '../../CreateWallet/SecretSeed';
-import { STEPS } from './constants';
 
 export interface CreateNewWalletProps {
   password: string;

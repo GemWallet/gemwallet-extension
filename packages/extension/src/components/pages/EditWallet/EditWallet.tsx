@@ -4,15 +4,15 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import { Button, CircularProgress, List, ListItem, ListItemText } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import { RemoveWallet } from './RemoveWallet';
+import { ShowSecret } from './ShowSecret';
+import { WalletName } from './WalletName';
 import { LIST_WALLETS_PATH } from '../../../constants';
 import { useWallet } from '../../../contexts';
 import { WalletLedger } from '../../../types';
 import { truncateWalletName } from '../../../utils';
 import { WalletIcon } from '../../atoms';
 import { PageWithReturn, PageWithSpinner } from '../../templates';
-import { RemoveWallet } from './RemoveWallet';
-import { ShowSecret } from './ShowSecret';
-import { WalletName } from './WalletName';
 
 type Menu = 'walletName' | 'showSecret' | 'removeWallet';
 

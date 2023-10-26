@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { render, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 
 import { useTimeout } from './useTimeout';
 
@@ -16,8 +16,8 @@ const TestComponent: React.FC = () => {
 };
 
 test('useTimeout hook should set isVisible to true after 2 seconds', async () => {
-  const { getByTestId } = render(<TestComponent />);
-  const testElement = getByTestId('test-element');
+  render(<TestComponent />);
+  const testElement = screen.getByTestId('test-element');
 
   // Assert that the element is initially hidden
   expect(testElement).toHaveTextContent('Hidden');

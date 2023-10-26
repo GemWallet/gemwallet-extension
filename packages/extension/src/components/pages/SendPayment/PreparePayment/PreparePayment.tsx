@@ -19,6 +19,7 @@ import { isValidAddress } from 'xrpl';
 
 import { Memo } from '@gemwallet/constants';
 
+import { DestinationTagInfoModal } from './DestinationTagInfoModal';
 import {
   DEFAULT_RESERVE,
   HOME_PATH,
@@ -31,7 +32,6 @@ import { buildDefaultMemos, convertHexCurrencyString } from '../../../../utils';
 import { NumericInput } from '../../../atoms';
 import { InformationMessage } from '../../../molecules';
 import { PageWithNavMenu, PageWithReturn, PageWithSpinner } from '../../../templates';
-import { DestinationTagInfoModal } from './DestinationTagInfoModal';
 
 const MAX_MEMO_LENGTH = 300;
 const MAX_DESTINATION_TAG_LENGTH = 10;

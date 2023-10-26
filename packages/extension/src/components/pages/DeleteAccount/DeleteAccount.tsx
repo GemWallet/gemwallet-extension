@@ -4,11 +4,11 @@ import WarningIcon from '@mui/icons-material/Warning';
 import { Button, Link, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
+import { DeleteAccountConfirm } from './DeleteAccountConfirm';
+import { DeleteAccountForm } from './DeleteAccountForm';
 import { SETTINGS_PATH } from '../../../constants';
 import { PageWithReturn } from '../../templates';
 import { EnterPasswordDanger } from '../EnterPasswordDanger';
-import { DeleteAccountConfirm } from './DeleteAccountConfirm';
-import { DeleteAccountForm } from './DeleteAccountForm';
 
 export const DeleteAccount: FC = () => {
   const navigate = useNavigate();

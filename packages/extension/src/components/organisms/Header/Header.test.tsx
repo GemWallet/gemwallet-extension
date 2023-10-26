@@ -1,9 +1,9 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
+import { Header } from './Header';
 import { generateWalletContext } from '../../../mocks';
 import { WalletLedger } from '../../../types';
-import { Header } from './Header';
 
 jest.mock('react-router-dom', () => ({
   useNavigate: () => jest.fn()

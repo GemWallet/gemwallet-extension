@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { formatToken } from '../../../utils';
 import { TokenDisplay, TokenDisplayProps } from './TokenDisplay';
+import { formatToken } from '../../../utils';
 
 const user = userEvent.setup();
 

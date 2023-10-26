@@ -1,7 +1,7 @@
 import { GEM_WALLET } from '@gemwallet/constants';
 
-import { handleLogoutEvent } from '../index';
 import { closeOffscreen, createOffscreen } from './offscreen';
+import { handleLogoutEvent } from '../index';
 
 const SESSION_LENGTH_MINUTES = 30;
 const MILLISECONDS_IN_MINUTE = 60 * 1000;

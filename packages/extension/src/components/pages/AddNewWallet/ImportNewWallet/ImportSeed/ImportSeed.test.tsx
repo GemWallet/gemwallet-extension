@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { generateWalletContext } from '../../../../../mocks';
 import { ImportSeed, ImportSeedProps } from './ImportSeed';
+import { generateWalletContext } from '../../../../../mocks';
 
 const defaultProps: ImportSeedProps = {
   activeStep: 2,

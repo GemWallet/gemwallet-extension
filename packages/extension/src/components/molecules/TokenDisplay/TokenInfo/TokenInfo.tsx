@@ -2,9 +2,9 @@ import { Ref, forwardRef } from 'react';
 
 import { Typography } from '@mui/material';
 
+import { RenderTokenIcon } from './RenderTokenIcon';
 import { SECONDARY_GRAY } from '../../../../constants';
 import { formatToken } from '../../../../utils';
-import { RenderTokenIcon } from './RenderTokenIcon';
 
 export interface TokenInfoProps {
   isXRPToken: boolean;

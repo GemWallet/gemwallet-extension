@@ -8,7 +8,7 @@ const user = userEvent.setup();
 
 describe('ImportSecretNumbers Page', () => {
   test('Should go back', async () => {
-    const renderedElements = render(
+    render(
       <BrowserRouter>
         <ImportSecretNumbers />
       </BrowserRouter>
@@ -28,9 +28,7 @@ describe('ImportSecretNumbers Page', () => {
       '073666'
     ];
     secretNumbers.forEach(async (number, index) => {
-      const numberInput = renderedElements.container.querySelector(
-        `#numbers${String.fromCharCode(65 + index)}`
-      );
+      const numberInput = screen.getByLabelText(`Numbers ${String.fromCharCode(65 + index)}`);
       await user.type(numberInput, number);
     });
 

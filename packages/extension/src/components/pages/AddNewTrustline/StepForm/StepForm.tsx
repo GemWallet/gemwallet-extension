@@ -6,11 +6,11 @@ import { isValidAddress } from 'xrpl';
 
 import { Network } from '@gemwallet/constants';
 
+import { SearchToken } from './SearchToken';
 import { HOME_PATH, MAX_TOKEN_LENGTH } from '../../../../constants';
 import { useNetwork } from '../../../../contexts';
 import { NumericInput } from '../../../atoms';
 import { PageWithReturn } from '../../../templates';
-import { SearchToken } from './SearchToken';
 
 interface InitialValues {
   issuer: string;

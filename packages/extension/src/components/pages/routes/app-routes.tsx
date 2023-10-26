@@ -1,10 +1,10 @@
 import * as Sentry from '@sentry/react';
 import { Route, Routes } from 'react-router-dom';
 
-import { PrivateRoute } from '../../atoms';
-import { Login } from '../Login';
 import { privateRoutes } from './private.routes';
 import { publicRoutes } from './public.routes';
+import { PrivateRoute } from '../../atoms';
+import { Login } from '../Login';
 
 const SentryRoutes = Sentry.withSentryReactRouterV6Routing(Routes);
 

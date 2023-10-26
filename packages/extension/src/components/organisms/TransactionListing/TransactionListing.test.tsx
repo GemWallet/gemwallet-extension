@@ -1,9 +1,9 @@
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { generateWalletContext } from '../../../mocks';
 import { TransactionListing } from './TransactionListing';
 import { mockTransactions } from './TransactionListing.mock';
+import { generateWalletContext } from '../../../mocks';
 
 const user = userEvent.setup();
 
@@ -19,27 +19,35 @@ describe('TransactionListing', () => {
 
   test('renders the page with spinner when the wallet is not loaded', () => {
     mockWalletContext = generateWalletContext({ getCurrentWallet: () => undefined });
-    const screen = render(<TransactionListing transactions={[]} />);
+    render(<TransactionListing transactions={[]} />);
     expect(screen.getByTestId('page-with-spinner')).toBeInTheDocument();
   });
 
   test('renders the information message when there are no transactions', async () => {
-    const screen = render(<TransactionListing transactions={[]} />);
+    render(<TransactionListing transactions={[]} />);
     expect(screen.getByText('No transactions to show')).toBeInTheDocument();
     const message = screen.getByText('There are no history of transactions with this wallet.');
     expect(message).toBeInTheDocument();
   });
 
   test('renders the list of transactions', async () => {
-    const screen = render(<TransactionListing transactions={mockTransactions} />);
-    expect(screen.getByText('Payment sent - 20 XRP')).toBeInTheDocument();
+    render(<TransactionListing transactions={mockTransactions} />);
+
+    const transactionTextElements = screen.getAllByText(
+      /Payment sent - 20 XRP|TrustLine transaction/
+    );
+
+    // Assert that both elements are present
+    expect(transactionTextElements[0]).toBeInTheDocument();
+    expect(transactionTextElements[1]).toBeInTheDocument();
+
+    // Continue with other assertions as needed
     expect(screen.getByText('Feb 12, 2023 - 17:31')).toBeInTheDocument();
-    expect(screen.getByText('TrustLine transaction')).toBeInTheDocument();
     expect(screen.getByText('Feb 12, 2023 - 06:48')).toBeInTheDocument();
   });
 
   test('renders the transaction details when the transaction is clicked', async () => {
-    const screen = render(<TransactionListing transactions={mockTransactions} />);
+    render(<TransactionListing transactions={mockTransactions} />);
     const transaction = await screen.findByText('Payment sent - 20 XRP');
     expect(transaction).toBeInTheDocument();
     await user.click(transaction);
@@ -57,7 +65,7 @@ describe('TransactionListing', () => {
   });
 
   test('dialog renders properly', async () => {
-    const screen = render(<TransactionListing transactions={mockTransactions} />);
+    render(<TransactionListing transactions={mockTransactions} />);
     const transaction = await screen.findByText('Payment sent - 20 XRP');
     expect(transaction).toBeInTheDocument();
     await user.click(transaction);

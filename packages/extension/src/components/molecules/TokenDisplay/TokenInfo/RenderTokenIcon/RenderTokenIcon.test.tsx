@@ -11,13 +11,10 @@ describe('RenderTokenIcon', () => {
   test('should render an image when tokenIconUrl is provided', () => {
     const tokenIconUrl = 'https://example.com/token.png';
     const token = 'Token';
-    const { container } = render(
-      <RenderTokenIcon isXRPToken={false} tokenIconUrl={tokenIconUrl} token={token} />
-    );
-    const imgElement = container.querySelector('img');
+    render(<RenderTokenIcon isXRPToken={false} tokenIconUrl={tokenIconUrl} token={token} />);
+    const imgElement = screen.getByRole('img', { name: token });
     expect(imgElement).toBeInTheDocument();
     expect(imgElement).toHaveAttribute('src', tokenIconUrl);
-    expect(imgElement).toHaveAttribute('alt', token);
   });
 
   test('should render GemWallet when neither isXRPToken nor tokenIconUrl is provided', () => {

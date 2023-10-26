@@ -2,10 +2,10 @@ import { FC, useCallback, useState } from 'react';
 
 import { Wallet } from 'xrpl';
 
+import { Mnemonic } from './Mnemonic';
 import { WalletToSave } from '../../../utils';
 import { Congratulations } from '../Congratulations';
 import { CreatePassword } from '../CreatePassword';
-import { Mnemonic } from './Mnemonic';
 
 const STEPS = 3;
 

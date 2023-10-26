@@ -1,9 +1,9 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
+import { AsyncTransaction } from './AsyncTransaction';
 import { BrowserContext } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
-import { AsyncTransaction } from './AsyncTransaction';
 
 describe('AsyncTransaction Template', () => {
   const user = userEvent.setup();

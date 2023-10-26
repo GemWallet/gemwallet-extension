@@ -1,7 +1,7 @@
 import * as Sentry from '@sentry/react';
 
-import { STORAGE_REMEMBER_SESSION } from '../constants';
 import { loadFromChromeLocalStorage, saveInChromeLocalStorage } from './storageChromeLocal';
+import { STORAGE_REMEMBER_SESSION } from '../constants';
 
 export const saveRememberSessionState = (checked: boolean) => {
   saveInChromeLocalStorage(STORAGE_REMEMBER_SESSION, JSON.stringify(checked));

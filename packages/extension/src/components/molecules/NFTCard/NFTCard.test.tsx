@@ -2,9 +2,9 @@ import { FC, ReactNode } from 'react';
 
 import { render, screen, waitFor, act } from '@testing-library/react';
 
+import { NFTCard, NFTCardProps } from './NFTCard';
 import { LedgerContext } from '../../../contexts';
 import { valueLedgerContext } from '../../../mocks';
-import { NFTCard, NFTCardProps } from './NFTCard';
 
 const mockNFT = {
   Flags: 11,
@@ -43,6 +43,7 @@ const LedgerContextMockProvider: FC<LedgerContextMockProviderProps> = ({ childre
 );
 
 const renderNFTCard = (props: NFTCardProps) => {
+  // eslint-disable-next-line testing-library/no-unnecessary-act
   act(() => {
     render(
       <LedgerContextMockProvider>
@@ -58,7 +59,10 @@ describe('NFTCard', () => {
       ...mockNFTData
     });
 
-    renderNFTCard({ NFT: mockNFT });
+    renderNFTCard({
+      NFT: mockNFT,
+      layout: 'list'
+    });
 
     await waitFor(() => expect(mockGetNFTData).toHaveBeenCalled());
     expect(
@@ -72,7 +76,7 @@ describe('NFTCard', () => {
       throw new Error('Failed to fetch NFT data');
     });
 
-    renderNFTCard({ NFT: mockNFT });
+    renderNFTCard({ NFT: mockNFT, layout: 'list' });
 
     await waitFor(() => expect(mockGetNFTData).toHaveBeenCalled());
 

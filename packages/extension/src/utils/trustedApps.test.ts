@@ -1,4 +1,3 @@
-import { STORAGE_TRUSTED_APPS } from '../constants';
 import { loadData } from './storageLocal';
 import {
   checkPermissions,
@@ -9,6 +8,7 @@ import {
   saveTrustedApp,
   TrustedApp
 } from './trustedApps';
+import { STORAGE_TRUSTED_APPS } from '../constants';
 
 describe('Trusted Apps util', () => {
   const mockTrustedApp: TrustedApp = {

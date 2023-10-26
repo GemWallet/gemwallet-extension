@@ -7,8 +7,8 @@ import { SecretSeed } from './SecretSeed';
 const defaultProps: SecretSeedProps = {
   activeStep: 0,
   steps: 3,
-  handleBack: jest.fn(),
-  setActiveStep: jest.fn()
+  onBack: jest.fn(),
+  onNext: jest.fn()
 };
 
 describe('ImportSeed - SecretSeed Page', () => {

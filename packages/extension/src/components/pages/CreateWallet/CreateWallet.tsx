@@ -2,14 +2,14 @@ import { useState, useEffect, FC, useCallback } from 'react';
 
 import * as Sentry from '@sentry/react';
 
+import { ConfirmSeed } from './ConfirmSeed';
+import { STEPS } from './constants';
+import { SecretSeed } from './SecretSeed';
 import { useWallet } from '../../../contexts';
 import { WalletToSave } from '../../../utils';
 import { PageWithSpinner } from '../../templates';
 import { Congratulations } from '../Congratulations';
 import { CreatePassword } from '../CreatePassword';
-import { ConfirmSeed } from './ConfirmSeed';
-import { STEPS } from './constants';
-import { SecretSeed } from './SecretSeed';
 
 export const CreateWallet: FC = () => {
   const [wallet, setWallet] = useState<WalletToSave | undefined>();

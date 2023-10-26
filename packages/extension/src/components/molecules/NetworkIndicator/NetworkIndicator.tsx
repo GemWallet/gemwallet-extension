@@ -7,14 +7,14 @@ import * as Sentry from '@sentry/react';
 import { NETWORK, Network } from '@gemwallet/constants';
 import { NetworkData } from '@gemwallet/constants/src/network/network.types';
 
-import { useNetwork } from '../../../contexts';
-import { loadCustomNetworks, loadNetwork, replaceCustomNetworks } from '../../../utils';
-import { DialogPage, LoadingOverlay } from '../../templates';
 import { ActiveNetworkDeleteDialog } from './ActiveNetworkDeleteDialog';
 import { AddCustomNetworkDialog } from './AddCustomNetworkDialog';
 import { DeleteNetworkDialog } from './DeleteNetworkDialog';
 import { ErrorSwitchNetworkDialog } from './ErrorSwitchNetworkDialog';
 import { NetworkDisplay } from './NetworkDisplay';
+import { useNetwork } from '../../../contexts';
+import { loadCustomNetworks, loadNetwork, replaceCustomNetworks } from '../../../utils';
+import { DialogPage, LoadingOverlay } from '../../templates';
 
 export const NetworkIndicator: FC = () => {
   const { client, networkName, switchNetwork } = useNetwork();

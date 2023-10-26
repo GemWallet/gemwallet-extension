@@ -1,7 +1,7 @@
 import { NETWORK, Network } from '@gemwallet/constants';
 
-import { STORAGE_NETWORK } from '../constants';
 import { saveNetwork, loadNetwork, removeNetwork } from './network';
+import { STORAGE_NETWORK } from '../constants';
 
 // Mock the localStorage object and its methods
 const localStorageMock = {

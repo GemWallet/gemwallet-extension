@@ -1,10 +1,10 @@
 import { FC, useCallback, useState } from 'react';
 
-import { PageWithSpinner } from '../../templates';
 import { AddWalletMethod } from './AddWalletMethod';
 import { ConfirmPassword } from './ConfirmPassword';
 import { CreateNewWallet } from './CreateNewWallet';
 import { ImportNewWallet } from './ImportNewWallet';
+import { PageWithSpinner } from '../../templates';
 
 export const AddNewWallet: FC = () => {
   const [activeStep, setActiveStep] = useState<number>(0);

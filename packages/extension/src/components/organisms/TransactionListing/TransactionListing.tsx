@@ -4,12 +4,12 @@ import TransactionIcon from '@mui/icons-material/CompareArrows';
 import { List, ListItem, ListItemIcon, ListItemText, Paper, Typography } from '@mui/material';
 import { unix } from 'moment';
 
+import { formatDate, formatTransaction } from './format.util';
+import { TransactionDetails } from './TransactionDetails';
 import { useWallet } from '../../../contexts';
 import { AccountTransaction } from '../../../types';
 import { InformationMessage } from '../../molecules';
 import { DialogPage, PageWithSpinner } from '../../templates';
-import { formatDate, formatTransaction } from './format.util';
-import { TransactionDetails } from './TransactionDetails';
 
 export interface TransactionListingProps {
   transactions: AccountTransaction[];

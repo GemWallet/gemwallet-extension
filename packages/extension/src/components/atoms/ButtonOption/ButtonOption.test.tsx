@@ -32,13 +32,13 @@ describe('ButtonOption', () => {
 
   test('does not render a check icon if the button option is not selected', () => {
     renderButtonOption({ isSelected: false });
-    expect(screen.queryByTestId('check-icon')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('CheckIcon')).not.toBeInTheDocument();
   });
 
   test('calls the onClick prop when the card is clicked', async () => {
     const onClick = jest.fn();
-    const { container } = renderButtonOption({ onClick });
-    await user.click(container.querySelector('.MuiPaper-root') as Element);
+    renderButtonOption({ onClick });
+    await user.click(screen.getByRole('button'));
     expect(onClick).toHaveBeenCalled();
   });
 });

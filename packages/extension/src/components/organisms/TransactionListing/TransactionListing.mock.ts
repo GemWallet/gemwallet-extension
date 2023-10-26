@@ -1,4 +1,6 @@
-export const mockTransactions = [
+import { AccountTransaction } from '../../../types';
+
+export const mockTransactions: AccountTransaction[] = [
   {
     meta: {
       AffectedNodes: [
@@ -61,7 +63,8 @@ export const mockTransactions = [
       inLedger: 35332299,
       ledger_index: 35332299
     },
-    validated: true
+    validated: true,
+    ledger_index: 35320144
   },
   {
     meta: {
@@ -109,7 +112,8 @@ export const mockTransactions = [
       inLedger: 35320142,
       ledger_index: 35320142
     },
-    validated: true
+    validated: true,
+    ledger_index: 35320144
   },
   {
     meta: {
@@ -149,7 +153,7 @@ export const mockTransactions = [
       },
       Sequence: 34325153,
       SigningPubKey: 'ED320B639DE36DD5779AE0E41A1930889BCD09A667E1848C96E38C65FB9D1F77DA',
-      TransactionType: 'New Transaction Type',
+      TransactionType: 'TrustSet',
       TxnSignature:
         'E1D827FA13B3B46BAE3B235B54B014F59BA214E3AE806D1056AD4929A3EC05CD144658359A5E8990B8D2C7810DE3CBD5ED10BB4D948ABA599ED57F88D71D500D',
       date: 729499754,
@@ -157,6 +161,7 @@ export const mockTransactions = [
       inLedger: 35320144,
       ledger_index: 35320144
     },
-    validated: true
+    validated: true,
+    ledger_index: 35320144
   }
 ];
