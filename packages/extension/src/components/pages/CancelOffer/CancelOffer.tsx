@@ -52,8 +52,7 @@ export const CancelOffer: FC = () => {
     params.transaction?.Fee
   );
 
-  const queryString = window.location.search;
-  const urlParams = new URLSearchParams(queryString);
+  const urlParams = new URLSearchParams(window.location.search);
   const { fetchedData } = useFetchFromSessionStorage(
     urlParams.get(STORAGE_MESSAGING_KEY) ?? undefined
   ) as {
@@ -113,8 +112,7 @@ export const CancelOffer: FC = () => {
   });
 
   useEffect(() => {
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
+    const urlParams = new URLSearchParams(window.location.search);
     const id = Number(urlParams.get('id')) || 0;
     const wallet = getCurrentWallet();
 

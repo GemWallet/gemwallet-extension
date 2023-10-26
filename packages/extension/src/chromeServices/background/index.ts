@@ -355,7 +355,7 @@ chrome.runtime.onMessage.addListener(
     } else if (type === 'REQUEST_CREATE_OFFER/V3') {
       const { payload } = message;
       try {
-        sendInMemoryMessage({
+        sendMessageInMemory({
           payload,
           parameter: PARAMETER_TRANSACTION_CREATE_OFFER,
           receivingMessage: 'RECEIVE_CREATE_OFFER/V3',
@@ -365,7 +365,7 @@ chrome.runtime.onMessage.addListener(
     } else if (type === 'REQUEST_CANCEL_OFFER/V3') {
       const { payload } = message;
       try {
-        sendInMemoryMessage({
+        sendMessageInMemory({
           payload,
           parameter: PARAMETER_TRANSACTION_CANCEL_OFFER,
           receivingMessage: 'RECEIVE_CANCEL_OFFER/V3',

@@ -24,7 +24,7 @@ describe('Offers', () => {
   });
 
   it('Create offer (XRP to ETH)', () => {
-    const url = `http://localhost:3000?create-offer&storageKey=${STORAGE_KEY}&id=210404997&requestMessage=undefined&transaction=createOffer`;
+    const url = `http://localhost:3000/create-offer?storageKey=${STORAGE_KEY}&id=210404997&requestMessage=undefined&transaction=createOffer`;
 
     const params = {
       takerGets: '10000000',
@@ -74,7 +74,7 @@ describe('Offers', () => {
   });
 
   it('Create offer (XRP to SOLO (non hex))', () => {
-    const url = `http://localhost:3000?create-offer&storageKey=${STORAGE_KEY}&id=210404997&requestMessage=undefined&transaction=createOffer`;
+    const url = `http://localhost:3000/create-offer?storageKey=${STORAGE_KEY}&id=210404997&requestMessage=undefined&transaction=createOffer`;
 
     const params = {
       takerGets: '10000000',
@@ -124,7 +124,7 @@ describe('Offers', () => {
   });
 
   it('Create offer (SOLO (non hex) to XRP)', () => {
-    const url = `http://localhost:3000?create-offer&storageKey=${STORAGE_KEY}&id=210404997&requestMessage=undefined&transaction=createOffer`;
+    const url = `http://localhost:3000/create-offer?storageKey=${STORAGE_KEY}&id=210404997&requestMessage=undefined&transaction=createOffer`;
 
     const params = {
       takerPays: '10000000',
@@ -174,7 +174,7 @@ describe('Offers', () => {
   });
 
   it('Create offer (XRP to SOLO (hex))', () => {
-    const url = `http://localhost:3000?create-offer&storageKey=${STORAGE_KEY}&id=210404997&requestMessage=undefined&transaction=createOffer`;
+    const url = `http://localhost:3000/create-offer?storageKey=${STORAGE_KEY}&id=210404997&requestMessage=undefined&transaction=createOffer`;
 
     const params = {
       takerGets: '10000000',
@@ -224,7 +224,7 @@ describe('Offers', () => {
   });
 
   it('Create offer (SOLO (hex) to XRP)', () => {
-    const url = `http://localhost:3000?create-offer&storageKey=${STORAGE_KEY}&id=210404997&requestMessage=undefined&transaction=createOffer`;
+    const url = `http://localhost:3000/create-offer?storageKey=${STORAGE_KEY}&id=210404997&requestMessage=undefined&transaction=createOffer`;
 
     const params = {
       takerPays: '10000000',
@@ -295,7 +295,7 @@ describe('Offers', () => {
   });
 
   it('Cancel offer', function () {
-    const url = `http://localhost:3000?cancel-offer&storageKey=${STORAGE_KEY}&id=210404997&requestMessage=undefined&transaction=cancelOffer`;
+    const url = `http://localhost:3000/cancel-offer?storageKey=${STORAGE_KEY}&id=210404997&requestMessage=undefined&transaction=cancelOffer`;
 
     const params = {
       offerSequence: this.sequence,
