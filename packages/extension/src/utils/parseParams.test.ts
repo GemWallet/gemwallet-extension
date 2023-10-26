@@ -275,6 +275,11 @@ describe('parseCreateOfferFlags', () => {
     expect(result).toEqual({ tfPassive: true, tfImmediateOrCancel: false });
   });
 
+  test('should return object when flags is object already', () => {
+    const result = parseCreateOfferFlags({ tfPassive: true, tfImmediateOrCancel: false });
+    expect(result).toEqual({ tfPassive: true, tfImmediateOrCancel: false });
+  });
+
   test('should return null when flagsString is invalid json', () => {
     const result = parseCreateOfferFlags('{ tfPassive: true, tfImmediateOrCancel: false }');
     expect(result).toBeNull();

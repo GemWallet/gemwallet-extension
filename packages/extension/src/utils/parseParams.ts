@@ -332,17 +332,24 @@ export const parseCreateNFTOfferFlags = (
   return null;
 };
 
-export const parseCreateOfferFlags = (flagsString: string | null): CreateOfferFlags | null => {
-  if (!flagsString) {
+export const parseCreateOfferFlags = (
+  input?: CreateOfferFlags | string
+): CreateOfferFlags | null => {
+  if (!input) {
     return null;
   }
 
-  if (Number(flagsString)) {
-    return Number(flagsString);
+  if (typeof input === 'object' || typeof input === 'number') {
+    return input;
   }
 
+  if (Number(input)) {
+    return Number(input);
+  }
+
+  // For API version < 3.6
   try {
-    const parsedFlags = JSON.parse(flagsString);
+    const parsedFlags = JSON.parse(input);
 
     if (
       typeof parsedFlags === 'object' &&

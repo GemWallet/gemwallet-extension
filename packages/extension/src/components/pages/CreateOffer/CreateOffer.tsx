@@ -4,11 +4,13 @@ import { OfferCreate } from 'xrpl';
 
 import {
   API_ERROR_BAD_REQUEST,
+  CreateOfferRequest,
   GEM_WALLET,
   ReceiveCreateOfferBackgroundMessage,
   ResponseType
 } from '@gemwallet/constants';
 
+import { STORAGE_MESSAGING_KEY } from '../../../constants';
 import {
   buildOfferCreate,
   TransactionProgressStatus,
@@ -17,10 +19,10 @@ import {
   useTransactionProgress,
   useWallet
 } from '../../../contexts';
-import { useFees, useTransactionStatus } from '../../../hooks';
+import { useFees, useFetchFromSessionStorage, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
 import { parseAmount, parseCreateOfferFlags } from '../../../utils';
-import { parseBaseParamsFromURLParamsNew } from '../../../utils/baseParams';
+import { parseBaseParamsFromStoredData } from '../../../utils/baseParams';
 import { serializeError } from '../../../utils/errors';
 import { TransactionDetails } from '../../organisms';
 import { TransactionPage } from '../../templates';
@@ -54,6 +56,13 @@ export const CreateOffer: FC = () => {
     },
     params.transaction?.Fee
   );
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const { fetchedData } = useFetchFromSessionStorage(
+    urlParams.get(STORAGE_MESSAGING_KEY) ?? undefined
+  ) as {
+    fetchedData: CreateOfferRequest | undefined;
+  };
 
   const sendMessageToBackground = useCallback(
     (message: ReceiveCreateOfferBackgroundMessage) => {
@@ -108,36 +117,35 @@ export const CreateOffer: FC = () => {
   });
 
   useEffect(() => {
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
+    const urlParams = new URLSearchParams(window.location.search);
     const id = Number(urlParams.get('id')) || 0;
-
-    // CreateOffer fields
-    const flags = parseCreateOfferFlags(urlParams.get('flags'));
-    const expiration = urlParams.get('expiration') ? Number(urlParams.get('expiration')) : null;
-    const offerSequence = urlParams.get('offerSequence')
-      ? Number(urlParams.get('offerSequence'))
-      : null;
-    const takerGets = urlParams.get('takerGets')
-      ? parseAmount(urlParams.get('takerGets'), null, null, '')
-      : null;
-    const takerPays = urlParams.get('takerPays')
-      ? parseAmount(urlParams.get('takerPays'), null, null, '')
-      : null;
     const wallet = getCurrentWallet();
-
-    if (!takerGets || !takerPays) {
-      setIsParamsMissing(true);
-    }
 
     if (!wallet) {
       setIsParamsMissing(true);
       return;
     }
 
+    if (!fetchedData) {
+      return;
+    }
+
+    const flags = 'flags' in fetchedData ? parseCreateOfferFlags(fetchedData.flags) : undefined;
+    const expiration = 'expiration' in fetchedData ? Number(fetchedData.expiration) : undefined;
+    const offerSequence =
+      'offerSequence' in fetchedData ? Number(fetchedData.offerSequence) : undefined;
+    const takerGets =
+      'takerGets' in fetchedData ? parseAmount(fetchedData.takerGets, null, null, '') : undefined;
+    const takerPays =
+      'takerPays' in fetchedData ? parseAmount(fetchedData.takerPays, null, null, '') : undefined;
+
+    if (!takerGets || !takerPays) {
+      setIsParamsMissing(true);
+    }
+
     const transaction = buildOfferCreate(
       {
-        ...parseBaseParamsFromURLParamsNew(urlParams),
+        ...parseBaseParamsFromStoredData(fetchedData),
         takerGets: takerGets ?? '0',
         takerPays: takerPays ?? '0',
         ...(flags && { flags }),
@@ -151,7 +159,7 @@ export const CreateOffer: FC = () => {
       id,
       transaction
     });
-  }, [getCurrentWallet]);
+  }, [fetchedData, getCurrentWallet]);
 
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);
