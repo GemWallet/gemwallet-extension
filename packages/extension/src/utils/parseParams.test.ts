@@ -12,6 +12,7 @@ import {
   mintNFTFlagsToNumber,
   parseAmount,
   parseArray,
+  parseCreateNFTOfferFlags,
   parseCreateOfferFlags,
   parseLimitAmount,
   parseMemos,
@@ -33,6 +34,13 @@ describe('parseAmount', () => {
   test('parse amount object', () => {
     expect(
       parseAmount('{"value":"123","issuer":"issuer","currency":"USD"}', null, null, '')
+    ).toEqual({
+      value: '123',
+      issuer: 'issuer',
+      currency: 'USD'
+    });
+    expect(
+      parseAmount({ value: '123', issuer: 'issuer', currency: 'USD' }, null, null, '')
     ).toEqual({
       value: '123',
       issuer: 'issuer',
@@ -91,6 +99,13 @@ describe('parseMemos', () => {
         }
       }
     ]);
+    expect(parseMemos([{ memo: { memoData: 'memo' } }])).toEqual([
+      {
+        memo: {
+          memoData: 'memo'
+        }
+      }
+    ]);
     expect(
       parseMemos(
         '[{"Memo":{"MemoData":"memo","MemoType":"type","MemoFormat":"format"}},{"Memo":{"MemoData":"memo","MemoType":"type","MemoFormat":"format"}}]'
@@ -131,7 +146,7 @@ describe('parseSigners', () => {
     expect(parseSigners('{"key": "value"}')).toBeNull();
   });
 
-  it('should return parsed signers when input is a valid JSON string of signers array', () => {
+  it('should return parsed signers when input is a valid JSON string of signers array or already signers array', () => {
     const signers: Signer[] = [
       {
         signer: {
@@ -150,6 +165,8 @@ describe('parseSigners', () => {
     ];
 
     expect(parseSigners(JSON.stringify(signers))).toEqual(signers);
+
+    expect(parseSigners(signers)).toEqual(signers);
   });
 });
 
@@ -202,6 +219,40 @@ describe('parseMintNFTFlags', () => {
       tfOnlyXRP: false,
       tfTrustLine: true,
       tfTransferable: true
+    });
+
+    expect(
+      parseMintNFTFlags({
+        tfBurnable: false,
+        tfOnlyXRP: false,
+        tfTrustLine: true,
+        tfTransferable: true
+      })
+    ).toEqual({
+      tfBurnable: false,
+      tfOnlyXRP: false,
+      tfTrustLine: true,
+      tfTransferable: true
+    });
+  });
+});
+
+describe('parseCreateNFTOfferFlags', () => {
+  test('parse flags', () => {
+    expect(parseCreateNFTOfferFlags('123')).toEqual(123);
+  });
+
+  test('parse flags object', () => {
+    expect(parseCreateNFTOfferFlags('{"tfSellNFToken":true}')).toEqual({
+      tfSellNFToken: true
+    });
+
+    expect(
+      parseCreateNFTOfferFlags({
+        tfSellNFToken: true
+      })
+    ).toEqual({
+      tfSellNFToken: true
     });
   });
 });
@@ -307,6 +358,12 @@ describe('createNFTOfferFlagsToNumber', () => {
   describe('parseArray', () => {
     it('should return a string array when input is a valid JSON array', () => {
       const input = '["element1", "element2"]';
+      const result = parseArray(input);
+      expect(result).toEqual(['element1', 'element2']);
+    });
+
+    it('should return a string array when input is a valid array', () => {
+      const input = ['element1', 'element2'];
       const result = parseArray(input);
       expect(result).toEqual(['element1', 'element2']);
     });

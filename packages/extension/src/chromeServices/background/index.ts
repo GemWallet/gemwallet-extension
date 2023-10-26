@@ -292,60 +292,55 @@ chrome.runtime.onMessage.addListener(
         }
       });
     } else if (type === 'REQUEST_MINT_NFT/V3') {
-      handleTransactionRequest({
-        payload: message.payload,
-        sender,
-        parameter: PARAMETER_TRANSACTION_MINT_NFT,
-        receivingMessage: 'RECEIVE_MINT_NFT/V3',
-        errorPayload: {
-          type: ResponseType.Reject,
-          result: undefined
-        }
-      });
+      const { payload } = message;
+      try {
+        sendMessageInMemory({
+          payload,
+          parameter: PARAMETER_TRANSACTION_MINT_NFT,
+          receivingMessage: 'RECEIVE_MINT_NFT/V3',
+          sender
+        });
+      } catch (e) {}
     } else if (type === 'REQUEST_CREATE_NFT_OFFER/V3') {
-      handleTransactionRequest({
-        payload: message.payload,
-        sender,
-        parameter: PARAMETER_TRANSACTION_CREATE_NFT_OFFER,
-        receivingMessage: 'RECEIVE_CREATE_NFT_OFFER/V3',
-        errorPayload: {
-          type: ResponseType.Reject,
-          result: undefined
-        }
-      });
+      const { payload } = message;
+      try {
+        sendMessageInMemory({
+          payload,
+          parameter: PARAMETER_TRANSACTION_CREATE_NFT_OFFER,
+          receivingMessage: 'RECEIVE_CREATE_NFT_OFFER/V3',
+          sender
+        });
+      } catch (e) {}
     } else if (type === 'REQUEST_CANCEL_NFT_OFFER/V3') {
-      handleTransactionRequest({
-        payload: message.payload,
-        sender,
-        parameter: PARAMETER_TRANSACTION_CANCEL_NFT_OFFER,
-        receivingMessage: 'RECEIVE_CANCEL_NFT_OFFER/V3',
-        errorPayload: {
-          type: ResponseType.Reject,
-          result: undefined
-        }
-      });
+      const { payload } = message;
+      try {
+        sendMessageInMemory({
+          payload,
+          parameter: PARAMETER_TRANSACTION_CANCEL_NFT_OFFER,
+          receivingMessage: 'RECEIVE_CANCEL_NFT_OFFER/V3',
+          sender
+        });
+      } catch (e) {}
     } else if (type === 'REQUEST_ACCEPT_NFT_OFFER/V3') {
-      handleTransactionRequest({
-        payload: message.payload,
-        sender,
-        parameter: PARAMETER_TRANSACTION_ACCEPT_NFT_OFFER,
-        receivingMessage: 'RECEIVE_ACCEPT_NFT_OFFER/V3',
-        errorPayload: {
-          type: ResponseType.Reject,
-          result: undefined
-        }
-      });
+      const { payload } = message;
+      try {
+        sendMessageInMemory({
+          payload,
+          parameter: PARAMETER_TRANSACTION_ACCEPT_NFT_OFFER,
+          receivingMessage: 'RECEIVE_ACCEPT_NFT_OFFER/V3',
+          sender
+        });
+      } catch (e) {}
     } else if (type === 'REQUEST_BURN_NFT/V3') {
-      handleTransactionRequest({
-        payload: message.payload,
-        sender,
-        parameter: PARAMETER_TRANSACTION_BURN_NFT,
-        receivingMessage: 'RECEIVE_BURN_NFT/V3',
-        errorPayload: {
-          type: ResponseType.Reject,
-          result: undefined
-        }
-      });
+      const { payload } = message;
+      try {
+        sendMessageInMemory({
+          payload,
+          parameter: PARAMETER_TRANSACTION_BURN_NFT,
+          receivingMessage: 'RECEIVE_BURN_NFT/V3',
+          sender
+        });
+      } catch (e) {}
     } else if (type === 'REQUEST_SET_ACCOUNT/V3') {
       handleTransactionRequest({
         payload: message.payload,

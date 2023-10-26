@@ -19,13 +19,18 @@ import {
   TrustSetFlags
 } from '@gemwallet/constants';
 
-export const parseArray = (str: string | null): string[] | null => {
-  if (!str) {
+export const parseArray = (input: Array<any> | string | null): string[] | null => {
+  if (!input) {
     return null;
   }
 
+  if (typeof input === 'object') {
+    return input;
+  }
+
+  // For API version < 3.6
   try {
-    const parsed = JSON.parse(str);
+    const parsed = JSON.parse(input);
 
     if (Array.isArray(parsed)) {
       return parsed as string[];
@@ -36,17 +41,21 @@ export const parseArray = (str: string | null): string[] | null => {
 };
 
 export const parseAmount = (
-  amountString: string | null,
+  input: Amount | string | null,
   deprecatedCurrencyString: string | null,
   deprecatedIssuerString: string | null,
   messageType: string
 ): Amount | null => {
-  if (!amountString) {
+  if (!input) {
     return null;
   }
 
+  if (typeof input === 'object') {
+    return input;
+  }
+
   try {
-    const parsedAmount = JSON.parse(amountString);
+    const parsedAmount = JSON.parse(input);
 
     if (
       typeof parsedAmount === 'object' &&
@@ -77,7 +86,7 @@ export const parseAmount = (
     }
   } catch (error) {}
 
-  return amountString;
+  return input;
 };
 
 export const parseLimitAmount = (
@@ -115,13 +124,18 @@ export const parseLimitAmount = (
   return null;
 };
 
-export const parseMemos = (memosString: string | null): Memo[] | null => {
-  if (!memosString) {
+export const parseMemos = (input: Memo[] | string | null): Memo[] | null => {
+  if (!input) {
     return null;
   }
 
+  if (typeof input === 'object' && Array.isArray(input)) {
+    return input;
+  }
+
+  // For API version < 3.6
   try {
-    const parsedMemos = JSON.parse(memosString);
+    const parsedMemos = JSON.parse(input);
 
     if (Array.isArray(parsedMemos)) {
       return parsedMemos as Memo[];
@@ -131,13 +145,18 @@ export const parseMemos = (memosString: string | null): Memo[] | null => {
   return null;
 };
 
-export const parseSigners = (signersString: string | null): Signer[] | null => {
-  if (!signersString) {
+export const parseSigners = (input: Signer[] | string | null): Signer[] | null => {
+  if (!input) {
     return null;
   }
 
+  if (typeof input === 'object' && Array.isArray(input)) {
+    return input;
+  }
+
+  // For API version < 3.6
   try {
-    const parsedSigners = JSON.parse(signersString);
+    const parsedSigners = JSON.parse(input);
 
     if (Array.isArray(parsedSigners)) {
       return parsedSigners as Signer[];
@@ -247,17 +266,22 @@ export const parseSetAccountFlags = (flagsString: string | null): SetAccountFlag
   return null;
 };
 
-export const parseMintNFTFlags = (flagsString: string | null): MintNFTFlags | null => {
-  if (!flagsString) {
+export const parseMintNFTFlags = (input?: MintNFTFlags | string): MintNFTFlags | null => {
+  if (!input) {
     return null;
   }
 
-  if (Number(flagsString)) {
-    return Number(flagsString);
+  if (typeof input === 'object' || typeof input === 'number') {
+    return input;
   }
 
+  if (Number(input)) {
+    return Number(input);
+  }
+
+  // For API version < 3.6
   try {
-    const parsedFlags = JSON.parse(flagsString);
+    const parsedFlags = JSON.parse(input);
 
     if (
       typeof parsedFlags === 'object' &&
@@ -280,18 +304,23 @@ export const parseMintNFTFlags = (flagsString: string | null): MintNFTFlags | nu
 };
 
 export const parseCreateNFTOfferFlags = (
-  flagsString: string | null
+  input?: CreateNFTOfferFlags | string
 ): CreateNFTOfferFlags | null => {
-  if (!flagsString) {
+  if (!input) {
     return null;
   }
 
-  if (Number(flagsString)) {
-    return Number(flagsString);
+  if (typeof input === 'object' || typeof input === 'number') {
+    return input;
   }
 
+  if (Number(input)) {
+    return Number(input);
+  }
+
+  // For API version < 3.6
   try {
-    const parsedFlags = JSON.parse(flagsString);
+    const parsedFlags = JSON.parse(input);
 
     if (typeof parsedFlags === 'object' && parsedFlags !== null && 'tfSellNFToken' in parsedFlags) {
       return parsedFlags as {

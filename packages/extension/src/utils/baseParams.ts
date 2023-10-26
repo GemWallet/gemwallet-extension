@@ -53,6 +53,41 @@ export const parseBaseParamsFromURLParamsNew = (
   return result;
 };
 
+export const parseBaseParamsFromStoredData = (storedObject: any): BaseTransactionParamsNew => {
+  const result: Partial<BaseTransactionParamsNew> = {};
+
+  const addParam = <T extends keyof BaseTransactionParamsNew>(
+    key: T,
+    value: BaseTransactionParamsNew[T] | null
+  ) => {
+    if (value !== null && value !== undefined) {
+      result[key] = value;
+    }
+  };
+
+  addParam('fee', 'fee' in storedObject ? checkFee(storedObject.fee) : undefined);
+  addParam('sequence', 'sequence' in storedObject ? Number(storedObject.sequence) : undefined);
+  addParam('accountTxnID', 'accountTxnID' in storedObject ? storedObject.accountTxnID : undefined);
+  addParam(
+    'lastLedgerSequence',
+    'lastLedgerSequence' in storedObject ? Number(storedObject.lastLedgerSequence) : undefined
+  );
+  addParam('memos', 'memos' in storedObject ? parseMemos(storedObject.memos) : undefined);
+  addParam('signers', 'signers' in storedObject ? parseSigners(storedObject.signers) : undefined);
+  addParam('sourceTag', 'sourceTag' in storedObject ? Number(storedObject.sourceTag) : undefined);
+  addParam(
+    'signingPubKey',
+    'signingPubKey' in storedObject ? storedObject.signingPubKey : undefined
+  );
+  addParam(
+    'ticketSequence',
+    'ticketSequence' in storedObject ? Number(storedObject.ticketSequence) : undefined
+  );
+  addParam('txnSignature', 'txnSignature' in storedObject ? storedObject.txnSignature : undefined);
+
+  return result;
+};
+
 /*
  * Legacy part: Will be removed after all the views have been migrated.
  */

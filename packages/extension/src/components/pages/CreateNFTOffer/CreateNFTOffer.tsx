@@ -4,11 +4,13 @@ import { NFTokenCreateOffer } from 'xrpl';
 
 import {
   API_ERROR_BAD_REQUEST,
+  CreateNFTOfferRequest,
   GEM_WALLET,
   ReceiveCreateNFTOfferBackgroundMessage,
   ResponseType
 } from '@gemwallet/constants';
 
+import { STORAGE_MESSAGING_KEY } from '../../../constants';
 import {
   buildNFTokenCreateOffer,
   TransactionProgressStatus,
@@ -17,10 +19,10 @@ import {
   useTransactionProgress,
   useWallet
 } from '../../../contexts';
-import { useFees, useTransactionStatus } from '../../../hooks';
+import { useFees, useFetchFromSessionStorage, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
 import { parseAmount, parseCreateNFTOfferFlags } from '../../../utils';
-import { parseBaseParamsFromURLParamsNew } from '../../../utils/baseParams';
+import { parseBaseParamsFromStoredData } from '../../../utils/baseParams';
 import { serializeError } from '../../../utils/errors';
 import { TransactionDetails } from '../../organisms';
 import { TransactionPage } from '../../templates';
@@ -55,6 +57,13 @@ export const CreateNFTOffer: FC = () => {
     },
     params.transaction?.Fee
   );
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const { fetchedData } = useFetchFromSessionStorage(
+    urlParams.get(STORAGE_MESSAGING_KEY) ?? undefined
+  ) as {
+    fetchedData: CreateNFTOfferRequest | undefined;
+  };
 
   const sendMessageToBackground = useCallback(
     (message: ReceiveCreateNFTOfferBackgroundMessage) => {
@@ -109,31 +118,35 @@ export const CreateNFTOffer: FC = () => {
   });
 
   useEffect(() => {
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
+    const urlParams = new URLSearchParams(window.location.search);
     const id = Number(urlParams.get('id')) || 0;
-
-    // CreateNFTOffer fields
-    const NFTokenID = urlParams.get('NFTokenID');
-    const amount = parseAmount(urlParams.get('amount'), null, null, '');
-    const owner = urlParams.get('owner');
-    const expiration = urlParams.get('expiration') ? Number(urlParams.get('expiration')) : null;
-    const destination = urlParams.get('destination');
-    const flags = parseCreateNFTOfferFlags(urlParams.get('flags'));
     const wallet = getCurrentWallet();
-
-    if (!amount || !NFTokenID) {
-      setIsParamsMissing(true);
-    }
 
     if (!wallet) {
       setIsParamsMissing(true);
       return;
     }
 
+    if (!fetchedData) {
+      return;
+    }
+
+    // CreateNFTOffer fields
+    const NFTokenID = 'NFTokenID' in fetchedData ? fetchedData.NFTokenID : undefined;
+    const amount =
+      'amount' in fetchedData ? parseAmount(fetchedData.amount, null, null, '') : undefined;
+    const owner = 'owner' in fetchedData ? fetchedData.owner : undefined;
+    const expiration = 'expiration' in fetchedData ? fetchedData.expiration : undefined;
+    const destination = 'destination' in fetchedData ? fetchedData.destination : undefined;
+    const flags = 'flags' in fetchedData ? parseCreateNFTOfferFlags(fetchedData.flags) : undefined;
+
+    if (!amount || !NFTokenID) {
+      setIsParamsMissing(true);
+    }
+
     const transaction = buildNFTokenCreateOffer(
       {
-        ...parseBaseParamsFromURLParamsNew(urlParams),
+        ...parseBaseParamsFromStoredData(fetchedData),
         NFTokenID: NFTokenID ?? '',
         amount: amount ?? '',
         ...(owner && { owner: owner }),
@@ -148,7 +161,7 @@ export const CreateNFTOffer: FC = () => {
       id,
       transaction
     });
-  }, [getCurrentWallet]);
+  }, [fetchedData, getCurrentWallet]);
 
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);

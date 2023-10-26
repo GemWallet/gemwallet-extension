@@ -4,11 +4,13 @@ import { NFTokenCancelOffer } from 'xrpl';
 
 import {
   API_ERROR_BAD_REQUEST,
+  CancelNFTOfferRequest,
   GEM_WALLET,
   ReceiveCancelNFTOfferBackgroundMessage,
   ResponseType
 } from '@gemwallet/constants';
 
+import { STORAGE_MESSAGING_KEY } from '../../../constants';
 import {
   buildNFTokenCancelOffer,
   TransactionProgressStatus,
@@ -17,10 +19,10 @@ import {
   useTransactionProgress,
   useWallet
 } from '../../../contexts';
-import { useFees, useTransactionStatus } from '../../../hooks';
+import { useFees, useFetchFromSessionStorage, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
 import { parseArray } from '../../../utils';
-import { parseBaseParamsFromURLParamsNew } from '../../../utils/baseParams';
+import { parseBaseParamsFromStoredData } from '../../../utils/baseParams';
 import { serializeError } from '../../../utils/errors';
 import { TransactionDetails } from '../../organisms';
 import { TransactionPage } from '../../templates';
@@ -50,6 +52,13 @@ export const CancelNFTOffer: FC = () => {
     },
     params.transaction?.Fee
   );
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const { fetchedData } = useFetchFromSessionStorage(
+    urlParams.get(STORAGE_MESSAGING_KEY) ?? undefined
+  ) as {
+    fetchedData: CancelNFTOfferRequest | undefined;
+  };
 
   const sendMessageToBackground = useCallback(
     (message: ReceiveCancelNFTOfferBackgroundMessage) => {
@@ -104,26 +113,29 @@ export const CancelNFTOffer: FC = () => {
   });
 
   useEffect(() => {
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
+    const urlParams = new URLSearchParams(window.location.search);
     const id = Number(urlParams.get('id')) || 0;
-
-    // CancelNFTOffer fields
-    const NFTokenOffers = parseArray(urlParams.get('NFTokenOffers'));
     const wallet = getCurrentWallet();
-
-    if (!NFTokenOffers || !NFTokenOffers.length) {
-      setIsParamsMissing(true);
-    }
 
     if (!wallet) {
       setIsParamsMissing(true);
       return;
     }
 
+    if (!fetchedData) {
+      return;
+    }
+
+    const NFTokenOffers =
+      'NFTokenOffers' in fetchedData ? parseArray(fetchedData.NFTokenOffers) : undefined;
+
+    if (!NFTokenOffers || !NFTokenOffers.length) {
+      setIsParamsMissing(true);
+    }
+
     const transaction = buildNFTokenCancelOffer(
       {
-        ...parseBaseParamsFromURLParamsNew(urlParams),
+        ...parseBaseParamsFromStoredData(fetchedData),
         NFTokenOffers: NFTokenOffers ?? []
       },
       wallet
@@ -133,7 +145,7 @@ export const CancelNFTOffer: FC = () => {
       id,
       transaction
     });
-  }, [getCurrentWallet]);
+  }, [fetchedData, getCurrentWallet]);
 
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);

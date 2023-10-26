@@ -1,6 +1,7 @@
 import {
   getBaseFromParams,
   initialBaseTransactionParams,
+  parseBaseParamsFromStoredData,
   parseBaseParamsFromURLParams,
   parseBaseParamsFromURLParamsNew
 } from './baseParams';
@@ -114,5 +115,52 @@ describe('getBaseFromParams', () => {
       ticketSequence: undefined,
       txnSignature: undefined
     });
+  });
+});
+
+describe('parseBaseParamsFromStoredData', () => {
+  it('should parse all values correctly', () => {
+    const storedObject = {
+      fee: '12',
+      sequence: '2',
+      accountTxnID: 'abc123',
+      lastLedgerSequence: '3456',
+      memos: ['memo1'],
+      signers: ['signer1'],
+      sourceTag: '1',
+      signingPubKey: 'pubKey1',
+      ticketSequence: '1',
+      txnSignature: 'txnSig1'
+    };
+
+    const result = parseBaseParamsFromStoredData(storedObject);
+
+    expect(result.fee).toEqual('12');
+    expect(result.sequence).toEqual(2);
+    expect(result.accountTxnID).toEqual('abc123');
+    expect(result.lastLedgerSequence).toEqual(3456);
+    expect(result.memos).toEqual(['memo1']);
+    expect(result.signers).toEqual(['signer1']);
+    expect(result.sourceTag).toEqual(1);
+    expect(result.signingPubKey).toEqual('pubKey1');
+    expect(result.ticketSequence).toEqual(1);
+    expect(result.txnSignature).toEqual('txnSig1');
+  });
+
+  it('should return undefined for missing values', () => {
+    const storedObject = {};
+
+    const result = parseBaseParamsFromStoredData(storedObject);
+
+    expect(result.fee).toBeUndefined();
+    expect(result.sequence).toBeUndefined();
+    expect(result.accountTxnID).toBeUndefined();
+    expect(result.lastLedgerSequence).toBeUndefined();
+    expect(result.memos).toBeUndefined();
+    expect(result.signers).toBeUndefined();
+    expect(result.sourceTag).toBeUndefined();
+    expect(result.signingPubKey).toBeUndefined();
+    expect(result.ticketSequence).toBeUndefined();
+    expect(result.txnSignature).toBeUndefined();
   });
 });

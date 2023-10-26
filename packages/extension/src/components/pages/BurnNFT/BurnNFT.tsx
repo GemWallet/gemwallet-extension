@@ -4,11 +4,13 @@ import { NFTokenBurn } from 'xrpl';
 
 import {
   API_ERROR_BAD_REQUEST,
+  BurnNFTRequest,
   GEM_WALLET,
   ReceiveBurnNFTBackgroundMessage,
   ResponseType
 } from '@gemwallet/constants';
 
+import { STORAGE_MESSAGING_KEY } from '../../../constants';
 import {
   buildNFTokenBurn,
   TransactionProgressStatus,
@@ -17,9 +19,9 @@ import {
   useTransactionProgress,
   useWallet
 } from '../../../contexts';
-import { useFees, useTransactionStatus } from '../../../hooks';
+import { useFees, useFetchFromSessionStorage, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
-import { parseBaseParamsFromURLParamsNew } from '../../../utils/baseParams';
+import { parseBaseParamsFromStoredData } from '../../../utils/baseParams';
 import { serializeError } from '../../../utils/errors';
 import { TransactionDetails } from '../../organisms';
 import { TransactionPage } from '../../templates';
@@ -50,6 +52,13 @@ export const BurnNFT: FC = () => {
     },
     params.transaction?.Fee
   );
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const { fetchedData } = useFetchFromSessionStorage(
+    urlParams.get(STORAGE_MESSAGING_KEY) ?? undefined
+  ) as {
+    fetchedData: BurnNFTRequest | undefined;
+  };
 
   const sendMessageToBackground = useCallback(
     (message: ReceiveBurnNFTBackgroundMessage) => {
@@ -104,27 +113,29 @@ export const BurnNFT: FC = () => {
   });
 
   useEffect(() => {
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
+    const urlParams = new URLSearchParams(window.location.search);
     const id = Number(urlParams.get('id')) || 0;
-
-    // BurnNFT fields
-    const NFTokenID = urlParams.get('NFTokenID');
-    const owner = urlParams.get('owner');
     const wallet = getCurrentWallet();
-
-    if (!NFTokenID) {
-      setIsParamsMissing(true);
-    }
 
     if (!wallet) {
       setIsParamsMissing(true);
       return;
     }
 
+    if (!fetchedData) {
+      return;
+    }
+
+    const NFTokenID = 'NFTokenID' in fetchedData ? fetchedData.NFTokenID : undefined;
+    const owner = 'owner' in fetchedData ? fetchedData.owner : undefined;
+
+    if (!NFTokenID) {
+      setIsParamsMissing(true);
+    }
+
     const transaction = buildNFTokenBurn(
       {
-        ...parseBaseParamsFromURLParamsNew(urlParams),
+        ...parseBaseParamsFromStoredData(fetchedData),
         NFTokenID: NFTokenID ?? '',
         ...(owner && { owner: owner })
       },
@@ -135,7 +146,7 @@ export const BurnNFT: FC = () => {
       id,
       transaction
     });
-  }, [getCurrentWallet]);
+  }, [fetchedData, getCurrentWallet]);
 
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);
