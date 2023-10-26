@@ -278,7 +278,7 @@ chrome.runtime.onMessage.addListener(
     } else if (type === 'REQUEST_SEND_PAYMENT/V3') {
       const { payload } = message;
       try {
-        sendInMemoryMessage({
+        sendMessageInMemory({
           payload,
           parameter: PARAMETER_TRANSACTION_PAYMENT,
           receivingMessage: 'RECEIVE_SEND_PAYMENT/V3',
@@ -290,7 +290,7 @@ chrome.runtime.onMessage.addListener(
       const { payload } = message;
       try {
         // Deprecated
-        sendInMemoryMessage({
+        sendMessageInMemory({
           payload,
           parameter: PARAMETER_TRANSACTION_PAYMENT,
           receivingMessage: 'RECEIVE_PAYMENT_HASH',
@@ -354,7 +354,7 @@ chrome.runtime.onMessage.addListener(
     } else if (type === 'REQUEST_SET_ACCOUNT/V3') {
       const { payload } = message;
       try {
-        sendInMemoryMessage({
+        sendMessageInMemory({
           payload,
           parameter: PARAMETER_TRANSACTION_SET_ACCOUNT,
           receivingMessage: 'RECEIVE_SET_ACCOUNT/V3',
@@ -384,7 +384,7 @@ chrome.runtime.onMessage.addListener(
     } else if (type === 'REQUEST_SET_TRUSTLINE/V3') {
       const { payload } = message;
       try {
-        sendInMemoryMessage({
+        sendMessageInMemory({
           payload,
           parameter: PARAMETER_TRANSACTION_TRUSTLINE,
           receivingMessage: 'RECEIVE_SET_TRUSTLINE/V3',
@@ -396,7 +396,7 @@ chrome.runtime.onMessage.addListener(
       const { payload } = message;
       try {
         // Deprecated
-        sendInMemoryMessage({
+        sendMessageInMemory({
           payload,
           parameter: PARAMETER_TRANSACTION_TRUSTLINE,
           receivingMessage: 'RECEIVE_TRUSTLINE_HASH',
@@ -410,7 +410,7 @@ chrome.runtime.onMessage.addListener(
     } else if (type === 'REQUEST_SIGN_MESSAGE/V3') {
       const { payload } = message;
       try {
-        sendInMemoryMessage({
+        sendMessageInMemory({
           payload,
           parameter: PARAMETER_SIGN_MESSAGE,
           receivingMessage: 'RECEIVE_SIGN_MESSAGE/V3',
@@ -422,7 +422,7 @@ chrome.runtime.onMessage.addListener(
       const { payload } = message;
       try {
         // Deprecated
-        sendInMemoryMessage({
+        sendMessageInMemory({
           payload,
           parameter: PARAMETER_SIGN_MESSAGE,
           receivingMessage: 'RECEIVE_SIGN_MESSAGE',

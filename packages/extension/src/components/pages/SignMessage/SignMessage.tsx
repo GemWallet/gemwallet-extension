@@ -40,8 +40,7 @@ export const SignMessage: FC = () => {
   });
 
   const payload = useMemo(() => {
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
+    const urlParams = new URLSearchParams(window.location.search);
 
     const url = urlParams.get('url');
     const favicon = urlParams.get('favicon');
@@ -56,15 +55,13 @@ export const SignMessage: FC = () => {
   const { id, url, favicon } = payload;
 
   const receivingMessage = useMemo(() => {
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
+    const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get('requestMessage') === 'REQUEST_SIGN_MESSAGE/V3'
       ? 'RECEIVE_SIGN_MESSAGE/V3'
       : 'RECEIVE_SIGN_MESSAGE';
   }, []);
 
-  const queryString = window.location.search;
-  const urlParams = new URLSearchParams(queryString);
+  const urlParams = new URLSearchParams(window.location.search);
   const { fetchedData } = useFetchFromSessionStorage(
     urlParams.get(STORAGE_MESSAGING_KEY) ?? undefined
   ) as {

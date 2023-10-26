@@ -43,8 +43,7 @@ export interface Params {
 }
 
 export const AddNewTrustline: FC = () => {
-  const queryString = window.location.search;
-  const urlParams = new URLSearchParams(queryString);
+  const urlParams = new URLSearchParams(window.location.search);
   const inAppCall = urlParams.get('inAppCall') === 'true' || false;
   const showForm = urlParams.get('showForm') === 'true' || false;
 
@@ -80,8 +79,7 @@ export const AddNewTrustline: FC = () => {
   );
 
   const receivingMessage = useMemo(() => {
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
+    const urlParams = new URLSearchParams(window.location.search);
 
     return urlParams.get('requestMessage') === 'REQUEST_SET_TRUSTLINE/V3'
       ? 'RECEIVE_SET_TRUSTLINE/V3'
@@ -159,8 +157,7 @@ export const AddNewTrustline: FC = () => {
   });
 
   useEffect(() => {
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
+    const urlParams = new URLSearchParams(window.location.search);
     const id = Number(urlParams.get('id')) || 0;
     const wallet = getCurrentWallet();
 
