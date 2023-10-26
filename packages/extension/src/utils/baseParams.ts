@@ -1,6 +1,6 @@
 import { Memo, Signer } from '@gemwallet/constants';
 
-import { parseMemos, parseSigners } from './parseFromString';
+import { parseMemos, parseSigners } from './parseParams';
 import { checkFee } from './transaction';
 
 export type BaseTransactionParamsNew = {

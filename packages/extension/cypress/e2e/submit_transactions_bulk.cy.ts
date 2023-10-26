@@ -1,6 +1,6 @@
 import { Network, NETWORK } from '@gemwallet/constants';
 
-const mockSessionStorage = {};
+import { navigate } from '../utils/navigation';
 
 describe('Submit Transactions (Bulk)', () => {
   // deepcode ignore NoHardcodedPasswords: password used for testing purposes
@@ -91,7 +91,7 @@ describe('Submit Transactions (Bulk)', () => {
   });
 
   it('Submit Transactions', () => {
-    const url = `http://localhost:3000?submit-transactions-bulk&storageKey=1693425372955.3833&id=93425114&requestMessage=undefined&submit=txBulk`;
+    const url = `http://localhost:3000/submit-transactions-bulk?storageKey=1693425372955.3833&id=93425114&requestMessage=undefined&submit=txBulk`;
 
     navigate(url, PASSWORD, '1693425372955.3833', {
       transactions: transactionsMap,
@@ -128,47 +128,4 @@ describe('Submit Transactions (Bulk)', () => {
     });
     cy.get('p[data-testid="transaction-subtitle"]').should('have.text', 'Transactions Successful');
   });
-
-  const navigate = (url: string, password: string, storageKey: string, transactions) => {
-    cy.visit(url, {
-      onBeforeLoad(win) {
-        (win as any).chrome = (win as any).chrome || {};
-        (win as any).chrome.runtime = {
-          sendMessage(message, cb) {}
-        };
-
-        (win as any).chrome.storage = {
-          local: {
-            get(key, cb) {},
-            set(obj, cb) {
-              if (cb) cb();
-            }
-          },
-          session: {
-            set(obj, cb) {
-              Object.assign(mockSessionStorage, obj);
-              if (cb) cb();
-            },
-            get(key, cb) {
-              cb(mockSessionStorage[key]);
-            },
-            remove(key, cb) {
-              delete mockSessionStorage[key];
-              if (cb) cb();
-            }
-          }
-        };
-
-        (win as any).chrome.storage.session.set({
-          [storageKey]: { [storageKey]: JSON.stringify(transactions) }
-        });
-
-        (win as any).chrome.runtime.lastError = null;
-      }
-    });
-
-    // Login
-    cy.get('input[name="password"]').type(password);
-    cy.contains('button', 'Unlock').click();
-  };
 });

@@ -1,6 +1,11 @@
-import { NFTokenCreateOfferFlags, NFTokenMintFlags, NFTokenMintFlagsInterface } from 'xrpl';
+import {
+  NFTokenCreateOfferFlags,
+  NFTokenMintFlags,
+  NFTokenMintFlagsInterface,
+  Transaction
+} from 'xrpl';
 
-import { Signer, TransactionWithID } from '@gemwallet/constants';
+import { Signer } from '@gemwallet/constants';
 
 import {
   createNFTOfferFlagsToNumber,
@@ -15,9 +20,8 @@ import {
   parseSetAccountFlags,
   parseSigners,
   parseTransactionParam,
-  parseTransactionsBulkMap,
   parseTrustSetFlags
-} from './parseFromString';
+} from './parseParams';
 
 describe('parseAmount', () => {
   test('parse amount in drops', () => {
@@ -383,23 +387,15 @@ describe('parseTransactionParam', () => {
 
     expect(parseTransactionParam(notAnObject)).toBe(null);
   });
-});
 
-describe('parseTransactionsBulkMap', () => {
-  it('should return null if input is null', () => {
-    expect(parseTransactionsBulkMap(null)).toBeNull();
-  });
+  it('should return the same object if the input is already a Transaction object', () => {
+    const mockTransaction: Transaction = {
+      Account: '123',
+      TransactionType: 'Payment',
+      Amount: '456',
+      Destination: '789'
+    };
 
-  it('should return the same object if it is of type Record<number, TransactionWithID>', () => {
-    const mockTransaction = { id: '123', amount: 456 };
-    const input: Record<number, TransactionWithID> = { 0: mockTransaction as any };
-
-    expect(parseTransactionsBulkMap(input)).toEqual(input);
-  });
-
-  it('should return the object even if it does not strictly match Record<number, TransactionWithID>', () => {
-    const input = { key: 'value' }; // This doesn't match the type but our function should still return it
-
-    expect(parseTransactionsBulkMap(input as any)).toEqual(input);
+    expect(parseTransactionParam(mockTransaction)).toEqual(mockTransaction);
   });
 });

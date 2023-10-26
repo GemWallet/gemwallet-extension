@@ -16,7 +16,6 @@ import {
   PaymentFlags,
   SetAccountFlags,
   Signer,
-  TransactionWithID,
   TrustSetFlags
 } from '@gemwallet/constants';
 
@@ -363,13 +362,18 @@ export const createNFTOfferFlagsToNumber = (flags: NFTokenCreateOfferFlagsInterf
   return result;
 };
 
-export const parseTransactionParam = (str: string | null): Transaction | null => {
-  if (!str) {
+export const parseTransactionParam = (input: Transaction | string | null): Transaction | null => {
+  if (!input) {
     return null;
   }
 
+  if (typeof input === 'object') {
+    return input;
+  }
+
+  // For API version < 3.6
   try {
-    const parsedTransaction = JSON.parse(str);
+    const parsedTransaction = JSON.parse(input);
 
     if (typeof parsedTransaction === 'object' && parsedTransaction !== null) {
       return parsedTransaction as Transaction;
@@ -379,18 +383,4 @@ export const parseTransactionParam = (str: string | null): Transaction | null =>
   }
 
   return null;
-};
-
-export const parseTransactionsBulkMap = (
-  json: object | null
-): Record<number, TransactionWithID> | null => {
-  if (!json) {
-    return null;
-  }
-
-  try {
-    return json as Record<number, TransactionWithID>;
-  } catch (error) {
-    return null;
-  }
 };

@@ -1,33 +1,27 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
 
-import * as Sentry from '@sentry/react';
-
 import {
   API_ERROR_BAD_REQUEST,
   DEFAULT_SUBMIT_TX_BULK_ON_ERROR,
   GEM_WALLET,
   ReceiveSubmitBulkTransactionsBackgroundMessage,
   ResponseType,
+  SubmitBulkTransactionsWithKeysRequest,
   TransactionBulkResponse,
   TransactionErrorHandling,
   TransactionWithID
 } from '@gemwallet/constants';
 
-import { STORAGE_PERMISSION_SUBMIT_BULK } from '../../../constants';
+import { STORAGE_MESSAGING_KEY, STORAGE_PERMISSION_SUBMIT_BULK } from '../../../constants';
 import {
   TransactionProgressStatus,
   useLedger,
   useNetwork,
   useTransactionProgress
 } from '../../../contexts';
-import { useFees, useTransactionStatus } from '../../../hooks';
+import { useFees, useFetchFromSessionStorage, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
-import {
-  loadFromChromeLocalStorage,
-  loadFromChromeSessionStorage,
-  parseTransactionsBulkMap,
-  saveInChromeLocalStorage
-} from '../../../utils';
+import { loadFromChromeLocalStorage, saveInChromeLocalStorage } from '../../../utils';
 import { serializeError } from '../../../utils/errors';
 import { PermissionRequiredView } from './PermissionRequiredView';
 import { RecapView } from './RecapView';
@@ -66,6 +60,13 @@ export const SubmitBulkTransactions: FC = () => {
     ) ?? [],
     null
   );
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const { fetchedData } = useFetchFromSessionStorage(
+    urlParams.get(STORAGE_MESSAGING_KEY) ?? undefined
+  ) as {
+    fetchedData: SubmitBulkTransactionsWithKeysRequest | undefined;
+  };
 
   const sendMessageToBackground = useCallback(
     (message: ReceiveSubmitBulkTransactionsBackgroundMessage) => {
@@ -151,55 +152,32 @@ export const SubmitBulkTransactions: FC = () => {
   }, []);
 
   useEffect(() => {
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
+    const urlParams = new URLSearchParams(window.location.search);
     const id = Number(urlParams.get('id')) || 0;
-    let parsedTransactionsMap: Record<number, TransactionWithID> | null = null;
 
-    const fetchData = async () => {
-      try {
-        const storageKey = urlParams.get('storageKey');
+    if (!fetchedData) {
+      return;
+    }
 
-        if (storageKey) {
-          const storedData = await loadFromChromeSessionStorage(storageKey, true);
-          if (storedData) {
-            const parsedStoredData = JSON.parse(storedData);
-            if ('transactions' in parsedStoredData) {
-              parsedTransactionsMap = parseTransactionsBulkMap(parsedStoredData.transactions);
-            }
-            if ('waitForHashes' in parsedStoredData) {
-              setWaitForHashes(
-                !(
-                  parsedStoredData.waitForHashes === false ||
-                  parsedStoredData.waitForHashes === 'false'
-                )
-              );
-            }
-            if ('onError' in parsedStoredData) {
-              const onError =
-                parsedStoredData.onError === 'abort' || parsedStoredData.onError === 'continue'
-                  ? parsedStoredData.onError
-                  : DEFAULT_SUBMIT_TX_BULK_ON_ERROR;
-              setOnError(onError);
-            }
-          }
-        }
-      } catch (error) {
-        Sentry.captureException(error);
-      }
+    const parsedTransactionsMap = 'transactions' in fetchedData ? fetchedData.transactions : null;
 
-      if (!parsedTransactionsMap) {
-        setIsParamsMissing(true);
-      }
+    if (!parsedTransactionsMap) {
+      setIsParamsMissing(true);
+    }
 
-      setParams({
-        id,
-        transactionsMapParam: parsedTransactionsMap
-      });
-    };
+    const waitForHashes = 'waitForHashes' in fetchedData ? fetchedData.waitForHashes ?? true : true;
+    const onError =
+      'onError' in fetchedData
+        ? fetchedData.onError ?? DEFAULT_SUBMIT_TX_BULK_ON_ERROR
+        : DEFAULT_SUBMIT_TX_BULK_ON_ERROR;
 
-    fetchData();
-  }, []);
+    setWaitForHashes(waitForHashes);
+    setOnError(onError);
+    setParams({
+      id,
+      transactionsMapParam: parsedTransactionsMap
+    });
+  }, [fetchedData]);
 
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);

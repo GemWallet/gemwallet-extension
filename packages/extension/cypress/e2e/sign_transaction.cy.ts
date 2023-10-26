@@ -1,9 +1,14 @@
 import { Network, NETWORK } from '@gemwallet/constants';
 
-describe('Sign Transaction', () => {
-  // deepcode ignore NoHardcodedPasswords: password used for testing purposes
-  const PASSWORD = 'SECRET_PASSWORD';
+import { navigate } from '../utils/navigation';
 
+const URL =
+  'http://localhost:3000/sign-transaction?storageKey=1693425372955.3833&id=210401828&requestMessage=undefined&sign=transaction';
+
+// deepcode ignore NoHardcodedPasswords: password used for testing purposes
+const PASSWORD = 'SECRET_PASSWORD';
+
+describe('Sign Transaction', () => {
   beforeEach(() => {
     // Mock the localStorage with a wallet already loaded
     cy.window().then((win) => {
@@ -21,8 +26,13 @@ describe('Sign Transaction', () => {
   });
 
   it('Sign Transaction', () => {
-    const url = `http://localhost:3000?transaction=%7B%22TransactionType%22%3A%22Payment%22%2C%22Destination%22%3A%22rhikRdkFw28csKw9z7fVoBjWncz1HSoQij%22%2C%22Amount%22%3A%22100000%22%7D&id=210329246&requestMessage=undefined&sign=transaction`;
-    navigate(url, PASSWORD);
+    const transaction = {
+      TransactionType: 'Payment',
+      Destination: 'rhikRdkFw28csKw9z7fVoBjWncz1HSoQij',
+      Amount: '100000'
+    };
+
+    navigate(URL, PASSWORD, '1693425372955.3833', { transaction });
 
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Sign Transaction');
 
@@ -40,7 +50,7 @@ describe('Sign Transaction', () => {
   });
 
   it('Sign Transaction (Set Trustline SOLO 1000000)', () => {
-    const transaction = JSON.stringify({
+    const transaction = {
       TransactionType: 'TrustSet',
       LimitAmount: {
         currency: '534F4C4F00000000000000000000000000000000',
@@ -56,9 +66,8 @@ describe('Sign Transaction', () => {
         }
       ],
       Fee: '199'
-    });
-    const url = `http://localhost:3000?transaction=${transaction}&requestMessage=undefined&sign=transaction`;
-    navigate(url, PASSWORD);
+    };
+    navigate(URL, PASSWORD, '1693425372955.3833', { transaction });
 
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Sign Transaction');
 
@@ -80,30 +89,4 @@ describe('Sign Transaction', () => {
     });
     cy.get('p[data-testid="transaction-subtitle"]').should('have.text', 'Transaction Successful');
   });
-
-  const navigate = (url: string, password: string) => {
-    cy.visit(url, {
-      onBeforeLoad(win) {
-        (win as any).chrome = (win as any).chrome || {};
-        (win as any).chrome.runtime = {
-          sendMessage(message, cb) {}
-        };
-
-        (win as any).chrome.storage = {
-          local: {
-            get(key, cb) {},
-            set(obj, cb) {
-              if (cb) cb();
-            }
-          }
-        };
-
-        cy.stub((win as any).chrome.runtime, 'sendMessage').resolves({});
-      }
-    });
-
-    // Login
-    cy.get('input[name="password"]').type(password);
-    cy.contains('button', 'Unlock').click();
-  };
 });

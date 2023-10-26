@@ -6,20 +6,21 @@ import {
   API_ERROR_BAD_REQUEST,
   GEM_WALLET,
   ReceiveSignTransactionBackgroundMessage,
-  ResponseType
+  ResponseType,
+  SignTransactionRequest
 } from '@gemwallet/constants';
 
+import { STORAGE_MESSAGING_KEY } from '../../../constants';
 import {
   TransactionProgressStatus,
   useLedger,
   useNetwork,
-  useTransactionProgress,
-  useWallet
+  useTransactionProgress
 } from '../../../contexts';
-import { useFees, useTransactionStatus } from '../../../hooks';
+import { useFees, useFetchFromSessionStorage, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
-import { parseTransactionParam } from '../../../utils';
 import { serializeError } from '../../../utils/errors';
+import { parseTransactionParam } from '../../../utils/parseParams';
 import { TransactionDetails } from '../../organisms';
 import { TransactionPage } from '../../templates';
 
@@ -50,8 +51,13 @@ export const SignTransaction: FC = () => {
     },
     params.txParam?.Fee ?? null
   );
-  const { getCurrentWallet } = useWallet();
-  const wallet = getCurrentWallet();
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const { fetchedData } = useFetchFromSessionStorage(
+    urlParams.get(STORAGE_MESSAGING_KEY) ?? undefined
+  ) as {
+    fetchedData: SignTransactionRequest | undefined;
+  };
 
   const sendMessageToBackground = useCallback(
     (message: ReceiveSignTransactionBackgroundMessage) => {
@@ -106,28 +112,25 @@ export const SignTransaction: FC = () => {
   });
 
   useEffect(() => {
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
+    const urlParams = new URLSearchParams(window.location.search);
     const id = Number(urlParams.get('id')) || 0;
-    const txParam = parseTransactionParam(urlParams.get('transaction'));
 
-    if (!txParam) {
-      setIsParamsMissing(true);
+    if (!fetchedData) {
+      return;
     }
 
-    if (
-      txParam !== null &&
-      wallet?.publicAddress &&
-      (!txParam?.Account || txParam?.Account === '')
-    ) {
-      txParam.Account = wallet.publicAddress;
+    const transaction =
+      'transaction' in fetchedData ? parseTransactionParam(fetchedData.transaction) : null;
+
+    if (!transaction) {
+      setIsParamsMissing(true);
     }
 
     setParams({
       id,
-      txParam
+      txParam: transaction
     });
-  }, [wallet?.publicAddress]);
+  }, [fetchedData]);
 
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);

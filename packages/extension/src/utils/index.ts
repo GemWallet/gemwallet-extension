@@ -8,7 +8,7 @@ export * from './image';
 export * from './link';
 export * from './network';
 export * from './numbersToSeed';
-export * from './parseFromString';
+export * from './parseParams';
 export * from './storage';
 export * from './storageChromeLocal';
 export * from './storageChromeSession';

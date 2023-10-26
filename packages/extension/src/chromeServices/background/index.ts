@@ -80,7 +80,7 @@ let currentReceivingMessage: string | undefined = undefined; // For reject messa
 
 // Used to send a message to the view through the chrome.storage.local memory.
 // Useful when the data to send is big.
-const sendInMemoryMessage = ({
+const sendMessageInMemory = ({
   payload,
   parameter,
   receivingMessage,
@@ -426,31 +426,29 @@ chrome.runtime.onMessage.addListener(
         }
       });
     } else if (type === 'REQUEST_SUBMIT_TRANSACTION/V3') {
-      handleTransactionRequest({
-        payload: message.payload,
-        sender,
-        parameter: PARAMETER_SUBMIT_TRANSACTION,
-        receivingMessage: 'RECEIVE_SUBMIT_TRANSACTION/V3',
-        errorPayload: {
-          type: ResponseType.Reject,
-          result: undefined
-        }
-      });
+      const { payload } = message;
+      try {
+        sendMessageInMemory({
+          payload,
+          parameter: PARAMETER_SUBMIT_TRANSACTION,
+          receivingMessage: 'RECEIVE_SUBMIT_TRANSACTION/V3',
+          sender
+        });
+      } catch (e) {}
     } else if (type === 'REQUEST_SIGN_TRANSACTION/V3') {
-      handleTransactionRequest({
-        payload: message.payload,
-        sender,
-        parameter: PARAMETER_SIGN_TRANSACTION,
-        receivingMessage: 'RECEIVE_SIGN_TRANSACTION/V3',
-        errorPayload: {
-          type: ResponseType.Reject,
-          result: undefined
-        }
-      });
+      const { payload } = message;
+      try {
+        sendMessageInMemory({
+          payload,
+          parameter: PARAMETER_SIGN_TRANSACTION,
+          receivingMessage: 'RECEIVE_SIGN_TRANSACTION/V3',
+          sender
+        });
+      } catch (e) {}
     } else if (type === 'REQUEST_SUBMIT_BULK_TRANSACTIONS/V3') {
       const { payload } = message;
       try {
-        sendInMemoryMessage({
+        sendMessageInMemory({
           payload,
           parameter: PARAMETER_SUBMIT_TRANSACTIONS_BULK,
           receivingMessage: 'RECEIVE_SUBMIT_BULK_TRANSACTIONS/V3',
