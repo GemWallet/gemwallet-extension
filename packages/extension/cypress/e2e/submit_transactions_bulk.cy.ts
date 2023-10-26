@@ -91,7 +91,7 @@ describe('Submit Transactions (Bulk)', () => {
   });
 
   it('Submit Transactions', () => {
-    const url = `http://localhost:3000?submit-transactions-bulk&storageKey=1693425372955.3833&id=93425114&requestMessage=undefined&submit=txBulk`;
+    const url = `http://localhost:3000/submit-transactions-bulk?storageKey=1693425372955.3833&id=93425114&requestMessage=undefined&submit=txBulk`;
 
     navigate(url, PASSWORD, '1693425372955.3833', {
       transactions: transactionsMap,

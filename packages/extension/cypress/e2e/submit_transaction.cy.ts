@@ -3,7 +3,7 @@ import { Network, NETWORK } from '@gemwallet/constants';
 import { navigate } from '../utils/navigation';
 
 const URL =
-  'http://localhost:3000?submit-transaction&storageKey=1693425372955.3833&id=210401828&requestMessage=undefined&submit=transaction';
+  'http://localhost:3000/submit-transaction?storageKey=1693425372955.3833&id=210401828&requestMessage=undefined&submit=transaction';
 
 // deepcode ignore NoHardcodedPasswords: password used for testing purposes
 const PASSWORD = 'SECRET_PASSWORD';
