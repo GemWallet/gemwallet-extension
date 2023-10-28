@@ -6,7 +6,6 @@ import {
   AccountDelete,
   AccountInfoResponse,
   AccountSet,
-  Client,
   LedgerEntryRequest,
   LedgerEntryResponse,
   NFTInfoResponse,
@@ -28,6 +27,9 @@ import {
   validate,
   Wallet
 } from 'xrpl';
+import { derive, utils, signAndSubmit } from 'xrpl-accountlib';
+import { AccountInfoResponse } from 'xrpl/dist/npm/models/methods/accountInfo';
+import { NFTInfoResponse } from 'xrpl/dist/npm/models/methods/nftInfo';
 
 import {
   AccountNFToken,
@@ -45,11 +47,17 @@ import {
   XRPLNetwork
 } from '@gemwallet/constants';
 
-import { AccountTransaction, WalletLedger } from '../../types';
+import { AccountTransaction } from '../../types';
 import { toUIError } from '../../utils/errors';
 import { resolveNFTData } from '../../utils/NFTDataResolver';
 import { useNetwork } from '../NetworkContext';
 import { useWallet } from '../WalletContext';
+import {
+  calculateFees as calculateFeesXahau,
+  fundWallet as fundWalletXahau,
+  handleMintNFT as handleMintNFTXahau,
+  handleTransaction as handleTransactionXahau
+} from './chains/Xahau';
 import {
   calculateFees as calculateFeesXRPL,
   fundWallet as fundWalletXRPL,
@@ -96,7 +104,7 @@ interface CancelOfferResponse {
   hash: string;
 }
 
-interface SubmitTransactionResponse {
+export interface SubmitTransactionResponse {
   hash: string;
 }
 
@@ -104,7 +112,7 @@ interface DeleteAccountResponse {
   hash: string;
 }
 
-interface SignTransactionResponse {
+export interface SignTransactionResponse {
   signature: string;
 }
 
@@ -197,6 +205,15 @@ const LedgerProvider: FC = ({ children }) => {
       const { transaction, client, wallet, signOnly, shouldCheck } = params;
 
       switch (chainName) {
+        case Chain.Xahau:
+          return (await handleTransactionXahau({
+            transaction,
+            client,
+            wallet,
+            signOnly,
+            shouldCheck,
+            networkName
+          })) as SubmitTransactionResponse;
         default:
           return (await handleTransactionXRPL({
             transaction,
@@ -207,7 +224,7 @@ const LedgerProvider: FC = ({ children }) => {
           })) as SubmitTransactionResponse;
       }
     },
-    [chainName]
+    [chainName, networkName]
   );
 
   /**
@@ -227,11 +244,13 @@ const LedgerProvider: FC = ({ children }) => {
       }
 
       switch (chainName) {
+        case Chain.Xahau:
+          return calculateFeesXahau({ client, transaction, networkName });
         default:
           return calculateFeesXRPL({ client, transaction });
       }
     },
-    [chainName, client, getCurrentWallet]
+    [chainName, client, getCurrentWallet, networkName]
   );
 
   const fundWallet = useCallback(async () => {
@@ -241,6 +260,8 @@ const LedgerProvider: FC = ({ children }) => {
       if (!wallet) throw new Error('You need to have a wallet connected to fund the wallet');
 
       switch (chainName) {
+        case Chain.Xahau:
+          return await fundWalletXahau({ wallet, networkName });
         default:
           return await fundWalletXRPL({ client, wallet });
       }
@@ -248,8 +269,11 @@ const LedgerProvider: FC = ({ children }) => {
       Sentry.captureException(e);
       throw e;
     }
-  }, [chainName, client, getCurrentWallet]);
+  }, [chainName, client, getCurrentWallet, networkName]);
 
+  /*
+   * Transactions
+   */
   /*
    * Transactions
    */
@@ -263,6 +287,13 @@ const LedgerProvider: FC = ({ children }) => {
       } else {
         try {
           switch (chainName) {
+            case Chain.Xahau:
+              return handleMintNFTXahau({
+                client,
+                wallet,
+                txn: payload,
+                networkName
+              });
             default:
               return handleMintNFTXRPL({ client, wallet, transaction: payload });
           }
@@ -272,7 +303,7 @@ const LedgerProvider: FC = ({ children }) => {
         }
       }
     },
-    [chainName, client, getCurrentWallet]
+    [chainName, client, getCurrentWallet, networkName]
   );
 
   const sendPayment = useCallback(

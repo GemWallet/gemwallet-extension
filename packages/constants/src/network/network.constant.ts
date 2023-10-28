@@ -19,6 +19,9 @@ export const XAHAU_TESTNET_NODES = ['wss://xahau-test.net'];
 // Faucets
 export const FAUCET_XAHAU_TESTNET = 'https://xahau-test.net/accounts';
 
+// Fees calculation
+export const FEES_XAHAU_TESTNET = 'https://xahau-test.net';
+
 export type Network = XRPLNetwork;
 
 export interface NetworkNode {
