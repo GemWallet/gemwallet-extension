@@ -174,6 +174,9 @@ const LedgerProvider: FC = ({ children }) => {
   const { client, networkName } = useNetwork();
   const { getCurrentWallet } = useWallet();
 
+  /*
+   * Helpers
+   */
   const handleTransaction = useCallback(
     async (params: {
       transaction: Transaction;
@@ -210,7 +213,7 @@ const LedgerProvider: FC = ({ children }) => {
         throw new Error(LEDGER_CONNECTION_ERROR);
       }
 
-      if (!wallet?.seed) {
+      if (!wallet) {
         throw new Error('You need to have a wallet connected to make a transaction');
       }
 
@@ -222,54 +225,26 @@ const LedgerProvider: FC = ({ children }) => {
     [client, getCurrentWallet, networkName]
   );
 
-  const getNFTs = useCallback(
-    async (payload?: GetNFTRequest): Promise<AccountNFTokenResponse> => {
-      const wallet = getCurrentWallet();
-      if (!client) {
-        throw new Error('You need to be connected to a ledger to get the NFTs');
-      }
-      if (!wallet) {
-        throw new Error('You need to have a wallet connected to get the NFTs');
-      }
-
-      // Prepare the transaction
-      const prepared = await client.request({
-        command: 'account_nfts',
-        account: wallet.publicAddress,
-        limit: payload?.limit,
-        marker: payload?.marker,
-        ledger_index: 'validated'
-      });
-
-      if (!prepared.result?.account_nfts) {
-        throw new Error("Couldn't get the NFTs");
-      }
-
-      return { account_nfts: prepared.result.account_nfts, marker: prepared.result.marker };
-    },
-    [client, getCurrentWallet]
-  );
-
-  const getTransactions = useCallback(async () => {
+  const fundWallet = useCallback(async () => {
     const wallet = getCurrentWallet();
-    if (!client) {
-      throw new Error(LEDGER_CONNECTION_ERROR);
-    } else if (!wallet) {
-      throw new Error('You need to have a wallet connected to make a transaction');
-    } else {
-      // Prepare the transaction
-      const prepared = await client.request({
-        command: 'account_tx',
-        account: wallet.publicAddress
-      });
-      if (!prepared.result?.transactions) {
-        throw new Error("Couldn't get the transaction history");
-      } else {
-        return prepared.result.transactions;
-      }
+    try {
+      if (!client) throw new Error('You need to be connected to a ledger to fund the wallet');
+      if (!wallet) throw new Error('You need to have a wallet connected to fund the wallet');
+
+      const walletWithAmount = await client.fundWallet(wallet.wallet);
+
+      if (!walletWithAmount) throw new Error("Couldn't fund the wallet");
+
+      return { ...walletWithAmount };
+    } catch (e) {
+      Sentry.captureException(e);
+      throw e;
     }
   }, [client, getCurrentWallet]);
 
+  /*
+   * Transactions
+   */
   const mintNFT = useCallback(
     async (payload: NFTokenMint) => {
       const wallet = getCurrentWallet();
@@ -345,23 +320,6 @@ const LedgerProvider: FC = ({ children }) => {
     },
     [getCurrentWallet]
   );
-
-  const fundWallet = useCallback(async () => {
-    const wallet = getCurrentWallet();
-    try {
-      if (!client) throw new Error('You need to be connected to a ledger to fund the wallet');
-      if (!wallet) throw new Error('You need to have a wallet connected to fund the wallet');
-
-      const walletWithAmount = await client.fundWallet(wallet.wallet);
-
-      if (!walletWithAmount) throw new Error("Couldn't fund the wallet");
-
-      return { ...walletWithAmount };
-    } catch (e) {
-      Sentry.captureException(e);
-      throw e;
-    }
-  }, [client, getCurrentWallet]);
 
   const createNFTOffer = useCallback(
     async (payload: NFTokenCreateOffer) => {
@@ -629,6 +587,92 @@ const LedgerProvider: FC = ({ children }) => {
     [client, getCurrentWallet]
   );
 
+  const deleteAccount = useCallback(
+    async (destinationAddress: string) => {
+      const wallet = getCurrentWallet();
+      if (!client) {
+        throw new Error('You need to be connected to a ledger');
+      }
+
+      if (!wallet) {
+        throw new Error('You need to have a wallet connected');
+      }
+
+      try {
+        const { hash } = await handleTransaction({
+          transaction: {
+            ...(buildBaseTransaction({}, wallet, 'AccountDelete') as AccountDelete),
+            Destination: destinationAddress
+          },
+          client,
+          wallet
+        });
+
+        if (!hash) throw new Error('Could not delete account');
+
+        return { hash };
+      } catch (e) {
+        if ((e as Error).message.includes('tecTOO_SOON')) {
+          throw new Error('tecTOO_SOON');
+        }
+        Sentry.captureException(e);
+        throw e;
+      }
+    },
+    [client, getCurrentWallet, handleTransaction]
+  );
+
+  /*
+   * Getters
+   */
+  const getNFTs = useCallback(
+    async (payload?: GetNFTRequest): Promise<AccountNFTokenResponse> => {
+      const wallet = getCurrentWallet();
+      if (!client) {
+        throw new Error('You need to be connected to a ledger to get the NFTs');
+      }
+      if (!wallet) {
+        throw new Error('You need to have a wallet connected to get the NFTs');
+      }
+
+      // Prepare the transaction
+      const prepared = await client.request({
+        command: 'account_nfts',
+        account: wallet.publicAddress,
+        limit: payload?.limit,
+        marker: payload?.marker,
+        ledger_index: 'validated'
+      });
+
+      if (!prepared.result?.account_nfts) {
+        throw new Error("Couldn't get the NFTs");
+      }
+
+      return { account_nfts: prepared.result.account_nfts, marker: prepared.result.marker };
+    },
+    [client, getCurrentWallet]
+  );
+
+  const getTransactions = useCallback(async () => {
+    const wallet = getCurrentWallet();
+    if (!client) {
+      throw new Error(LEDGER_CONNECTION_ERROR);
+    } else if (!wallet) {
+      throw new Error('You need to have a wallet connected to make a transaction');
+    } else {
+      // Prepare the transaction
+      const prepared = await client.request({
+        command: 'account_tx',
+        account: wallet.publicAddress
+      });
+      if (!prepared.result?.transactions) {
+        throw new Error("Couldn't get the transaction history");
+      } else {
+        return prepared.result.transactions;
+      }
+    }
+  }, [client, getCurrentWallet]);
+
   const getAccountInfo = useCallback(
     (accountId?: string): Promise<AccountInfoResponse> => {
       const wallet = getCurrentWallet();
@@ -716,41 +760,6 @@ const LedgerProvider: FC = ({ children }) => {
       }
     },
     [getAccountInfo]
-  );
-
-  const deleteAccount = useCallback(
-    async (destinationAddress: string) => {
-      const wallet = getCurrentWallet();
-      if (!client) {
-        throw new Error('You need to be connected to a ledger');
-      }
-
-      if (!wallet) {
-        throw new Error('You need to have a wallet connected');
-      }
-
-      try {
-        const { hash } = await handleTransaction({
-          transaction: {
-            ...(buildBaseTransaction({}, wallet, 'AccountDelete') as AccountDelete),
-            Destination: destinationAddress
-          },
-          client,
-          wallet
-        });
-
-        if (!hash) throw new Error('Could not delete account');
-
-        return { hash };
-      } catch (e) {
-        if ((e as Error).message.includes('tecTOO_SOON')) {
-          throw new Error('tecTOO_SOON');
-        }
-        Sentry.captureException(e);
-        throw e;
-      }
-    },
-    [client, getCurrentWallet, handleTransaction]
   );
 
   const value: LedgerContextType = {
