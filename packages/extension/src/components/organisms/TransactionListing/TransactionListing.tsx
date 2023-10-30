@@ -5,6 +5,7 @@ import { List, ListItem, ListItemIcon, ListItemText, Paper, Typography } from '@
 import { unix } from 'moment';
 
 import { useWallet } from '../../../contexts';
+import { useMainToken } from '../../../hooks';
 import { AccountTransaction } from '../../../types';
 import { InformationMessage } from '../../molecules';
 import { DialogPage, PageWithSpinner } from '../../templates';
@@ -18,6 +19,7 @@ export interface TransactionListingProps {
 export const TransactionListing: FC<TransactionListingProps> = ({ transactions }) => {
   const [openedTx, setOpenedTx] = useState<AccountTransaction | null>(null);
 
+  const mainToken = useMainToken();
   const { getCurrentWallet } = useWallet();
   const wallet = getCurrentWallet();
 
@@ -90,7 +92,7 @@ export const TransactionListing: FC<TransactionListingProps> = ({ transactions }
                     <TransactionIcon />
                   </ListItemIcon>
                   <ListItemText
-                    primary={formatTransaction(transaction, wallet.publicAddress)}
+                    primary={formatTransaction(transaction, wallet.publicAddress, mainToken)}
                     secondary={transaction.tx?.date ? formatDate(transaction.tx?.date) : undefined}
                   />
                 </ListItem>

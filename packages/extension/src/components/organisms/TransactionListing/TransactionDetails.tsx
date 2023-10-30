@@ -3,6 +3,7 @@ import { FC } from 'react';
 import { Divider, List, ListItem, ListItemText } from '@mui/material';
 import { convertHexToString, dropsToXrp } from 'xrpl';
 
+import { useMainToken } from '../../../hooks';
 import { AccountTransaction } from '../../../types';
 import { formatFlagsToNumber } from '../../../utils';
 import { formatDate, formatTransaction } from './format.util';
@@ -24,6 +25,8 @@ const renderDestinationField = (transaction: AccountTransaction): JSX.Element | 
 };
 
 export const TransactionDetails: FC<TransactionDetailsProps> = ({ transaction, publicAddress }) => {
+  const mainToken = useMainToken();
+
   if (!transaction) {
     return null;
   }
@@ -40,7 +43,7 @@ export const TransactionDetails: FC<TransactionDetailsProps> = ({ transaction, p
         <ListItem style={{ padding: '8px 24px' }}>
           <ListItemText
             primary="Transaction"
-            secondary={formatTransaction(transaction, publicAddress)}
+            secondary={formatTransaction(transaction, publicAddress, mainToken)}
           />
         </ListItem>
         <Divider light />

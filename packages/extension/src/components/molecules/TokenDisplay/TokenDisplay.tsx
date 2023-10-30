@@ -14,7 +14,7 @@ export interface TokenDisplayProps {
   balance: number;
   token: string;
   issuer?: string;
-  isXRPToken?: boolean;
+  isMainToken?: boolean;
   trustlineLimit?: number;
   trustlineNoRipple?: boolean;
   onExplainClick?: () => void;
@@ -33,7 +33,7 @@ export const TokenDisplay: FC<TokenDisplayProps> = ({
   balance,
   token,
   issuer,
-  isXRPToken = false,
+  isMainToken = false,
   trustlineLimit,
   trustlineNoRipple,
   onExplainClick,
@@ -98,7 +98,7 @@ export const TokenDisplay: FC<TokenDisplayProps> = ({
     >
       {tokenData?.issuerName ? (
         <TokenInfo
-          isXRPToken={isXRPToken}
+          isMainToken={isMainToken}
           tokenIconUrl={tokenData?.tokenIconUrl}
           token={token}
           tokenWarningMessage={tokenWarningMessage}
@@ -108,7 +108,7 @@ export const TokenDisplay: FC<TokenDisplayProps> = ({
         />
       ) : (
         <TokenInfo
-          isXRPToken={isXRPToken}
+          isMainToken={isMainToken}
           tokenIconUrl={tokenData?.tokenIconUrl}
           token={token}
           tokenWarningMessage={tokenWarningMessage}

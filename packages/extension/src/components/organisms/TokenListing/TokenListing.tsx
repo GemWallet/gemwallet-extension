@@ -16,6 +16,7 @@ import {
   STORAGE_MESSAGING_KEY
 } from '../../../constants';
 import { useLedger, useNetwork, useServer } from '../../../contexts';
+import { useMainToken } from '../../../hooks';
 import { convertHexCurrencyString, generateKey, saveInChromeSessionStorage } from '../../../utils';
 import { isLPToken } from '../../../utils/trustlines';
 import { TokenLoader } from '../../atoms';
@@ -41,7 +42,7 @@ export interface TokenListingProps {
 }
 
 export const TokenListing: FC<TokenListingProps> = ({ address }) => {
-  const [XRPBalance, setXRPBalance] = useState<string>(LOADING_STATE);
+  const [mainTokenBalance, setMainTokenBalance] = useState<string>(LOADING_STATE);
   const [reserve, setReserve] = useState<number>(DEFAULT_RESERVE);
   const [ownerReserve, setOwnerReserve] = useState<number>(0);
   const [errorMessage, setErrorMessage] = useState('');
@@ -50,6 +51,7 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
   const { client, reconnectToNetwork, networkName } = useNetwork();
   const { serverInfo } = useServer();
   const { fundWallet, getAccountInfo } = useLedger();
+  const mainToken = useMainToken();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -57,7 +59,7 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
       try {
         // Retrieve balances without trustline details
         const balances = await client?.getBalances(address);
-        const XRPBalance = balances?.find((balance) => balance.issuer === undefined);
+        const mainTokenBalance = balances?.find((balance) => balance.issuer === undefined);
         let trustLineBalances = balances?.filter(
           (balance) => balance.issuer !== undefined
         ) as TrustLineBalance[];
@@ -94,8 +96,8 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
             ); // Hide revoked trustlines with a balance of 0
         }
 
-        if (XRPBalance) {
-          setXRPBalance(XRPBalance.value);
+        if (mainTokenBalance) {
+          setMainTokenBalance(mainTokenBalance.value);
         }
         if (trustLineBalances) {
           setTrustLineBalances(trustLineBalances);
@@ -104,7 +106,7 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
         if (e?.data?.error !== 'actNotFound') {
           Sentry.captureException(e);
         }
-        setXRPBalance(ERROR_STATE);
+        setMainTokenBalance(ERROR_STATE);
       }
     }
 
@@ -121,11 +123,11 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
 
   const handleFundWallet = useCallback(() => {
     setErrorMessage('');
-    setXRPBalance(LOADING_STATE);
+    setMainTokenBalance(LOADING_STATE);
     fundWallet()
-      .then(({ balance }) => setXRPBalance(balance.toString()))
+      .then(({ balance }) => setMainTokenBalance(balance.toString()))
       .catch((e) => {
-        setXRPBalance(ERROR_STATE);
+        setMainTokenBalance(ERROR_STATE);
         setErrorMessage(e.message);
       });
   }, [fundWallet]);
@@ -152,7 +154,7 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
     );
   }
 
-  if (XRPBalance === LOADING_STATE) {
+  if (mainTokenBalance === LOADING_STATE) {
     return <TokenLoader />;
   }
   const baseReserve = serverInfo?.info.validated_ledger?.reserve_base_xrp || DEFAULT_RESERVE;
@@ -166,12 +168,12 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
       setReserve(DEFAULT_RESERVE);
     });
 
-  if (XRPBalance === ERROR_STATE) {
+  if (mainTokenBalance === ERROR_STATE) {
     return (
       <InformationMessage title="Account not activated">
         <div style={{ marginBottom: '5px' }}>
           To create this account to the XRP ledger, you will have to make a first deposit of a
-          minimum {reserve} XRP.
+          minimum {reserve} {mainToken}.
         </div>
         <Link
           href="https://xrpl.org/reserves.html?utm_source=gemwallet.app"
@@ -181,7 +183,8 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
           Learn more about the account reserve.
         </Link>
         <div style={{ marginTop: '5px' }}>
-          Your reserved XRP will not show up within your GemWallet's balance as you cannot spend it.
+          Your reserved {mainToken} will not show up within your GemWallet's balance as you cannot
+          spend it.
         </div>
 
         {(networkName === Network.TESTNET || networkName === Network.DEVNET) && (
@@ -198,9 +201,9 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
   return (
     <div>
       <TokenDisplay
-        balance={Number(XRPBalance) - reserve}
-        token="XRP"
-        isXRPToken
+        balance={Number(mainTokenBalance) - reserve}
+        token={mainToken}
+        isMainToken
         onExplainClick={handleOpen}
       />
       {trustLineBalances.map((trustedLine) => {
@@ -259,7 +262,7 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
           >
             <Typography style={{ marginBottom: '5px' }}>
               The activation of this XRP ledger account was made through a minimum deposit of{' '}
-              {baseReserve} XRP.
+              {baseReserve} {mainToken}.
             </Typography>
             <Link
               href="https://xrpl.org/reserves.html?utm_source=gemwallet.app"
@@ -270,13 +273,17 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
             </Link>
           </InformationMessage>
           <Typography style={{ margin: '20px 0 10px 0' }}>Account balance</Typography>
-          <TokenDisplay balance={Number(XRPBalance)} isXRPToken token="XRP" />
+          <TokenDisplay balance={Number(mainTokenBalance)} isMainToken token={mainToken} />
           <Typography style={{ margin: '20px 0 10px 0' }}>Amount that can be spent</Typography>
-          <TokenDisplay balance={Number(XRPBalance) - reserve} isXRPToken token="XRP" />
+          <TokenDisplay
+            balance={Number(mainTokenBalance) - reserve}
+            isMainToken
+            token={mainToken}
+          />
           <Typography style={{ margin: '20px 0 10px 0' }}>Base reserve</Typography>
-          <TokenDisplay balance={baseReserve} isXRPToken token="XRP" />
+          <TokenDisplay balance={baseReserve} isMainToken token={mainToken} />
           <Typography style={{ margin: '20px 0 10px 0' }}>Owner reserve</Typography>
-          <TokenDisplay balance={ownerReserve} isXRPToken token="XRP" />
+          <TokenDisplay balance={ownerReserve} isMainToken token={mainToken} />
         </div>
       </DialogPage>
       <div

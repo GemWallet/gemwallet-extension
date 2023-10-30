@@ -9,7 +9,8 @@ const user = userEvent.setup();
 
 let mockWalletContext = generateWalletContext();
 jest.mock('../../../contexts', () => ({
-  useWallet: () => mockWalletContext
+  useWallet: () => mockWalletContext,
+  useNetwork: () => ({ networkName: 'testnet' })
 }));
 
 describe('TransactionListing', () => {
