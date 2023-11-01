@@ -22,6 +22,7 @@ import {
 } from '@gemwallet/constants';
 
 import { convertHexCurrencyString } from './convertHexCurrencyString';
+import { LP_TOKEN } from './trustlines';
 
 const formatValue = (value: number) => {
   let decimalLength = value.toString().split('.')[1]?.length || 0;
@@ -87,7 +88,8 @@ export const formatToken = (value: number, currency: string = 'XRP', isDrops = f
     value = Number(dropsToXrp(value));
   }
 
-  return `${formatValue(value)} ${currency.toUpperCase()}`;
+  const displayedCurrency = currency === LP_TOKEN ? '' : currency.toUpperCase();
+  return `${formatValue(value)} ${displayedCurrency}`;
 };
 
 // NFTokenCreateOffer
