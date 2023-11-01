@@ -4,7 +4,9 @@ import {
   TrustSetFlagsInterface,
   NFTokenCreateOfferFlagsInterface,
   AccountSetFlagsInterface,
-  OfferCreateFlagsInterface
+  OfferCreateFlagsInterface,
+  AMMDepositFlagsInterface,
+  AMMWithdrawFlagsInterface
 } from 'xrpl';
 
 export interface Memo {
@@ -34,3 +36,7 @@ export type CreateNFTOfferFlags = NFTokenCreateOfferFlagsInterface | number;
 export type SetAccountFlags = AccountSetFlagsInterface | number;
 
 export type CreateOfferFlags = OfferCreateFlagsInterface | number;
+
+export type DepositAMMFlags = AMMDepositFlagsInterface | number;
+
+export type WithdrawAMMFlags = AMMWithdrawFlagsInterface | number;

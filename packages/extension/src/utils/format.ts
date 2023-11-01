@@ -7,7 +7,9 @@ import {
   Transaction,
   TrustSetFlags as TrustSetFlagsBitmask,
   PaymentFlags as PaymentFlagsBitmask,
-  AccountSetTfFlags as AccountSetTfFlagsBitmask
+  AccountSetTfFlags as AccountSetTfFlagsBitmask,
+  AMMDepositFlags as AMMDepositFlagsBitmask,
+  AMMWithdrawFlags as AMMWithdrawFlagsBitmask
 } from 'xrpl';
 import { Amount, IssuedCurrencyAmount } from 'xrpl/dist/npm/models/common';
 import { GlobalFlags } from 'xrpl/dist/npm/models/transactions/common';
@@ -15,10 +17,12 @@ import { GlobalFlags } from 'xrpl/dist/npm/models/transactions/common';
 import {
   CreateNFTOfferFlags,
   CreateOfferFlags,
+  DepositAMMFlags,
   MintNFTFlags,
   PaymentFlags,
   SetAccountFlags,
-  TrustSetFlags
+  TrustSetFlags,
+  WithdrawAMMFlags
 } from '@gemwallet/constants';
 
 import { convertHexCurrencyString } from './convertHexCurrencyString';
@@ -123,6 +127,15 @@ const LABEL_SET_NO_RIPPLE = 'Set No Ripple';
 const LABEL_CLEAR_NO_RIPPLE = 'Clear No Ripple';
 const LABEL_SET_FREEZE = 'Set Freeze';
 const LABEL_CLEAR_FREEZE = 'Clear Freeze';
+// AMMDeposit
+const LABEL_LPTOKEN = 'LP Token';
+const LABEL_SINGLE_ASSET = 'Single Asset';
+const LABEL_TWO_ASSET = 'Two Assets';
+const LABEL_ONE_ASSET_LPTOKEN = 'One Asset LP Token';
+const LABEL_LIMIT_LPTOKEN = 'Limit LP Token';
+// AMMWithdraw
+const LABEL_WITHDRAW_ALL = 'Withdraw All';
+const LABEL_ONE_ASSET_WITHDRAW_ALL = 'One Asset Withdraw All';
 export const formatFlags = (
   flags:
     | PaymentFlags
@@ -131,8 +144,19 @@ export const formatFlags = (
     | CreateNFTOfferFlags
     | SetAccountFlags
     | CreateOfferFlags
+    | DepositAMMFlags
+    | WithdrawAMMFlags
     | GlobalFlags,
-  flagsType?: 'NFTokenCreateOffer' | 'NFTokenMint' | string
+  flagsType?:
+    | 'NFTokenCreateOffer'
+    | 'NFTokenMint'
+    | 'OfferCreate'
+    | 'Payment'
+    | 'AccountSet'
+    | 'TrustSet'
+    | 'AMMDeposit'
+    | 'AMMWithdraw'
+    | string
 ) => {
   if (flagsType === 'NFTokenCreateOffer') {
     if (typeof flags === 'number') {
@@ -403,6 +427,144 @@ export const formatFlags = (
               'tfClearNoRipple',
               'tfSetFreeze',
               'tfClearFreeze'
+            ].includes(key)
+          ) {
+            return null;
+          }
+          return `${key}: ${value}`;
+        })
+        .filter((flag) => flag !== null);
+
+      return formattedFlags.length > 0 ? formattedFlags.join('\n') : 'None';
+    }
+  }
+
+  if (flagsType === 'AMMDeposit') {
+    if (typeof flags === 'number') {
+      let flagDescriptions: string[] = [];
+
+      if (flags & AMMDepositFlagsBitmask.tfLPToken) {
+        flagDescriptions.push(LABEL_LPTOKEN);
+      }
+      if (flags & AMMDepositFlagsBitmask.tfSingleAsset) {
+        flagDescriptions.push(LABEL_SINGLE_ASSET);
+      }
+      if (flags & AMMDepositFlagsBitmask.tfTwoAsset) {
+        flagDescriptions.push(LABEL_TWO_ASSET);
+      }
+      if (flags & AMMDepositFlagsBitmask.tfOneAssetLPToken) {
+        flagDescriptions.push(LABEL_ONE_ASSET_LPTOKEN);
+      }
+      if (flags & AMMDepositFlagsBitmask.tfLimitLPToken) {
+        flagDescriptions.push(LABEL_LIMIT_LPTOKEN);
+      }
+
+      return flagDescriptions.length > 0 ? flagDescriptions.join('\n') : 'None';
+    }
+
+    // If flags is an object
+    if (typeof flags === 'object') {
+      const formattedFlags = Object.entries(flags)
+        .map(([key, value]) => {
+          if (key === 'tfLPToken' && value) {
+            return `${LABEL_LPTOKEN}`;
+          }
+          if (key === 'tfSingleAsset' && value) {
+            return `${LABEL_SINGLE_ASSET}`;
+          }
+          if (key === 'tfTwoAsset' && value) {
+            return `${LABEL_TWO_ASSET}`;
+          }
+          if (key === 'tfOneAssetLPToken' && value) {
+            return `${LABEL_ONE_ASSET_LPTOKEN}`;
+          }
+          if (key === 'tfLimitLPToken' && value) {
+            return `${LABEL_LIMIT_LPTOKEN}`;
+          }
+
+          if (
+            [
+              'tfLPToken',
+              'tfSingleAsset',
+              'tfTwoAsset',
+              'tfOneAssetLPToken',
+              'tfLimitLPToken'
+            ].includes(key)
+          ) {
+            return null;
+          }
+          return `${key}: ${value}`;
+        })
+        .filter((flag) => flag !== null);
+
+      return formattedFlags.length > 0 ? formattedFlags.join('\n') : 'None';
+    }
+  }
+
+  if (flagsType === 'AMMWithdraw') {
+    if (typeof flags === 'number') {
+      let flagDescriptions: string[] = [];
+
+      if (flags & AMMWithdrawFlagsBitmask.tfLPToken) {
+        flagDescriptions.push(LABEL_LPTOKEN);
+      }
+      if (flags & AMMWithdrawFlagsBitmask.tfWithdrawAll) {
+        flagDescriptions.push(LABEL_WITHDRAW_ALL);
+      }
+      if (flags & AMMWithdrawFlagsBitmask.tfOneAssetWithdrawAll) {
+        flagDescriptions.push(LABEL_ONE_ASSET_WITHDRAW_ALL);
+      }
+      if (flags & AMMWithdrawFlagsBitmask.tfSingleAsset) {
+        flagDescriptions.push(LABEL_SINGLE_ASSET);
+      }
+      if (flags & AMMWithdrawFlagsBitmask.tfTwoAsset) {
+        flagDescriptions.push(LABEL_TWO_ASSET);
+      }
+      if (flags & AMMWithdrawFlagsBitmask.tfOneAssetLPToken) {
+        flagDescriptions.push(LABEL_ONE_ASSET_LPTOKEN);
+      }
+      if (flags & AMMWithdrawFlagsBitmask.tfLimitLPToken) {
+        flagDescriptions.push(LABEL_LIMIT_LPTOKEN);
+      }
+
+      return flagDescriptions.length > 0 ? flagDescriptions.join('\n') : 'None';
+    }
+
+    // If flags is an object
+    if (typeof flags === 'object') {
+      const formattedFlags = Object.entries(flags)
+        .map(([key, value]) => {
+          if (key === 'tfLPToken' && value) {
+            return `${LABEL_LPTOKEN}`;
+          }
+          if (key === 'tfWithdrawAll' && value) {
+            return `${LABEL_WITHDRAW_ALL}`;
+          }
+          if (key === 'tfOneAssetWithdrawAll' && value) {
+            return `${LABEL_ONE_ASSET_WITHDRAW_ALL}`;
+          }
+          if (key === 'tfSingleAsset' && value) {
+            return `${LABEL_SINGLE_ASSET}`;
+          }
+          if (key === 'tfTwoAsset' && value) {
+            return `${LABEL_TWO_ASSET}`;
+          }
+          if (key === 'tfOneAssetLPToken' && value) {
+            return `${LABEL_ONE_ASSET_LPTOKEN}`;
+          }
+          if (key === 'tfLimitLPToken' && value) {
+            return `${LABEL_LIMIT_LPTOKEN}`;
+          }
+
+          if (
+            [
+              'tfLPToken',
+              'tfWithdrawAll',
+              'tfOneAssetWithdrawAll',
+              'tfSingleAsset',
+              'tfTwoAsset',
+              'tfOneAssetLPToken',
+              'tfLimitLPToken'
             ].includes(key)
           ) {
             return null;

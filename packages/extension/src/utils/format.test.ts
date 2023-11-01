@@ -299,6 +299,92 @@ describe('formatFlags', () => {
     };
     expect(formatFlags(flags, 'TrustSet')).toBe('None');
   });
+
+  // AMMDeposit
+  it('should format AMMDeposit flags correctly when given as a number', () => {
+    const flags = 589824;
+    const expectedResult = 'LP Token\nSingle Asset';
+    expect(formatFlags(flags, 'AMMDeposit')).toBe(expectedResult);
+  });
+
+  it('should format AMMDeposit flags correctly when given as an object', () => {
+    const flags = {
+      tfLPToken: true,
+      tfSingleAsset: true,
+      tfTwoAsset: false,
+      tfOneAssetLPToken: false,
+      tfLimitLPToken: false
+    };
+    const expectedResult = 'LP Token\nSingle Asset';
+    expect(formatFlags(flags, 'AMMDeposit')).toBe(expectedResult);
+  });
+
+  it('should not show false flags for AMMDeposit', () => {
+    const flags = {
+      tfLPToken: false,
+      tfSingleAsset: false,
+      tfTwoAsset: false,
+      tfOneAssetLPToken: true,
+      tfLimitLPToken: false
+    };
+    expect(formatFlags(flags, 'AMMDeposit')).toBe('One Asset LP Token');
+  });
+
+  it('should format AMMDeposit flags to "None" when no flags are set as a number', () => {
+    const flags = 0; // no flags are set
+    expect(formatFlags(flags, 'AMMDeposit')).toBe('None');
+  });
+
+  it('should format AMMDeposit flags to "None" when no flags are set as an object', () => {
+    const flags = {
+      tfLPToken: false,
+      tfSingleAsset: false,
+      tfTwoAsset: false,
+      tfOneAssetLPToken: false,
+      tfLimitLPToken: false
+    };
+    expect(formatFlags(flags, 'AMMDeposit')).toBe('None');
+  });
+
+  //AMMWithdraw
+  it('should format AMMWithdraw flags correctly when given as a number', () => {
+    const flags = 589824;
+    const expectedResult = 'LP Token\nSingle Asset';
+    expect(formatFlags(flags, 'AMMWithdraw')).toBe(expectedResult);
+  });
+
+  it('should format AMMWithdraw flags correctly when given as an object', () => {
+    const flags = {
+      tfLPToken: true,
+      tfSingleAsset: true
+      // other flags as false
+    };
+    const expectedResult = 'LP Token\nSingle Asset';
+    expect(formatFlags(flags, 'AMMWithdraw')).toBe(expectedResult);
+  });
+
+  it('should not show false flags for AMMWithdraw', () => {
+    const flags = {
+      tfLPToken: false,
+      tfSingleAsset: true
+      // other flags as false
+    };
+    expect(formatFlags(flags, 'AMMWithdraw')).toBe('Single Asset');
+  });
+
+  it('should format AMMWithdraw flags to "None" when no flags are set as a number', () => {
+    const flags = 0; // no flags are set
+    expect(formatFlags(flags, 'AMMWithdraw')).toBe('None');
+  });
+
+  it('should format AMMWithdraw flags to "None" when no flags are set as an object', () => {
+    const flags = {
+      tfLPToken: false,
+      tfSingleAsset: false
+      // other flags as false
+    };
+    expect(formatFlags(flags, 'AMMWithdraw')).toBe('None');
+  });
 });
 
 describe('formatFlagsToNumber', () => {
