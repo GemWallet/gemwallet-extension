@@ -146,19 +146,16 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
 
   const renderCurrency = (params: { title: string; value: Currency }) => {
     const { title, value } = params;
-    const currency =
-      value.currency.length === 40 ? convertHexCurrencyString(value.currency) : value.currency;
+    const currency = convertHexCurrencyString(value.currency);
     const formatted = value.issuer ? `${currency}\n${value.issuer}` : currency;
     const hasTooltip = !!value.issuer;
     return (
-      <>
-        <KeyValueDisplay
-          keyName={title}
-          value={formatted}
-          useLegacy={useLegacy}
-          hasTooltip={hasTooltip}
-        />
-      </>
+      <KeyValueDisplay
+        keyName={title}
+        value={formatted}
+        useLegacy={useLegacy}
+        hasTooltip={hasTooltip}
+      />
     );
   };
 

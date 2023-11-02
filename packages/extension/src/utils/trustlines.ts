@@ -1,7 +1,7 @@
 /*
  * AMM Related
  */
-export const LP_TOKEN = 'LP Token';
+export const LP_TOKEN_NAME = 'LP Token';
 
 // Source: https://xrpl.org/automated-market-makers.html#lp-token-currency-codes
 export const isLPToken = (hexCurrency: string): boolean => {

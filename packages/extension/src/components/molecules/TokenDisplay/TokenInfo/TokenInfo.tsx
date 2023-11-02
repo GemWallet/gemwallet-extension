@@ -4,7 +4,7 @@ import { Tooltip, Typography } from '@mui/material';
 
 import { SECONDARY_GRAY } from '../../../../constants';
 import { formatToken } from '../../../../utils';
-import { LP_TOKEN } from '../../../../utils/trustlines';
+import { LP_TOKEN_NAME } from '../../../../utils/trustlines';
 import { RenderTokenIcon } from './RenderTokenIcon';
 
 export interface TokenInfoProps {
@@ -18,6 +18,7 @@ export interface TokenInfoProps {
 }
 
 const MAX_TOKEN_LENGTH = 5;
+const MAX_ISSUER_LENGTH = 20;
 
 export const TokenInfo = forwardRef((props: TokenInfoProps, ref: Ref<HTMLDivElement>) => {
   const {
@@ -32,7 +33,7 @@ export const TokenInfo = forwardRef((props: TokenInfoProps, ref: Ref<HTMLDivElem
   } = props;
 
   const isLPToken = useMemo(() => {
-    return token === LP_TOKEN;
+    return token === LP_TOKEN_NAME;
   }, [token]);
 
   const displayToken = useMemo(() => {
@@ -42,8 +43,8 @@ export const TokenInfo = forwardRef((props: TokenInfoProps, ref: Ref<HTMLDivElem
   }, [token, isLPToken]);
 
   const formattedIssuerAddress = useMemo(() => {
-    return issuerAddress && issuerAddress.length > 20
-      ? `${issuerAddress.slice(0, 20)}...`
+    return issuerAddress && issuerAddress.length > MAX_ISSUER_LENGTH
+      ? `${issuerAddress.slice(0, MAX_ISSUER_LENGTH)}...`
       : issuerAddress;
   }, [issuerAddress]);
 
@@ -74,13 +75,15 @@ export const TokenInfo = forwardRef((props: TokenInfoProps, ref: Ref<HTMLDivElem
               title={issuerAddress || ''}
               placement="top"
               arrow
-              disableHoverListener={issuerAddress !== undefined && issuerAddress.length <= 20}
+              disableHoverListener={
+                issuerAddress !== undefined && issuerAddress.length <= MAX_ISSUER_LENGTH
+              }
             >
               <Typography
                 component="span"
                 variant="caption"
                 style={{
-                  marginLeft: '5px',
+                  marginLeft: '15px',
                   fontSize: 'smaller',
                   fontStyle: 'italic',
                   color: SECONDARY_GRAY

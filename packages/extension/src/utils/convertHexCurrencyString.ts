@@ -1,7 +1,7 @@
 import { Amount, IssuedCurrencyAmount } from 'xrpl/dist/npm/models/common';
 
 import { currencyToHex } from './hexConverter';
-import { isLPToken, LP_TOKEN } from './trustlines';
+import { isLPToken, LP_TOKEN_NAME } from './trustlines';
 
 export const convertHexCurrencyString = (hexCurrency: string): string => {
   if (hexCurrency.length !== 40) {
@@ -9,7 +9,7 @@ export const convertHexCurrencyString = (hexCurrency: string): string => {
   }
 
   if (isLPToken(hexCurrency)) {
-    return LP_TOKEN;
+    return LP_TOKEN_NAME;
   }
 
   // Trim trailing zeros in the hex string
