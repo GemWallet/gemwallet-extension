@@ -1,24 +1,31 @@
 import { FC } from 'react';
 
 import { TypographyProps } from '@mui/material';
-import { convertHexToString, Transaction } from 'xrpl';
+import { convertHexToString, Currency, Transaction } from 'xrpl';
 import { Amount, Memo, Signer } from 'xrpl/dist/npm/models/common';
 import { GlobalFlags } from 'xrpl/dist/npm/models/transactions/common';
 
 import { useWallet } from '../../../contexts';
-import { formatFlags, formatTransferFee, parseAmountObject } from '../../../utils';
+import {
+  convertHexCurrencyString,
+  formatFlags,
+  formatTransferFee,
+  parseAmountObject
+} from '../../../utils';
 import { KeyValueDisplay } from '../../atoms';
 
 type XRPLTxProps = {
   tx: Transaction;
   displayTransactionType?: boolean;
   useLegacy?: boolean;
+  hasMultipleAmounts?: boolean;
 };
 
 export const XRPLTransaction: FC<XRPLTxProps> = ({
   tx,
   displayTransactionType = true,
-  useLegacy = true
+  useLegacy = true,
+  hasMultipleAmounts = false
 }) => {
   const { selectedWallet, wallets } = useWallet();
   const keyMap: Record<string, (value: any) => JSX.Element | null> = {
@@ -32,7 +39,15 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
       renderAmount({
         title: 'Amount',
         value,
-        useLegacy
+        useLegacy,
+        hasMultipleAmounts
+      }),
+    Amount2: (value: Amount) =>
+      renderAmount({
+        title: 'Amount 2',
+        value,
+        useLegacy,
+        hasMultipleAmounts
       }),
     Account: (value: string) =>
       wallets[selectedWallet].publicAddress === value
@@ -40,6 +55,12 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
         : renderSimpleText({ title: 'Account', value, hasTooltip: true, useLegacy }),
     NFTokenID: (value: string) =>
       renderSimpleText({ title: 'NFT', value, hasTooltip: true, useLegacy }),
+    DeliverMin: (value: Amount) =>
+      renderAmount({
+        title: 'Deliver Min',
+        value,
+        useLegacy
+      }),
     Destination: (value: string) =>
       renderSimpleText({ title: 'Destination', value, hasTooltip: true, useLegacy }),
     DestinationTag: (value?: number) =>
@@ -90,7 +111,15 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
     OfferSequence: (value?: number) =>
       renderSimpleText({ title: 'Offer Sequence', value, useLegacy }),
     EmailHash: (value?: string) => renderSimpleText({ title: 'Email Hash', value, useLegacy }),
-    NFTokenTaxon: (value?: string) => renderSimpleText({ title: 'Taxon', value, useLegacy })
+    NFTokenTaxon: (value?: string) => renderSimpleText({ title: 'Taxon', value, useLegacy }),
+    Asset: (value: Currency) => renderCurrency({ title: 'Asset', value }),
+    Asset2: (value: Currency) => renderCurrency({ title: 'Asset 2', value }),
+    SendMax: (value: Amount) =>
+      renderAmount({
+        title: 'Send Max',
+        value,
+        useLegacy
+      })
   };
 
   const renderSimpleText = (params: {
@@ -115,14 +144,48 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
     );
   };
 
+  const renderCurrency = (params: { title: string; value: Currency }) => {
+    const { title, value } = params;
+    const currency = convertHexCurrencyString(value.currency);
+    const formatted = value.issuer ? `${currency}\n${value.issuer}` : currency;
+    const hasTooltip = !!value.issuer;
+    return (
+      <KeyValueDisplay
+        keyName={title}
+        value={formatted}
+        useLegacy={useLegacy}
+        hasTooltip={hasTooltip}
+      />
+    );
+  };
+
   const renderAmount = (params: {
     title: string;
     value: Amount;
     valueTypographyProps?: TypographyProps;
     useLegacy: boolean;
+    hasMultipleAmounts?: boolean;
   }) => {
     const { title, value, valueTypographyProps, useLegacy } = params;
     const res = parseAmountObject(value);
+    if (hasMultipleAmounts) {
+      const formattedValue = res.issuer
+        ? `${res.amount} ${res.currency}\n${res.issuer}`
+        : `${res.amount} ${res.currency}`;
+
+      const hasTooltip = !!res.issuer;
+
+      return (
+        <KeyValueDisplay
+          keyName={title}
+          value={formattedValue}
+          valueTypographyProps={valueTypographyProps}
+          useLegacy={useLegacy}
+          hasTooltip={hasTooltip}
+        />
+      );
+    }
+
     return (
       <>
         <KeyValueDisplay
@@ -201,6 +264,9 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
     const order = [
       'TransactionType',
       'Amount',
+      'Asset',
+      'Amount2',
+      'Asset2',
       'LimitAmount',
       'NFTokenID',
       'NFTokenOffers',
@@ -208,6 +274,8 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
       'TakerPays',
       'Destination',
       'DestinationTag',
+      'DeliverMin',
+      'SendMax',
       'NFTokenSellOffer',
       'NFTokenBuyOffer',
       'NFTokenBrokerFee',

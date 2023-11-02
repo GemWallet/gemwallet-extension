@@ -29,6 +29,10 @@ export const TransactionDetails: FC<TransactionDetailsProps> = ({
     return <LoadingOverlay />;
   }
 
+  const hasMultipleAmounts =
+    ('Amount' in txParam && 'Amount2' in txParam) ||
+    ('DeliverMin' in txParam && 'SendMax' in txParam);
+
   return (
     <>
       <DataCard
@@ -37,6 +41,7 @@ export const TransactionDetails: FC<TransactionDetailsProps> = ({
             tx={txParam}
             useLegacy={false}
             displayTransactionType={displayTransactionType}
+            hasMultipleAmounts={hasMultipleAmounts}
           />
         }
         dataName="Transaction details"

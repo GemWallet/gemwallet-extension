@@ -104,6 +104,7 @@ export const TokenDisplay: FC<TokenDisplayProps> = ({
           tokenWarningMessage={tokenWarningMessage}
           balance={balance}
           issuerName={tokenData?.issuerName}
+          issuerAddress={issuer}
         />
       ) : (
         <TokenInfo
@@ -112,6 +113,7 @@ export const TokenDisplay: FC<TokenDisplayProps> = ({
           token={token}
           tokenWarningMessage={tokenWarningMessage}
           balance={balance}
+          issuerAddress={issuer}
         />
       )}
       {onExplainClick ? (

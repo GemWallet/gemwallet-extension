@@ -17,6 +17,7 @@ import {
 } from '../../../constants';
 import { useLedger, useNetwork, useServer } from '../../../contexts';
 import { convertHexCurrencyString, generateKey, saveInChromeSessionStorage } from '../../../utils';
+import { isLPToken } from '../../../utils/trustlines';
 import { TokenLoader } from '../../atoms';
 import { InformationMessage } from '../../molecules/InformationMessage';
 import { TokenDisplay } from '../../molecules/TokenDisplay';
@@ -203,8 +204,10 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
         onExplainClick={handleOpen}
       />
       {trustLineBalances.map((trustedLine) => {
+        const isAMMLPToken = isLPToken(trustedLine.currency);
         const currencyToDisplay = convertHexCurrencyString(trustedLine.currency);
-        const canBeEdited = trustedLine.trustlineDetails || trustedLine.value !== '0';
+        const canBeEdited =
+          (trustedLine.trustlineDetails || trustedLine.value !== '0') && !isAMMLPToken;
         const limit = trustedLine.trustlineDetails?.limit || 0;
         const noRipple = trustedLine.trustlineDetails?.noRipple || false;
         const flags = noRipple ? TrustSetFlagsBitmask.tfSetNoRipple : undefined;
