@@ -113,7 +113,13 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
     EmailHash: (value?: string) => renderSimpleText({ title: 'Email Hash', value, useLegacy }),
     NFTokenTaxon: (value?: string) => renderSimpleText({ title: 'Taxon', value, useLegacy }),
     Asset: (value: Currency) => renderCurrency({ title: 'Asset', value }),
-    Asset2: (value: Currency) => renderCurrency({ title: 'Asset 2', value })
+    Asset2: (value: Currency) => renderCurrency({ title: 'Asset 2', value }),
+    SendMax: (value: Amount) =>
+      renderAmount({
+        title: 'Send Max',
+        value,
+        useLegacy
+      })
   };
 
   const renderSimpleText = (params: {
@@ -271,6 +277,8 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
       'TakerPays',
       'Destination',
       'DestinationTag',
+      'DeliverMin',
+      'SendMax',
       'NFTokenSellOffer',
       'NFTokenBuyOffer',
       'NFTokenBrokerFee',

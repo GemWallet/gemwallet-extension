@@ -29,7 +29,9 @@ export const TransactionDetails: FC<TransactionDetailsProps> = ({
     return <LoadingOverlay />;
   }
 
-  const hasMultipleAmounts = 'Amount' in txParam && 'Amount2' in txParam;
+  const hasMultipleAmounts =
+    ('Amount' in txParam && 'Amount2' in txParam) ||
+    ('DeliverMin' in txParam && 'SendMax' in txParam);
 
   return (
     <>
