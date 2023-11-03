@@ -43,13 +43,8 @@ export const SignTransaction: FC = () => {
   const { isConnectionFailed, networkName } = useNetwork();
   const { setTransactionProgress } = useTransactionProgress();
   const { estimatedFees, errorFees, difference } = useFees(
-    params.txParam ?? {
-      TransactionType: 'Payment',
-      Account: '',
-      Destination: '',
-      Amount: ''
-    },
-    params.txParam?.Fee ?? null
+    params.txParam ?? [],
+    params.txParam?.Fee
   );
 
   const urlParams = new URLSearchParams(window.location.search);

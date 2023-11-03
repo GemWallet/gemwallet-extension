@@ -64,17 +64,7 @@ export const AddNewTrustline: FC = () => {
   const { networkName } = useNetwork();
   const { setTransactionProgress } = useTransactionProgress();
   const { estimatedFees, errorFees, difference } = useFees(
-    {
-      TransactionType: 'TrustSet',
-      Account: '',
-      LimitAmount: params.transaction?.LimitAmount || {
-        currency: '',
-        issuer: '',
-        value: '0'
-      },
-      ...(params.transaction?.Memos && { Memos: params.transaction?.Memos }),
-      ...(params.transaction?.Flags && { Flags: params.transaction.Flags })
-    },
+    params.transaction ?? [],
     params.transaction?.Fee
   );
 

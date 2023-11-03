@@ -45,11 +45,7 @@ export const CancelNFTOffer: FC = () => {
   const { networkName } = useNetwork();
   const { setTransactionProgress } = useTransactionProgress();
   const { estimatedFees, errorFees, difference } = useFees(
-    {
-      TransactionType: 'NFTokenCancelOffer',
-      Account: '',
-      NFTokenOffers: params.transaction?.NFTokenOffers ?? []
-    },
+    params.transaction ?? [],
     params.transaction?.Fee
   );
 

@@ -44,12 +44,7 @@ export const BurnNFT: FC = () => {
   const { networkName } = useNetwork();
   const { setTransactionProgress } = useTransactionProgress();
   const { estimatedFees, errorFees, difference } = useFees(
-    {
-      TransactionType: 'NFTokenBurn',
-      Account: '',
-      NFTokenID: params.transaction?.NFTokenID ?? '',
-      ...(params.transaction?.Owner && { Owner: params.transaction.Owner })
-    },
+    params.transaction ?? [],
     params.transaction?.Fee
   );
 

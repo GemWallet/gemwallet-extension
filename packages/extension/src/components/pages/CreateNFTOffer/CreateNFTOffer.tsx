@@ -45,16 +45,7 @@ export const CreateNFTOffer: FC = () => {
   const { networkName } = useNetwork();
   const { setTransactionProgress } = useTransactionProgress();
   const { estimatedFees, errorFees, difference } = useFees(
-    {
-      TransactionType: 'NFTokenCreateOffer',
-      Account: '',
-      NFTokenID: params.transaction?.NFTokenID ?? '',
-      Amount: params.transaction?.Amount ?? '',
-      ...(params.transaction?.Owner && { Owner: params.transaction.Owner }),
-      ...(params.transaction?.Expiration && { Expiration: params.transaction.Expiration }),
-      ...(params.transaction?.Destination && { Destination: params.transaction?.Destination }),
-      ...(params.transaction?.Flags && { Flags: params.transaction.Flags })
-    },
+    params.transaction ?? [],
     params.transaction?.Fee
   );
 

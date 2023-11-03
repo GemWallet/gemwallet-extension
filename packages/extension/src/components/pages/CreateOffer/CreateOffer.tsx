@@ -45,15 +45,7 @@ export const CreateOffer: FC = () => {
   const { networkName } = useNetwork();
   const { setTransactionProgress } = useTransactionProgress();
   const { estimatedFees, errorFees, difference } = useFees(
-    {
-      TransactionType: 'OfferCreate',
-      Account: '',
-      ...(params.transaction?.Flags && { Flags: params.transaction.Flags }),
-      ...(params.transaction?.Expiration && { Expiration: params.transaction.Expiration }),
-      ...(params.transaction?.OfferSequence && { OfferSequence: params.transaction.OfferSequence }),
-      TakerGets: params.transaction?.TakerGets ?? '',
-      TakerPays: params.transaction?.TakerPays ?? ''
-    },
+    params.transaction ?? [],
     params.transaction?.Fee
   );
 

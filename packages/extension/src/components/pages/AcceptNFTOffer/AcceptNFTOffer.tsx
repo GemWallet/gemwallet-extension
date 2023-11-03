@@ -45,19 +45,7 @@ export const AcceptNFTOffer: FC = () => {
   const { networkName } = useNetwork();
   const { setTransactionProgress } = useTransactionProgress();
   const { estimatedFees, errorFees, difference } = useFees(
-    {
-      TransactionType: 'NFTokenAcceptOffer',
-      Account: '',
-      ...(params.transaction?.NFTokenSellOffer && {
-        NFTokenSellOffer: params.transaction.NFTokenSellOffer
-      }),
-      ...(params.transaction?.NFTokenBuyOffer && {
-        NFTokenBuyOffer: params.transaction.NFTokenBuyOffer
-      }),
-      ...(params.transaction?.NFTokenBrokerFee && {
-        NFTokenBrokerFee: params.transaction.NFTokenBrokerFee
-      })
-    },
+    params.transaction ?? [],
     params.transaction?.Fee
   );
 

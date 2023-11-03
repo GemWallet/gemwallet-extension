@@ -45,23 +45,7 @@ export const SetAccount: FC = () => {
   const { networkName } = useNetwork();
   const { setTransactionProgress } = useTransactionProgress();
   const { estimatedFees, errorFees, difference } = useFees(
-    {
-      TransactionType: 'AccountSet',
-      Account: '',
-      ...(params.transaction?.Flags ? { Flags: params.transaction.Flags } : {}),
-      ...(params.transaction?.ClearFlag ? { ClearFlag: params.transaction.ClearFlag } : {}),
-      ...(params.transaction?.Domain ? { Domain: params.transaction.Domain } : {}),
-      ...(params.transaction?.EmailHash ? { EmailHash: params.transaction.EmailHash } : {}),
-      ...(params.transaction?.MessageKey ? { MessageKey: params.transaction.MessageKey } : {}),
-      ...(params.transaction?.NFTokenMinter
-        ? { NFTokenMinter: params.transaction.NFTokenMinter }
-        : {}),
-      ...(params.transaction?.SetFlag ? { SetFlag: params.transaction.SetFlag } : {}),
-      ...(params.transaction?.TransferRate
-        ? { TransferRate: params.transaction.TransferRate }
-        : {}),
-      ...(params.transaction?.TickSize ? { TickSize: params.transaction.TickSize } : {})
-    },
+    params.transaction ?? [],
     params.transaction?.Fee
   );
 
