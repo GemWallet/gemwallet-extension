@@ -2,7 +2,7 @@ import * as Sentry from '@sentry/react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { Network } from '@gemwallet/constants';
+import { Chain, XRPLNetwork } from '@gemwallet/constants';
 
 import { DEFAULT_RESERVE, RESERVE_PER_OWNER } from '../../../constants';
 import { formatToken } from '../../../utils';
@@ -21,7 +21,8 @@ let mockGetBalancesPromise = jest.fn();
 let mockFundWalletPromise = jest.fn();
 let mockRequestPromise = jest.fn();
 
-let mockNetwork = Network.TESTNET;
+let mockChain = Chain.XRPL;
+let mockNetwork = XRPLNetwork.TESTNET;
 let mockClient: { getBalances: jest.Mock; request: jest.Mock } | null = {
   getBalances: mockGetBalancesPromise,
   request: mockRequestPromise
@@ -42,7 +43,8 @@ jest.mock('../../../contexts', () => {
     useNetwork: () => ({
       client: mockClient,
       reconnectToNetwork: jest.fn(),
-      networkName: mockNetwork
+      networkName: mockNetwork,
+      chainName: mockChain
     }),
     useServer: () => ({
       serverInfo: {
@@ -138,7 +140,7 @@ describe('TokenListing', () => {
   });
 
   test('Should display the fund wallet button when the network is testnet and XRP balance is 0', async () => {
-    mockNetwork = Network.TESTNET;
+    mockNetwork = XRPLNetwork.TESTNET;
     mockGetBalancesPromise.mockRejectedValueOnce(
       new Error('Throw an error if there is an error fetching the balances')
     );
@@ -150,7 +152,7 @@ describe('TokenListing', () => {
   });
 
   test('Should not display the fund wallet button when the network is Mainnet and XRP balance is 0', async () => {
-    mockNetwork = Network.MAINNET;
+    mockNetwork = XRPLNetwork.MAINNET;
     mockGetBalancesPromise.mockRejectedValueOnce(
       new Error('Throw an error if there is an error fetching the balances')
     );
@@ -164,7 +166,7 @@ describe('TokenListing', () => {
   test('Should display the amount of XRP when click on Fund Wallet Button', async () => {
     const reserve = DEFAULT_RESERVE + RESERVE_PER_OWNER * 2;
 
-    mockNetwork = Network.TESTNET;
+    mockNetwork = XRPLNetwork.TESTNET;
     mockFundWalletPromise.mockResolvedValueOnce({ balance: 10000 });
     mockGetBalancesPromise.mockRejectedValueOnce(
       new Error('Throw an error if there is an error fetching the balances')

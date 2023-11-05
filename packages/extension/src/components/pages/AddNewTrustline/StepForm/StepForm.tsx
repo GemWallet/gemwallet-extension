@@ -1,10 +1,10 @@
 import { FC, FocusEvent, useCallback, useEffect, useMemo, useState } from 'react';
 
-import { Button, TextField, Typography, Checkbox, FormControlLabel } from '@mui/material';
+import { Button, Checkbox, FormControlLabel, TextField, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { isValidAddress } from 'xrpl';
 
-import { Network } from '@gemwallet/constants';
+import { Chain, XRPLNetwork } from '@gemwallet/constants';
 
 import { HOME_PATH, MAX_TOKEN_LENGTH } from '../../../../constants';
 import { useNetwork } from '../../../../contexts';
@@ -41,7 +41,7 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
   const [errorLimit, setErrorLimit] = useState<string>('');
 
   const navigate = useNavigate();
-  const { networkName } = useNetwork();
+  const { chainName, networkName } = useNetwork();
 
   const handleBack = useCallback(() => {
     navigate(HOME_PATH);
@@ -109,8 +109,8 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
   }, [noRipple, issuer, limit, onTrustlineSubmit, token]);
 
   const canSearchTokens = useMemo(() => {
-    return networkName === Network.MAINNET && !initialValues;
-  }, [initialValues, networkName]);
+    return chainName === Chain.XRPL && networkName === XRPLNetwork.MAINNET && !initialValues;
+  }, [chainName, initialValues, networkName]);
 
   useEffect(() => {
     if (initialValues) {

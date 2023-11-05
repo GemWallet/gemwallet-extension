@@ -4,12 +4,12 @@ import { XRP_TOKEN } from '../../constants';
 import { useNetwork } from '../../contexts';
 
 export const useMainToken = () => {
-  const { networkName } = useNetwork();
+  const { chainName } = useNetwork();
 
   return useMemo(() => {
-    switch (networkName) {
+    switch (chainName) {
       default:
         return XRP_TOKEN;
     }
-  }, [networkName]);
+  }, [chainName]);
 };

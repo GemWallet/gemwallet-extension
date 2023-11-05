@@ -4,7 +4,7 @@ import { FiberManualRecord as FiberManualRecordIcon } from '@mui/icons-material'
 import { Button, Chip } from '@mui/material';
 import * as Sentry from '@sentry/react';
 
-import { NETWORK, Network } from '@gemwallet/constants';
+import { getNetwork, NETWORK, Network } from '@gemwallet/constants';
 import { NetworkData } from '@gemwallet/constants/src/network/network.types';
 
 import { useNetwork } from '../../../contexts';
@@ -17,7 +17,7 @@ import { ErrorSwitchNetworkDialog } from './ErrorSwitchNetworkDialog';
 import { NetworkDisplay } from './NetworkDisplay';
 
 export const NetworkIndicator: FC = () => {
-  const { client, networkName, switchNetwork } = useNetwork();
+  const { client, networkName, chainName, switchNetwork } = useNetwork();
   const [currentNetworkName, setCurrentNetworkName] = useState<string>(networkName);
   const [explanationOpen, setExplanationOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -117,10 +117,10 @@ export const NetworkIndicator: FC = () => {
   }, [existingNetworks, networkToDelete]);
 
   const preDefinedNetworks = useMemo(() => {
-    return Object.keys(NETWORK)
-      .filter((network) => network !== Network.CUSTOM)
+    return Object.keys(NETWORK[chainName])
+      .filter((network) => network !== NETWORK[chainName].Custom.name)
       .map((_network) => {
-        const { name, server, description } = NETWORK[_network as Network];
+        const { name, server, description } = getNetwork(chainName, _network as Network);
         return (
           <NetworkDisplay
             key={_network}
@@ -132,7 +132,7 @@ export const NetworkIndicator: FC = () => {
           />
         );
       });
-  }, [currentNetworkName, handleClickOnNetwork]);
+  }, [chainName, currentNetworkName, handleClickOnNetwork]);
 
   const customNetworks = useMemo(() => {
     return Object.keys(existingNetworks).map((_network) => {
@@ -144,12 +144,12 @@ export const NetworkIndicator: FC = () => {
           server={server}
           description={description || ''}
           isSelected={name === currentNetworkName}
-          onClick={() => handleClickOnNetwork(Network.CUSTOM, name, server)}
+          onClick={() => handleClickOnNetwork(NETWORK[chainName].Custom.name, name, server)}
           onRemove={() => removeNetwork(name)}
         />
       );
     });
-  }, [currentNetworkName, existingNetworks, handleClickOnNetwork, removeNetwork]);
+  }, [chainName, currentNetworkName, existingNetworks, handleClickOnNetwork, removeNetwork]);
 
   return (
     <>
@@ -178,9 +178,10 @@ export const NetworkIndicator: FC = () => {
             dialogOpen={handleAddNetwork}
             handleClose={handleAddNetworkClose}
             refreshNetworks={refreshCustomNetworks}
-            networkNames={[...Object.keys(NETWORK), ...Object.keys(existingNetworks)].map((name) =>
-              name.toLowerCase()
-            )}
+            networkNames={[
+              ...Object.keys(NETWORK[chainName]),
+              ...Object.keys(existingNetworks)
+            ].map((name) => name.toLowerCase())}
           />
           <DeleteNetworkDialog
             confirmDeleteOpen={confirmDeleteOpen}

@@ -12,7 +12,6 @@ import {
   MSG_INTERNAL_RECEIVE_PASSWORD,
   MSG_INTERNAL_REQUEST_PASSWORD,
   NETWORK,
-  Network,
   ReceiveGetNetworkBackgroundMessage,
   ReceiveGetNetworkBackgroundMessageDeprecated,
   ResponseType
@@ -29,7 +28,7 @@ const App: FC = () => {
   const { window: extensionWindow, closeExtension } = useBrowser();
   const { search } = useLocation();
   const { signIn } = useWallet();
-  const { client } = useNetwork();
+  const { client, chainName } = useNetwork();
 
   useEffect(() => {
     // Action which doesn't require to be authenticated
@@ -43,11 +42,11 @@ const App: FC = () => {
 
       const id = Number(urlParams.get('id')) || 0;
       const network = loadNetwork();
-      const networkResponse = Object.values(NETWORK)
+      const networkResponse = Object.values(NETWORK[chainName])
         .map((n) => n.name.toLowerCase())
         .includes(network.name.toLowerCase())
         ? network.name
-        : Network.CUSTOM;
+        : NETWORK[chainName].Custom.name;
 
       if (extensionWindow) {
         let message:
@@ -92,7 +91,7 @@ const App: FC = () => {
           });
       }
     }
-  }, [closeExtension, extensionWindow, search]);
+  }, [chainName, closeExtension, extensionWindow, search]);
 
   useEffect(() => {
     if (process.env.NODE_ENV === 'production') {

@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 
-import { Network, NETWORK } from '@gemwallet/constants';
+import { Chain, XRPLNetwork } from '@gemwallet/constants';
 
 const SRC_ADDRESS = 'rB3JmRd5m292YjCsCr65tc8dwZz2WN7HQu';
 const DEST_ADDRESS = 'rhikRdkFw28csKw9z7fVoBjWncz1HSoQij';
@@ -19,7 +19,8 @@ describe('Send Token', () => {
       win.localStorage.setItem(
         'network',
         JSON.stringify({
-          name: NETWORK[Network.TESTNET].name
+          chain: Chain.XRPL,
+          name: XRPLNetwork.TESTNET
         })
       );
     });

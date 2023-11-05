@@ -4,10 +4,12 @@ import * as Sentry from '@sentry/react';
 import { sign } from 'ripple-keypairs';
 import {
   AccountDelete,
+  AccountInfoResponse,
   AccountSet,
   Client,
   LedgerEntryRequest,
   LedgerEntryResponse,
+  NFTInfoResponse,
   NFTInfoRequest,
   NFTokenAcceptOffer,
   NFTokenBurn,
@@ -25,22 +27,21 @@ import {
   validate,
   Wallet
 } from 'xrpl';
-import { AccountInfoResponse } from 'xrpl/dist/npm/models/methods/accountInfo';
-import { NFTInfoResponse } from 'xrpl/dist/npm/models/methods/nftInfo';
 
 import {
   AccountNFToken,
   AccountNFTokenResponse,
+  Chain,
   GetNFTRequest,
   MAINNET_CLIO_NODES,
-  Network,
   NFTData,
   NFTokenIDResponse,
   SignTransactionRequest,
   SubmitBulkTransactionsRequest,
   SubmitTransactionRequest,
   TransactionBulkResponse,
-  TransactionWithID
+  TransactionWithID,
+  XRPLNetwork
 } from '@gemwallet/constants';
 
 import { AccountTransaction, WalletLedger } from '../../types';
@@ -50,6 +51,7 @@ import { useNetwork } from '../NetworkContext';
 import { useWallet } from '../WalletContext';
 import {
   calculateFees as calculateFeesXRPL,
+  fundWallet as fundWalletXRPL,
   handleMintNFT as handleMintNFTXRPL,
   handleTransaction as handleTransactionXRPL
 } from './chains/XRPL';
@@ -137,7 +139,7 @@ export interface LedgerContextType {
   getAccountInfo: (accountId?: string) => Promise<AccountInfoResponse>;
   getNFTData: (payload: NFTImageRequest) => Promise<NFTData>;
   deleteAccount: (destinationAddress: string) => Promise<DeleteAccountResponse>;
-  getNFTInfo: (NFTokenID: string, network?: string) => Promise<NFTInfoResponse>;
+  getNFTInfo: (NFTokenID: string) => Promise<NFTInfoResponse>;
   getLedgerEntry: (ID: string) => Promise<LedgerEntryResponse>;
 }
 
@@ -171,7 +173,7 @@ const LedgerContext = createContext<LedgerContextType>({
 });
 
 const LedgerProvider: FC = ({ children }) => {
-  const { client, networkName } = useNetwork();
+  const { client, networkName, chainName } = useNetwork();
   const { getCurrentWallet } = useWallet();
 
   /*
@@ -187,7 +189,7 @@ const LedgerProvider: FC = ({ children }) => {
     }): Promise<{ hash?: string; signature?: string }> => {
       const { transaction, client, wallet, signOnly, shouldCheck } = params;
 
-      switch (networkName) {
+      switch (chainName) {
         default:
           return (await handleTransactionXRPL({
             transaction,
@@ -198,7 +200,7 @@ const LedgerProvider: FC = ({ children }) => {
           })) as SubmitTransactionResponse;
       }
     },
-    [networkName]
+    [chainName]
   );
 
   /**
@@ -217,12 +219,12 @@ const LedgerProvider: FC = ({ children }) => {
         throw new Error('You need to have a wallet connected to make a transaction');
       }
 
-      switch (networkName) {
+      switch (chainName) {
         default:
           return calculateFeesXRPL({ client, transaction });
       }
     },
-    [client, getCurrentWallet, networkName]
+    [chainName, client, getCurrentWallet]
   );
 
   const fundWallet = useCallback(async () => {
@@ -231,16 +233,15 @@ const LedgerProvider: FC = ({ children }) => {
       if (!client) throw new Error('You need to be connected to a ledger to fund the wallet');
       if (!wallet) throw new Error('You need to have a wallet connected to fund the wallet');
 
-      const walletWithAmount = await client.fundWallet(wallet.wallet);
-
-      if (!walletWithAmount) throw new Error("Couldn't fund the wallet");
-
-      return { ...walletWithAmount };
+      switch (chainName) {
+        default:
+          return await fundWalletXRPL({ client, wallet });
+      }
     } catch (e) {
       Sentry.captureException(e);
       throw e;
     }
-  }, [client, getCurrentWallet]);
+  }, [chainName, client, getCurrentWallet]);
 
   /*
    * Transactions
@@ -254,7 +255,7 @@ const LedgerProvider: FC = ({ children }) => {
         throw new Error('You need to have a wallet connected to mint an NFT');
       } else {
         try {
-          switch (networkName) {
+          switch (chainName) {
             default:
               return handleMintNFTXRPL({ client, wallet, transaction: payload });
           }
@@ -264,7 +265,7 @@ const LedgerProvider: FC = ({ children }) => {
         }
       }
     },
-    [client, getCurrentWallet, networkName]
+    [chainName, client, getCurrentWallet]
   );
 
   const sendPayment = useCallback(
@@ -699,11 +700,11 @@ const LedgerProvider: FC = ({ children }) => {
   );
 
   const getNFTInfo = useCallback(
-    async (NFTokenID: string, network?: string): Promise<NFTInfoResponse> => {
+    async (NFTokenID: string): Promise<NFTInfoResponse> => {
       if (!client) throw new Error('You need to be connected to a ledger');
 
       try {
-        if (network === Network.MAINNET) {
+        if (chainName === Chain.XRPL && networkName === XRPLNetwork.MAINNET) {
           // Connect to Clio server for mainnet
           let clioClient;
           try {
@@ -729,7 +730,7 @@ const LedgerProvider: FC = ({ children }) => {
         throw e;
       }
     },
-    [client]
+    [chainName, client, networkName]
   );
 
   const getLedgerEntry = useCallback(

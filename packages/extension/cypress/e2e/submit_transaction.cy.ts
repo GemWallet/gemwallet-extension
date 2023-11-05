@@ -1,4 +1,4 @@
-import { Network, NETWORK } from '@gemwallet/constants';
+import { Chain, XRPLNetwork } from '@gemwallet/constants';
 
 import { navigate } from '../utils/navigation';
 
@@ -19,7 +19,8 @@ describe('Submit Transaction', () => {
       win.localStorage.setItem(
         'network',
         JSON.stringify({
-          name: NETWORK[Network.TESTNET].name
+          chain: Chain.XRPL,
+          name: XRPLNetwork.TESTNET
         })
       );
     });

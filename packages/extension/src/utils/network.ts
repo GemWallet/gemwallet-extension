@@ -1,4 +1,4 @@
-import { NETWORK, Network, NetworkNode } from '@gemwallet/constants';
+import { Chain, getNetwork, Network, NetworkNode, XRPLNetwork } from '@gemwallet/constants';
 import { NetworkData } from '@gemwallet/constants/src/network/network.types';
 
 import { STORAGE_CUSTOM_NETWORKS, STORAGE_NETWORK } from '../constants/storage';
@@ -6,6 +6,7 @@ import { STORAGE_CUSTOM_NETWORKS, STORAGE_NETWORK } from '../constants/storage';
 import { loadData, removeData, saveData } from '.';
 
 export const saveNetwork = (
+  chain: Chain,
   network: Network,
   customNetworkName?: string,
   customNetworkServer?: string
@@ -14,14 +15,17 @@ export const saveNetwork = (
     try {
       saveData(
         STORAGE_NETWORK,
-        JSON.stringify({ name: customNetworkName, server: customNetworkServer })
+        JSON.stringify({ chain, name: customNetworkName, server: customNetworkServer })
       );
     } catch (e) {
       throw e;
     }
   } else {
     try {
-      saveData(STORAGE_NETWORK, JSON.stringify({ name: network, server: NETWORK[network].server }));
+      saveData(
+        STORAGE_NETWORK,
+        JSON.stringify({ chain, name: network, server: getNetwork(chain, network).server })
+      );
     } catch (e) {
       throw e;
     }
@@ -67,22 +71,25 @@ export const loadNetwork = () => {
   try {
     const data = loadData(STORAGE_NETWORK);
     if (!data) {
-      return NETWORK[Network.MAINNET];
+      return getNetwork(Chain.XRPL, XRPLNetwork.MAINNET);
     }
 
     const parsedData: NetworkNode = JSON.parse(data);
-    if (NETWORK[parsedData.name as Network]) {
-      return NETWORK[parsedData.name as Network];
-    }
+    try {
+      return getNetwork(parsedData.chain as Chain, parsedData.name as Network);
+    } catch (error) {}
 
-    return {
-      name: parsedData.name,
-      server: parsedData.server,
-      description: 'Custom network'
-    };
-  } catch (error) {
-    return NETWORK[Network.MAINNET];
-  }
+    if ('chain' in parsedData && 'name' in parsedData && 'server' in parsedData) {
+      return {
+        chain: parsedData.chain,
+        name: parsedData.name,
+        server: parsedData.server,
+        description: 'Custom network'
+      };
+    }
+  } catch (error) {}
+
+  return getNetwork(Chain.XRPL, XRPLNetwork.MAINNET);
 };
 
 export const removeNetwork = () => {

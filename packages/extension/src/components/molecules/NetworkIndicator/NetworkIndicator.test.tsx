@@ -1,6 +1,8 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
+import { Chain } from '@gemwallet/constants';
+
 import { NetworkIndicator } from './NetworkIndicator';
 
 const mockUseNetwork = jest.fn();
@@ -15,6 +17,7 @@ describe('NetworkIndicator', () => {
   test('renders the correct network name chip', () => {
     mockUseNetwork.mockReturnValue({
       client: undefined,
+      chainName: Chain.XRPL,
       networkName: 'testnet',
       switchNetwork: jest.fn(),
       hasOfflineBanner: false
@@ -28,6 +31,7 @@ describe('NetworkIndicator', () => {
   test('renders the switch network name chip', () => {
     mockUseNetwork.mockReturnValue({
       client: undefined,
+      chainName: Chain.XRPL,
       networkName: 'Loading...',
       switchNetwork: jest.fn(),
       hasOfflineBanner: false
@@ -41,6 +45,7 @@ describe('NetworkIndicator', () => {
   test('renders the correct green color chip', () => {
     mockUseNetwork.mockReturnValue({
       client: jest.fn(),
+      chainName: Chain.XRPL,
       networkName: 'testnet',
       switchNetwork: jest.fn(),
       hasOfflineBanner: false
@@ -54,6 +59,7 @@ describe('NetworkIndicator', () => {
   test('renders the correct red color chip', () => {
     mockUseNetwork.mockReturnValue({
       client: undefined,
+      chainName: Chain.XRPL,
       networkName: 'testnet',
       switchNetwork: jest.fn(),
       hasOfflineBanner: false
@@ -67,6 +73,7 @@ describe('NetworkIndicator', () => {
   test('opens the dialog on chip click', async () => {
     mockUseNetwork.mockReturnValue({
       client: undefined,
+      chainName: Chain.XRPL,
       networkName: 'testnet',
       switchNetwork: jest.fn(),
       hasOfflineBanner: false
@@ -82,6 +89,7 @@ describe('NetworkIndicator', () => {
   test('closes the dialog on close button click', async () => {
     mockUseNetwork.mockReturnValue({
       client: undefined,
+      chainName: Chain.XRPL,
       networkName: 'testnet',
       switchNetwork: jest.fn(),
       hasOfflineBanner: false
