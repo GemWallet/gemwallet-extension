@@ -8,6 +8,7 @@ import {
   Chain,
   EventNetworkChangedBackgroundMessage,
   GEM_WALLET,
+  getDefaultNetwork,
   getNetwork,
   Network
 } from '@gemwallet/constants';
@@ -28,6 +29,7 @@ interface ContextType {
     customNetworkServer?: string
   ) => Promise<void>;
   resetNetwork: () => Promise<void>;
+  switchChain: (chain: Chain) => Promise<void>;
   // Returns null if client couldn't connect
   client?: Client | null;
   networkName: Network | string;
@@ -40,6 +42,7 @@ const NetworkContext = createContext<ContextType>({
   reconnectToNetwork: () => new Promise(() => {}),
   switchNetwork: () => new Promise(() => {}),
   resetNetwork: () => new Promise(() => {}),
+  switchChain: () => new Promise(() => {}),
   client: undefined,
   networkName: DEFAULT_NETWORK_NAME,
   chainName: Chain.XRPL,
@@ -54,7 +57,7 @@ const NetworkProvider: FC = ({ children }) => {
 
   const [client, setClient] = useState<Client | null | undefined>(undefined);
   const [networkName, setNetworkName] = useState<Network | string>(DEFAULT_NETWORK_NAME);
-  const [chainName] = useState<Chain>(Chain.XRPL);
+  const [chainName, setChainName] = useState<Chain>(Chain.XRPL);
   const [isConnectionFailed, setIsConnectionFailed] = useState(false);
   const [hasOfflineBanner, setHasOfflineBanner] = useState(false);
 
@@ -186,6 +189,15 @@ const NetworkProvider: FC = ({ children }) => {
     [chainName, client]
   );
 
+  const switchChain = useCallback(
+    async (chain: Chain) => {
+      const newNetwork = getDefaultNetwork(chain);
+      await switchNetwork(newNetwork);
+      setChainName(chain);
+    },
+    [switchNetwork]
+  );
+
   // Remove Network configuration and set default one
   const resetNetwork = useCallback(async () => {
     try {
@@ -206,7 +218,8 @@ const NetworkProvider: FC = ({ children }) => {
       networkName,
       chainName,
       isConnectionFailed,
-      hasOfflineBanner
+      hasOfflineBanner,
+      switchChain
     };
   }, [
     reconnectToNetwork,
@@ -216,7 +229,8 @@ const NetworkProvider: FC = ({ children }) => {
     networkName,
     chainName,
     isConnectionFailed,
-    hasOfflineBanner
+    hasOfflineBanner,
+    switchChain
   ]);
 
   return (

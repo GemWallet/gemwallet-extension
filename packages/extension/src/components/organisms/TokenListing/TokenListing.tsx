@@ -1,11 +1,12 @@
-import { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
 
 import { Button, Link, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
-import { AccountLinesTrustline, TrustSetFlags as TrustSetFlagsBitmask } from 'xrpl';
+import { AccountLinesTrustline } from 'xrpl';
+import { TrustSetFlags as TrustSetFlagsBitmask } from 'xrpl';
 
-import { Chain, XRPLNetwork } from '@gemwallet/constants';
+import { Chain, XahauNetwork, XRPLNetwork } from '@gemwallet/constants';
 
 import {
   ADD_NEW_TRUSTLINE_PATH,
@@ -120,14 +121,12 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
     setExplanationOpen(false);
   }, []);
 
-  const hasFundWallet = useMemo(() => {
+  const hasFundWallet = useCallback(() => {
     switch (chainName) {
       case Chain.XRPL:
-        return (
-          networkName === XRPLNetwork.TESTNET ||
-          networkName === XRPLNetwork.DEVNET ||
-          networkName === XahauNetwork.XAHAU_TESTNET
-        );
+        return networkName === XRPLNetwork.TESTNET || networkName === XRPLNetwork.DEVNET;
+      case Chain.XAHAU:
+        return networkName === XahauNetwork.XAHAU_TESTNET;
       default:
         return false;
     }

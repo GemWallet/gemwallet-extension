@@ -10,7 +10,7 @@ export const useMainToken = () => {
 
   return useMemo(() => {
     switch (chainName) {
-      case Chain.Xahau:
+      case Chain.XAHAU:
         return XAH_TOKEN;
       default:
         return XRP_TOKEN;

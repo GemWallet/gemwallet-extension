@@ -1,7 +1,7 @@
-import { Client, NFTokenMint, Transaction, Wallet as WalletXRPL } from 'xrpl';
+import { Client, encode, NFTokenMint, Transaction, Wallet as WalletXRPL } from 'xrpl';
 import { utils } from 'xrpl-accountlib';
 
-import { FAUCET_XAHAU_TESTNET, Network } from '@gemwallet/constants';
+import { FAUCET_XAHAU_TESTNET, XahauNetwork } from '@gemwallet/constants';
 
 import { WalletLedger } from '../../../types';
 import { handleTransaction as handleTransactionXRPL } from './XRPL';
@@ -17,11 +17,10 @@ export const handleTransaction = async (param: {
   wallet?: WalletLedger;
   signOnly?: boolean;
   shouldCheck?: boolean;
-  networkName: string;
 }): Promise<{ hash?: string; signature?: string }> => {
-  const { client, wallet, signOnly, shouldCheck, networkName } = param;
+  const { client, wallet, signOnly, shouldCheck } = param;
   const txn = param.transaction;
-  const transaction = await toXahauTransaction({ transaction: txn, networkName, client, wallet });
+  const transaction = await toXahauTransaction({ transaction: txn, client, wallet });
 
   return handleTransactionXRPL({ transaction, client, wallet, signOnly, shouldCheck });
 };
@@ -31,10 +30,9 @@ export const handleMintNFT = async (param: {
   txn: NFTokenMint;
   client: Client;
   wallet: WalletLedger;
-  networkName: string;
 }): Promise<{ hash: string; NFTokenID: string }> => {
-  const { txn, client, wallet, networkName } = param;
-  const transaction = await toXahauTransaction({ transaction: txn, networkName, client, wallet });
+  const { txn, client, wallet } = param;
+  const transaction = await toXahauTransaction({ transaction: txn, client, wallet });
 
   return handleTransactionXRPL({ transaction, client, wallet })
     .then((result) => {
@@ -47,29 +45,20 @@ export const handleMintNFT = async (param: {
 
 const toXahauTransaction = async (params: {
   transaction: Transaction;
-  networkName: string;
   client?: Client | null;
   wallet?: WalletLedger;
 }): Promise<Transaction> => {
-  const { transaction, networkName, client, wallet } = params;
+  const { transaction, client, wallet } = params;
   const res = { ...transaction };
 
-  switch (networkName) {
-    case Network.XAHAU_TESTNET:
-      res.NetworkID = TESTNET_NETWORK_ID;
-      break;
-    default:
-      throw new Error('Unsupported network');
-  }
-
-  res.Fee = await calculateFees({ transaction, networkName, client, wallet });
+  res.NetworkID = TESTNET_NETWORK_ID;
+  res.Fee = await calculateFees({ transaction, client, wallet });
 
   return res;
 };
 
 export const calculateFees = async (param: {
   transaction: Transaction;
-  networkName: string;
   client?: Client | null;
   wallet?: WalletLedger;
 }): Promise<string> => {
@@ -83,7 +72,7 @@ export const calculateFees = async (param: {
   const prepared = await client.autofill(transactionCopy);
 
   try {
-    return await utils.networkTxFee(server, prepared);
+    return await utils.networkTxFee(server, encode(prepared));
   } catch (error) {
     throw new Error(`Error calculating transaction fee: ${error}`);
   }
@@ -97,7 +86,7 @@ export const fundWallet = async (param: {
 
   let faucetUrl = undefined;
   switch (networkName) {
-    case Network.XAHAU_TESTNET:
+    case XahauNetwork.XAHAU_TESTNET:
       faucetUrl = FAUCET_XAHAU_TESTNET;
       break;
     default:
