@@ -8,6 +8,11 @@ describe('RenderTokenIcon', () => {
     expect(screen.getByTestId('xrp-icon')).toBeInTheDocument();
   });
 
+  test('should render LP token icon when isLPToken is true', () => {
+    render(<RenderTokenIcon isLPToken={true} tokenIconUrl="" token="abc" />);
+    expect(screen.getByTestId('lp-token-icon')).toBeInTheDocument();
+  });
+
   test('should render an image when tokenIconUrl is provided', () => {
     const tokenIconUrl = 'https://example.com/token.png';
     const token = 'Token';
