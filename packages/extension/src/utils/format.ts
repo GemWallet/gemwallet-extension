@@ -25,6 +25,7 @@ import {
   WithdrawAMMFlags
 } from '@gemwallet/constants';
 
+import { XRP_TOKEN } from '../constants';
 import { convertHexCurrencyString } from './convertHexCurrencyString';
 import { LP_TOKEN_NAME } from './trustlines';
 
@@ -51,13 +52,14 @@ export const formatCurrencyName = (currency: string) => {
   return currency.toUpperCase();
 };
 
-export const formatAmount = (amount: Amount | IssuedCurrencyAmount) => {
-  const res = parseAmountObject(amount);
+export const formatAmount = (amount: Amount | IssuedCurrencyAmount, mainToken?: string) => {
+  const res = parseAmountObject(amount, mainToken);
   return `${res.amount} ${res.currency}`;
 };
 
 export const parseAmountObject = (
-  amount: Amount | IssuedCurrencyAmount
+  amount: Amount | IssuedCurrencyAmount,
+  mainToken?: string
 ): {
   amount: string;
   currency: string;
@@ -70,7 +72,7 @@ export const parseAmountObject = (
     value = Number(dropsToXrp(amount));
     return {
       amount: formatValue(value),
-      currency: 'XRP'
+      currency: mainToken ?? XRP_TOKEN
     };
   }
 

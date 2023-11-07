@@ -8,7 +8,7 @@ import { LP_TOKEN_NAME } from '../../../../utils/trustlines';
 import { RenderTokenIcon } from './RenderTokenIcon';
 
 export interface TokenInfoProps {
-  isXRPToken: boolean;
+  isMainToken: boolean;
   tokenIconUrl: string | undefined;
   token: string;
   tokenWarningMessage: string | undefined;
@@ -22,7 +22,7 @@ const MAX_ISSUER_LENGTH = 20;
 
 export const TokenInfo = forwardRef((props: TokenInfoProps, ref: Ref<HTMLDivElement>) => {
   const {
-    isXRPToken,
+    isMainToken,
     tokenIconUrl,
     token,
     tokenWarningMessage,
@@ -50,7 +50,7 @@ export const TokenInfo = forwardRef((props: TokenInfoProps, ref: Ref<HTMLDivElem
 
   return (
     <div ref={ref} {...otherProps} style={{ display: 'flex', alignItems: 'center' }}>
-      <RenderTokenIcon {...{ isXRPToken, tokenIconUrl: tokenIconUrl || '', token, isLPToken }} />
+      <RenderTokenIcon {...{ isMainToken, tokenIconUrl: tokenIconUrl || '', token, isLPToken }} />
       <div style={{ marginLeft: '10px' }}>
         <Typography
           style={tokenWarningMessage && !isLPToken ? { color: 'brown', cursor: 'help' } : undefined}

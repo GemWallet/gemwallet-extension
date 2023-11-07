@@ -3,16 +3,21 @@ import { render, screen } from '@testing-library/react';
 import { RenderTokenIcon } from './RenderTokenIcon';
 
 describe('RenderTokenIcon', () => {
-  test('should render Xrp icon when isXRPToken is true', () => {
-    render(<RenderTokenIcon isXRPToken={true} tokenIconUrl="" token="XRP" />);
+  test('should render Xrp icon when isMainToken is true', () => {
+    render(<RenderTokenIcon isMainToken={true} tokenIconUrl="" token="XRP" />);
     expect(screen.getByTestId('xrp-icon')).toBeInTheDocument();
+  });
+
+  test('should render LP token icon when isLPToken is true', () => {
+    render(<RenderTokenIcon isLPToken={true} tokenIconUrl="" token="abc" />);
+    expect(screen.getByTestId('lp-token-icon')).toBeInTheDocument();
   });
 
   test('should render an image when tokenIconUrl is provided', () => {
     const tokenIconUrl = 'https://example.com/token.png';
     const token = 'Token';
     const { container } = render(
-      <RenderTokenIcon isXRPToken={false} tokenIconUrl={tokenIconUrl} token={token} />
+      <RenderTokenIcon isMainToken={false} tokenIconUrl={tokenIconUrl} token={token} />
     );
     const imgElement = container.querySelector('img');
     expect(imgElement).toBeInTheDocument();
@@ -20,8 +25,8 @@ describe('RenderTokenIcon', () => {
     expect(imgElement).toHaveAttribute('alt', token);
   });
 
-  test('should render GemWallet when neither isXRPToken nor tokenIconUrl is provided', () => {
-    render(<RenderTokenIcon isXRPToken={false} tokenIconUrl="" token="" />);
+  test('should render GemWallet when neither isMainToken nor tokenIconUrl is provided', () => {
+    render(<RenderTokenIcon isMainToken={false} tokenIconUrl="" token="" />);
     expect(screen.getByTestId('gem-icon')).toBeInTheDocument();
   });
 });

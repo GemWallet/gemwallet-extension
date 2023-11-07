@@ -1,4 +1,5 @@
 export * from './apiErrors';
+export * from './chains';
 export * from './colors';
 export * from './links';
 export * from './storage';

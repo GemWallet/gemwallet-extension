@@ -8,11 +8,15 @@ export const formatDate = (unixTimestamp: number): string => {
   return unix(946684800 + unixTimestamp).format('MMM DD, YYYY - HH:mm');
 };
 
-type TransactionFormatter = (transaction: AccountTransaction, publicAddress: string) => string;
+type TransactionFormatter = (
+  transaction: AccountTransaction,
+  publicAddress: string,
+  mainToken: string
+) => string;
 
 const transactionMappers: Record<TransactionTypes, TransactionFormatter> = {
-  [TransactionTypes.Payment]: (transaction, publicAddress) => {
-    const amount = formatAmount((transaction.tx as Payment).Amount);
+  [TransactionTypes.Payment]: (transaction, publicAddress, mainToken) => {
+    const amount = formatAmount((transaction.tx as Payment).Amount, mainToken);
     return (transaction.tx as Payment).Destination === publicAddress
       ? `Payment received - ${amount}`
       : `Payment sent - ${amount}`;
@@ -54,7 +58,8 @@ const transactionMappers: Record<TransactionTypes, TransactionFormatter> = {
 
 export const formatTransaction = (
   transaction: AccountTransaction,
-  publicAddress: string
+  publicAddress: string,
+  mainToken: string
 ): string => {
   if (!transaction.tx) {
     return 'Unsupported transaction';
@@ -64,5 +69,5 @@ export const formatTransaction = (
   const formatter = transactionMappers[txType as keyof typeof transactionMappers];
 
   // If formatter doesn't exist for this txType, return the txType as default message
-  return formatter ? formatter(transaction, publicAddress) : txType;
+  return formatter ? formatter(transaction, publicAddress, mainToken) : txType;
 };

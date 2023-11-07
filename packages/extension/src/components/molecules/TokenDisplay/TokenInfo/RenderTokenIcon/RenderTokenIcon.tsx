@@ -5,19 +5,19 @@ import { Avatar } from '@mui/material';
 import { GemWallet, LPToken, Xrp } from '../../../../atoms';
 
 interface RenderTokenIconProps {
-  isXRPToken?: boolean;
+  isMainToken?: boolean;
   tokenIconUrl: string;
   token: string;
   isLPToken?: boolean;
 }
 
 export const RenderTokenIcon: FC<RenderTokenIconProps> = ({
-  isXRPToken,
+  isMainToken,
   tokenIconUrl,
   token,
   isLPToken
 }) => {
-  if (isXRPToken) {
+  if (isMainToken) {
     return <Xrp />;
   }
 

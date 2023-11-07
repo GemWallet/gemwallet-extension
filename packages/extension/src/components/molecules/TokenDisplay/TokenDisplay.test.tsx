@@ -13,7 +13,7 @@ describe('TokenDisplay', () => {
     props = {
       balance: 100,
       token: 'ETH',
-      isXRPToken: false,
+      isMainToken: false,
       onExplainClick: jest.fn()
     };
   });
@@ -25,8 +25,8 @@ describe('TokenDisplay', () => {
     expect(screen.getByTestId('gem-icon')).toBeInTheDocument();
   });
 
-  test('should display the XRP icon if isXRPToken is true', () => {
-    props.isXRPToken = true;
+  test('should display the XRP icon if isMainToken is true', () => {
+    props.isMainToken = true;
     render(<TokenDisplay {...props} />);
     expect(screen.getByTestId('xrp-icon')).toBeInTheDocument();
   });

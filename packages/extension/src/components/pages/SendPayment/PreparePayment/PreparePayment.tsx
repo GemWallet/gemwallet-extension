@@ -27,6 +27,7 @@ import {
   GEMWALLET_BLUE
 } from '../../../../constants';
 import { useLedger, useNetwork, useServer, useWallet } from '../../../../contexts';
+import { useMainToken } from '../../../../hooks';
 import { buildDefaultMemos, convertHexCurrencyString } from '../../../../utils';
 import { NumericInput } from '../../../atoms';
 import { InformationMessage } from '../../../molecules';
@@ -59,6 +60,7 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
   const { client } = useNetwork();
   const { serverInfo } = useServer();
   const { getCurrentWallet } = useWallet();
+  const mainToken = useMainToken();
   const navigate = useNavigate();
   const [address, setAddress] = useState<string>('');
   const [amount, setAmount] = useState<string>('');
@@ -389,7 +391,11 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
                 key={`${token.currency}-${token.issuer}`}
                 value={`${token.currency}-${token.issuer}`}
               >
-                {convertHexCurrencyString(token.currency)}
+                {convertHexCurrencyString(
+                  token.issuer === undefined && token.currency !== mainToken
+                    ? mainToken
+                    : token.currency
+                )}
               </MenuItem>
             ))}
           </Select>
