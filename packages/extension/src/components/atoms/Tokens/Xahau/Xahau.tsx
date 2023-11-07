@@ -1,6 +1,6 @@
-import React, { FC } from 'react';
+import { FC, SVGProps } from 'react';
 
-export const Xahau: FC = (props) => (
+export const Xahau: FC<SVGProps<SVGSVGElement>> = (props) => (
   <svg
     width={45}
     height={45}
@@ -8,6 +8,7 @@ export const Xahau: FC = (props) => (
     preserveAspectRatio="xMidYMid meet"
     xmlns="http://www.w3.org/2000/svg"
     {...props}
+    data-testid="xahau-icon"
   >
     <circle cx="100" cy="100" r="100" fill="#1E1E1E" />
     <g

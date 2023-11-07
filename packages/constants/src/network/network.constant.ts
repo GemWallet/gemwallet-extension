@@ -11,15 +11,20 @@ export enum XRPLNetwork {
 }
 
 export enum XahauNetwork {
-  XAHAU_TESTNET = 'Xahau-Testnet',
+  XAHAU_MAINNET = 'Mainnet',
+  XAHAU_TESTNET = 'Testnet',
   CUSTOM = 'Custom'
 }
 
+// XRPL
 export const MAINNET_CLIO_NODES = ['wss://s1.ripple.com', 'wss://s2.ripple.com'];
 export const MAINNET_NODES = ['wss://xrplcluster.com', ...MAINNET_CLIO_NODES];
 export const TESTNET_NODES = ['wss://s.altnet.rippletest.net:51233', 'wss://testnet.xrpl-labs.com'];
 export const DEVNET_NODES = ['wss://s.devnet.rippletest.net:51233'];
-export const XAHAU_TESTNET_NODES = ['wss://hooks-testnet-v3.xrpl-labs.com'];
+
+// Xahau
+export const XAHAU_MAINNET_NODES = ['wss://xahau.network'];
+export const XAHAU_TESTNET_NODES = ['wss://xahau-test.net'];
 
 // Faucets
 export const FAUCET_XAHAU_TESTNET = 'https://xahau-test.net/accounts';
@@ -42,6 +47,7 @@ interface NetworkConfigXRPL {
 }
 
 interface NetworkConfigXahau {
+  [XahauNetwork.XAHAU_MAINNET]: NetworkNode;
   [XahauNetwork.XAHAU_TESTNET]: NetworkNode;
   [XahauNetwork.CUSTOM]: NetworkNode;
 }
@@ -83,12 +89,19 @@ export const NETWORK: ChainConfig = {
     }
   },
   [Chain.XAHAU]: {
+    [XahauNetwork.XAHAU_MAINNET]: {
+      chain: Chain.XAHAU,
+      name: XahauNetwork.XAHAU_MAINNET,
+      server: XAHAU_MAINNET_NODES[0],
+      nodes: XAHAU_MAINNET_NODES,
+      description: 'Mainnet for the Xahau blockchain.'
+    },
     [XahauNetwork.XAHAU_TESTNET]: {
       chain: Chain.XAHAU,
       name: XahauNetwork.XAHAU_TESTNET,
       server: XAHAU_TESTNET_NODES[0],
       nodes: XAHAU_TESTNET_NODES,
-      description: 'Xahau Testnet for the Xahau blockchain.'
+      description: 'Testnet for the Xahau blockchain.'
     },
     [XahauNetwork.CUSTOM]: {
       chain: Chain.XAHAU,
@@ -102,7 +115,7 @@ export const NETWORK: ChainConfig = {
 export const getDefaultNetwork = (chain: Chain): Network => {
   switch (chain) {
     case Chain.XAHAU:
-      return XahauNetwork.XAHAU_TESTNET;
+      return XahauNetwork.XAHAU_MAINNET;
     default:
       return XRPLNetwork.MAINNET;
   }

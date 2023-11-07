@@ -23,11 +23,11 @@ const DEFAULT_NETWORK_NAME = 'Loading...';
 
 interface ContextType {
   reconnectToNetwork: () => Promise<void>;
-  switchNetwork: (
-    network: Network,
-    customNetworkName?: string,
-    customNetworkServer?: string
-  ) => Promise<void>;
+  switchNetwork: (param: {
+    network: Network;
+    customNetworkName?: string;
+    customNetworkServer?: string;
+  }) => Promise<void>;
   resetNetwork: () => Promise<void>;
   switchChain: (chain: Chain) => Promise<void>;
   // Returns null if client couldn't connect
@@ -68,6 +68,9 @@ const NetworkProvider: FC = ({ children }) => {
     const connectToNetwork = async () => {
       const network = loadNetwork();
       setNetworkName(network.name);
+      if (chainName !== network.chain) {
+        setChainName(network.chain);
+      }
       let node = network.server;
       if (nodeIndex !== 0 && network.nodes?.[nodeIndex]) {
         node = network.nodes[nodeIndex];
@@ -98,7 +101,7 @@ const NetworkProvider: FC = ({ children }) => {
     };
 
     connectToNetwork();
-  }, []);
+  }, [chainName]);
 
   useEffect(() => {
     const handleBeforeUnload = () => {
@@ -142,20 +145,28 @@ const NetworkProvider: FC = ({ children }) => {
   }, [client]);
 
   const switchNetwork = useCallback(
-    async (network: Network, customNetworkName?: string, customNetworkServer?: string) => {
+    async (params: {
+      network: Network;
+      chain?: Chain;
+      customNetworkName?: string;
+      customNetworkServer?: string;
+    }) => {
+      const { network, chain, customNetworkName, customNetworkServer } = params;
+
       try {
         await client?.disconnect();
         // If a server URL is provided, use it. Otherwise, use the pre-defined server for the given network
         const ws = await connectToLedger(
-          customNetworkServer || getNetwork(chainName, network).server
+          customNetworkServer || getNetwork(chain ?? chainName, network).server
         );
         setNetworkName(customNetworkName || network);
-        saveNetwork(chainName, network, customNetworkName, customNetworkServer);
+        if (chain) setChainName(chain);
+        saveNetwork(chain ?? chainName, network, customNetworkName, customNetworkServer);
         setClient(ws);
         setIsConnectionFailed(false);
 
         if (process.env.NODE_ENV === 'production') {
-          const currentNetwork = getNetwork(chainName, network);
+          const currentNetwork = getNetwork(chain ?? chainName, network);
           chrome.runtime
             .sendMessage<EventNetworkChangedBackgroundMessage>({
               app: GEM_WALLET,
@@ -192,8 +203,7 @@ const NetworkProvider: FC = ({ children }) => {
   const switchChain = useCallback(
     async (chain: Chain) => {
       const newNetwork = getDefaultNetwork(chain);
-      await switchNetwork(newNetwork);
-      setChainName(chain);
+      await switchNetwork({ network: newNetwork, chain });
     },
     [switchNetwork]
   );

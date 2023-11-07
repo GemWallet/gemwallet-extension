@@ -4,7 +4,7 @@ import { FiberManualRecord as FiberManualRecordIcon } from '@mui/icons-material'
 import { Button, Chip } from '@mui/material';
 import * as Sentry from '@sentry/react';
 
-import { getNetwork, NETWORK, Network } from '@gemwallet/constants';
+import { Chain, getNetwork, NETWORK, Network } from '@gemwallet/constants';
 import { NetworkData } from '@gemwallet/constants/src/network/network.types';
 
 import { useNetwork } from '../../../contexts';
@@ -63,12 +63,16 @@ export const NetworkIndicator: FC = () => {
       setIsLoading(true);
       const currentNetwork = loadNetwork();
       try {
-        await switchNetwork(network, customNetworkName, customNetworkServer);
+        await switchNetwork({ network, customNetworkName, customNetworkServer });
         setCurrentNetworkName(customNetworkName || network);
       } catch (error) {
         // If the network switch fails, reconnect to the previous network
         try {
-          await switchNetwork(currentNetwork.name, currentNetwork.name, currentNetwork.server);
+          await switchNetwork({
+            network: currentNetwork.name,
+            customNetworkName: currentNetwork.name,
+            customNetworkServer: currentNetwork.server
+          });
           setCurrentNetworkName(currentNetwork.name);
         } catch (error) {}
         // Show the error dialog
@@ -135,7 +139,13 @@ export const NetworkIndicator: FC = () => {
   }, [chainName, currentNetworkName, handleClickOnNetwork]);
 
   const customNetworks = useMemo(() => {
-    return Object.keys(existingNetworks).map((_network) => {
+    return Object.entries(existingNetworks).map((data) => {
+      const _network = data[0];
+      const _chain = 'chain' in data[1] ? data[1].chain : Chain.XRPL;
+      if (_chain !== chainName) {
+        return null;
+      }
+
       const { name, server, description } = existingNetworks[_network];
       return (
         <NetworkDisplay
@@ -165,6 +175,12 @@ export const NetworkIndicator: FC = () => {
         }
         onClick={handleOpen}
         data-testid="network-indicator"
+        sx={{
+          maxWidth: '110px',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap'
+        }}
       />
       {isLoading ? (
         <LoadingOverlay />

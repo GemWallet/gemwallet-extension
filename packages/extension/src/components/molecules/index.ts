@@ -1,4 +1,5 @@
 export * from './ActionButtons';
+export * from './ChainIndicator';
 export * from './TransactionHeader';
 export * from './DataCard';
 export * from './InformationMessage';

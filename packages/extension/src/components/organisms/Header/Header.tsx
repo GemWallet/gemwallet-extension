@@ -21,7 +21,7 @@ import { useFeatureFlags, useTimeout } from '../../../hooks';
 import { WalletLedger } from '../../../types';
 import { truncateAddress, truncateWalletName } from '../../../utils';
 import { WalletIcon } from '../../atoms';
-import { NetworkIndicator } from '../../molecules';
+import { ChainIndicator, NetworkIndicator } from '../../molecules';
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   display: 'block',
@@ -80,12 +80,19 @@ export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => 
               alignItems: 'center'
             }}
           >
-            <WalletIcon
-              publicAddress={publicAddress}
-              onClick={onWalletIconClick}
-              isConnectedInformation
-            />
-            <NetworkIndicator />
+            <div style={{ flexGrow: 1, flexBasis: '50%' }}>
+              <WalletIcon
+                publicAddress={publicAddress}
+                onClick={onWalletIconClick}
+                isConnectedInformation
+              />
+            </div>
+            <ChainIndicator />
+            <div
+              style={{ flexGrow: 1, flexBasis: '50%', display: 'flex', justifyContent: 'flex-end' }}
+            >
+              <NetworkIndicator />
+            </div>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>

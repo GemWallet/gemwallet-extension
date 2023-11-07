@@ -1,7 +1,14 @@
-import { FC } from 'react';
+import { FC, SVGProps } from 'react';
 
-export const Xrp: FC = (props) => (
-  <svg width={45} height={45} xmlns="http://www.w3.org/2000/svg" {...props} data-testid="xrp-icon">
+export const Xrp: FC<SVGProps<SVGSVGElement>> = (props) => (
+  <svg
+    width={45}
+    height={45}
+    viewBox="0 0 45 45"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+    data-testid="xrp-icon"
+  >
     <g stroke="null" fill="none">
       <circle cx={22.492} cy={22.51} r={22.363} fill="#1E1E1E" />
       <path

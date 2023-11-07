@@ -17,10 +17,11 @@ export const handleTransaction = async (param: {
   wallet?: WalletLedger;
   signOnly?: boolean;
   shouldCheck?: boolean;
+  networkName: string;
 }): Promise<{ hash?: string; signature?: string }> => {
-  const { client, wallet, signOnly, shouldCheck } = param;
+  const { client, wallet, signOnly, shouldCheck, networkName } = param;
   const txn = param.transaction;
-  const transaction = await toXahauTransaction({ transaction: txn, client, wallet });
+  const transaction = await toXahauTransaction({ transaction: txn, client, wallet, networkName });
 
   return handleTransactionXRPL({ transaction, client, wallet, signOnly, shouldCheck });
 };
@@ -30,9 +31,10 @@ export const handleMintNFT = async (param: {
   txn: NFTokenMint;
   client: Client;
   wallet: WalletLedger;
+  networkName: string;
 }): Promise<{ hash: string; NFTokenID: string }> => {
-  const { txn, client, wallet } = param;
-  const transaction = await toXahauTransaction({ transaction: txn, client, wallet });
+  const { txn, client, wallet, networkName } = param;
+  const transaction = await toXahauTransaction({ transaction: txn, client, wallet, networkName });
 
   return handleTransactionXRPL({ transaction, client, wallet })
     .then((result) => {
@@ -47,11 +49,22 @@ const toXahauTransaction = async (params: {
   transaction: Transaction;
   client?: Client | null;
   wallet?: WalletLedger;
+  networkName: string;
 }): Promise<Transaction> => {
   const { transaction, client, wallet } = params;
   const res = { ...transaction };
 
-  res.NetworkID = TESTNET_NETWORK_ID;
+  switch (params.networkName) {
+    case XahauNetwork.XAHAU_MAINNET:
+      res.NetworkID = MAINNET_NETWORK_ID;
+      break;
+    case XahauNetwork.XAHAU_TESTNET:
+      res.NetworkID = TESTNET_NETWORK_ID;
+      break;
+    default:
+      throw new Error(`Unsupported network: ${params.networkName}`);
+  }
+
   res.Fee = await calculateFees({ transaction, client, wallet });
 
   return res;

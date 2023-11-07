@@ -211,7 +211,8 @@ const LedgerProvider: FC = ({ children }) => {
             client,
             wallet,
             signOnly,
-            shouldCheck
+            shouldCheck,
+            networkName
           })) as SubmitTransactionResponse;
         default:
           return (await handleTransactionXRPL({
@@ -223,7 +224,7 @@ const LedgerProvider: FC = ({ children }) => {
           })) as SubmitTransactionResponse;
       }
     },
-    [chainName]
+    [chainName, networkName]
   );
 
   /**
@@ -287,7 +288,7 @@ const LedgerProvider: FC = ({ children }) => {
         try {
           switch (chainName) {
             case Chain.XAHAU:
-              return handleMintNFTXahau({ client, wallet, txn: payload });
+              return handleMintNFTXahau({ client, wallet, txn: payload, networkName });
             default:
               return handleMintNFTXRPL({ client, wallet, transaction: payload });
           }
@@ -297,7 +298,7 @@ const LedgerProvider: FC = ({ children }) => {
         }
       }
     },
-    [chainName, client, getCurrentWallet]
+    [chainName, client, getCurrentWallet, networkName]
   );
 
   const sendPayment = useCallback(
