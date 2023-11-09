@@ -47,15 +47,7 @@ export const Transaction: FC = () => {
   const { networkName } = useNetwork();
   const { setTransactionProgress } = useTransactionProgress();
   const { estimatedFees, errorFees, difference } = useFees(
-    {
-      TransactionType: 'Payment',
-      Account: '',
-      Amount: params.transaction?.Amount ?? '',
-      Destination: params.transaction?.Destination ?? '',
-      Memos: params.transaction?.Memos ?? undefined,
-      DestinationTag: params.transaction?.DestinationTag ?? undefined,
-      Flags: params.transaction?.Flags ?? undefined
-    },
+    params.transaction ?? [],
     params.transaction?.Fee
   );
 

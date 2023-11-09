@@ -45,15 +45,7 @@ export const MintNFT: FC = () => {
   const { networkName } = useNetwork();
   const { setTransactionProgress } = useTransactionProgress();
   const { estimatedFees, errorFees, difference } = useFees(
-    {
-      TransactionType: 'NFTokenMint',
-      Account: '',
-      NFTokenTaxon: params.transaction?.NFTokenTaxon ?? 0,
-      ...(params.transaction?.URI && { URI: params.transaction.URI }),
-      ...(params.transaction?.Flags && { Flags: params.transaction.Flags }),
-      ...(params.transaction?.TransferFee && { TransferFee: params.transaction.TransferFee }),
-      ...(params.transaction?.Issuer && { Issuer: params.transaction.Issuer })
-    },
+    params.transaction ?? [],
     params.transaction?.Fee
   );
 

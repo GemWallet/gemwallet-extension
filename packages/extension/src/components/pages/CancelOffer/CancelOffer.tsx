@@ -44,11 +44,7 @@ export const CancelOffer: FC = () => {
   const { networkName } = useNetwork();
   const { setTransactionProgress } = useTransactionProgress();
   const { estimatedFees, errorFees, difference } = useFees(
-    {
-      TransactionType: 'OfferCancel',
-      Account: '',
-      OfferSequence: params.transaction?.OfferSequence ?? 0
-    },
+    params.transaction ?? [],
     params.transaction?.Fee
   );
 

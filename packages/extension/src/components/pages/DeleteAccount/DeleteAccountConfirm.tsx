@@ -33,7 +33,7 @@ export const DeleteAccountConfirm: FC<DeleteAccountConfirmProps> = ({
   const { errorFees, difference } = useFees(
     {
       TransactionType: 'AccountDelete',
-      Account: '',
+      Account: wallet?.publicAddress ?? '',
       Destination: destinationAddress
     },
     null

@@ -44,7 +44,7 @@ export const SubmitTransaction: FC = () => {
   const { setTransactionProgress } = useTransactionProgress();
   const { estimatedFees, errorFees, difference } = useFees(
     params.txParam ?? [],
-    params.txParam?.Fee ?? null
+    params.txParam?.Fee
   );
 
   const urlParams = new URLSearchParams(window.location.search);
