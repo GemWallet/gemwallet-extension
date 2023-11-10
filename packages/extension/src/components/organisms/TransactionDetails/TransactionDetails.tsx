@@ -2,6 +2,7 @@ import React, { FC, useState } from 'react';
 
 import { Transaction } from 'xrpl';
 
+import { useMainToken } from '../../../hooks';
 import { DataCard, RawTransaction, XRPLTransaction } from '../../molecules';
 import { Fee } from '../../organisms';
 import { LoadingOverlay } from '../../templates';
@@ -24,6 +25,7 @@ export const TransactionDetails: FC<TransactionDetailsProps> = ({
   const [isTxExpanded, setIsTxExpanded] = useState(false);
   const [isRawTxExpanded, setIsRawTxExpanded] = useState(false);
   const [isFeeExpanded, setIsFeeExpanded] = useState(false);
+  const mainToken = useMainToken();
 
   if (!txParam?.Account) {
     return <LoadingOverlay />;
@@ -42,6 +44,7 @@ export const TransactionDetails: FC<TransactionDetailsProps> = ({
             useLegacy={false}
             displayTransactionType={displayTransactionType}
             hasMultipleAmounts={hasMultipleAmounts}
+            mainToken={mainToken}
           />
         }
         dataName="Transaction details"

@@ -19,13 +19,15 @@ type XRPLTxProps = {
   displayTransactionType?: boolean;
   useLegacy?: boolean;
   hasMultipleAmounts?: boolean;
+  mainToken?: string;
 };
 
 export const XRPLTransaction: FC<XRPLTxProps> = ({
   tx,
   displayTransactionType = true,
   useLegacy = true,
-  hasMultipleAmounts = false
+  hasMultipleAmounts = false,
+  mainToken
 }) => {
   const { selectedWallet, wallets } = useWallet();
   const keyMap: Record<string, (value: any) => JSX.Element | null> = {
@@ -40,6 +42,7 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
         title: 'Amount',
         value,
         useLegacy,
+        mainToken,
         hasMultipleAmounts
       }),
     Amount2: (value: Amount) =>
@@ -80,14 +83,17 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
       renderAmount({
         title: 'Limit Amount',
         value: value as Amount,
-        useLegacy
+        useLegacy,
+        mainToken
       }),
     NFTokenSellOffer: (value?: string) =>
       value !== undefined ? renderSimpleText({ title: 'Sell Offer', value, useLegacy }) : null,
     NFTokenBuyOffer: (value?: string) =>
       value !== undefined ? renderSimpleText({ title: 'Buy Offer', value, useLegacy }) : null,
     NFTokenBrokerFee: (value?: Amount) =>
-      value !== undefined ? renderAmount({ title: 'Broker Fee', value, useLegacy }) : null,
+      value !== undefined
+        ? renderAmount({ title: 'Broker Fee', value, useLegacy, mainToken })
+        : null,
     NFTokenMinter: (value?: string) =>
       value !== undefined ? renderSimpleText({ title: 'Minter', value, useLegacy }) : null,
     URI: (value?: string | null) =>
@@ -100,8 +106,10 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
           })
         : null,
     Fee: () => null, // Fee is rendered in the BaseTransaction component
-    TakerGets: (value: Amount) => renderAmount({ title: 'Taker Gets', value, useLegacy }),
-    TakerPays: (value: Amount) => renderAmount({ title: 'Taker Pays', value, useLegacy }),
+    TakerGets: (value: Amount) =>
+      renderAmount({ title: 'Taker Gets', value, useLegacy, mainToken }),
+    TakerPays: (value: Amount) =>
+      renderAmount({ title: 'Taker Pays', value, useLegacy, mainToken }),
     TransferFee: (value?: number) =>
       renderSimpleText({
         title: 'Transfer Fee',
@@ -167,9 +175,10 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
     valueTypographyProps?: TypographyProps;
     useLegacy: boolean;
     hasMultipleAmounts?: boolean;
+    mainToken?: string;
   }) => {
     const { title, value, valueTypographyProps, useLegacy } = params;
-    const res = parseAmountObject(value);
+    const res = parseAmountObject(value, mainToken);
     if (hasMultipleAmounts) {
       const formattedValue = res.issuer
         ? `${res.amount} ${res.currency}\n${res.issuer}`
