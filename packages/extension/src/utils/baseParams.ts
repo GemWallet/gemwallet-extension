@@ -9,6 +9,7 @@ export type BaseTransactionParamsNew = {
   accountTxnID?: string;
   lastLedgerSequence?: number;
   memos?: Memo[];
+  networkID?: number;
   signers?: Signer[];
   sourceTag?: number;
   signingPubKey?: string;
@@ -73,6 +74,7 @@ export const parseBaseParamsFromStoredData = (storedObject: any): BaseTransactio
     'lastLedgerSequence' in storedObject ? Number(storedObject.lastLedgerSequence) : undefined
   );
   addParam('memos', 'memos' in storedObject ? parseMemos(storedObject.memos) : undefined);
+  addParam('networkID', 'networkID' in storedObject ? storedObject.networkID : undefined);
   addParam('signers', 'signers' in storedObject ? parseSigners(storedObject.signers) : undefined);
   addParam('sourceTag', 'sourceTag' in storedObject ? Number(storedObject.sourceTag) : undefined);
   addParam(

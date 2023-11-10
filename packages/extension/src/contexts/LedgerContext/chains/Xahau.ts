@@ -54,15 +54,18 @@ const toXahauTransaction = async (params: {
   const { transaction, client, wallet } = params;
   const res = { ...transaction };
 
-  switch (params.networkName) {
-    case XahauNetwork.XAHAU_MAINNET:
-      res.NetworkID = MAINNET_NETWORK_ID;
-      break;
-    case XahauNetwork.XAHAU_TESTNET:
-      res.NetworkID = TESTNET_NETWORK_ID;
-      break;
-    default:
-      throw new Error(`Unsupported network: ${params.networkName}`);
+  // In case the NetworkID is not set by the API consumer, we autofill it
+  if (res.NetworkID === undefined) {
+    switch (params.networkName) {
+      case XahauNetwork.XAHAU_MAINNET:
+        res.NetworkID = MAINNET_NETWORK_ID;
+        break;
+      case XahauNetwork.XAHAU_TESTNET:
+        res.NetworkID = TESTNET_NETWORK_ID;
+        break;
+      default:
+        throw new Error(`Unsupported network: ${params.networkName}`);
+    }
   }
 
   res.Fee = await calculateFees({ transaction, client, wallet });
