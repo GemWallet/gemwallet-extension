@@ -1,23 +1,32 @@
 import { FC, useCallback, useState, useEffect } from 'react';
 
-import { Switch, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
-import { SETTINGS_PATH, STORAGE_PERMISSION_SUBMIT_BULK } from '../../../constants';
+import {
+  SETTINGS_PATH,
+  STORAGE_PERMISSION_ADVANCED_MODE,
+  STORAGE_PERMISSION_SUBMIT_BULK
+} from '../../../constants';
 import { loadFromChromeLocalStorage, saveInChromeLocalStorage } from '../../../utils';
 import { PageWithReturn } from '../../templates';
+import { PermissionSwitch } from './PermissionsSwitch';
 
 export const Permissions: FC = () => {
   const navigate = useNavigate();
   const [isSubmitBulkTransactionsEnabled, setIsSubmitBulkTransactionsEnabled] =
     useState<boolean>(false);
+  const [isAdvancedModeEnabled, setIsAdvancedModeEnabled] = useState<boolean>(false);
 
   useEffect(() => {
     const loadInitialData = async () => {
-      const storedData = await loadFromChromeLocalStorage(STORAGE_PERMISSION_SUBMIT_BULK);
-      if (!storedData) return;
+      const storedDataSubmitBulk = await loadFromChromeLocalStorage(STORAGE_PERMISSION_SUBMIT_BULK);
+      setIsSubmitBulkTransactionsEnabled(storedDataSubmitBulk === 'true');
 
-      setIsSubmitBulkTransactionsEnabled(storedData === 'true');
+      const storedDataAdvancedMode = await loadFromChromeLocalStorage(
+        STORAGE_PERMISSION_ADVANCED_MODE
+      );
+      setIsAdvancedModeEnabled(storedDataAdvancedMode === 'true');
     };
 
     loadInitialData();
@@ -30,6 +39,10 @@ export const Permissions: FC = () => {
     );
   }, [isSubmitBulkTransactionsEnabled]);
 
+  useEffect(() => {
+    saveInChromeLocalStorage(STORAGE_PERMISSION_ADVANCED_MODE, isAdvancedModeEnabled.toString());
+  }, [isAdvancedModeEnabled]);
+
   const handleBack = useCallback(() => {
     navigate(SETTINGS_PATH);
   }, [navigate]);
@@ -38,25 +51,26 @@ export const Permissions: FC = () => {
     setIsSubmitBulkTransactionsEnabled(!isSubmitBulkTransactionsEnabled);
   };
 
+  const toggleAdvancedMode = () => {
+    setIsAdvancedModeEnabled(!isAdvancedModeEnabled);
+  };
+
   return (
     <PageWithReturn title="Permissions" onBackClick={handleBack}>
       <div style={{ marginTop: '1rem' }}>
         <Typography variant="subtitle2">Permissions</Typography>
-        <div style={{ marginTop: '0.5rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <Switch
-              checked={isSubmitBulkTransactionsEnabled}
-              onChange={toggleSubmitBulkTransactions}
-              color="primary"
-              inputProps={{ 'aria-label': 'Enable or disable bulk transactions' }}
-            />
-            <Typography style={{ marginLeft: '1rem' }}>Submit Bulk Transactions</Typography>
-          </div>
-          <Typography variant="body2" color="textSecondary" style={{ marginLeft: '0.7rem' }}>
-            Enabling this will allow to submit multiple transactions at once. Enable at your own
-            risk.
-          </Typography>
-        </div>
+        <PermissionSwitch
+          isEnabled={isAdvancedModeEnabled}
+          toggleSwitch={toggleAdvancedMode}
+          name="Advanced Mode"
+          description="Unlocks the advanced features."
+        />
+        <PermissionSwitch
+          isEnabled={isSubmitBulkTransactionsEnabled}
+          toggleSwitch={toggleSubmitBulkTransactions}
+          name="Bulk Transactions"
+          description="Enabling this will allow to submit multiple transactions at once. Enable at your own risk."
+        />
       </div>
     </PageWithReturn>
   );
