@@ -1,7 +1,10 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
-import { Button, Container, Typography } from '@mui/material';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import DoneIcon from '@mui/icons-material/Done';
+import { Button, Container, IconButton, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
+import copyToClipboard from 'copy-to-clipboard';
 
 import { Network } from '@gemwallet/constants';
 
@@ -18,6 +21,8 @@ interface TransactionStatusProps {
   transaction: TransactionStatus;
   errorRequestRejection?: Error;
   isBulk?: boolean;
+  resultKey?: string;
+  resultValue?: string;
   errorValue?: string;
   errorFees: string | undefined;
   progressPercentage?: number;
@@ -32,6 +37,8 @@ export const useTransactionStatus = ({
   transaction,
   errorRequestRejection,
   isBulk,
+  resultKey,
+  resultValue,
   errorValue,
   errorFees,
   progressPercentage,
@@ -39,6 +46,16 @@ export const useTransactionStatus = ({
   onClick
 }: TransactionStatusProps) => {
   const { client, hasOfflineBanner, reconnectToNetwork } = useNetwork();
+
+  const [isCopied, setIsCopied] = useState(false);
+
+  const handleCopy = useCallback(() => {
+    if (resultValue) {
+      copyToClipboard(resultValue);
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2000);
+    }
+  }, [resultValue]);
 
   const hasEnoughFunds = useMemo(() => {
     return Number(difference) > 0;
@@ -153,6 +170,10 @@ export const useTransactionStatus = ({
     }
 
     if (transaction === TransactionStatus.Success || transaction === TransactionStatus.Pending) {
+      const truncateString = (str: string) => {
+        return str.length > 20 ? str.substring(0, 20) + '...' : str;
+      };
+
       return (
         <AsyncTransaction
           title={
@@ -162,7 +183,37 @@ export const useTransactionStatus = ({
           }
           subtitle={
             transaction === TransactionStatus.Success ? (
-              `Transaction${isBulk ? 's' : ''} Successful`
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  width: '100%'
+                }}
+              >
+                <Typography align="center">{`Transaction${
+                  isBulk ? 's' : ''
+                } Successful`}</Typography>
+                {resultKey && resultValue ? (
+                  <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                    <Typography>{`${resultKey}: ${truncateString(resultValue)}`}</Typography>
+                    <IconButton
+                      size="small"
+                      edge="end"
+                      color="inherit"
+                      aria-label="Copy"
+                      onClick={handleCopy}
+                      style={{ flexShrink: 0 }}
+                    >
+                      {isCopied ? (
+                        <DoneIcon sx={{ fontSize: '0.9rem' }} color="success" />
+                      ) : (
+                        <ContentCopyIcon sx={{ fontSize: '0.9rem' }} />
+                      )}
+                    </IconButton>
+                  </div>
+                ) : null}
+              </div>
             ) : (
               <>
                 {`We are processing your transaction${isBulk ? 's' : ''}`}
@@ -210,6 +261,10 @@ export const useTransactionStatus = ({
     onClick,
     reconnectToNetwork,
     network,
+    resultKey,
+    resultValue,
+    handleCopy,
+    isCopied,
     progressPercentage,
     errorRequestRejection
   ]);
