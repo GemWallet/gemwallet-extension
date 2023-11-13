@@ -1,7 +1,7 @@
-import { NETWORK, Network } from '@gemwallet/constants';
+import { Chain, getNetwork, XRPLNetwork } from '@gemwallet/constants';
 
 import { STORAGE_NETWORK } from '../constants';
-import { saveNetwork, loadNetwork, removeNetwork } from './network';
+import { loadNetwork, removeNetwork, saveNetwork } from './network';
 
 // Mock the localStorage object and its methods
 const localStorageMock = {
@@ -26,13 +26,15 @@ afterEach(() => {
 
 describe('saveNetwork', () => {
   test('should save the network to local storage', () => {
-    const network = Network.MAINNET;
-    saveNetwork(network);
+    const chain = Chain.XRPL;
+    const network = XRPLNetwork.MAINNET;
+    saveNetwork(chain, network);
     expect(localStorage.setItem).toHaveBeenCalledWith(
       STORAGE_NETWORK,
       JSON.stringify({
+        chain: chain,
         name: network,
-        server: NETWORK[network].server
+        server: getNetwork(chain, network).server
       })
     );
   });
@@ -42,19 +44,19 @@ describe('saveNetwork', () => {
     localStorage.setItem = jest.fn(() => {
       throw error;
     });
-    expect(() => saveNetwork(Network.MAINNET)).toThrowError(error);
+    expect(() => saveNetwork(Chain.XRPL, XRPLNetwork.MAINNET)).toThrowError(error);
   });
 });
 
 describe('loadNetwork', () => {
   test('should load the network from local storage', () => {
-    localStorage.getItem = jest.fn(() => Network.MAINNET);
-    expect(loadNetwork()).toEqual(NETWORK[Network.MAINNET]);
+    localStorage.getItem = jest.fn(() => XRPLNetwork.MAINNET);
+    expect(loadNetwork()).toEqual(getNetwork(Chain.XRPL, XRPLNetwork.MAINNET));
   });
 
   test('should return the mainnet network if no network is found in local storage', () => {
     localStorage.getItem = jest.fn(() => null);
-    expect(loadNetwork()).toEqual(NETWORK[Network.MAINNET]);
+    expect(loadNetwork()).toEqual(getNetwork(Chain.XRPL, XRPLNetwork.MAINNET));
   });
 
   test('should return the mainnet network if an error occurs while loading the network', () => {
@@ -62,7 +64,7 @@ describe('loadNetwork', () => {
     localStorageMock.getItem = jest.fn(() => {
       throw error;
     });
-    expect(loadNetwork()).toEqual(NETWORK[Network.MAINNET]);
+    expect(loadNetwork()).toEqual(getNetwork(Chain.XRPL, XRPLNetwork.MAINNET));
   });
 });
 

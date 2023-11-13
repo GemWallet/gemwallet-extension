@@ -5,9 +5,10 @@ import { useLocation } from 'react-router-dom';
 import { Client } from 'xrpl';
 
 import {
+  Chain,
   EventNetworkChangedBackgroundMessage,
   GEM_WALLET,
-  NETWORK,
+  getNetwork,
   Network
 } from '@gemwallet/constants';
 
@@ -30,6 +31,7 @@ interface ContextType {
   // Returns null if client couldn't connect
   client?: Client | null;
   networkName: Network | string;
+  chainName: Chain;
   isConnectionFailed: boolean;
   hasOfflineBanner: boolean;
 }
@@ -40,6 +42,7 @@ const NetworkContext = createContext<ContextType>({
   resetNetwork: () => new Promise(() => {}),
   client: undefined,
   networkName: DEFAULT_NETWORK_NAME,
+  chainName: Chain.XRPL,
   isConnectionFailed: false,
   hasOfflineBanner: false
 });
@@ -51,6 +54,7 @@ const NetworkProvider: FC = ({ children }) => {
 
   const [client, setClient] = useState<Client | null | undefined>(undefined);
   const [networkName, setNetworkName] = useState<Network | string>(DEFAULT_NETWORK_NAME);
+  const [chainName] = useState<Chain>(Chain.XRPL);
   const [isConnectionFailed, setIsConnectionFailed] = useState(false);
   const [hasOfflineBanner, setHasOfflineBanner] = useState(false);
 
@@ -139,13 +143,16 @@ const NetworkProvider: FC = ({ children }) => {
       try {
         await client?.disconnect();
         // If a server URL is provided, use it. Otherwise, use the pre-defined server for the given network
-        const ws = await connectToLedger(customNetworkServer || NETWORK[network].server);
+        const ws = await connectToLedger(
+          customNetworkServer || getNetwork(chainName, network).server
+        );
         setNetworkName(customNetworkName || network);
-        saveNetwork(network, customNetworkName, customNetworkServer);
+        saveNetwork(chainName, network, customNetworkName, customNetworkServer);
         setClient(ws);
         setIsConnectionFailed(false);
 
         if (process.env.NODE_ENV === 'production') {
+          const currentNetwork = getNetwork(chainName, network);
           chrome.runtime
             .sendMessage<EventNetworkChangedBackgroundMessage>({
               app: GEM_WALLET,
@@ -155,9 +162,9 @@ const NetworkProvider: FC = ({ children }) => {
                 id: 0,
                 result: {
                   network: {
-                    name: NETWORK[network].name.toLowerCase(),
-                    server: customNetworkServer ?? NETWORK[network].server,
-                    description: NETWORK[network].description
+                    name: currentNetwork.name.toLowerCase(),
+                    server: customNetworkServer ?? currentNetwork.server,
+                    description: currentNetwork.description
                   }
                 }
               }
@@ -176,7 +183,7 @@ const NetworkProvider: FC = ({ children }) => {
         throw err;
       }
     },
-    [client]
+    [chainName, client]
   );
 
   // Remove Network configuration and set default one
@@ -197,17 +204,19 @@ const NetworkProvider: FC = ({ children }) => {
       resetNetwork,
       client,
       networkName,
+      chainName,
       isConnectionFailed,
       hasOfflineBanner
     };
   }, [
-    client,
-    hasOfflineBanner,
-    isConnectionFailed,
-    networkName,
     reconnectToNetwork,
+    switchNetwork,
     resetNetwork,
-    switchNetwork
+    client,
+    networkName,
+    chainName,
+    isConnectionFailed,
+    hasOfflineBanner
   ]);
 
   return (

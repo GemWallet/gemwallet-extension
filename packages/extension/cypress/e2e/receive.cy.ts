@@ -1,4 +1,4 @@
-import { Network, NETWORK } from '@gemwallet/constants';
+import { Chain, XRPLNetwork } from '@gemwallet/constants';
 
 describe('ReceivePayment View', () => {
   beforeEach(() => {
@@ -14,7 +14,8 @@ describe('ReceivePayment View', () => {
       win.localStorage.setItem(
         'network',
         JSON.stringify({
-          name: NETWORK[Network.TESTNET].name
+          chain: Chain.XRPL,
+          name: XRPLNetwork.TESTNET
         })
       );
     });

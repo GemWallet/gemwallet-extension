@@ -1,4 +1,11 @@
-import { Client, Transaction, TransactionMetadata, TxResponse, validate } from 'xrpl';
+import {
+  Client,
+  Transaction,
+  TransactionMetadata,
+  TxResponse,
+  validate,
+  Wallet as WalletXRPL
+} from 'xrpl';
 import { NFTokenMint } from 'xrpl/dist/npm/models/transactions/NFTokenMint';
 
 import { WalletLedger } from '../../../types';
@@ -123,4 +130,17 @@ const submit = async (param: {
     (tx.result.meta as TransactionMetadata)?.TransactionResult ||
       `Something went wrong, we couldn't submit properly the transaction`
   );
+};
+
+export const fundWallet = async (param: {
+  wallet: WalletLedger;
+  client: Client;
+}): Promise<{ wallet: WalletXRPL; balance: number }> => {
+  const { wallet, client } = param;
+
+  const walletWithAmount = await client.fundWallet(wallet.wallet);
+
+  if (!walletWithAmount) throw new Error("Couldn't fund the wallet");
+
+  return { ...walletWithAmount };
 };

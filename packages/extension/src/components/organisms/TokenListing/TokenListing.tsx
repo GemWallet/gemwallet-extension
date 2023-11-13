@@ -1,12 +1,11 @@
-import { FC, useCallback, useEffect, useState } from 'react';
+import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Button, Link, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
-import { AccountLinesTrustline } from 'xrpl';
-import { TrustSetFlags as TrustSetFlagsBitmask } from 'xrpl';
+import { AccountLinesTrustline, TrustSetFlags as TrustSetFlagsBitmask } from 'xrpl';
 
-import { Network } from '@gemwallet/constants';
+import { Chain, XRPLNetwork } from '@gemwallet/constants';
 
 import {
   ADD_NEW_TRUSTLINE_PATH,
@@ -48,7 +47,7 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [trustLineBalances, setTrustLineBalances] = useState<TrustLineBalance[]>([]);
   const [explanationOpen, setExplanationOpen] = useState(false);
-  const { client, reconnectToNetwork, networkName } = useNetwork();
+  const { client, reconnectToNetwork, networkName, chainName } = useNetwork();
   const { serverInfo } = useServer();
   const { fundWallet, getAccountInfo } = useLedger();
   const mainToken = useMainToken();
@@ -121,6 +120,15 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
     setExplanationOpen(false);
   }, []);
 
+  const hasFundWallet = useMemo(() => {
+    switch (chainName) {
+      case Chain.XRPL:
+        return networkName === XRPLNetwork.TESTNET || networkName === XRPLNetwork.DEVNET;
+      default:
+        return false;
+    }
+  }, [chainName, networkName]);
+
   const handleFundWallet = useCallback(() => {
     setErrorMessage('');
     setMainTokenBalance(LOADING_STATE);
@@ -187,7 +195,7 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
           spend it.
         </div>
 
-        {(networkName === Network.TESTNET || networkName === Network.DEVNET) && (
+        {hasFundWallet && (
           <div style={{ margin: '15px 0px', textAlign: 'center' }}>
             <Button variant="contained" onClick={handleFundWallet} data-testid="fund-wallet-button">
               Fund Wallet

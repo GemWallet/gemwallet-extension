@@ -96,7 +96,7 @@ export const StepperView: FC<StepperViewProps> = ({
       amount?: Amount
     ) => {
       try {
-        const NFTInfo = await getNFTInfo(NFTokenID, networkName);
+        const NFTInfo = await getNFTInfo(NFTokenID);
         const URI = NFTInfo.result.uri;
 
         resolveNFTDataFromURI(URI, index, amount);

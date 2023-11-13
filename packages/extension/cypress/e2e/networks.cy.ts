@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 
-import { Network, NETWORK } from '@gemwallet/constants';
+import { XRPLNetwork } from '@gemwallet/constants';
 
 describe('Switch networks', () => {
   // deepcode ignore NoHardcodedPasswords: password used for testing purposes
@@ -51,10 +51,7 @@ describe('Switch networks', () => {
 
   it('Switch from Mainnet (default network) to Testnet', () => {
     // Mainnet should be the default network
-    cy.get('div[data-testid="network-indicator"]').should(
-      'have.text',
-      NETWORK[Network.MAINNET].name
-    );
+    cy.get('div[data-testid="network-indicator"]').should('have.text', XRPLNetwork.MAINNET);
 
     // Open the change network window
     cy.get('div[data-testid="network-indicator"]').click();
@@ -63,14 +60,11 @@ describe('Switch networks', () => {
       .should('have.text', 'Change Network');
 
     // Select the testnet network
-    cy.contains('button', NETWORK[Network.TESTNET].name).click();
+    cy.contains('button', XRPLNetwork.TESTNET).click();
 
     // Make sure that the network is switched to Testnet
     cy.get('div[data-testid="loading"]').should('be.visible');
-    cy.get('div[data-testid="network-indicator"]').should(
-      'have.text',
-      NETWORK[Network.TESTNET].name
-    );
+    cy.get('div[data-testid="network-indicator"]').should('have.text', XRPLNetwork.TESTNET);
 
     // Save the current state of the localStorage
     cy.window().then((win) => {
@@ -80,11 +74,9 @@ describe('Switch networks', () => {
 
   it('Switch from Testnet (localStorage) to Devnet', () => {
     // Testnet should be the network from localStorage
-    cy.get('div[data-testid="network-indicator"]').should(
-      'have.text',
-      NETWORK[Network.TESTNET].name,
-      { timeout: 1500 }
-    );
+    cy.get('div[data-testid="network-indicator"]').should('have.text', XRPLNetwork.TESTNET, {
+      timeout: 1500
+    });
 
     // Open the change network window
     cy.get('div[data-testid="network-indicator"]').click();
@@ -93,15 +85,13 @@ describe('Switch networks', () => {
       .should('have.text', 'Change Network');
 
     // Select the Devnet network
-    cy.contains('button', NETWORK[Network.DEVNET].name).click();
+    cy.contains('button', XRPLNetwork.DEVNET).click();
 
     // Make sure that the network is switched to Devnet
     cy.get('div[data-testid="loading"]').should('be.visible');
-    cy.get('div[data-testid="network-indicator"]').should(
-      'have.text',
-      NETWORK[Network.DEVNET].name,
-      { timeout: 1500 }
-    );
+    cy.get('div[data-testid="network-indicator"]').should('have.text', XRPLNetwork.DEVNET, {
+      timeout: 1500
+    });
 
     // Save the current state of the localStorage
     cy.window().then((win) => {
@@ -111,11 +101,9 @@ describe('Switch networks', () => {
 
   it('Switch from Devnet (localStorage) to AMMDevnet', () => {
     // Devnet should be the network from localStorage
-    cy.get('div[data-testid="network-indicator"]').should(
-      'have.text',
-      NETWORK[Network.DEVNET].name,
-      { timeout: 1500 }
-    );
+    cy.get('div[data-testid="network-indicator"]').should('have.text', XRPLNetwork.DEVNET, {
+      timeout: 1500
+    });
 
     // Open the change network window
     cy.get('div[data-testid="network-indicator"]').click();
@@ -124,17 +112,13 @@ describe('Switch networks', () => {
       .should('have.text', 'Change Network');
 
     // Select the AMMDevnet network
-    cy.contains('button', NETWORK[Network.AMM_DEVNET].name).click();
+    cy.contains('button', XRPLNetwork.AMM_DEVNET).click();
 
     // Make sure that the network is switched to AMMDevnet
     cy.get('div[data-testid="loading"]').should('be.visible');
-    cy.get('div[data-testid="network-indicator"]').should(
-      'have.text',
-      NETWORK[Network.AMM_DEVNET].name,
-      {
-        timeout: 1500
-      }
-    );
+    cy.get('div[data-testid="network-indicator"]').should('have.text', XRPLNetwork.AMM_DEVNET, {
+      timeout: 1500
+    });
 
     // Save the current state of the localStorage
     cy.window().then((win) => {
@@ -153,7 +137,7 @@ describe('Switch networks', () => {
     cy.contains('button', 'Add a custom network').click();
 
     // Expect an error if the network name already exists
-    cy.get('input[name="network-name"]').type(NETWORK[Network.MAINNET].name);
+    cy.get('input[name="network-name"]').type(XRPLNetwork.MAINNET);
     cy.get('#network-name-helper-text').should(
       'have.text',
       'A network with this name already exists'
@@ -212,17 +196,13 @@ describe('Switch networks', () => {
     cy.contains('button', 'OK', { timeout: 3000 }).should('be.visible').click();
 
     // Connect back to the AMMDevnet network
-    cy.contains('button', NETWORK[Network.AMM_DEVNET].name).click();
+    cy.contains('button', XRPLNetwork.AMM_DEVNET).click();
 
     // Make sure that the network is switched to AMMDevnet
     cy.get('div[data-testid="loading"]').should('be.visible');
-    cy.get('div[data-testid="network-indicator"]').should(
-      'have.text',
-      NETWORK[Network.AMM_DEVNET].name,
-      {
-        timeout: 1500
-      }
-    );
+    cy.get('div[data-testid="network-indicator"]').should('have.text', XRPLNetwork.AMM_DEVNET, {
+      timeout: 1500
+    });
 
     // Open the change network window
     cy.get('div[data-testid="network-indicator"]').click();
@@ -245,13 +225,9 @@ describe('Switch networks', () => {
 
   it('Switch from AMMDevnet (localStorage) to Mainnet', () => {
     // AMMDevnet should be the network from localStorage
-    cy.get('div[data-testid="network-indicator"]').should(
-      'have.text',
-      NETWORK[Network.AMM_DEVNET].name,
-      {
-        timeout: 1500
-      }
-    );
+    cy.get('div[data-testid="network-indicator"]').should('have.text', XRPLNetwork.AMM_DEVNET, {
+      timeout: 1500
+    });
 
     // Open the change network window
     cy.get('div[data-testid="network-indicator"]').click();
@@ -260,17 +236,13 @@ describe('Switch networks', () => {
       .should('have.text', 'Change Network');
 
     // Select the Mainnet network
-    cy.contains('button', NETWORK[Network.MAINNET].name).click();
+    cy.contains('button', XRPLNetwork.MAINNET).click();
 
     // Make sure that the network is switched to Mainnet
     cy.get('div[data-testid="loading"]').should('be.visible');
-    cy.get('div[data-testid="network-indicator"]').should(
-      'have.text',
-      NETWORK[Network.MAINNET].name,
-      {
-        timeout: 1500
-      }
-    );
+    cy.get('div[data-testid="network-indicator"]').should('have.text', XRPLNetwork.MAINNET, {
+      timeout: 1500
+    });
 
     // Save the current state of the localStorage
     cy.window().then((win) => {
