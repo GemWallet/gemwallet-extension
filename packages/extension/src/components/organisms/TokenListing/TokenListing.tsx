@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useState } from 'react';
+import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Button, Link, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
@@ -120,13 +120,13 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
     setExplanationOpen(false);
   }, []);
 
-  const hasFundWallet = useCallback(() => {
+  const hasFundWallet = useMemo(() => {
     switch (chainName) {
       case Chain.XRPL:
         return networkName === XRPLNetwork.TESTNET || networkName === XRPLNetwork.DEVNET;
+      default:
+        return false;
     }
-
-    return false;
   }, [chainName, networkName]);
 
   const handleFundWallet = useCallback(() => {
@@ -195,7 +195,7 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
           spend it.
         </div>
 
-        {hasFundWallet() && (
+        {hasFundWallet && (
           <div style={{ margin: '15px 0px', textAlign: 'center' }}>
             <Button variant="contained" onClick={handleFundWallet} data-testid="fund-wallet-button">
               Fund Wallet
