@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useState } from 'react';
+import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Button, Link, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
@@ -121,7 +121,7 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
     setExplanationOpen(false);
   }, []);
 
-  const hasFundWallet = useCallback(() => {
+  const hasFundWallet = useMemo(() => {
     switch (chainName) {
       case Chain.XRPL:
         return networkName === XRPLNetwork.TESTNET || networkName === XRPLNetwork.DEVNET;

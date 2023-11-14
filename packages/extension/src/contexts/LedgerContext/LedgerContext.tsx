@@ -6,6 +6,7 @@ import {
   AccountDelete,
   AccountInfoResponse,
   AccountSet,
+  Client,
   LedgerEntryRequest,
   LedgerEntryResponse,
   NFTInfoResponse,
@@ -27,9 +28,6 @@ import {
   validate,
   Wallet
 } from 'xrpl';
-import { derive, utils, signAndSubmit } from 'xrpl-accountlib';
-import { AccountInfoResponse } from 'xrpl/dist/npm/models/methods/accountInfo';
-import { NFTInfoResponse } from 'xrpl/dist/npm/models/methods/nftInfo';
 
 import {
   AccountNFToken,
@@ -47,7 +45,7 @@ import {
   XRPLNetwork
 } from '@gemwallet/constants';
 
-import { AccountTransaction } from '../../types';
+import { AccountTransaction, WalletLedger } from '../../types';
 import { toUIError } from '../../utils/errors';
 import { resolveNFTData } from '../../utils/NFTDataResolver';
 import { useNetwork } from '../NetworkContext';
@@ -104,7 +102,7 @@ interface CancelOfferResponse {
   hash: string;
 }
 
-export interface SubmitTransactionResponse {
+interface SubmitTransactionResponse {
   hash: string;
 }
 
@@ -112,7 +110,7 @@ interface DeleteAccountResponse {
   hash: string;
 }
 
-export interface SignTransactionResponse {
+interface SignTransactionResponse {
   signature: string;
 }
 
@@ -271,9 +269,6 @@ const LedgerProvider: FC = ({ children }) => {
     }
   }, [chainName, client, getCurrentWallet, networkName]);
 
-  /*
-   * Transactions
-   */
   /*
    * Transactions
    */

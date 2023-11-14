@@ -16,6 +16,8 @@ export enum XahauNetwork {
   CUSTOM = 'Custom'
 }
 
+export type Network = XRPLNetwork | XahauNetwork;
+
 // XRPL
 export const MAINNET_CLIO_NODES = ['wss://s1.ripple.com', 'wss://s2.ripple.com'];
 export const MAINNET_NODES = ['wss://xrplcluster.com', ...MAINNET_CLIO_NODES];
@@ -28,8 +30,6 @@ export const XAHAU_TESTNET_NODES = ['wss://xahau-test.net'];
 
 // Faucets
 export const FAUCET_XAHAU_TESTNET = 'https://xahau-test.net/accounts';
-
-export type Network = XRPLNetwork | XahauNetwork;
 
 export interface NetworkNode {
   chain: Chain;

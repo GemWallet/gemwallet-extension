@@ -1,9 +1,10 @@
 import { renderHook } from '@testing-library/react-hooks';
 
-import { Network } from '@gemwallet/constants';
+import { Chain } from '@gemwallet/constants';
 
+import { XAH_TOKEN, XRP_TOKEN } from '../../constants';
 import { useNetwork } from '../../contexts';
-import { useMainToken, XRP_TOKEN, XAH_TOKEN } from './useMainToken';
+import { useMainToken } from './useMainToken';
 
 jest.mock('../../contexts', () => ({
   useNetwork: jest.fn()
@@ -11,13 +12,13 @@ jest.mock('../../contexts', () => ({
 
 describe('useMainToken', () => {
   it('returns XRP_TOKEN for default network', () => {
-    useNetwork.mockReturnValue({ networkName: 'SomeNetwork' });
+    useNetwork.mockReturnValue({ chainName: 'SomeChain' });
     const { result } = renderHook(() => useMainToken());
     expect(result.current).toBe(XRP_TOKEN);
   });
 
   it('returns XAH_TOKEN for XAHAU_TESTNET', () => {
-    useNetwork.mockReturnValue({ networkName: Network.XAHAU_TESTNET });
+    useNetwork.mockReturnValue({ chainName: Chain.XAHAU });
     const { result } = renderHook(() => useMainToken());
     expect(result.current).toBe(XAH_TOKEN);
   });
