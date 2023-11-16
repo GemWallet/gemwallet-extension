@@ -18,7 +18,6 @@ import {
   parseMemos,
   parseMintNFTFlags,
   parsePaymentFlags,
-  parsePaymentPaths,
   parseSetAccountFlags,
   parseSigners,
   parseTransactionParam,
@@ -502,32 +501,5 @@ describe('parseTransactionParam', () => {
     };
 
     expect(parseTransactionParam(mockTransaction)).toEqual(mockTransaction);
-  });
-});
-
-describe('parsePaymentPaths', () => {
-  it('should parse payment paths from a valid JSON string', () => {
-    const pathsString = JSON.stringify([
-      [{ account: 'rAccount', currency: 'XRP', issuer: 'rIssuer' }]
-    ]);
-    const expectedPaths = [[{ account: 'rAccount', currency: 'XRP', issuer: 'rIssuer' }]];
-
-    const paths = parsePaymentPaths(pathsString);
-
-    expect(paths).toEqual(expectedPaths);
-  });
-
-  it('should return null for invalid JSON string', () => {
-    const pathsString = 'invalid JSON string';
-
-    const paths = parsePaymentPaths(pathsString);
-
-    expect(paths).toBeNull();
-  });
-
-  it('should return null for null input', () => {
-    const paths = parsePaymentPaths(null);
-
-    expect(paths).toBeNull();
   });
 });
