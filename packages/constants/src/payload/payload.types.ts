@@ -102,6 +102,12 @@ export interface SendPaymentRequestDeprecated {
 export interface SetTrustlineRequest extends BaseTransactionRequest {
   // The maximum amount of currency that can be exchanged to the trustline
   limitAmount: IssuedCurrencyAmount;
+  // Value incoming balances on this trust line at the ratio of this number per 1,000,000,000 units.
+  // A value of 0 is shorthand for treating balances at face value.
+  qualityIn?: number;
+  // Value outgoing balances on this trust line at the ratio of this number per 1,000,000,000 units.
+  // A value of 0 is shorthand for treating balances at face value.
+  qualityOut?: number;
   // Flags to set on the transaction
   flags?: TrustSetFlags;
 }
