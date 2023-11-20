@@ -1,8 +1,12 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, FC } from 'react';
 
-import { Button, TextareaAutosize, Typography } from '@mui/material';
+import { Button, Typography } from '@mui/material';
+import { highlight, languages } from 'prismjs';
 import { useNavigate } from 'react-router-dom';
+import Editor from 'react-simple-code-editor';
 import { validate } from 'xrpl';
+import 'prismjs/components/prism-json';
+import 'prismjs/themes/prism-okaidia.css';
 
 import {
   SETTINGS_PATH,
@@ -14,7 +18,9 @@ import { useWallet } from '../../../contexts';
 import { generateKey, saveInChromeSessionStorage } from '../../../utils';
 import { PageWithReturn } from '../../templates';
 
-export const BuildTransaction: React.FC = () => {
+const EDITOR_HEIGHT = '380px';
+
+export const BuildTransaction: FC = () => {
   const { getCurrentWallet } = useWallet();
 
   const navigate = useNavigate();
@@ -83,16 +89,35 @@ export const BuildTransaction: React.FC = () => {
     setErrorMessage('');
   }, [jsonInput, navigate, wallet?.publicAddress]);
 
+  const jsonEditorStyle = `
+    .json-editor {
+      outline: none;
+    }`;
+
   return (
     <PageWithReturn title="Build Transaction" onBackClick={handleBack}>
+      <style>{jsonEditorStyle}</style>
       <div style={{ margin: '1rem' }}>
-        <Typography variant="body1">Please enter or paste your JSON data below:</Typography>
-        <TextareaAutosize
-          minRows={10}
-          style={{ width: '100%', marginTop: '1rem', padding: '0.5rem' }}
-          value={jsonInput}
-          onChange={(e) => setJsonInput(e.target.value)}
-        />
+        <Typography variant="body1" style={{ marginBottom: '1rem' }}>
+          Please type or paste your JSON data:
+        </Typography>
+        <div style={{ maxHeight: EDITOR_HEIGHT, overflow: 'auto' }}>
+          <Editor
+            value={jsonInput}
+            textareaClassName={'json-editor'}
+            onValueChange={(input) => setJsonInput(input)}
+            highlight={(code) => highlight(code, languages.json, 'json')}
+            padding={10}
+            style={{
+              fontFamily: '"Fira code", "Fira Mono", monospace',
+              fontSize: 12,
+              tabSize: 2,
+              backgroundColor: '#2d2d2d',
+              borderRadius: '2px',
+              minHeight: EDITOR_HEIGHT
+            }}
+          />
+        </div>
         {errorMessage ? (
           <Typography color="error" style={{ marginTop: '1rem' }}>
             {errorMessage}
