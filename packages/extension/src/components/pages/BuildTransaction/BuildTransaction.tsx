@@ -18,7 +18,7 @@ import { useWallet } from '../../../contexts';
 import { generateKey, saveInChromeSessionStorage } from '../../../utils';
 import { PageWithReturn } from '../../templates';
 
-const EDITOR_HEIGHT = '380px';
+const EDITOR_HEIGHT = '310px';
 
 export const BuildTransaction: FC = () => {
   const { getCurrentWallet } = useWallet();
@@ -89,6 +89,17 @@ export const BuildTransaction: FC = () => {
     setErrorMessage('');
   }, [jsonInput, navigate, wallet?.publicAddress]);
 
+  const handleBeautifyJson = useCallback(() => {
+    try {
+      const parsedJson = JSON.parse(jsonInput);
+      const beautifiedJson = JSON.stringify(parsedJson, null, 2);
+      setJsonInput(beautifiedJson);
+      setErrorMessage('');
+    } catch (e) {
+      setErrorMessage('Invalid JSON - cannot beautify');
+    }
+  }, [jsonInput]);
+
   const jsonEditorStyle = `
     .json-editor {
       outline: none;
@@ -123,6 +134,11 @@ export const BuildTransaction: FC = () => {
             {errorMessage}
           </Typography>
         ) : null}
+        <div style={{ textAlign: 'right', marginTop: '1rem' }}>
+          <Button variant="outlined" size="small" onClick={handleBeautifyJson}>
+            Beautify JSON
+          </Button>
+        </div>
       </div>
       <div
         style={{
