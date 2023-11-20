@@ -1,7 +1,13 @@
+import { Path } from 'xrpl';
 import { Amount } from 'xrpl/dist/npm/models/common';
 import { NFTokenMint } from 'xrpl/dist/npm/models/transactions/NFTokenMint';
 
-import { CancelOfferRequest, CreateOfferRequest, MintNFTRequest } from '@gemwallet/constants';
+import {
+  CancelOfferRequest,
+  CreateOfferRequest,
+  MintNFTRequest,
+  SendPaymentRequest
+} from '@gemwallet/constants';
 
 import { WalletLedger } from '../../../types';
 import {
@@ -14,6 +20,7 @@ import {
   buildNFTokenMint,
   buildOfferCancel,
   buildOfferCreate,
+  buildPayment,
   buildTrustSet
 } from './buildXRPLTransaction';
 
@@ -111,7 +118,9 @@ describe('buildNFTokenCreateOffer', () => {
     expect(result.Destination).toEqual('destinationAddress');
     expect(result.Flags).toBeUndefined();
   });
+});
 
+describe('buildNFTokenMint', () => {
   it('should build NFTokenMint with given parameters', () => {
     const params: MintNFTRequest = {
       NFTokenTaxon: 0,
@@ -143,34 +152,34 @@ describe('buildOfferCancel', () => {
     expect(result.Account).toEqual('publicAddress');
     expect(result.OfferSequence).toEqual(123);
   });
+});
 
-  describe('buildOfferCreate', () => {
-    it('should build OfferCreate correctly', () => {
-      const takerGets: Amount = '100';
+describe('buildOfferCreate', () => {
+  it('should build OfferCreate correctly', () => {
+    const takerGets: Amount = '100';
 
-      const takerPays: Amount = {
-        currency: 'USD',
-        value: '200',
-        issuer: 'rUsDIssuer'
-      };
+    const takerPays: Amount = {
+      currency: 'USD',
+      value: '200',
+      issuer: 'rUsDIssuer'
+    };
 
-      const params: CreateOfferRequest = {
-        takerGets,
-        takerPays,
-        expiration: 567,
-        offerSequence: 123
-      };
+    const params: CreateOfferRequest = {
+      takerGets,
+      takerPays,
+      expiration: 567,
+      offerSequence: 123
+    };
 
-      const result = buildOfferCreate(params, wallet);
+    const result = buildOfferCreate(params, wallet);
 
-      expect(result.TransactionType).toEqual('OfferCreate');
-      expect(result.Account).toEqual('publicAddress');
-      expect(result.Expiration).toEqual(567);
-      expect(result.OfferSequence).toEqual(123);
-      expect(result.TakerGets).toEqual(takerGets);
-      expect(result.TakerPays).toEqual(takerPays);
-      expect(result.Flags).toBeUndefined();
-    });
+    expect(result.TransactionType).toEqual('OfferCreate');
+    expect(result.Account).toEqual('publicAddress');
+    expect(result.Expiration).toEqual(567);
+    expect(result.OfferSequence).toEqual(123);
+    expect(result.TakerGets).toEqual(takerGets);
+    expect(result.TakerPays).toEqual(takerPays);
+    expect(result.Flags).toBeUndefined();
   });
 });
 
@@ -222,30 +231,76 @@ describe('buildAccountSet', () => {
 
     expect(buildAccountSet(params, wallet)).toEqual(expectedResult);
   });
+});
 
-  describe('buildTrustSet', () => {
-    it('should build a TrustSet transaction with flags', () => {
-      const params = {
-        limitAmount: { currency: 'USD', value: '100', issuer: 'rSomeIssuer' },
-        flags: 131072
-      };
+describe('buildTrustSet', () => {
+  it('should build a TrustSet transaction with flags', () => {
+    const params = {
+      limitAmount: { currency: 'USD', value: '100', issuer: 'rSomeIssuer' },
+      flags: 131072
+    };
 
-      const result = buildTrustSet(params, wallet as any);
-      expect(result).toMatchObject({
-        LimitAmount: params.limitAmount,
-        Flags: params.flags
-      });
+    const result = buildTrustSet(params, wallet as any);
+    expect(result).toMatchObject({
+      LimitAmount: params.limitAmount,
+      Flags: params.flags
     });
+  });
 
-    it('should build a TrustSet transaction without flags', () => {
-      const params = {
-        limitAmount: { currency: 'USD', value: '100', issuer: 'rSomeIssuer' }
-      };
-      const result = buildTrustSet(params, wallet as any);
-      expect(result).toMatchObject({
-        LimitAmount: params.limitAmount
-      });
-      expect(result.Flags).toBeUndefined();
+  it('should build a TrustSet transaction without flags', () => {
+    const params = {
+      limitAmount: { currency: 'USD', value: '100', issuer: 'rSomeIssuer' }
+    };
+    const result = buildTrustSet(params, wallet as any);
+    expect(result).toMatchObject({
+      LimitAmount: params.limitAmount
     });
+    expect(result.Flags).toBeUndefined();
+  });
+});
+
+describe('buildPayment', () => {
+  it('should build Payment transaction with all fields', () => {
+    const params = {
+      amount: '1000',
+      destination: 'rDestination',
+      destinationTag: 1234,
+      invoiceID: 'invoice123',
+      paths: [[{ account: 'rAccount', currency: 'XRP', issuer: 'rIssuer' }]] as Path[],
+      sendMax: '2000',
+      deliverMin: '900'
+    };
+
+    const result = buildPayment(params, wallet);
+
+    expect(result.TransactionType).toEqual('Payment');
+    expect(result.Account).toEqual(wallet.publicAddress);
+    expect(result.Amount).toEqual(params.amount);
+    expect(result.Destination).toEqual(params.destination);
+    expect(result.DestinationTag).toEqual(params.destinationTag);
+    expect(result.InvoiceID).toEqual(params.invoiceID);
+    expect(result.Paths).toEqual(params.paths);
+    expect(result.SendMax).toEqual(params.sendMax);
+    expect(result.DeliverMin).toEqual(params.deliverMin);
+  });
+
+  it('should build Payment transaction with only mandatory fields', () => {
+    const params: SendPaymentRequest = {
+      amount: '1000',
+      destination: 'rDestination'
+    };
+
+    const result = buildPayment(params, wallet);
+
+    expect(result.TransactionType).toEqual('Payment');
+    expect(result.Account).toEqual(wallet.publicAddress);
+    expect(result.Amount).toEqual(params.amount);
+    expect(result.Destination).toEqual(params.destination);
+    expect(result.DestinationTag).toBeUndefined();
+    expect(result.InvoiceID).toBeUndefined();
+    expect(result.Paths).toBeUndefined();
+    expect(result.SendMax).toBeUndefined();
+    expect(result.DeliverMin).toBeUndefined();
+    expect(result.Flags).toBeUndefined();
   });
 });

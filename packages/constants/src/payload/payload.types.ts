@@ -1,4 +1,4 @@
-import { AccountSetAsfFlags, Transaction } from 'xrpl';
+import { AccountSetAsfFlags, Path, Transaction } from 'xrpl';
 import { Amount, IssuedCurrencyAmount } from 'xrpl/dist/npm/models/common';
 
 import { Network } from '../network/network.constant';
@@ -70,6 +70,18 @@ export interface SendPaymentRequest extends BaseTransactionRequest {
   destination: string;
   // The destination tag to attach to the transaction
   destinationTag?: number;
+  // Arbitrary 256-bit hash representing a specific reason or identifier for this payment.
+  invoiceID?: string;
+  // Array of payment paths to be used for this transaction. Must be omitted for XRP-to-XRP transactions.
+  paths?: Path[];
+  // Highest amount of source currency this transaction is allowed to cost, including transfer fees, exchange rates,
+  // and slippage . Does not include the XRP destroyed as a cost for submitting the transaction.
+  // For non-XRP amounts, the nested field names MUST be lower-case.
+  // Must be supplied for cross-currency/cross-issue payments. Must be omitted for XRP-to-XRP Payments.
+  sendMax?: Amount;
+  // Minimum amount of destination currency this transaction should deliver. Only valid if this is a partial payment.
+  // For non-XRP amounts, the nested field names are lower-case.
+  deliverMin?: Amount;
   // Flags to set on the transaction
   flags?: PaymentFlags;
 }

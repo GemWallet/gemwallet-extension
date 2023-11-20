@@ -147,6 +147,10 @@ export const Transaction: FC = () => {
     const destination = 'destination' in fetchedData ? fetchedData.destination : undefined;
     const destinationTag =
       'destinationTag' in fetchedData ? Number(fetchedData.destinationTag) : undefined;
+    const invoiceID = 'invoiceID' in fetchedData ? fetchedData.invoiceID : undefined;
+    const paths = 'paths' in fetchedData ? fetchedData.paths : undefined;
+    const sendMax = 'sendMax' in fetchedData ? fetchedData.sendMax : undefined;
+    const deliverMin = 'deliverMin' in fetchedData ? fetchedData.deliverMin : undefined;
     const flags = 'flags' in fetchedData ? parsePaymentFlags(fetchedData.flags) : undefined;
 
     if (amount === null || destination === null) {
@@ -159,6 +163,10 @@ export const Transaction: FC = () => {
         amount: amount ?? '0',
         destination: destination ?? '',
         ...(destinationTag && { destinationTag }),
+        ...(invoiceID && { invoiceID }),
+        ...(paths && { paths }),
+        ...(sendMax && { sendMax }),
+        ...(deliverMin && { deliverMin }),
         ...(flags && { flags })
       },
       wallet
