@@ -32,10 +32,11 @@ export const handleTransaction = async (param: {
 
   // Sign only: prepare, sign, and return the blob without submitting
   if (signOnly) {
-    if (!client) {
-      throw new Error('Client is required for preparing the transaction');
+    let prepared = transaction;
+    if (client) {
+      prepared = await client.autofill(transaction);
     }
-    const prepared = await client.autofill(transaction);
+
     const signed = wallet.wallet.sign(prepared);
 
     if (!signed.tx_blob) {

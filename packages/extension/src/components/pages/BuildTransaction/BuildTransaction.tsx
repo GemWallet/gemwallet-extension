@@ -1,4 +1,4 @@
-import { useState, useCallback, FC } from 'react';
+import { useState, useCallback, FC, useMemo } from 'react';
 
 import { Button, Typography } from '@mui/material';
 import { highlight, languages } from 'prismjs';
@@ -14,14 +14,16 @@ import {
   STORAGE_MESSAGING_KEY,
   SUBMIT_TRANSACTION_PATH
 } from '../../../constants';
-import { useWallet } from '../../../contexts';
+import { useNetwork, useWallet } from '../../../contexts';
 import { generateKey, saveInChromeSessionStorage } from '../../../utils';
 import { PageWithReturn } from '../../templates';
 
-const EDITOR_HEIGHT = '310px';
-
 export const BuildTransaction: FC = () => {
   const { getCurrentWallet } = useWallet();
+  const { hasOfflineBanner } = useNetwork();
+  const editorHeight = useMemo(() => {
+    return hasOfflineBanner ? '280px' : '340px';
+  }, [hasOfflineBanner]);
 
   const navigate = useNavigate();
   const wallet = getCurrentWallet();
@@ -112,7 +114,7 @@ export const BuildTransaction: FC = () => {
         <Typography variant="body1" style={{ marginBottom: '1rem' }}>
           Please type or paste your JSON data:
         </Typography>
-        <div style={{ maxHeight: EDITOR_HEIGHT, overflow: 'auto' }}>
+        <div style={{ maxHeight: editorHeight, overflow: 'auto' }}>
           <Editor
             value={jsonInput}
             textareaClassName={'json-editor'}
@@ -125,7 +127,7 @@ export const BuildTransaction: FC = () => {
               tabSize: 2,
               backgroundColor: '#2d2d2d',
               borderRadius: '2px',
-              minHeight: EDITOR_HEIGHT
+              minHeight: editorHeight
             }}
           />
         </div>
@@ -157,7 +159,13 @@ export const BuildTransaction: FC = () => {
         <Button variant="outlined" size="large" onClick={handleSignTransaction} color="primary">
           Sign
         </Button>
-        <Button variant="outlined" size="large" onClick={handleSubmitTransaction} color="primary">
+        <Button
+          variant="outlined"
+          size="large"
+          onClick={handleSubmitTransaction}
+          disabled={hasOfflineBanner}
+          color="primary"
+        >
           Submit
         </Button>
       </div>
