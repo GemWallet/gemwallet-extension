@@ -20,6 +20,7 @@ import { EventLoginBackgroundMessage, GEM_WALLET } from '@gemwallet/constants';
 import {
   ACCEPT_NFT_OFFER_PATH,
   ADD_NEW_TRUSTLINE_PATH,
+  BUILD_TRANSACTION_PATH,
   BURN_NFT_PATH,
   CANCEL_NFT_OFFER_PATH,
   CANCEL_OFFER_PATH,
@@ -35,6 +36,7 @@ import {
   PARAMETER_SUBMIT_TRANSACTION,
   PARAMETER_SUBMIT_TRANSACTIONS_BULK,
   PARAMETER_TRANSACTION_ACCEPT_NFT_OFFER,
+  PARAMETER_TRANSACTION_BUILD_RAW,
   PARAMETER_TRANSACTION_BURN_NFT,
   PARAMETER_TRANSACTION_CANCEL_NFT_OFFER,
   PARAMETER_TRANSACTION_CANCEL_OFFER,
@@ -116,6 +118,8 @@ export const Login: FC = () => {
       navigate(`${CREATE_OFFER_PATH}${search}`);
     } else if (search.includes(PARAMETER_TRANSACTION_CANCEL_OFFER)) {
       navigate(`${CANCEL_OFFER_PATH}${search}`);
+    } else if (search.includes(PARAMETER_TRANSACTION_BUILD_RAW)) {
+      navigate(`${BUILD_TRANSACTION_PATH}${search}`);
     } else {
       navigate(`${HOME_PATH}${search}`);
     }

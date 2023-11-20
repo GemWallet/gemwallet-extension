@@ -7,6 +7,7 @@ export const PARAMETER_SIGN_TRANSACTION = 'sign=transaction';
 export const PARAMETER_SUBMIT_TRANSACTION = 'submit=transaction';
 export const PARAMETER_SUBMIT_TRANSACTIONS_BULK = 'submit=txBulk';
 export const PARAMETER_TRANSACTION_ACCEPT_NFT_OFFER = 'transaction=acceptNFTOffer';
+export const PARAMETER_TRANSACTION_BUILD_RAW = 'transaction=buildRaw';
 export const PARAMETER_TRANSACTION_BURN_NFT = 'transaction=burnNFT';
 export const PARAMETER_TRANSACTION_PAYMENT = 'transaction=payment';
 export const PARAMETER_TRANSACTION_TRUSTLINE = 'transaction=trustSet';
