@@ -22,7 +22,7 @@ export const BuildTransaction: FC = () => {
   const { getCurrentWallet } = useWallet();
   const { hasOfflineBanner } = useNetwork();
   const editorHeight = useMemo(() => {
-    return hasOfflineBanner ? '280px' : '340px';
+    return hasOfflineBanner ? '250px' : '310px';
   }, [hasOfflineBanner]);
 
   const navigate = useNavigate();
@@ -131,16 +131,16 @@ export const BuildTransaction: FC = () => {
             }}
           />
         </div>
-        {errorMessage ? (
-          <Typography color="error" style={{ marginTop: '1rem' }}>
-            {errorMessage}
-          </Typography>
-        ) : null}
         <div style={{ textAlign: 'right', marginTop: '1rem' }}>
           <Button variant="outlined" size="small" onClick={handleBeautifyJson}>
             Beautify JSON
           </Button>
         </div>
+        {errorMessage ? (
+          <Typography color="error" style={{ marginTop: '1rem' }}>
+            {errorMessage}
+          </Typography>
+        ) : null}
       </div>
       <div
         style={{
