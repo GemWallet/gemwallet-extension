@@ -168,6 +168,8 @@ export const buildTrustSet = (params: SetTrustlineRequest, wallet: WalletLedger)
   return {
     ...(buildBaseTransaction(params, wallet, 'TrustSet') as TrustSet),
     LimitAmount: params.limitAmount,
+    ...(params.qualityIn !== undefined && { QualityIn: params.qualityIn }),
+    ...(params.qualityOut !== undefined && { QualityOut: params.qualityOut }),
     ...(params.flags !== undefined && { Flags: params.flags })
   };
 };

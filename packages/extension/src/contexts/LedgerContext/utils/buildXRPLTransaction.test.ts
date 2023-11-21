@@ -237,25 +237,31 @@ describe('buildTrustSet', () => {
   it('should build a TrustSet transaction with flags', () => {
     const params = {
       limitAmount: { currency: 'USD', value: '100', issuer: 'rSomeIssuer' },
+      qualityIn: 1,
+      qualityOut: 2,
       flags: 131072
     };
 
-    const result = buildTrustSet(params, wallet as any);
+    const result = buildTrustSet(params, wallet);
     expect(result).toMatchObject({
       LimitAmount: params.limitAmount,
+      QualityIn: params.qualityIn,
+      QualityOut: params.qualityOut,
       Flags: params.flags
     });
   });
 
-  it('should build a TrustSet transaction without flags', () => {
+  it('should build a TrustSet transaction without optional fields', () => {
     const params = {
       limitAmount: { currency: 'USD', value: '100', issuer: 'rSomeIssuer' }
     };
-    const result = buildTrustSet(params, wallet as any);
+    const result = buildTrustSet(params, wallet);
     expect(result).toMatchObject({
       LimitAmount: params.limitAmount
     });
     expect(result.Flags).toBeUndefined();
+    expect(result.QualityIn).toBeUndefined();
+    expect(result.QualityOut).toBeUndefined();
   });
 });
 

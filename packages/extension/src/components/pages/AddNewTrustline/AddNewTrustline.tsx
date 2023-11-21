@@ -172,6 +172,8 @@ export const AddNewTrustline: FC = () => {
       issuer ?? null
     );
     const flags = 'flags' in fetchedData ? parseTrustSetFlags(fetchedData.flags) : undefined;
+    const qualityIn = 'qualityIn' in fetchedData ? Number(fetchedData.qualityIn) : undefined;
+    const qualityOut = 'qualityOut' in fetchedData ? Number(fetchedData.qualityOut) : undefined;
 
     if (limitAmount === null) {
       setIsParamsMissing(true);
@@ -185,8 +187,10 @@ export const AddNewTrustline: FC = () => {
       ? buildTrustSet(
           {
             ...parseBaseParamsFromStoredData(fetchedData),
-            ...(flags && { flags }),
-            limitAmount: limitAmount
+            limitAmount: limitAmount,
+            ...(qualityIn !== undefined ? { qualityIn } : {}),
+            ...(qualityOut !== undefined ? { qualityOut } : {}),
+            ...(flags && { flags })
           },
           wallet
         )
