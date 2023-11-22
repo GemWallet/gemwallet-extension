@@ -364,16 +364,15 @@ chrome.runtime.onMessage.addListener(
         });
       } catch (e) {}
     } else if (type === 'REQUEST_SET_REGULAR_KEY/V3') {
-      handleTransactionRequest({
-        payload: message.payload,
-        sender,
-        parameter: PARAMETER_TRANSACTION_SET_REGULAR_KEY,
-        receivingMessage: 'RECEIVE_SET_REGULAR_KEY/V3',
-        errorPayload: {
-          type: ResponseType.Reject,
-          result: undefined
-        }
-      });
+      const { payload } = message;
+      try {
+        sendMessageInMemory({
+          payload,
+          parameter: PARAMETER_TRANSACTION_SET_REGULAR_KEY,
+          receivingMessage: 'RECEIVE_SET_REGULAR_KEY/V3',
+          sender
+        });
+      } catch (e) {}
     } else if (type === 'REQUEST_CREATE_OFFER/V3') {
       const { payload } = message;
       try {

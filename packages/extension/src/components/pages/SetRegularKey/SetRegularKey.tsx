@@ -6,10 +6,11 @@ import { isValidAddress, SetRegularKey as SetRegularKeyXRPL } from 'xrpl';
 import {
   GEM_WALLET,
   ReceiveSetRegularKeyBackgroundMessage,
-  ResponseType
+  ResponseType,
+  SetRegularKeyRequest
 } from '@gemwallet/constants';
 
-import { HOME_PATH } from '../../../constants';
+import { HOME_PATH, STORAGE_MESSAGING_KEY } from '../../../constants';
 import {
   buildSetRegularKey,
   TransactionProgressStatus,
@@ -18,9 +19,9 @@ import {
   useTransactionProgress,
   useWallet
 } from '../../../contexts';
-import { useFees, useTransactionStatus } from '../../../hooks';
+import { useFees, useFetchFromSessionStorage, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
-import { parseBaseParamsFromURLParamsNew } from '../../../utils/baseParams';
+import { parseBaseParamsFromStoredData } from '../../../utils/baseParams';
 import { serializeError } from '../../../utils/errors';
 import { TransactionDetails } from '../../organisms';
 import { AsyncTransaction, TransactionPage } from '../../templates';
@@ -33,8 +34,7 @@ interface Params {
 
 export const SetRegularKey: FC = () => {
   const inAppCall = useMemo(() => {
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
+    const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get('inAppCall') === 'true' || false;
   }, []);
 
@@ -48,16 +48,13 @@ export const SetRegularKey: FC = () => {
   const [inputRegularKey, setInputRegularKey] = useState<string | null>(null);
   const [inputRegularKeyError, setInputRegularKeyError] = useState<string>('');
   const [removeKeyChecked, setRemoveKeyChecked] = useState(false);
+  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const { setRegularKey, getAccountInfo } = useLedger();
   const { getCurrentWallet } = useWallet();
   const { networkName } = useNetwork();
   const { setTransactionProgress } = useTransactionProgress();
   const { estimatedFees, errorFees, difference } = useFees(
-    {
-      TransactionType: 'SetRegularKey',
-      Account: '',
-      ...(params.transaction?.RegularKey ? { RegularKey: params.transaction.RegularKey } : {})
-    },
+    params.transaction ?? [],
     params.transaction?.Fee
   );
   const navigate = useNavigate();
@@ -71,14 +68,12 @@ export const SetRegularKey: FC = () => {
     onClick: inAppCall ? () => navigate(HOME_PATH) : undefined
   });
 
-  useEffect(() => {
-    getAccountInfo().then((accountInfo) => {
-      const currentRegularKey = accountInfo.result.account_data.RegularKey;
-      if (currentRegularKey) {
-        setInputRegularKey(currentRegularKey);
-      }
-    });
-  }, [getAccountInfo]);
+  const urlParams = new URLSearchParams(window.location.search);
+  const { fetchedData } = useFetchFromSessionStorage(
+    urlParams.get(STORAGE_MESSAGING_KEY) ?? undefined
+  ) as {
+    fetchedData: SetRegularKeyRequest | undefined;
+  };
 
   const sendMessageToBackground = useCallback(
     (message: ReceiveSetRegularKeyBackgroundMessage) => {
@@ -146,12 +141,17 @@ export const SetRegularKey: FC = () => {
   };
 
   useEffect(() => {
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
-    const id = Number(urlParams.get('id')) || 0;
+    getAccountInfo().then((accountInfo) => {
+      const currentRegularKey = accountInfo.result.account_data.RegularKey;
+      if (currentRegularKey) {
+        setInputRegularKey(currentRegularKey);
+      }
+    });
+  }, [getAccountInfo]);
 
-    // SetRegularKey fields
-    const regularKey = urlParams.get('regularKey');
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = Number(urlParams.get('id')) || 0;
     const wallet = getCurrentWallet();
 
     if (!wallet) {
@@ -159,13 +159,24 @@ export const SetRegularKey: FC = () => {
       return;
     }
 
+    if (!fetchedData && !inAppCall) {
+      // We only need to fetch the data in case of an API call
+      return;
+    }
+
+    let regularKey = undefined;
+    if (fetchedData) {
+      regularKey = 'regularKey' in fetchedData ? fetchedData.regularKey : undefined;
+    }
+
     // UI specific
     const finalRegularKey =
       inAppCall && removeKeyChecked ? undefined : inAppCall ? inputRegularKey : regularKey;
 
+    const baseParams = fetchedData ? parseBaseParamsFromStoredData(fetchedData) : {};
     const transaction = buildSetRegularKey(
       {
-        ...parseBaseParamsFromURLParamsNew(urlParams),
+        ...baseParams,
         ...(finalRegularKey && { regularKey: finalRegularKey ?? undefined })
       },
       wallet
@@ -175,7 +186,7 @@ export const SetRegularKey: FC = () => {
       id,
       transaction
     });
-  }, [getAccountInfo, getCurrentWallet, inAppCall, inputRegularKey, removeKeyChecked]);
+  }, [fetchedData, getAccountInfo, getCurrentWallet, inAppCall, inputRegularKey, removeKeyChecked]);
 
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);
@@ -223,7 +234,7 @@ export const SetRegularKey: FC = () => {
     return <div>{transactionStatusComponent}</div>;
   }
 
-  if (inAppCall) {
+  if (inAppCall && !isFormSubmitted) {
     return (
       <SetRegularKeyForm
         hasEnoughFunds={hasEnoughFunds}
@@ -232,7 +243,7 @@ export const SetRegularKey: FC = () => {
         removeKeyChecked={removeKeyChecked}
         handleInputChange={handleInputChange}
         handleCheckboxChange={handleCheckboxChange}
-        onClickApprove={handleConfirm}
+        onClickApprove={() => setIsFormSubmitted(true)}
         isApproveEnabled={inputRegularKeyError === ''}
       />
     );
@@ -251,7 +262,7 @@ export const SetRegularKey: FC = () => {
         txParam={params.transaction}
         estimatedFees={estimatedFees}
         errorFees={errorFees}
-        displayTransactionType={false}
+        displayTransactionType={true}
       />
     </TransactionPage>
   );

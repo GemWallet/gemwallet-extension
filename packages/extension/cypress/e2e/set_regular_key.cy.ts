@@ -1,9 +1,12 @@
-import { Network, NETWORK } from '@gemwallet/constants';
+import { Chain, XRPLNetwork } from '@gemwallet/constants';
+
+import { navigate } from '../utils/navigation';
+
+// deepcode ignore NoHardcodedPasswords: password used for testing purposes
+const PASSWORD = 'SECRET_PASSWORD';
+const STORAGE_KEY = '1693425372955.3833';
 
 describe('Set Regular Key', () => {
-  // deepcode ignore NoHardcodedPasswords: password used for testing purposes
-  const PASSWORD = 'SECRET_PASSWORD';
-
   beforeEach(() => {
     // Mock the localStorage with a wallet already loaded
     cy.window().then((win) => {
@@ -14,39 +17,28 @@ describe('Set Regular Key', () => {
       win.localStorage.setItem(
         'network',
         JSON.stringify({
-          name: NETWORK[Network.TESTNET].name
+          chain: Chain.XRPL,
+          name: XRPLNetwork.TESTNET
         })
       );
     });
   });
 
   it('Set Regular Key (API)', () => {
-    cy.visit(
-      `http://localhost:3000?set-regular-key&regularKey=rNvFCZXpDtGeQ3bVas95wGLN6N2stGmA9o&memos=%5B%7B%22memo%22%3A%7B%22memoType%22%3A%224465736372697074696f6e%22%2C%22memoData%22%3A%2254657374206d656d6f%22%7D%7D%5D&id=210384974&requestMessage=undefined&transaction=setRegularKey`,
-      {
-        onBeforeLoad(win) {
-          (win as any).chrome = (win as any).chrome || {};
-          (win as any).chrome.runtime = {
-            sendMessage(message, cb) {}
-          };
-
-          (win as any).chrome.storage = {
-            local: {
-              get(key, cb) {},
-              set(obj, cb) {
-                if (cb) cb();
-              }
-            }
-          };
-
-          cy.stub((win as any).chrome.runtime, 'sendMessage').resolves({});
+    const url = `http://localhost:3000/set-regular-key?storageKey=${STORAGE_KEY}&id=210404997&requestMessage=undefined&transaction=setRegularKey`;
+    const params = {
+      regularKey: 'rNvFCZXpDtGeQ3bVas95wGLN6N2stGmA9o',
+      memos: [
+        {
+          memo: {
+            memoType: '4465736372697074696f6e',
+            memoData: '54657374206d656d6f'
+          }
         }
-      }
-    );
+      ]
+    };
 
-    // Login
-    cy.get('input[name="password"]').type(PASSWORD);
-    cy.contains('button', 'Unlock').click();
+    navigate(url, PASSWORD, STORAGE_KEY, params);
 
     cy.get('h1[data-testid="page-title"]').should('have.text', 'Set Regular Key');
 
@@ -94,6 +86,16 @@ describe('Set Regular Key', () => {
     // Confirm
     cy.contains('button', 'Submit').click();
 
+    // Check transaction details
+    cy.get('h1[data-testid="page-title"]').should('have.text', 'Set Regular Key');
+
+    cy.contains('p', 'Regular Key')
+      .next()
+      .should('have.text', 'rNvFCZXpDtGeQ3bVas95wGLN6N2stGmA9o');
+
+    // Confirm
+    cy.contains('button', 'Submit').click();
+
     cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction in progress');
     cy.get('p[data-testid="transaction-subtitle"]').should(
       'have.text',
@@ -125,6 +127,12 @@ describe('Set Regular Key', () => {
     // Confirm
     cy.contains('button', 'Submit').click();
 
+    // Check transaction details
+    cy.get('h1[data-testid="page-title"]').should('have.text', 'Set Regular Key');
+
+    // Confirm
+    cy.contains('button', 'Submit').click();
+
     cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction in progress');
     cy.get('p[data-testid="transaction-subtitle"]').should(
       'have.text',
@@ -149,29 +157,3 @@ describe('Set Regular Key', () => {
     cy.get('input[name="regularKey"]').should('have.value', '');
   });
 });
-
-const navigate = (url: string, password: string) => {
-  cy.visit(url, {
-    onBeforeLoad(win) {
-      (win as any).chrome = (win as any).chrome || {};
-      (win as any).chrome.runtime = {
-        sendMessage(message, cb) {}
-      };
-
-      (win as any).chrome.storage = {
-        local: {
-          get(key, cb) {},
-          set(obj, cb) {
-            if (cb) cb();
-          }
-        }
-      };
-
-      cy.stub((win as any).chrome.runtime, 'sendMessage').resolves({});
-    }
-  });
-
-  // Login
-  cy.get('input[name="password"]').type(password);
-  cy.contains('button', 'Unlock').click();
-};
