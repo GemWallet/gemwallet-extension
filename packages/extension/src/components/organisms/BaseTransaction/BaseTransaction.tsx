@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, useMemo, useState } from 'react';
 
 import ErrorIcon from '@mui/icons-material/Error';
 import { IconButton, Paper, Tooltip, Typography } from '@mui/material';
@@ -16,7 +16,7 @@ import {
   getMaxFeeInDrops
 } from '@gemwallet/constants';
 
-import { ERROR_RED } from '../../../constants';
+import { ERROR_RED, WARNING_ORANGE } from '../../../constants';
 import { useNetwork } from '../../../contexts';
 import { formatAmount, formatFlags, formatToken } from '../../../utils';
 import { TileLoader } from '../../atoms';
@@ -115,6 +115,16 @@ export const Fee: FC<FeeProps> = ({
     setIsEditing(false);
   };
 
+  const warningFee = useMemo(() => {
+    if (estimatedFees === DEFAULT_FEES || fee === null) {
+      return null;
+    }
+
+    if (fee < Number(estimatedFees)) {
+      return 'The fee is lower than the estimated fee, the transaction may fail';
+    }
+  }, [estimatedFees, fee]);
+
   if (useLegacy) {
     return (
       <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
@@ -200,6 +210,15 @@ export const Fee: FC<FeeProps> = ({
           </span>
         )}
       </Typography>
+      {warningFee ? (
+        <Typography
+          variant="caption"
+          style={{ color: WARNING_ORANGE, cursor: 'pointer' }}
+          onClick={handleFeeClick}
+        >
+          {warningFee}
+        </Typography>
+      ) : null}
     </>
   );
 };

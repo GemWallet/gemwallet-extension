@@ -70,6 +70,7 @@ export const TransactionDetails: FC<TransactionDetailsProps> = ({
               onFeeChange={onFeeChange}
             />
           }
+          alwaysExpand={true}
           isExpanded={isFeeExpanded}
           setIsExpanded={setIsFeeExpanded}
           paddingTop={10}
