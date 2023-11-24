@@ -15,24 +15,16 @@ import {
 } from '@mui/material';
 import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
-import { dropsToXrp, isValidAddress } from 'xrpl';
+import { isValidAddress } from 'xrpl';
 
 import { Memo } from '@gemwallet/constants';
 
 import {
-<<<<<<< HEAD
   DEFAULT_RESERVE,
   HOME_PATH,
   RESERVE_PER_OWNER,
   navigation,
   GEMWALLET_BLUE
-=======
-  DEFAULT_FEE,
-  DEFAULT_RESERVE,
-  HOME_PATH,
-  navigation,
-  RESERVE_PER_OWNER
->>>>>>> 380ee9ea (Improve PreparePayment view)
 } from '../../../../constants';
 import { useLedger, useNetwork, useServer, useWallet } from '../../../../contexts';
 import { useMainToken } from '../../../../hooks';
@@ -45,11 +37,7 @@ import { DestinationTagInfoModal } from './DestinationTagInfoModal';
 const MAX_MEMO_LENGTH = 300;
 const MAX_DESTINATION_TAG_LENGTH = 10;
 const INDEX_DEFAULT_NAV = navigation.findIndex((link) => link.pathname === HOME_PATH);
-<<<<<<< HEAD
 const BOTTOM_SPACING = '24px';
-=======
-const MAX_ALLOWED_FEES_XRP = 5;
->>>>>>> e47cddaf (Add MAX_ALLOWED_FEES_XRP in PreparePayment view)
 
 export interface PreparePaymentProps {
   onSendPaymentClick: ({
@@ -57,19 +45,13 @@ export interface PreparePaymentProps {
     token,
     value,
     memos,
-    destinationTag,
-    transactionFee
+    destinationTag
   }: {
     address: string;
     token: string;
     value: string;
     memos?: Memo[];
-<<<<<<< HEAD
     destinationTag?: number;
-=======
-    destinationTag?: string;
-    transactionFee: string;
->>>>>>> a7d13987 (Added custom transaction fee)
   }) => void;
 }
 
@@ -88,7 +70,6 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
   const [errorAmount, setErrorAmount] = useState<string>('');
   const [errorMemo, setErrorMemo] = useState<string>('');
   const [errorDestinationTag, setErrorDestinationTag] = useState<string>('');
-  const [errorTransactionFee, setErrorTransactionFee] = useState<string>('');
   const [tokens, setTokens] = useState<
     | {
         value: string;
@@ -108,15 +89,6 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
 
   const tokenRef = useRef<HTMLInputElement | null>(null);
 
-  let minimumFeeValue = Number(dropsToXrp(DEFAULT_FEE));
-  if (serverInfo?.info.validated_ledger?.base_fee_xrp && serverInfo?.info.load_factor) {
-    minimumFeeValue = Math.max(
-      serverInfo?.info.validated_ledger?.base_fee_xrp * serverInfo?.info.load_factor,
-      minimumFeeValue
-    );
-  }
-  const [transactionFee, setTransactionFee] = useState<string>(minimumFeeValue.toString());
-
   const baseReserve = useMemo(
     () => serverInfo?.info.validated_ledger?.reserve_base_xrp || DEFAULT_RESERVE,
     [serverInfo?.info.validated_ledger?.reserve_base_xrp]
@@ -130,18 +102,9 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
       errorAddress === '' &&
       errorAmount === '' &&
       errorMemo === '' &&
-      errorDestinationTag === '' &&
-      errorTransactionFee === ''
+      errorDestinationTag === ''
     );
-  }, [
-    address,
-    amount,
-    errorAddress,
-    errorAmount,
-    errorDestinationTag,
-    errorMemo,
-    errorTransactionFee
-  ]);
+  }, [address, amount, errorAddress, errorAmount, errorDestinationTag, errorMemo]);
 
   const reserve = useMemo(() => {
     return ownerCount * RESERVE_PER_OWNER + baseReserve;
@@ -323,37 +286,6 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
     [hasValidDestinationTag]
   );
 
-  const handleTransactionFeeChange = useCallback(
-    (e: FocusEvent<HTMLInputElement>) => {
-      // Always update the transaction fee value. If it's invalid, the submit button will be disabled, but the user
-      // can still easily modify the value.
-      setTransactionFee(e.target.value);
-
-      const isValidNumber = /^\d*\.?\d*$/.test(e.target.value);
-      if (!isValidNumber) {
-        // Int and decimal numbers only
-        setErrorTransactionFee('The transaction fee is invalid');
-        return;
-      }
-
-      if (Number(e.target.value) < minimumFeeValue) {
-        // The transaction fee must be greater than the minimum fee, to prevent the transaction from pending forever.
-        setErrorTransactionFee(`The minimum transaction fee is ${minimumFeeValue}`);
-        return;
-      }
-
-      if (Number(e.target.value) > MAX_ALLOWED_FEES_XRP) {
-        setErrorTransactionFee(
-          `The maximum allowed transaction fee is ${MAX_ALLOWED_FEES_XRP} XRP`
-        );
-        return;
-      }
-
-      setErrorTransactionFee('');
-    },
-    [minimumFeeValue]
-  );
-
   const handleSendPayment = useCallback(() => {
     if (!isSendPaymentDisabled) {
       onSendPaymentClick({
@@ -362,19 +294,10 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
           tokenRef.current?.value === 'XRP-undefined' ? 'XRP' : tokenRef.current?.value ?? 'XRP',
         value: amount,
         memos,
-        destinationTag,
-        transactionFee
+        destinationTag
       });
     }
-  }, [
-    address,
-    amount,
-    destinationTag,
-    isSendPaymentDisabled,
-    memos,
-    onSendPaymentClick,
-    transactionFee
-  ]);
+  }, [address, amount, destinationTag, isSendPaymentDisabled, memos, onSendPaymentClick]);
 
   if (!isWalletActivated) {
     return (
@@ -429,8 +352,6 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
     );
   }
 
-  const defaultMarginBottom = '20px';
-
   return (
     <PageWithReturn
       title="Send Payment"
@@ -452,20 +373,10 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
           helperText={errorAddress}
           onChange={handleAddressChange}
           onBlur={handleAddressBlur}
-<<<<<<< HEAD
           style={{ marginTop: '20px', marginBottom: errorAddress === '' ? BOTTOM_SPACING : '10px' }}
           autoComplete="off"
         />
         <FormControl fullWidth style={{ marginBottom: BOTTOM_SPACING }}>
-=======
-          style={{
-            marginTop: '20px',
-            marginBottom: errorAddress === '' ? defaultMarginBottom : '10px'
-          }}
-          autoComplete="off"
-        />
-        <FormControl fullWidth style={{ marginBottom: defaultMarginBottom }}>
->>>>>>> 380ee9ea (Improve PreparePayment view)
           <InputLabel id="token-label">Token</InputLabel>
           <Select
             labelId="token-label"
@@ -494,46 +405,23 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
           id="amount"
           name="amount"
           fullWidth
-<<<<<<< HEAD
           style={{ marginBottom: BOTTOM_SPACING }}
-=======
-          style={{ marginBottom: defaultMarginBottom }}
->>>>>>> 380ee9ea (Improve PreparePayment view)
           error={!!errorAmount}
           helperText={errorAmount}
           onChange={handleAmountChange}
           autoComplete="off"
         />
-<<<<<<< HEAD
-=======
-        <TextField
-          label="Memo (optional)"
-          id="memo"
-          name="memo"
-          fullWidth
-          style={{ marginBottom: defaultMarginBottom }}
-          error={!!errorMemo}
-          helperText={errorMemo}
-          onChange={handleMemoChange}
-          autoComplete="off"
-        />
->>>>>>> 380ee9ea (Improve PreparePayment view)
         <NumericInput
           label="Destination Tag (optional, numeric)"
           id="destination-tag"
           name="destination-tag"
           fullWidth
-<<<<<<< HEAD
           style={{ marginBottom: '5px' }}
-=======
-          style={{ marginBottom: defaultMarginBottom }}
->>>>>>> 380ee9ea (Improve PreparePayment view)
           error={!!errorDestinationTag}
           helperText={errorDestinationTag}
           onChange={handleDestinationTagChange}
           autoComplete="off"
         />
-<<<<<<< HEAD
         <Typography
           variant="caption"
           component="div"
@@ -563,18 +451,6 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
           error={!!errorMemo}
           helperText={errorMemo}
           onChange={handleMemoChange}
-=======
-        <TextField
-          label="Transaction Fee (XRP)"
-          id="transaction-fee"
-          name="transaction-fee"
-          fullWidth
-          value={transactionFee}
-          style={{ marginBottom: defaultMarginBottom }}
-          error={!!errorTransactionFee}
-          helperText={errorTransactionFee}
-          onChange={handleTransactionFeeChange}
->>>>>>> a7d13987 (Added custom transaction fee)
           autoComplete="off"
         />
       </div>
