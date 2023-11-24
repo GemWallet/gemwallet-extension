@@ -12,6 +12,7 @@ interface TransactionDetailsProps {
   errorFees?: string;
   isConnectionFailed?: boolean;
   displayTransactionType?: boolean;
+  onFeeChange?: (newFee: number) => void;
 }
 
 export const TransactionDetails: FC<TransactionDetailsProps> = ({
@@ -19,7 +20,8 @@ export const TransactionDetails: FC<TransactionDetailsProps> = ({
   errorFees,
   estimatedFees,
   isConnectionFailed,
-  displayTransactionType
+  displayTransactionType,
+  onFeeChange
 }) => {
   const [isTxExpanded, setIsTxExpanded] = useState(false);
   const [isRawTxExpanded, setIsRawTxExpanded] = useState(false);
@@ -65,6 +67,7 @@ export const TransactionDetails: FC<TransactionDetailsProps> = ({
               estimatedFees={estimatedFees}
               fee={txParam?.Fee ? Number(txParam?.Fee) : null}
               useLegacy={false}
+              onFeeChange={onFeeChange}
             />
           }
           isExpanded={isFeeExpanded}

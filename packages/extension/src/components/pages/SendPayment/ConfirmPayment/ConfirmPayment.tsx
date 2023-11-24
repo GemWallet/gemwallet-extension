@@ -106,9 +106,10 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
   }, []);
 
   const handleConfirm = useCallback(() => {
-    const [currency, issuer] = token.split('-');
     setTransaction(TransactionStatus.Pending);
-    sendPayment(buildPaymentFromProps({ value, currency, issuer, address, memos, destinationTag }))
+    // Amount and Destination will be present because if not,
+    // we won't be able to go to the confirm transaction state
+    sendPayment(params.transaction as Payment)
       .then(() => {
         setTransaction(TransactionStatus.Success);
       })
@@ -117,11 +118,25 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
         setTransaction(TransactionStatus.Rejected);
         Sentry.captureException(e);
       });
-  }, [address, buildPaymentFromProps, destinationTag, memos, sendPayment, token, value]);
+  }, [params.transaction, sendPayment]);
 
   const handleTransactionClick = useCallback(() => {
     navigate(HOME_PATH);
   }, [navigate]);
+
+  const handleFeeChange = useCallback(
+    (fee: number) => {
+      if (params.transaction) {
+        setParams({
+          transaction: {
+            ...params.transaction,
+            Fee: fee.toString()
+          }
+        });
+      }
+    },
+    [params.transaction]
+  );
 
   if (transaction === TransactionStatus.Success || transaction === TransactionStatus.Pending) {
     return (
@@ -178,6 +193,7 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
         estimatedFees={estimatedFees}
         errorFees={errorFees}
         displayTransactionType={false}
+        onFeeChange={handleFeeChange}
       />
     </TransactionPage>
   );

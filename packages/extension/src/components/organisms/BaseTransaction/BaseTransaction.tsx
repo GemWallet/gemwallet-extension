@@ -1,7 +1,9 @@
-import { FC } from 'react';
+import { FC, useState } from 'react';
 
 import ErrorIcon from '@mui/icons-material/Error';
 import { IconButton, Paper, Tooltip, Typography } from '@mui/material';
+import MuiInput from '@mui/material/Input';
+import { dropsToXrp, xrpToDrops } from 'xrpl';
 
 import {
   CreateNFTOfferFlags,
@@ -10,10 +12,12 @@ import {
   MintNFTFlags,
   PaymentFlags,
   SetAccountFlags,
-  TrustSetFlags
+  TrustSetFlags,
+  getMaxFeeInDrops
 } from '@gemwallet/constants';
 
 import { ERROR_RED } from '../../../constants';
+import { useNetwork } from '../../../contexts';
 import { formatAmount, formatFlags, formatToken } from '../../../utils';
 import { TileLoader } from '../../atoms';
 
@@ -39,6 +43,7 @@ type FeeProps = {
   errorFees: string | undefined;
   estimatedFees: string;
   isBulk?: boolean;
+  onFeeChange?: (newFee: number) => void;
   useLegacy?: boolean;
 };
 
@@ -82,7 +87,34 @@ export const BaseTransaction: FC<BaseTransactionProps> = ({
   </>
 );
 
-export const Fee: FC<FeeProps> = ({ errorFees, estimatedFees, fee, isBulk, useLegacy = true }) => {
+export const Fee: FC<FeeProps> = ({
+  errorFees,
+  estimatedFees,
+  fee,
+  isBulk,
+  onFeeChange,
+  useLegacy = true
+}) => {
+  const { chainName } = useNetwork();
+  const [isEditing, setIsEditing] = useState(false);
+
+  const handleFeeClick = () => {
+    if (onFeeChange !== undefined) {
+      setIsEditing(true);
+    }
+  };
+
+  const handleFeeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newFee = Number(event.target.value);
+    if (onFeeChange) {
+      onFeeChange(Number(xrpToDrops(newFee)));
+    }
+  };
+
+  const handleBlur = () => {
+    setIsEditing(false);
+  };
+
   if (useLegacy) {
     return (
       <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
@@ -134,16 +166,38 @@ export const Fee: FC<FeeProps> = ({ errorFees, estimatedFees, fee, isBulk, useLe
         {isBulk ? 'Total network fees' : 'Network fees'}
       </Typography>
       <Typography variant="body2" gutterBottom align="right">
-        {errorFees ? (
-          <Typography variant="caption" style={{ color: ERROR_RED }}>
+        {isEditing ? (
+          <MuiInput
+            value={fee !== null ? dropsToXrp(fee) : dropsToXrp(estimatedFees)}
+            onChange={handleFeeChange}
+            onBlur={handleBlur}
+            autoFocus
+            size="small"
+            inputProps={{
+              step: dropsToXrp(1),
+              min: dropsToXrp(1),
+              max: dropsToXrp(getMaxFeeInDrops(chainName)),
+              type: 'number'
+            }}
+          />
+        ) : errorFees ? (
+          <Typography
+            variant="caption"
+            style={{ color: ERROR_RED, cursor: 'pointer' }}
+            onClick={handleFeeClick}
+          >
             {errorFees}
           </Typography>
         ) : estimatedFees === DEFAULT_FEES ? (
           <TileLoader secondLineOnly />
-        ) : fee ? (
-          formatToken(fee, 'XRP (manual)', true)
+        ) : fee !== null ? (
+          <span onClick={handleFeeClick} style={{ cursor: 'pointer' }}>
+            {formatToken(fee, 'XRP (manual)', true)}
+          </span>
         ) : (
-          formatAmount(estimatedFees)
+          <span onClick={handleFeeClick} style={{ cursor: 'pointer' }}>
+            {formatAmount(estimatedFees)}
+          </span>
         )}
       </Typography>
     </>
