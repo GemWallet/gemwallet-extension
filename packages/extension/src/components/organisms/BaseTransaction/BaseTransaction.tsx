@@ -13,7 +13,7 @@ import {
   PaymentFlags,
   SetAccountFlags,
   TrustSetFlags,
-  getMaxFeeInDrops
+  getMaxFee
 } from '@gemwallet/constants';
 
 import { ERROR_RED, WARNING_ORANGE } from '../../../constants';
@@ -186,7 +186,7 @@ export const Fee: FC<FeeProps> = ({
             inputProps={{
               step: dropsToXrp(1),
               min: dropsToXrp(1),
-              max: dropsToXrp(getMaxFeeInDrops(chainName)),
+              max: getMaxFee(chainName),
               type: 'number'
             }}
           />

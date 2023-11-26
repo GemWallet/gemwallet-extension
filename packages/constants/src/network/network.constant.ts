@@ -1,5 +1,3 @@
-import { xrpToDrops } from 'xrpl';
-
 export enum Chain {
   XRPL = 'XRPL'
 }
@@ -104,9 +102,9 @@ export function getNetwork(chain: Chain, network: Network): NetworkNode {
   throw new Error(`Network ${network} is not valid for chain ${chain}`);
 }
 
-export const getMaxFeeInDrops = (chain: Chain): number => {
+export const getMaxFee = (chain: Chain): number => {
   switch (chain) {
     default:
-      return Number(xrpToDrops(1));
+      return 1;
   }
 };
