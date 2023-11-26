@@ -264,7 +264,7 @@ describe('Make payment from the UI', () => {
   });
 
   it('Should correctly pay with custom fees', () => {
-    navigate(HOME_URL, PASSWORD);
+    navigate('http://localhost:3000', PASSWORD);
 
     cy.contains('button', 'Send').click();
 
@@ -274,17 +274,18 @@ describe('Make payment from the UI', () => {
     // Input amount
     cy.get('#amount').clear().type('0.01').should('not.have.class', 'Mui-error');
 
-    // Input new fees (optional)
-    cy.get('#transaction-fee').clear().type('0.000025').should('not.have.class', 'Mui-error');
-
     // Click on the Send Payment button
     cy.get('button').contains('Send Payment').click();
 
+    // Click on the custom fees to display the input
+    cy.contains('Network fees').next().contains('XRP').click();
+    cy.get('[type="number"]').clear().type('0.000025').blur();
+
     // Check that the fees are correct
-    cy.contains('Network fees:').next().should('have.text', '0.000025 XRP');
+    cy.contains('Network fees').next().should('have.text', '0.000025 XRP (MANUAL)');
 
     // Confirm the payment
-    cy.contains('button', 'Confirm').click();
+    cy.contains('button', 'Submit').click();
 
     cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction in progress');
     cy.get('p[data-testid="transaction-subtitle"]').should(
@@ -296,5 +297,15 @@ describe('Make payment from the UI', () => {
       timeout: 10000
     });
     cy.get('p[data-testid="transaction-subtitle"]').should('have.text', 'Transaction Successful');
+
+    // Go to transaction history
+    cy.contains('button', 'Close').click();
+    cy.contains('button', 'History').click();
+
+    // Find a Payment transaction
+    cy.contains('Payment').closest('.MuiPaper-root').click();
+
+    // Find the fee and check that it is correct
+    cy.contains('Fees').next().should('have.text', '0.000025');
   });
 });

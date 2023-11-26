@@ -96,6 +96,7 @@ export const Fee: FC<FeeProps> = ({
   useLegacy = true
 }) => {
   const { chainName } = useNetwork();
+  const [inputValue, setInputValue] = useState<string | undefined>(undefined);
   const [isEditing, setIsEditing] = useState(false);
 
   const handleFeeClick = () => {
@@ -105,8 +106,10 @@ export const Fee: FC<FeeProps> = ({
   };
 
   const handleFeeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newFee = Number(event.target.value);
-    if (onFeeChange) {
+    const newValue = event.target.value;
+    setInputValue(newValue);
+    const newFee = Number(newValue);
+    if (onFeeChange && !isNaN(newFee)) {
       onFeeChange(Number(xrpToDrops(newFee)));
     }
   };
@@ -178,7 +181,13 @@ export const Fee: FC<FeeProps> = ({
       <Typography variant="body2" gutterBottom align="right">
         {isEditing ? (
           <MuiInput
-            value={fee !== null ? dropsToXrp(fee) : dropsToXrp(estimatedFees)}
+            value={
+              inputValue !== undefined
+                ? inputValue
+                : fee !== null
+                ? dropsToXrp(fee)
+                : dropsToXrp(estimatedFees)
+            }
             onChange={handleFeeChange}
             onBlur={handleBlur}
             autoFocus
