@@ -128,6 +128,22 @@ export const Fee: FC<FeeProps> = ({
     }
   }, [estimatedFees, fee]);
 
+  const inputDisplayValue = useMemo(() => {
+    if (inputValue !== undefined) {
+      return inputValue;
+    }
+
+    if (fee !== null) {
+      return dropsToXrp(fee);
+    }
+
+    if (estimatedFees !== DEFAULT_FEES) {
+      return dropsToXrp(estimatedFees);
+    }
+
+    return undefined;
+  }, [inputValue, fee, estimatedFees]);
+
   if (useLegacy) {
     return (
       <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
@@ -181,13 +197,7 @@ export const Fee: FC<FeeProps> = ({
       <Typography variant="body2" gutterBottom align="right">
         {isEditing ? (
           <MuiInput
-            value={
-              inputValue !== undefined
-                ? inputValue
-                : fee !== null
-                ? dropsToXrp(fee)
-                : dropsToXrp(estimatedFees)
-            }
+            value={inputDisplayValue}
             onChange={handleFeeChange}
             onBlur={handleBlur}
             autoFocus
