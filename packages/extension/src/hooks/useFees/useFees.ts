@@ -13,6 +13,7 @@ const calculateTotalFees = (fees: string[]) =>
 
 export const useFees = (tx: Transaction | Transaction[], fee?: string | null) => {
   const [estimatedFees, setEstimatedFees] = useState<string>(DEFAULT_FEES);
+  const [minimumFees, setMinimumFees] = useState<string>(DEFAULT_FEES);
   const [error, setError] = useState<string | undefined>();
   const [difference, setDifference] = useState<number>(1); // by default, we want to correctly display the view and not being stuck on the loading state
 
@@ -30,19 +31,21 @@ export const useFees = (tx: Transaction | Transaction[], fee?: string | null) =>
         const processTransactions = async () => {
           try {
             const fees = [];
+            const minimumFees = [];
             for (let i = 0; i < transactions.length; i++) {
               const transaction = transactions[i];
               if (!transaction.Account || transaction.Account === '') {
                 transaction.Account = currentWallet.publicAddress;
               }
 
-              const fee = transaction.Fee
-                ? transaction.Fee
-                : await estimateNetworkFees(transaction);
+              const estimatedNetworkFee = await estimateNetworkFees(transaction);
+              const fee = transaction.Fee ? transaction.Fee : estimatedNetworkFee;
               fees.push(fee);
+              minimumFees.push(estimatedNetworkFee);
             }
             const totalFees = calculateTotalFees(fees);
             setEstimatedFees(totalFees.toString());
+            setMinimumFees(calculateTotalFees(minimumFees).toString());
 
             const currentBalance = await client?.getXrpBalance(currentWallet.publicAddress);
             const baseReserve = Number(
@@ -81,6 +84,7 @@ export const useFees = (tx: Transaction | Transaction[], fee?: string | null) =>
 
   return {
     estimatedFees,
+    minimumFees,
     errorFees: error,
     difference
   };

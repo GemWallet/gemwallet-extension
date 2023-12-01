@@ -36,12 +36,14 @@ type BaseTransactionProps = {
     | null;
   errorFees: string | undefined;
   estimatedFees: string;
+  minimumFees: string;
 };
 
 type FeeProps = {
   fee: number | null;
   errorFees: string | undefined;
   estimatedFees: string;
+  minimumFees?: string;
   isBulk?: boolean;
   onFeeChange?: (newFee: number) => void;
   useLegacy?: boolean;
@@ -52,7 +54,8 @@ export const BaseTransaction: FC<BaseTransactionProps> = ({
   memos,
   flags,
   errorFees,
-  estimatedFees
+  estimatedFees,
+  minimumFees
 }) => (
   <>
     {memos && memos.length > 0 ? (
@@ -83,13 +86,14 @@ export const BaseTransaction: FC<BaseTransactionProps> = ({
         </Typography>
       </Paper>
     ) : null}
-    <Fee errorFees={errorFees} estimatedFees={estimatedFees} fee={fee} />
+    <Fee errorFees={errorFees} estimatedFees={estimatedFees} fee={fee} minimumFees={minimumFees} />
   </>
 );
 
 export const Fee: FC<FeeProps> = ({
   errorFees,
   estimatedFees,
+  minimumFees,
   fee,
   isBulk,
   onFeeChange,
@@ -119,14 +123,17 @@ export const Fee: FC<FeeProps> = ({
   };
 
   const warningFee = useMemo(() => {
-    if (estimatedFees === DEFAULT_FEES || fee === null) {
+    if (minimumFees === undefined || minimumFees === DEFAULT_FEES) {
       return null;
     }
 
-    if (fee < Number(estimatedFees)) {
+    if (
+      (fee !== null && fee < Number(minimumFees)) ||
+      (estimatedFees !== DEFAULT_FEES && Number(estimatedFees) < Number(minimumFees))
+    ) {
       return 'The fee is lower than the estimated fee, the transaction may fail';
     }
-  }, [estimatedFees, fee]);
+  }, [estimatedFees, fee, minimumFees]);
 
   const inputDisplayValue = useMemo(() => {
     if (inputValue !== undefined) {

@@ -43,7 +43,7 @@ export const CancelOffer: FC = () => {
   const { getCurrentWallet } = useWallet();
   const { networkName } = useNetwork();
   const { setTransactionProgress } = useTransactionProgress();
-  const { estimatedFees, errorFees, difference } = useFees(
+  const { estimatedFees, minimumFees, errorFees, difference } = useFees(
     params.transaction ?? [],
     params.transaction?.Fee
   );
@@ -170,6 +170,21 @@ export const CancelOffer: FC = () => {
       });
   }, [cancelOffer, params, sendMessageToBackground, createMessage]);
 
+  const handleFeeChange = useCallback(
+    (fee: number) => {
+      if (params.transaction) {
+        setParams({
+          ...params,
+          transaction: {
+            ...params.transaction,
+            Fee: fee.toString()
+          }
+        });
+      }
+    },
+    [params]
+  );
+
   if (transactionStatusComponent) {
     return <div>{transactionStatusComponent}</div>;
   }
@@ -186,8 +201,10 @@ export const CancelOffer: FC = () => {
       <TransactionDetails
         txParam={params.transaction}
         estimatedFees={estimatedFees}
+        minimumFees={minimumFees}
         errorFees={errorFees}
         displayTransactionType={false}
+        onFeeChange={handleFeeChange}
       />
     </TransactionPage>
   );

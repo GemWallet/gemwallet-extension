@@ -94,7 +94,10 @@ export const calculateFees = async (param: {
 }): Promise<string> => {
   const { client, transaction } = param;
 
-  const prepared = await client.autofill(transaction);
+  const txCopy = { ...transaction };
+  delete txCopy.Fee; // Force the estimated fee to be calculated
+
+  const prepared = await client.autofill(txCopy);
   if (!prepared.Fee) {
     throw new Error("Couldn't calculate the fees, something went wrong");
   }

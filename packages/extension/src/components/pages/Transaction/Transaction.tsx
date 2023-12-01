@@ -46,7 +46,7 @@ export const Transaction: FC = () => {
   const { getCurrentWallet } = useWallet();
   const { networkName } = useNetwork();
   const { setTransactionProgress } = useTransactionProgress();
-  const { estimatedFees, errorFees, difference } = useFees(
+  const { estimatedFees, minimumFees, errorFees, difference } = useFees(
     params.transaction ?? [],
     params.transaction?.Fee
   );
@@ -224,6 +224,21 @@ export const Transaction: FC = () => {
       });
   }, [sendPayment, params.transaction, sendMessageToBackground, createMessage]);
 
+  const handleFeeChange = useCallback(
+    (fee: number) => {
+      if (params.transaction) {
+        setParams({
+          ...params,
+          transaction: {
+            ...params.transaction,
+            Fee: fee.toString()
+          }
+        });
+      }
+    },
+    [params]
+  );
+
   if (!isValidDestination) {
     return (
       <AsyncTransaction
@@ -256,8 +271,10 @@ export const Transaction: FC = () => {
       <TransactionDetails
         txParam={params.transaction}
         estimatedFees={estimatedFees}
+        minimumFees={minimumFees}
         errorFees={errorFees}
         displayTransactionType={false}
+        onFeeChange={handleFeeChange}
       />
     </TransactionPage>
   );

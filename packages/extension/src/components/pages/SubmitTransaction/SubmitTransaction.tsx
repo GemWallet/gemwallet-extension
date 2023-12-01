@@ -42,7 +42,7 @@ export const SubmitTransaction: FC = () => {
   const { submitTransaction } = useLedger();
   const { networkName } = useNetwork();
   const { setTransactionProgress } = useTransactionProgress();
-  const { estimatedFees, errorFees, difference } = useFees(
+  const { estimatedFees, minimumFees, errorFees, difference } = useFees(
     params.txParam ?? [],
     params.txParam?.Fee
   );
@@ -158,6 +158,21 @@ export const SubmitTransaction: FC = () => {
       });
   }, [submitTransaction, params.txParam, sendMessageToBackground, createMessage]);
 
+  const handleFeeChange = useCallback(
+    (fee: number) => {
+      if (params.txParam) {
+        setParams({
+          ...params,
+          txParam: {
+            ...params.txParam,
+            Fee: fee.toString()
+          }
+        });
+      }
+    },
+    [params]
+  );
+
   const { txParam } = params;
 
   return (
@@ -176,7 +191,9 @@ export const SubmitTransaction: FC = () => {
           <TransactionDetails
             txParam={txParam}
             estimatedFees={estimatedFees}
+            minimumFees={minimumFees}
             errorFees={errorFees}
+            onFeeChange={handleFeeChange}
           />
         </TransactionPage>
       )}

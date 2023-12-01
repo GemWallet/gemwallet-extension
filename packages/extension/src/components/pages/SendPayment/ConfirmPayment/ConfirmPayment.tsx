@@ -191,6 +191,7 @@ export const ConfirmPayment: FC<ConfirmPaymentProps> = ({
       <TransactionDetails
         txParam={params.transaction}
         estimatedFees={estimatedFees}
+        minimumFees={estimatedFees}
         errorFees={errorFees}
         displayTransactionType={false}
         onFeeChange={handleFeeChange}

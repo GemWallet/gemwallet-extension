@@ -9,6 +9,7 @@ import { LoadingOverlay } from '../../templates';
 interface TransactionDetailsProps {
   txParam: Transaction | null;
   estimatedFees: string;
+  minimumFees?: string;
   errorFees?: string;
   isConnectionFailed?: boolean;
   displayTransactionType?: boolean;
@@ -19,6 +20,7 @@ export const TransactionDetails: FC<TransactionDetailsProps> = ({
   txParam,
   errorFees,
   estimatedFees,
+  minimumFees,
   isConnectionFailed,
   displayTransactionType,
   onFeeChange
@@ -65,6 +67,7 @@ export const TransactionDetails: FC<TransactionDetailsProps> = ({
             <Fee
               errorFees={errorFees}
               estimatedFees={estimatedFees}
+              minimumFees={minimumFees}
               fee={txParam?.Fee ? Number(txParam?.Fee) : null}
               useLegacy={false}
               onFeeChange={onFeeChange}
