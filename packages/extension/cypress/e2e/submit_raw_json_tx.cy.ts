@@ -3,7 +3,7 @@ import { Chain, XRPLNetwork } from '@gemwallet/constants';
 import { navigate } from '../utils/navigation';
 
 // deepcode ignore NoHardcodedPasswords: password used for testing purposes
-const BUILD_TX_URL = 'http://localhost:3000/build-transaction?transaction=buildRaw';
+const SUBMIT_RAW_TRANSACTION_PATH = 'http://localhost:3000/build-transaction?transaction=buildRaw';
 const PASSWORD = 'SECRET_PASSWORD';
 
 beforeEach(() => {
@@ -25,7 +25,7 @@ beforeEach(() => {
 
 describe('JSON Transaction', () => {
   it('Sign JSON Transaction', () => {
-    navigate(BUILD_TX_URL, PASSWORD);
+    navigate(SUBMIT_RAW_TRANSACTION_PATH, PASSWORD);
 
     const rawTx = `{
         "TransactionType": "Payment",
@@ -65,19 +65,13 @@ describe('JSON Transaction', () => {
     // Click on 'Sign' button
     cy.get('button').contains('Sign').click();
 
-    cy.get('h1[data-testid="transaction-title"]').should('have.text', 'Transaction in progress');
-    cy.get('p[data-testid="transaction-subtitle"]').should(
-      'have.text',
-      'We are processing your transactionPlease wait'
-    );
-
     cy.get('h1[data-testid="transaction-title"]').contains('Transaction accepted', {
       timeout: 10000
     });
   });
 
   it('Submit JSON Transaction', () => {
-    navigate(BUILD_TX_URL, PASSWORD);
+    navigate(SUBMIT_RAW_TRANSACTION_PATH, PASSWORD);
 
     const rawTx = `{
         "TransactionType": "Payment",

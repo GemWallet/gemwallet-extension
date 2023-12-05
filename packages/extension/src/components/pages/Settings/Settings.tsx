@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom';
 
 import {
   ABOUT_PATH,
-  BUILD_TRANSACTION_PATH,
   DELETE_ACCOUNT_PATH,
   FAQ_LINK,
   FEEDBACK_LINK,
@@ -14,6 +13,7 @@ import {
   PERMISSIONS_PATH,
   RESET_PASSWORD_PATH,
   STORAGE_PERMISSION_ADVANCED_MODE,
+  SUBMIT_RAW_TRANSACTION_PATH,
   TRUSTED_APPS_PATH
 } from '../../../constants';
 import { useWallet } from '../../../contexts';
@@ -82,9 +82,9 @@ export const Settings: FC = () => {
   const advancedItems = useMemo<ItemMenuGroup[]>(
     () => [
       {
-        name: 'Build Transaction',
+        name: 'Submit Raw Transaction',
         type: 'button',
-        onClick: () => navigate(BUILD_TRANSACTION_PATH)
+        onClick: () => navigate(SUBMIT_RAW_TRANSACTION_PATH)
       }
     ],
     [navigate]

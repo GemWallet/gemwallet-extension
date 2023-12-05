@@ -18,7 +18,7 @@ import { useNetwork, useWallet } from '../../../contexts';
 import { generateKey, saveInChromeSessionStorage } from '../../../utils';
 import { PageWithReturn } from '../../templates';
 
-export const BuildTransaction: FC = () => {
+export const SubmitRawTransaction: FC = () => {
   const { getCurrentWallet } = useWallet();
   const { hasOfflineBanner } = useNetwork();
   const editorHeight = useMemo(() => {
@@ -108,7 +108,7 @@ export const BuildTransaction: FC = () => {
     }`;
 
   return (
-    <PageWithReturn title="Build Transaction" onBackClick={handleBack}>
+    <PageWithReturn title="Submit Raw Transaction" onBackClick={handleBack}>
       <style>{jsonEditorStyle}</style>
       <div style={{ margin: '1rem' }}>
         <Typography variant="body1" style={{ marginBottom: '1rem' }}>

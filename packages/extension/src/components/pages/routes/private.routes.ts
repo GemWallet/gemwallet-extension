@@ -5,7 +5,7 @@ import {
   ACCEPT_NFT_OFFER_PATH,
   ADD_NEW_TRUSTLINE_PATH,
   ADD_NEW_WALLET_PATH,
-  BUILD_TRANSACTION_PATH,
+  SUBMIT_RAW_TRANSACTION_PATH,
   BURN_NFT_PATH,
   CANCEL_NFT_OFFER_PATH,
   CANCEL_OFFER_PATH,
@@ -37,7 +37,6 @@ import { About } from '../About';
 import { AcceptNFTOffer } from '../AcceptNFTOffer';
 import { AddNewTrustline } from '../AddNewTrustline';
 import { AddNewWallet } from '../AddNewWallet';
-import { BuildTransaction } from '../BuildTransaction';
 import { BurnNFT } from '../BurnNFT';
 import { CancelNFTOffer } from '../CancelNFTOffer';
 import { CancelOffer } from '../CancelOffer';
@@ -61,6 +60,7 @@ import { SharePublicKey } from '../SharePublicKey';
 import { SignMessage } from '../SignMessage';
 import { SignTransaction } from '../SignTransaction';
 import { SubmitBulkTransactions } from '../SubmitBulkTransactions';
+import { SubmitRawTransaction } from '../SubmitRawTransaction';
 import { SubmitTransaction } from '../SubmitTransaction';
 import { Transaction } from '../Transaction';
 import { TrustedApps } from '../TrustedApps';
@@ -74,7 +74,6 @@ export const privateRoutes: PrivateRouteConfig[] = [
   { path: ACCEPT_NFT_OFFER_PATH, element: AcceptNFTOffer },
   { path: ADD_NEW_TRUSTLINE_PATH, element: AddNewTrustline },
   { path: ADD_NEW_WALLET_PATH, element: AddNewWallet },
-  { path: BUILD_TRANSACTION_PATH, element: BuildTransaction },
   { path: BURN_NFT_PATH, element: BurnNFT },
   { path: CANCEL_NFT_OFFER_PATH, element: CancelNFTOffer },
   { path: CANCEL_OFFER_PATH, element: CancelOffer },
@@ -98,6 +97,7 @@ export const privateRoutes: PrivateRouteConfig[] = [
   { path: SHARE_NFT_PATH, element: ShareNFT },
   { path: SIGN_MESSAGE_PATH, element: SignMessage },
   { path: SIGN_TRANSACTION_PATH, element: SignTransaction },
+  { path: SUBMIT_RAW_TRANSACTION_PATH, element: SubmitRawTransaction },
   { path: SUBMIT_TRANSACTION_PATH, element: SubmitTransaction },
   { path: SUBMIT_TRANSACTIONS_BULK_PATH, element: SubmitBulkTransactions },
   { path: TRANSACTION_PATH, element: Transaction },
