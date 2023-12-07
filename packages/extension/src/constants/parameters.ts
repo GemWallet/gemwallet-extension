@@ -17,3 +17,4 @@ export const PARAMETER_TRANSACTION_CANCEL_OFFER = 'transaction=cancelOffer';
 export const PARAMETER_TRANSACTION_CREATE_NFT_OFFER = 'transaction=createNFTOffer';
 export const PARAMETER_TRANSACTION_CREATE_OFFER = 'transaction=createOffer';
 export const PARAMETER_TRANSACTION_SET_ACCOUNT = 'transaction=setAccount';
+export const PARAMETER_TRANSACTION_SET_REGULAR_KEY = 'transaction=setRegularKey';

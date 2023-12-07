@@ -44,9 +44,11 @@ import {
   PARAMETER_TRANSACTION_MINT_NFT,
   PARAMETER_TRANSACTION_PAYMENT,
   PARAMETER_TRANSACTION_SET_ACCOUNT,
+  PARAMETER_TRANSACTION_SET_REGULAR_KEY,
   PARAMETER_TRANSACTION_TRUSTLINE,
   RESET_PASSWORD_PATH,
   SET_ACCOUNT_PATH,
+  SET_REGULAR_KEY_PATH,
   SHARE_NFT_PATH,
   SHARE_PUBLIC_ADDRESS_PATH,
   SHARE_PUBLIC_KEY_PATH,
@@ -114,6 +116,8 @@ export const Login: FC = () => {
       navigate(`${BURN_NFT_PATH}${search}`);
     } else if (search.includes(PARAMETER_TRANSACTION_SET_ACCOUNT)) {
       navigate(`${SET_ACCOUNT_PATH}${search}`);
+    } else if (search.includes(PARAMETER_TRANSACTION_SET_REGULAR_KEY)) {
+      navigate(`${SET_REGULAR_KEY_PATH}${search}`);
     } else if (search.includes(PARAMETER_TRANSACTION_CREATE_OFFER)) {
       navigate(`${CREATE_OFFER_PATH}${search}`);
     } else if (search.includes(PARAMETER_TRANSACTION_CANCEL_OFFER)) {

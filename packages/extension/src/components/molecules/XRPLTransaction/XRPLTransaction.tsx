@@ -112,6 +112,8 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
       renderSimpleText({ title: 'Offer Sequence', value, useLegacy }),
     EmailHash: (value?: string) => renderSimpleText({ title: 'Email Hash', value, useLegacy }),
     NFTokenTaxon: (value?: string) => renderSimpleText({ title: 'Taxon', value, useLegacy }),
+    RegularKey: (value?: string) =>
+      renderSimpleText({ title: 'Regular Key', value, hasTooltip: true, useLegacy }),
     Asset: (value: Currency) => renderCurrency({ title: 'Asset', value }),
     Asset2: (value: Currency) => renderCurrency({ title: 'Asset 2', value }),
     SendMax: (value: Amount) =>
@@ -282,6 +284,7 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
       'URI',
       'NFTokenMinter',
       'OfferSequence',
+      'RegularKey',
       'Signers',
       'Flags',
       'TransferFee',

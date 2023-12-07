@@ -35,6 +35,8 @@ import {
   SendPaymentResponseDeprecated,
   SetAccountResponse,
   SetAccountRequest,
+  SetRegularKeyResponse,
+  SetRegularKeyRequest,
   SetTrustlineResponse,
   SetTrustlineResponseDeprecated,
   SetTrustlineRequest,
@@ -76,6 +78,7 @@ export type RequestMessage =
   | 'REQUEST_PUBLIC_KEY'
   | 'REQUEST_SEND_PAYMENT/V3'
   | 'REQUEST_SET_ACCOUNT/V3'
+  | 'REQUEST_SET_REGULAR_KEY/V3'
   | 'REQUEST_SET_TRUSTLINE/V3'
   | 'REQUEST_SIGN_MESSAGE'
   | 'REQUEST_SIGN_MESSAGE/V3'
@@ -104,6 +107,7 @@ export type ReceiveMessage =
   | 'RECEIVE_PUBLIC_KEY'
   | 'RECEIVE_SEND_PAYMENT/V3'
   | 'RECEIVE_SET_ACCOUNT/V3'
+  | 'RECEIVE_SET_REGULAR_KEY/V3'
   | 'RECEIVE_SET_TRUSTLINE/V3'
   | 'RECEIVE_SIGN_MESSAGE'
   | 'RECEIVE_SIGN_MESSAGE/V3'
@@ -238,6 +242,12 @@ export interface RequestSetAccountMessage {
   payload: SetAccountRequest;
 }
 
+export interface RequestSetRegularKeyMessage {
+  app: typeof GEM_WALLET;
+  type: 'REQUEST_SET_REGULAR_KEY/V3';
+  payload: SetRegularKeyRequest;
+}
+
 export interface RequestCreateOfferMessage {
   app: typeof GEM_WALLET;
   type: 'REQUEST_CREATE_OFFER/V3';
@@ -327,6 +337,7 @@ export type SendPaymentMessagingResponse = MessagingResponse & SendPaymentRespon
 export type SendPaymentMessagingResponseDeprecated = MessagingResponse &
   SendPaymentResponseDeprecated;
 export type SetAccountMessagingResponse = MessagingResponse & SetAccountResponse;
+export type SetRegularKeyMessagingResponse = MessagingResponse & SetRegularKeyResponse;
 export type SetTrustlineMessagingResponse = MessagingResponse & SetTrustlineResponse;
 export type SetTrustlineMessagingResponseDeprecated = MessagingResponse &
   SetTrustlineResponseDeprecated;
@@ -462,6 +473,12 @@ export interface ReceiveSetAccountContentMessage {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_SET_ACCOUNT/V3';
   payload: SetAccountMessagingResponse;
+}
+
+export interface ReceiveSetRegularKeyContentMessage {
+  app: typeof GEM_WALLET;
+  type: 'RECEIVE_SET_REGULAR_KEY/V3';
+  payload: SetRegularKeyMessagingResponse;
 }
 
 export interface ReceiveCreateOfferContentMessage {
@@ -609,6 +626,9 @@ export type ReceiveBurnNFTBackgroundMessage = ReceiveBurnNFTContentMessage &
 export type ReceiveSetAccountBackgroundMessage = ReceiveSetAccountContentMessage &
   BackgroundMessagePayload;
 
+export type ReceiveSetRegularKeyBackgroundMessage = ReceiveSetRegularKeyContentMessage &
+  BackgroundMessagePayload;
+
 export type ReceiveCreateOfferBackgroundMessage = ReceiveCreateOfferContentMessage &
   BackgroundMessagePayload;
 
@@ -663,6 +683,7 @@ export type BackgroundMessage =
   | RequestSendPaymentMessage
   | RequestSendPaymentMessageDeprecated
   | RequestSetAccountMessage
+  | RequestSetRegularKeyMessage
   | RequestSetTrustlineMessage
   | RequestSetTrustlineMessageDeprecated
   | RequestSignMessageMessage
@@ -691,6 +712,7 @@ export type BackgroundMessage =
   | ReceivePublicKeyBackgroundMessage
   | ReceivePublicKeyBackgroundMessageDeprecated
   | ReceiveSetAccountBackgroundMessage
+  | ReceiveSetRegularKeyBackgroundMessage
   | ReceiveSendPaymentBackgroundMessage
   | ReceiveSendPaymentBackgroundMessageDeprecated
   | ReceiveSetTrustlineBackgroundMessage
@@ -730,6 +752,7 @@ export type APIMessages =
   | RequestIsInstalledMessage
   | RequestSendPaymentMessage
   | RequestSetAccountMessage
+  | RequestSetRegularKeyMessage
   | RequestSetTrustlineMessage
   | RequestSignMessageMessage
   | RequestSignTransactionMessage
