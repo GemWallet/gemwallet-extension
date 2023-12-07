@@ -42,10 +42,10 @@ export const SetRegularKeyForm: FC<SetRegularKeyFormProps> = ({
       <PageWithReturn title="Set Regular Key" onBackClick={handleBack}>
         <Typography align="center" style={{ marginTop: '0.5rem', fontSize: '0.9rem' }}>
           You can protect your account by assigning a regular key pair to it and using it instead of
-          the master key pair to sign transactions whenever possible.
+          the private key pair to sign transactions whenever possible.
         </Typography>
         <Typography align="center" style={{ marginTop: '0.5rem', fontSize: '0.9rem' }}>
-          If your regular key pair is compromised, but your master key pair is not, you can use a
+          If your regular key pair is compromised, but your private key pair is not, you can use a
           SetRegularKey transaction to regain control of your account.
         </Typography>
         <Typography
@@ -73,7 +73,7 @@ export const SetRegularKeyForm: FC<SetRegularKeyFormProps> = ({
           style={{ marginBottom: '15px' }}
           id="regularKey"
           name="regularKey"
-          label="Regular Key"
+          label="Regular Key (address)"
           variant="outlined"
           value={inputRegularKey || ''}
           onChange={handleInputChange}

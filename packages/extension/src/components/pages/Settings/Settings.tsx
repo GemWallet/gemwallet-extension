@@ -54,11 +54,6 @@ export const Settings: FC = () => {
         name: 'Permissions',
         type: 'button',
         onClick: () => navigate(PERMISSIONS_PATH)
-      },
-      {
-        name: 'Set Regular Key',
-        type: 'button',
-        onClick: () => navigate(`${SET_REGULAR_KEY_PATH}?inAppCall=true`)
       }
     ],
     [navigate]
@@ -87,6 +82,11 @@ export const Settings: FC = () => {
 
   const advancedItems = useMemo<ItemMenuGroup[]>(
     () => [
+      {
+        name: 'Set Regular Key',
+        type: 'button',
+        onClick: () => navigate(`${SET_REGULAR_KEY_PATH}?inAppCall=true`)
+      },
       {
         name: 'Submit Raw Transaction',
         type: 'button',
