@@ -5,6 +5,7 @@ import {
   ACCEPT_NFT_OFFER_PATH,
   ADD_NEW_TRUSTLINE_PATH,
   ADD_NEW_WALLET_PATH,
+  SUBMIT_RAW_TRANSACTION_PATH,
   BURN_NFT_PATH,
   CANCEL_NFT_OFFER_PATH,
   CANCEL_OFFER_PATH,
@@ -59,6 +60,7 @@ import { SharePublicKey } from '../SharePublicKey';
 import { SignMessage } from '../SignMessage';
 import { SignTransaction } from '../SignTransaction';
 import { SubmitBulkTransactions } from '../SubmitBulkTransactions';
+import { SubmitRawTransaction } from '../SubmitRawTransaction';
 import { SubmitTransaction } from '../SubmitTransaction';
 import { Transaction } from '../Transaction';
 import { TrustedApps } from '../TrustedApps';
@@ -95,6 +97,7 @@ export const privateRoutes: PrivateRouteConfig[] = [
   { path: SHARE_NFT_PATH, element: ShareNFT },
   { path: SIGN_MESSAGE_PATH, element: SignMessage },
   { path: SIGN_TRANSACTION_PATH, element: SignTransaction },
+  { path: SUBMIT_RAW_TRANSACTION_PATH, element: SubmitRawTransaction },
   { path: SUBMIT_TRANSACTION_PATH, element: SubmitTransaction },
   { path: SUBMIT_TRANSACTIONS_BULK_PATH, element: SubmitBulkTransactions },
   { path: TRANSACTION_PATH, element: Transaction },

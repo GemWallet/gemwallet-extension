@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo } from 'react';
+import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 
 import LockIcon from '@mui/icons-material/Lock';
 import { Button } from '@mui/material';
@@ -12,16 +12,31 @@ import {
   NAV_MENU_HEIGHT,
   PERMISSIONS_PATH,
   RESET_PASSWORD_PATH,
+  STORAGE_PERMISSION_ADVANCED_MODE,
+  SUBMIT_RAW_TRANSACTION_PATH,
   TRUSTED_APPS_PATH
 } from '../../../constants';
 import { useWallet } from '../../../contexts';
-import { openExternalLink } from '../../../utils';
+import { loadFromChromeLocalStorage, openExternalLink } from '../../../utils';
 import { PageWithHeader } from '../../templates';
 import { ItemMenuGroup, MenuGroup } from './MenuGroup';
 
 export const Settings: FC = () => {
   const navigate = useNavigate();
   const { signOut } = useWallet();
+
+  const [advancedModeEnabled, setAdvancedModeEnabled] = useState<boolean>(false);
+
+  useEffect(() => {
+    const loadInitialData = async () => {
+      const storedData = await loadFromChromeLocalStorage(STORAGE_PERMISSION_ADVANCED_MODE);
+      if (!storedData) return;
+
+      setAdvancedModeEnabled(storedData === 'true');
+    };
+
+    loadInitialData();
+  }, []);
 
   const handleLock = useCallback(() => {
     signOut();
@@ -64,6 +79,17 @@ export const Settings: FC = () => {
     [navigate]
   );
 
+  const advancedItems = useMemo<ItemMenuGroup[]>(
+    () => [
+      {
+        name: 'Submit Raw Transaction',
+        type: 'button',
+        onClick: () => navigate(SUBMIT_RAW_TRANSACTION_PATH)
+      }
+    ],
+    [navigate]
+  );
+
   const dangerZoneItems = useMemo<ItemMenuGroup[]>(
     () => [
       {
@@ -93,6 +119,9 @@ export const Settings: FC = () => {
         <div style={{ paddingBottom: '0.75rem' }}>
           <MenuGroup sectionName={'Account settings'} items={accountParamsItems} />
           <MenuGroup sectionName={'Informations'} items={infoItems} />
+          {advancedModeEnabled ? (
+            <MenuGroup sectionName={'Advanced'} items={advancedItems} />
+          ) : null}
           <MenuGroup sectionName={'Danger zone'} items={dangerZoneItems} />
           <Button
             variant="contained"

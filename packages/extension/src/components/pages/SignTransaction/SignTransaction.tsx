@@ -1,5 +1,6 @@
 import { FC, useCallback, useEffect, useState } from 'react';
 
+import { useNavigate } from 'react-router-dom';
 import { Transaction } from 'xrpl';
 
 import {
@@ -10,7 +11,7 @@ import {
   SignTransactionRequest
 } from '@gemwallet/constants';
 
-import { STORAGE_MESSAGING_KEY } from '../../../constants';
+import { SETTINGS_PATH, STORAGE_MESSAGING_KEY } from '../../../constants';
 import {
   TransactionProgressStatus,
   useLedger,
@@ -28,17 +29,24 @@ interface Params {
   id: number;
   // SignTransaction fields
   txParam: Transaction | null;
+  // UI specific fields
+  inAppCall: boolean;
 }
 
 export const SignTransaction: FC = () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const inAppCall = urlParams.get('inAppCall') === 'true' || false;
   const [params, setParams] = useState<Params>({
     id: 0,
     // SignTransaction fields
-    txParam: null
+    txParam: null,
+    // UI specific fields
+    inAppCall
   });
   const [errorRequestRejection, setErrorRequestRejection] = useState<Error>();
   const [isParamsMissing, setIsParamsMissing] = useState(false);
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
+  const [resultValue, setResultValue] = useState<string | undefined>();
   const { signTransaction } = useLedger();
   const { isConnectionFailed, networkName } = useNetwork();
   const { setTransactionProgress } = useTransactionProgress();
@@ -47,7 +55,6 @@ export const SignTransaction: FC = () => {
     params.txParam?.Fee
   );
 
-  const urlParams = new URLSearchParams(window.location.search);
   const { fetchedData } = useFetchFromSessionStorage(
     urlParams.get(STORAGE_MESSAGING_KEY) ?? undefined
   ) as {
@@ -96,14 +103,19 @@ export const SignTransaction: FC = () => {
     );
   }, [createMessage, sendMessageToBackground]);
 
+  const navigate = useNavigate();
+
   const { hasEnoughFunds, transactionStatusComponent } = useTransactionStatus({
     isParamsMissing,
     errorFees,
     network: networkName,
     difference,
     transaction,
+    resultKey: 'Signature',
+    resultValue,
     errorRequestRejection,
-    badRequestCallback
+    badRequestCallback,
+    onClick: params.inAppCall ? () => navigate(SETTINGS_PATH) : undefined
   });
 
   useEffect(() => {
@@ -123,17 +135,21 @@ export const SignTransaction: FC = () => {
 
     setParams({
       id,
-      txParam: transaction
+      txParam: transaction,
+      // UI specific fields
+      inAppCall
     });
-  }, [fetchedData]);
+  }, [fetchedData, inAppCall]);
 
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);
-    const message = createMessage({
-      signature: null
-    });
-    sendMessageToBackground(message);
-  }, [createMessage, sendMessageToBackground]);
+    if (!params.inAppCall) {
+      const message = createMessage({
+        signature: null
+      });
+      sendMessageToBackground(message);
+    }
+  }, [createMessage, params.inAppCall, sendMessageToBackground]);
 
   const handleSign = useCallback(() => {
     setTransaction(TransactionStatus.Pending);
@@ -145,18 +161,24 @@ export const SignTransaction: FC = () => {
     })
       .then((response) => {
         setTransaction(TransactionStatus.Success);
-        sendMessageToBackground(createMessage(response));
+        if (!params.inAppCall) {
+          sendMessageToBackground(createMessage(response));
+        } else {
+          setResultValue(response.signature);
+        }
       })
       .catch((e) => {
         setErrorRequestRejection(e);
         setTransaction(TransactionStatus.Rejected);
-        const message = createMessage({
-          signature: undefined,
-          error: e
-        });
-        sendMessageToBackground(message);
+        if (!params.inAppCall) {
+          const message = createMessage({
+            signature: undefined,
+            error: e
+          });
+          sendMessageToBackground(message);
+        }
       });
-  }, [signTransaction, params.txParam, sendMessageToBackground, createMessage]);
+  }, [signTransaction, params.txParam, params.inAppCall, sendMessageToBackground, createMessage]);
 
   const { txParam } = params;
 

@@ -1,5 +1,6 @@
 import { FC, useCallback, useEffect, useState } from 'react';
 
+import { useNavigate } from 'react-router-dom';
 import { Transaction } from 'xrpl';
 
 import {
@@ -10,7 +11,7 @@ import {
   SubmitTransactionRequest
 } from '@gemwallet/constants';
 
-import { STORAGE_MESSAGING_KEY } from '../../../constants';
+import { SETTINGS_PATH, STORAGE_MESSAGING_KEY } from '../../../constants';
 import {
   TransactionProgressStatus,
   useLedger,
@@ -28,13 +29,19 @@ interface Params {
   id: number;
   // SubmitTransaction fields
   txParam: Transaction | null;
+  // UI specific fields
+  inAppCall: boolean;
 }
 
 export const SubmitTransaction: FC = () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const inAppCall = urlParams.get('inAppCall') === 'true' || false;
   const [params, setParams] = useState<Params>({
     id: 0,
     // SubmitTransaction fields
-    txParam: null
+    txParam: null,
+    // UI specific fields
+    inAppCall
   });
   const [errorRequestRejection, setErrorRequestRejection] = useState<Error>();
   const [isParamsMissing, setIsParamsMissing] = useState(false);
@@ -47,7 +54,6 @@ export const SubmitTransaction: FC = () => {
     params.txParam?.Fee
   );
 
-  const urlParams = new URLSearchParams(window.location.search);
   const { fetchedData } = useFetchFromSessionStorage(
     urlParams.get(STORAGE_MESSAGING_KEY) ?? undefined
   ) as {
@@ -96,6 +102,8 @@ export const SubmitTransaction: FC = () => {
     );
   }, [createMessage, sendMessageToBackground]);
 
+  const navigate = useNavigate();
+
   const { hasEnoughFunds, transactionStatusComponent } = useTransactionStatus({
     isParamsMissing,
     errorFees,
@@ -103,7 +111,8 @@ export const SubmitTransaction: FC = () => {
     difference,
     transaction,
     errorRequestRejection,
-    badRequestCallback
+    badRequestCallback,
+    onClick: params.inAppCall ? () => navigate(SETTINGS_PATH) : undefined
   });
 
   useEffect(() => {
@@ -123,17 +132,21 @@ export const SubmitTransaction: FC = () => {
 
     setParams({
       id,
-      txParam: transaction
+      txParam: transaction,
+      // UI specific fields
+      inAppCall
     });
-  }, [fetchedData]);
+  }, [fetchedData, inAppCall]);
 
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);
-    const message = createMessage({
-      hash: null
-    });
-    sendMessageToBackground(message);
-  }, [createMessage, sendMessageToBackground]);
+    if (!params.inAppCall) {
+      const message = createMessage({
+        hash: null
+      });
+      sendMessageToBackground(message);
+    }
+  }, [createMessage, params.inAppCall, sendMessageToBackground]);
 
   const handleConfirm = useCallback(() => {
     setTransaction(TransactionStatus.Pending);
@@ -145,18 +158,22 @@ export const SubmitTransaction: FC = () => {
     })
       .then((response) => {
         setTransaction(TransactionStatus.Success);
-        sendMessageToBackground(createMessage(response));
+        if (!params.inAppCall) {
+          sendMessageToBackground(createMessage(response));
+        }
       })
       .catch((e) => {
         setErrorRequestRejection(e);
         setTransaction(TransactionStatus.Rejected);
-        const message = createMessage({
-          hash: undefined,
-          error: e
-        });
-        sendMessageToBackground(message);
+        if (!params.inAppCall) {
+          const message = createMessage({
+            hash: undefined,
+            error: e
+          });
+          sendMessageToBackground(message);
+        }
       });
-  }, [submitTransaction, params.txParam, sendMessageToBackground, createMessage]);
+  }, [submitTransaction, params.txParam, params.inAppCall, sendMessageToBackground, createMessage]);
 
   const { txParam } = params;
 
