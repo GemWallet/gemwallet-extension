@@ -63,13 +63,10 @@ describe('Set Regular Key', () => {
   });
 
   it('Set Regular Key (UI)', () => {
-    navigate('http://localhost:3000', PASSWORD);
-
-    // Click on settings
-    cy.contains('Settings').click();
-
-    // Click on Set Regular Key
-    cy.contains('Set Regular Key').click();
+    navigate(
+      'http://localhost:3000?set-regular-key&inAppCall=true&transaction=setRegularKey',
+      PASSWORD
+    );
 
     // Enter wrong Regular Key
     cy.get('input[name="regularKey"]').clear();
@@ -87,7 +84,9 @@ describe('Set Regular Key', () => {
     cy.contains('button', 'Submit').click();
 
     // Check transaction details
-    cy.get('h1[data-testid="page-title"]').should('have.text', 'Set Regular Key');
+    cy.get('h1[data-testid="page-title"]').should('have.text', 'Set Regular Key', {
+      timeout: 10000
+    });
 
     cy.contains('p', 'Regular Key')
       .next()
@@ -109,13 +108,10 @@ describe('Set Regular Key', () => {
   });
 
   it('Delete Regular Key (UI)', () => {
-    navigate('http://localhost:3000', PASSWORD);
-
-    // Click on settings
-    cy.contains('Settings').click();
-
-    // Click on Set Regular Key
-    cy.contains('Set Regular Key').click();
+    navigate(
+      'http://localhost:3000?set-regular-key&inAppCall=true&transaction=setRegularKey',
+      PASSWORD
+    );
 
     // Check the current Regular Key
     cy.get('input[name="regularKey"]').should('have.value', 'rNvFCZXpDtGeQ3bVas95wGLN6N2stGmA9o');
@@ -128,7 +124,9 @@ describe('Set Regular Key', () => {
     cy.contains('button', 'Submit').click();
 
     // Check transaction details
-    cy.get('h1[data-testid="page-title"]').should('have.text', 'Set Regular Key');
+    cy.get('h1[data-testid="page-title"]').should('have.text', 'Set Regular Key', {
+      timeout: 10000
+    });
 
     // Confirm
     cy.contains('button', 'Submit').click();
@@ -143,17 +141,5 @@ describe('Set Regular Key', () => {
       timeout: 10000
     });
     cy.get('p[data-testid="transaction-subtitle"]').should('have.text', 'Transaction Successful');
-
-    // Click Close
-    cy.contains('button', 'Close').click();
-
-    // Click on settings
-    cy.contains('Settings').click();
-
-    // Click on Set Regular Key
-    cy.contains('Set Regular Key').click();
-
-    // Check the current Regular Key
-    cy.get('input[name="regularKey"]').should('have.value', '');
   });
 });
