@@ -14,9 +14,12 @@ import { PermissionSwitch } from './PermissionsSwitch';
 
 export const Permissions: FC = () => {
   const navigate = useNavigate();
-  const [isSubmitBulkTransactionsEnabled, setIsSubmitBulkTransactionsEnabled] =
-    useState<boolean>(false);
-  const [isAdvancedModeEnabled, setIsAdvancedModeEnabled] = useState<boolean>(false);
+  const [isSubmitBulkTransactionsEnabled, setIsSubmitBulkTransactionsEnabled] = useState<
+    boolean | undefined
+  >(undefined);
+  const [isAdvancedModeEnabled, setIsAdvancedModeEnabled] = useState<boolean | undefined>(
+    undefined
+  );
 
   useEffect(() => {
     const loadInitialData = async () => {
@@ -33,6 +36,10 @@ export const Permissions: FC = () => {
   }, []);
 
   useEffect(() => {
+    if (isSubmitBulkTransactionsEnabled === undefined) {
+      return;
+    }
+
     saveInChromeLocalStorage(
       STORAGE_PERMISSION_SUBMIT_BULK,
       isSubmitBulkTransactionsEnabled.toString()
@@ -40,6 +47,10 @@ export const Permissions: FC = () => {
   }, [isSubmitBulkTransactionsEnabled]);
 
   useEffect(() => {
+    if (isAdvancedModeEnabled === undefined) {
+      return;
+    }
+
     saveInChromeLocalStorage(STORAGE_PERMISSION_ADVANCED_MODE, isAdvancedModeEnabled.toString());
   }, [isAdvancedModeEnabled]);
 
@@ -60,13 +71,13 @@ export const Permissions: FC = () => {
       <div style={{ marginTop: '1rem' }}>
         <Typography variant="subtitle2">Permissions</Typography>
         <PermissionSwitch
-          isEnabled={isAdvancedModeEnabled}
+          isEnabled={isAdvancedModeEnabled || false}
           toggleSwitch={toggleAdvancedMode}
           name="Advanced Mode"
           description="Unlocks the advanced features."
         />
         <PermissionSwitch
-          isEnabled={isSubmitBulkTransactionsEnabled}
+          isEnabled={isSubmitBulkTransactionsEnabled || false}
           toggleSwitch={toggleSubmitBulkTransactions}
           name="Bulk Transactions"
           description="Enabling this will allow to submit multiple transactions at once. Enable at your own risk."
