@@ -168,12 +168,12 @@ describe('Switch networks', () => {
     // Expect an error dialog when trying to delete the network we are currently connected to
     cy.contains('button', 'OK', { timeout: 3000 }).should('be.visible').click();
 
-    // Connect back to the Custom network
-    cy.contains('button', XRPLNetwork.CUSTOM).click();
+    // Connect back to the Devnet network
+    cy.contains('button', XRPLNetwork.DEVNET).click();
 
-    // Make sure that the network is switched to Custom network
+    // Make sure that the network is switched to Devnet network
     cy.get('div[data-testid="loading"]').should('be.visible');
-    cy.get('div[data-testid="network-indicator"]').should('have.text', XRPLNetwork.CUSTOM, {
+    cy.get('div[data-testid="network-indicator"]').should('have.text', XRPLNetwork.DEVNET, {
       timeout: 1500
     });
 
@@ -196,9 +196,9 @@ describe('Switch networks', () => {
     });
   });
 
-  it('Switch from Custom (localStorage) to Mainnet', () => {
+  it('Switch from Devnet (localStorage) to Mainnet', () => {
     // Custom network should be the network from localStorage
-    cy.get('div[data-testid="network-indicator"]').should('have.text', XRPLNetwork.CUSTOM, {
+    cy.get('div[data-testid="network-indicator"]').should('have.text', XRPLNetwork.DEVNET, {
       timeout: 1500
     });
 
