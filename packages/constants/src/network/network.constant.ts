@@ -101,3 +101,10 @@ export function getNetwork(chain: Chain, network: Network): NetworkNode {
 
   throw new Error(`Network ${network} is not valid for chain ${chain}`);
 }
+
+export const getMaxFee = (chain: Chain): number => {
+  switch (chain) {
+    default:
+      return 1;
+  }
+};

@@ -1,7 +1,9 @@
-import { FC } from 'react';
+import { FC, useMemo, useState } from 'react';
 
 import ErrorIcon from '@mui/icons-material/Error';
 import { IconButton, Paper, Tooltip, Typography } from '@mui/material';
+import MuiInput from '@mui/material/Input';
+import { dropsToXrp, xrpToDrops } from 'xrpl';
 
 import {
   CreateNFTOfferFlags,
@@ -10,10 +12,12 @@ import {
   MintNFTFlags,
   PaymentFlags,
   SetAccountFlags,
-  TrustSetFlags
+  TrustSetFlags,
+  getMaxFee
 } from '@gemwallet/constants';
 
-import { ERROR_RED } from '../../../constants';
+import { ERROR_RED, WARNING_ORANGE } from '../../../constants';
+import { useNetwork } from '../../../contexts';
 import { formatAmount, formatFlags, formatToken } from '../../../utils';
 import { TileLoader } from '../../atoms';
 
@@ -32,13 +36,16 @@ type BaseTransactionProps = {
     | null;
   errorFees: string | undefined;
   estimatedFees: string;
+  minimumFees: string;
 };
 
 type FeeProps = {
   fee: number | null;
   errorFees: string | undefined;
   estimatedFees: string;
+  minimumFees?: string;
   isBulk?: boolean;
+  onFeeChange?: (newFee: number) => void;
   useLegacy?: boolean;
 };
 
@@ -47,7 +54,8 @@ export const BaseTransaction: FC<BaseTransactionProps> = ({
   memos,
   flags,
   errorFees,
-  estimatedFees
+  estimatedFees,
+  minimumFees
 }) => (
   <>
     {memos && memos.length > 0 ? (
@@ -78,11 +86,71 @@ export const BaseTransaction: FC<BaseTransactionProps> = ({
         </Typography>
       </Paper>
     ) : null}
-    <Fee errorFees={errorFees} estimatedFees={estimatedFees} fee={fee} />
+    <Fee errorFees={errorFees} estimatedFees={estimatedFees} fee={fee} minimumFees={minimumFees} />
   </>
 );
 
-export const Fee: FC<FeeProps> = ({ errorFees, estimatedFees, fee, isBulk, useLegacy = true }) => {
+export const Fee: FC<FeeProps> = ({
+  errorFees,
+  estimatedFees,
+  minimumFees,
+  fee,
+  isBulk,
+  onFeeChange,
+  useLegacy = true
+}) => {
+  const { chainName } = useNetwork();
+  const [inputValue, setInputValue] = useState<string | undefined>(undefined);
+  const [isEditing, setIsEditing] = useState(false);
+
+  const handleFeeClick = () => {
+    if (onFeeChange !== undefined) {
+      setIsEditing(true);
+    }
+  };
+
+  const handleFeeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = event.target.value;
+    setInputValue(newValue);
+    const newFee = Number(newValue);
+    if (onFeeChange && !isNaN(newFee)) {
+      onFeeChange(Number(xrpToDrops(newFee)));
+    }
+  };
+
+  const handleBlur = () => {
+    setIsEditing(false);
+  };
+
+  const warningFee = useMemo(() => {
+    if (minimumFees === undefined || minimumFees === DEFAULT_FEES) {
+      return null;
+    }
+
+    if (
+      (fee !== null && fee < Number(minimumFees)) ||
+      (estimatedFees !== DEFAULT_FEES && Number(estimatedFees) < Number(minimumFees))
+    ) {
+      return 'The fee is lower than the estimated fee, the transaction may fail';
+    }
+  }, [estimatedFees, fee, minimumFees]);
+
+  const inputDisplayValue = useMemo(() => {
+    if (inputValue !== undefined) {
+      return inputValue;
+    }
+
+    if (fee !== null) {
+      return dropsToXrp(fee);
+    }
+
+    if (estimatedFees !== DEFAULT_FEES) {
+      return dropsToXrp(estimatedFees);
+    }
+
+    return undefined;
+  }, [inputValue, fee, estimatedFees]);
+
   if (useLegacy) {
     return (
       <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
@@ -134,18 +202,49 @@ export const Fee: FC<FeeProps> = ({ errorFees, estimatedFees, fee, isBulk, useLe
         {isBulk ? 'Total network fees' : 'Network fees'}
       </Typography>
       <Typography variant="body2" gutterBottom align="right">
-        {errorFees ? (
-          <Typography variant="caption" style={{ color: ERROR_RED }}>
+        {isEditing ? (
+          <MuiInput
+            value={inputDisplayValue}
+            onChange={handleFeeChange}
+            onBlur={handleBlur}
+            autoFocus
+            size="small"
+            inputProps={{
+              step: dropsToXrp(1),
+              min: dropsToXrp(1),
+              max: getMaxFee(chainName),
+              type: 'number'
+            }}
+          />
+        ) : errorFees ? (
+          <Typography
+            variant="caption"
+            style={{ color: ERROR_RED, cursor: 'pointer' }}
+            onClick={handleFeeClick}
+          >
             {errorFees}
           </Typography>
         ) : estimatedFees === DEFAULT_FEES ? (
           <TileLoader secondLineOnly />
-        ) : fee ? (
-          formatToken(fee, 'XRP (manual)', true)
+        ) : fee !== null ? (
+          <span onClick={handleFeeClick} style={{ cursor: 'pointer' }}>
+            {formatToken(fee, 'XRP (manual)', true)}
+          </span>
         ) : (
-          formatAmount(estimatedFees)
+          <span onClick={handleFeeClick} style={{ cursor: 'pointer' }}>
+            {formatAmount(estimatedFees)}
+          </span>
         )}
       </Typography>
+      {warningFee ? (
+        <Typography
+          variant="caption"
+          style={{ color: WARNING_ORANGE, cursor: 'pointer' }}
+          onClick={handleFeeClick}
+        >
+          {warningFee}
+        </Typography>
+      ) : null}
     </>
   );
 };

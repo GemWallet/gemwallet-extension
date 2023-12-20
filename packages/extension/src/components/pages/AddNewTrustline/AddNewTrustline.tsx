@@ -63,7 +63,7 @@ export const AddNewTrustline: FC = () => {
   const { getCurrentWallet } = useWallet();
   const { networkName } = useNetwork();
   const { setTransactionProgress } = useTransactionProgress();
-  const { estimatedFees, errorFees, difference } = useFees(
+  const { estimatedFees, minimumFees, errorFees, difference } = useFees(
     params.transaction ?? [],
     params.transaction?.Fee
   );
@@ -377,8 +377,9 @@ export const AddNewTrustline: FC = () => {
         transactionStatusComponent
       ) : (
         <StepConfirm
-          params={params}
+          inputParams={params}
           estimatedFees={estimatedFees}
+          minimumFees={minimumFees}
           errorFees={errorFees}
           hasEnoughFunds={hasEnoughFunds}
           onReject={handleReject}
