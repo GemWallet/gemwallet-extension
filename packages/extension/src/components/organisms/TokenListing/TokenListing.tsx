@@ -184,7 +184,7 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
       <InformationMessage title="Account not activated">
         <div style={{ marginBottom: '5px' }}>
           To create this account to the XRP ledger, you will have to make a first deposit of a
-          minimum {reserve} {mainToken}.
+          minimum {baseReserve} {mainToken}.
         </div>
         <Link
           href="https://xrpl.org/reserves.html?utm_source=gemwallet.app"
@@ -272,8 +272,8 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
             }}
           >
             <Typography style={{ marginBottom: '5px' }}>
-              The activation of this XRP ledger account was made through a minimum deposit of{' '}
-              {baseReserve} {mainToken}.
+              The activation of this account was made through a minimum deposit of {baseReserve}{' '}
+              {mainToken}.
             </Typography>
             <Link
               href="https://xrpl.org/reserves.html?utm_source=gemwallet.app"
