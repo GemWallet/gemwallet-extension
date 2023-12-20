@@ -6,24 +6,17 @@ export enum XRPLNetwork {
   MAINNET = 'Mainnet',
   TESTNET = 'Testnet',
   DEVNET = 'Devnet',
-  AMM_DEVNET = 'AMM-Devnet',
   CUSTOM = 'Custom'
 }
 
 export const Networks = {
-  [Chain.XRPL]: [
-    XRPLNetwork.MAINNET,
-    XRPLNetwork.TESTNET,
-    XRPLNetwork.DEVNET,
-    XRPLNetwork.AMM_DEVNET
-  ]
+  [Chain.XRPL]: [XRPLNetwork.MAINNET, XRPLNetwork.TESTNET, XRPLNetwork.DEVNET]
 };
 
 export const MAINNET_CLIO_NODES = ['wss://s1.ripple.com', 'wss://s2.ripple.com'];
 export const MAINNET_NODES = ['wss://xrplcluster.com', ...MAINNET_CLIO_NODES];
 export const TESTNET_NODES = ['wss://s.altnet.rippletest.net:51233', 'wss://testnet.xrpl-labs.com'];
 export const DEVNET_NODES = ['wss://s.devnet.rippletest.net:51233'];
-export const AMM_DEVNET_NODES = ['wss://amm.devnet.rippletest.net:51233'];
 
 export type Network = XRPLNetwork;
 
@@ -39,7 +32,6 @@ interface NetworkConfigXRPL {
   [XRPLNetwork.MAINNET]: NetworkNode;
   [XRPLNetwork.TESTNET]: NetworkNode;
   [XRPLNetwork.DEVNET]: NetworkNode;
-  [XRPLNetwork.AMM_DEVNET]: NetworkNode;
   [XRPLNetwork.CUSTOM]: NetworkNode;
 }
 
@@ -70,13 +62,6 @@ export const NETWORK: ChainConfig = {
       server: DEVNET_NODES[0],
       nodes: DEVNET_NODES,
       description: 'A preview of upcoming features, where unstable changes are tested out.'
-    },
-    [XRPLNetwork.AMM_DEVNET]: {
-      chain: Chain.XRPL,
-      name: XRPLNetwork.AMM_DEVNET,
-      server: AMM_DEVNET_NODES[0],
-      nodes: AMM_DEVNET_NODES,
-      description: 'XLS-30d Automated Market Makers preview network.'
     },
     [XRPLNetwork.CUSTOM]: {
       chain: Chain.XRPL,
