@@ -99,33 +99,6 @@ describe('Switch networks', () => {
     });
   });
 
-  it('Switch from Devnet (localStorage) to AMMDevnet', () => {
-    // Devnet should be the network from localStorage
-    cy.get('div[data-testid="network-indicator"]').should('have.text', XRPLNetwork.DEVNET, {
-      timeout: 1500
-    });
-
-    // Open the change network window
-    cy.get('div[data-testid="network-indicator"]').click();
-    cy.get('div[data-testid="network-indicator-dialog"]', { timeout: 1500 })
-      .find('header')
-      .should('have.text', 'Change Network');
-
-    // Select the AMMDevnet network
-    cy.contains('button', XRPLNetwork.AMM_DEVNET).click();
-
-    // Make sure that the network is switched to AMMDevnet
-    cy.get('div[data-testid="loading"]').should('be.visible');
-    cy.get('div[data-testid="network-indicator"]').should('have.text', XRPLNetwork.AMM_DEVNET, {
-      timeout: 1500
-    });
-
-    // Save the current state of the localStorage
-    cy.window().then((win) => {
-      networkLocalStorage = win.localStorage.getItem('network');
-    });
-  });
-
   it('Add a custom network', () => {
     // Open the change network window
     cy.get('div[data-testid="network-indicator"]').click();
@@ -195,12 +168,12 @@ describe('Switch networks', () => {
     // Expect an error dialog when trying to delete the network we are currently connected to
     cy.contains('button', 'OK', { timeout: 3000 }).should('be.visible').click();
 
-    // Connect back to the AMMDevnet network
-    cy.contains('button', XRPLNetwork.AMM_DEVNET).click();
+    // Connect back to the Devnet network
+    cy.contains('button', XRPLNetwork.DEVNET).click();
 
-    // Make sure that the network is switched to AMMDevnet
+    // Make sure that the network is switched to Devnet network
     cy.get('div[data-testid="loading"]').should('be.visible');
-    cy.get('div[data-testid="network-indicator"]').should('have.text', XRPLNetwork.AMM_DEVNET, {
+    cy.get('div[data-testid="network-indicator"]').should('have.text', XRPLNetwork.DEVNET, {
       timeout: 1500
     });
 
@@ -223,9 +196,9 @@ describe('Switch networks', () => {
     });
   });
 
-  it('Switch from AMMDevnet (localStorage) to Mainnet', () => {
-    // AMMDevnet should be the network from localStorage
-    cy.get('div[data-testid="network-indicator"]').should('have.text', XRPLNetwork.AMM_DEVNET, {
+  it('Switch from Devnet (localStorage) to Mainnet', () => {
+    // Custom network should be the network from localStorage
+    cy.get('div[data-testid="network-indicator"]').should('have.text', XRPLNetwork.DEVNET, {
       timeout: 1500
     });
 
