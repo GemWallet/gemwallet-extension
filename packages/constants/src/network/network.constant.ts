@@ -9,10 +9,6 @@ export enum XRPLNetwork {
   CUSTOM = 'Custom'
 }
 
-export const Networks = {
-  [Chain.XRPL]: [XRPLNetwork.MAINNET, XRPLNetwork.TESTNET, XRPLNetwork.DEVNET]
-};
-
 export const MAINNET_CLIO_NODES = ['wss://s1.ripple.com', 'wss://s2.ripple.com'];
 export const MAINNET_NODES = ['wss://xrplcluster.com', ...MAINNET_CLIO_NODES];
 export const TESTNET_NODES = ['wss://s.altnet.rippletest.net:51233', 'wss://testnet.xrpl-labs.com'];
