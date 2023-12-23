@@ -208,9 +208,7 @@ const LedgerProvider: FC = ({ children }) => {
             transaction,
             client,
             wallet,
-            signOnly,
-            shouldCheck,
-            networkName
+            signOnly
           })) as SubmitTransactionResponse;
         default:
           return (await handleTransactionXRPL({
@@ -222,7 +220,7 @@ const LedgerProvider: FC = ({ children }) => {
           })) as SubmitTransactionResponse;
       }
     },
-    [chainName, networkName]
+    [chainName]
   );
 
   /**

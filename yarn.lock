@@ -11774,18 +11774,6 @@ ripple-binary-codec@^1.10.0:
     decimal.js "^10.2.0"
     ripple-address-codec "^4.3.1"
 
-"ripple-binary-codec@npm:xrpl-binary-codec-prerelease@5.0.2":
-  version "5.0.2"
-  resolved "https://registry.yarnpkg.com/xrpl-binary-codec-prerelease/-/xrpl-binary-codec-prerelease-5.0.2.tgz#44945e52bd93ba2bf3760da025acfd5883c3b053"
-  integrity sha512-bKxrHKZyWZF3V8/o9BTJbtm7EUVMY9/IkXkSM1LHNZqaB5+t2OOjDneCYY5j0BbDdlxNomPafcSjLWVf7sJpuw==
-  dependencies:
-    assert "^2.0.0"
-    big-integer "^1.6.48"
-    buffer "6.0.3"
-    create-hash "^1.2.0"
-    decimal.js "^10.2.0"
-    ripple-address-codec "^4.3.1"
-
 ripple-keypairs@^1.1.4, ripple-keypairs@^1.3.1:
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/ripple-keypairs/-/ripple-keypairs-1.3.1.tgz#7fa531df36b138134afb53555a87d7f5eb465b2e"
@@ -14228,10 +14216,10 @@ xmlchars@^2.2.0:
   resolved "https://registry.yarnpkg.com/xmlchars/-/xmlchars-2.2.0.tgz#060fe1bcb7f9c76fe2a17db86a9bc3ab894210cb"
   integrity sha512-JZnDKK8B0RCDw84FNdDAIpZK+JuJw+s7Lz8nksI7SIuU3UXJJslUthsi+uWBUYOwPFwW7W7PRLRfUKpxjtjFCw==
 
-xrpl-accountlib@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/xrpl-accountlib/-/xrpl-accountlib-3.0.0.tgz#238df5d1d5bfd5f98cab0515fff83f4314b40b1f"
-  integrity sha512-V4C6tlWTnFGM48JVfokCSH/sI+0ms9lsTck8V6DqC7D5OZ8d9T+GfXPJJqnCnce4kXRbANJWsiMA22i8DphHZg==
+xrpl-accountlib@^3.2.6:
+  version "3.2.6"
+  resolved "https://registry.yarnpkg.com/xrpl-accountlib/-/xrpl-accountlib-3.2.6.tgz#8ce616292483fafb766f87148b4a48b806e930bb"
+  integrity sha512-wLvZlJSBNjTjstMh+Ex0v0AwYmOiwFL026Pq0x1xYOcFMLD8uZMEPf2seOmFhgwUeERr+UEKHKx0PT4/17YY+g==
   dependencies:
     assert "^2.0.0"
     bip32 "^2.0.6"
@@ -14241,17 +14229,29 @@ xrpl-accountlib@^3.0.0:
     hash.js "^1.1.7"
     lodash "^4.17.21"
     ripple-address-codec "^4.2.5"
-    ripple-binary-codec "npm:xrpl-binary-codec-prerelease@5.0.2"
     ripple-keypairs "^1.1.4"
     ripple-secret-codec "^1.0.3"
-    xrpl-client "^2.1.0"
+    xrpl-binary-codec-prerelease "^7.0.1"
+    xrpl-client "^2.3.0"
     xrpl-secret-numbers "^0.3.3"
-    xrpl-sign-keypairs "^2.2.1"
+    xrpl-sign-keypairs "^2.5.0"
 
-xrpl-client@^2.1.0:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/xrpl-client/-/xrpl-client-2.2.0.tgz#55c58ee558b7cbbbc2366eb5764c1164705557fc"
-  integrity sha512-lHblRPbtUKiQ+6cBjvIt4FeUvnhuOp4A0/v51PyxO2oPgEjFOUTE9Dw63/z9t+JiOtVn1o5Z46XjhXq9czbuBg==
+xrpl-binary-codec-prerelease@^7.0.1:
+  version "7.0.1"
+  resolved "https://registry.yarnpkg.com/xrpl-binary-codec-prerelease/-/xrpl-binary-codec-prerelease-7.0.1.tgz#650052e7622233da65a4b1b370d109e17b7c54f2"
+  integrity sha512-IOIWUTkCyeYWReT6hn/2ONMpk0FNk1mltqQjpl7n2cfCuxJwSxwk+J4fi5s0cExNJSFT1aUhRSgDQLOtCBo2hQ==
+  dependencies:
+    assert "^2.0.0"
+    big-integer "^1.6.48"
+    buffer "6.0.3"
+    create-hash "^1.2.0"
+    decimal.js "^10.2.0"
+    ripple-address-codec "^4.3.1"
+
+xrpl-client@^2.3.0:
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/xrpl-client/-/xrpl-client-2.3.1.tgz#a39d044cc62d1f21bb8140564bcb04df3de53b7a"
+  integrity sha512-UyeYZvewX+n+OHpb1W7zutHWfS75Z45Ltz15OOMNhmxFnBPRbJJ0sMQRtk6jVoxuF7Id8kZ85IwifqKNByyMWw==
   dependencies:
     debug "^4.1.1"
     websocket "^1.0.34"
@@ -14265,15 +14265,15 @@ xrpl-secret-numbers@^0.3.3, xrpl-secret-numbers@^0.3.4:
     brorand "^1.1.0"
     ripple-keypairs "^1.1.5"
 
-xrpl-sign-keypairs@^2.2.1:
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/xrpl-sign-keypairs/-/xrpl-sign-keypairs-2.2.1.tgz#56f9e5dc5d59e25fda7de01644ec48cad7b09b3b"
-  integrity sha512-H5sJqWqTZxmc3vJSqOqkobFJgHGXs82qr80+9SDM/xwpvOfzAxIpe8yxsR1CaovyO0oq1wsALbJNpRc7MugpfA==
+xrpl-sign-keypairs@^2.5.0:
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/xrpl-sign-keypairs/-/xrpl-sign-keypairs-2.5.0.tgz#2d2d29fdc5ea1f6998057caacfb7117273ab9271"
+  integrity sha512-chcO69Aao1lN54ypdmZ3HQOculTf8DaqzSULnPHS1ivsufk/iz7Fa2rg1//cgJx+bYvvV9y9xP6E55S6YBEZ0Q==
   dependencies:
     big-integer "^1.6.51"
     ripple-address-codec "^4.2.4"
-    ripple-binary-codec "npm:xrpl-binary-codec-prerelease@5.0.2"
     ripple-keypairs "^1.1.4"
+    xrpl-binary-codec-prerelease "^7.0.1"
 
 xrpl@^2.13.0:
   version "2.13.0"
