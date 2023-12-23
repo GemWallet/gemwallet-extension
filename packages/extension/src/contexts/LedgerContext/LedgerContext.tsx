@@ -21,14 +21,12 @@ import {
   Payment,
   SetRegularKey,
   SubmitResponse,
-  Transaction,
   TransactionMetadata,
   TrustSet,
   TxResponse,
   validate,
   Wallet
 } from 'xrpl';
-import { derive, signAndSubmit, utils } from 'xrpl-accountlib';
 
 import {
   AccountNFToken,
@@ -42,9 +40,11 @@ import {
   SignTransactionRequest,
   SubmitBulkTransactionsRequest,
   SubmitTransactionRequest,
+  Transaction,
   TransactionBulkResponse,
   TransactionWithID,
-  XRPLNetwork
+  XRPLNetwork,
+  XRPLTransaction
 } from '@gemwallet/constants';
 
 import { AccountTransaction, WalletLedger } from '../../types';
@@ -220,7 +220,7 @@ const LedgerProvider: FC = ({ children }) => {
           })) as SubmitTransactionResponse;
         default:
           return (await handleTransactionXRPL({
-            transaction,
+            transaction: transaction as XRPLTransaction,
             client,
             wallet,
             signOnly,
@@ -251,7 +251,7 @@ const LedgerProvider: FC = ({ children }) => {
         case Chain.XAHAU:
           return calculateFeesXahau({ client, transaction, wallet });
         default:
-          return calculateFeesXRPL({ client, transaction });
+          return calculateFeesXRPL({ client, transaction: transaction as XRPLTransaction });
       }
     },
     [chainName, client, getCurrentWallet]
@@ -691,6 +691,35 @@ const LedgerProvider: FC = ({ children }) => {
     [client, getCurrentWallet, handleTransaction]
   );
 
+  const setHook = useCallback(
+    async (payload: SetHookRequest): Promise<SetHookResponse> => {
+      if (chainName !== Chain.XAHAU) {
+        throw new Error('Hooks are only available on Xahau');
+      }
+
+      const wallet = getCurrentWallet();
+      if (!wallet?.publicAddress) throw new Error('You need to have a wallet connected');
+
+      try {
+        const { hash } = await handleTransaction({
+          transaction: {
+            TransactionType: 'SetHook',
+            Hooks: payload.hooks,
+            Account: wallet.publicAddress
+          },
+          client,
+          wallet
+        });
+        if (!hash) throw new Error("Couldn't set the hook");
+        return { hash };
+      } catch (e) {
+        Sentry.captureException(e);
+        throw e;
+      }
+    },
+    [chainName, client, getCurrentWallet, handleTransaction]
+  );
+
   /*
    * Getters
    */
@@ -765,40 +794,6 @@ const LedgerProvider: FC = ({ children }) => {
       }
     },
     [client, getCurrentWallet]
-  );
-
-  const setHook = useCallback(
-    async (payload: SetHookRequest): Promise<SetHookResponse> => {
-      const server = client?.connection.getUrl();
-      if (!server) throw new Error('You need to be connected to a ledger');
-
-      const wallet = getCurrentWallet();
-      if (!wallet?.seed) throw new Error('You need to have a wallet connected');
-
-      const account = derive.familySeed(wallet.seed);
-      const networkInfo = await utils.txNetworkAndAccountValues(server, account);
-
-      try {
-        const tx = {
-          TransactionType: 'SetHook',
-          Hooks: payload.hooks,
-          // Add: Sequence, Account, LastLedgerSequence, Fee (in case Hooks enabled: autodetect (from ledger))
-          ...networkInfo.txValues
-        };
-
-        const submitted = await signAndSubmit(tx, server, account);
-
-        if (!submitted.tx_id) throw new Error('Could not submit the transaction');
-
-        return {
-          hash: submitted.tx_id
-        };
-      } catch (e) {
-        Sentry.captureException(e);
-        throw e;
-      }
-    },
-    [client?.connection, getCurrentWallet]
   );
 
   const getNFTInfo = useCallback(

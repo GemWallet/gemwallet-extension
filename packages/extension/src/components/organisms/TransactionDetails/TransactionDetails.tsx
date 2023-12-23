@@ -1,7 +1,6 @@
 import { FC, useEffect, useMemo, useState } from 'react';
 
-import { Transaction } from 'xrpl';
-
+import { Transaction } from '@gemwallet/constants';
 import { Network, getNetwork, getNetworkByNetworkID } from '@gemwallet/constants';
 
 import { useNetwork } from '../../../contexts';

@@ -1,3 +1,10 @@
+import { BaseTransaction } from 'xrpl';
+
+export interface SetHook extends BaseTransaction {
+  TransactionType: 'SetHook';
+  Hooks: Hook[];
+}
+
 export interface Hook {
   CreateCode: string;
   Flags: number;

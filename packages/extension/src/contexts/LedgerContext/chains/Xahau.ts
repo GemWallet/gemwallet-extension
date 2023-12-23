@@ -7,7 +7,7 @@ import {
 } from 'xrpl';
 import { XrplClient, XrplDefinitions, derive, sign, signAndSubmit, utils } from 'xrpl-accountlib';
 
-import { FAUCET_XAHAU_TESTNET, XahauNetwork } from '@gemwallet/constants';
+import { FAUCET_XAHAU_TESTNET, XahauNetwork, XahauTransaction } from '@gemwallet/constants';
 
 import { WalletLedger } from '../../../types';
 
@@ -20,7 +20,7 @@ const FUNDING_AMOUNT = 10000;
  * Hence, shouldCheck parameter is not handled here.
  */
 export const handleTransaction = async (param: {
-  transaction: Transaction;
+  transaction: XahauTransaction;
   client?: Client | null;
   wallet?: WalletLedger;
   signOnly?: boolean;
@@ -105,7 +105,7 @@ export const handleMintNFT = async (param: {
 };
 
 export const calculateFees = async (param: {
-  transaction: Transaction;
+  transaction: XahauTransaction;
   client?: Client | null;
   wallet?: WalletLedger;
 }): Promise<string> => {

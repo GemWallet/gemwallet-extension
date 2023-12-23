@@ -8,10 +8,12 @@ import {
   Wallet as WalletXRPL
 } from 'xrpl';
 
+import { XRPLTransaction } from '@gemwallet/constants';
+
 import { WalletLedger } from '../../../types';
 
 export const handleTransaction = async (param: {
-  transaction: Transaction;
+  transaction: XRPLTransaction;
   client?: Client | null;
   wallet?: WalletLedger;
   signOnly?: boolean;
@@ -91,7 +93,7 @@ export const handleMintNFT = async (param: {
 
 export const calculateFees = async (param: {
   client: Client;
-  transaction: Transaction;
+  transaction: XRPLTransaction;
 }): Promise<string> => {
   const { client, transaction } = param;
 

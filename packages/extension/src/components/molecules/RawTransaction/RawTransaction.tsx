@@ -1,8 +1,9 @@
-import React, { FC, CSSProperties } from 'react';
+import { FC, CSSProperties } from 'react';
 
 import { Typography } from '@mui/material';
 import ReactJson from 'react-json-view';
-import { Transaction } from 'xrpl';
+
+import { Transaction } from '@gemwallet/constants';
 
 export interface RawTransactionProps {
   transaction: Transaction;

@@ -1,9 +1,11 @@
 import { FC } from 'react';
 
 import { TypographyProps } from '@mui/material';
-import { convertHexToString, Currency, Transaction } from 'xrpl';
+import { convertHexToString, Currency } from 'xrpl';
 import { Amount, Memo, Signer } from 'xrpl/dist/npm/models/common';
 import { GlobalFlags } from 'xrpl/dist/npm/models/transactions/common';
+
+import { Transaction } from '@gemwallet/constants';
 
 import { useWallet } from '../../../contexts';
 import {
