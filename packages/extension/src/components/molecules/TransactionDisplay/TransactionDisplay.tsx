@@ -5,7 +5,7 @@ import { convertHexToString, Currency } from 'xrpl';
 import { Amount, Memo, Signer } from 'xrpl/dist/npm/models/common';
 import { GlobalFlags } from 'xrpl/dist/npm/models/transactions/common';
 
-import { Transaction } from '@gemwallet/constants';
+import { Hook, Transaction } from '@gemwallet/constants';
 
 import { useWallet } from '../../../contexts';
 import {
@@ -15,6 +15,7 @@ import {
   parseAmountObject
 } from '../../../utils';
 import { KeyValueDisplay } from '../../atoms';
+import { HooksDisplay } from './HooksDisplay';
 
 type XRPLTxProps = {
   tx: Transaction;
@@ -24,7 +25,7 @@ type XRPLTxProps = {
   mainToken?: string;
 };
 
-export const XRPLTransaction: FC<XRPLTxProps> = ({
+export const TransactionDisplay: FC<XRPLTxProps> = ({
   tx,
   displayTransactionType = true,
   useLegacy = true,
@@ -131,7 +132,8 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
         title: 'Send Max',
         value,
         useLegacy
-      })
+      }),
+    Hooks: (value?: Hook[]) => renderHooks({ hooks: value })
   };
 
   const renderSimpleText = (params: {
@@ -220,6 +222,10 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
     );
   };
 
+  const renderHooks = (params: { hooks: Hook[] | undefined }) => {
+    return <HooksDisplay hooks={params.hooks ?? []} fontSize={12} />;
+  };
+
   const renderMemos = (params: { memos?: Memo[]; useLegacy: boolean }) => {
     const { memos, useLegacy } = params;
     if (memos === undefined || memos.length === 0) {
@@ -281,6 +287,7 @@ export const XRPLTransaction: FC<XRPLTxProps> = ({
       'Amount2',
       'Asset2',
       'LimitAmount',
+      'Hooks',
       'NFTokenID',
       'NFTokenOffers',
       'TakerGets',

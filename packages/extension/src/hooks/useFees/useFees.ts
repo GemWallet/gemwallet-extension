@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 
 import * as Sentry from '@sentry/react';
-import { dropsToXrp, Transaction } from 'xrpl';
+import { dropsToXrp } from 'xrpl';
+
+import { Transaction } from '@gemwallet/constants';
 
 import { DEFAULT_RESERVE, RESERVE_PER_OWNER } from '../../constants';
 import { useLedger, useNetwork, useServer, useWallet } from '../../contexts';

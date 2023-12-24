@@ -305,7 +305,7 @@ export interface SubmitStorageKeyRequest {
   storageKey: string;
 }
 
-export interface SetHookRequest {
+export interface SetHookRequest extends BaseTransactionRequest {
   // Hooks array, which mirrors the Hook Chain installed on the account. Position 0 in the array corresponds to position
   // 0 in the Hook Chain, etc.
   hooks: Hook[];

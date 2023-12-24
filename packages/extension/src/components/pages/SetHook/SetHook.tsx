@@ -3,34 +3,36 @@ import { FC, useCallback, useEffect, useState } from 'react';
 import {
   Chain,
   GEM_WALLET,
-  Hook,
   ReceiveSetHookBackgroundMessage,
   ResponseType,
-  SetHookRequest
+  SetHookRequest,
+  SetHook as SetHookTransaction
 } from '@gemwallet/constants';
 
 import { STORAGE_MESSAGING_KEY } from '../../../constants';
-import { useLedger, useNetwork } from '../../../contexts';
-import { useFetchFromSessionStorage, useTransactionStatus } from '../../../hooks';
+import { buildSetHook, useLedger, useNetwork, useWallet } from '../../../contexts';
+import { useFees, useFetchFromSessionStorage, useTransactionStatus } from '../../../hooks';
 import { TransactionStatus } from '../../../types';
+import { parseBaseParamsFromStoredData } from '../../../utils/baseParams';
 import { serializeError } from '../../../utils/errors';
+import { TransactionDetails } from '../../organisms';
 import { LoadingOverlay, TransactionPage } from '../../templates';
-import { HooksDisplay } from './HooksDisplay';
 
 interface Params {
   id: number;
-  hooks: Hook[] | null;
+  transaction: SetHookTransaction | null;
 }
 
 export const SetHook: FC = () => {
   const [params, setParams] = useState<Params>({
     id: 0,
-    hooks: null
+    transaction: null
   });
   const [errorRequestRejection, setErrorRequestRejection] = useState<Error>();
   const [isParamsMissing, setIsParamsMissing] = useState(false);
   const [transaction, setTransaction] = useState<TransactionStatus>(TransactionStatus.Waiting);
   const { setHook } = useLedger();
+  const { getCurrentWallet } = useWallet();
   const { chainName, networkName } = useNetwork();
   const { hasEnoughFunds, transactionStatusComponent } = useTransactionStatus({
     isParamsMissing,
@@ -48,6 +50,7 @@ export const SetHook: FC = () => {
   ) as {
     fetchedData: SetHookRequest | undefined;
   };
+  const { estimatedFees, errorFees } = useFees(params.transaction ?? [], params.transaction?.Fee);
 
   const createMessage = useCallback(
     (messagePayload: {
@@ -77,6 +80,12 @@ export const SetHook: FC = () => {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const id = Number(urlParams.get('id')) || 0;
+    const wallet = getCurrentWallet();
+
+    if (!wallet) {
+      setIsParamsMissing(true);
+      return;
+    }
 
     if (!fetchedData) {
       return;
@@ -89,11 +98,19 @@ export const SetHook: FC = () => {
       return;
     }
 
+    const transaction = buildSetHook(
+      {
+        ...parseBaseParamsFromStoredData(fetchedData),
+        hooks: hooks
+      },
+      wallet
+    );
+
     setParams({
       id,
-      hooks
+      transaction
     });
-  }, [fetchedData]);
+  }, [fetchedData, getCurrentWallet]);
 
   const handleReject = useCallback(() => {
     setTransaction(TransactionStatus.Rejected);
@@ -107,9 +124,7 @@ export const SetHook: FC = () => {
     setTransaction(TransactionStatus.Pending);
     // hooks will be present because if not,
     // we won't be able to go to the confirm transaction state
-    setHook({
-      hooks: params.hooks || []
-    })
+    setHook(params.transaction as SetHookTransaction)
       .then((response) => {
         setTransaction(TransactionStatus.Success);
         chrome.runtime.sendMessage<ReceiveSetHookBackgroundMessage>(createMessage(response));
@@ -125,7 +140,7 @@ export const SetHook: FC = () => {
       });
   }, [setHook, params, createMessage]);
 
-  if (params.hooks === null) {
+  if (params.transaction === null) {
     return <LoadingOverlay />;
   }
 
@@ -142,7 +157,12 @@ export const SetHook: FC = () => {
       onClickApprove={handleConfirm}
       onClickReject={handleReject}
     >
-      <HooksDisplay hooks={params.hooks ?? []} fontSize={12} />
+      <TransactionDetails
+        txParam={params.transaction}
+        estimatedFees={estimatedFees}
+        errorFees={errorFees}
+        displayTransactionType={false}
+      />
     </TransactionPage>
   );
 };

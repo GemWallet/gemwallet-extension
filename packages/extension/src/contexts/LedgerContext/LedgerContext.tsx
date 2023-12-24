@@ -36,7 +36,7 @@ import {
   MAINNET_CLIO_NODES,
   NFTData,
   NFTokenIDResponse,
-  SetHookRequest,
+  SetHook,
   SignTransactionRequest,
   SubmitBulkTransactionsRequest,
   SubmitTransactionRequest,
@@ -159,7 +159,7 @@ export interface LedgerContextType {
   deleteAccount: (destinationAddress: string) => Promise<DeleteAccountResponse>;
   getNFTInfo: (NFTokenID: string) => Promise<NFTInfoResponse>;
   getLedgerEntry: (ID: string) => Promise<LedgerEntryResponse>;
-  setHook: (payload: SetHookRequest) => Promise<SetHookResponse>;
+  setHook: (payload: SetHook) => Promise<SetHookResponse>;
 }
 
 const LedgerContext = createContext<LedgerContextType>({
@@ -692,7 +692,7 @@ const LedgerProvider: FC = ({ children }) => {
   );
 
   const setHook = useCallback(
-    async (payload: SetHookRequest): Promise<SetHookResponse> => {
+    async (payload: SetHook): Promise<SetHookResponse> => {
       if (chainName !== Chain.XAHAU) {
         throw new Error('Hooks are only available on Xahau');
       }
@@ -702,11 +702,7 @@ const LedgerProvider: FC = ({ children }) => {
 
       try {
         const { hash } = await handleTransaction({
-          transaction: {
-            TransactionType: 'SetHook',
-            Hooks: payload.hooks,
-            Account: wallet.publicAddress
-          },
+          transaction: payload,
           client,
           wallet
         });
