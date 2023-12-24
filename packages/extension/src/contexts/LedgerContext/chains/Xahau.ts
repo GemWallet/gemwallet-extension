@@ -1,13 +1,15 @@
-import { Client, NFTokenMint, Transaction, Wallet as WalletXRPL } from 'xrpl';
+import {
+  Client,
+  NFTokenMint,
+  setTransactionFlagsToNumber,
+  Transaction,
+  Wallet as WalletXRPL
+} from 'xrpl';
 import { XrplClient, XrplDefinitions, derive, sign, signAndSubmit, utils } from 'xrpl-accountlib';
 
 import { FAUCET_XAHAU_TESTNET, XahauNetwork } from '@gemwallet/constants';
 
 import { WalletLedger } from '../../../types';
-import { handleTransaction as handleTransactionXRPL } from './XRPL';
-
-const MAINNET_NETWORK_ID = 21337;
-const TESTNET_NETWORK_ID = 21338;
 
 const FUNDING_AMOUNT = 10000;
 
@@ -37,12 +39,22 @@ export const handleTransaction = async (param: {
   const account = derive.familySeed(wallet.seed);
   const networkInfo = await utils.txNetworkAndAccountValues(server, account);
 
+  // Object flags are not supported for Xahau transactions, so we convert them to numbers
+  setTransactionFlagsToNumber(transaction);
+
   try {
     const tx = {
       ...transaction,
       // Add: Sequence, Account, LastLedgerSequence, Fee (in case Hooks enabled: autodetect (from ledger))
       ...networkInfo.txValues
     };
+
+    // Check if the transaction has a custom Fee
+    // '0' means that the Fee must be dynamically calculated, so we don't keep it
+    if (transaction.Fee && transaction.Fee !== '0') {
+      // Retain the original custom Fee from transaction
+      tx.Fee = transaction.Fee;
+    }
 
     if (signOnly) {
       // Because the sign method from xrpl-accountlib does not fetch the definitions automatically -but signAndSubmit does-,
@@ -77,47 +89,19 @@ export const handleTransaction = async (param: {
 
 // Specific case for mintNFT where we also return the NFT ID
 export const handleMintNFT = async (param: {
-  txn: NFTokenMint;
+  transaction: NFTokenMint;
   client: Client;
   wallet: WalletLedger;
-  networkName: string;
 }): Promise<{ hash: string; NFTokenID: string }> => {
-  const { txn, client, wallet, networkName } = param;
-  const transaction = await toXahauTransaction({ transaction: txn, client, wallet, networkName });
+  const { transaction, client, wallet } = param;
 
-  return handleTransactionXRPL({ transaction, client, wallet })
+  return handleTransaction({ transaction, client, wallet })
     .then((result) => {
       return { hash: result.hash ?? '', NFTokenID: 'unknown' };
     })
     .catch((error) => {
       throw error;
     });
-};
-
-const toXahauTransaction = async (params: {
-  transaction: Transaction;
-  client?: Client | null;
-  wallet?: WalletLedger;
-  networkName: string;
-}): Promise<Transaction> => {
-  const { transaction } = params;
-  const res = { ...transaction };
-
-  // In case the NetworkID is not set by the API consumer, we autofill it
-  if (res.NetworkID === undefined) {
-    switch (params.networkName) {
-      case XahauNetwork.XAHAU_MAINNET:
-        res.NetworkID = MAINNET_NETWORK_ID;
-        break;
-      case XahauNetwork.XAHAU_TESTNET:
-        res.NetworkID = TESTNET_NETWORK_ID;
-        break;
-      default:
-        throw new Error(`Unsupported network: ${params.networkName}`);
-    }
-  }
-
-  return res;
 };
 
 export const calculateFees = async (param: {
@@ -130,6 +114,9 @@ export const calculateFees = async (param: {
 
   const server = client.connection.getUrl();
   if (!server) throw new Error('You need to be connected to a ledger');
+
+  // Object flags are not supported for Xahau transactions, so we convert them to numbers
+  setTransactionFlagsToNumber(transaction);
 
   const account = derive.familySeed(wallet.seed);
   const networkInfo = await utils.txNetworkAndAccountValues(server, account);
