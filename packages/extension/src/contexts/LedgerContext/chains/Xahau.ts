@@ -1,13 +1,12 @@
-import {
-  Client,
-  NFTokenMint,
-  setTransactionFlagsToNumber,
-  Transaction,
-  Wallet as WalletXRPL
-} from 'xrpl';
+import { Client, NFTokenMint, setTransactionFlagsToNumber, Wallet as WalletXRPL } from 'xrpl';
 import { XrplClient, XrplDefinitions, derive, sign, signAndSubmit, utils } from 'xrpl-accountlib';
 
-import { FAUCET_XAHAU_TESTNET, XahauNetwork, XahauTransaction } from '@gemwallet/constants';
+import {
+  FAUCET_XAHAU_TESTNET,
+  XahauNetwork,
+  XahauTransaction,
+  XRPLTransaction
+} from '@gemwallet/constants';
 
 import { WalletLedger } from '../../../types';
 
@@ -40,7 +39,8 @@ export const handleTransaction = async (param: {
   const networkInfo = await utils.txNetworkAndAccountValues(server, account);
 
   // Object flags are not supported for Xahau transactions, so we convert them to numbers
-  setTransactionFlagsToNumber(transaction);
+  // Since XahauTransaction does not embed flags objects yet, we can safely pass them as XRPLTransaction for now
+  setTransactionFlagsToNumber(transaction as XRPLTransaction);
 
   try {
     const tx = {
@@ -116,7 +116,8 @@ export const calculateFees = async (param: {
   if (!server) throw new Error('You need to be connected to a ledger');
 
   // Object flags are not supported for Xahau transactions, so we convert them to numbers
-  setTransactionFlagsToNumber(transaction);
+  // Since XahauTransaction does not embed flags objects yet, we can safely pass them as XRPLTransaction for now
+  setTransactionFlagsToNumber(transaction as XRPLTransaction);
 
   const account = derive.familySeed(wallet.seed);
   const networkInfo = await utils.txNetworkAndAccountValues(server, account);
