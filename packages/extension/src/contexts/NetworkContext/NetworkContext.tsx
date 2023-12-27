@@ -23,8 +23,9 @@ const DEFAULT_NETWORK_NAME = 'Loading...';
 
 interface ContextType {
   reconnectToNetwork: () => Promise<void>;
-  switchNetwork: (param: {
+  switchNetwork: (params: {
     network: Network;
+    chain?: Chain;
     customNetworkName?: string;
     customNetworkServer?: string;
   }) => Promise<void>;
