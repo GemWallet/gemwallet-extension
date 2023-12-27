@@ -18,7 +18,12 @@ jest.mock('../../contexts', () => {
       })
     }),
     useNetwork: () => ({
-      client: { getXrpBalance: mockGetXrpBalance }
+      client: {
+        getXrpBalance: mockGetXrpBalance,
+        connection: {
+          getUrl: () => 'wss://s.altnet.rippletest.net:51233'
+        }
+      }
     }),
     useServer: () => ({
       serverInfo: {
