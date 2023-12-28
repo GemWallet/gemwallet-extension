@@ -1,6 +1,6 @@
 import { useState, useCallback, FC, useMemo } from 'react';
 
-import { Button, Typography } from '@mui/material';
+import { Button, Tooltip, Typography } from '@mui/material';
 import { highlight, languages } from 'prismjs';
 import { useNavigate } from 'react-router-dom';
 import Editor from 'react-simple-code-editor';
@@ -156,18 +156,32 @@ export const SubmitRawTransaction: FC = () => {
         <Button variant="contained" size="large" onClick={handleBack}>
           Cancel
         </Button>
-        <Button variant="outlined" size="large" onClick={handleSignTransaction} color="primary">
-          Sign
-        </Button>
-        <Button
-          variant="outlined"
-          size="large"
-          onClick={handleSubmitTransaction}
-          disabled={hasOfflineBanner}
-          color="primary"
-        >
-          Submit
-        </Button>
+        <Tooltip title={!hasOfflineBanner ? 'Signing is only available in offline mode' : ''}>
+          <span>
+            <Button
+              variant="outlined"
+              size="large"
+              onClick={handleSignTransaction}
+              color="primary"
+              disabled={!hasOfflineBanner}
+            >
+              Sign
+            </Button>
+          </span>
+        </Tooltip>
+        <Tooltip title={hasOfflineBanner ? 'Submitting is only available in online mode' : ''}>
+          <span>
+            <Button
+              variant="outlined"
+              size="large"
+              onClick={handleSubmitTransaction}
+              disabled={hasOfflineBanner}
+              color="primary"
+            >
+              Submit
+            </Button>
+          </span>
+        </Tooltip>
       </div>
     </PageWithReturn>
   );
