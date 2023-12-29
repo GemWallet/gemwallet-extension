@@ -46,8 +46,28 @@ describe('JSON Transaction', () => {
     // Type extra character to trigger validation
     cy.get('.json-editor').type('a');
 
-    // 'Sign' button should be disabled
-    cy.get('button').contains('Sign').should('be.disabled');
+    // Click on 'Sign' button
+    cy.get('button').contains('Sign').click();
+
+    // 'Invalid JSON' error should be displayed
+    cy.contains('Invalid JSON');
+
+    // Remove extra character
+    cy.get('.json-editor').type('{backspace}');
+
+    // Click on 'Sign' button
+    cy.get('button').contains('Sign').click();
+
+    // 'Sign Transaction' modal should be displayed
+    cy.contains('Sign Transaction');
+    cy.contains('Amount').next().should('have.text', '0.1 XRP');
+
+    // Click on 'Sign' button
+    cy.get('button').contains('Sign').click();
+
+    cy.get('h1[data-testid="transaction-title"]').contains('Transaction accepted', {
+      timeout: 10000
+    });
   });
 
   it('Submit JSON Transaction', () => {
