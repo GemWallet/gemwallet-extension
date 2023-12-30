@@ -1,6 +1,12 @@
 import { render, screen } from '@testing-library/react';
 
+import { XAH_TOKEN } from '../../../../../constants';
+import { useMainToken } from '../../../../../hooks';
 import { RenderTokenIcon } from './RenderTokenIcon';
+
+jest.mock('../../../../../hooks', () => ({
+  useMainToken: jest.fn()
+}));
 
 describe('RenderTokenIcon', () => {
   test('should render Xrp icon when isMainToken is true', () => {
@@ -28,5 +34,21 @@ describe('RenderTokenIcon', () => {
   test('should render GemWallet when neither isMainToken nor tokenIconUrl is provided', () => {
     render(<RenderTokenIcon isMainToken={false} tokenIconUrl="" token="" />);
     expect(screen.getByTestId('gem-icon')).toBeInTheDocument();
+  });
+
+  test('should render Xahau icon when XAH_TOKEN is the main token', () => {
+    (useMainToken as jest.Mock).mockReturnValue(XAH_TOKEN);
+    render(<RenderTokenIcon isMainToken={true} tokenIconUrl="" token="" />);
+    expect(screen.getByTestId('xahau-icon')).toBeInTheDocument();
+  });
+
+  test('should render GemWallet by default', () => {
+    render(<RenderTokenIcon tokenIconUrl="" token="" />);
+    expect(screen.getByTestId('gem-icon')).toBeInTheDocument();
+  });
+
+  test('should render LPToken icon when isLPToken is true', () => {
+    render(<RenderTokenIcon isLPToken={true} tokenIconUrl="" token="" />);
+    expect(screen.getByTestId('lp-token-icon')).toBeInTheDocument();
   });
 });
