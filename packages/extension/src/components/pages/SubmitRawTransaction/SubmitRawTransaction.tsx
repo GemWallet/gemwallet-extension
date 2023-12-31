@@ -163,11 +163,9 @@ export const SubmitRawTransaction: FC = () => {
               : ''
           }
         >
-          <span>
-            <Button variant="outlined" size="large" onClick={handleSignTransaction} color="primary">
-              Sign
-            </Button>
-          </span>
+          <Button variant="outlined" size="large" onClick={handleSignTransaction} color="primary">
+            Sign
+          </Button>
         </Tooltip>
         <Tooltip title={hasOfflineBanner ? 'Submitting is only available in online mode' : ''}>
           <span>
