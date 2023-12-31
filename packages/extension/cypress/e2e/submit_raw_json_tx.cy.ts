@@ -92,8 +92,8 @@ describe('JSON Transaction', () => {
     // Type extra character to trigger validation
     cy.get('.json-editor').type('a');
 
-    // Click on 'Sign' button
-    cy.get('button').contains('Sign').click();
+    // Click on 'Submit' button
+    cy.get('button').contains('Submit').click();
 
     // 'Invalid JSON' error should be displayed
     cy.contains('Invalid JSON');
