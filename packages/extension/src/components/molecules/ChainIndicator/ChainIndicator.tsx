@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, MouseEvent, useState } from 'react';
 
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import Button from '@mui/material/Button';
@@ -15,9 +15,9 @@ export const ChainIndicator: FC = () => {
   const { chainName, switchChain } = useNetwork();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const open = Boolean(anchorEl);
+  const isOpen = Boolean(anchorEl);
 
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+  const handleClick = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -70,7 +70,7 @@ export const ChainIndicator: FC = () => {
       >
         <span style={{ visibility: 'hidden', width: '0' }}>{chainName}</span>
       </Button>
-      <Menu id="chain-menu" anchorEl={anchorEl} keepMounted open={open} onClose={handleClose}>
+      <Menu id="chain-menu" anchorEl={anchorEl} keepMounted open={isOpen} onClose={handleClose}>
         <MenuItem onClick={() => handleChangeChain(Chain.XRPL)}>
           <Xrp style={{ marginRight: '10px', width: '24px', height: '24px' }} /> XRPL
         </MenuItem>
