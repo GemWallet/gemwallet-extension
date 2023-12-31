@@ -134,7 +134,7 @@ describe('TokenListing', () => {
     await user.click(explainButton);
     expect(
       screen.getByText(
-        'The activation of this XRP ledger account was made through a minimum deposit of 10 XRP.'
+        'The activation of this account was made through a minimum deposit of 10 XRP.'
       )
     ).toBeVisible();
   });

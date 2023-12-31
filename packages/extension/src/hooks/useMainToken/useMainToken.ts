@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
 
-import { XRP_TOKEN } from '../../constants';
+import { Chain } from '@gemwallet/constants';
+
+import { XAH_TOKEN, XRP_TOKEN } from '../../constants';
 import { useNetwork } from '../../contexts';
 
 export const useMainToken = () => {
@@ -8,6 +10,8 @@ export const useMainToken = () => {
 
   return useMemo(() => {
     switch (chainName) {
+      case Chain.XAHAU:
+        return XAH_TOKEN;
       default:
         return XRP_TOKEN;
     }

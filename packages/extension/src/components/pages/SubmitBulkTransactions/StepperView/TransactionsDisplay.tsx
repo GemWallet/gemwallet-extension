@@ -4,6 +4,7 @@ import { Button } from '@mui/material';
 
 import { TransactionWithID } from '@gemwallet/constants';
 
+import { useMainToken } from '../../../../hooks';
 import {
   DataCard,
   RawTransaction,
@@ -23,6 +24,7 @@ export const TransactionsDisplay: FC<TransactionsDisplayProps> = ({
 }) => {
   const [expandedStates, setExpandedStates] = useState<Record<string, boolean>>({});
   const [areAllExpanded, setAreAllExpanded] = useState<boolean>(false);
+  const mainToken = useMainToken();
 
   const transactions = useMemo(
     () => Object.entries(transactionsToDisplay || {}),
@@ -79,6 +81,7 @@ export const TransactionsDisplay: FC<TransactionsDisplayProps> = ({
                   tx={txWithoutID}
                   displayTransactionType={false}
                   useLegacy={false}
+                  mainToken={mainToken}
                 />
                 <RawTransaction
                   transaction={txWithoutID}

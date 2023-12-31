@@ -210,6 +210,7 @@ export const buildBaseTransaction = (
   ...(payload.accountTxnID && { AccountTxnID: payload.accountTxnID }),
   ...(payload.lastLedgerSequence && { LastLedgerSequence: payload.lastLedgerSequence }),
   ...(payload.memos && { Memos: toXRPLMemos(payload.memos) }), // Each field of each memo is hex encoded
+  ...(payload.networkID && { NetworkID: payload.networkID }),
   ...(payload.signers && { Signers: toXRPLSigners(payload.signers) }),
   ...(payload.sourceTag && { SourceTag: payload.sourceTag }),
   ...(payload.signingPubKey && { SigningPubKey: payload.signingPubKey }),

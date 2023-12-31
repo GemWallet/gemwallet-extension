@@ -5,6 +5,7 @@ import { Amount } from 'xrpl/dist/npm/models/common';
 
 import { NFTData } from '@gemwallet/constants';
 
+import { useMainToken } from '../../../hooks';
 import { formatAmount } from '../../../utils';
 
 export type TxNFTData = NFTData & {
@@ -16,11 +17,13 @@ interface TransactionNFTDisplayProps {
 }
 
 export const TransactionNFTDisplay: FC<TransactionNFTDisplayProps> = ({ nftData }) => {
+  const mainToken = useMainToken();
+
   return (
     <>
       {nftData.amount ? (
         <Typography variant="body2" color="textSecondary">
-          {formatAmount(nftData.amount)}
+          {formatAmount(nftData.amount, mainToken)}
         </Typography>
       ) : null}
       {nftData.name ? (

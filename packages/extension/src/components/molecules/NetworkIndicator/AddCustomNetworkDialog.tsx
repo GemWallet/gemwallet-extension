@@ -2,6 +2,7 @@ import { FC, FocusEvent, useCallback, useMemo, useState } from 'react';
 
 import { Button, TextField } from '@mui/material';
 
+import { useNetwork } from '../../../contexts';
 import { saveCustomNetwork } from '../../../utils';
 import { DialogPage } from '../../templates';
 
@@ -23,6 +24,7 @@ export const AddCustomNetworkDialog: FC<AddCustomNetworkDialogProps> = ({
   const [description, setDescription] = useState<string>('');
   const [networkNameError, setNetworkNameError] = useState<string>('');
   const [serverError, setServerError] = useState<string>('');
+  const { chainName } = useNetwork();
 
   const handleNetworkNameChange = useCallback(
     (e: FocusEvent<HTMLInputElement>) => {
@@ -56,12 +58,13 @@ export const AddCustomNetworkDialog: FC<AddCustomNetworkDialogProps> = ({
   const handleAddNetwork = useCallback(() => {
     saveCustomNetwork({
       name: networkName,
+      chain: chainName,
       server,
       description
     });
     refreshNetworks();
     handleClose();
-  }, [description, handleClose, networkName, refreshNetworks, server]);
+  }, [chainName, description, handleClose, networkName, refreshNetworks, server]);
 
   const isAddNetworkDisabled = useMemo(() => {
     if (networkNames.includes(networkName.toLowerCase())) {

@@ -8,6 +8,7 @@ import {
   Chain,
   EventNetworkChangedBackgroundMessage,
   GEM_WALLET,
+  getDefaultNetwork,
   getNetwork,
   Network
 } from '@gemwallet/constants';
@@ -22,12 +23,13 @@ const DEFAULT_NETWORK_NAME = 'Loading...';
 
 interface ContextType {
   reconnectToNetwork: () => Promise<void>;
-  switchNetwork: (
-    network: Network,
-    customNetworkName?: string,
-    customNetworkServer?: string
-  ) => Promise<void>;
+  switchNetwork: (param: {
+    network: Network;
+    customNetworkName?: string;
+    customNetworkServer?: string;
+  }) => Promise<void>;
   resetNetwork: () => Promise<void>;
+  switchChain: (chain: Chain) => Promise<void>;
   // Returns null if client couldn't connect
   client?: Client | null;
   networkName: Network | string;
@@ -40,6 +42,7 @@ const NetworkContext = createContext<ContextType>({
   reconnectToNetwork: () => new Promise(() => {}),
   switchNetwork: () => new Promise(() => {}),
   resetNetwork: () => new Promise(() => {}),
+  switchChain: () => new Promise(() => {}),
   client: undefined,
   networkName: DEFAULT_NETWORK_NAME,
   chainName: Chain.XRPL,
@@ -54,7 +57,7 @@ const NetworkProvider: FC = ({ children }) => {
 
   const [client, setClient] = useState<Client | null | undefined>(undefined);
   const [networkName, setNetworkName] = useState<Network | string>(DEFAULT_NETWORK_NAME);
-  const [chainName] = useState<Chain>(Chain.XRPL);
+  const [chainName, setChainName] = useState<Chain>(Chain.XRPL);
   const [isConnectionFailed, setIsConnectionFailed] = useState(false);
   const [hasOfflineBanner, setHasOfflineBanner] = useState(false);
 
@@ -65,6 +68,9 @@ const NetworkProvider: FC = ({ children }) => {
     const connectToNetwork = async () => {
       const network = loadNetwork();
       setNetworkName(network.name);
+      if (chainName !== network.chain) {
+        setChainName(network.chain);
+      }
       let node = network.server;
       if (nodeIndex !== 0 && network.nodes?.[nodeIndex]) {
         node = network.nodes[nodeIndex];
@@ -95,7 +101,7 @@ const NetworkProvider: FC = ({ children }) => {
     };
 
     connectToNetwork();
-  }, []);
+  }, [chainName]);
 
   useEffect(() => {
     const handleBeforeUnload = () => {
@@ -139,20 +145,28 @@ const NetworkProvider: FC = ({ children }) => {
   }, [client]);
 
   const switchNetwork = useCallback(
-    async (network: Network, customNetworkName?: string, customNetworkServer?: string) => {
+    async (params: {
+      network: Network;
+      chain?: Chain;
+      customNetworkName?: string;
+      customNetworkServer?: string;
+    }) => {
+      const { network, chain, customNetworkName, customNetworkServer } = params;
+
       try {
         await client?.disconnect();
         // If a server URL is provided, use it. Otherwise, use the pre-defined server for the given network
         const ws = await connectToLedger(
-          customNetworkServer || getNetwork(chainName, network).server
+          customNetworkServer || getNetwork(chain ?? chainName, network).server
         );
         setNetworkName(customNetworkName || network);
-        saveNetwork(chainName, network, customNetworkName, customNetworkServer);
+        if (chain) setChainName(chain);
+        saveNetwork(chain ?? chainName, network, customNetworkName, customNetworkServer);
         setClient(ws);
         setIsConnectionFailed(false);
 
         if (process.env.NODE_ENV === 'production') {
-          const currentNetwork = getNetwork(chainName, network);
+          const currentNetwork = getNetwork(chain ?? chainName, network);
           chrome.runtime
             .sendMessage<EventNetworkChangedBackgroundMessage>({
               app: GEM_WALLET,
@@ -186,6 +200,14 @@ const NetworkProvider: FC = ({ children }) => {
     [chainName, client]
   );
 
+  const switchChain = useCallback(
+    async (chain: Chain) => {
+      const newNetwork = getDefaultNetwork(chain);
+      await switchNetwork({ network: newNetwork, chain });
+    },
+    [switchNetwork]
+  );
+
   // Remove Network configuration and set default one
   const resetNetwork = useCallback(async () => {
     try {
@@ -206,7 +228,8 @@ const NetworkProvider: FC = ({ children }) => {
       networkName,
       chainName,
       isConnectionFailed,
-      hasOfflineBanner
+      hasOfflineBanner,
+      switchChain
     };
   }, [
     reconnectToNetwork,
@@ -216,7 +239,8 @@ const NetworkProvider: FC = ({ children }) => {
     networkName,
     chainName,
     isConnectionFailed,
-    hasOfflineBanner
+    hasOfflineBanner,
+    switchChain
   ]);
 
   return (

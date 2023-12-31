@@ -1,5 +1,6 @@
 export enum Chain {
-  XRPL = 'XRPL'
+  XRPL = 'XRPL',
+  XAHAU = 'XAHAU'
 }
 
 export enum XRPLNetwork {
@@ -9,12 +10,26 @@ export enum XRPLNetwork {
   CUSTOM = 'Custom'
 }
 
+export enum XahauNetwork {
+  XAHAU_MAINNET = 'Mainnet',
+  XAHAU_TESTNET = 'Testnet',
+  CUSTOM = 'Custom'
+}
+
+export type Network = XRPLNetwork | XahauNetwork;
+
+// XRPL
 export const MAINNET_CLIO_NODES = ['wss://s1.ripple.com', 'wss://s2.ripple.com'];
 export const MAINNET_NODES = ['wss://xrplcluster.com', ...MAINNET_CLIO_NODES];
 export const TESTNET_NODES = ['wss://s.altnet.rippletest.net:51233', 'wss://testnet.xrpl-labs.com'];
 export const DEVNET_NODES = ['wss://s.devnet.rippletest.net:51233'];
 
-export type Network = XRPLNetwork;
+// Xahau
+export const XAHAU_MAINNET_NODES = ['wss://xahau.network'];
+export const XAHAU_TESTNET_NODES = ['wss://xahau-test.net'];
+
+// Faucets
+export const FAUCET_XAHAU_TESTNET = 'https://xahau-test.net/accounts';
 
 export interface NetworkNode {
   chain: Chain;
@@ -31,8 +46,15 @@ interface NetworkConfigXRPL {
   [XRPLNetwork.CUSTOM]: NetworkNode;
 }
 
+interface NetworkConfigXahau {
+  [XahauNetwork.XAHAU_MAINNET]: NetworkNode;
+  [XahauNetwork.XAHAU_TESTNET]: NetworkNode;
+  [XahauNetwork.CUSTOM]: NetworkNode;
+}
+
 type ChainConfig = {
   [Chain.XRPL]: NetworkConfigXRPL;
+  [Chain.XAHAU]: NetworkConfigXahau;
 };
 
 export const NETWORK: ChainConfig = {
@@ -65,11 +87,35 @@ export const NETWORK: ChainConfig = {
       server: '',
       description: 'Custom network configuration provided by the user.'
     }
+  },
+  [Chain.XAHAU]: {
+    [XahauNetwork.XAHAU_MAINNET]: {
+      chain: Chain.XAHAU,
+      name: XahauNetwork.XAHAU_MAINNET,
+      server: XAHAU_MAINNET_NODES[0],
+      nodes: XAHAU_MAINNET_NODES,
+      description: 'Mainnet for the Xahau blockchain.'
+    },
+    [XahauNetwork.XAHAU_TESTNET]: {
+      chain: Chain.XAHAU,
+      name: XahauNetwork.XAHAU_TESTNET,
+      server: XAHAU_TESTNET_NODES[0],
+      nodes: XAHAU_TESTNET_NODES,
+      description: 'Testnet for the Xahau blockchain.'
+    },
+    [XahauNetwork.CUSTOM]: {
+      chain: Chain.XAHAU,
+      name: XahauNetwork.CUSTOM,
+      server: '',
+      description: 'Custom network configuration provided by the user.'
+    }
   }
 };
 
 export const getDefaultNetwork = (chain: Chain): Network => {
   switch (chain) {
+    case Chain.XAHAU:
+      return XahauNetwork.XAHAU_MAINNET;
     default:
       return XRPLNetwork.MAINNET;
   }
@@ -78,6 +124,10 @@ export const getDefaultNetwork = (chain: Chain): Network => {
 export function getNetwork(chain: Chain, network: Network): NetworkNode {
   if (chain === Chain.XRPL && Object.values(XRPLNetwork).includes(network as XRPLNetwork)) {
     return NETWORK[chain][network as XRPLNetwork] as NetworkNode;
+  }
+
+  if (chain === Chain.XAHAU && Object.values(XahauNetwork).includes(network as XahauNetwork)) {
+    return NETWORK[chain][network as XahauNetwork] as NetworkNode;
   }
 
   throw new Error(`Network ${network} is not valid for chain ${chain}`);

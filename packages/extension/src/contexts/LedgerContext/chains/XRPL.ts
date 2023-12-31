@@ -1,12 +1,12 @@
 import {
   Client,
+  NFTokenMint,
   Transaction,
   TransactionMetadata,
   TxResponse,
   validate,
   Wallet as WalletXRPL
 } from 'xrpl';
-import { NFTokenMint } from 'xrpl/dist/npm/models/transactions/NFTokenMint';
 
 import { WalletLedger } from '../../../types';
 

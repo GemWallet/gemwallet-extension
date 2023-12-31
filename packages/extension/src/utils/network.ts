@@ -1,4 +1,11 @@
-import { Chain, getNetwork, Network, NetworkNode, XRPLNetwork } from '@gemwallet/constants';
+import {
+  Chain,
+  getDefaultNetwork,
+  getNetwork,
+  Network,
+  NetworkNode,
+  XRPLNetwork
+} from '@gemwallet/constants';
 import { NetworkData } from '@gemwallet/constants/src/network/network.types';
 
 import { STORAGE_CUSTOM_NETWORKS, STORAGE_NETWORK } from '../constants/storage';
@@ -71,7 +78,7 @@ export const loadNetwork = () => {
   try {
     const data = loadData(STORAGE_NETWORK);
     if (!data) {
-      return getNetwork(Chain.XRPL, XRPLNetwork.MAINNET);
+      return getNetwork(Chain.XRPL, getDefaultNetwork(Chain.XRPL));
     }
 
     const parsedData: NetworkNode = JSON.parse(data);

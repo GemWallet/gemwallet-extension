@@ -51,6 +51,12 @@ import { resolveNFTData } from '../../utils/NFTDataResolver';
 import { useNetwork } from '../NetworkContext';
 import { useWallet } from '../WalletContext';
 import {
+  calculateFees as calculateFeesXahau,
+  fundWallet as fundWalletXahau,
+  handleMintNFT as handleMintNFTXahau,
+  handleTransaction as handleTransactionXahau
+} from './chains/Xahau';
+import {
   calculateFees as calculateFeesXRPL,
   fundWallet as fundWalletXRPL,
   handleMintNFT as handleMintNFTXRPL,
@@ -197,6 +203,13 @@ const LedgerProvider: FC = ({ children }) => {
       const { transaction, client, wallet, signOnly, shouldCheck } = params;
 
       switch (chainName) {
+        case Chain.XAHAU:
+          return (await handleTransactionXahau({
+            transaction,
+            client,
+            wallet,
+            signOnly
+          })) as SubmitTransactionResponse;
         default:
           return (await handleTransactionXRPL({
             transaction,
@@ -227,6 +240,8 @@ const LedgerProvider: FC = ({ children }) => {
       }
 
       switch (chainName) {
+        case Chain.XAHAU:
+          return calculateFeesXahau({ client, transaction, wallet });
         default:
           return calculateFeesXRPL({ client, transaction });
       }
@@ -241,6 +256,8 @@ const LedgerProvider: FC = ({ children }) => {
       if (!wallet) throw new Error('You need to have a wallet connected to fund the wallet');
 
       switch (chainName) {
+        case Chain.XAHAU:
+          return await fundWalletXahau({ wallet, networkName });
         default:
           return await fundWalletXRPL({ client, wallet });
       }
@@ -248,7 +265,7 @@ const LedgerProvider: FC = ({ children }) => {
       Sentry.captureException(e);
       throw e;
     }
-  }, [chainName, client, getCurrentWallet]);
+  }, [chainName, client, getCurrentWallet, networkName]);
 
   /*
    * Transactions
@@ -263,6 +280,8 @@ const LedgerProvider: FC = ({ children }) => {
       } else {
         try {
           switch (chainName) {
+            case Chain.XAHAU:
+              return handleMintNFTXahau({ client, wallet, transaction: payload });
             default:
               return handleMintNFTXRPL({ client, wallet, transaction: payload });
           }

@@ -2,7 +2,9 @@ import { FC } from 'react';
 
 import { Avatar } from '@mui/material';
 
-import { GemWallet, LPToken, Xrp } from '../../../../atoms';
+import { XAH_TOKEN } from '../../../../../constants';
+import { useMainToken } from '../../../../../hooks';
+import { GemWallet, LPToken, Xahau, Xrp } from '../../../../atoms';
 
 interface RenderTokenIconProps {
   isMainToken?: boolean;
@@ -17,8 +19,15 @@ export const RenderTokenIcon: FC<RenderTokenIconProps> = ({
   token,
   isLPToken
 }) => {
+  const mainToken = useMainToken();
+
   if (isMainToken) {
-    return <Xrp />;
+    switch (mainToken) {
+      case XAH_TOKEN:
+        return <Xahau />;
+      default:
+        return <Xrp />;
+    }
   }
 
   if (isLPToken) {

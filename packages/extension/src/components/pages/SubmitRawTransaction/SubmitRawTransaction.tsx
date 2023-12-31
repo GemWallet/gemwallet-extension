@@ -8,6 +8,8 @@ import { validate } from 'xrpl';
 import 'prismjs/components/prism-json';
 import 'prismjs/themes/prism-okaidia.css';
 
+import { Chain } from '@gemwallet/constants';
+
 import {
   SETTINGS_PATH,
   SIGN_TRANSACTION_PATH,
@@ -26,6 +28,7 @@ export const SubmitRawTransaction: FC = () => {
   }, [hasOfflineBanner]);
 
   const navigate = useNavigate();
+  const { chainName } = useNetwork();
   const wallet = getCurrentWallet();
 
   const [jsonInput, setJsonInput] = useState('');
@@ -34,6 +37,20 @@ export const SubmitRawTransaction: FC = () => {
   const handleBack = useCallback(() => {
     navigate(SETTINGS_PATH);
   }, [navigate]);
+
+  const validateTx = useCallback(
+    (parsed) => {
+      if (!('Account' in parsed)) {
+        parsed.Account = wallet?.publicAddress;
+      }
+
+      if (chainName !== Chain.XAHAU) {
+        // Transaction validation is not supported for Xahau for now
+        validate(parsed);
+      }
+    },
+    [chainName, wallet?.publicAddress]
+  );
 
   const handleSignTransaction = useCallback(() => {
     const key = generateKey();
@@ -46,11 +63,7 @@ export const SubmitRawTransaction: FC = () => {
 
     try {
       const parsed = JSON.parse(jsonInput);
-      if (!('Account' in parsed)) {
-        parsed.Account = wallet?.publicAddress;
-      }
-
-      validate(parsed);
+      validateTx(parsed);
       saveInChromeSessionStorage(key, JSON.stringify({ transaction: parsed })).then(() =>
         navigate(
           `${SIGN_TRANSACTION_PATH}?${STORAGE_MESSAGING_KEY}=${key}&inAppCall=true&sign=transaction`
@@ -61,7 +74,7 @@ export const SubmitRawTransaction: FC = () => {
       return;
     }
     setErrorMessage('');
-  }, [jsonInput, navigate, wallet?.publicAddress]);
+  }, [jsonInput, navigate, validateTx]);
 
   const handleSubmitTransaction = useCallback(() => {
     const key = generateKey();
@@ -74,11 +87,7 @@ export const SubmitRawTransaction: FC = () => {
 
     try {
       const parsed = JSON.parse(jsonInput);
-      if (!('Account' in parsed)) {
-        parsed.Account = wallet?.publicAddress;
-      }
-
-      validate(parsed);
+      validateTx(parsed);
       saveInChromeSessionStorage(key, JSON.stringify({ transaction: parsed })).then(() =>
         navigate(
           `${SUBMIT_TRANSACTION_PATH}?${STORAGE_MESSAGING_KEY}=${key}&inAppCall=true&submit=transaction`
@@ -89,7 +98,7 @@ export const SubmitRawTransaction: FC = () => {
       return;
     }
     setErrorMessage('');
-  }, [jsonInput, navigate, wallet?.publicAddress]);
+  }, [jsonInput, navigate, validateTx]);
 
   const handleBeautifyJson = useCallback(() => {
     try {

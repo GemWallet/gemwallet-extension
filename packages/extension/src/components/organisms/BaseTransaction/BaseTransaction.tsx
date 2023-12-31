@@ -14,6 +14,7 @@ import {
 } from '@gemwallet/constants';
 
 import { ERROR_RED } from '../../../constants';
+import { useMainToken } from '../../../hooks';
 import { formatAmount, formatFlags, formatToken } from '../../../utils';
 import { TileLoader } from '../../atoms';
 
@@ -83,6 +84,8 @@ export const BaseTransaction: FC<BaseTransactionProps> = ({
 );
 
 export const Fee: FC<FeeProps> = ({ errorFees, estimatedFees, fee, isBulk, useLegacy = true }) => {
+  const mainToken = useMainToken();
+
   if (useLegacy) {
     return (
       <Paper elevation={24} style={{ padding: '10px', marginBottom: '5px' }}>
@@ -108,9 +111,9 @@ export const Fee: FC<FeeProps> = ({ errorFees, estimatedFees, fee, isBulk, useLe
           ) : estimatedFees === DEFAULT_FEES ? (
             <TileLoader secondLineOnly />
           ) : fee ? (
-            formatToken(fee, 'XRP (manual)', true)
+            formatToken(fee, `${mainToken} (manual)`, true)
           ) : (
-            formatAmount(estimatedFees)
+            formatAmount(estimatedFees, mainToken)
           )}
         </Typography>
       </Paper>
@@ -141,9 +144,9 @@ export const Fee: FC<FeeProps> = ({ errorFees, estimatedFees, fee, isBulk, useLe
         ) : estimatedFees === DEFAULT_FEES ? (
           <TileLoader secondLineOnly />
         ) : fee ? (
-          formatToken(fee, 'XRP (manual)', true)
+          formatToken(fee, `${mainToken} (manual)`, true)
         ) : (
-          formatAmount(estimatedFees)
+          formatAmount(estimatedFees, mainToken)
         )}
       </Typography>
     </>

@@ -3,9 +3,10 @@ import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, Link, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
-import { AccountLinesTrustline, TrustSetFlags as TrustSetFlagsBitmask } from 'xrpl';
+import { AccountLinesTrustline } from 'xrpl';
+import { TrustSetFlags as TrustSetFlagsBitmask } from 'xrpl';
 
-import { Chain, XRPLNetwork } from '@gemwallet/constants';
+import { Chain, XahauNetwork, XRPLNetwork } from '@gemwallet/constants';
 
 import {
   ADD_NEW_TRUSTLINE_PATH,
@@ -124,6 +125,8 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
     switch (chainName) {
       case Chain.XRPL:
         return networkName === XRPLNetwork.TESTNET || networkName === XRPLNetwork.DEVNET;
+      case Chain.XAHAU:
+        return networkName === XahauNetwork.XAHAU_TESTNET;
       default:
         return false;
     }
@@ -181,7 +184,7 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
       <InformationMessage title="Account not activated">
         <div style={{ marginBottom: '5px' }}>
           To create this account to the XRP ledger, you will have to make a first deposit of a
-          minimum {reserve} {mainToken}.
+          minimum {baseReserve} {mainToken}.
         </div>
         <Link
           href="https://xrpl.org/reserves.html?utm_source=gemwallet.app"
@@ -269,8 +272,8 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
             }}
           >
             <Typography style={{ marginBottom: '5px' }}>
-              The activation of this XRP ledger account was made through a minimum deposit of{' '}
-              {baseReserve} {mainToken}.
+              The activation of this account was made through a minimum deposit of {baseReserve}{' '}
+              {mainToken}.
             </Typography>
             <Link
               href="https://xrpl.org/reserves.html?utm_source=gemwallet.app"
