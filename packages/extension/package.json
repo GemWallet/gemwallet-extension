@@ -57,7 +57,7 @@
     "eslint": "^7.11.0"
   },
   "scripts": {
-    "start": "craco start",
+    "start": "NODE_OPTIONS=--openssl-legacy-provider craco start",
     "build": "INLINE_RUNTIME_CHUNK=false GENERATE_SOURCEMAP=false craco build",
     "cypress:open": "cypress open",
     "cypress:e2e": "cypress open --browser chrome --e2e",
