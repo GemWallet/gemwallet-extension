@@ -37,6 +37,7 @@ export interface NetworkNode {
   server: string;
   nodes?: string[];
   description: string;
+  networkID?: number;
 }
 
 interface NetworkConfigXRPL {
@@ -64,7 +65,8 @@ export const NETWORK: ChainConfig = {
       name: XRPLNetwork.MAINNET,
       server: MAINNET_NODES[0],
       nodes: MAINNET_NODES,
-      description: 'Main network using the production version of the XRP Ledger.'
+      description: 'Main network using the production version of the XRP Ledger.',
+      networkID: 0
     },
     [XRPLNetwork.TESTNET]: {
       chain: Chain.XRPL,
@@ -72,7 +74,8 @@ export const NETWORK: ChainConfig = {
       server: TESTNET_NODES[0],
       nodes: TESTNET_NODES,
       description:
-        'Acts as a testing network, without impacting production users and risking real money.'
+        'Acts as a testing network, without impacting production users and risking real money.',
+      networkID: 1
     },
     [XRPLNetwork.DEVNET]: {
       chain: Chain.XRPL,
@@ -94,14 +97,16 @@ export const NETWORK: ChainConfig = {
       name: XahauNetwork.XAHAU_MAINNET,
       server: XAHAU_MAINNET_NODES[0],
       nodes: XAHAU_MAINNET_NODES,
-      description: 'Mainnet for the Xahau blockchain.'
+      description: 'Mainnet for the Xahau blockchain.',
+      networkID: 21337
     },
     [XahauNetwork.XAHAU_TESTNET]: {
       chain: Chain.XAHAU,
       name: XahauNetwork.XAHAU_TESTNET,
       server: XAHAU_TESTNET_NODES[0],
       nodes: XAHAU_TESTNET_NODES,
-      description: 'Testnet for the Xahau blockchain.'
+      description: 'Testnet for the Xahau blockchain.',
+      networkID: 21338
     },
     [XahauNetwork.CUSTOM]: {
       chain: Chain.XAHAU,
@@ -132,3 +137,19 @@ export function getNetwork(chain: Chain, network: Network): NetworkNode {
 
   throw new Error(`Network ${network} is not valid for chain ${chain}`);
 }
+
+export const getNetworkByNetworkID = (networkID: number): NetworkNode => {
+  // Hardcoded for performance reasons
+  switch (networkID) {
+    case 0:
+      return NETWORK[Chain.XRPL][XRPLNetwork.MAINNET];
+    case 1:
+      return NETWORK[Chain.XRPL][XRPLNetwork.TESTNET];
+    case 21337:
+      return NETWORK[Chain.XAHAU][XahauNetwork.XAHAU_MAINNET];
+    case 21338:
+      return NETWORK[Chain.XAHAU][XahauNetwork.XAHAU_TESTNET];
+    default:
+      throw new Error(`Network ID ${networkID} is not valid`);
+  }
+};

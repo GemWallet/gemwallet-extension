@@ -3,7 +3,6 @@ import { useCallback, useMemo, useState } from 'react';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import DoneIcon from '@mui/icons-material/Done';
 import { Button, Container, IconButton, Typography } from '@mui/material';
-import * as Sentry from '@sentry/react';
 import copyToClipboard from 'copy-to-clipboard';
 
 import { Network } from '@gemwallet/constants';
@@ -134,15 +133,6 @@ export const useTransactionStatus = ({
           />
         );
       }
-      Sentry.captureException('Transaction failed - errorFees: ' + errorFees);
-      return (
-        <AsyncTransaction
-          title="Error"
-          subtitle={errorFees}
-          transaction={TransactionStatus.Rejected}
-          {...(onClick && { onClick })}
-        />
-      );
     }
 
     if (!difference) {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import * as Sentry from '@sentry/react';
 import { dropsToXrp, Transaction } from 'xrpl';
@@ -21,12 +21,19 @@ export const useFees = (tx: Transaction | Transaction[], fee?: string | null) =>
   const { client } = useNetwork();
   const { serverInfo } = useServer();
 
+  const reserveBase = useMemo(() => {
+    return serverInfo?.info.validated_ledger?.reserve_base_xrp;
+  }, [serverInfo?.info.validated_ledger?.reserve_base_xrp]);
+
   useEffect(() => {
     const currentWallet = getCurrentWallet();
     if (currentWallet && client) {
       const transactions = Array.isArray(tx) ? tx : [tx];
 
-      if (transactions.length) {
+      // We don't want to calculate fees if the reserve has not yet been fetched since it will force a new calculation
+      // when the reserve will be fetched
+      // This way, we calculate fees the least amount of time possible
+      if (transactions.length && reserveBase !== undefined) {
         const processTransactions = async () => {
           try {
             const fees = [];
@@ -45,9 +52,7 @@ export const useFees = (tx: Transaction | Transaction[], fee?: string | null) =>
             setEstimatedFees(totalFees.toString());
 
             const currentBalance = await client?.getXrpBalance(currentWallet.publicAddress);
-            const baseReserve = Number(
-              serverInfo?.info.validated_ledger?.reserve_base_xrp || DEFAULT_RESERVE
-            );
+            const baseReserve = Number(reserveBase || DEFAULT_RESERVE);
             const diffFee = fee ? Number(fee) : totalFees;
             try {
               const accountInfo = await getAccountInfo();
@@ -55,13 +60,14 @@ export const useFees = (tx: Transaction | Transaction[], fee?: string | null) =>
                 accountInfo.result.account_data.OwnerCount * RESERVE_PER_OWNER + baseReserve;
               const difference = Number(currentBalance) - reserve - Number(dropsToXrp(diffFee));
               setDifference(difference);
+              setError(undefined);
             } catch (e) {
               const difference = Number(currentBalance) - baseReserve - Number(dropsToXrp(diffFee));
               setDifference(difference);
               Sentry.captureException(e);
             }
           } catch (e: any) {
-            setError(e.message);
+            setError(`Error while calculating fees: ${e.message}`);
             Sentry.captureException(e);
           }
         };
@@ -69,15 +75,14 @@ export const useFees = (tx: Transaction | Transaction[], fee?: string | null) =>
         processTransactions();
       }
     }
-  }, [
-    client,
-    estimateNetworkFees,
-    getCurrentWallet,
-    serverInfo?.info.validated_ledger?.reserve_base_xrp,
-    fee,
-    getAccountInfo,
-    tx
-  ]);
+    // Since switching network from the Transaction view updates multiple objects in a non-atomic way -client, estimateNetworkFees, etc- we want to optimize the number of calls
+    // in order to avoid fees calculation errors due multiple estimation of fees at the same time and race conditions
+    // getAccountInfo and estimateNetworkFees depend on the client, so we do not put them in the deps array
+    // getCurrentWallet will not change so will never trigger a recalculation
+    // Also, we consider that the client is updated when the url changes, otherwise we consider that the newtork is the same and the fees won't change
+    // Finally, if the transaction object and the provided fee are updated, we need to recalculate the fees
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [client?.connection.getUrl(), reserveBase, tx, fee, getCurrentWallet]);
 
   return {
     estimatedFees,

@@ -1,11 +1,15 @@
-import React, { FC, useState } from 'react';
+import { FC, useEffect, useMemo, useState } from 'react';
 
 import { Transaction } from 'xrpl';
 
+import { Network, getNetwork, getNetworkByNetworkID } from '@gemwallet/constants';
+
+import { useNetwork } from '../../../contexts';
 import { useMainToken } from '../../../hooks';
 import { DataCard, RawTransaction, XRPLTransaction } from '../../molecules';
 import { Fee } from '../../organisms';
 import { LoadingOverlay } from '../../templates';
+import { WrongNetworkIDModal } from './WrongNetworkIDModal';
 
 interface TransactionDetailsProps {
   txParam: Transaction | null;
@@ -25,7 +29,34 @@ export const TransactionDetails: FC<TransactionDetailsProps> = ({
   const [isTxExpanded, setIsTxExpanded] = useState(false);
   const [isRawTxExpanded, setIsRawTxExpanded] = useState(false);
   const [isFeeExpanded, setIsFeeExpanded] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const { chainName, networkName } = useNetwork();
   const mainToken = useMainToken();
+
+  const currentNetwork = useMemo(() => {
+    return getNetwork(chainName, networkName as Network);
+  }, [chainName, networkName]);
+
+  const expectedNetwork = useMemo(() => {
+    if (!txParam?.NetworkID) {
+      return null;
+    }
+
+    return getNetworkByNetworkID(txParam?.NetworkID);
+  }, [txParam?.NetworkID]);
+
+  useEffect(() => {
+    if (!expectedNetwork?.networkID) {
+      return;
+    }
+
+    setShowModal(currentNetwork.networkID !== expectedNetwork?.networkID);
+  }, [currentNetwork.networkID, expectedNetwork?.networkID]);
+
+  if (isLoading) {
+    return <LoadingOverlay />;
+  }
 
   if (!txParam?.Account) {
     return <LoadingOverlay />;
@@ -73,8 +104,18 @@ export const TransactionDetails: FC<TransactionDetailsProps> = ({
           isExpanded={isFeeExpanded}
           setIsExpanded={setIsFeeExpanded}
           paddingTop={10}
+          alwaysExpand={true}
         />
       )}
+      <WrongNetworkIDModal
+        open={showModal}
+        onClose={() => {
+          setShowModal(false);
+        }}
+        expectedNetwork={expectedNetwork}
+        currentNetwork={currentNetwork}
+        setIsLoading={setIsLoading}
+      />
     </>
   );
 };
