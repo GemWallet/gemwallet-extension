@@ -28,7 +28,7 @@ import {
 } from '../../../../constants';
 import { useLedger, useNetwork, useServer, useWallet } from '../../../../contexts';
 import { useMainToken } from '../../../../hooks';
-import { buildDefaultMemos, convertHexCurrencyString } from '../../../../utils';
+import { buildDefaultMemos, convertHexCurrencyString, formatToken } from '../../../../utils';
 import { NumericInput } from '../../../atoms';
 import { InformationMessage } from '../../../molecules';
 import { PageWithNavMenu, PageWithReturn, PageWithSpinner } from '../../../templates';
@@ -386,18 +386,39 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
             label="Token"
             onChange={handleTokenChange}
           >
-            {tokens.map((token) => (
-              <MenuItem
-                key={`${token.currency}-${token.issuer}`}
-                value={`${token.currency}-${token.issuer}`}
-              >
-                {convertHexCurrencyString(
-                  token.issuer === undefined && token.currency !== mainToken
-                    ? mainToken
-                    : token.currency
-                )}
-              </MenuItem>
-            ))}
+            {tokens.map((token) => {
+              const displayCurrency =
+                token.issuer === undefined && token.currency !== mainToken
+                  ? mainToken
+                  : token.currency;
+
+              return (
+                <MenuItem
+                  key={`${token.currency}-${token.issuer}`}
+                  value={`${token.currency}-${token.issuer}`}
+                >
+                  {convertHexCurrencyString(displayCurrency)}
+                  {token.value ? (
+                    <Typography
+                      variant="caption"
+                      component="span"
+                      style={{ marginLeft: '8px', fontStyle: 'italic', fontSize: '0.8rem' }}
+                    >
+                      - Available: {formatToken(Number(token.value), displayCurrency)}
+                    </Typography>
+                  ) : null}
+                  {token.issuer ? (
+                    <Typography
+                      variant="caption"
+                      component="span"
+                      style={{ marginLeft: '8px', fontStyle: 'italic', fontSize: '0.8rem' }}
+                    >
+                      - {token.issuer}
+                    </Typography>
+                  ) : null}
+                </MenuItem>
+              );
+            })}
           </Select>
         </FormControl>
         <NumericInput
