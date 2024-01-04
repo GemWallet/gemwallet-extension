@@ -156,9 +156,10 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
   }, [client, getCurrentWallet]);
 
   useEffect(() => {
+    setTokensWithMetadata(tokens);
+
     const fetchTokensData = async () => {
       if (!tokens) {
-        setTokensWithMetadata(undefined);
         return;
       }
 
