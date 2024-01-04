@@ -457,7 +457,15 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
                     <Typography
                       variant="caption"
                       component="span"
-                      style={{ marginLeft: '8px', fontStyle: 'italic', fontSize: '0.8rem' }}
+                      style={{
+                        marginLeft: '8px',
+                        fontStyle: 'italic',
+                        fontSize: '0.8rem',
+                        overflow: 'hidden',
+                        whiteSpace: 'nowrap',
+                        textOverflow: 'ellipsis',
+                        display: 'inline-block'
+                      }}
                     >
                       - {token.issuerName ?? token.issuer}
                     </Typography>
