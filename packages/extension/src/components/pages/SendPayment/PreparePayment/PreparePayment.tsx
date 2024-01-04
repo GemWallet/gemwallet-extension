@@ -28,7 +28,12 @@ import {
 } from '../../../../constants';
 import { useLedger, useNetwork, useServer, useWallet } from '../../../../contexts';
 import { useMainToken } from '../../../../hooks';
-import { buildDefaultMemos, convertHexCurrencyString, formatToken } from '../../../../utils';
+import {
+  buildDefaultMemos,
+  convertHexCurrencyString,
+  formatToken,
+  getTrustLineData
+} from '../../../../utils';
 import { NumericInput } from '../../../atoms';
 import { InformationMessage } from '../../../molecules';
 import { PageWithNavMenu, PageWithReturn, PageWithSpinner } from '../../../templates';
@@ -75,6 +80,15 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
         value: string;
         currency: string;
         issuer?: string;
+      }[]
+    | undefined
+  >();
+  const [tokensWithMetadata, setTokensWithMetadata] = useState<
+    | {
+        value: string;
+        currency: string;
+        issuer?: string;
+        issuerName?: string;
       }[]
     | undefined
   >();
@@ -140,6 +154,37 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
 
     fetchBalances();
   }, [client, getCurrentWallet]);
+
+  useEffect(() => {
+    const fetchTokensData = async () => {
+      if (!tokens) {
+        setTokensWithMetadata(undefined);
+        return;
+      }
+
+      const tokensListDataPromises = tokens.map(async (token) => {
+        const { currency, issuer } = token;
+        if (!issuer) {
+          return { ...token };
+        }
+
+        try {
+          const res = await getTrustLineData({ token: currency, issuer });
+          return {
+            ...token,
+            issuerName: res.issuerName
+          };
+        } catch (error) {
+          return { ...token };
+        }
+      });
+
+      const tokensListData = await Promise.all(tokensListDataPromises);
+      setTokensWithMetadata(tokensListData);
+    };
+
+    fetchTokensData();
+  }, [tokens]);
 
   useEffect(() => {
     async function checkWalletActivated() {
@@ -340,7 +385,7 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
     );
   }
 
-  if (!tokens) {
+  if (!tokensWithMetadata) {
     return <PageWithSpinner />;
   }
 
@@ -382,11 +427,11 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
             labelId="token-label"
             id="token-select"
             inputRef={tokenRef}
-            defaultValue={`${tokens[0].currency}-${tokens[0].issuer}`}
+            defaultValue={`${tokensWithMetadata[0].currency}-${tokensWithMetadata[0].issuer}`}
             label="Token"
             onChange={handleTokenChange}
           >
-            {tokens.map((token) => {
+            {tokensWithMetadata.map((token) => {
               const displayCurrency =
                 token.issuer === undefined && token.currency !== mainToken
                   ? mainToken
@@ -404,7 +449,8 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
                       component="span"
                       style={{ marginLeft: '8px', fontStyle: 'italic', fontSize: '0.8rem' }}
                     >
-                      - Available: {formatToken(Number(token.value), displayCurrency)}
+                      - Available:{' '}
+                      {formatToken(Number(token.value), convertHexCurrencyString(displayCurrency))}
                     </Typography>
                   ) : null}
                   {token.issuer ? (
@@ -413,7 +459,7 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
                       component="span"
                       style={{ marginLeft: '8px', fontStyle: 'italic', fontSize: '0.8rem' }}
                     >
-                      - {token.issuer}
+                      - {token.issuerName ?? token.issuer}
                     </Typography>
                   ) : null}
                 </MenuItem>
