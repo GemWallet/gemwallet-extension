@@ -5,7 +5,7 @@ import {
   Transaction
 } from 'xrpl';
 
-import { Hook, Signer } from '@gemwallet/constants';
+import { Signer } from '@gemwallet/constants';
 
 import {
   createNFTOfferFlagsToNumber,
@@ -14,7 +14,6 @@ import {
   parseArray,
   parseCreateNFTOfferFlags,
   parseCreateOfferFlags,
-  parseHooksParam,
   parseLimitAmount,
   parseMemos,
   parseMintNFTFlags,
@@ -502,34 +501,5 @@ describe('parseTransactionParam', () => {
     };
 
     expect(parseTransactionParam(mockTransaction)).toEqual(mockTransaction);
-  });
-});
-
-describe('parseHooksParam', () => {
-  test('should return null when input is null', () => {
-    expect(parseHooksParam(null)).toBeNull();
-  });
-
-  test('should return null when input is an invalid JSON string', () => {
-    const str = 'invalid json string';
-    expect(parseHooksParam(str)).toBeNull();
-  });
-
-  test('should return null when input is a valid JSON string but not an object', () => {
-    const str = JSON.stringify('This is a string, not an object');
-    expect(parseHooksParam(str)).toBeNull();
-  });
-
-  test('should return parsed Hook object when input is a valid JSON string', () => {
-    const hook: Hook = {
-      CreateCode: 'someCode',
-      Flags: 1,
-      HookApiVersion: 0,
-      HookNamespace: 'someNamespace',
-      HookOn: 'someHookOn'
-    };
-
-    const str = JSON.stringify([hook]);
-    expect(parseHooksParam(str)).toEqual([hook]);
   });
 });

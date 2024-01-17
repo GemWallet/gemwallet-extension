@@ -11,7 +11,6 @@ import { Amount, IssuedCurrencyAmount } from 'xrpl/dist/npm/models/common';
 import {
   CreateNFTOfferFlags,
   CreateOfferFlags,
-  Hook,
   Memo,
   MintNFTFlags,
   PaymentFlags,
@@ -433,24 +432,6 @@ export const parseTransactionParam = (input: Transaction | string | null): Trans
 
     if (typeof parsedTransaction === 'object' && parsedTransaction !== null) {
       return parsedTransaction as Transaction;
-    }
-  } catch (error) {
-    return null;
-  }
-
-  return null;
-};
-
-export const parseHooksParam = (str: string | null): Hook[] | null => {
-  if (!str) {
-    return null;
-  }
-
-  try {
-    const parsedHooks = JSON.parse(str);
-
-    if (typeof parsedHooks === 'object' && parsedHooks !== null) {
-      return parsedHooks as Hook[];
     }
   } catch (error) {
     return null;
