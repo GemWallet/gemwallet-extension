@@ -37,6 +37,12 @@ describe('Send Token', () => {
             set(obj, cb) {
               if (cb) cb();
             }
+          },
+          session: {
+            get(key, cb) {},
+            set(obj, cb) {
+              if (cb) cb();
+            }
           }
         };
 

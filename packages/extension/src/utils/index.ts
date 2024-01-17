@@ -1,6 +1,7 @@
 export * from './breakStringByLine';
 export * from './convertHexCurrencyString';
 export * from './crypto';
+export * from './fetchTokenData';
 export * from './format';
 export * from './getLastItemFromArray';
 export * from './hexConverter';
