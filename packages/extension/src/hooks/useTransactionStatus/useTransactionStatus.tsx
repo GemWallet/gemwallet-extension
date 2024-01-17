@@ -150,7 +150,7 @@ export const useTransactionStatus = ({
             <>
               {errorValue}
               <br />
-              {`Please try again with ${isBulk ? 'correct transactions' : 'a correct transaction'}`}
+              {'Please try again.'}
             </>
           }
           transaction={TransactionStatus.Rejected}

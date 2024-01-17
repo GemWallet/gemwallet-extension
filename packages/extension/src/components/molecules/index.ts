@@ -9,5 +9,5 @@ export * from './NFTCard';
 export * from './RawTransaction';
 export * from './TextCopy';
 export * from './TokenDisplay';
+export * from './TransactionDisplay';
 export * from './TransactionNFTDisplay';
-export * from './XRPLTransaction';

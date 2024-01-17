@@ -25,6 +25,7 @@ import {
   ReceiveSendPaymentContentMessage,
   ReceiveSendPaymentContentMessageDeprecated,
   ReceiveSetAccountContentMessage,
+  ReceiveSetHookContentMessage,
   ReceiveSetRegularKeyContentMessage,
   ReceiveSetTrustlineContentMessage,
   ReceiveSetTrustlineContentMessageDeprecated,
@@ -56,6 +57,7 @@ import {
   PARAMETER_TRANSACTION_PAYMENT,
   PARAMETER_TRANSACTION_TRUSTLINE,
   PARAMETER_TRANSACTION_SET_ACCOUNT,
+  PARAMETER_TRANSACTION_SET_HOOK,
   PARAMETER_TRANSACTION_SET_REGULAR_KEY
 } from '../../constants/parameters';
 import { STORAGE_CURRENT_WINDOW_ID, STORAGE_STATE_TRANSACTION } from '../../constants/storage';
@@ -465,6 +467,16 @@ chrome.runtime.onMessage.addListener(
           sender
         });
       } catch (e) {}
+    } else if (type === 'REQUEST_SET_HOOK/V3') {
+      const { payload } = message;
+      try {
+        sendMessageInMemory({
+          payload,
+          parameter: PARAMETER_TRANSACTION_SET_HOOK,
+          receivingMessage: 'RECEIVE_SET_HOOK/V3',
+          sender
+        });
+      } catch (e) {}
     } else if (type === 'REQUEST_SUBMIT_BULK_TRANSACTIONS/V3') {
       const { payload } = message;
       try {
@@ -740,6 +752,17 @@ chrome.runtime.onMessage.addListener(
       handleTransactionResponse<ReceiveSignTransactionContentMessage>(payload.id, {
         app,
         type: 'RECEIVE_SIGN_TRANSACTION/V3',
+        payload: {
+          type: ResponseType.Response,
+          result: payload.result,
+          error: payload.error
+        }
+      });
+    } else if (type === 'RECEIVE_SET_HOOK/V3') {
+      const { payload } = message;
+      sendMessageToTab<ReceiveSetHookContentMessage>(payload.id, {
+        app,
+        type: 'RECEIVE_SET_HOOK/V3',
         payload: {
           type: ResponseType.Response,
           result: payload.result,

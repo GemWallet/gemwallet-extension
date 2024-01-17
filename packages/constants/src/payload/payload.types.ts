@@ -12,7 +12,8 @@ import {
   SetAccountFlags,
   CreateOfferFlags
 } from '../xrpl/basic.types';
-import { AccountNFToken, AccountNFTokenResponse, NFTokenIDResponse } from './../xrpl/nft.types';
+import { Hook } from '../xrpl/hooks.types';
+import { AccountNFToken, AccountNFTokenResponse, NFTokenIDResponse } from '../xrpl/nft.types';
 
 /*
  * Request Payloads
@@ -304,6 +305,12 @@ export interface SubmitStorageKeyRequest {
   storageKey: string;
 }
 
+export interface SetHookRequest extends BaseTransactionRequest {
+  // Hooks array, which mirrors the Hook Chain installed on the account. Position 0 in the array corresponds to position
+  // 0 in the Hook Chain, etc.
+  hooks: Hook[];
+}
+
 export type RequestPayload =
   | AcceptNFTOfferRequest
   | BurnNFTRequest
@@ -318,6 +325,7 @@ export type RequestPayload =
   | SendPaymentRequest
   | SendPaymentRequestDeprecated
   | SetAccountRequest
+  | SetHookRequest
   | SetRegularKeyRequest
   | SetTrustlineRequest
   | SetTrustlineRequestDeprecated
@@ -460,6 +468,11 @@ export interface CancelOfferResponse
     hash: string;
   }> {}
 
+export interface SetHookResponse
+  extends BaseResponse<{
+    hash: string;
+  }> {}
+
 export type ResponsePayload =
   | AcceptNFTOfferResponse
   | BurnNFTResponse
@@ -480,6 +493,7 @@ export type ResponsePayload =
   | SendPaymentResponse
   | SendPaymentResponseDeprecated
   | SetAccountResponse
+  | SetHookResponse
   | SetRegularKeyResponse
   | SetTrustlineResponse
   | SetTrustlineResponseDeprecated

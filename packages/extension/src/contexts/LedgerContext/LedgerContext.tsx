@@ -21,7 +21,6 @@ import {
   Payment,
   SetRegularKey,
   SubmitResponse,
-  Transaction,
   TransactionMetadata,
   TrustSet,
   TxResponse,
@@ -37,12 +36,15 @@ import {
   MAINNET_CLIO_NODES,
   NFTData,
   NFTokenIDResponse,
+  SetHook,
   SignTransactionRequest,
   SubmitBulkTransactionsRequest,
   SubmitTransactionRequest,
+  Transaction,
   TransactionBulkResponse,
   TransactionWithID,
-  XRPLNetwork
+  XRPLNetwork,
+  XRPLTransaction
 } from '@gemwallet/constants';
 
 import { AccountTransaction, WalletLedger } from '../../types';
@@ -123,6 +125,10 @@ interface SubmitBulkTransactionsResponse {
   hasError?: boolean;
 }
 
+interface SetHookResponse {
+  hash: string;
+}
+
 export const LEDGER_CONNECTION_ERROR = 'You need to be connected to a ledger to make a transaction';
 
 export interface LedgerContextType {
@@ -153,6 +159,7 @@ export interface LedgerContextType {
   deleteAccount: (destinationAddress: string) => Promise<DeleteAccountResponse>;
   getNFTInfo: (NFTokenID: string) => Promise<NFTInfoResponse>;
   getLedgerEntry: (ID: string) => Promise<LedgerEntryResponse>;
+  setHook: (payload: SetHook) => Promise<SetHookResponse>;
 }
 
 const LedgerContext = createContext<LedgerContextType>({
@@ -182,7 +189,8 @@ const LedgerContext = createContext<LedgerContextType>({
   getNFTData: () => new Promise(() => {}),
   deleteAccount: () => new Promise(() => {}),
   getNFTInfo: () => new Promise(() => {}),
-  getLedgerEntry: () => new Promise(() => {})
+  getLedgerEntry: () => new Promise(() => {}),
+  setHook: () => new Promise(() => {})
 });
 
 const LedgerProvider: FC = ({ children }) => {
@@ -212,7 +220,7 @@ const LedgerProvider: FC = ({ children }) => {
           })) as SubmitTransactionResponse;
         default:
           return (await handleTransactionXRPL({
-            transaction,
+            transaction: transaction as XRPLTransaction,
             client,
             wallet,
             signOnly,
@@ -243,7 +251,7 @@ const LedgerProvider: FC = ({ children }) => {
         case Chain.XAHAU:
           return calculateFeesXahau({ client, transaction, wallet });
         default:
-          return calculateFeesXRPL({ client, transaction });
+          return calculateFeesXRPL({ client, transaction: transaction as XRPLTransaction });
       }
     },
     [chainName, client, getCurrentWallet]
@@ -683,6 +691,31 @@ const LedgerProvider: FC = ({ children }) => {
     [client, getCurrentWallet, handleTransaction]
   );
 
+  const setHook = useCallback(
+    async (payload: SetHook): Promise<SetHookResponse> => {
+      if (chainName !== Chain.XAHAU) {
+        throw new Error('Hooks are only available on Xahau');
+      }
+
+      const wallet = getCurrentWallet();
+      if (!wallet?.publicAddress) throw new Error('You need to have a wallet connected');
+
+      try {
+        const { hash } = await handleTransaction({
+          transaction: payload,
+          client,
+          wallet
+        });
+        if (!hash) throw new Error("Couldn't set the hook");
+        return { hash };
+      } catch (e) {
+        Sentry.captureException(e);
+        throw e;
+      }
+    },
+    [chainName, client, getCurrentWallet, handleTransaction]
+  );
+
   /*
    * Getters
    */
@@ -847,7 +880,8 @@ const LedgerProvider: FC = ({ children }) => {
     deleteAccount,
     getNFTInfo,
     getLedgerEntry,
-    setRegularKey
+    setRegularKey,
+    setHook
   };
 
   return <LedgerContext.Provider value={value}>{children}</LedgerContext.Provider>;

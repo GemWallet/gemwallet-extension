@@ -144,5 +144,11 @@ export const buildRejectMessage = (type: string): any => {
       type: 'RECEIVE_SET_REGULAR_KEY/V3',
       payload: defaultPayload
     };
+  } else if (type === 'RECEIVE_SET_HOOK/V3') {
+    return {
+      app: GEM_WALLET,
+      type: 'RECEIVE_SET_HOOK/V3',
+      payload: defaultPayload
+    };
   }
 };

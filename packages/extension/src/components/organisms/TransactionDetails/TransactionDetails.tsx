@@ -1,12 +1,11 @@
 import { FC, useEffect, useMemo, useState } from 'react';
 
-import { Transaction } from 'xrpl';
-
+import { Transaction } from '@gemwallet/constants';
 import { Network, getNetwork, getNetworkByNetworkID } from '@gemwallet/constants';
 
 import { useNetwork } from '../../../contexts';
 import { useMainToken } from '../../../hooks';
-import { DataCard, RawTransaction, XRPLTransaction } from '../../molecules';
+import { DataCard, RawTransaction, TransactionDisplay } from '../../molecules';
 import { Fee } from '../../organisms';
 import { LoadingOverlay } from '../../templates';
 import { WrongNetworkIDModal } from './WrongNetworkIDModal';
@@ -70,7 +69,7 @@ export const TransactionDetails: FC<TransactionDetailsProps> = ({
     <>
       <DataCard
         formattedData={
-          <XRPLTransaction
+          <TransactionDisplay
             tx={txParam}
             useLegacy={false}
             displayTransactionType={displayTransactionType}

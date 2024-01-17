@@ -10,7 +10,7 @@ import {
   RawTransaction,
   TransactionNFTDisplay,
   TxNFTData,
-  XRPLTransaction
+  TransactionDisplay
 } from '../../../molecules';
 
 interface TransactionsDisplayProps {
@@ -77,7 +77,7 @@ export const TransactionsDisplay: FC<TransactionsDisplayProps> = ({
                 {txNFTData[Number(key)] ? (
                   <TransactionNFTDisplay nftData={txNFTData[Number(key)]} />
                 ) : null}
-                <XRPLTransaction
+                <TransactionDisplay
                   tx={txWithoutID}
                   displayTransactionType={false}
                   useLegacy={false}

@@ -6,8 +6,16 @@ import {
   AccountSetFlagsInterface,
   OfferCreateFlagsInterface,
   AMMDepositFlagsInterface,
-  AMMWithdrawFlagsInterface
+  AMMWithdrawFlagsInterface,
+  Transaction as XRPLTx
 } from 'xrpl';
+
+import { SetHook } from './hooks.types';
+
+export type Transaction = XRPLTransaction | XahauTransaction;
+
+export type XRPLTransaction = XRPLTx;
+export type XahauTransaction = XRPLTx | SetHook;
 
 export interface Memo {
   memo: {
