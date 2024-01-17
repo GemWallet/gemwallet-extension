@@ -464,8 +464,7 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
                         fontSize: '0.8rem',
                         overflow: 'hidden',
                         whiteSpace: 'nowrap',
-                        textOverflow: 'ellipsis',
-                        display: 'inline-block'
+                        textOverflow: 'ellipsis'
                       }}
                     >
                       - {token.issuerName ?? token.issuer}
