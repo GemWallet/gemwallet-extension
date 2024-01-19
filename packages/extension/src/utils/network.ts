@@ -89,7 +89,8 @@ export const loadNetwork = () => {
     if ('chain' in parsedData && 'name' in parsedData && 'server' in parsedData) {
       return {
         chain: parsedData.chain,
-        name: parsedData.name,
+        name: 'Custom' as Network,
+        customNetworkName: parsedData.name,
         server: parsedData.server,
         description: 'Custom network'
       };
