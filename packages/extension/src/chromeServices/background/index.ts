@@ -760,7 +760,7 @@ chrome.runtime.onMessage.addListener(
       });
     } else if (type === 'RECEIVE_SET_HOOK/V3') {
       const { payload } = message;
-      sendMessageToTab<ReceiveSetHookContentMessage>(payload.id, {
+      handleTransactionResponse<ReceiveSetHookContentMessage>(payload.id, {
         app,
         type: 'RECEIVE_SET_HOOK/V3',
         payload: {
