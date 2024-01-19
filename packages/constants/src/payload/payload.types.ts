@@ -350,6 +350,7 @@ interface BaseResponse<T> {
 
 export interface GetNetworkResponse
   extends BaseResponse<{
+    chain: string;
     network: Network;
     websocket: string;
   }> {}

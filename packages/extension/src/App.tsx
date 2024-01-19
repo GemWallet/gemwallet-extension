@@ -57,6 +57,7 @@ const App: FC = () => {
           const response: GetNetworkResponse = {
             type: ResponseType.Response,
             result: {
+              chain: chainName,
               network: networkResponse,
               websocket: network.server
             }
