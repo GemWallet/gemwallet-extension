@@ -34,7 +34,14 @@ export const TransactionDetails: FC<TransactionDetailsProps> = ({
   const mainToken = useMainToken();
 
   const currentNetwork = useMemo(() => {
-    return getNetwork(chainName, networkName as Network);
+    try {
+      return getNetwork(chainName, networkName as Network);
+    } catch (error) {
+      return {
+        ...getNetwork(chainName, 'Custom' as Network),
+        customNetworkName: networkName as string
+      };
+    }
   }, [chainName, networkName]);
 
   const expectedNetwork = useMemo(() => {

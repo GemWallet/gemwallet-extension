@@ -34,6 +34,7 @@ export const FAUCET_XAHAU_TESTNET = 'https://xahau-test.net/accounts';
 export interface NetworkNode {
   chain: Chain;
   name: Network;
+  customNetworkName?: string;
   server: string;
   nodes?: string[];
   description: string;

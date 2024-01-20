@@ -68,7 +68,7 @@ const NetworkProvider: FC = ({ children }) => {
 
     const connectToNetwork = async () => {
       const network = loadNetwork();
-      setNetworkName(network.name);
+      setNetworkName(network.customNetworkName ?? network.name);
       if (chainName !== network.chain) {
         setChainName(network.chain);
       }
@@ -132,7 +132,7 @@ const NetworkProvider: FC = ({ children }) => {
     try {
       const loadedNetwork = loadNetwork();
       const ws = await connectToLedger(loadedNetwork.server);
-      setNetworkName(loadedNetwork.name);
+      setNetworkName(loadedNetwork.customNetworkName ?? loadedNetwork.name);
       setClient(ws);
       setIsConnectionFailed(false);
     } catch (err) {
@@ -214,7 +214,7 @@ const NetworkProvider: FC = ({ children }) => {
     try {
       await removeNetwork();
       const network = await loadNetwork();
-      setNetworkName(network.name);
+      setNetworkName(network.customNetworkName ?? network.name);
     } catch (err) {
       Sentry.captureException(err);
     }
