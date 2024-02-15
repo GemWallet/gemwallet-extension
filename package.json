@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Monorepo related to the GemWallet extension",
   "private": true,
-  "repository": "https://github.com/GemWallet/poc-vitejs.git",
+  "repository": "https://github.com/GemWallet/gemwallet-extension.git",
   "scripts": {
     "prepare": "husky install",
     "build": "yarn workspace @gemwallet/extension build",
