@@ -23,7 +23,6 @@
     "crypto-js": "^4.2.0",
     "dayjs": "^1.11.10",
     "events": "^3.3.0",
-    "https-browserify": "^1.0.0",
     "lottie-react": "^2.4.0",
     "prismjs": "^1.29.0",
     "qrcode.react": "^3.1.0",
@@ -37,7 +36,6 @@
     "react-router-dom": "^6.21.3",
     "react-simple-code-editor": "^0.13.1",
     "stream-browserify": "^3.0.0",
-    "stream-http": "^3.2.0",
     "web-vitals": "^3.5.1",
     "xrpl": "^3.0.0",
     "xrpl-accountlib": "^3.2.9"
