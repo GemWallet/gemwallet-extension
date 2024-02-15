@@ -39,6 +39,10 @@ interface ContextType {
   hasOfflineBanner: boolean;
 }
 
+interface Props {
+  children: React.ReactElement;
+}
+
 const NetworkContext = createContext<ContextType>({
   reconnectToNetwork: () => new Promise(() => {}),
   switchNetwork: () => new Promise(() => {}),
@@ -53,7 +57,7 @@ const NetworkContext = createContext<ContextType>({
 
 const MAX_RETRIES = 2;
 
-const NetworkProvider: FC = ({ children }) => {
+const NetworkProvider: FC<Props> = ({ children }) => {
   const { pathname } = useLocation();
 
   const [client, setClient] = useState<Client | null | undefined>(undefined);

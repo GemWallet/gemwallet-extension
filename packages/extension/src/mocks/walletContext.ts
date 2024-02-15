@@ -2,6 +2,7 @@ import { Wallet } from 'xrpl';
 
 import { WalletContextType } from '../contexts';
 import { WalletLedger } from '../types';
+import { vi } from 'vitest';
 
 export const WALLET_SEED = 'spoVYVKVDaWYZERvh3xSgQPTu2X13';
 export const WALLET_MNEMONIC =
@@ -52,9 +53,9 @@ export const generateWalletContext = (params?: GenerateWalletContextParams): Wal
   } = params || {};
 
   return {
-    signIn: jest.fn(),
-    signOut: jest.fn(),
-    selectWallet: jest.fn(),
+    signIn: vi.fn(),
+    signOut: vi.fn(),
+    selectWallet: vi.fn(),
     generateWallet,
     getCurrentWallet,
     getWalletByPublicAddress,
@@ -65,8 +66,8 @@ export const generateWalletContext = (params?: GenerateWalletContextParams): Wal
     isValidNumbers,
     isPasswordCorrect,
     importNumbers,
-    renameWallet: jest.fn(),
-    removeWallet: jest.fn(),
+    renameWallet: vi.fn(),
+    removeWallet: vi.fn(),
     selectedWallet,
     wallets
   };

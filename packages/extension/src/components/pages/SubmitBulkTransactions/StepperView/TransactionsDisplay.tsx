@@ -1,4 +1,4 @@
-import React, { FC, useMemo, useState } from 'react';
+import { FC, useMemo, useState } from 'react';
 
 import { Button } from '@mui/material';
 
@@ -42,10 +42,13 @@ export const TransactionsDisplay: FC<TransactionsDisplayProps> = ({
     const newState = !areAllExpanded;
     setAreAllExpanded(newState);
 
-    const updatedExpandedStates = transactions.reduce((acc, [key]) => {
-      acc[key] = newState;
-      return acc;
-    }, {} as Record<string, boolean>);
+    const updatedExpandedStates = transactions.reduce(
+      (acc, [key]) => {
+        acc[key] = newState;
+        return acc;
+      },
+      {} as Record<string, boolean>
+    );
 
     setExpandedStates(updatedExpandedStates);
   };
@@ -64,7 +67,7 @@ export const TransactionsDisplay: FC<TransactionsDisplayProps> = ({
       >
         {areAllExpanded ? 'Collapse All' : 'Expand All'}
       </Button>
-      {transactions.map(([key, tx], index) => {
+      {transactions.map(([key, tx]) => {
         const { ID, ...txWithoutID } = tx;
         return (
           <DataCard

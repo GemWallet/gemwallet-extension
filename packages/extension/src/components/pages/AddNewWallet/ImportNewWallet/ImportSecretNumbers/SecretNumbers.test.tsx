@@ -2,11 +2,12 @@ import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
 import { ImportSecretNumbers, ImportSecretNumbersProps } from './ImportSecretNumbers';
+import { vi } from 'vitest';
 
 const defaultProps: ImportSecretNumbersProps = {
   activeStep: 0,
   password: '',
-  handleBack: jest.fn()
+  handleBack: vi.fn()
 };
 
 describe('Import New Wallet - Import Secret Numbers', () => {

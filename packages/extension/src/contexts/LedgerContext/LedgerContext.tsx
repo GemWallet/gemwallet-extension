@@ -129,6 +129,10 @@ interface SetHookResponse {
   hash: string;
 }
 
+interface Props {
+  children: React.ReactElement;
+}
+
 export const LEDGER_CONNECTION_ERROR = 'You need to be connected to a ledger to make a transaction';
 
 export interface LedgerContextType {
@@ -193,7 +197,7 @@ const LedgerContext = createContext<LedgerContextType>({
   setHook: () => new Promise(() => {})
 });
 
-const LedgerProvider: FC = ({ children }) => {
+const LedgerProvider: FC<Props> = ({ children }) => {
   const { client, networkName, chainName } = useNetwork();
   const { getCurrentWallet } = useWallet();
 

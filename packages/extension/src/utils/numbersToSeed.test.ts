@@ -1,4 +1,5 @@
 import { numbersToSeed } from './numbersToSeed';
+import { describe, expect, test } from 'vitest';
 
 describe('numbersToSeed', () => {
   test('should return the seed', () => {

@@ -1,7 +1,7 @@
 import { FC, useCallback, useEffect, useState } from 'react';
 
 import { useNavigate } from 'react-router-dom';
-import { Transaction } from 'xrpl';
+import { SubmittableTransaction } from 'xrpl';
 
 import {
   API_ERROR_BAD_REQUEST,
@@ -28,7 +28,7 @@ import { TransactionPage } from '../../templates';
 interface Params {
   id: number;
   // SubmitTransaction fields
-  txParam: Transaction | null;
+  txParam: SubmittableTransaction | null;
   // UI specific fields
   inAppCall: boolean;
 }
@@ -154,7 +154,7 @@ export const SubmitTransaction: FC = () => {
     // we won't be able to go to the confirm transaction state
     submitTransaction({
       // SubmitTransaction fields
-      transaction: params.txParam as Transaction
+      transaction: params.txParam as SubmittableTransaction
     })
       .then((response) => {
         setTransaction(TransactionStatus.Success);

@@ -1,4 +1,4 @@
-import { Account } from 'xrpl-secret-numbers';
+import { Account } from '@xrplf/secret-numbers';
 
 export const numbersToSeed = (numbers: string[]) => {
   const account = new Account(numbers);

@@ -2,7 +2,7 @@ import { FC, useCallback, useMemo, useState } from 'react';
 
 import TransactionIcon from '@mui/icons-material/CompareArrows';
 import { List, ListItem, ListItemIcon, ListItemText, Paper, Typography } from '@mui/material';
-import { unix } from 'moment';
+import { unix } from 'dayjs';
 
 import { useWallet } from '../../../contexts';
 import { useMainToken } from '../../../hooks';

@@ -1,5 +1,6 @@
 import {
   BackgroundMessage,
+  EventEventData,
   EventLogoutBackgroundMessage,
   GEM_WALLET,
   InternalReceivePasswordContentMessage,
@@ -30,7 +31,9 @@ import {
   ReceiveSetTrustlineContentMessage,
   ReceiveSetTrustlineContentMessageDeprecated,
   ReceiveSignMessageContentMessage,
+  ReceiveSignMessageContentMessageDeprecated,
   ReceiveSignTransactionContentMessage,
+  ReceiveSubmitBulkTransactionsContentMessage,
   ReceiveSubmitTransactionContentMessage,
   ResponsePayload,
   ResponseType,
@@ -74,12 +77,12 @@ import { createOffscreen } from './utils/offscreen';
 import { buildRejectMessage } from './utils/rejectOnClose';
 import { Session } from './utils/session';
 
-const sendMessageToTab = <T>(tabId: number | undefined, message: any) => {
+const sendMessageToTab = <T>(tabId: number | undefined, message: T) => {
   chrome.tabs.sendMessage<T>(tabId ?? 0, message);
 };
 
 chrome.runtime.onStartup.addListener(createOffscreen);
-chrome.runtime.onMessage.addListener((e) => {}); // keepAlive
+chrome.runtime.onMessage.addListener(() => {}); // keepAlive
 
 const session = Session.getInstance();
 let currentReceivingMessage: string | undefined = undefined; // For reject message on popup close
@@ -102,7 +105,7 @@ const sendMessageInMemory = ({
   requestMessage?: RequestMessage;
 }) => {
   const key = generateKey();
-  saveInChromeSessionStorage(key, JSON.stringify(payload)).then((r) =>
+  saveInChromeSessionStorage(key, JSON.stringify(payload)).then(() =>
     handleTransactionRequest({
       payload: {
         storageKey: key
@@ -141,7 +144,7 @@ const handleTransactionRequest = async (payload: FocusOrCreatePopupWindowParam) 
   focusOrCreatePopupWindow(payload);
 };
 
-const handleTransactionResponse = <T>(id: number, payload: any) => {
+const handleTransactionResponse = <T>(id: number, payload: T) => {
   saveInChromeSessionStorage(STORAGE_STATE_TRANSACTION, false);
   sendMessageToTab<T>(id, payload);
 };
@@ -289,7 +292,9 @@ chrome.runtime.onMessage.addListener(
           requestMessage: message.type,
           sender
         });
-      } catch (e) {}
+      } catch (e) {
+        console.log(e);
+      }
     } else if (type === 'SEND_PAYMENT') {
       const { payload } = message;
       try {
@@ -304,7 +309,9 @@ chrome.runtime.onMessage.addListener(
             hash: undefined
           }
         });
-      } catch (e) {}
+      } catch (e) {
+        console.log(e);
+      }
     } else if (type === 'REQUEST_MINT_NFT/V3') {
       const { payload } = message;
       try {
@@ -314,7 +321,9 @@ chrome.runtime.onMessage.addListener(
           receivingMessage: 'RECEIVE_MINT_NFT/V3',
           sender
         });
-      } catch (e) {}
+      } catch (e) {
+        console.log(e);
+      }
     } else if (type === 'REQUEST_CREATE_NFT_OFFER/V3') {
       const { payload } = message;
       try {
@@ -324,7 +333,9 @@ chrome.runtime.onMessage.addListener(
           receivingMessage: 'RECEIVE_CREATE_NFT_OFFER/V3',
           sender
         });
-      } catch (e) {}
+      } catch (e) {
+        console.log(e);
+      }
     } else if (type === 'REQUEST_CANCEL_NFT_OFFER/V3') {
       const { payload } = message;
       try {
@@ -334,7 +345,9 @@ chrome.runtime.onMessage.addListener(
           receivingMessage: 'RECEIVE_CANCEL_NFT_OFFER/V3',
           sender
         });
-      } catch (e) {}
+      } catch (e) {
+        console.log(e);
+      }
     } else if (type === 'REQUEST_ACCEPT_NFT_OFFER/V3') {
       const { payload } = message;
       try {
@@ -344,7 +357,9 @@ chrome.runtime.onMessage.addListener(
           receivingMessage: 'RECEIVE_ACCEPT_NFT_OFFER/V3',
           sender
         });
-      } catch (e) {}
+      } catch (e) {
+        console.log(e);
+      }
     } else if (type === 'REQUEST_BURN_NFT/V3') {
       const { payload } = message;
       try {
@@ -354,7 +369,9 @@ chrome.runtime.onMessage.addListener(
           receivingMessage: 'RECEIVE_BURN_NFT/V3',
           sender
         });
-      } catch (e) {}
+      } catch (e) {
+        console.log(e);
+      }
     } else if (type === 'REQUEST_SET_ACCOUNT/V3') {
       const { payload } = message;
       try {
@@ -364,7 +381,9 @@ chrome.runtime.onMessage.addListener(
           receivingMessage: 'RECEIVE_SET_ACCOUNT/V3',
           sender
         });
-      } catch (e) {}
+      } catch (e) {
+        console.log(e);
+      }
     } else if (type === 'REQUEST_SET_REGULAR_KEY/V3') {
       const { payload } = message;
       try {
@@ -374,7 +393,9 @@ chrome.runtime.onMessage.addListener(
           receivingMessage: 'RECEIVE_SET_REGULAR_KEY/V3',
           sender
         });
-      } catch (e) {}
+      } catch (e) {
+        console.log(e);
+      }
     } else if (type === 'REQUEST_CREATE_OFFER/V3') {
       const { payload } = message;
       try {
@@ -384,7 +405,9 @@ chrome.runtime.onMessage.addListener(
           receivingMessage: 'RECEIVE_CREATE_OFFER/V3',
           sender
         });
-      } catch (e) {}
+      } catch (e) {
+        console.log(e);
+      }
     } else if (type === 'REQUEST_CANCEL_OFFER/V3') {
       const { payload } = message;
       try {
@@ -394,7 +417,9 @@ chrome.runtime.onMessage.addListener(
           receivingMessage: 'RECEIVE_CANCEL_OFFER/V3',
           sender
         });
-      } catch (e) {}
+      } catch (e) {
+        console.log(e);
+      }
     } else if (type === 'REQUEST_SET_TRUSTLINE/V3') {
       const { payload } = message;
       try {
@@ -405,7 +430,9 @@ chrome.runtime.onMessage.addListener(
           requestMessage: message.type,
           sender
         });
-      } catch (e) {}
+      } catch (e) {
+        console.log(e);
+      }
     } else if (type === 'REQUEST_ADD_TRUSTLINE') {
       const { payload } = message;
       try {
@@ -420,7 +447,9 @@ chrome.runtime.onMessage.addListener(
             hash: undefined
           }
         });
-      } catch (e) {}
+      } catch (e) {
+        console.log(e);
+      }
     } else if (type === 'REQUEST_SIGN_MESSAGE/V3') {
       const { payload } = message;
       try {
@@ -431,7 +460,9 @@ chrome.runtime.onMessage.addListener(
           requestMessage: message.type,
           sender
         });
-      } catch (e) {}
+      } catch (e) {
+        console.log(e);
+      }
     } else if (type === 'REQUEST_SIGN_MESSAGE') {
       const { payload } = message;
       try {
@@ -446,7 +477,9 @@ chrome.runtime.onMessage.addListener(
             signedMessage: undefined
           }
         });
-      } catch (e) {}
+      } catch (e) {
+        console.log(e);
+      }
     } else if (type === 'REQUEST_SUBMIT_TRANSACTION/V3') {
       const { payload } = message;
       try {
@@ -456,7 +489,9 @@ chrome.runtime.onMessage.addListener(
           receivingMessage: 'RECEIVE_SUBMIT_TRANSACTION/V3',
           sender
         });
-      } catch (e) {}
+      } catch (e) {
+        console.log(e);
+      }
     } else if (type === 'REQUEST_SIGN_TRANSACTION/V3') {
       const { payload } = message;
       try {
@@ -466,7 +501,9 @@ chrome.runtime.onMessage.addListener(
           receivingMessage: 'RECEIVE_SIGN_TRANSACTION/V3',
           sender
         });
-      } catch (e) {}
+      } catch (e) {
+        console.log(e);
+      }
     } else if (type === 'REQUEST_SET_HOOK/V3') {
       const { payload } = message;
       try {
@@ -476,7 +513,9 @@ chrome.runtime.onMessage.addListener(
           receivingMessage: 'RECEIVE_SET_HOOK/V3',
           sender
         });
-      } catch (e) {}
+      } catch (e) {
+        console.log(e);
+      }
     } else if (type === 'REQUEST_SUBMIT_BULK_TRANSACTIONS/V3') {
       const { payload } = message;
       try {
@@ -486,7 +525,9 @@ chrome.runtime.onMessage.addListener(
           receivingMessage: 'RECEIVE_SUBMIT_BULK_TRANSACTIONS/V3',
           sender
         });
-      } catch (e) {}
+      } catch (e) {
+        console.log(e);
+      }
       /*
        * Receive messages
        */
@@ -729,7 +770,7 @@ chrome.runtime.onMessage.addListener(
       });
     } else if (type === 'RECEIVE_SIGN_MESSAGE') {
       const { payload } = message;
-      handleTransactionResponse<ReceiveSignMessageContentMessage>(payload.id, {
+      handleTransactionResponse<ReceiveSignMessageContentMessageDeprecated>(payload.id, {
         app,
         type: 'RECEIVE_SIGN_MESSAGE',
         payload: {
@@ -771,7 +812,7 @@ chrome.runtime.onMessage.addListener(
       });
     } else if (type === 'RECEIVE_SUBMIT_BULK_TRANSACTIONS/V3') {
       const { payload } = message;
-      handleTransactionResponse<ReceiveSubmitTransactionContentMessage>(payload.id, {
+      handleTransactionResponse<ReceiveSubmitBulkTransactionsContentMessage>(payload.id, {
         app,
         type: 'RECEIVE_SUBMIT_BULK_TRANSACTIONS/V3',
         payload: {
@@ -861,12 +902,14 @@ chrome.runtime.onMessage.addListener((request, sender) => {
     } else if (request.type === 'CONTENT_SCRIPT_UNLOADED') {
       try {
         activeTabs.delete(sender.tab.id);
-      } catch {}
+      } catch {
+        console.log('Error while deleting tab');
+      }
     }
   }
 });
 
-const sendToActiveTabs = (payload: any): void => {
+const sendToActiveTabs = (payload: Omit<EventEventData, 'messageId'>) => {
   activeTabs.forEach((tabId) => {
     chrome.tabs.get(tabId, () => {
       if (!chrome.runtime.lastError) {

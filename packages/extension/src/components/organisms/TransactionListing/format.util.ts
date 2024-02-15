@@ -1,4 +1,4 @@
-import { unix } from 'moment';
+import { unix } from 'dayjs';
 import { DepositPreauth, Payment, SetRegularKey } from 'xrpl';
 
 import { AccountTransaction, TransactionTypes } from '../../../types';

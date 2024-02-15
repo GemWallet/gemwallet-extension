@@ -1,4 +1,5 @@
 import { truncateAddress } from '.';
+import { describe, test, expect } from 'vitest';
 
 describe('Truncate Address util', () => {
   describe('truncateAddress', () => {

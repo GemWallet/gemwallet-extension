@@ -3,10 +3,11 @@ import { render, screen } from '@testing-library/react';
 import { Chain } from '@gemwallet/constants';
 
 import { ChainIndicator } from './ChainIndicator';
+import { vi } from 'vitest';
 
-const mockUseNetwork = jest.fn();
+const mockUseNetwork = vi.fn();
 
-jest.mock('../../../contexts', () => {
+vi.mock('../../../contexts', () => {
   return {
     useNetwork: () => mockUseNetwork()
   };
@@ -16,7 +17,7 @@ describe('ChainIndicator', () => {
   test('renders the XRPL chain', () => {
     mockUseNetwork.mockReturnValue({
       chainName: Chain.XRPL,
-      switchChain: jest.fn()
+      switchChain: vi.fn()
     });
 
     render(<ChainIndicator />);
@@ -28,7 +29,7 @@ describe('ChainIndicator', () => {
   test('renders the XAHAU chain', () => {
     mockUseNetwork.mockReturnValue({
       chainName: Chain.XAHAU,
-      switchChain: jest.fn()
+      switchChain: vi.fn()
     });
 
     render(<ChainIndicator />);

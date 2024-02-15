@@ -106,7 +106,7 @@ export const calculateFees = async (param: {
 };
 
 const submit = async (param: {
-  transaction: Transaction;
+  transaction: XRPLTransaction;
   client: Client;
   wallet: WalletLedger;
 }): Promise<TxResponse<Transaction>> => {

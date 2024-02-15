@@ -2,13 +2,14 @@ import { render } from '@testing-library/react';
 
 import { generateWalletContext } from '../../../mocks';
 import { PrivateRoute } from './PrivateRoute';
+import { vi } from 'vitest';
 
 let mockWalletContext = generateWalletContext();
-jest.mock('../../../contexts', () => ({
+vi.mock('../../../contexts', () => ({
   useWallet: () => mockWalletContext
 }));
 
-jest.mock('react-router-dom', () => ({
+vi.mock('react-router-dom', () => ({
   Navigate: () => <div>Navigation</div>,
   useLocation: () => {
     return {

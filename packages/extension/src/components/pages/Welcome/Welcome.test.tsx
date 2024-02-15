@@ -6,18 +6,19 @@ import App from '../../../App';
 import { CREATE_NEW_WALLET_PATH, IMPORT_WALLET_PATH, WELCOME_PATH } from '../../../constants';
 import { generateWalletContext } from '../../../mocks';
 import { Welcome } from './Welcome';
+import { vi, describe, test, beforeEach } from 'vitest';
 
-const mockedUsedNavigate = jest.fn();
+const mockedUsedNavigate = vi.fn();
 const mockNetworkContext = {
   client: null
 };
-const mockBrowserContext = jest.fn();
+const mockBrowserContext = vi.fn();
 const mockWalletContext = generateWalletContext();
 const mockTransactionProgressContext = {
-  setTransactionProgress: jest.fn()
+  setTransactionProgress: vi.fn()
 };
 
-jest.mock('../../../contexts', () => ({
+vi.mock('../../../contexts', () => ({
   useNetwork: () => mockNetworkContext,
   useBrowser: () => mockBrowserContext,
   useWallet: () => mockWalletContext,
@@ -27,12 +28,19 @@ jest.mock('../../../contexts', () => ({
   }
 }));
 
-jest.mock('react-router-dom', () => ({
-  ...(jest.requireActual('react-router-dom') as object),
-  useNavigate: () => mockedUsedNavigate
-}));
+vi.mock('react-router-dom', async () => {
+  const originalModule = await vi.importActual('react-router-dom');
+  return {
+    ...originalModule,
+    useNavigate: vi.fn(() => mockedUsedNavigate)
+  };
+});
 
 describe('Welcome Page', () => {
+  beforeEach(() => {
+    mockedUsedNavigate.mockClear();
+  });
+
   test('Should render the proper elements', () => {
     render(
       <BrowserRouter>

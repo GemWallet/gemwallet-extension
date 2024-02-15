@@ -9,6 +9,7 @@ import {
   formatTransferFee,
   parseAmountObject
 } from './format';
+import { describe, it, expect, test } from 'vitest';
 
 describe('Format util', () => {
   describe('formatAmount', () => {

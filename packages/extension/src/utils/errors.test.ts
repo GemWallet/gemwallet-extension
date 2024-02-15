@@ -3,8 +3,9 @@ import * as Sentry from '@sentry/react';
 import { MessagingError } from '@gemwallet/constants';
 
 import { serializeError, toUIError } from './errors';
+import { describe, vi, it, expect } from 'vitest';
 
-jest.mock('@sentry/react');
+vi.mock('@sentry/react');
 
 describe('Error utils', () => {
   const mockError = new Error('Test Error');

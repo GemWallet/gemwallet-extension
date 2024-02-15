@@ -1,20 +1,24 @@
 import { renderHook } from '@testing-library/react-hooks';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { loadFromChromeSessionStorage } from '../../utils';
 import { useFetchFromSessionStorage } from './useFetchFromSessionStorage';
 
 // Mock the utilities
-jest.mock('../../utils', () => ({
-  ...(jest.requireActual('../../utils') as object),
-  loadFromChromeSessionStorage: jest.fn()
+vi.mock('../../utils', () => ({
+  loadFromChromeSessionStorage: vi.fn()
 }));
 
 describe('useFetchFromSessionStorage', () => {
+  let storedData;
+
+  beforeEach(() => {
+    storedData = JSON.stringify({ data: 'test-data' });
+    vi.mocked(loadFromChromeSessionStorage).mockResolvedValue(storedData);
+  });
+
   it('fetches data from session storage', async () => {
     const key = 'test-key';
-    const storedData = JSON.stringify({ data: 'test-data' });
-
-    (loadFromChromeSessionStorage as jest.Mock).mockResolvedValue(storedData);
 
     const { result, waitForNextUpdate } = renderHook(() => useFetchFromSessionStorage(key));
 

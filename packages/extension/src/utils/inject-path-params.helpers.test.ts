@@ -1,4 +1,5 @@
 import { injectPathParams } from './inject-path-params.helpers';
+import { describe, it, expect } from 'vitest';
 
 describe('injectPathParams', () => {
   it('replaces path params with provided values', () => {

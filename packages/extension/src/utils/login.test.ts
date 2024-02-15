@@ -1,17 +1,14 @@
 import { STORAGE_REMEMBER_SESSION } from '../constants';
 import { loadRememberSessionState, saveRememberSessionState } from './login';
 import { saveInChromeLocalStorage, loadFromChromeLocalStorage } from './storageChromeLocal';
+import { describe, expect, test, vi, Mock } from 'vitest';
 
-jest.mock('./storageChromeLocal', () => ({
-  saveInChromeLocalStorage: jest.fn(),
-  loadFromChromeLocalStorage: jest.fn()
+vi.mock('./storageChromeLocal', () => ({
+  saveInChromeLocalStorage: vi.fn(),
+  loadFromChromeLocalStorage: vi.fn()
 }));
 
 describe('saveRememberSessionState', () => {
-  beforeEach(() => {
-    saveInChromeLocalStorage.mockClear();
-  });
-
   test('should save the remember session state to chrome storage', async () => {
     const state = true;
     saveRememberSessionState(state);
@@ -23,27 +20,23 @@ describe('saveRememberSessionState', () => {
 });
 
 describe('loadRememberSessionState', () => {
-  beforeEach(() => {
-    loadFromChromeLocalStorage.mockClear();
-  });
-
   test('should load the remember session state from chrome storage', async () => {
     const state = true;
-    (loadFromChromeLocalStorage as jest.Mock).mockResolvedValue(JSON.stringify(state));
+    (loadFromChromeLocalStorage as Mock).mockResolvedValue(JSON.stringify(state));
 
     const loadedState = await loadRememberSessionState();
     expect(loadedState).toEqual(state);
   });
 
   test('should return false if no state is found in chrome storage', async () => {
-    (loadFromChromeLocalStorage as jest.Mock).mockResolvedValue({});
+    (loadFromChromeLocalStorage as Mock).mockResolvedValue({});
 
     const loadedState = await loadRememberSessionState();
     expect(loadedState).toEqual(false);
   });
 
   test('should return false if an error occurs while loading the state', async () => {
-    (loadFromChromeLocalStorage as jest.Mock).mockRejectedValue(
+    (loadFromChromeLocalStorage as Mock).mockRejectedValue(
       new Error('Error loading state from chrome storage')
     );
 

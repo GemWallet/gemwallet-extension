@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { BrowserContext } from '../../../contexts';
 import { TransactionStatus } from '../../../types';
 import { AsyncTransaction } from './AsyncTransaction';
+import { vi } from 'vitest';
 
 describe('AsyncTransaction Template', () => {
   const user = userEvent.setup();
@@ -72,7 +73,7 @@ describe('AsyncTransaction Template', () => {
       id: 1234
     };
     test('Should not call closeExtension when button is clicked for "waiting"', () => {
-      const mockedCloseExtension = jest.fn();
+      const mockedCloseExtension = vi.fn();
       render(
         <BrowserContext.Provider value={{ closeExtension: mockedCloseExtension, window }}>
           <AsyncTransaction
@@ -86,7 +87,7 @@ describe('AsyncTransaction Template', () => {
     });
 
     test('Should not call closeExtension when button is clicked for "pending"', () => {
-      const mockedCloseExtension = jest.fn();
+      const mockedCloseExtension = vi.fn();
       render(
         <BrowserContext.Provider value={{ closeExtension: mockedCloseExtension, window }}>
           <AsyncTransaction
@@ -100,7 +101,7 @@ describe('AsyncTransaction Template', () => {
     });
 
     test('Should not call closeExtension when button is clicked for "success"', async () => {
-      const mockedCloseExtension = jest.fn();
+      const mockedCloseExtension = vi.fn();
       render(
         <BrowserContext.Provider value={{ closeExtension: mockedCloseExtension, window }}>
           <AsyncTransaction
@@ -116,7 +117,7 @@ describe('AsyncTransaction Template', () => {
     });
 
     test('Should not call closeExtension when button is clicked for "rejected"', async () => {
-      const mockedCloseExtension = jest.fn();
+      const mockedCloseExtension = vi.fn();
       render(
         <BrowserContext.Provider value={{ closeExtension: mockedCloseExtension, window }}>
           <AsyncTransaction

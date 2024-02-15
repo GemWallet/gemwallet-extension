@@ -7,7 +7,7 @@ import {
   OfferCreateFlagsInterface,
   AMMDepositFlagsInterface,
   AMMWithdrawFlagsInterface,
-  Transaction as XRPLTx
+  SubmittableTransaction as XRPLTx
 } from 'xrpl';
 
 import { SetHook } from './hooks.types';

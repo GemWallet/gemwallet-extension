@@ -3,12 +3,13 @@ import { BrowserRouter } from 'react-router-dom';
 
 import { SecretSeedProps } from './SecretSeed';
 import { SecretSeed } from './SecretSeed';
+import { vi } from 'vitest';
 
 const defaultProps: SecretSeedProps = {
   activeStep: 0,
   steps: 3,
-  handleBack: jest.fn(),
-  setActiveStep: jest.fn()
+  onBack: vi.fn(),
+  onNext: vi.fn()
 };
 
 describe('ImportSeed - SecretSeed Page', () => {

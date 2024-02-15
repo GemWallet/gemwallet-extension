@@ -1,8 +1,9 @@
 import { act, render, screen, waitFor } from '@testing-library/react';
 
 import { ServerProvider, useServer } from './ServerContext';
+import { vi } from 'vitest';
 
-jest.mock('../NetworkContext', () => ({
+vi.mock('../NetworkContext', () => ({
   useNetwork: () => ({
     client: {
       request: () =>
@@ -17,7 +18,7 @@ jest.mock('../NetworkContext', () => ({
 
 function TestComponent() {
   const { serverInfo } = useServer();
-  return <div>{serverInfo}</div>;
+  return <>{serverInfo}</>;
 }
 describe('ServerProvider', () => {
   test('renders children elements', () => {

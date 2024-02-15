@@ -5,16 +5,18 @@ import { Memo } from '@gemwallet/constants';
 import { ConfirmPayment } from './ConfirmPayment';
 import { PreparePayment } from './PreparePayment';
 
-export const SendPayment: FC = () => {
-  const [payment, setPayment] = useState<{
-    address: string;
-    token: string;
-    value: string;
-    memos?: Memo[];
-    destinationTag?: number;
-  } | null>(null);
+type PaymentData = {
+  address: string;
+  token: string;
+  value: string;
+  memos?: Memo[];
+  destinationTag?: number;
+};
 
-  const handlePreparePayment = useCallback((payment) => {
+export const SendPayment: FC = () => {
+  const [payment, setPayment] = useState<PaymentData | null>(null);
+
+  const handlePreparePayment = useCallback((payment: PaymentData | null) => {
     setPayment(payment);
   }, []);
 

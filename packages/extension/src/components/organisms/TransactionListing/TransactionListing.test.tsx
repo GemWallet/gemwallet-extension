@@ -4,11 +4,13 @@ import userEvent from '@testing-library/user-event';
 import { generateWalletContext } from '../../../mocks';
 import { TransactionListing } from './TransactionListing';
 import { mockTransactions } from './TransactionListing.mock';
+import { AccountTransaction } from '../../../types';
+import { vi } from 'vitest';
 
 const user = userEvent.setup();
 
 let mockWalletContext = generateWalletContext();
-jest.mock('../../../contexts', () => ({
+vi.mock('../../../contexts', () => ({
   useWallet: () => mockWalletContext,
   useNetwork: () => ({ networkName: 'testnet' })
 }));
@@ -32,7 +34,9 @@ describe('TransactionListing', () => {
   });
 
   test('renders the list of transactions', async () => {
-    const screen = render(<TransactionListing transactions={mockTransactions} />);
+    const screen = render(
+      <TransactionListing transactions={mockTransactions as unknown as AccountTransaction[]} />
+    );
     expect(screen.getByText('Payment sent - 20 XRP')).toBeInTheDocument();
     expect(screen.getByText('Feb 12, 2023 - 17:31')).toBeInTheDocument();
     expect(screen.getByText('TrustLine transaction')).toBeInTheDocument();
@@ -40,7 +44,9 @@ describe('TransactionListing', () => {
   });
 
   test('renders the transaction details when the transaction is clicked', async () => {
-    const screen = render(<TransactionListing transactions={mockTransactions} />);
+    const screen = render(
+      <TransactionListing transactions={mockTransactions as unknown as AccountTransaction[]} />
+    );
     const transaction = await screen.findByText('Payment sent - 20 XRP');
     expect(transaction).toBeInTheDocument();
     await user.click(transaction);
@@ -58,7 +64,9 @@ describe('TransactionListing', () => {
   });
 
   test('dialog renders properly', async () => {
-    const screen = render(<TransactionListing transactions={mockTransactions} />);
+    const screen = render(
+      <TransactionListing transactions={mockTransactions as unknown as AccountTransaction[]} />
+    );
     const transaction = await screen.findByText('Payment sent - 20 XRP');
     expect(transaction).toBeInTheDocument();
     await user.click(transaction);

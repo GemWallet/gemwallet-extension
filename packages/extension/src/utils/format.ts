@@ -69,7 +69,7 @@ export const parseAmountObject = (
   let currency: string;
 
   if (typeof amount === 'string') {
-    value = Number(dropsToXrp(amount));
+    value = dropsToXrp(amount);
     return {
       amount: formatValue(value),
       currency: mainToken ?? XRP_TOKEN
@@ -91,7 +91,7 @@ export const parseAmountObject = (
 
 export const formatToken = (value: number, currency: string = 'XRP', isDrops = false) => {
   if (isDrops) {
-    value = Number(dropsToXrp(value));
+    value = dropsToXrp(value);
   }
 
   const displayedCurrency = currency === LP_TOKEN_NAME ? '' : currency.toUpperCase();
@@ -590,14 +590,14 @@ export const formatFlags = (
   }
 };
 
-export const formatFlagsToNumber = (tx: Transaction) => {
+export const formatFlagsToNumber = (tx: Transaction): number | undefined => {
   if (typeof tx.Flags === 'number') {
     return tx.Flags;
   }
 
   const txCopy = { ...tx };
   setTransactionFlagsToNumber(txCopy);
-  return txCopy.Flags;
+  return txCopy.Flags as number; // Flags have been set to number
 };
 
 export const formatTransferFee = (fee: number) => {

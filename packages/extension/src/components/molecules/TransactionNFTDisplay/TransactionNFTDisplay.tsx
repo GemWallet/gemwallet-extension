@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 
 import { Typography, Card, CardMedia } from '@mui/material';
 import { Amount } from 'xrpl/dist/npm/models/common';

@@ -1,6 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter, MemoryRouter } from 'react-router-dom';
+import * as ReactRouterDom from 'react-router-dom';
+import { describe, expect, test, vi } from 'vitest';
 
 import {
   HOME_PATH,
@@ -12,15 +14,22 @@ import { generateWalletContext } from '../../../mocks';
 import { Congratulations } from './Congratulations';
 
 const mockWalletContext = generateWalletContext();
-jest.mock('../../../contexts', () => ({
+vi.mock('../../../contexts', () => ({
   useWallet: () => mockWalletContext
 }));
 
-const mockedUsedNavigate = jest.fn();
-jest.mock('react-router-dom', () => ({
-  ...(jest.requireActual('react-router-dom') as object),
-  useNavigate: () => mockedUsedNavigate
-}));
+const mockedUsedNavigate = vi.fn();
+vi.mock('react-router-dom', async (importOriginal) => {
+  const actual = (await importOriginal()) as typeof ReactRouterDom;
+  return {
+    ...actual,
+    useNavigate: () => mockedUsedNavigate
+  };
+});
+
+beforeEach(() => {
+  vi.clearAllMocks();
+});
 
 describe('Congratulations Page', () => {
   test('Should render the proper elements', async () => {
@@ -56,6 +65,7 @@ describe('Congratulations Page', () => {
         <Congratulations />
       </MemoryRouter>
     );
+
     const user = userEvent.setup();
     const finishButton = screen.getByRole('button', { name: 'Finish' });
     await user.click(finishButton);

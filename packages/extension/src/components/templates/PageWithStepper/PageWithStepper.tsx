@@ -15,6 +15,7 @@ export interface PageWithStepperProps {
   handleBack: () => void;
   handleNext?: () => void;
   disabledNext?: boolean;
+  children: React.ReactNode;
 }
 
 export const PageWithStepper: FC<PageWithStepperProps> = ({

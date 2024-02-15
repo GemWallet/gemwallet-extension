@@ -352,7 +352,7 @@ export type EventListener =
   | SubmitBulkTransactionsEventListener;
 
 // Events
-interface EventEventData {
+export interface EventEventData {
   app: typeof GEM_WALLET;
   type: EventMessage;
   source: 'GEM_WALLET_MSG_REQUEST';

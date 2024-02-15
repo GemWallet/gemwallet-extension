@@ -6,29 +6,30 @@ import { Chain, XRPLNetwork } from '@gemwallet/constants';
 import { generateWalletContext } from '../../../mocks';
 import { WalletLedger } from '../../../types';
 import { Header } from './Header';
+import { vi } from 'vitest';
 
-jest.mock('react-router-dom', () => ({
-  useNavigate: () => jest.fn()
+vi.mock('react-router-dom', () => ({
+  useNavigate: () => vi.fn()
 }));
 
-let mockChain = Chain.XRPL;
-let mockNetwork = XRPLNetwork.TESTNET;
-jest.mock('../../../contexts', () => {
+const mockChain = Chain.XRPL;
+const mockNetwork = XRPLNetwork.TESTNET;
+vi.mock('../../../contexts', () => {
   return {
     useNetwork: () => ({
       networkName: mockNetwork,
       chainName: mockChain,
-      switchChain: () => jest.fn()
+      switchChain: () => vi.fn()
     })
   };
 });
 
-jest.mock('../../atoms', () => ({
+vi.mock('../../atoms', () => ({
   WalletIcon: () => 'Mocked Wallet Icon',
   Xrp: () => 'Mocked Xrp Icon',
   Xahau: () => 'Mocked Xahau Icon'
 }));
-window.prompt = jest.fn();
+window.prompt = vi.fn();
 
 const mockWalletContext = generateWalletContext();
 const mockWalletLedger = mockWalletContext.getCurrentWallet() as WalletLedger;

@@ -1,5 +1,3 @@
-import { RouteProps } from 'react-router-dom';
-
 import {
   ABOUT_PATH,
   ACCEPT_NFT_OFFER_PATH,
@@ -69,7 +67,8 @@ import { SubmitTransaction } from '../SubmitTransaction';
 import { Transaction } from '../Transaction';
 import { TrustedApps } from '../TrustedApps';
 
-type PrivateRouteConfig = RouteProps & {
+type PrivateRouteConfig = {
+  path: string;
   element: React.ComponentType;
 };
 

@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 
 import { generateWalletContext } from '../../../mocks';
 import { CreatePassword, CreatePasswordProps } from './CreatePassword';
+import { vi } from 'vitest';
 
 const user = userEvent.setup();
 const generatedWallet = generateWalletContext().getCurrentWallet();
@@ -11,8 +12,8 @@ const generatedWallet = generateWalletContext().getCurrentWallet();
 const defaultProps: CreatePasswordProps = {
   activeStep: 1,
   steps: 3,
-  handleBack: jest.fn(),
-  setActiveStep: jest.fn(),
+  handleBack: vi.fn(),
+  setActiveStep: vi.fn(),
   wallet: {
     name: 'Wallet 1',
     publicAddress: generatedWallet?.publicAddress as string,
@@ -22,7 +23,7 @@ const defaultProps: CreatePasswordProps = {
 };
 
 const mockWalletContext = generateWalletContext();
-jest.mock('../../../contexts', () => ({
+vi.mock('../../../contexts', () => ({
   useNetwork: () => ({
     hasOfflineBanner: false
   }),

@@ -3,24 +3,25 @@ import userEvent from '@testing-library/user-event';
 
 import { generateWalletContext } from '../../../../mocks';
 import { ShowSecret, ShowSecretProps } from './ShowSecret';
+import { vi } from 'vitest';
 
 const passwordTest = 'test-password';
 
 let mockWalletContext = generateWalletContext();
 
-jest.mock('../../../../contexts', () => ({
+vi.mock('../../../../contexts', () => ({
   useNetwork: () => ({
     hasOfflineBanner: false
   }),
   useWallet: () => mockWalletContext
 }));
 
-window.prompt = jest.fn();
+window.prompt = vi.fn();
 
 const seed = 'test-seed';
 const mnemonic = 'test mnemonic';
 const incorrectPassword = 'incorrect-password';
-const onBackButton = jest.fn();
+const onBackButton = vi.fn();
 
 const renderShowSecret = (props?: Partial<ShowSecretProps>) =>
   render(<ShowSecret seed={seed} mnemonic={mnemonic} onBackButton={onBackButton} {...props} />);

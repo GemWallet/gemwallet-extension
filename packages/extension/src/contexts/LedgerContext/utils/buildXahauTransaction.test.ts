@@ -2,6 +2,7 @@ import { SetHookRequest } from '@gemwallet/constants';
 
 import { WalletLedger } from '../../../types';
 import { buildSetHook } from './buildXahauTransaction';
+import { describe, it, expect } from 'vitest';
 
 const wallet: WalletLedger = {
   name: 'name',

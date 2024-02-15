@@ -3,24 +3,25 @@ import userEvent from '@testing-library/user-event';
 
 import { generateWalletContext, WALLET_SEED } from '../../../../mocks';
 import { ConfirmSeed, ConfirmSeedProps } from './ConfirmSeed';
+import { vi } from 'vitest';
 
 const user = userEvent.setup();
 
-const mockedSetActiveStep = jest.fn();
+const mockedSetActiveStep = vi.fn();
 const defaultProps: ConfirmSeedProps = {
   seed: WALLET_SEED,
   activeStep: 2,
   steps: 4,
-  handleBack: jest.fn(),
+  handleBack: vi.fn(),
   onConfirm: mockedSetActiveStep
 };
 
-jest.mock('react-router-dom', () => ({
-  useNavigate: () => jest.fn()
+vi.mock('react-router-dom', () => ({
+  useNavigate: () => vi.fn()
 }));
 
 const mockWalletContext = generateWalletContext();
-jest.mock('../../../../contexts', () => ({
+vi.mock('../../../../contexts', () => ({
   useNetwork: () => ({
     hasOfflineBanner: false
   }),

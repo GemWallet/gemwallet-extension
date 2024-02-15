@@ -2,19 +2,20 @@ import { Chain, getNetwork, XRPLNetwork } from '@gemwallet/constants';
 
 import { STORAGE_NETWORK } from '../constants';
 import { loadNetwork, removeNetwork, saveNetwork } from './network';
+import { describe, test, vi, beforeEach, afterEach } from 'vitest';
 
 // Mock the localStorage object and its methods
 const localStorageMock = {
-  getItem: jest.fn(),
-  setItem: jest.fn(),
-  removeItem: jest.fn(),
+  getItem: vi.fn(),
+  setItem: vi.fn(),
+  removeItem: vi.fn(),
   length: 0,
-  clear: jest.fn(),
-  key: jest.fn()
+  clear: vi.fn(),
+  key: vi.fn()
 };
 
 beforeEach(() => {
-  jest.spyOn(window, 'localStorage', 'get').mockImplementation(() => localStorageMock);
+  vi.spyOn(window, 'localStorage', 'get').mockImplementation(() => localStorageMock);
 });
 
 afterEach(() => {
@@ -41,7 +42,7 @@ describe('saveNetwork', () => {
 
   test('should throw an error if saving to local storage fails', () => {
     const error = new Error('Error saving to local storage');
-    localStorage.setItem = jest.fn(() => {
+    localStorage.setItem = vi.fn(() => {
       throw error;
     });
     expect(() => saveNetwork(Chain.XRPL, XRPLNetwork.MAINNET)).toThrowError(error);
@@ -50,18 +51,18 @@ describe('saveNetwork', () => {
 
 describe('loadNetwork', () => {
   test('should load the network from local storage', () => {
-    localStorage.getItem = jest.fn(() => XRPLNetwork.MAINNET);
+    localStorage.getItem = vi.fn(() => XRPLNetwork.MAINNET);
     expect(loadNetwork()).toEqual(getNetwork(Chain.XRPL, XRPLNetwork.MAINNET));
   });
 
   test('should return the mainnet network if no network is found in local storage', () => {
-    localStorage.getItem = jest.fn(() => null);
+    localStorage.getItem = vi.fn(() => null);
     expect(loadNetwork()).toEqual(getNetwork(Chain.XRPL, XRPLNetwork.MAINNET));
   });
 
   test('should return the mainnet network if an error occurs while loading the network', () => {
     const error = new Error('Error loading network from local storage');
-    localStorageMock.getItem = jest.fn(() => {
+    localStorageMock.getItem = vi.fn(() => {
       throw error;
     });
     expect(loadNetwork()).toEqual(getNetwork(Chain.XRPL, XRPLNetwork.MAINNET));

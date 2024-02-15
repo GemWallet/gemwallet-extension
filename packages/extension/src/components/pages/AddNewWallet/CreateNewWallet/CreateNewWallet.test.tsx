@@ -4,9 +4,10 @@ import { BrowserRouter } from 'react-router-dom';
 
 import { generateWalletContext } from '../../../../mocks';
 import { CreateNewWallet } from './CreateNewWallet';
+import { vi } from 'vitest';
 
-let mockWalletContext = generateWalletContext();
-jest.mock('../../../../contexts', () => ({
+const mockWalletContext = generateWalletContext();
+vi.mock('../../../../contexts', () => ({
   useNetwork: () => ({
     hasOfflineBanner: false
   }),

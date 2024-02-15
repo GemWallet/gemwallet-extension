@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { ButtonOption, ButtonOptionProps } from './ButtonOption';
+import { vi } from 'vitest';
 
 const defaultName = 'Option 1';
 const defaultDescription = 'This is option 1';
@@ -14,7 +15,7 @@ const renderButtonOption = (props?: Partial<ButtonOptionProps>) =>
       name={props?.name || defaultName}
       description={props?.description || defaultDescription}
       isSelected={props?.isSelected}
-      onClick={props?.onClick || jest.fn()}
+      onClick={props?.onClick || vi.fn()}
     />
   );
 
@@ -36,7 +37,7 @@ describe('ButtonOption', () => {
   });
 
   test('calls the onClick prop when the card is clicked', async () => {
-    const onClick = jest.fn();
+    const onClick = vi.fn();
     const { container } = renderButtonOption({ onClick });
     await user.click(container.querySelector('.MuiPaper-root') as Element);
     expect(onClick).toHaveBeenCalled();

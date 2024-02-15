@@ -3,22 +3,17 @@
   "version": "1.0.0",
   "description": "Monorepo related to the GemWallet extension",
   "private": true,
+  "repository": "https://github.com/GemWallet/poc-vitejs.git",
   "scripts": {
-    "build": "NODE_OPTIONS=--openssl-legacy-provider yarn workspace @gemwallet/extension build",
+    "prepare": "husky install",
+    "build": "yarn workspace @gemwallet/extension build",
     "build:api:cdn": "yarn workspace @gemwallet/api build:cdn",
     "build:api:npm": "yarn workspace @gemwallet/api build:npm",
-    "cypress": "yarn workspace @gemwallet/extension cypress:e2e",
-    "lint": "eslint --cache --quiet --fix",
-    "prepare": "husky install",
-    "prettier": "prettier --write **/*.{js,ts,tsx}",
-    "release:api:npm": "cd packages/api/dist && npm publish --access=public",
-    "start": "NODE_OPTIONS=--openssl-legacy-provider yarn workspace @gemwallet/extension start",
+    "start": "yarn workspace @gemwallet/extension dev",
     "start:api": "yarn workspace @gemwallet/api start",
-    "test": "TZ=UTC yarn workspaces run test --runInBand"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/GemWallet/gemwallet-extension.git"
+    "test": "TZ=UTC yarn workspaces run test",
+    "cypress": "yarn workspace @gemwallet/extension cypress:e2e",
+    "prettier": "prettier --write **/*.{js,ts,tsx}"
   },
   "author": "GemWallet",
   "bugs": {
@@ -33,7 +28,7 @@
   "dependencies": {
     "husky": "^7.0.4",
     "lint-staged": "^12.0.2",
-    "prettier": "^2.4.1"
+    "prettier": "^3.2.4"
   },
   "lint-staged": {
     "**/*.{js,ts,tsx}": [
@@ -43,10 +38,5 @@
     "**/*.{json,md,html}": [
       "prettier --write"
     ]
-  },
-  "engines": {
-    "node": ">=18.19.0",
-    "npm": ">=10.2.3",
-    "yarn": "^1.22.5"
   }
 }

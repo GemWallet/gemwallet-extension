@@ -1,4 +1,5 @@
 import { currencyToHex } from './hexConverter';
+import { describe, it, expect } from 'vitest';
 
 describe('currencyToHex function', () => {
   it('should convert a string into hex and pad it to 40 characters', () => {

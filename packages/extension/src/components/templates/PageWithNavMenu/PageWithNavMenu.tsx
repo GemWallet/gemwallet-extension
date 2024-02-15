@@ -6,6 +6,7 @@ import { NavMenu } from '../../organisms';
 
 export interface PageWithNavMenuProps {
   indexDefaultNav: number;
+  children: React.ReactNode;
 }
 
 export const PageWithNavMenu: FC<PageWithNavMenuProps> = ({ children, indexDefaultNav }) => {

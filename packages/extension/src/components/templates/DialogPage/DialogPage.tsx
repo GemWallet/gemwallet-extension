@@ -17,6 +17,7 @@ export interface DialogPageProps {
   onClose: (event: React.MouseEvent<HTMLButtonElement>) => void;
   open: boolean;
   title: string;
+  children: React.ReactNode;
 }
 
 export const DialogPage: FC<DialogPageProps> = ({ onClose, open, title, children, ...props }) => {

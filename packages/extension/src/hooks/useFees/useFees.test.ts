@@ -1,19 +1,20 @@
 import { renderHook } from '@testing-library/react-hooks';
-import { Transaction } from 'xrpl';
+import { SubmittableTransaction } from 'xrpl';
 
 import { useFees } from './useFees';
+import { vi } from 'vitest';
 
 // Mock the modules and hooks that `useFees` depends on
-jest.mock('@sentry/react', () => ({
-  captureException: jest.fn()
+vi.mock('@sentry/react', () => ({
+  captureException: vi.fn()
 }));
 
-let mockGetXrpBalance = () => Promise.resolve('50');
-jest.mock('../../contexts', () => {
+let mockGetXrpBalance = () => Promise.resolve(50);
+vi.mock('../../contexts', () => {
   return {
     useLedger: () => ({
-      estimateNetworkFees: jest.fn().mockResolvedValue('12'),
-      getAccountInfo: jest.fn().mockResolvedValue({
+      estimateNetworkFees: vi.fn().mockResolvedValue('12'),
+      getAccountInfo: vi.fn().mockResolvedValue({
         result: { account_data: { OwnerCount: 2 } }
       })
     }),
@@ -35,7 +36,7 @@ jest.mock('../../contexts', () => {
 });
 
 describe('useFees', () => {
-  const transaction: Transaction = {
+  const transaction: SubmittableTransaction = {
     TransactionType: 'Payment',
     Destination: 'fake',
     Amount: '100000',
@@ -51,7 +52,7 @@ describe('useFees', () => {
   };
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should estimate fees correctly', async () => {
@@ -65,7 +66,7 @@ describe('useFees', () => {
   });
 
   it('useFees with a list of transactions', async () => {
-    const transactions: Transaction[] = [
+    const transactions: SubmittableTransaction[] = [
       {
         TransactionType: 'Payment',
         Destination: 'fake',
@@ -124,7 +125,7 @@ describe('useFees', () => {
     it('should calculate difference correctly when balance is more than reserve + fees', async () => {
       // Set the balance to be more than reserve + fees
 
-      mockGetXrpBalance = () => Promise.resolve('100');
+      mockGetXrpBalance = () => Promise.resolve(100);
 
       const { result, waitForNextUpdate } = renderHook(() => useFees(transaction, null));
 
@@ -137,7 +138,7 @@ describe('useFees', () => {
 
     it('should calculate difference correctly when balance is less than reserve + fees', async () => {
       // Set the balance to be less than reserve + fees
-      mockGetXrpBalance = () => Promise.resolve('20');
+      mockGetXrpBalance = () => Promise.resolve(20);
 
       const { result, waitForNextUpdate } = renderHook(() => useFees(transaction, null));
 

@@ -89,7 +89,7 @@ export const StepForm: FC<StepFormProps> = ({ onTrustlineSubmit, initialValues }
     }
   }, []);
 
-  const handleNoRippleChange = useCallback((event) => {
+  const handleNoRippleChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setNoRipple(event.target.checked);
   }, []);
 

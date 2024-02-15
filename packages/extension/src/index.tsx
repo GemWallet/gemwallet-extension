@@ -4,7 +4,6 @@ import Paper from '@mui/material/Paper';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { BrowserTracing, Replay } from '@sentry/browser';
 import * as Sentry from '@sentry/react';
-import ReactDOM from 'react-dom';
 import {
   BrowserRouter,
   useLocation,
@@ -27,6 +26,7 @@ import {
 import { useFeatureFlags } from './hooks';
 import reportWebVitals from './reportWebVitals';
 import './index.css';
+import { createRoot } from 'react-dom/client';
 
 const halloweenTheme = createTheme({
   palette: {
@@ -128,7 +128,7 @@ const GemWallet = () => {
   );
 };
 
-ReactDOM.render(<GemWallet />, document.getElementById('root'));
+createRoot(document.getElementById('root') as HTMLElement).render(<GemWallet />);
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

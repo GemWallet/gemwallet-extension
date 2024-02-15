@@ -19,7 +19,7 @@ describe('ImportMnemonic Page', () => {
 
     // Going to Screen 1
     const mnemonicInput = renderedElements.container.querySelector('#mnemonic');
-    await user.type(mnemonicInput, WALLET_MNEMONIC);
+    await user.type(mnemonicInput as Element, WALLET_MNEMONIC);
     await user.click(nextButton);
 
     // Go back to Screen 0

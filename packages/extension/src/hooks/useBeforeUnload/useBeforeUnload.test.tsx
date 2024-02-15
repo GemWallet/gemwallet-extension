@@ -1,10 +1,11 @@
 import { renderHook } from '@testing-library/react-hooks';
 
 import { useBeforeUnload } from './useBeforeUnload';
+import { vi, describe, it } from 'vitest';
 
 describe('useBeforeUnload', () => {
   it('should call the provided callback function before unloading', () => {
-    const mockCallback = jest.fn();
+    const mockCallback = vi.fn();
     const { unmount } = renderHook(() => useBeforeUnload(mockCallback));
 
     // Trigger the beforeunload event

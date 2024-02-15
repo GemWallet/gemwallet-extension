@@ -4,10 +4,11 @@ import userEvent from '@testing-library/user-event';
 import { Chain } from '@gemwallet/constants';
 
 import { NetworkIndicator } from './NetworkIndicator';
+import { vi } from 'vitest';
 
-const mockUseNetwork = jest.fn();
+const mockUseNetwork = vi.fn();
 
-jest.mock('../../../contexts', () => {
+vi.mock('../../../contexts', () => {
   return {
     useNetwork: () => mockUseNetwork()
   };
@@ -19,7 +20,7 @@ describe('NetworkIndicator', () => {
       client: undefined,
       chainName: Chain.XRPL,
       networkName: 'testnet',
-      switchNetwork: jest.fn(),
+      switchNetwork: vi.fn(),
       hasOfflineBanner: false
     });
 
@@ -33,7 +34,7 @@ describe('NetworkIndicator', () => {
       client: undefined,
       chainName: Chain.XRPL,
       networkName: 'Loading...',
-      switchNetwork: jest.fn(),
+      switchNetwork: vi.fn(),
       hasOfflineBanner: false
     });
 
@@ -44,10 +45,10 @@ describe('NetworkIndicator', () => {
 
   test('renders the correct green color chip', () => {
     mockUseNetwork.mockReturnValue({
-      client: jest.fn(),
+      client: vi.fn(),
       chainName: Chain.XRPL,
       networkName: 'testnet',
-      switchNetwork: jest.fn(),
+      switchNetwork: vi.fn(),
       hasOfflineBanner: false
     });
 
@@ -61,7 +62,7 @@ describe('NetworkIndicator', () => {
       client: undefined,
       chainName: Chain.XRPL,
       networkName: 'testnet',
-      switchNetwork: jest.fn(),
+      switchNetwork: vi.fn(),
       hasOfflineBanner: false
     });
 
@@ -75,7 +76,7 @@ describe('NetworkIndicator', () => {
       client: undefined,
       chainName: Chain.XRPL,
       networkName: 'testnet',
-      switchNetwork: jest.fn(),
+      switchNetwork: vi.fn(),
       hasOfflineBanner: false
     });
 
@@ -91,7 +92,7 @@ describe('NetworkIndicator', () => {
       client: undefined,
       chainName: Chain.XRPL,
       networkName: 'testnet',
-      switchNetwork: jest.fn(),
+      switchNetwork: vi.fn(),
       hasOfflineBanner: false
     });
 

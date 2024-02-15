@@ -25,6 +25,7 @@ import {
   buildSetRegularKey,
   buildTrustSet
 } from './buildXRPLTransaction';
+import { describe, it, expect } from 'vitest';
 
 const wallet: WalletLedger = {
   name: 'name',

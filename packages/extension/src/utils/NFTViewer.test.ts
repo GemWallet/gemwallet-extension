@@ -1,10 +1,11 @@
 import { parseImage, parseJSON } from './NFTViewer';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 // Mock fetch
-global.fetch = jest.fn();
+global.fetch = vi.fn();
 
-jest.doMock('./NFTViewer', () => ({
-  parseImage: jest.fn()
+vi.doMock('./NFTViewer', () => ({
+  parseImage: vi.fn()
 }));
 
 describe('parseImage function', () => {
@@ -33,7 +34,7 @@ describe('parseImage function', () => {
 describe('parseJSON function', () => {
   beforeEach(() => {
     // Mock the global fetch function
-    global.fetch = jest.fn(() =>
+    global.fetch = vi.fn(() =>
       Promise.resolve({
         json: () => Promise.resolve({ name: 'Mock NFT' })
       })
@@ -42,7 +43,7 @@ describe('parseJSON function', () => {
 
   afterEach(() => {
     // Clear all instances and calls to the fetch mock
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('returns NFT data with added properties', async () => {
@@ -61,7 +62,7 @@ describe('parseJSON function', () => {
 
   it('throws an error when the fetch promise rejects', async () => {
     // Mock the fetch function to reject with an error
-    global.fetch = jest.fn(() => Promise.reject('Error')) as any;
+    global.fetch = vi.fn(() => Promise.reject('Error')) as any;
 
     const mockUrl = 'https://someUrl.json';
     const mockNFTokenID = '123';

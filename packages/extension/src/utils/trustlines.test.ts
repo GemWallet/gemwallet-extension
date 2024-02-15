@@ -1,4 +1,5 @@
 import { isLPToken } from './trustlines';
+import { describe, it, expect } from 'vitest';
 
 describe('isLPToken', () => {
   it('returns true for hex strings starting with 0x03', () => {

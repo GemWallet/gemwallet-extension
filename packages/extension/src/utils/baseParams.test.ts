@@ -5,6 +5,7 @@ import {
   parseBaseParamsFromURLParams,
   parseBaseParamsFromURLParamsNew
 } from './baseParams';
+import { describe, it, expect, test } from 'vitest';
 
 describe('parseBaseParamsFromURLParamsNew', () => {
   it('should parse all values correctly', () => {

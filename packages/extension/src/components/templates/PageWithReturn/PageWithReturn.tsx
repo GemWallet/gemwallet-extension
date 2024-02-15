@@ -15,6 +15,7 @@ export interface PageWithReturnProps {
     ariaLabel: string;
   };
   style?: CSSProperties;
+  children: React.ReactNode;
 }
 
 export const PageWithReturn: FC<PageWithReturnProps> = ({

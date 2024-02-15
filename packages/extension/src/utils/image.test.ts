@@ -1,4 +1,5 @@
 import { isImageUrl } from './image';
+import { describe, it, expect } from 'vitest';
 
 describe('isImageUrl', () => {
   it('returns true for png image URLs', () => {

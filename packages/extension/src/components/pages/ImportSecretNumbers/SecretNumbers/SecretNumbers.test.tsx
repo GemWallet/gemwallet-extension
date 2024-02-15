@@ -2,12 +2,13 @@ import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
 import { SecretNumbers, SecretNumbersProps } from './SecretNumbers';
+import { vi } from 'vitest';
 
 const defaultProps: SecretNumbersProps = {
   activeStep: 0,
   steps: 4,
-  handleBack: jest.fn(),
-  setActiveStep: jest.fn()
+  onBack: vi.fn(),
+  onNext: vi.fn()
 };
 
 describe('SecretNumbers - ImportSecretNumbers Page', () => {

@@ -3,19 +3,20 @@ import userEvent from '@testing-library/user-event';
 
 import { generateWalletContext } from '../../../../../mocks';
 import { ImportSeed, ImportSeedProps } from './ImportSeed';
+import { describe, expect, vi } from 'vitest';
 
 const defaultProps: ImportSeedProps = {
   activeStep: 2,
   password: '4',
-  handleBack: jest.fn()
+  handleBack: vi.fn()
 };
 
-jest.mock('react-router-dom', () => ({
-  useNavigate: () => jest.fn()
+vi.mock('react-router-dom', () => ({
+  useNavigate: () => vi.fn()
 }));
 
 let mockWalletContext = generateWalletContext();
-jest.mock('../../../../../contexts', () => ({
+vi.mock('../../../../../contexts', () => ({
   useNetwork: () => ({
     hasOfflineBanner: false
   }),

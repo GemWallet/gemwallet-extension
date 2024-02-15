@@ -30,7 +30,7 @@ describe('ImportSecretNumbers Page', () => {
     secretNumbers.forEach(async (number, index) => {
       const numberInput = renderedElements.container.querySelector(
         `#numbers${String.fromCharCode(65 + index)}`
-      );
+      ) as HTMLInputElement;
       await user.type(numberInput, number);
     });
 

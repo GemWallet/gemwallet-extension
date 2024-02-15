@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 
 import { formatToken } from '../../../utils';
 import { TokenDisplay, TokenDisplayProps } from './TokenDisplay';
+import { vi } from 'vitest';
 
 const user = userEvent.setup();
 
@@ -14,7 +15,7 @@ describe('TokenDisplay', () => {
       balance: 100,
       token: 'ETH',
       isMainToken: false,
-      onExplainClick: jest.fn()
+      onExplainClick: vi.fn()
     };
   });
 
