@@ -62,7 +62,7 @@ jobs:
       - name: Install modules
         run: yarn install --frozen-lockfile
       - name: Cypress run
-        uses: cypress-io/github-action@v5
+        uses: cypress-io/github-action@v6
         with:
           start: yarn dev
           wait-on: 'http://localhost:3000'
