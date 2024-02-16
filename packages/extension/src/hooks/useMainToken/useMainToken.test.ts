@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 
 import { Chain } from '@gemwallet/constants';
 
@@ -17,6 +17,7 @@ describe('useMainToken', () => {
   });
 
   it('returns XRP_TOKEN for default network', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.mocked(contexts.useNetwork).mockReturnValue({ chainName: 'SomeChain' } as any);
 
     const { result } = renderHook(() => useMainToken());
@@ -24,6 +25,7 @@ describe('useMainToken', () => {
   });
 
   it('returns XAH_TOKEN for XAHAU_TESTNET', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.mocked(contexts.useNetwork).mockReturnValue({ chainName: Chain.XAHAU } as any);
 
     const { result } = renderHook(() => useMainToken());

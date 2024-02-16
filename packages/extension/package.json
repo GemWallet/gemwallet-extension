@@ -46,7 +46,6 @@
     "@rollup/plugin-inject": "^5.0.5",
     "@testing-library/jest-dom": "^6.2.0",
     "@testing-library/react": "^14.1.2",
-    "@testing-library/react-hooks": "^8.0.1",
     "@testing-library/user-event": "^14.5.2",
     "@types/chrome": "^0.0.258",
     "@types/crypto-js": "^4.2.1",

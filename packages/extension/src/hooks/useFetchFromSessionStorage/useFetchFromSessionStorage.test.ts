@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { loadFromChromeSessionStorage } from '../../utils';
@@ -20,11 +20,8 @@ describe('useFetchFromSessionStorage', () => {
   it('fetches data from session storage', async () => {
     const key = 'test-key';
 
-    const { result, waitForNextUpdate } = renderHook(() => useFetchFromSessionStorage(key));
+    const { result } = renderHook(() => useFetchFromSessionStorage(key));
 
-    // Waiting for the async operation to complete
-    await waitForNextUpdate();
-
-    expect(result.current.fetchedData).toEqual({ data: 'test-data' });
+    await waitFor(() => expect(result.current.fetchedData).toEqual({ data: 'test-data' }));
   });
 });
