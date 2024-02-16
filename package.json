@@ -5,15 +5,17 @@
   "private": true,
   "repository": "https://github.com/GemWallet/gemwallet-extension.git",
   "scripts": {
-    "prepare": "husky install",
     "build": "yarn workspace @gemwallet/extension build",
     "build:api:cdn": "yarn workspace @gemwallet/api build:cdn",
     "build:api:npm": "yarn workspace @gemwallet/api build:npm",
+    "cypress": "yarn workspace @gemwallet/extension cypress:e2e",
+    "lint": "eslint --cache --quiet --fix",
+    "prepare": "husky install",
+    "prettier": "prettier --write **/*.{js,ts,tsx}",
+    "release:api:npm": "cd packages/api/dist && npm publish --access=public",
     "start": "yarn workspace @gemwallet/extension dev",
     "start:api": "yarn workspace @gemwallet/api start",
-    "test": "TZ=UTC yarn workspaces run test",
-    "cypress": "yarn workspace @gemwallet/extension cypress:e2e",
-    "prettier": "prettier --write **/*.{js,ts,tsx}"
+    "test": "TZ=UTC yarn workspaces run test"
   },
   "author": "GemWallet",
   "bugs": {

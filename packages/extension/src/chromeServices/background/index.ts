@@ -293,7 +293,7 @@ chrome.runtime.onMessage.addListener(
           sender
         });
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
     } else if (type === 'SEND_PAYMENT') {
       const { payload } = message;
@@ -310,7 +310,7 @@ chrome.runtime.onMessage.addListener(
           }
         });
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
     } else if (type === 'REQUEST_MINT_NFT/V3') {
       const { payload } = message;
@@ -322,7 +322,7 @@ chrome.runtime.onMessage.addListener(
           sender
         });
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
     } else if (type === 'REQUEST_CREATE_NFT_OFFER/V3') {
       const { payload } = message;
@@ -334,7 +334,7 @@ chrome.runtime.onMessage.addListener(
           sender
         });
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
     } else if (type === 'REQUEST_CANCEL_NFT_OFFER/V3') {
       const { payload } = message;
@@ -346,7 +346,7 @@ chrome.runtime.onMessage.addListener(
           sender
         });
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
     } else if (type === 'REQUEST_ACCEPT_NFT_OFFER/V3') {
       const { payload } = message;
@@ -358,7 +358,7 @@ chrome.runtime.onMessage.addListener(
           sender
         });
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
     } else if (type === 'REQUEST_BURN_NFT/V3') {
       const { payload } = message;
@@ -370,7 +370,7 @@ chrome.runtime.onMessage.addListener(
           sender
         });
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
     } else if (type === 'REQUEST_SET_ACCOUNT/V3') {
       const { payload } = message;
@@ -382,7 +382,7 @@ chrome.runtime.onMessage.addListener(
           sender
         });
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
     } else if (type === 'REQUEST_SET_REGULAR_KEY/V3') {
       const { payload } = message;
@@ -394,7 +394,7 @@ chrome.runtime.onMessage.addListener(
           sender
         });
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
     } else if (type === 'REQUEST_CREATE_OFFER/V3') {
       const { payload } = message;
@@ -406,7 +406,7 @@ chrome.runtime.onMessage.addListener(
           sender
         });
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
     } else if (type === 'REQUEST_CANCEL_OFFER/V3') {
       const { payload } = message;
@@ -418,7 +418,7 @@ chrome.runtime.onMessage.addListener(
           sender
         });
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
     } else if (type === 'REQUEST_SET_TRUSTLINE/V3') {
       const { payload } = message;
@@ -431,7 +431,7 @@ chrome.runtime.onMessage.addListener(
           sender
         });
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
     } else if (type === 'REQUEST_ADD_TRUSTLINE') {
       const { payload } = message;
@@ -448,7 +448,7 @@ chrome.runtime.onMessage.addListener(
           }
         });
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
     } else if (type === 'REQUEST_SIGN_MESSAGE/V3') {
       const { payload } = message;
@@ -461,7 +461,7 @@ chrome.runtime.onMessage.addListener(
           sender
         });
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
     } else if (type === 'REQUEST_SIGN_MESSAGE') {
       const { payload } = message;
@@ -478,7 +478,7 @@ chrome.runtime.onMessage.addListener(
           }
         });
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
     } else if (type === 'REQUEST_SUBMIT_TRANSACTION/V3') {
       const { payload } = message;
@@ -490,7 +490,7 @@ chrome.runtime.onMessage.addListener(
           sender
         });
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
     } else if (type === 'REQUEST_SIGN_TRANSACTION/V3') {
       const { payload } = message;
@@ -502,7 +502,7 @@ chrome.runtime.onMessage.addListener(
           sender
         });
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
     } else if (type === 'REQUEST_SET_HOOK/V3') {
       const { payload } = message;
@@ -514,7 +514,7 @@ chrome.runtime.onMessage.addListener(
           sender
         });
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
     } else if (type === 'REQUEST_SUBMIT_BULK_TRANSACTIONS/V3') {
       const { payload } = message;
@@ -526,7 +526,7 @@ chrome.runtime.onMessage.addListener(
           sender
         });
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
       /*
        * Receive messages
@@ -903,7 +903,7 @@ chrome.runtime.onMessage.addListener((request, sender) => {
       try {
         activeTabs.delete(sender.tab.id);
       } catch {
-        console.log('Error while deleting tab');
+        console.error('Error while deleting tab');
       }
     }
   }
