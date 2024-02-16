@@ -40,5 +40,10 @@
     "**/*.{json,md,html}": [
       "prettier --write"
     ]
+  },
+  "engines": {
+    "node": ">=20.11.1",
+    "npm": ">=10.2.4",
+    "yarn": "^1.22.5"
   }
 }
