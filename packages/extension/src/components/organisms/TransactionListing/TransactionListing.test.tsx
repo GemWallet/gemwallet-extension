@@ -35,13 +35,13 @@ describe('TransactionListing', () => {
   test('renders the list of transactions', async () => {
     const screen = render(<TransactionListing transactions={mockTransactions} />);
     expect(screen.getByText('TrustLine transaction')).toBeInTheDocument();
-    expect(screen.getByText('Feb 17, 2024 - 13:48')).toBeInTheDocument();
+    expect(screen.getByText('Feb 17, 2024 - 12:48')).toBeInTheDocument();
     expect(screen.getByText('Mint NFT')).toBeInTheDocument();
-    expect(screen.getByText('Feb 17, 2024 - 13:47')).toBeInTheDocument();
+    expect(screen.getByText('Feb 17, 2024 - 12:47')).toBeInTheDocument();
     expect(screen.getByText('Payment sent - 50 XRP')).toBeInTheDocument();
-    expect(screen.getByText('Feb 17, 2024 - 13:46')).toBeInTheDocument();
+    expect(screen.getByText('Feb 17, 2024 - 12:46')).toBeInTheDocument();
     expect(screen.getByText('Payment received - 10,000 XRP')).toBeInTheDocument();
-    expect(screen.getByText('Feb 17, 2024 - 13:44')).toBeInTheDocument();
+    expect(screen.getByText('Feb 17, 2024 - 12:44')).toBeInTheDocument();
   });
 
   test('renders the transaction details when the transaction is clicked', async () => {
