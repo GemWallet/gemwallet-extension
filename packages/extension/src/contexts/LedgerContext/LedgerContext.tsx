@@ -6,6 +6,8 @@ import {
   AccountDelete,
   AccountInfoResponse,
   AccountSet,
+  AccountTxRequest,
+  AccountTxTransaction,
   Client,
   LedgerEntryRequest,
   LedgerEntryResponse,
@@ -47,7 +49,7 @@ import {
   XRPLTransaction
 } from '@gemwallet/constants';
 
-import { AccountTransaction, WalletLedger } from '../../types';
+import { WalletLedger } from '../../types';
 import { toUIError } from '../../utils/errors';
 import { resolveNFTData } from '../../utils/NFTDataResolver';
 import { useNetwork } from '../NetworkContext';
@@ -142,7 +144,7 @@ export interface LedgerContextType {
   signMessage: (message: string) => string | undefined;
   estimateNetworkFees: (payload: Transaction) => Promise<string>;
   getNFTs: (payload?: GetNFTRequest) => Promise<AccountNFTokenResponse>;
-  getTransactions: () => Promise<AccountTransaction[]>;
+  getTransactions: () => Promise<AccountTxTransaction[]>;
   fundWallet: () => Promise<FundWalletResponse>;
   mintNFT: (payload: NFTokenMint) => Promise<NFTokenIDResponse>;
   createNFTOffer: (payload: NFTokenCreateOffer) => Promise<CreateNFTOfferResponse>;
@@ -759,7 +761,7 @@ const LedgerProvider: FC<Props> = ({ children }) => {
       throw new Error('You need to have a wallet connected to make a transaction');
     } else {
       // Prepare the transaction
-      const prepared = await client.request({
+      const prepared = await client.request<AccountTxRequest>({
         command: 'account_tx',
         account: wallet.publicAddress
       });

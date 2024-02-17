@@ -1,7 +1,7 @@
 import { unix } from 'dayjs';
-import { DepositPreauth, Payment, SetRegularKey } from 'xrpl';
+import { AccountTxTransaction, DepositPreauth, Payment, SetRegularKey } from 'xrpl';
 
-import { AccountTransaction, TransactionTypes } from '../../../types';
+import { TransactionTypes } from '../../../types';
 import { formatAmount } from '../../../utils';
 
 export const formatDate = (unixTimestamp: number): string => {
@@ -9,7 +9,7 @@ export const formatDate = (unixTimestamp: number): string => {
 };
 
 type TransactionFormatter = (
-  transaction: AccountTransaction,
+  transaction: AccountTxTransaction,
   publicAddress: string,
   mainToken: string
 ) => string;
@@ -57,7 +57,7 @@ const transactionMappers: Record<TransactionTypes, TransactionFormatter> = {
 };
 
 export const formatTransaction = (
-  transaction: AccountTransaction,
+  transaction: AccountTxTransaction,
   publicAddress: string,
   mainToken: string
 ): string => {
