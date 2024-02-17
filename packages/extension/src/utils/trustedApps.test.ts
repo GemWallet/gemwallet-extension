@@ -82,6 +82,19 @@ describe('Trusted Apps util', () => {
       const trustedApps = JSON.parse(loadData(STORAGE_TRUSTED_APPS) || '[[]]');
       expect(trustedApps).toContainEqual([mockTrustedApp, mockTrustedApp2]);
     });
+
+    test('should throw error if saving trusted app to local storage fails', () => {
+      const localStorageMock = jest.spyOn(window.localStorage, 'setItem');
+      localStorageMock.mockImplementation(() => {
+        throw new Error('Error saving trusted app to local storage');
+      });
+
+      expect(() => saveTrustedApp(mockTrustedApp, 0)).toThrowError(
+        'Error saving trusted app to local storage'
+      );
+
+      localStorageMock.mockRestore();
+    });
   });
 
   describe('loadTrustedApps', () => {
