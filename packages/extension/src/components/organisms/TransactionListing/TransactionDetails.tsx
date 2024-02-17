@@ -32,7 +32,6 @@ export const TransactionDetails: FC<TransactionDetailsProps> = ({ transaction, p
   }
 
   return (
-    <>
       <List sx={{ width: '100%', wordBreak: 'break-word' }}>
         <ListItem style={{ padding: '8px 24px' }}>
           <ListItemText primary="Account" secondary={transaction.tx?.Account} />
@@ -119,6 +118,5 @@ export const TransactionDetails: FC<TransactionDetailsProps> = ({ transaction, p
           <ListItemText primary="Sequence" secondary={transaction.tx?.Sequence} />
         </ListItem>
       </List>
-    </>
   );
 };
