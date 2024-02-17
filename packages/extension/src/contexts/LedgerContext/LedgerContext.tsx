@@ -4,7 +4,9 @@ import * as Sentry from '@sentry/react';
 import { sign } from 'ripple-keypairs';
 import {
   AccountDelete,
+  AccountInfoRequest,
   AccountInfoResponse,
+  AccountNFTsRequest,
   AccountSet,
   AccountTxRequest,
   AccountTxTransaction,
@@ -736,7 +738,7 @@ const LedgerProvider: FC<Props> = ({ children }) => {
       }
 
       // Prepare the transaction
-      const prepared = await client.request({
+      const prepared = await client.request<AccountNFTsRequest>({
         command: 'account_nfts',
         account: wallet.publicAddress,
         limit: payload?.limit,
@@ -785,7 +787,7 @@ const LedgerProvider: FC<Props> = ({ children }) => {
         );
 
       try {
-        return client.request({
+        return client.request<AccountInfoRequest>({
           command: 'account_info',
           account: address,
           ledger_index: 'current'
@@ -813,14 +815,14 @@ const LedgerProvider: FC<Props> = ({ children }) => {
               throw new Error("Couldn't connect to a Clio server");
             });
           }
-          return clioClient.request({
+          return clioClient.request<NFTInfoRequest>({
             command: 'nft_info',
             nft_id: NFTokenID
           } as NFTInfoRequest);
         }
 
         // Fallback, will probably fail since it's probably not a Clio server
-        return client.request({
+        return client.request<NFTInfoRequest>({
           command: 'nft_info',
           nft_id: NFTokenID
         } as NFTInfoRequest);
@@ -837,7 +839,7 @@ const LedgerProvider: FC<Props> = ({ children }) => {
       if (!client) throw new Error('You need to be connected to a ledger');
 
       try {
-        return client.request({
+        return client.request<LedgerEntryRequest>({
           command: 'ledger_entry',
           index: ID,
           ledger_index: 'validated'
