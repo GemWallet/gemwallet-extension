@@ -12,21 +12,33 @@ vi.mock('../../contexts', () => ({
 }));
 
 describe('useMainToken', () => {
-  beforeEach(() => {
-    vi.resetAllMocks();
-  });
-
   it('returns XRP_TOKEN for default network', () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    vi.mocked(contexts.useNetwork).mockReturnValue({ chainName: 'SomeChain' } as any);
+    vi.mocked(contexts.useNetwork).mockReturnValue({
+      chainName: Chain.XRPL,
+      reconnectToNetwork: vi.fn(),
+      switchNetwork: vi.fn(),
+      resetNetwork: vi.fn(),
+      switchChain: vi.fn(),
+      networkName: 'XRPL',
+      isConnectionFailed: false,
+      hasOfflineBanner: false
+    });
 
     const { result } = renderHook(() => useMainToken());
     expect(result.current).toBe(XRP_TOKEN);
   });
 
   it('returns XAH_TOKEN for XAHAU_TESTNET', () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    vi.mocked(contexts.useNetwork).mockReturnValue({ chainName: Chain.XAHAU } as any);
+    vi.mocked(contexts.useNetwork).mockReturnValue({
+      chainName: Chain.XAHAU,
+      reconnectToNetwork: vi.fn(),
+      switchNetwork: vi.fn(),
+      resetNetwork: vi.fn(),
+      switchChain: vi.fn(),
+      networkName: 'Xahau',
+      isConnectionFailed: false,
+      hasOfflineBanner: false
+    });
 
     const { result } = renderHook(() => useMainToken());
     expect(result.current).toBe(XAH_TOKEN);
