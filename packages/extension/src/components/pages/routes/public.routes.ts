@@ -17,7 +17,7 @@ import { Welcome } from '../Welcome';
 
 type PublicRouteConfig = {
   path: string;
-  element: React.ComponentType;
+  element: React.FC;
 };
 
 export const publicRoutes: PublicRouteConfig[] = [

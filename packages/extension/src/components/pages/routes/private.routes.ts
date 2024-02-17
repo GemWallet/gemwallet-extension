@@ -69,7 +69,7 @@ import { TrustedApps } from '../TrustedApps';
 
 type PrivateRouteConfig = {
   path: string;
-  element: React.ComponentType;
+  element: React.FC;
 };
 
 export const privateRoutes: PrivateRouteConfig[] = [
