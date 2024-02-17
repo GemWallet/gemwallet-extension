@@ -1,6 +1,3 @@
-import { Transaction, TransactionMetadata } from 'xrpl';
-import { ResponseOnlyTxInfo } from 'xrpl/dist/npm/models/common';
-
 export enum TransactionStatus {
   // waiting: waiting for a user interaction
   Waiting = 'WAITING',
@@ -37,12 +34,4 @@ export enum TransactionTypes {
   SignerListSet = 'SignerListSet',
   TicketCreate = 'TicketCreate',
   TrustSet = 'TrustSet'
-}
-
-export interface AccountTransaction {
-  ledger_index: number;
-  meta: string | TransactionMetadata;
-  tx?: Transaction & ResponseOnlyTxInfo;
-  tx_blob?: string;
-  validated: boolean;
 }

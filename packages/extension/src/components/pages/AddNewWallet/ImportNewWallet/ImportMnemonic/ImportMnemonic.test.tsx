@@ -2,11 +2,12 @@ import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
 import { ImportMnemonic, ImportMnemonicProps } from './ImportMnemonic';
+import { vi } from 'vitest';
 
 const defaultProps: ImportMnemonicProps = {
   activeStep: 0,
   password: '',
-  handleBack: jest.fn()
+  handleBack: vi.fn()
 };
 
 describe('Import New Wallet - Import Mnemonic', () => {

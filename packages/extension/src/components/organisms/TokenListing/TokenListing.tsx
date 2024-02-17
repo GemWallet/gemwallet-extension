@@ -174,7 +174,7 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
       setOwnerReserve(accountInfo.result.account_data.OwnerCount * RESERVE_PER_OWNER);
       setReserve(accountInfo.result.account_data.OwnerCount * RESERVE_PER_OWNER + baseReserve);
     })
-    .catch((e) => {
+    .catch((_) => {
       setOwnerReserve(0);
       setReserve(DEFAULT_RESERVE);
     });

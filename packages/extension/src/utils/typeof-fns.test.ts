@@ -7,6 +7,7 @@ import {
   isString,
   isUndefined
 } from './typeof-fns';
+import { describe, it, expect } from 'vitest';
 
 describe('isFunction', () => {
   it('correctly identifies functions', () => {

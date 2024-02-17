@@ -206,7 +206,7 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
   }, [client, getCurrentWallet]);
 
   const hasEnoughFunds = useCallback(
-    (amountToSend: string, currentToken) => {
+    (amountToSend: string, currentToken: string) => {
       const [currency, issuer] = currentToken.split('-');
       const token = tokens?.find((token) => {
         if (currency === 'XRP') {

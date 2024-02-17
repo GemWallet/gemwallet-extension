@@ -3,12 +3,13 @@ import { convertStringToHex } from 'xrpl';
 import { IPFSResolverPrefix } from '@gemwallet/constants/src/xrpl/nft.constant';
 
 import { resolveNFTData } from './NFTDataResolver';
+import { describe, it, expect, beforeEach, afterEach, SpyInstance, Mock, vi } from 'vitest';
 
 describe('resolveNFTData', () => {
-  let mockFetch: jest.SpyInstance;
+  let mockFetch: SpyInstance;
 
   beforeEach(() => {
-    mockFetch = jest.spyOn(global, 'fetch');
+    mockFetch = vi.spyOn(global, 'fetch');
   });
 
   afterEach(() => {
@@ -24,7 +25,7 @@ describe('resolveNFTData', () => {
         NFTokenTaxon: 0,
         nft_serial: 0
       },
-      jest.fn()
+      vi.fn()
     );
     expect(result).toEqual({
       NFTokenID: '1234',
@@ -43,7 +44,7 @@ describe('resolveNFTData', () => {
         NFTokenTaxon: 0,
         nft_serial: 0
       },
-      jest.fn()
+      vi.fn()
     );
     expect(result).toEqual({
       NFTokenID: '1234',
@@ -62,7 +63,7 @@ describe('resolveNFTData', () => {
         NFTokenTaxon: 0,
         nft_serial: 0
       },
-      jest.fn()
+      vi.fn()
     );
     expect(result).toEqual({
       NFTokenID: '1234',
@@ -72,7 +73,7 @@ describe('resolveNFTData', () => {
 
   it('should return parsed JSON if URL is a JSON', async () => {
     mockFetch.mockResolvedValue(new Response(JSON.stringify({}), { status: 200 }));
-    (global.fetch as jest.Mock).mockResolvedValue(
+    (global.fetch as Mock).mockResolvedValue(
       new Response(JSON.stringify({ description: 'Test JSON' }))
     );
     const result = await resolveNFTData(
@@ -84,7 +85,7 @@ describe('resolveNFTData', () => {
         NFTokenTaxon: 0,
         nft_serial: 0
       },
-      jest.fn()
+      vi.fn()
     );
     expect(result).toEqual({
       NFTokenID: '1234',
@@ -95,7 +96,7 @@ describe('resolveNFTData', () => {
 
   it('should return raw NFT attributes if URL fetch fails', async () => {
     const testJsonUrl = 'https://test.com/data.json';
-    (global.fetch as jest.Mock).mockRejectedValueOnce(new Error('Fetch failed'));
+    (global.fetch as Mock).mockRejectedValueOnce(new Error('Fetch failed'));
 
     const result = await resolveNFTData(
       {
@@ -106,7 +107,7 @@ describe('resolveNFTData', () => {
         NFTokenTaxon: 0,
         nft_serial: 0
       },
-      jest.fn()
+      vi.fn()
     );
 
     expect(result).toEqual({
@@ -117,7 +118,7 @@ describe('resolveNFTData', () => {
 
   it('should return raw NFT attributes if URL fetch from IPFS fails', async () => {
     const testIpfsUrl = `${IPFSResolverPrefix}someHash`;
-    (global.fetch as jest.Mock).mockRejectedValueOnce(new Error('Fetch failed'));
+    (global.fetch as Mock).mockRejectedValueOnce(new Error('Fetch failed'));
 
     const result = await resolveNFTData(
       {
@@ -128,7 +129,7 @@ describe('resolveNFTData', () => {
         NFTokenTaxon: 0,
         nft_serial: 0
       },
-      jest.fn()
+      vi.fn()
     );
 
     expect(result).toEqual({

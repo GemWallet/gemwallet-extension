@@ -60,11 +60,11 @@ export const useFees = (tx: Transaction | Transaction[], fee?: string | null) =>
               const accountInfo = await getAccountInfo();
               const reserve =
                 accountInfo.result.account_data.OwnerCount * RESERVE_PER_OWNER + baseReserve;
-              const difference = Number(currentBalance) - reserve - Number(dropsToXrp(diffFee));
+              const difference = currentBalance - reserve - dropsToXrp(diffFee);
               setDifference(difference);
               setError(undefined);
             } catch (e) {
-              const difference = Number(currentBalance) - baseReserve - Number(dropsToXrp(diffFee));
+              const difference = currentBalance - baseReserve - dropsToXrp(diffFee);
               setDifference(difference);
               Sentry.captureException(e);
             }

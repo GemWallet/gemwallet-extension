@@ -115,7 +115,7 @@ export const NavMenu: FC<NavMenuProps> = ({ indexDefaultNav }) => {
           icon={icon}
           value={index}
           showLabel
-          onClick={(e) => handleClick(e, index)}
+          onClick={(e: MouseEvent<HTMLButtonElement>) => handleClick(e, index)}
         />
       ))}
     </StyledBottomNavigation>

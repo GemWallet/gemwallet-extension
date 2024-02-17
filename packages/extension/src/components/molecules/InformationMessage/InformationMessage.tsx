@@ -6,6 +6,7 @@ import { Paper, Typography } from '@mui/material';
 export interface InformationMessageProps {
   title?: string;
   style?: CSSProperties;
+  children: React.ReactNode;
 }
 
 export const InformationMessage: FC<InformationMessageProps> = ({ title, children, style }) => {

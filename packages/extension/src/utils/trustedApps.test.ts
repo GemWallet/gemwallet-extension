@@ -9,6 +9,7 @@ import {
   saveTrustedApp,
   TrustedApp
 } from './trustedApps';
+import { describe, test, beforeEach } from 'vitest';
 
 describe('Trusted Apps util', () => {
   const mockTrustedApp: TrustedApp = {
@@ -82,15 +83,18 @@ describe('Trusted Apps util', () => {
       expect(trustedApps).toContainEqual([mockTrustedApp, mockTrustedApp2]);
     });
 
-    // test('should throw error if saving trusted app to local storage fails', () => {
-    //   jest.spyOn(window.localStorage, 'setItem').mockImplementation(() => {
-    //     throw new Error('Error saving trusted app to local storage');
-    //   });
+    test('should throw error if saving trusted app to local storage fails', () => {
+      const localStorageMock = jest.spyOn(window.localStorage, 'setItem');
+      localStorageMock.mockImplementation(() => {
+        throw new Error('Error saving trusted app to local storage');
+      });
 
-    //   expect(() => saveTrustedApp(mockTrustedApp, 0)).toThrowError(
-    //     'Error saving trusted app to local storage'
-    //   );
-    // });
+      expect(() => saveTrustedApp(mockTrustedApp, 0)).toThrowError(
+        'Error saving trusted app to local storage'
+      );
+
+      localStorageMock.mockRestore();
+    });
   });
 
   describe('loadTrustedApps', () => {

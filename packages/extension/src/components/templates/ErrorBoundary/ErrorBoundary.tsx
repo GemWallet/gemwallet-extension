@@ -17,13 +17,17 @@ interface State {
   hasError: boolean;
 }
 
+interface Props {
+  children: React.ReactElement;
+}
+
 class ErrorBoundaryClassComponent extends Component<ErrorBoundaryProps, State> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false };
   }
 
-  static getDerivedStateFromError(error: Error) {
+  static getDerivedStateFromError() {
     // Update state so the next render will show the fallback UI.
     return { hasError: true };
   }
@@ -84,7 +88,7 @@ class ErrorBoundaryClassComponent extends Component<ErrorBoundaryProps, State> {
   }
 }
 
-export const ErrorBoundary: React.FC = ({ children }) => {
+export const ErrorBoundary: React.FC<Props> = ({ children }) => {
   const { hasOfflineBanner } = useNetwork();
 
   return (

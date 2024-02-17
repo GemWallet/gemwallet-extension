@@ -7,6 +7,10 @@ export enum TransactionProgressStatus {
   IDLE = 'IDLE'
 }
 
+interface Props {
+  children: React.ReactElement;
+}
+
 interface TransactionProgressContextType {
   setTransactionProgress: (status: TransactionProgressStatus) => void;
   transactionProgress: TransactionProgressStatus;
@@ -17,7 +21,7 @@ const TransactionProgressContext = createContext<TransactionProgressContextType>
   transactionProgress: TransactionProgressStatus.IN_PROGRESS
 });
 
-const TransactionProgressProvider: FC = ({ children }) => {
+const TransactionProgressProvider: FC<Props> = ({ children }) => {
   const [transactionProgress, setTransactionProgress] = useState<TransactionProgressStatus>(
     TransactionProgressStatus.IN_PROGRESS
   );

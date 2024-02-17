@@ -2,12 +2,13 @@ import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
 import { Mnemonic, MnemonicProps } from './Mnemonic';
+import { vi } from 'vitest';
 
 const defaultProps: MnemonicProps = {
   activeStep: 0,
   steps: 4,
-  handleBack: jest.fn(),
-  setActiveStep: jest.fn()
+  onBack: vi.fn(),
+  onNext: vi.fn()
 };
 
 describe('Import Mnemonic - Mnemonic Page', () => {

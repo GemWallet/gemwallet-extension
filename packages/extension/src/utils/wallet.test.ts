@@ -7,15 +7,16 @@ import {
   saveSelectedWallet,
   saveWallet
 } from './wallet';
+import { describe, test, vi, beforeEach, afterEach } from 'vitest';
 
 // Mock the localStorage object and its methods
 const localStorageMock = {
-  getItem: jest.fn(),
-  setItem: jest.fn(),
-  removeItem: jest.fn(),
+  getItem: vi.fn(),
+  setItem: vi.fn(),
+  removeItem: vi.fn(),
   length: 0,
-  clear: jest.fn(),
-  key: jest.fn()
+  clear: vi.fn(),
+  key: vi.fn()
 };
 
 const password = 'password';
@@ -26,7 +27,7 @@ const wallet = {
 };
 
 beforeEach(() => {
-  jest.spyOn(window, 'localStorage', 'get').mockImplementation(() => localStorageMock);
+  vi.spyOn(window, 'localStorage', 'get').mockImplementation(() => localStorageMock);
 });
 
 afterEach(() => {
@@ -59,7 +60,7 @@ describe('saveWallet', () => {
 
   test('should throw an error if saving to local storage fails', () => {
     const error = new Error('Error saving to local storage');
-    localStorageMock.setItem = jest.fn(() => {
+    localStorageMock.setItem = vi.fn(() => {
       throw error;
     });
     expect(() => saveWallet(wallet, password)).toThrowError(error);
@@ -68,18 +69,18 @@ describe('saveWallet', () => {
 
 describe('loadWallets', () => {
   test('should load the wallets from local storage', () => {
-    localStorageMock.getItem = jest.fn(() => encrypt(JSON.stringify([wallet]), password));
+    localStorageMock.getItem = vi.fn(() => encrypt(JSON.stringify([wallet]), password));
     expect(loadWallets(password)).toEqual([wallet]);
   });
 
   test('should return an empty array if no wallets are found in local storage', () => {
-    localStorageMock.getItem = jest.fn(() => null);
+    localStorageMock.getItem = vi.fn(() => null);
     expect(loadWallets(password)).toEqual([]);
   });
 
   test('should return an empty array if an error occurs while loading the wallets', () => {
     const error = new Error('Error loading wallets from local storage');
-    localStorageMock.getItem = jest.fn(() => {
+    localStorageMock.getItem = vi.fn(() => {
       throw error;
     });
     expect(loadWallets(password)).toEqual([]);
@@ -87,7 +88,7 @@ describe('loadWallets', () => {
 
   test('should return an empty array if the password is incorrect', () => {
     const wrongPassword = 'wrongPassword';
-    localStorageMock.getItem = jest.fn(() => encrypt(JSON.stringify([wallet]), password));
+    localStorageMock.getItem = vi.fn(() => encrypt(JSON.stringify([wallet]), password));
     expect(loadWallets(wrongPassword)).toEqual([]);
   });
 });
@@ -111,7 +112,7 @@ describe('saveSelectedWallet', () => {
 
   test('should throw an error if saving to local storage fails', () => {
     const error = new Error('Error saving to local storage');
-    localStorageMock.setItem = jest.fn(() => {
+    localStorageMock.setItem = vi.fn(() => {
       throw error;
     });
     expect(() => saveSelectedWallet(2)).toThrowError(error);
@@ -120,18 +121,18 @@ describe('saveSelectedWallet', () => {
 
 describe('loadSelectedWallet', () => {
   test('should load the selected wallet index from local storage', () => {
-    localStorageMock.getItem = jest.fn(() => JSON.stringify(2));
+    localStorageMock.getItem = vi.fn(() => JSON.stringify(2));
     expect(loadSelectedWallet()).toEqual(2);
   });
 
   test('should return 0 if no selected wallet index is found in local storage', () => {
-    localStorageMock.getItem = jest.fn(() => null);
+    localStorageMock.getItem = vi.fn(() => null);
     expect(loadSelectedWallet()).toEqual(0);
   });
 
   test('should return 0 if an error occurs while loading the selected wallet index', () => {
     const error = new Error('Error loading selected wallet index from local storage');
-    localStorageMock.getItem = jest.fn(() => {
+    localStorageMock.getItem = vi.fn(() => {
       throw error;
     });
     expect(loadSelectedWallet()).toEqual(0);

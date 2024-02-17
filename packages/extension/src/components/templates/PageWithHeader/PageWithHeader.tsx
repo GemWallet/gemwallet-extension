@@ -22,6 +22,7 @@ export interface PageWithHeaderProps {
     root?: CSSProperties;
     container?: CSSProperties;
   };
+  children: React.ReactNode;
 }
 
 export const PageWithHeader: FC<PageWithHeaderProps> = ({ children, styles, title }) => {

@@ -67,7 +67,11 @@ const WalletContext = createContext<WalletContextType>({
   selectedWallet: 0
 });
 
-const WalletProvider: FC = ({ children }) => {
+interface Props {
+  children: React.ReactElement;
+}
+
+const WalletProvider: FC<Props> = ({ children }) => {
   const navigate = useNavigate();
   const [wallets, setWallets] = useState<WalletLedger[]>([]);
   const [selectedWallet, setSelectedWallet] = useState<number>(loadSelectedWallet());

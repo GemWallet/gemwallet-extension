@@ -12,11 +12,15 @@ interface ContextType {
   serverInfo?: ServerInfo | null;
 }
 
+interface Props {
+  children: React.ReactElement;
+}
+
 const ServerContext = createContext<ContextType>({
   serverInfo: undefined
 });
 
-const ServerProvider: FC = ({ children }) => {
+const ServerProvider: FC<Props> = ({ children }) => {
   const { client } = useNetwork();
 
   const [serverInfo, setServerInfo] = useState<ServerInfo | null>();

@@ -1,4 +1,5 @@
 import { convertHexCurrencyString, handleAmountHexCurrency } from './convertHexCurrencyString';
+import { describe, it, expect } from 'vitest';
 
 describe('convertHexCurrencyString', () => {
   it('should convert a currency string with 40 characters into its corresponding characters', () => {

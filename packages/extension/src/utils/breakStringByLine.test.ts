@@ -1,4 +1,5 @@
 import { breakStringByLine } from './breakStringByLine';
+import { describe, expect, test } from 'vitest';
 
 describe('breakStringByLine', () => {
   test('should wrap the string every 30 characters by default', () => {

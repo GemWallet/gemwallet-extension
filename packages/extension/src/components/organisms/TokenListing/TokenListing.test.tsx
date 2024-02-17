@@ -7,23 +7,24 @@ import { Chain, XRPLNetwork } from '@gemwallet/constants';
 import { DEFAULT_RESERVE, RESERVE_PER_OWNER } from '../../../constants';
 import { formatToken } from '../../../utils';
 import { TokenListing, TokenListingProps } from './TokenListing';
+import { vi, Mock } from 'vitest';
 
 const user = userEvent.setup();
 
-jest.mock('react-router-dom');
-jest.mock('@sentry/react', () => {
+vi.mock('react-router-dom');
+vi.mock('@sentry/react', () => {
   return {
-    captureException: jest.fn()
+    captureException: vi.fn()
   };
 });
 
-let mockGetBalancesPromise = jest.fn();
-let mockFundWalletPromise = jest.fn();
-let mockRequestPromise = jest.fn();
+const mockGetBalancesPromise = vi.fn();
+const mockFundWalletPromise = vi.fn();
+const mockRequestPromise = vi.fn();
 
-let mockChain = Chain.XRPL;
+const mockChain = Chain.XRPL;
 let mockNetwork = XRPLNetwork.TESTNET;
-let mockClient: { getBalances: jest.Mock; request: jest.Mock } | null = {
+let mockClient: { getBalances: Mock; request: Mock } | null = {
   getBalances: mockGetBalancesPromise,
   request: mockRequestPromise
 };
@@ -38,11 +39,11 @@ mockRequestPromise.mockResolvedValueOnce({
   }
 });
 
-jest.mock('../../../contexts', () => {
+vi.mock('../../../contexts', () => {
   return {
     useNetwork: () => ({
       client: mockClient,
-      reconnectToNetwork: jest.fn(),
+      reconnectToNetwork: vi.fn(),
       networkName: mockNetwork,
       chainName: mockChain
     }),
@@ -57,7 +58,7 @@ jest.mock('../../../contexts', () => {
     }),
     useLedger: () => ({
       fundWallet: mockFundWalletPromise,
-      getAccountInfo: jest.fn().mockImplementation(() =>
+      getAccountInfo: vi.fn().mockImplementation(() =>
         Promise.resolve({
           result: {
             account_data: {

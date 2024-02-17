@@ -3,9 +3,10 @@ import { render, screen } from '@testing-library/react';
 import { XAH_TOKEN } from '../../../../../constants';
 import { useMainToken } from '../../../../../hooks';
 import { RenderTokenIcon } from './RenderTokenIcon';
+import { Mock, vi } from 'vitest';
 
-jest.mock('../../../../../hooks', () => ({
-  useMainToken: jest.fn()
+vi.mock('../../../../../hooks', () => ({
+  useMainToken: vi.fn()
 }));
 
 describe('RenderTokenIcon', () => {
@@ -37,7 +38,7 @@ describe('RenderTokenIcon', () => {
   });
 
   test('should render Xahau icon when XAH_TOKEN is the main token', () => {
-    (useMainToken as jest.Mock).mockReturnValue(XAH_TOKEN);
+    (useMainToken as Mock).mockReturnValue(XAH_TOKEN);
     render(<RenderTokenIcon isMainToken={true} tokenIconUrl="" token="" />);
     expect(screen.getByTestId('xahau-icon')).toBeInTheDocument();
   });

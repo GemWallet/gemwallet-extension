@@ -1,4 +1,5 @@
 import { render, fireEvent } from '@testing-library/react';
+import { describe, test, vi } from 'vitest';
 
 import { useKeyUp } from './useKeyUp';
 
@@ -10,7 +11,7 @@ const TestComponent = ({ k, callback }: { k: string; callback: () => void }) => 
 describe('useKeyUp hook', () => {
   test('calls callback function on keyup event with correct key', async () => {
     const key = 'Enter';
-    const callback = jest.fn();
+    const callback = vi.fn();
     render(<TestComponent k={key} callback={callback} />);
     await fireEvent(window, new KeyboardEvent('keyup', { key }));
     expect(callback).toHaveBeenCalled();
@@ -18,7 +19,7 @@ describe('useKeyUp hook', () => {
 
   test('removes event listener on unmount', async () => {
     const key = 'Enter';
-    const callback = jest.fn();
+    const callback = vi.fn();
     const { unmount } = render(<TestComponent k={key} callback={callback} />);
     unmount();
     await fireEvent(window, new KeyboardEvent('keyup', { key }));

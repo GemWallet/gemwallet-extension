@@ -2,10 +2,11 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { WalletIcon, WalletIconProps } from './WalletIcon';
+import { vi } from 'vitest';
 
 const user = userEvent.setup();
 
-jest.mock('@emeraldpay/hashicon-react', () => ({
+vi.mock('@emeraldpay/hashicon-react', () => ({
   Hashicon: ({ value, size }: { value: string; size: number }) => (
     <div>
       <div>{value}</div>
@@ -17,7 +18,7 @@ jest.mock('@emeraldpay/hashicon-react', () => ({
 let mockNetworkContext = {
   client: false
 };
-jest.mock('../../../contexts', () => ({
+vi.mock('../../../contexts', () => ({
   useNetwork: () => mockNetworkContext
 }));
 
@@ -27,7 +28,7 @@ const renderWalletIcon = (props?: Partial<WalletIconProps>) =>
   render(
     <WalletIcon
       publicAddress={props?.publicAddress || defaultPublicAddress}
-      onClick={props?.onClick || jest.fn()}
+      onClick={props?.onClick || vi.fn()}
       size={props?.size}
       isConnectedInformation={props?.isConnectedInformation}
     />
@@ -53,7 +54,7 @@ describe('WalletIcon', () => {
   });
 
   test('calls the onClick prop when the icon is clicked', async () => {
-    const onClick = jest.fn();
+    const onClick = vi.fn();
     renderWalletIcon({ onClick });
     await user.click(screen.getByRole('button', { name: 'Wallet icon' }));
     expect(onClick).toHaveBeenCalled();

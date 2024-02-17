@@ -2,28 +2,28 @@ import { FC, useCallback, useMemo, useState } from 'react';
 
 import TransactionIcon from '@mui/icons-material/CompareArrows';
 import { List, ListItem, ListItemIcon, ListItemText, Paper, Typography } from '@mui/material';
-import { unix } from 'moment';
+import { unix } from 'dayjs';
+import { AccountTxTransaction } from 'xrpl';
 
 import { useWallet } from '../../../contexts';
 import { useMainToken } from '../../../hooks';
-import { AccountTransaction } from '../../../types';
 import { InformationMessage } from '../../molecules';
 import { DialogPage, PageWithSpinner } from '../../templates';
 import { formatDate, formatTransaction } from './format.util';
 import { TransactionDetails } from './TransactionDetails';
 
 export interface TransactionListingProps {
-  transactions: AccountTransaction[];
+  transactions: AccountTxTransaction[];
 }
 
 export const TransactionListing: FC<TransactionListingProps> = ({ transactions }) => {
-  const [openedTx, setOpenedTx] = useState<AccountTransaction | null>(null);
+  const [openedTx, setOpenedTx] = useState<AccountTxTransaction | null>(null);
 
   const mainToken = useMainToken();
   const { getCurrentWallet } = useWallet();
   const wallet = getCurrentWallet();
 
-  const handleClick = useCallback((transaction: AccountTransaction) => {
+  const handleClick = useCallback((transaction: AccountTxTransaction) => {
     setOpenedTx(transaction);
   }, []);
 
@@ -32,7 +32,7 @@ export const TransactionListing: FC<TransactionListingProps> = ({ transactions }
   }, []);
 
   const transactionsByDate = useMemo(() => {
-    const grouped = new Map<string, AccountTransaction[]>();
+    const grouped = new Map<string, AccountTxTransaction[]>();
     transactions.forEach((transaction) => {
       const date = transaction.tx?.date
         ? unix(946684800 + transaction.tx.date).format('MMM DD, YYYY')

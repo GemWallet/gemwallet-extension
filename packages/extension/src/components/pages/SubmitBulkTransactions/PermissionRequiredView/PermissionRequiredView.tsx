@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 
 import WarningIcon from '@mui/icons-material/Warning';
 import { Button, Container, Typography } from '@mui/material';

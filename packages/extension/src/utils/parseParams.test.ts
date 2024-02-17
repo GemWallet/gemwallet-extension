@@ -23,6 +23,7 @@ import {
   parseTransactionParam,
   parseTrustSetFlags
 } from './parseParams';
+import { describe, it, expect, test } from 'vitest';
 
 describe('parseAmount', () => {
   test('parse amount in drops', () => {
@@ -286,8 +287,8 @@ describe('parseCreateNFTOfferFlags', () => {
 });
 
 describe('parseCreateOfferFlags', () => {
-  test('should return null when flagsString is null', () => {
-    const result = parseCreateOfferFlags(null);
+  test('should return null when flagsString is undefined', () => {
+    const result = parseCreateOfferFlags(undefined);
     expect(result).toBeNull();
   });
 
@@ -420,8 +421,8 @@ describe('createNFTOfferFlagsToNumber', () => {
   });
 
   describe('parseSetAccountFlags', () => {
-    it('returns null if input is null', () => {
-      const result = parseSetAccountFlags(null);
+    it('returns null if input is undefined', () => {
+      const result = parseSetAccountFlags(undefined);
       expect(result).toBeNull();
     });
 

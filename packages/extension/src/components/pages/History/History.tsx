@@ -1,10 +1,10 @@
 import { FC, useEffect, useState } from 'react';
+import { AccountTxTransaction } from 'xrpl';
 
 import { Button, CircularProgress, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
 
 import { LEDGER_CONNECTION_ERROR, useLedger, useNetwork } from '../../../contexts';
-import { AccountTransaction } from '../../../types';
 import { InformationMessage } from '../../molecules';
 import { TransactionListing } from '../../organisms';
 import { PageWithHeader } from '../../templates';
@@ -13,7 +13,7 @@ export const History: FC = () => {
   const { getTransactions } = useLedger();
   const { reconnectToNetwork } = useNetwork();
 
-  const [transactions, setTransactions] = useState<AccountTransaction[] | null>(null);
+  const [transactions, setTransactions] = useState<AccountTxTransaction[] | null>(null);
   const [isTxFailed, setIsTxFailed] = useState<boolean>(false);
 
   useEffect(() => {

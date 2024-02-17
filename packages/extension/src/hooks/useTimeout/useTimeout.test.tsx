@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { render, waitFor } from '@testing-library/react';
 
 import { useTimeout } from './useTimeout';
+import { test } from 'vitest';
 
 const TestComponent: React.FC = () => {
   const [isVisible, setIsVisible] = useState<boolean>(false);
@@ -24,6 +25,6 @@ test('useTimeout hook should set isVisible to true after 2 seconds', async () =>
 
   // Wait for 2 seconds
   await waitFor(() => expect(testElement).toHaveTextContent('Visible'), {
-    timeout: 2000
+    timeout: 2100 // Slightly longer to ensure the timeout has fully elapsed
   });
 });

@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 
 import ErrorIcon from '@mui/icons-material/Error';
 import { Typography } from '@mui/material';

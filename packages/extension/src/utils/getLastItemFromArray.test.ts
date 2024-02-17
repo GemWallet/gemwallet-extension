@@ -1,4 +1,5 @@
 import { getLastItemFromArray } from './getLastItemFromArray';
+import { describe, it, expect } from 'vitest';
 
 describe('getLastItemFromArray', () => {
   it('returns the  item of an array', () => {

@@ -1,5 +1,3 @@
-import { RouteProps } from 'react-router-dom';
-
 import {
   CREATE_NEW_WALLET_PATH,
   IMPORT_MNEMONIC_PATH,
@@ -17,8 +15,9 @@ import { ImportWallet } from '../ImportWallet';
 import { ResetPassword } from '../ResetPassword';
 import { Welcome } from '../Welcome';
 
-type PublicRouteConfig = RouteProps & {
-  element: React.ComponentType;
+type PublicRouteConfig = {
+  path: string;
+  element: React.FC;
 };
 
 export const publicRoutes: PublicRouteConfig[] = [

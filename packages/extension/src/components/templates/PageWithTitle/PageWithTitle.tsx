@@ -10,6 +10,7 @@ export interface PageWithTitleProps {
   styles?: {
     container?: React.CSSProperties;
   };
+  children: React.ReactNode;
 }
 
 export const PageWithTitle: FC<PageWithTitleProps> = ({ title, children, styles }) => {

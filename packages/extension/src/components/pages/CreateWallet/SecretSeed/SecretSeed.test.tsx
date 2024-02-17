@@ -2,21 +2,22 @@ import { render, screen } from '@testing-library/react';
 
 import { generateWalletContext } from '../../../../mocks';
 import { SecretSeed, SecretSeedProps } from './SecretSeed';
+import { vi } from 'vitest';
 
 const defaultProps: SecretSeedProps = {
   activeStep: 0,
   steps: 4,
   seed: 'fdjlfkhfhdksj',
-  handleBack: jest.fn(),
-  setActiveStep: jest.fn()
+  handleBack: vi.fn(),
+  setActiveStep: vi.fn()
 };
 
-jest.mock('react-router-dom', () => ({
-  useNavigate: () => jest.fn()
+vi.mock('react-router-dom', () => ({
+  useNavigate: () => vi.fn()
 }));
 
 const mockWalletContext = generateWalletContext();
-jest.mock('../../../../contexts', () => ({
+vi.mock('../../../../contexts', () => ({
   useNetwork: () => ({
     hasOfflineBanner: false
   }),

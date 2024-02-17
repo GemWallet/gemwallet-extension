@@ -1,4 +1,5 @@
 import { truncateWalletName } from './truncateWalletName';
+import { describe, it, expect } from 'vitest';
 
 describe('truncateWalletName', () => {
   it('should truncate the wallet name if it exceeds the maximum length', () => {

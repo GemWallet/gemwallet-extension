@@ -15,6 +15,10 @@ interface NavBarPositionContextType {
   isHalloween: boolean;
 }
 
+interface Props {
+  children: React.ReactElement;
+}
+
 const defaultPosition = {
   left: '0%',
   width: '0'
@@ -26,7 +30,7 @@ const NavBarPositionContext = createContext<NavBarPositionContextType>({
   isHalloween: false
 });
 
-const NavBarPositionProvider: FC = ({ children }) => {
+const NavBarPositionProvider: FC<Props> = ({ children }) => {
   const [navBarPosition, setNavBarPosition] = useState<NavBarPosition>(defaultPosition);
   const { featureFlags } = useFeatureFlags();
 

@@ -17,7 +17,11 @@ const BrowserContext = createContext<ContextType>({
   closeExtension: () => {}
 });
 
-const BrowserProvider: FC = ({ children }) => {
+interface Props {
+  children: React.ReactElement;
+}
+
+const BrowserProvider: FC<Props> = ({ children }) => {
   const [window, setWindow] = useState<chrome.windows.Window | undefined>();
 
   const getCurrentWindow = useCallback(() => {

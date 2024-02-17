@@ -23,6 +23,7 @@ export interface TransactionPageProps {
   onClickApprove: () => void;
   onClickReject: () => void;
   navigation?: NavigationProps;
+  children: React.ReactNode;
 }
 
 export const TransactionPage: FC<TransactionPageProps> = ({

@@ -18,7 +18,7 @@ describe('ImportSeed Page', () => {
     const nextButton = screen.getByRole('button', { name: 'Next' });
 
     // Going to Screen 1
-    const seedInput = renderedElements.container.querySelector('#seed');
+    const seedInput = renderedElements.container.querySelector('#seed') as HTMLInputElement;
     await user.type(seedInput, WALLET_SEED);
     await user.click(nextButton);
 

@@ -5,6 +5,7 @@ import { render, screen, waitFor, act } from '@testing-library/react';
 import { LedgerContext } from '../../../contexts';
 import { valueLedgerContext } from '../../../mocks';
 import { NFTCard, NFTCardProps } from './NFTCard';
+import { vi } from 'vitest';
 
 const mockNFT = {
   Flags: 11,
@@ -28,7 +29,7 @@ const mockNFTData = {
   }
 };
 
-const mockGetNFTData = jest.fn();
+const mockGetNFTData = vi.fn();
 const mockContext = {
   ...valueLedgerContext,
   getNFTData: mockGetNFTData
@@ -58,7 +59,7 @@ describe('NFTCard', () => {
       ...mockNFTData
     });
 
-    renderNFTCard({ NFT: mockNFT });
+    renderNFTCard({ NFT: mockNFT, layout: 'large' });
 
     await waitFor(() => expect(mockGetNFTData).toHaveBeenCalled());
     expect(
@@ -72,7 +73,7 @@ describe('NFTCard', () => {
       throw new Error('Failed to fetch NFT data');
     });
 
-    renderNFTCard({ NFT: mockNFT });
+    renderNFTCard({ NFT: mockNFT, layout: 'large' });
 
     await waitFor(() => expect(mockGetNFTData).toHaveBeenCalled());
 

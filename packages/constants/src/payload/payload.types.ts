@@ -1,4 +1,4 @@
-import { AccountSetAsfFlags, Path, Transaction } from 'xrpl';
+import { AccountSetAsfFlags, Path, SubmittableTransaction } from 'xrpl';
 import { Amount, IssuedCurrencyAmount } from 'xrpl/dist/npm/models/common';
 
 import { Network } from '../network/network.constant';
@@ -265,14 +265,14 @@ export interface CancelOfferRequest extends BaseTransactionRequest {
 }
 
 export interface SubmitTransactionRequest {
-  transaction: Transaction;
+  transaction: SubmittableTransaction;
 }
 
 export interface SignTransactionRequest {
-  transaction: Transaction;
+  transaction: SubmittableTransaction;
 }
 
-export type TransactionWithID = Transaction & {
+export type TransactionWithID = SubmittableTransaction & {
   // Optional ID to identify the transaction in the response, after it has been submitted.
   // This id is only used as an indicator in the response, and is not used to order transactions.
   ID?: string;
