@@ -290,6 +290,7 @@ describe('Offers', () => {
     cy.contains('Sequence')
       .next()
       .invoke('text')
+      // deepcode ignore PromiseNotCaughtGeneral: No need to have a catch here as this is a test
       .then((sequence) => {
         cy.wrap(sequence).as('sequence');
       });

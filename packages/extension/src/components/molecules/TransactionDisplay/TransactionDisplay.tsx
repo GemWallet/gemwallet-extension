@@ -1,6 +1,5 @@
 import { FC } from 'react';
 
-import { TypographyProps } from '@mui/material';
 import { convertHexToString, Currency } from 'xrpl';
 import { Amount, Memo, Signer } from 'xrpl/dist/npm/models/common';
 import { GlobalFlags } from 'xrpl/dist/npm/models/transactions/common';
@@ -176,12 +175,11 @@ export const TransactionDisplay: FC<XRPLTxProps> = ({
   const renderAmount = (params: {
     title: string;
     value: Amount;
-    valueTypographyProps?: TypographyProps;
     useLegacy: boolean;
     hasMultipleAmounts?: boolean;
     mainToken?: string;
   }) => {
-    const { title, value, valueTypographyProps, useLegacy } = params;
+    const { title, value, useLegacy } = params;
     const res = parseAmountObject(value, mainToken);
     if (hasMultipleAmounts) {
       const formattedValue = res.issuer
@@ -194,7 +192,6 @@ export const TransactionDisplay: FC<XRPLTxProps> = ({
         <KeyValueDisplay
           keyName={title}
           value={formattedValue}
-          valueTypographyProps={valueTypographyProps}
           useLegacy={useLegacy}
           hasTooltip={hasTooltip}
         />
@@ -206,14 +203,12 @@ export const TransactionDisplay: FC<XRPLTxProps> = ({
         <KeyValueDisplay
           keyName={title}
           value={`${res.amount} ${res.currency}`}
-          valueTypographyProps={valueTypographyProps}
           useLegacy={useLegacy}
         />
         {res.issuer ? (
           <KeyValueDisplay
             keyName="Trustline"
             value={res.issuer}
-            valueTypographyProps={valueTypographyProps}
             hasTooltip={true}
             useLegacy={useLegacy}
           />

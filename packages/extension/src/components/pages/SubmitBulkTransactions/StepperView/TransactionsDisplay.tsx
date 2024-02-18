@@ -71,6 +71,7 @@ export const TransactionsDisplay: FC<TransactionsDisplayProps> = ({
         const { ID, ...txWithoutID } = tx;
         return (
           <DataCard
+            key={ID}
             dataName={`${Number(key) + 1} - ${tx.TransactionType}`}
             isExpanded={expandedStates[key] ?? areAllExpanded}
             setIsExpanded={() => handleToggleExpand(key)}

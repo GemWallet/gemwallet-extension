@@ -2,8 +2,8 @@ import { Chain, XRPLNetwork } from '@gemwallet/constants';
 
 import { navigate } from '../utils/navigation';
 
-// deepcode ignore NoHardcodedPasswords: password used for testing purposes
 const SUBMIT_RAW_TRANSACTION_PATH = 'http://localhost:3000/build-transaction?transaction=buildRaw';
+// deepcode ignore NoHardcodedPasswords: password used for testing purposes
 const PASSWORD = 'SECRET_PASSWORD';
 
 beforeEach(() => {

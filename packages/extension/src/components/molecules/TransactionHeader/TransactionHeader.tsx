@@ -6,7 +6,7 @@ import { SECONDARY_GRAY } from '../../../constants';
 
 export interface TransactionHeaderProps {
   title: string;
-  favicon?: string | undefined;
+  favicon?: string;
   url?: string | null;
 }
 

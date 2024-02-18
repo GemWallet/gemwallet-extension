@@ -3,6 +3,7 @@
 import { Chain, XRPLNetwork } from '@gemwallet/constants';
 
 describe('Delete account', () => {
+  // deepcode ignore NoHardcodedPasswords: <Test file, not a real password>
   const PASSWORD = 'SECRET_PASSWORD';
 
   beforeEach(() => {
@@ -98,21 +99,21 @@ describe('Delete account', () => {
 const navigate = (url: string, password: string) => {
   cy.visit(url, {
     onBeforeLoad(win) {
-      (win as any).chrome = (win as any).chrome || {};
-      (win as any).chrome.runtime = {
-        sendMessage(message, cb) {}
+      win['chrome'] = win['chrome'] || {};
+      win['chrome'].runtime = {
+        sendMessage() {}
       };
 
-      (win as any).chrome.storage = {
+      win['chrome'].storage = {
         local: {
-          get(key, cb) {},
+          get() {},
           set(obj, cb) {
             if (cb) cb();
           }
         }
       };
 
-      cy.stub((win as any).chrome.runtime, 'sendMessage').resolves({});
+      cy.stub(win['chrome'].runtime, 'sendMessage').resolves({});
     }
   });
 

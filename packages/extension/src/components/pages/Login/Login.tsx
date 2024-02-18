@@ -154,13 +154,11 @@ export const Login: FC = () => {
   useEffect(() => {
     const loadTimerData = async () => {
       const storedTimerData = await loadFromChromeLocalStorage('disabledLoginTimer');
-      if (storedTimerData !== null) {
-        if (storedTimerData > Date.now()) {
-          setDisableLogin(true);
-          setPasswordError('Too many attempts, please try again later');
-        } else {
-          setDisableLogin(false);
-        }
+      if (typeof storedTimerData === 'number' && storedTimerData > Date.now()) {
+        setDisableLogin(true);
+        setPasswordError('Too many attempts, please try again later');
+      } else {
+        setDisableLogin(false);
       }
     };
     loadTimerData();
