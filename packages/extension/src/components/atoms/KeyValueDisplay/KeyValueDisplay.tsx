@@ -1,12 +1,10 @@
 import { FC } from 'react';
 
-import { Paper, Tooltip, Typography, TypographyProps } from '@mui/material';
+import { Paper, Tooltip, Typography } from '@mui/material';
 
 interface KeyValueDisplayProps {
   keyName: string;
   value: string;
-  keyTypographyProps?: TypographyProps;
-  valueTypographyProps?: TypographyProps;
   hasTooltip?: boolean;
   useLegacy?: boolean;
 }

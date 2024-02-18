@@ -4,12 +4,11 @@ import * as Sentry from '@sentry/react';
 
 export interface CloseProps {
   windowId: number;
-  callback?: Function;
 }
 
 interface ContextType {
   window?: chrome.windows.Window;
-  closeExtension: ({ windowId, callback }: CloseProps) => void;
+  closeExtension: ({ windowId }: CloseProps) => void;
 }
 
 const BrowserContext = createContext<ContextType>({
@@ -34,14 +33,10 @@ const BrowserProvider: FC<Props> = ({ children }) => {
     getCurrentWindow();
   }, [getCurrentWindow]);
 
-  const closeExtension = useCallback(({ windowId, callback }: CloseProps) => {
+  const closeExtension = useCallback(({ windowId }: CloseProps) => {
     if (chrome?.windows) {
       chrome.storage.local.remove('currentWindowId');
-      chrome.windows.remove(windowId).then(() => {
-        if (callback) {
-          callback();
-        }
-      });
+      chrome.windows.remove(windowId);
     }
   }, []);
 

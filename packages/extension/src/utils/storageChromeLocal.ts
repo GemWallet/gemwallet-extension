@@ -2,6 +2,7 @@
  * Manages the storage in Chrome local storage
  */
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const saveInChromeLocalStorage = (key: string, value: any): Promise<void> => {
   return new Promise((resolve, reject) => {
     if (process.env.NODE_ENV === 'production') {
@@ -18,10 +19,7 @@ export const saveInChromeLocalStorage = (key: string, value: any): Promise<void>
   });
 };
 
-export const loadFromChromeLocalStorage = (
-  key: string,
-  deleteAfterLoad: boolean = false
-): Promise<any> => {
+export const loadFromChromeLocalStorage = (key: string, deleteAfterLoad: boolean = false) => {
   return new Promise((resolve, reject) => {
     if (process.env.NODE_ENV === 'production') {
       chrome.storage.local.get(key, (result) => {

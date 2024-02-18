@@ -48,7 +48,7 @@ export const SignMessage: FC = () => {
     return {
       id: Number(urlParams.get('id')) || 0,
       url,
-      favicon: favicon || undefined
+      favicon: favicon ?? undefined
     };
   }, []);
 
@@ -178,6 +178,7 @@ export const SignMessage: FC = () => {
     <TransactionPage
       title="Sign Message"
       description="Signing this message will prove your ownership of the wallet."
+      // deepcode ignore OR: This URL is not used to redirect the user but only displayed as stringified
       url={url}
       favicon={favicon}
       actionButtonsDescription="Only sign messages with a website you trust."

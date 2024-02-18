@@ -1,6 +1,7 @@
 import { NFTData } from '@gemwallet/constants';
 import { IPFSResolverPrefix } from '@gemwallet/constants/src/xrpl/nft.constant';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const parseImage = (NFTData: any, URL: string): string => {
   if (NFTData.image) {
     return replaceIPFS(NFTData.image);
@@ -13,7 +14,7 @@ export const parseImage = (NFTData: any, URL: string): string => {
   return URL.replace('.json', '.png');
 };
 
-export const parseJSON = async (URL: any, NFTokenID: string): Promise<NFTData> => {
+export const parseJSON = async (URL: string, NFTokenID: string): Promise<NFTData> => {
   const NFTData = await fetch(URL)
     .then((res) => res.json())
     .catch(() => {
