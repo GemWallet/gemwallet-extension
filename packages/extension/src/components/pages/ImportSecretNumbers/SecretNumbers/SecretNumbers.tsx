@@ -111,8 +111,8 @@ export const SecretNumbers: FC<SecretNumbersProps> = ({ activeStep, steps, onBac
               marginBottom: Boolean(inputErrors.numbersA)
                 ? '0px'
                 : hasOfflineBanner
-                ? '10px'
-                : '20px',
+                  ? '10px'
+                  : '20px',
               width: '110px'
             }}
             className={styles.textField}
@@ -133,8 +133,8 @@ export const SecretNumbers: FC<SecretNumbersProps> = ({ activeStep, steps, onBac
               marginBottom: Boolean(inputErrors.numbersB)
                 ? '0px'
                 : hasOfflineBanner
-                ? '10px'
-                : '20px',
+                  ? '10px'
+                  : '20px',
               width: '110px'
             }}
             className={styles.textField}
@@ -155,8 +155,8 @@ export const SecretNumbers: FC<SecretNumbersProps> = ({ activeStep, steps, onBac
               marginBottom: Boolean(inputErrors.numbersC)
                 ? '0px'
                 : hasOfflineBanner
-                ? '10px'
-                : '20px',
+                  ? '10px'
+                  : '20px',
               width: '110px'
             }}
             className={styles.textField}
@@ -177,8 +177,8 @@ export const SecretNumbers: FC<SecretNumbersProps> = ({ activeStep, steps, onBac
               marginBottom: Boolean(inputErrors.numbersD)
                 ? '0px'
                 : hasOfflineBanner
-                ? '10px'
-                : '20px',
+                  ? '10px'
+                  : '20px',
               width: '110px'
             }}
             className={styles.textField}
@@ -199,8 +199,8 @@ export const SecretNumbers: FC<SecretNumbersProps> = ({ activeStep, steps, onBac
               marginBottom: Boolean(inputErrors.numbersE)
                 ? '0px'
                 : hasOfflineBanner
-                ? '10px'
-                : '20px',
+                  ? '10px'
+                  : '20px',
               width: '110px'
             }}
             className={styles.textField}
@@ -221,8 +221,8 @@ export const SecretNumbers: FC<SecretNumbersProps> = ({ activeStep, steps, onBac
               marginBottom: Boolean(inputErrors.numbersF)
                 ? '0px'
                 : hasOfflineBanner
-                ? '10px'
-                : '20px',
+                  ? '10px'
+                  : '20px',
               width: '110px'
             }}
             className={styles.textField}
@@ -243,8 +243,8 @@ export const SecretNumbers: FC<SecretNumbersProps> = ({ activeStep, steps, onBac
               marginBottom: Boolean(inputErrors.numbersG)
                 ? '0px'
                 : hasOfflineBanner
-                ? '10px'
-                : '20px',
+                  ? '10px'
+                  : '20px',
               width: '110px'
             }}
             className={styles.textField}
@@ -265,8 +265,8 @@ export const SecretNumbers: FC<SecretNumbersProps> = ({ activeStep, steps, onBac
               marginBottom: Boolean(inputErrors.numbersH)
                 ? '0px'
                 : hasOfflineBanner
-                ? '10px'
-                : '20px',
+                  ? '10px'
+                  : '20px',
               width: '110px'
             }}
             className={styles.textField}

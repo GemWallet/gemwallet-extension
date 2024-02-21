@@ -29,6 +29,7 @@ export * from './Settings';
 export * from './ShareAddress';
 export * from './ShareNFT';
 export * from './SharePublicKey';
+export * from './SignAlicesRing';
 export * from './SignMessage';
 export * from './SignTransaction';
 export * from './SubmitTransaction';

@@ -12,11 +12,13 @@
     "cypress:e2e": "cypress open --browser chrome --e2e"
   },
   "dependencies": {
+    "@cypherLab/types-Ring-Signature-audit": "../types-Ring-Signature-audit",
     "@emeraldpay/hashicon-react": "^0.5.2",
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.15.5",
     "@mui/material": "^5.15.5",
+    "@noble/ed25519": "^2.0.0",
     "@sentry/react": "^7.93.0",
     "copy-to-clipboard": "^3.3.3",
     "crypto-browserify": "^3.12.0",

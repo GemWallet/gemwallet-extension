@@ -2,6 +2,7 @@ export const PARAMETER_SHARE_ADDRESS = 'share=add';
 export const PARAMETER_SHARE_PUBLIC_KEY = 'share=pbk';
 export const PARAMETER_SHARE_NETWORK = 'share=network';
 export const PARAMETER_SHARE_NFT = 'share=nft';
+export const PARAMETER_SIGN_ALICES_RING = 'sign=alicesRing';
 export const PARAMETER_SIGN_MESSAGE = 'sign=message';
 export const PARAMETER_SIGN_TRANSACTION = 'sign=transaction';
 export const PARAMETER_SUBMIT_TRANSACTION = 'submit=transaction';

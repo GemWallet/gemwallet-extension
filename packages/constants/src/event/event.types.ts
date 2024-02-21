@@ -19,6 +19,7 @@ import {
   SetRegularKeyRequest,
   SetTrustlineRequest,
   SetTrustlineRequestDeprecated,
+  SignAlicesRingRequest,
   SignMessageRequest,
   SignTransactionRequest,
   SubmitTransactionRequest,
@@ -48,6 +49,7 @@ interface MessageEventData {
     | SetRegularKeyRequest
     | SetTrustlineRequest
     | SetTrustlineRequestDeprecated
+    | SignAlicesRingRequest
     | SignMessageRequest
     | SubmitTransactionRequest
     | SubmitBulkTransactionsWithKeysRequest
@@ -252,6 +254,16 @@ export interface SubmitTransactionEventListener extends MessageEvent<MessageEven
   };
 }
 
+export interface SignAlicesRingEventListener extends MessageEvent<MessageEventData> {
+  data: {
+    app: typeof GEM_WALLET;
+    type: 'REQUEST_SIGN_ALICES_RING/V3';
+    source: 'GEM_WALLET_MSG_REQUEST';
+    messageId: number;
+    payload: SignAlicesRingRequest;
+  };
+}
+
 export interface SignTransactionEventListener extends MessageEvent<MessageEventData> {
   data: {
     app: typeof GEM_WALLET;
@@ -345,6 +357,7 @@ export type EventListener =
   | SetRegularKeyEventListener
   | SetTrustlineEventListener
   | SetTrustlineEventListenerDeprecated
+  | SignAlicesRingEventListener
   | SignMessageListener
   | SignMessageListenerDeprecated
   | SignTransactionEventListener

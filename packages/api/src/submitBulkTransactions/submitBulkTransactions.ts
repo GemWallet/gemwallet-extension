@@ -36,10 +36,13 @@ export const submitBulkTransactions = async (
       payload: {
         ...payload,
         // Add an index to each transaction so that we can process them in order
-        transactions: payload.transactions.reduce((acc, transaction, index) => {
-          acc[index] = transaction;
-          return acc;
-        }, {} as Record<number, TransactionWithID>)
+        transactions: payload.transactions.reduce(
+          (acc, transaction, index) => {
+            acc[index] = transaction;
+            return acc;
+          },
+          {} as Record<number, TransactionWithID>
+        )
       }
     };
 

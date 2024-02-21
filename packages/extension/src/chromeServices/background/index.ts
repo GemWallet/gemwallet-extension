@@ -30,6 +30,7 @@ import {
   ReceiveSetRegularKeyContentMessage,
   ReceiveSetTrustlineContentMessage,
   ReceiveSetTrustlineContentMessageDeprecated,
+  ReceiveSignAlicesRingContentMessage,
   ReceiveSignMessageContentMessage,
   ReceiveSignMessageContentMessageDeprecated,
   ReceiveSignTransactionContentMessage,
@@ -46,6 +47,7 @@ import {
   PARAMETER_SHARE_NETWORK,
   PARAMETER_SHARE_NFT,
   PARAMETER_SHARE_PUBLIC_KEY,
+  PARAMETER_SIGN_ALICES_RING,
   PARAMETER_SIGN_MESSAGE,
   PARAMETER_SIGN_TRANSACTION,
   PARAMETER_SUBMIT_TRANSACTION,
@@ -450,6 +452,21 @@ chrome.runtime.onMessage.addListener(
       } catch (e) {
         console.error(e);
       }
+      /*
+       * Cypher Lab specific
+       */
+    } else if (type === 'REQUEST_SIGN_ALICES_RING/V3') {
+      const { payload } = message;
+      try {
+        sendMessageInMemory({
+          payload,
+          parameter: PARAMETER_SIGN_ALICES_RING,
+          receivingMessage: 'RECEIVE_SIGN_ALICES_RING/V3',
+          sender
+        });
+      } catch (e) {
+        console.log(e);
+      }
     } else if (type === 'REQUEST_SIGN_MESSAGE/V3') {
       const { payload } = message;
       try {
@@ -755,6 +772,20 @@ chrome.runtime.onMessage.addListener(
         type: 'RECEIVE_NFT',
         payload: {
           nfts: payload.nfts
+        }
+      });
+      /*
+       * Cypher Lab specific
+       */
+    } else if (type === 'RECEIVE_SIGN_ALICES_RING/V3') {
+      const { payload } = message;
+      handleTransactionResponse<ReceiveSignAlicesRingContentMessage>(payload.id, {
+        app,
+        type: 'RECEIVE_SIGN_ALICES_RING/V3',
+        payload: {
+          type: ResponseType.Response,
+          result: payload.result,
+          error: payload.error
         }
       });
     } else if (type === 'RECEIVE_SIGN_MESSAGE/V3') {

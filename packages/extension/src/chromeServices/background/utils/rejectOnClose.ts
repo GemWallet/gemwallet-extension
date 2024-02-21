@@ -39,6 +39,15 @@ export const buildRejectMessage = (type: string): any => {
               publicKey: null
             }
     };
+    /*
+     * Cypher Lab specific
+     */
+  } else if (type === 'RECEIVE_SIGN_ALICES_RING/V3') {
+    return {
+      app: GEM_WALLET,
+      type: 'RECEIVE_SIGN_ALICES_RING/V3',
+      payload: defaultPayload
+    };
   } else if (type === 'RECEIVE_SIGN_MESSAGE/V3' || type === 'RECEIVE_SIGN_MESSAGE') {
     return {
       app: GEM_WALLET,

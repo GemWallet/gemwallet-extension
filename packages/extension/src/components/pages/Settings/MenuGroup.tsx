@@ -68,8 +68,8 @@ export const MenuGroup: FC<MenuGroupProps> = ({ sectionName, items }) => {
               ...(index === 0
                 ? firstListItemStyles
                 : index === arr.length - 1
-                ? lastListItemStyles
-                : {}),
+                  ? lastListItemStyles
+                  : {}),
               ...(index !== arr.length - 1 ? listItemStyles : {})
             }}
             sx={{

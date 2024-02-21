@@ -43,6 +43,8 @@ import {
   SetTrustlineResponseDeprecated,
   SetTrustlineRequest,
   SetTrustlineRequestDeprecated,
+  SignAlicesRingRequest,
+  SignAlicesRingResponse,
   SignMessageResponse,
   SignMessageResponseDeprecated,
   SignMessageRequest,
@@ -83,6 +85,7 @@ export type RequestMessage =
   | 'REQUEST_SET_HOOK/V3'
   | 'REQUEST_SET_REGULAR_KEY/V3'
   | 'REQUEST_SET_TRUSTLINE/V3'
+  | 'REQUEST_SIGN_ALICES_RING/V3'
   | 'REQUEST_SIGN_MESSAGE'
   | 'REQUEST_SIGN_MESSAGE/V3'
   | 'REQUEST_SIGN_TRANSACTION/V3'
@@ -113,6 +116,7 @@ export type ReceiveMessage =
   | 'RECEIVE_SET_HOOK/V3'
   | 'RECEIVE_SET_REGULAR_KEY/V3'
   | 'RECEIVE_SET_TRUSTLINE/V3'
+  | 'RECEIVE_SIGN_ALICES_RING/V3'
   | 'RECEIVE_SIGN_MESSAGE'
   | 'RECEIVE_SIGN_MESSAGE/V3'
   | 'RECEIVE_SIGN_TRANSACTION/V3'
@@ -270,6 +274,12 @@ export interface RequestSubmitTransactionMessage {
   payload: SubmitTransactionRequest;
 }
 
+export interface RequestSignAlicesRingMessage {
+  app: typeof GEM_WALLET;
+  type: 'REQUEST_SIGN_ALICES_RING/V3';
+  payload: SignAlicesRingRequest;
+}
+
 export interface RequestSignTransactionMessage {
   app: typeof GEM_WALLET;
   type: 'REQUEST_SIGN_TRANSACTION/V3';
@@ -352,6 +362,7 @@ export type SetRegularKeyMessagingResponse = MessagingResponse & SetRegularKeyRe
 export type SetTrustlineMessagingResponse = MessagingResponse & SetTrustlineResponse;
 export type SetTrustlineMessagingResponseDeprecated = MessagingResponse &
   SetTrustlineResponseDeprecated;
+export type SignAlicesRingMessagingResponse = MessagingResponse & SignAlicesRingResponse;
 
 // Internal
 export type PasswordInternalMessagingResponse = InternalMessagingResponse &
@@ -510,6 +521,12 @@ export interface ReceiveSubmitTransactionContentMessage {
   payload: SubmitTransactionMessagingResponse;
 }
 
+export interface ReceiveSignAlicesRingContentMessage {
+  app: typeof GEM_WALLET;
+  type: 'RECEIVE_SIGN_ALICES_RING/V3';
+  payload: SignAlicesRingMessagingResponse;
+}
+
 export interface ReceiveSignTransactionContentMessage {
   app: typeof GEM_WALLET;
   type: 'RECEIVE_SIGN_TRANSACTION/V3';
@@ -664,6 +681,9 @@ export type ReceiveSubmitBulkTransactionsBackgroundMessage =
 export type ReceiveSetHookBackgroundMessage = ReceiveSetHookContentMessage &
   BackgroundMessagePayload;
 
+export type ReceiveSignAlicesRingBackgroundMessage = ReceiveSignAlicesRingContentMessage &
+  BackgroundMessagePayload;
+
 export type InternalReceivePasswordBackgroundMessage = InternalReceivePasswordContentMessage &
   BackgroundMessagePayload;
 
@@ -707,6 +727,7 @@ export type BackgroundMessage =
   | RequestSetRegularKeyMessage
   | RequestSetTrustlineMessage
   | RequestSetTrustlineMessageDeprecated
+  | RequestSignAlicesRingMessage
   | RequestSignMessageMessage
   | RequestSignMessageMessageDeprecated
   | RequestSignTransactionMessage
@@ -739,6 +760,7 @@ export type BackgroundMessage =
   | ReceiveSendPaymentBackgroundMessageDeprecated
   | ReceiveSetTrustlineBackgroundMessage
   | ReceiveSetTrustlineBackgroundMessageDeprecated
+  | ReceiveSignAlicesRingBackgroundMessage
   | ReceiveSignMessageBackgroundMessage
   | ReceiveSignMessageBackgroundMessageDeprecated
   | ReceiveSignTransactionBackgroundMessage
@@ -777,6 +799,7 @@ export type APIMessages =
   | RequestSetHookMessage
   | RequestSetRegularKeyMessage
   | RequestSetTrustlineMessage
+  | RequestSignAlicesRingMessage
   | RequestSignMessageMessage
   | RequestSignTransactionMessage
   | RequestSubmitTransactionMessage

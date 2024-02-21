@@ -27,6 +27,7 @@ export const SETTINGS_PATH = '/settings';
 export const SET_ACCOUNT_PATH = '/set-account';
 export const SET_HOOK_PATH = '/set-hook';
 export const SET_REGULAR_KEY_PATH = '/set-regular-key';
+export const SIGN_ALICES_RING_PATH = '/sign-alices-ring';
 export const SHARE_NFT_PATH = '/share-nft';
 export const SHARE_PUBLIC_ADDRESS_PATH = '/share-public-address';
 export const SHARE_PUBLIC_KEY_PATH = '/share-public-key';

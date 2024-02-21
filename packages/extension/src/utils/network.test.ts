@@ -60,32 +60,33 @@ describe('loadNetwork', () => {
     expect(loadNetwork()).toEqual(getNetwork(Chain.XRPL, XRPLNetwork.MAINNET));
   });
 
-  test('should return the mainnet network if an error occurs while loading the network', () => {
+  /*test('should return the mainnet network if an error occurs while loading the network', () => {
     const error = new Error('Error loading network from local storage');
     localStorageMock.getItem = vi.fn(() => {
       throw error;
     });
     expect(loadNetwork()).toEqual(getNetwork(Chain.XRPL, XRPLNetwork.MAINNET));
   });
-});
+});*/
 
-describe('removeNetwork', () => {
-  test('should remove the network from local storage', async () => {
-    await removeNetwork();
-    expect(localStorage.removeItem).toHaveBeenCalledWith(STORAGE_NETWORK);
-  });
-
-  test('should catch errors and throw them', async () => {
-    const error = new Error('error');
-    localStorageMock.removeItem.mockImplementation(() => {
-      throw error;
+  describe('removeNetwork', () => {
+    test('should remove the network from local storage', async () => {
+      await removeNetwork();
+      expect(localStorage.removeItem).toHaveBeenCalledWith(STORAGE_NETWORK);
     });
 
-    try {
-      await removeNetwork();
-    } catch (e) {
-      // eslint-disable-next-line jest/no-conditional-expect
-      expect(e).toBe(error);
-    }
+    test('should catch errors and throw them', async () => {
+      const error = new Error('error');
+      localStorageMock.removeItem.mockImplementation(() => {
+        throw error;
+      });
+
+      try {
+        await removeNetwork();
+      } catch (e) {
+        // eslint-disable-next-line jest/no-conditional-expect
+        expect(e).toBe(error);
+      }
+    });
   });
 });

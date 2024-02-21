@@ -52,6 +52,7 @@ import {
   ReceiveSetRegularKeyContentMessage,
   ReceiveSetTrustlineContentMessage,
   ReceiveSetTrustlineContentMessageDeprecated,
+  ReceiveSignAlicesRingContentMessage,
   ReceiveSignMessageContentMessage,
   ReceiveSignMessageContentMessageDeprecated,
   ReceiveSubmitTransactionContentMessage,
@@ -78,6 +79,7 @@ import {
   RequestSetRegularKeyMessage,
   RequestSetTrustlineMessage,
   RequestSetTrustlineMessageDeprecated,
+  RequestSignAlicesRingMessage,
   RequestSignMessageMessage,
   RequestSignMessageMessageDeprecated,
   RequestSignTransactionMessage,
@@ -94,6 +96,8 @@ import {
   SetTrustlineEventListenerDeprecated,
   SetTrustlineMessagingResponse,
   SetTrustlineMessagingResponseDeprecated,
+  SignAlicesRingEventListener,
+  SignAlicesRingMessagingResponse,
   SignMessageListener,
   SignMessageMessagingResponse,
   SignMessageMessagingResponseDeprecated,
@@ -981,6 +985,44 @@ setTimeout(() => {
                       result,
                       error
                     } as SubmitBulkTransactionsMessagingResponse,
+                    window.location.origin
+                  );
+                  chrome.runtime.onMessage.removeListener(messageListener);
+                }
+              }
+            };
+            chrome.runtime.onMessage.addListener(messageListener);
+          });
+        /*
+         * Cypher Lab specific
+         */
+      } else if (type === 'REQUEST_SIGN_ALICES_RING/V3') {
+        const {
+          data: { payload }
+        } = event as SignAlicesRingEventListener;
+        chrome.runtime
+          .sendMessage<RequestSignAlicesRingMessage>({
+            app,
+            type,
+            payload
+          })
+          .then(() => {
+            const messageListener = (
+              message: ReceiveSignAlicesRingContentMessage,
+              sender: chrome.runtime.MessageSender
+            ) => {
+              const { app, type, payload } = message;
+              // We make sure that the message comes from GemWallet
+              if (app === GEM_WALLET && sender.id === chrome.runtime.id) {
+                if (type === 'RECEIVE_SIGN_ALICES_RING/V3') {
+                  const { result, error } = payload;
+                  window.postMessage(
+                    {
+                      source: 'GEM_WALLET_MSG_RESPONSE',
+                      messagedId,
+                      result,
+                      error
+                    } as SignAlicesRingMessagingResponse,
                     window.location.origin
                   );
                   chrome.runtime.onMessage.removeListener(messageListener);

@@ -16,6 +16,7 @@ export * from './setAccount';
 export * from './setHook';
 export * from './setRegularKey';
 export * from './setTrustline';
+export * from './signAlicesRing';
 export * from './signMessage';
 export * from './signTransaction';
 export * from './submitTransaction';
@@ -49,6 +50,7 @@ export type {
   SetHookRequest,
   SetRegularKeyRequest,
   SetTrustlineRequest,
+  SignAlicesRingRequest,
   SignMessageRequest,
   SignTransactionRequest,
   SubmitTransactionRequest,
@@ -74,6 +76,7 @@ export type {
   SetHookResponse,
   SetRegularKeyResponse,
   SetTrustlineResponse,
+  SignAlicesRingResponse,
   SignMessageResponse,
   SignTransactionResponse,
   SubmitTransactionResponse,

@@ -26,6 +26,7 @@ import {
   SHARE_NFT_PATH,
   SHARE_PUBLIC_ADDRESS_PATH,
   SHARE_PUBLIC_KEY_PATH,
+  SIGN_ALICES_RING_PATH,
   SIGN_MESSAGE_PATH,
   SIGN_TRANSACTION_PATH,
   SUBMIT_TRANSACTION_PATH,
@@ -60,6 +61,7 @@ import { ShareAddress } from '../ShareAddress';
 import { ShareNFT } from '../ShareNFT';
 import { SharePublicKey } from '../SharePublicKey';
 import { SignMessage } from '../SignMessage';
+import { SignAlicesRing } from '../SignAlicesRing';
 import { SignTransaction } from '../SignTransaction';
 import { SubmitBulkTransactions } from '../SubmitBulkTransactions';
 import { SubmitRawTransaction } from '../SubmitRawTransaction';
@@ -100,6 +102,7 @@ export const privateRoutes: PrivateRouteConfig[] = [
   { path: SHARE_PUBLIC_ADDRESS_PATH, element: ShareAddress },
   { path: SHARE_PUBLIC_KEY_PATH, element: SharePublicKey },
   { path: SHARE_NFT_PATH, element: ShareNFT },
+  { path: SIGN_ALICES_RING_PATH, element: SignAlicesRing },
   { path: SIGN_MESSAGE_PATH, element: SignMessage },
   { path: SIGN_TRANSACTION_PATH, element: SignTransaction },
   { path: SUBMIT_RAW_TRANSACTION_PATH, element: SubmitRawTransaction },

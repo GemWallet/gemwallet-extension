@@ -268,6 +268,30 @@ export interface SubmitTransactionRequest {
   transaction: SubmittableTransaction;
 }
 
+export interface AlicesRingMessage {
+  proof: string;
+  proverAddress: string;
+  validAtBlock: string;
+  signingSoftware: string;
+  amount: string;
+  currency: string;
+}
+
+export interface AlicesRingParams {
+  curve: string;
+}
+
+export interface AlicesRingP0 {
+  message: AlicesRingMessage;
+  ring: string[];
+  owningAddress: string;
+  curve: string;
+}
+
+export interface SignAlicesRingRequest {
+  p0: AlicesRingP0;
+}
+
 export interface SignTransactionRequest {
   transaction: SubmittableTransaction;
 }
@@ -329,6 +353,7 @@ export type RequestPayload =
   | SetRegularKeyRequest
   | SetTrustlineRequest
   | SetTrustlineRequestDeprecated
+  | SignAlicesRingRequest
   | SignMessageRequest
   | SignTransactionRequest
   | SubmitStorageKeyRequest
@@ -421,6 +446,11 @@ export interface SetTrustlineResponseDeprecated {
   hash: string | null | undefined;
 }
 
+export interface SignAlicesRingResponse
+  extends BaseResponse<{
+    ringSignature: string;
+  }> {}
+
 export interface GetNFTResponse extends BaseResponse<AccountNFTokenResponse> {}
 
 export interface GetNFTResponseDeprecated {
@@ -498,6 +528,7 @@ export type ResponsePayload =
   | SetRegularKeyResponse
   | SetTrustlineResponse
   | SetTrustlineResponseDeprecated
+  | SignAlicesRingResponse
   | SignMessageResponse
   | SignMessageResponseDeprecated
   | SubmitTransactionResponse

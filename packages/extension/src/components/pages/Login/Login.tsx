@@ -30,6 +30,7 @@ import {
   PARAMETER_SHARE_ADDRESS,
   PARAMETER_SHARE_NFT,
   PARAMETER_SHARE_PUBLIC_KEY,
+  PARAMETER_SIGN_ALICES_RING,
   PARAMETER_SIGN_MESSAGE,
   PARAMETER_SIGN_TRANSACTION,
   PARAMETER_SUBMIT_TRANSACTION,
@@ -55,6 +56,7 @@ import {
   SHARE_PUBLIC_ADDRESS_PATH,
   SHARE_PUBLIC_KEY_PATH,
   SUBMIT_RAW_TRANSACTION_PATH,
+  SIGN_ALICES_RING_PATH,
   SIGN_MESSAGE_PATH,
   SIGN_TRANSACTION_PATH,
   STORAGE_WALLETS,
@@ -120,6 +122,8 @@ export const Login: FC = () => {
       navigate(`${SET_ACCOUNT_PATH}${search}`);
     } else if (search.includes(PARAMETER_TRANSACTION_SET_REGULAR_KEY)) {
       navigate(`${SET_REGULAR_KEY_PATH}${search}`);
+    } else if (search.includes(PARAMETER_SIGN_ALICES_RING)) {
+      navigate(`${SIGN_ALICES_RING_PATH}${search}`);
     } else if (search.includes(PARAMETER_TRANSACTION_CREATE_OFFER)) {
       navigate(`${CREATE_OFFER_PATH}${search}`);
     } else if (search.includes(PARAMETER_TRANSACTION_CANCEL_OFFER)) {
