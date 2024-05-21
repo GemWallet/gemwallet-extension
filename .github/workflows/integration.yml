@@ -20,17 +20,6 @@ jobs:
           cache: 'yarn'
       - name: Install modules
         run: yarn install --frozen-lockfile
-      - name: Create cypress.env.json
-        run: |
-          echo '{' > packages/extension/cypress.env.json
-          echo '  "defaultWalletAddress": "'$CYPRESS_defaultWalletAddress'",' >> packages/extension/cypress.env.json
-          echo '  "issuerETHAddress": "'$CYPRESS_issuerETHAddress'",' >> packages/extension/cypress.env.json
-          echo '  "issuerSOLOAddress": "'$CYPRESS_issuerSOLOAddress'",' >> packages/extension/cypress.env.json
-          echo '  "localStorageWallets": "'$CYPRESS_localStorageWallets'",' >> packages/extension/cypress.env.json
-          echo '  "mnemonic": "'$CYPRESS_mnemonic'",' >> packages/extension/cypress.env.json
-          echo '  "password": "'$CYPRESS_password'",' >> packages/extension/cypress.env.json
-          echo '  "seed": "'$CYPRESS_SEED'",' >> packages/extension/cypress.env.json
-          echo '}' >> packages/extension/cypress.env.json
       - name: Build the extension
         run: yarn build
       - name: Cache build artifacts
@@ -72,6 +61,17 @@ jobs:
           cache: 'yarn'
       - name: Install modules
         run: yarn install --frozen-lockfile
+      - name: Create cypress.env.json
+        run: |
+          echo '{' > packages/extension/cypress.env.json
+          echo '  "defaultWalletAddress": "'$CYPRESS_defaultWalletAddress'",' >> packages/extension/cypress.env.json
+          echo '  "issuerETHAddress": "'$CYPRESS_issuerETHAddress'",' >> packages/extension/cypress.env.json
+          echo '  "issuerSOLOAddress": "'$CYPRESS_issuerSOLOAddress'",' >> packages/extension/cypress.env.json
+          echo '  "localStorageWallets": "'$CYPRESS_localStorageWallets'",' >> packages/extension/cypress.env.json
+          echo '  "mnemonic": "'$CYPRESS_mnemonic'",' >> packages/extension/cypress.env.json
+          echo '  "password": "'$CYPRESS_password'",' >> packages/extension/cypress.env.json
+          echo '  "seed": "'$CYPRESS_SEED'",' >> packages/extension/cypress.env.json
+          echo '}' >> packages/extension/cypress.env.json
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
