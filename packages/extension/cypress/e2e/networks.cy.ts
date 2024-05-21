@@ -1,20 +1,18 @@
 /// <reference types="cypress" />
 
 import { XRPLNetwork } from '@gemwallet/constants';
+import { navigate } from '../utils/navigation';
+
+const PASSWORD = Cypress.env('password');
+const LOCAL_STORAGE_WALLETS = Cypress.env('localStorage');
 
 describe('Switch networks', () => {
-  // deepcode ignore NoHardcodedPasswords: password used for testing purposes
-  const PASSWORD = 'SECRET_PASSWORD';
-
   let networkLocalStorage = undefined;
   let customNetworkLocalStorage = undefined;
   beforeEach(() => {
     // Mock the localStorage with a wallet already loaded
     cy.window().then((win) => {
-      win.localStorage.setItem(
-        'wallets',
-        'U2FsdGVkX18AlCMtFj8wFHFphXwjUK7eE88VPubDBdA0p2PPWShzgCETsCScUwibFZBToMQ4k3pAJj1bwvo0IRlIr0eGnGizk3/Ga309btSK5igom3OSYbqT5SA3JHjCCdTgsM/+tSauA6kdb/A6O3GpNXdXihKa4V/SiuwxOUV9iTP/5zrgvGyGPkv6onJb'
-      );
+      win.localStorage.setItem('wallets', LOCAL_STORAGE_WALLETS);
       if (networkLocalStorage) {
         win.localStorage.setItem('network', networkLocalStorage);
       }
@@ -22,31 +20,8 @@ describe('Switch networks', () => {
         win.localStorage.setItem('customNetworks', customNetworkLocalStorage);
       }
     });
-    cy.visit('http://localhost:3000/', {
-      onBeforeLoad(win) {
-        (win as any).chrome = (win as any).chrome || {};
-        (win as any).chrome.runtime = {
-          sendMessage(message, cb) {}
-        };
 
-        (win as any).chrome.storage = {
-          local: {
-            get(key, cb) {},
-            set(obj, cb) {
-              if (cb) cb();
-            }
-          }
-        };
-
-        cy.stub((win as any).chrome.runtime, 'sendMessage').resolves({});
-      }
-    });
-
-    cy.get('.MuiCircularProgress-root', { timeout: 20000 }).should('not.exist');
-
-    // Login
-    cy.get('input[name="password"]').type(PASSWORD);
-    cy.contains('button', 'Unlock').click();
+    navigate('http://localhost:3000/', PASSWORD);
   });
 
   it('Switch from Mainnet (default network) to Testnet', () => {
