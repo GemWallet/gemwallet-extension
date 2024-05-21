@@ -4,13 +4,15 @@ import { Chain, XRPLNetwork } from '@gemwallet/constants';
 
 import { navigate } from '../utils/navigation';
 
+const PASSWORD = Cypress.env('password');
+const LOCAL_STORAGE_WALLETS = Cypress.env('localStorage');
+const ISSUER_SOLO_ADDRESS = Cypress.env('issuerSOLOAddress');
+const ISSUER_ETH_ADDRESS = Cypress.env('issuerETHAddress');
+
 beforeEach(() => {
   // Mock the localStorage with a wallet already loaded
   cy.window().then((win) => {
-    win.localStorage.setItem(
-      'wallets',
-      'U2FsdGVkX19VA07d7tVhAAtUbt+YVbw0xQY7OZMykOW4YI4nRZK9iZ7LT3+xHvrj4kwlPKEcRg0S1GjbIWSFaMzg3Mw8fklZrZLL9QZvnbF821SeDB5lBBj/F9PBg8A07uZhYz1p4sTDsWAOFvrnKJjmlWIqXzN5MFFbWBb3os2xGtAGTslFVUXuTp6eM9X9'
-    );
+    win.localStorage.setItem('wallets', LOCAL_STORAGE_WALLETS);
     win.localStorage.setItem(
       'network',
       JSON.stringify({
@@ -21,19 +23,16 @@ beforeEach(() => {
   });
 });
 
-// deepcode ignore NoHardcodedPasswords: password used for testing purposes
-const PASSWORD = 'SECRET_PASSWORD';
 const STORAGE_KEY = '1693425372955.3833';
 const URL = `http://localhost:3000/add-new-trustline?storageKey=${STORAGE_KEY}&id=210405959&requestMessage=undefined&transaction=trustSet`;
 
 describe('Trustline', () => {
-  const CURRENCY = 'USD';
-  const DESTINATION_ADDRESS = 'rwtDvu9QDfCskWuyE2TSEt3s56RbiWUKJN';
+  const CURRENCY = 'ETH';
   const VALUE = '10000000';
   const AMOUNT = JSON.stringify({
     currency: CURRENCY,
     value: VALUE,
-    issuer: DESTINATION_ADDRESS
+    issuer: ISSUER_ETH_ADDRESS
   });
   const FLAGS = JSON.stringify({
     tfSetNoRipple: true
@@ -48,7 +47,7 @@ describe('Trustline', () => {
 
     navigate(URL, PASSWORD, STORAGE_KEY, params);
 
-    cy.on('uncaught:exception', (err, runnable) => {
+    cy.on('uncaught:exception', () => {
       // Continue with the test
       return false;
     });
@@ -75,17 +74,17 @@ describe('Trustline', () => {
   it('Confirm the trustline', () => {
     navigate(URL, PASSWORD);
 
-    cy.on('uncaught:exception', (err, runnable) => {
+    cy.on('uncaught:exception', () => {
       // Continue with the test
       return false;
     });
-    validateTrustlineTx(DESTINATION_ADDRESS, CURRENCY, '10,000,000');
+    validateTrustlineTx(ISSUER_ETH_ADDRESS, CURRENCY, '10,000,000');
   });
 
   it('Reject the trustline', () => {
     navigate(URL, PASSWORD);
 
-    cy.on('uncaught:exception', (err, runnable) => {
+    cy.on('uncaught:exception', () => {
       // Continue with the test
       return false;
     });
@@ -109,7 +108,7 @@ describe('Trustline', () => {
 
     // Should have the proper information
     cy.contains('Limit Amount').next().should('have.text', `10,000,000 ${CURRENCY}`);
-    cy.contains('p', 'Trustline').next().should('have.text', DESTINATION_ADDRESS);
+    cy.contains('p', 'Trustline').next().should('have.text', ISSUER_ETH_ADDRESS);
 
     // Confirm the trustline
     cy.contains('button', 'Reject').click();
@@ -125,7 +124,7 @@ describe('Trustline', () => {
     const amount = JSON.stringify({
       currency: 'SOLO',
       value: '10000000',
-      issuer: 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN'
+      issuer: ISSUER_SOLO_ADDRESS
     });
 
     const params = {
@@ -136,18 +135,18 @@ describe('Trustline', () => {
 
     navigate(URL, PASSWORD, STORAGE_KEY, params);
 
-    cy.on('uncaught:exception', (err, runnable) => {
+    cy.on('uncaught:exception', () => {
       // Continue with the test
       return false;
     });
-    validateTrustlineTx('rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN', 'SOLO', '10,000,000');
+    validateTrustlineTx(ISSUER_SOLO_ADDRESS, 'SOLO', '10,000,000');
   });
 
   it('Confirm SOLO (hex)', () => {
     const amount = JSON.stringify({
       currency: '534F4C4F00000000000000000000000000000000',
       value: '10000000',
-      issuer: 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN'
+      issuer: ISSUER_SOLO_ADDRESS
     });
 
     const params = {
@@ -158,22 +157,22 @@ describe('Trustline', () => {
 
     navigate(URL, PASSWORD, STORAGE_KEY, params);
 
-    cy.on('uncaught:exception', (err, runnable) => {
+    cy.on('uncaught:exception', () => {
       // Continue with the test
       return false;
     });
-    validateTrustlineTx('rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN', 'SOLO', '10,000,000');
+    validateTrustlineTx(ISSUER_SOLO_ADDRESS, 'SOLO', '10,000,000');
   });
 
   const testCases = [
     {
-      issuer: 'rwtDvu9QDfCskWuyE2TSEt3s56RbiWUKJN',
-      token: 'USD',
+      issuer: ISSUER_ETH_ADDRESS,
+      token: 'ETH',
       limit: '10000000',
       formattedLimit: '10,000,000'
     },
     {
-      issuer: 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN',
+      issuer: ISSUER_SOLO_ADDRESS,
       token: 'SOLO',
       limit: '100000000',
       formattedLimit: '100,000,000'
@@ -238,7 +237,7 @@ describe('Trustline', () => {
 
     // Check values in the confirmation page
     cy.contains('Limit Amount').next().should('have.text', `${newLimit} ${CURRENCY}`);
-    cy.contains('p', 'Trustline').next().should('have.text', DESTINATION_ADDRESS);
+    cy.contains('p', 'Trustline').next().should('have.text', ISSUER_ETH_ADDRESS);
 
     cy.contains('button', 'Submit').click();
 
