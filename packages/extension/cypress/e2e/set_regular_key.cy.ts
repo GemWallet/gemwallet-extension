@@ -2,18 +2,15 @@ import { Chain, XRPLNetwork } from '@gemwallet/constants';
 
 import { navigate } from '../utils/navigation';
 
-// deepcode ignore NoHardcodedPasswords: password used for testing purposes
-const PASSWORD = 'SECRET_PASSWORD';
+const PASSWORD = Cypress.env('password');
+const LOCAL_STORAGE_WALLETS = Cypress.env('localStorage');
 const STORAGE_KEY = '1693425372955.3833';
 
 describe('Set Regular Key', () => {
   beforeEach(() => {
     // Mock the localStorage with a wallet already loaded
     cy.window().then((win) => {
-      win.localStorage.setItem(
-        'wallets',
-        'U2FsdGVkX19VA07d7tVhAAtUbt+YVbw0xQY7OZMykOW4YI4nRZK9iZ7LT3+xHvrj4kwlPKEcRg0S1GjbIWSFaMzg3Mw8fklZrZLL9QZvnbF821SeDB5lBBj/F9PBg8A07uZhYz1p4sTDsWAOFvrnKJjmlWIqXzN5MFFbWBb3os2xGtAGTslFVUXuTp6eM9X9'
-      );
+      win.localStorage.setItem('wallets', LOCAL_STORAGE_WALLETS);
       win.localStorage.setItem(
         'network',
         JSON.stringify({
