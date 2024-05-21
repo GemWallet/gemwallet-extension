@@ -5,6 +5,8 @@ import { Chain, XRPLNetwork } from '@gemwallet/constants';
 import { navigate } from '../utils/navigation';
 
 const PASSWORD = Cypress.env('password');
+const LOCAL_STORAGE_WALLETS = Cypress.env('localStorage');
+const ISSUER_ADDRESS = Cypress.env('issuerSOLOAddress');
 const STORAGE_KEY = '1693425372955.3833';
 
 describe('Mint', () => {
@@ -32,10 +34,7 @@ describe('Mint', () => {
   beforeEach(() => {
     // Mock the localStorage with a wallet already loaded
     cy.window().then((win) => {
-      win.localStorage.setItem(
-        'wallets',
-        'U2FsdGVkX19VA07d7tVhAAtUbt+YVbw0xQY7OZMykOW4YI4nRZK9iZ7LT3+xHvrj4kwlPKEcRg0S1GjbIWSFaMzg3Mw8fklZrZLL9QZvnbF821SeDB5lBBj/F9PBg8A07uZhYz1p4sTDsWAOFvrnKJjmlWIqXzN5MFFbWBb3os2xGtAGTslFVUXuTp6eM9X9'
-      );
+      win.localStorage.setItem('wallets', LOCAL_STORAGE_WALLETS);
       win.localStorage.setItem(
         'network',
         JSON.stringify({
@@ -163,7 +162,7 @@ describe('Mint', () => {
     const params = {
       amount: {
         currency: 'SOLO',
-        issuer: 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN',
+        issuer: ISSUER_ADDRESS,
         value: '0.4'
       },
       fee: '199',
@@ -188,7 +187,7 @@ describe('Mint', () => {
 
     cy.contains('p', 'NFT').next().should('have.text', this.NFTokenID);
     cy.contains('Amount').next().should('have.text', '0.4 SOLO');
-    cy.contains('Trustline').next().should('have.text', 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN');
+    cy.contains('Trustline').next().should('have.text', ISSUER_ADDRESS);
     cy.contains('Memo').next().should('have.text', 'Test memo');
     cy.contains('Flags').next().should('have.text', 'Offer type: Sell offer');
 
@@ -213,7 +212,7 @@ describe('Mint', () => {
     const params = {
       amount: {
         currency: '534F4C4F00000000000000000000000000000000',
-        issuer: 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN',
+        issuer: ISSUER_ADDRESS,
         value: '0.4'
       },
       fee: '199',
@@ -238,7 +237,7 @@ describe('Mint', () => {
 
     cy.contains('p', 'NFT').next().should('have.text', this.NFTokenID);
     cy.contains('Amount').next().should('have.text', '0.4 SOLO');
-    cy.contains('Trustline').next().should('have.text', 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN');
+    cy.contains('Trustline').next().should('have.text', ISSUER_ADDRESS);
     cy.contains('Memo').next().should('have.text', 'Test memo');
     cy.contains('Flags').next().should('have.text', 'Offer type: Sell offer');
 
@@ -333,7 +332,7 @@ describe('Mint', () => {
       ],
       NFTokenBrokerFee: {
         currency: 'SOLO',
-        issuer: 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN',
+        issuer: ISSUER_ADDRESS,
         value: '0.1'
       }
     };
@@ -346,7 +345,7 @@ describe('Mint', () => {
     cy.contains('Sell Offer').next().should('have.text', this.OfferID);
 
     cy.contains('Broker Fee').next().should('have.text', '0.1 SOLO');
-    cy.contains('Trustline').next().should('have.text', 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN');
+    cy.contains('Trustline').next().should('have.text', ISSUER_ADDRESS);
 
     // Confirm
     cy.contains('button', 'Submit').click();
@@ -374,7 +373,7 @@ describe('Mint', () => {
       ],
       NFTokenBrokerFee: {
         currency: '534F4C4F00000000000000000000000000000000',
-        issuer: 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN',
+        issuer: ISSUER_ADDRESS,
         value: '0.1'
       }
     };
@@ -387,7 +386,7 @@ describe('Mint', () => {
     cy.contains('Sell Offer').next().should('have.text', this.OfferID);
 
     cy.contains('Broker Fee').next().should('have.text', '0.1 SOLO');
-    cy.contains('Trustline').next().should('have.text', 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN');
+    cy.contains('Trustline').next().should('have.text', ISSUER_ADDRESS);
 
     // Confirm
     cy.contains('button', 'Submit').click();
