@@ -2,7 +2,7 @@ import { Chain, XRPLNetwork } from '@gemwallet/constants';
 import { navigate } from '../utils/navigation';
 
 const PASSWORD = Cypress.env('password');
-const LOCAL_STORAGE_WALLETS = Cypress.env('localStorage');
+const LOCAL_STORAGE_WALLETS = Cypress.env('localStorageWallets');
 
 describe('ReceivePayment View', () => {
   beforeEach(() => {

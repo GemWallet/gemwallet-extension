@@ -6,7 +6,7 @@ const URL =
   'http://localhost:3000/submit-transaction?storageKey=1693425372955.3833&id=210401828&requestMessage=undefined&submit=transaction';
 
 const PASSWORD = Cypress.env('password');
-const LOCAL_STORAGE_WALLETS = Cypress.env('localStorage');
+const LOCAL_STORAGE_WALLETS = Cypress.env('localStorageWallets');
 const ISSUER_SOLO_ADDRESS = Cypress.env('issuerSOLOAddress');
 const DEFAULT_WALLET_ADDRESS = Cypress.env('defaultWalletAddress');
 
