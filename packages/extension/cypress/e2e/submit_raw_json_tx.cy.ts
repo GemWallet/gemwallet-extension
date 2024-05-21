@@ -3,16 +3,14 @@ import { Chain, XRPLNetwork } from '@gemwallet/constants';
 import { navigate } from '../utils/navigation';
 
 const SUBMIT_RAW_TRANSACTION_PATH = 'http://localhost:3000/build-transaction?transaction=buildRaw';
-// deepcode ignore NoHardcodedPasswords: password used for testing purposes
-const PASSWORD = 'SECRET_PASSWORD';
+const PASSWORD = Cypress.env('password');
+const LOCAL_STORAGE_WALLETS = Cypress.env('localStorage');
+const ISSUER_SOLO_ADDRESS = Cypress.env('issuerSOLOAddress');
 
 beforeEach(() => {
   // Mock the localStorage with a wallet already loaded
   cy.window().then((win) => {
-    win.localStorage.setItem(
-      'wallets',
-      'U2FsdGVkX19VA07d7tVhAAtUbt+YVbw0xQY7OZMykOW4YI4nRZK9iZ7LT3+xHvrj4kwlPKEcRg0S1GjbIWSFaMzg3Mw8fklZrZLL9QZvnbF821SeDB5lBBj/F9PBg8A07uZhYz1p4sTDsWAOFvrnKJjmlWIqXzN5MFFbWBb3os2xGtAGTslFVUXuTp6eM9X9'
-    );
+    win.localStorage.setItem('wallets', LOCAL_STORAGE_WALLETS);
     win.localStorage.setItem(
       'network',
       JSON.stringify({
@@ -75,7 +73,7 @@ describe('JSON Transaction', () => {
 
     const rawTx = `{
         "TransactionType": "Payment",
-        "Destination": "rhikRdkFw28csKw9z7fVoBjWncz1HSoQij",
+        "Destination": "${ISSUER_SOLO_ADDRESS}",
         "Amount": "100000",
         "Memos": [
             {
