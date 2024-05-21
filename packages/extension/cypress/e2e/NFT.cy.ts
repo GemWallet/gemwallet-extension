@@ -4,8 +4,7 @@ import { Chain, XRPLNetwork } from '@gemwallet/constants';
 
 import { navigate } from '../utils/navigation';
 
-// deepcode ignore NoHardcodedPasswords: password used for testing purposes
-const PASSWORD = 'SECRET_PASSWORD';
+const PASSWORD = Cypress.env('password');
 const STORAGE_KEY = '1693425372955.3833';
 
 describe('Mint', () => {
