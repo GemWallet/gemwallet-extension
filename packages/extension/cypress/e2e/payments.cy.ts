@@ -6,10 +6,10 @@ import { Chain, XRPLNetwork } from '@gemwallet/constants';
 
 import { navigate } from '../utils/navigation';
 
-const PASSWORD = Cypress.env('password');
-const LOCAL_STORAGE_WALLETS = Cypress.env('localStorageWallets');
-const ISSUER_ETH_ADDRESS = Cypress.env('issuerETHAddress');
-const ISSUER_SOLO_ADDRESS = Cypress.env('issuerSOLOAddress');
+const PASSWORD = Cypress.env('PASSWORD');
+const LOCAL_STORAGE_WALLETS = Cypress.env('LOCAL_STORAGE_WALLETS');
+const ISSUER_ETH_ADDRESS = Cypress.env('ISSUER_ETH_ADDRESS');
+const ISSUER_SOLO_ADDRESS = Cypress.env('ISSUER_SOLO_ADDRESS');
 const STORAGE_KEY = '1693425372955.3833';
 const URL = `http://localhost:3000/transaction?storageKey=${STORAGE_KEY}&id=210405959&requestMessage=REQUEST_SEND_PAYMENT%2FV3&transaction=payment`;
 

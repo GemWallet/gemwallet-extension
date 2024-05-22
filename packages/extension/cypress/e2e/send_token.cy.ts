@@ -3,10 +3,10 @@
 import { Chain, XRPLNetwork } from '@gemwallet/constants';
 import { navigate } from '../utils/navigation';
 
-const PASSWORD = Cypress.env('password');
-const LOCAL_STORAGE_WALLETS = Cypress.env('localStorageWallets');
-const SENDER_ADDRESS = Cypress.env('defaultWalletAddress');
-const ISSUER_SOLO_ADDRESS = Cypress.env('issuerSOLOAddress');
+const PASSWORD = Cypress.env('PASSWORD');
+const LOCAL_STORAGE_WALLETS = Cypress.env('LOCAL_STORAGE_WALLETS');
+const SENDER_ADDRESS = Cypress.env('DEFAULT_WALLET_ADDRESS');
+const ISSUER_SOLO_ADDRESS = Cypress.env('ISSUER_SOLO_ADDRESS');
 
 describe('Send Token', () => {
   beforeEach(() => {

@@ -2,8 +2,8 @@ import { Chain, XRPLNetwork } from '@gemwallet/constants';
 
 import { navigate } from '../utils/navigation';
 
-const PASSWORD = Cypress.env('password');
-const LOCAL_STORAGE_WALLETS = Cypress.env('localStorageWallets');
+const PASSWORD = Cypress.env('PASSWORD');
+const LOCAL_STORAGE_WALLETS = Cypress.env('LOCAL_STORAGE_WALLETS');
 
 describe('Set Account', () => {
   const STORAGE_KEY = '1693425372955.3833';

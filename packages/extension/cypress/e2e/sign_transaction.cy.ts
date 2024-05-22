@@ -5,10 +5,10 @@ import { navigate } from '../utils/navigation';
 const URL =
   'http://localhost:3000/sign-transaction?storageKey=1693425372955.3833&id=210401828&requestMessage=undefined&sign=transaction';
 
-const PASSWORD = Cypress.env('password');
-const LOCAL_STORAGE_WALLETS = Cypress.env('localStorageWallets');
-const ISSUER_SOLO_ADDRESS = Cypress.env('issuerSOLOAddress');
-const DEFAULT_WALLET_ADDRESS = Cypress.env('defaultWalletAddress');
+const PASSWORD = Cypress.env('PASSWORD');
+const LOCAL_STORAGE_WALLETS = Cypress.env('LOCAL_STORAGE_WALLETS');
+const ISSUER_SOLO_ADDRESS = Cypress.env('ISSUER_SOLO_ADDRESS');
+const DEFAULT_WALLET_ADDRESS = Cypress.env('DEFAULT_WALLET_ADDRESS');
 
 describe('Sign Transaction', () => {
   beforeEach(() => {

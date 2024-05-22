@@ -1,8 +1,8 @@
 /// <reference types="cypress" />
 
-const PASSWORD = Cypress.env('password');
-const SEED = Cypress.env('seed');
-const MNEMONIC = Cypress.env('mnemonic');
+const PASSWORD = Cypress.env('PASSWORD');
+const SEED = Cypress.env('SEED');
+const MNEMONIC = Cypress.env('MNEMONIC');
 const ERROR_MNEMONIC = 'You need 6 digits';
 const URL_WALLET = 'http://localhost:3000/';
 

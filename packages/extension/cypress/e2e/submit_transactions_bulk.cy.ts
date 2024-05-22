@@ -3,10 +3,10 @@ import { Chain, XRPLNetwork } from '@gemwallet/constants';
 import { navigate } from '../utils/navigation';
 
 describe('Submit Transactions (Bulk)', () => {
-  const PASSWORD = Cypress.env('password');
-  const LOCAL_STORAGE_WALLETS = Cypress.env('localStorageWallets');
-  const ISSUER_SOLO_ADDRESS = Cypress.env('issuerSOLOAddress');
-  const ISSUER_ETH_ADDRESS = Cypress.env('issuerETHAddress');
+  const PASSWORD = Cypress.env('PASSWORD');
+  const LOCAL_STORAGE_WALLETS = Cypress.env('LOCAL_STORAGE_WALLETS');
+  const ISSUER_SOLO_ADDRESS = Cypress.env('ISSUER_SOLO_ADDRESS');
+  const ISSUER_ETH_ADDRESS = Cypress.env('ISSUER_ETH_ADDRESS');
 
   const transactions = [
     {
