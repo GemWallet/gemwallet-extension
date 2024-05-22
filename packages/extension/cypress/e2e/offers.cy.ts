@@ -2,18 +2,17 @@ import { Chain, XRPLNetwork } from '@gemwallet/constants';
 
 import { navigate } from '../utils/navigation';
 
-// deepcode ignore NoHardcodedPasswords: password used for testing purposes
-const PASSWORD = 'SECRET_PASSWORD';
+const PASSWORD = Cypress.env('PASSWORD');
+const LOCAL_STORAGE_WALLETS = Cypress.env('LOCAL_STORAGE_WALLETS');
+const ISSUER_ETH_ADDRESS = Cypress.env('ISSUER_ETH_ADDRESS');
+const ISSUER_SOLO_ADDRESS = Cypress.env('ISSUER_SOLO_ADDRESS');
 const STORAGE_KEY = '1693425372955.3833';
 
 describe('Offers', () => {
   beforeEach(() => {
     // Mock the localStorage with a wallet already loaded
     cy.window().then((win) => {
-      win.localStorage.setItem(
-        'wallets',
-        'U2FsdGVkX19VA07d7tVhAAtUbt+YVbw0xQY7OZMykOW4YI4nRZK9iZ7LT3+xHvrj4kwlPKEcRg0S1GjbIWSFaMzg3Mw8fklZrZLL9QZvnbF821SeDB5lBBj/F9PBg8A07uZhYz1p4sTDsWAOFvrnKJjmlWIqXzN5MFFbWBb3os2xGtAGTslFVUXuTp6eM9X9'
-      );
+      win.localStorage.setItem('wallets', LOCAL_STORAGE_WALLETS);
       win.localStorage.setItem(
         'network',
         JSON.stringify({
@@ -31,7 +30,7 @@ describe('Offers', () => {
       takerGets: '10000000',
       takerPays: {
         currency: 'ETH',
-        issuer: 'rnm76Qgz4G9G4gZBJVuXVvkbt7gVD7szey',
+        issuer: ISSUER_ETH_ADDRESS,
         value: '0.1'
       },
       flags: {
@@ -54,7 +53,7 @@ describe('Offers', () => {
 
     cy.contains('Taker Gets').next().should('have.text', '10 XRP');
     cy.contains('Taker Pays').next().should('have.text', '0.1 ETH');
-    cy.contains('Trustline').next().should('have.text', 'rnm76Qgz4G9G4gZBJVuXVvkbt7gVD7szey');
+    cy.contains('Trustline').next().should('have.text', ISSUER_ETH_ADDRESS);
     cy.contains('Network fees').next().should('have.text', '0.000199 XRP (MANUAL)');
     cy.contains('Memo').next().should('have.text', 'Test memo');
     cy.contains('Flags').next().should('have.text', 'Passive');
@@ -81,7 +80,7 @@ describe('Offers', () => {
       takerGets: '10000000',
       takerPays: {
         currency: 'SOLO',
-        issuer: 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN',
+        issuer: ISSUER_SOLO_ADDRESS,
         value: '0.1'
       },
       flags: {
@@ -104,7 +103,7 @@ describe('Offers', () => {
 
     cy.contains('Taker Gets').next().should('have.text', '10 XRP');
     cy.contains('Taker Pays').next().should('have.text', '0.1 SOLO');
-    cy.contains('Trustline').next().should('have.text', 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN');
+    cy.contains('Trustline').next().should('have.text', ISSUER_SOLO_ADDRESS);
     cy.contains('Network fees').next().should('have.text', '0.000199 XRP (MANUAL)');
     cy.contains('Memo').next().should('have.text', 'Test memo');
     cy.contains('Flags').next().should('have.text', 'Passive');
@@ -131,7 +130,7 @@ describe('Offers', () => {
       takerPays: '10000000',
       takerGets: {
         currency: 'SOLO',
-        issuer: 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN',
+        issuer: ISSUER_SOLO_ADDRESS,
         value: '0.1'
       },
       flags: {
@@ -154,7 +153,7 @@ describe('Offers', () => {
 
     cy.contains('Taker Pays').next().should('have.text', '10 XRP');
     cy.contains('Taker Gets').next().should('have.text', '0.1 SOLO');
-    cy.contains('Trustline').next().should('have.text', 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN');
+    cy.contains('Trustline').next().should('have.text', ISSUER_SOLO_ADDRESS);
     cy.contains('Network fees').next().should('have.text', '0.000199 XRP (MANUAL)');
     cy.contains('Memo').next().should('have.text', 'Test memo');
     cy.contains('Flags').next().should('have.text', 'Passive');
@@ -181,7 +180,7 @@ describe('Offers', () => {
       takerGets: '10000000',
       takerPays: {
         currency: 'SOLO',
-        issuer: 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN',
+        issuer: ISSUER_SOLO_ADDRESS,
         value: '0.1'
       },
       flags: {
@@ -204,7 +203,7 @@ describe('Offers', () => {
 
     cy.contains('Taker Gets').next().should('have.text', '10 XRP');
     cy.contains('Taker Pays').next().should('have.text', '0.1 SOLO');
-    cy.contains('Trustline').next().should('have.text', 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN');
+    cy.contains('Trustline').next().should('have.text', ISSUER_SOLO_ADDRESS);
     cy.contains('Network fees').next().should('have.text', '0.000199 XRP (MANUAL)');
     cy.contains('Memo').next().should('have.text', 'Test memo');
     cy.contains('Flags').next().should('have.text', 'Passive');
@@ -231,7 +230,7 @@ describe('Offers', () => {
       takerPays: '10000000',
       takerGets: {
         currency: 'SOLO',
-        issuer: 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN',
+        issuer: ISSUER_SOLO_ADDRESS,
         value: '0.1'
       },
       flags: {
@@ -254,7 +253,7 @@ describe('Offers', () => {
 
     cy.contains('Taker Pays').next().should('have.text', '10 XRP');
     cy.contains('Taker Gets').next().should('have.text', '0.1 SOLO');
-    cy.contains('Trustline').next().should('have.text', 'rHZwvHEs56GCmHupwjA4RY7oPA3EoAJWuN');
+    cy.contains('Trustline').next().should('have.text', ISSUER_SOLO_ADDRESS);
     cy.contains('Network fees').next().should('have.text', '0.000199 XRP (MANUAL)');
     cy.contains('Memo').next().should('have.text', 'Test memo');
     cy.contains('Flags').next().should('have.text', 'Passive');

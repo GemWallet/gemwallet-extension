@@ -1,18 +1,18 @@
 /// <reference types="cypress" />
 
 import { Chain, XRPLNetwork } from '@gemwallet/constants';
+import { navigate } from '../utils/navigation';
+
+const PASSWORD = Cypress.env('PASSWORD');
+const LOCAL_STORAGE_WALLETS = Cypress.env('LOCAL_STORAGE_WALLETS');
+const DEFAULT_WALLET_ADDRESS = Cypress.env('DEFAULT_WALLET_ADDRESS');
+const VALID_ADDRESS = 'rNvFCZXpDtGeQ3bVas95wGLN6N2stGmA9o';
 
 describe('Delete account', () => {
-  // deepcode ignore NoHardcodedPasswords: <Test file, not a real password>
-  const PASSWORD = 'SECRET_PASSWORD';
-
   beforeEach(() => {
     // Mock the localStorage with a wallet already loaded
     cy.window().then((win) => {
-      win.localStorage.setItem(
-        'wallets',
-        'U2FsdGVkX18AlCMtFj8wFHFphXwjUK7eE88VPubDBdA0p2PPWShzgCETsCScUwibFZBToMQ4k3pAJj1bwvo0IRlIr0eGnGizk3/Ga309btSK5igom3OSYbqT5SA3JHjCCdTgsM/+tSauA6kdb/A6O3GpNXdXihKa4V/SiuwxOUV9iTP/5zrgvGyGPkv6onJb'
-      );
+      win.localStorage.setItem('wallets', LOCAL_STORAGE_WALLETS);
       win.localStorage.setItem(
         'network',
         JSON.stringify({
@@ -63,7 +63,7 @@ describe('Delete account', () => {
 
     // Enter the same address as the current wallet
     cy.get('input[name="destination-address"]').clear();
-    cy.get('input[name="destination-address"]').type('rJD2jq9TboEoQgNtuRYBRWqJCJupoq9uVr');
+    cy.get('input[name="destination-address"]').type(DEFAULT_WALLET_ADDRESS);
     cy.get('input[name="destination-address"]').blur();
     cy.get('#destination-address-helper-text').should(
       'have.text',
@@ -73,7 +73,7 @@ describe('Delete account', () => {
 
     // Enter valid address
     cy.get('input[name="destination-address"]').clear();
-    cy.get('input[name="destination-address"]').type('rNvFCZXpDtGeQ3bVas95wGLN6N2stGmA9o');
+    cy.get('input[name="destination-address"]').type(VALID_ADDRESS);
     cy.contains('button', 'Continue').should('not.be.disabled');
     cy.contains('button', 'Continue').click();
 
@@ -82,11 +82,9 @@ describe('Delete account', () => {
 
     cy.contains('You are about to permanently delete the following account from the XRPL:')
       .next()
-      .should('have.text', 'rJD2jq9TboEoQgNtuRYBRWqJCJupoq9uVr');
+      .should('have.text', DEFAULT_WALLET_ADDRESS);
 
-    cy.contains('and transfer your XRP funds to:')
-      .next()
-      .should('have.text', 'rNvFCZXpDtGeQ3bVas95wGLN6N2stGmA9o');
+    cy.contains('and transfer your XRP funds to:').next().should('have.text', VALID_ADDRESS);
 
     // We are not going to actually delete the account, so we just click on the cancel button
     cy.contains('button', 'Cancel').click();
@@ -95,29 +93,3 @@ describe('Delete account', () => {
     cy.contains('Settings').should('exist');
   });
 });
-
-const navigate = (url: string, password: string) => {
-  cy.visit(url, {
-    onBeforeLoad(win) {
-      win['chrome'] = win['chrome'] || {};
-      win['chrome'].runtime = {
-        sendMessage() {}
-      };
-
-      win['chrome'].storage = {
-        local: {
-          get() {},
-          set(obj, cb) {
-            if (cb) cb();
-          }
-        }
-      };
-
-      cy.stub(win['chrome'].runtime, 'sendMessage').resolves({});
-    }
-  });
-
-  // Login
-  cy.get('input[name="password"]').type(password);
-  cy.contains('button', 'Unlock').click();
-};

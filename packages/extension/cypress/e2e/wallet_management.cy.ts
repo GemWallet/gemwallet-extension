@@ -1,32 +1,30 @@
 /// <reference types="cypress" />
 
-describe('Setup the initial wallet (no previous wallet)', () => {
-  // deepcode ignore NoHardcodedPasswords: password used for testing purposes
-  const PASSWORD = 'SECRET_PASSWORD';
-  const SEED = 'sEdSPaf6j72fpTWbufHtN8yBTtm4QSK';
-  const MNEMONIC =
-    'frozen voyage arrest venture question deny print brother genuine hip tooth rigid life output bitter raccoon kidney wine urban rookie allow envelope pitch marriage';
-  const ERROR_MNEMONIC = 'You need 6 digits';
+const PASSWORD = Cypress.env('PASSWORD');
+const SEED = Cypress.env('SEED');
+const MNEMONIC = Cypress.env('MNEMONIC');
+const ERROR_MNEMONIC = 'You need 6 digits';
+const URL_WALLET = 'http://localhost:3000/';
 
-  beforeEach(() => {
-    cy.visit('http://localhost:3000/', {
-      onBeforeLoad(win) {
-        (win as any).chrome = (win as any).chrome || {};
-        (win as any).chrome.runtime = {
-          sendMessage(message, cb) {}
-        };
-
-        (win as any).chrome.storage = {
-          local: {
-            get(key, cb) {},
-            set(obj, cb) {
-              if (cb) cb();
-            }
-          }
-        };
-
-        cy.stub((win as any).chrome.runtime, 'sendMessage').resolves({});
+const setupChromeMocks = (win) => {
+  win['chrome'] = win['chrome'] || {};
+  win['chrome'].runtime = {
+    sendMessage: cy.stub().resolves({})
+  };
+  win['chrome'].storage = {
+    local: {
+      get() {},
+      set(obj, cb) {
+        if (cb) cb();
       }
+    }
+  };
+};
+
+describe('Setup the initial wallet (no previous wallet)', () => {
+  beforeEach(() => {
+    cy.visit(URL_WALLET, {
+      onBeforeLoad: setupChromeMocks
     });
 
     cy.get('.MuiCircularProgress-root', { timeout: 20000 }).should('not.exist');
@@ -225,12 +223,6 @@ describe('Setup the initial wallet (no previous wallet)', () => {
 });
 
 describe('Add an additional wallet (with previous wallet)', () => {
-  // deepcode ignore NoHardcodedPasswords: password used for testing purposes
-  const PASSWORD = 'SECRET_PASSWORD';
-  const SEED = 'sEdSPaf6j72fpTWbufHtN8yBTtm4QSK';
-  const MNEMONIC =
-    'frozen voyage arrest venture question deny print brother genuine hip tooth rigid life output bitter raccoon kidney wine urban rookie allow envelope pitch marriage';
-  const ERROR_MNEMONIC = 'You need 6 digits';
   let walletLocalStorage =
     'U2FsdGVkX18AlCMtFj8wFHFphXwjUK7eE88VPubDBdA0p2PPWShzgCETsCScUwibFZBToMQ4k3pAJj1bwvo0IRlIr0eGnGizk3/Ga309btSK5igom3OSYbqT5SA3JHjCCdTgsM/+tSauA6kdb/A6O3GpNXdXihKa4V/SiuwxOUV9iTP/5zrgvGyGPkv6onJb';
 
@@ -239,24 +231,8 @@ describe('Add an additional wallet (with previous wallet)', () => {
     cy.window().then((win) => {
       win.localStorage.setItem('wallets', walletLocalStorage);
     });
-    cy.visit('http://localhost:3000/', {
-      onBeforeLoad(win) {
-        (win as any).chrome = (win as any).chrome || {};
-        (win as any).chrome.runtime = {
-          sendMessage(message, cb) {}
-        };
-
-        (win as any).chrome.storage = {
-          local: {
-            get(key, cb) {},
-            set(obj, cb) {
-              if (cb) cb();
-            }
-          }
-        };
-
-        cy.stub((win as any).chrome.runtime, 'sendMessage').resolves({});
-      }
+    cy.visit(URL_WALLET, {
+      onBeforeLoad: setupChromeMocks
     });
 
     cy.get('.MuiCircularProgress-root', { timeout: 20000 }).should('not.exist');
@@ -394,11 +370,6 @@ describe('Add an additional wallet (with previous wallet)', () => {
 });
 
 describe('Edit wallet', () => {
-  // deepcode ignore NoHardcodedPasswords: password used for testing purposes
-  const PASSWORD = 'SECRET_PASSWORD';
-  const MNEMONIC =
-    'frozen voyage arrest venture question deny print brother genuine hip tooth rigid life output bitter raccoon kidney wine urban rookie allow envelope pitch marriage';
-
   beforeEach(() => {
     // Mock the localStorage with a wallet already loaded
     cy.window().then((win) => {
@@ -407,24 +378,8 @@ describe('Edit wallet', () => {
         'U2FsdGVkX18lhnWbAn5EJDspfPXAVOsREMhg5+2NHl2IH8nrDClBsmNH75PutpB4AO0ddYhMYmNk8fsfx2ym2HW3VJGn8x+ZQreGATWF7beHhhx2vPJDsnODdOXWdcF2eqmeEp7P3pQZfZnGggvXiwqvn/NPg4mbzx5GjPcx1TfuFjBLM/YbyxXskVeOKs+fL4fGvCBj4s1/8x0Ok9fRYFdN2i9ODEJDNuJRrAZygsiqVaFPEBHHg7FfZYLuECwIOA2MukcjESPOAPRg2JMLbjWblI6rcLVx4zblkjMsfWOYujuq7zDWWt6hNCncs6DnHpBr4joQIayx6bNqpXUBQ0sEA1gpSeAvKuDf7eWpHzEJtpCUYEXYa8zW25XeABiUU8Hht7dK0r6L2V7mWpPNbQTTFA7yaXrhTQI2JNCt31ZEIWCWd2w5vgTGvPTJcs8xKPmUtXk+fJDbG9zHzwSrMDMLh5TtxzCGmTFUGNAc2NCZJKNjj6SUJGW2AgLqt3NYPpG91Ec6V0baina40VAZ/5pgCgzUWgkcxFU8J1htMaD2cMnAs6MeqVCeJOPpOVjIVD70RsJRsR8782K2pJezwV5TdzEYKkfpzEYMEl6aKfJSGzbGcActM1LDpi8fJBuqUia3YhqhAMevSFWpuw9anA=='
       );
     });
-    cy.visit('http://localhost:3000/', {
-      onBeforeLoad(win) {
-        (win as any).chrome = (win as any).chrome || {};
-        (win as any).chrome.runtime = {
-          sendMessage(message, cb) {}
-        };
-
-        (win as any).chrome.storage = {
-          local: {
-            get(key, cb) {},
-            set(obj, cb) {
-              if (cb) cb();
-            }
-          }
-        };
-
-        cy.stub((win as any).chrome.runtime, 'sendMessage').resolves({});
-      }
+    cy.visit(URL_WALLET, {
+      onBeforeLoad: setupChromeMocks
     });
 
     cy.get('.MuiCircularProgress-root', { timeout: 20000 }).should('not.exist');
@@ -513,7 +468,7 @@ describe('Edit wallet', () => {
     // Show seed
     cy.get('input[name="password"]').clear().type(PASSWORD);
     cy.contains('button', 'Show').click();
-    cy.contains('sEdSPaf6j72fpTWbufHtN8yBTtm4QSK').should('be.visible');
+    cy.contains(SEED).should('be.visible');
   });
 
   it('Show Mnemonic', () => {
@@ -545,8 +500,6 @@ describe('Edit wallet', () => {
 });
 
 describe('Switch wallet', () => {
-  // deepcode ignore NoHardcodedPasswords: password used for testing purposes
-  const PASSWORD = 'SECRET_PASSWORD';
   beforeEach(() => {
     // Mock the localStorage with a wallet already loaded
     cy.window().then((win) => {
@@ -555,24 +508,8 @@ describe('Switch wallet', () => {
         'U2FsdGVkX18lhnWbAn5EJDspfPXAVOsREMhg5+2NHl2IH8nrDClBsmNH75PutpB4AO0ddYhMYmNk8fsfx2ym2HW3VJGn8x+ZQreGATWF7beHhhx2vPJDsnODdOXWdcF2eqmeEp7P3pQZfZnGggvXiwqvn/NPg4mbzx5GjPcx1TfuFjBLM/YbyxXskVeOKs+fL4fGvCBj4s1/8x0Ok9fRYFdN2i9ODEJDNuJRrAZygsiqVaFPEBHHg7FfZYLuECwIOA2MukcjESPOAPRg2JMLbjWblI6rcLVx4zblkjMsfWOYujuq7zDWWt6hNCncs6DnHpBr4joQIayx6bNqpXUBQ0sEA1gpSeAvKuDf7eWpHzEJtpCUYEXYa8zW25XeABiUU8Hht7dK0r6L2V7mWpPNbQTTFA7yaXrhTQI2JNCt31ZEIWCWd2w5vgTGvPTJcs8xKPmUtXk+fJDbG9zHzwSrMDMLh5TtxzCGmTFUGNAc2NCZJKNjj6SUJGW2AgLqt3NYPpG91Ec6V0baina40VAZ/5pgCgzUWgkcxFU8J1htMaD2cMnAs6MeqVCeJOPpOVjIVD70RsJRsR8782K2pJezwV5TdzEYKkfpzEYMEl6aKfJSGzbGcActM1LDpi8fJBuqUia3YhqhAMevSFWpuw9anA=='
       );
     });
-    cy.visit('http://localhost:3000/', {
-      onBeforeLoad(win) {
-        (win as any).chrome = (win as any).chrome || {};
-        (win as any).chrome.runtime = {
-          sendMessage(message, cb) {}
-        };
-
-        (win as any).chrome.storage = {
-          local: {
-            get(key, cb) {},
-            set(obj, cb) {
-              if (cb) cb();
-            }
-          }
-        };
-
-        cy.stub((win as any).chrome.runtime, 'sendMessage').resolves({});
-      }
+    cy.visit(URL_WALLET, {
+      onBeforeLoad: setupChromeMocks
     });
 
     cy.get('.MuiCircularProgress-root', { timeout: 20000 }).should('not.exist');
@@ -620,24 +557,8 @@ describe('Reset password', () => {
         'U2FsdGVkX18lhnWbAn5EJDspfPXAVOsREMhg5+2NHl2IH8nrDClBsmNH75PutpB4AO0ddYhMYmNk8fsfx2ym2HW3VJGn8x+ZQreGATWF7beHhhx2vPJDsnODdOXWdcF2eqmeEp7P3pQZfZnGggvXiwqvn/NPg4mbzx5GjPcx1TfuFjBLM/YbyxXskVeOKs+fL4fGvCBj4s1/8x0Ok9fRYFdN2i9ODEJDNuJRrAZygsiqVaFPEBHHg7FfZYLuECwIOA2MukcjESPOAPRg2JMLbjWblI6rcLVx4zblkjMsfWOYujuq7zDWWt6hNCncs6DnHpBr4joQIayx6bNqpXUBQ0sEA1gpSeAvKuDf7eWpHzEJtpCUYEXYa8zW25XeABiUU8Hht7dK0r6L2V7mWpPNbQTTFA7yaXrhTQI2JNCt31ZEIWCWd2w5vgTGvPTJcs8xKPmUtXk+fJDbG9zHzwSrMDMLh5TtxzCGmTFUGNAc2NCZJKNjj6SUJGW2AgLqt3NYPpG91Ec6V0baina40VAZ/5pgCgzUWgkcxFU8J1htMaD2cMnAs6MeqVCeJOPpOVjIVD70RsJRsR8782K2pJezwV5TdzEYKkfpzEYMEl6aKfJSGzbGcActM1LDpi8fJBuqUia3YhqhAMevSFWpuw9anA=='
       );
     });
-    cy.visit('http://localhost:3000/', {
-      onBeforeLoad(win) {
-        (win as any).chrome = (win as any).chrome || {};
-        (win as any).chrome.runtime = {
-          sendMessage(message, cb) {}
-        };
-
-        (win as any).chrome.storage = {
-          local: {
-            get(key, cb) {},
-            set(obj, cb) {
-              if (cb) cb();
-            }
-          }
-        };
-
-        cy.stub((win as any).chrome.runtime, 'sendMessage').resolves({});
-      }
+    cy.visit(URL_WALLET, {
+      onBeforeLoad: setupChromeMocks
     });
 
     cy.get('.MuiCircularProgress-root', { timeout: 20000 }).should('not.exist');

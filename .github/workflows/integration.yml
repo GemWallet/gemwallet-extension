@@ -70,3 +70,11 @@ jobs:
           browser: chrome
           config-file: cypress.config.ts
           working-directory: packages/extension
+        env:
+          CYPRESS_DEFAULT_WALLET_ADDRESS: ${{vars.CYPRESS_DEFAULT_WALLET_ADDRESS}}
+          CYPRESS_ISSUER_ETH_ADDRESS: ${{vars.CYPRESS_ISSUER_ETH_ADDRESS}}
+          CYPRESS_ISSUER_SOLO_ADDRESS: ${{vars.CYPRESS_ISSUER_SOLO_ADDRESS}}
+          CYPRESS_LOCAL_STORAGE_WALLETS: ${{vars.CYPRESS_LOCAL_STORAGE_WALLETS}}
+          CYPRESS_MNEMONIC: ${{vars.CYPRESS_MNEMONIC}}
+          CYPRESS_PASSWORD: ${{vars.CYPRESS_PASSWORD}}
+          CYPRESS_SEED: ${{vars.CYPRESS_SEED}}

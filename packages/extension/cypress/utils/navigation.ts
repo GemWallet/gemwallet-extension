@@ -3,14 +3,14 @@ const mockSessionStorage = {};
 export const navigate = (url: string, password: string, storageKey?: string, data?) => {
   cy.visit(url, {
     onBeforeLoad(win) {
-      (win as any).chrome = (win as any).chrome || {};
-      (win as any).chrome.runtime = {
-        sendMessage(message, cb) {}
+      win['chrome'] = win['chrome'] || {};
+      win['chrome'].runtime = {
+        sendMessage() {}
       };
 
-      (win as any).chrome.storage = {
+      win['chrome'].storage = {
         local: {
-          get(key, cb) {},
+          get() {},
           set(obj, cb) {
             if (cb) cb();
           }
@@ -31,14 +31,14 @@ export const navigate = (url: string, password: string, storageKey?: string, dat
       };
 
       if (storageKey && data) {
-        (win as any).chrome.storage.session.set({
+        win['chrome'].storage.session.set({
           [storageKey]: JSON.stringify(data)
         });
       }
 
-      (win as any).chrome.runtime.lastError = null;
+      win['chrome'].runtime.lastError = null;
 
-      cy.stub((win as any).chrome.runtime, 'sendMessage').resolves({});
+      cy.stub(win['chrome'].runtime, 'sendMessage').resolves({});
     }
   });
 

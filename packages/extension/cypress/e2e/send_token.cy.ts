@@ -1,21 +1,18 @@
 /// <reference types="cypress" />
 
 import { Chain, XRPLNetwork } from '@gemwallet/constants';
+import { navigate } from '../utils/navigation';
 
-const SRC_ADDRESS = 'rB3JmRd5m292YjCsCr65tc8dwZz2WN7HQu';
-const DEST_ADDRESS = 'rhikRdkFw28csKw9z7fVoBjWncz1HSoQij';
+const PASSWORD = Cypress.env('PASSWORD');
+const LOCAL_STORAGE_WALLETS = Cypress.env('LOCAL_STORAGE_WALLETS');
+const SENDER_ADDRESS = Cypress.env('DEFAULT_WALLET_ADDRESS');
+const ISSUER_SOLO_ADDRESS = Cypress.env('ISSUER_SOLO_ADDRESS');
 
 describe('Send Token', () => {
-  // deepcode ignore NoHardcodedPasswords: password used for testing purposes
-  const PASSWORD = 'SECRET_PASSWORD';
-
   beforeEach(() => {
     // Mock the localStorage with a wallet already loaded
     cy.window().then((win) => {
-      win.localStorage.setItem(
-        'wallets',
-        'U2FsdGVkX1/JAHkPXi6ZonxQukDVxSlHcveDl30pBLB/Y9tPmrtAIi0ulBoj+mgxv/qj29Odgw8pRm0QzwGpT5zKmTRyf4QHmjpl5UcSNfRw95l/ZxPMgOpy/qrOJgWQHKNVK1TUpQHuV/c+ULBmpyOeMsI60paKXKvBEddTfHggacZV9ABvmCZZbIMM4h3tRn0HtVQY8kFvp9yJuUxq8T6BMgHzCys7hzUjtwdZ81YVEfdUShzEkleuqLsx4STqNvibUmf6HnwCgMCCPTzjulr3XvZK+yfreBb3RPsivSCsl5dwSz0ORtNwg04zjLiTvR+1btv91kifEBrMo3dh/Q=='
-      );
+      win.localStorage.setItem('wallets', LOCAL_STORAGE_WALLETS);
       win.localStorage.setItem(
         'network',
         JSON.stringify({
@@ -24,37 +21,7 @@ describe('Send Token', () => {
         })
       );
     });
-    cy.visit('http://localhost:3000/', {
-      onBeforeLoad(win) {
-        (win as any).chrome = (win as any).chrome || {};
-        (win as any).chrome.runtime = {
-          sendMessage(message, cb) {}
-        };
-
-        (win as any).chrome.storage = {
-          local: {
-            get(key, cb) {},
-            set(obj, cb) {
-              if (cb) cb();
-            }
-          },
-          session: {
-            get(key, cb) {},
-            set(obj, cb) {
-              if (cb) cb();
-            }
-          }
-        };
-
-        cy.stub((win as any).chrome.runtime, 'sendMessage').resolves({});
-      }
-    });
-
-    cy.get('.MuiCircularProgress-root', { timeout: 20000 }).should('not.exist');
-
-    // Login
-    cy.get('input[name="password"]').type(PASSWORD);
-    cy.contains('button', 'Unlock').click();
+    navigate('http://localhost:3000/', PASSWORD);
 
     // Go to the send page
     cy.contains('button', 'Send').click();
@@ -101,17 +68,17 @@ describe('Send Token', () => {
     sendXRP(undefined, '123456789');
   });
 
-  it('Send USD', () => {
-    sendUSD();
+  it('Send ETH', () => {
+    sendETH();
   });
 
-  it('Send USD with memo and destination tag', () => {
-    sendUSD('This is another memo', '12');
+  it('Send ETH with memo and destination tag', () => {
+    sendETH('This is another memo', '12');
   });
 
   it('Reject Send XRP', () => {
     // Add receipient address as the sender address
-    cy.get('input[name="recipient-address"]').type(SRC_ADDRESS);
+    cy.get('input[name="recipient-address"]').type(SENDER_ADDRESS);
 
     // Blur the input to trigger the validation
     cy.get('input[name="recipient-address"]').blur();
@@ -180,7 +147,7 @@ describe('Send Token', () => {
     );
 
     //Add a valid amount, a valid receipient address and a valid memo
-    cy.get('input[name="recipient-address"]').clear().type(DEST_ADDRESS);
+    cy.get('input[name="recipient-address"]').clear().type(ISSUER_SOLO_ADDRESS);
     cy.get('input[name="amount"]').clear().type('0.001');
     cy.get('input[name="memo"]').clear().type('This is a memo');
     cy.get('input[name="destination-tag"]').clear().type('123456789');
@@ -202,18 +169,18 @@ describe('Send Token', () => {
 
 const sendXRP = (memo?: string, destinationTag?: string) => {
   // Add receipient address
-  cy.get('input[name="recipient-address"]').type(DEST_ADDRESS);
+  cy.get('input[name="recipient-address"]').type(ISSUER_SOLO_ADDRESS);
 
   handleTransaction(memo, destinationTag);
 };
 
-const sendUSD = (memo?: string, destinationTag?: string) => {
+const sendETH = (memo?: string, destinationTag?: string) => {
   // Add receipient address
-  cy.get('input[name="recipient-address"]').type(DEST_ADDRESS);
+  cy.get('input[name="recipient-address"]').type(ISSUER_SOLO_ADDRESS);
 
-  // Select USD token
+  // Select ETH token
   cy.get('#token-select').click();
-  cy.contains('li', 'USD').click();
+  cy.contains('li', 'ETH').click();
 
   handleTransaction(memo, destinationTag);
 };
