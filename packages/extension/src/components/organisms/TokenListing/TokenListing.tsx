@@ -13,7 +13,8 @@ import {
   DEFAULT_RESERVE,
   ERROR_RED,
   RESERVE_PER_OWNER,
-  STORAGE_MESSAGING_KEY
+  STORAGE_MESSAGING_KEY,
+  XAHAU_RESERVE_PER_OWNER
 } from '../../../constants';
 import { useLedger, useNetwork, useServer } from '../../../contexts';
 import { useMainToken } from '../../../hooks';
@@ -102,6 +103,7 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
         if (trustLineBalances) {
           setTrustLineBalances(trustLineBalances);
         }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (e: any) {
         if (e?.data?.error !== 'actNotFound') {
           Sentry.captureException(e);
@@ -171,10 +173,14 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
   const baseReserve = serverInfo?.info.validated_ledger?.reserve_base_xrp || DEFAULT_RESERVE;
   getAccountInfo()
     .then((accountInfo) => {
-      setOwnerReserve(accountInfo.result.account_data.OwnerCount * RESERVE_PER_OWNER);
-      setReserve(accountInfo.result.account_data.OwnerCount * RESERVE_PER_OWNER + baseReserve);
+      const ownerReserve =
+        chainName === Chain.XAHAU
+          ? accountInfo.result.account_data.OwnerCount * XAHAU_RESERVE_PER_OWNER
+          : accountInfo.result.account_data.OwnerCount * RESERVE_PER_OWNER;
+      setOwnerReserve(ownerReserve);
+      setReserve(ownerReserve + baseReserve);
     })
-    .catch((_) => {
+    .catch(() => {
       setOwnerReserve(0);
       setReserve(DEFAULT_RESERVE);
     });
