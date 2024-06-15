@@ -16,7 +16,7 @@
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.15.5",
-    "@mui/material": "^5.15.5",
+    "@mui/material": "^5.15.20",
     "@sentry/react": "^7.93.0",
     "copy-to-clipboard": "^3.3.3",
     "crypto-browserify": "^3.12.0",
