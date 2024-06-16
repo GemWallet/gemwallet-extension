@@ -16,11 +16,7 @@ export const saveWallet = (wallet: WalletToSave, password: string) => {
 
   wallets.push(wallet as Wallet);
 
-  try {
-    saveData(STORAGE_WALLETS, encrypt(JSON.stringify(wallets), password));
-  } catch (e) {
-    throw e;
-  }
+  saveData(STORAGE_WALLETS, encrypt(JSON.stringify(wallets), password));
 };
 
 export const loadWallets = (password: string): Wallet[] => {
@@ -45,11 +41,7 @@ export const removeWallets = () => {
 };
 
 export const saveSelectedWallet = (index: number): void => {
-  try {
-    saveData(STORAGE_SELECTED_WALLET, String(index));
-  } catch (e) {
-    throw e;
-  }
+  saveData(STORAGE_SELECTED_WALLET, String(index));
 };
 
 export const loadSelectedWallet = (): number => {

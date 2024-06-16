@@ -46,11 +46,7 @@ export const saveTrustedApp = (trustedApp: TrustedApp, walletIndex: number): voi
 
   const stringifiedNewTrustedApps = JSON.stringify(trustedApps);
 
-  try {
-    saveData(STORAGE_TRUSTED_APPS, stringifiedNewTrustedApps);
-  } catch (e) {
-    throw e;
-  }
+  saveData(STORAGE_TRUSTED_APPS, stringifiedNewTrustedApps);
 };
 
 export const loadTrustedApps = (walletIndex: number): TrustedApp[] => {
@@ -66,7 +62,7 @@ export const loadTrustedApps = (walletIndex: number): TrustedApp[] => {
 };
 
 export const removeTrustedApp = (url: string, walletIndex: number): TrustedApp[] => {
-  let trustedApps: TrustedApp[][] = JSON.parse(loadData(STORAGE_TRUSTED_APPS) || '[[]]');
+  const trustedApps: TrustedApp[][] = JSON.parse(loadData(STORAGE_TRUSTED_APPS) || '[[]]');
 
   if (!trustedApps[walletIndex]) {
     throw new Error("Couldn't find the wallet while removing the trusted app");
@@ -79,11 +75,7 @@ export const removeTrustedApp = (url: string, walletIndex: number): TrustedApp[]
     removeData(STORAGE_TRUSTED_APPS);
   } else {
     const stringifiedTrustedApps = JSON.stringify(trustedApps);
-    try {
-      saveData(STORAGE_TRUSTED_APPS, stringifiedTrustedApps);
-    } catch (e) {
-      throw e;
-    }
+    saveData(STORAGE_TRUSTED_APPS, stringifiedTrustedApps);
   }
 
   return trustedApps[walletIndex];
@@ -96,11 +88,7 @@ export const removeWalletFromTrustedApp = (walletIndex: number): void => {
     trustedApps.splice(walletIndex, 1);
   }
 
-  try {
-    saveData(STORAGE_TRUSTED_APPS, JSON.stringify(trustedApps));
-  } catch (e) {
-    throw e;
-  }
+  saveData(STORAGE_TRUSTED_APPS, JSON.stringify(trustedApps));
 };
 
 // Checks if the trustedApp includes all the permissions

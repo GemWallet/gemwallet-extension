@@ -61,7 +61,9 @@ export const resolveNFTData = async (
           NFTokenID,
           image: URL
         };
-      } catch (e) {}
+      } catch (e) {
+        /* empty */
+      }
     }
   } else {
     // Case 2 - JSON URL
@@ -70,7 +72,9 @@ export const resolveNFTData = async (
       // Case 2.1 - The URL is directly a JSON
       // If it follows the XLS-24 standard, it will be automatically parsed
       return parseJSON(URL, NFTokenID);
-    } catch (e) {}
+    } catch (e) {
+      /* empty */
+    }
     // Case 2.2 - The URL is an IPFS hash
     if (!URL.startsWith(IPFSResolverPrefix) && !URL.startsWith('http')) {
       try {
@@ -89,7 +93,9 @@ export const resolveNFTData = async (
             image: resourceURL
           };
         }
-      } catch (e) {}
+      } catch (e) {
+        /* empty */
+      }
     }
   }
   // Case 3 - Return the raw NFT attributes
