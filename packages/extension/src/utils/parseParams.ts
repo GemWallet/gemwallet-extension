@@ -19,6 +19,7 @@ import {
   TrustSetFlags
 } from '@gemwallet/constants';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const parseArray = (input: Array<any> | string | null): string[] | null => {
   if (!input) {
     return null;
@@ -35,7 +36,9 @@ export const parseArray = (input: Array<any> | string | null): string[] | null =
     if (Array.isArray(parsed)) {
       return parsed as string[];
     }
-  } catch (error) {}
+  } catch (error) {
+    /* empty */
+  }
 
   return null;
 };
@@ -84,7 +87,9 @@ export const parseAmount = (
       }
       return parsedAmount.toString();
     }
-  } catch (error) {}
+  } catch (error) {
+    /* empty */
+  }
 
   return input;
 };
@@ -123,7 +128,9 @@ export const parseLimitAmount = (
     ) {
       return parsedAmount as { value: string; issuer: string; currency: string };
     }
-  } catch (error) {}
+  } catch (error) {
+    /* empty */
+  }
 
   return null;
 };
@@ -144,7 +151,9 @@ export const parseMemos = (input: Memo[] | string | null): Memo[] | null => {
     if (Array.isArray(parsedMemos)) {
       return parsedMemos as Memo[];
     }
-  } catch (error) {}
+  } catch (error) {
+    /* empty */
+  }
 
   return null;
 };
@@ -165,7 +174,9 @@ export const parseSigners = (input: Signer[] | string | null): Signer[] | null =
     if (Array.isArray(parsedSigners)) {
       return parsedSigners as Signer[];
     }
-  } catch (error) {}
+  } catch (error) {
+    /* empty */
+  }
 
   return null;
 };
@@ -190,17 +201,19 @@ export const parsePaymentFlags = (input?: PaymentFlags | string): PaymentFlags |
     if (
       typeof parsedFlags === 'object' &&
       parsedFlags !== null &&
-      ('tfNoDirectRipple' in parsedFlags ||
+      ('tfNoRippleDirect' in parsedFlags ||
         'tfPartialPayment' in parsedFlags ||
         'tfLimitQuality' in parsedFlags)
     ) {
       return parsedFlags as {
-        tfNoDirectRipple?: boolean;
+        tfNoRippleDirect?: boolean;
         tfPartialPayment?: boolean;
         tfLimitQuality?: boolean;
       };
     }
-  } catch (error) {}
+  } catch (error) {
+    /* empty */
+  }
 
   return null;
 };
@@ -239,7 +252,9 @@ export const parseTrustSetFlags = (input?: TrustSetFlags | string): TrustSetFlag
         tfClearFreeze?: boolean;
       };
     }
-  } catch (error) {}
+  } catch (error) {
+    /* empty */
+  }
 
   return null;
 };
@@ -280,7 +295,9 @@ export const parseSetAccountFlags = (input?: SetAccountFlags | string): SetAccou
         tfAllowXRP?: boolean;
       };
     }
-  } catch (error) {}
+  } catch (error) {
+    /* empty */
+  }
 
   return null;
 };
@@ -317,7 +334,9 @@ export const parseMintNFTFlags = (input?: MintNFTFlags | string): MintNFTFlags |
         tfTransferable?: boolean;
       };
     }
-  } catch (error) {}
+  } catch (error) {
+    /* empty */
+  }
 
   return null;
 };
@@ -346,7 +365,9 @@ export const parseCreateNFTOfferFlags = (
         tfSellNFToken?: boolean;
       };
     }
-  } catch (error) {}
+  } catch (error) {
+    /* empty */
+  }
 
   return null;
 };
@@ -385,7 +406,9 @@ export const parseCreateOfferFlags = (
         tfSell?: boolean;
       };
     }
-  } catch (error) {}
+  } catch (error) {
+    /* empty */
+  }
 
   return null;
 };

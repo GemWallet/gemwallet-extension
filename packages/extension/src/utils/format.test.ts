@@ -1,4 +1,4 @@
-import { TrustSet, xrpToDrops } from 'xrpl';
+import { PaymentFlags as PaymentFlagsBitmask, TrustSet, xrpToDrops } from 'xrpl';
 
 import {
   formatAmount,
@@ -10,6 +10,14 @@ import {
   parseAmountObject
 } from './format';
 import { describe, it, expect, test } from 'vitest';
+
+// Mocking navigator.language
+Object.defineProperty(global, 'navigator', {
+  value: {
+    language: 'en-US'
+  },
+  writable: true
+});
 
 describe('Format util', () => {
   describe('formatAmount', () => {
@@ -78,17 +86,21 @@ describe('Format util', () => {
 });
 
 describe('formatFlags', () => {
+  type PaymentFlags = {
+    [key in keyof typeof PaymentFlagsBitmask]: boolean;
+  };
+
   it('should return a number as it is if flags is a number', () => {
     expect(formatFlags(123456)).toBe(123456);
   });
 
   it('should return formatted string if flags is an object', () => {
-    const paymentFlags = {
-      tfNoDirectRipple: true,
+    const paymentFlags: PaymentFlags = {
+      tfNoRippleDirect: true,
       tfPartialPayment: false,
       tfLimitQuality: false
     };
-    let expectedResult = 'tfNoDirectRipple: true\ntfPartialPayment: false\ntfLimitQuality: false';
+    let expectedResult = 'tfNoRippleDirect: true\ntfPartialPayment: false\ntfLimitQuality: false';
     expect(formatFlags(paymentFlags)).toBe(expectedResult);
 
     const trustSetFlags = {
@@ -187,14 +199,14 @@ describe('formatFlags', () => {
   });
 
   it('should format Payment flags correctly when given as a number', () => {
-    const flags = 196608; // both tfNoDirectRipple and tfPartialPayment flags are set
+    const flags = 196608; // both tfNoRippleDirect and tfPartialPayment flags are set
     const expectedResult = 'No Direct Ripple\nPartial Payment';
     expect(formatFlags(flags, 'Payment')).toBe(expectedResult);
   });
 
   it('should format Payment flags correctly when given as an object', () => {
-    const flags = {
-      tfNoDirectRipple: true,
+    const flags: PaymentFlags = {
+      tfNoRippleDirect: true,
       tfPartialPayment: true,
       tfLimitQuality: false
     };
@@ -203,8 +215,8 @@ describe('formatFlags', () => {
   });
 
   it('should not show false flags for Payment', () => {
-    const flags = {
-      tfNoDirectRipple: false,
+    const flags: PaymentFlags = {
+      tfNoRippleDirect: false,
       tfPartialPayment: false,
       tfLimitQuality: true
     };
@@ -212,8 +224,8 @@ describe('formatFlags', () => {
   });
 
   it('should format Payment flags to "None" when no flags are set', () => {
-    const flags = {
-      tfNoDirectRipple: false,
+    const flags: PaymentFlags = {
+      tfNoRippleDirect: false,
       tfPartialPayment: false,
       tfLimitQuality: false
     };

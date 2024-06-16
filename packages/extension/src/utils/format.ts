@@ -186,7 +186,7 @@ export const formatFlags = (
 
   if (flagsType === 'NFTokenMint') {
     if (typeof flags === 'number') {
-      let flagDescriptions: string[] = [];
+      const flagDescriptions: string[] = [];
 
       if (flags & NFTokenMintFlags.tfBurnable) {
         flagDescriptions.push(LABEL_BURNABLE);
@@ -231,7 +231,7 @@ export const formatFlags = (
 
   if (flagsType === 'OfferCreate') {
     if (typeof flags === 'number') {
-      let flagDescriptions: string[] = [];
+      const flagDescriptions: string[] = [];
 
       if (flags & OfferCreateFlags.tfPassive) {
         flagDescriptions.push(LABEL_PASSIVE);
@@ -276,9 +276,9 @@ export const formatFlags = (
 
   if (flagsType === 'Payment') {
     if (typeof flags === 'number') {
-      let flagDescriptions: string[] = [];
+      const flagDescriptions: string[] = [];
 
-      if (flags & PaymentFlagsBitmask.tfNoDirectRipple) {
+      if (flags & PaymentFlagsBitmask.tfNoRippleDirect) {
         flagDescriptions.push(LABEL_NO_DIRECT_RIPPLE);
       }
       if (flags & PaymentFlagsBitmask.tfPartialPayment) {
@@ -294,7 +294,7 @@ export const formatFlags = (
     if (typeof flags === 'object') {
       const formattedFlags = Object.entries(flags)
         .map(([key, value]) => {
-          if (key === 'tfNoDirectRipple' && value) {
+          if (key === 'tfNoRippleDirect' && value) {
             return `${LABEL_NO_DIRECT_RIPPLE}`;
           }
           if (key === 'tfPartialPayment' && value) {
@@ -303,7 +303,7 @@ export const formatFlags = (
           if (key === 'tfLimitQuality' && value) {
             return `${LABEL_LIMIT_QUALITY}`;
           }
-          if (['tfNoDirectRipple', 'tfPartialPayment', 'tfLimitQuality'].includes(key)) {
+          if (['tfNoRippleDirect', 'tfPartialPayment', 'tfLimitQuality'].includes(key)) {
             return null;
           }
           return `${key}: ${value}`;
@@ -316,7 +316,7 @@ export const formatFlags = (
 
   if (flagsType === 'AccountSet') {
     if (typeof flags === 'number') {
-      let flagDescriptions: string[] = [];
+      const flagDescriptions: string[] = [];
 
       if (flags & AccountSetTfFlagsBitmask.tfRequireDestTag) {
         flagDescriptions.push(LABEL_REQUIRE_DEST_TAG);
@@ -383,7 +383,7 @@ export const formatFlags = (
 
   if (flagsType === 'TrustSet') {
     if (typeof flags === 'number') {
-      let flagDescriptions: string[] = [];
+      const flagDescriptions: string[] = [];
 
       if (flags & TrustSetFlagsBitmask.tfSetfAuth) {
         flagDescriptions.push(LABEL_SET_AUTH);
@@ -443,7 +443,7 @@ export const formatFlags = (
 
   if (flagsType === 'AMMDeposit') {
     if (typeof flags === 'number') {
-      let flagDescriptions: string[] = [];
+      const flagDescriptions: string[] = [];
 
       if (flags & AMMDepositFlagsBitmask.tfLPToken) {
         flagDescriptions.push(LABEL_LPTOKEN);
@@ -505,7 +505,7 @@ export const formatFlags = (
 
   if (flagsType === 'AMMWithdraw') {
     if (typeof flags === 'number') {
-      let flagDescriptions: string[] = [];
+      const flagDescriptions: string[] = [];
 
       if (flags & AMMWithdrawFlagsBitmask.tfLPToken) {
         flagDescriptions.push(LABEL_LPTOKEN);
