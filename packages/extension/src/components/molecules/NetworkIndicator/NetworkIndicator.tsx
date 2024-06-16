@@ -74,7 +74,9 @@ export const NetworkIndicator: FC = () => {
             customNetworkServer: currentNetwork.server
           });
           setCurrentNetworkName(currentNetwork.name);
-        } catch (error) {}
+        } catch (error) {
+          /* empty */
+        }
         // Show the error dialog
         setErrorDialogOpen(true);
       }

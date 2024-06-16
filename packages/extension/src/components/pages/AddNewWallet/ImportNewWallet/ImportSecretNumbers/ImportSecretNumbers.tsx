@@ -111,7 +111,7 @@ export const ImportSecretNumbers: FC<ImportSecretNumbersProps> = ({
             helperText={inputErrors.numbersA}
             style={{
               marginTop: '15px',
-              marginBottom: Boolean(inputErrors.numbersA) ? '0px' : '20px',
+              marginBottom: inputErrors.numbersA ? '0px' : '20px',
               width: '110px'
             }}
             className={styles.textField}
@@ -129,7 +129,7 @@ export const ImportSecretNumbers: FC<ImportSecretNumbersProps> = ({
             helperText={inputErrors.numbersB}
             style={{
               marginTop: '15px',
-              marginBottom: Boolean(inputErrors.numbersB) ? '0px' : '20px',
+              marginBottom: inputErrors.numbersB ? '0px' : '20px',
               width: '110px'
             }}
             className={styles.textField}
@@ -147,7 +147,7 @@ export const ImportSecretNumbers: FC<ImportSecretNumbersProps> = ({
             helperText={inputErrors.numbersC}
             style={{
               marginTop: '15px',
-              marginBottom: Boolean(inputErrors.numbersC) ? '0px' : '20px',
+              marginBottom: inputErrors.numbersC ? '0px' : '20px',
               width: '110px'
             }}
             className={styles.textField}
@@ -165,7 +165,7 @@ export const ImportSecretNumbers: FC<ImportSecretNumbersProps> = ({
             helperText={inputErrors.numbersD}
             style={{
               marginTop: '15px',
-              marginBottom: Boolean(inputErrors.numbersD) ? '0px' : '20px',
+              marginBottom: inputErrors.numbersD ? '0px' : '20px',
               width: '110px'
             }}
             className={styles.textField}
@@ -183,7 +183,7 @@ export const ImportSecretNumbers: FC<ImportSecretNumbersProps> = ({
             helperText={inputErrors.numbersE}
             style={{
               marginTop: '15px',
-              marginBottom: Boolean(inputErrors.numbersE) ? '0px' : '20px',
+              marginBottom: inputErrors.numbersE ? '0px' : '20px',
               width: '110px'
             }}
             className={styles.textField}
@@ -201,7 +201,7 @@ export const ImportSecretNumbers: FC<ImportSecretNumbersProps> = ({
             helperText={inputErrors.numbersF}
             style={{
               marginTop: '15px',
-              marginBottom: Boolean(inputErrors.numbersF) ? '0px' : '20px',
+              marginBottom: inputErrors.numbersF ? '0px' : '20px',
               width: '110px'
             }}
             className={styles.textField}
@@ -219,7 +219,7 @@ export const ImportSecretNumbers: FC<ImportSecretNumbersProps> = ({
             helperText={inputErrors.numbersG}
             style={{
               marginTop: '15px',
-              marginBottom: Boolean(inputErrors.numbersG) ? '0px' : '20px',
+              marginBottom: inputErrors.numbersG ? '0px' : '20px',
               width: '110px'
             }}
             className={styles.textField}
@@ -237,7 +237,7 @@ export const ImportSecretNumbers: FC<ImportSecretNumbersProps> = ({
             helperText={inputErrors.numbersH}
             style={{
               marginTop: '15px',
-              marginBottom: Boolean(inputErrors.numbersH) ? '0px' : '20px',
+              marginBottom: inputErrors.numbersH ? '0px' : '20px',
               width: '110px'
             }}
             className={styles.textField}
