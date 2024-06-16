@@ -2,6 +2,7 @@ import {
   NFTokenCreateOfferFlags,
   NFTokenMintFlags,
   NFTokenMintFlagsInterface,
+  PaymentFlags as PaymentFlagsBitmask,
   Transaction
 } from 'xrpl';
 
@@ -172,27 +173,33 @@ describe('parseSigners', () => {
 });
 
 describe('parsePaymentFlags', () => {
+  type PaymentFlags = {
+    [key in keyof typeof PaymentFlagsBitmask]: boolean;
+  };
+
   test('parse flags', () => {
     expect(parsePaymentFlags('123')).toEqual(123);
     expect(parsePaymentFlags(123)).toEqual(123);
   });
   test('parse flags json', () => {
-    expect(
-      parsePaymentFlags('{"tfNoDirectRipple":true,"tfPartialPayment":true,"tfLimitQuality":false}')
-    ).toEqual({
-      tfNoDirectRipple: true,
+    const result: PaymentFlags = {
+      tfNoRippleDirect: true,
       tfPartialPayment: true,
       tfLimitQuality: false
-    });
+    };
+    expect(
+      parsePaymentFlags('{"tfNoRippleDirect":true,"tfPartialPayment":true,"tfLimitQuality":false}')
+    ).toEqual(result);
   });
   test('parse flags object', () => {
-    expect(
-      parsePaymentFlags({ tfNoDirectRipple: true, tfPartialPayment: true, tfLimitQuality: false })
-    ).toEqual({
-      tfNoDirectRipple: true,
+    const result: PaymentFlags = {
+      tfNoRippleDirect: true,
       tfPartialPayment: true,
       tfLimitQuality: false
-    });
+    };
+    expect(
+      parsePaymentFlags({ tfNoRippleDirect: true, tfPartialPayment: true, tfLimitQuality: false })
+    ).toEqual(result);
   });
 });
 

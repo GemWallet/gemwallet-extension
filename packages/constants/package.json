@@ -18,6 +18,6 @@
   },
   "homepage": "https://github.com/GemWallet/gemwallet-extension#readme",
   "peerDependencies": {
-    "xrpl": "^3.0.0"
+    "xrpl": "^3.1.0"
   }
 }
