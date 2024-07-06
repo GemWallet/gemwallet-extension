@@ -95,7 +95,9 @@ export const checkFee = (fee: string | null) => {
       if (Number(fee) && dropsToXrp(fee)) {
         return fee;
       }
-    } catch (e) {}
+    } catch (e) {
+      /* empty */
+    }
   }
   return null;
 };

@@ -19,59 +19,39 @@ export const saveNetwork = (
   customNetworkServer?: string
 ) => {
   if (customNetworkName && customNetworkServer) {
-    try {
-      saveData(
-        STORAGE_NETWORK,
-        JSON.stringify({ chain, name: customNetworkName, server: customNetworkServer })
-      );
-    } catch (e) {
-      throw e;
-    }
+    saveData(
+      STORAGE_NETWORK,
+      JSON.stringify({ chain, name: customNetworkName, server: customNetworkServer })
+    );
   } else {
-    try {
-      saveData(
-        STORAGE_NETWORK,
-        JSON.stringify({ chain, name: network, server: getNetwork(chain, network).server })
-      );
-    } catch (e) {
-      throw e;
-    }
+    saveData(
+      STORAGE_NETWORK,
+      JSON.stringify({ chain, name: network, server: getNetwork(chain, network).server })
+    );
   }
 };
 
 export const loadCustomNetworks = (): Record<string, NetworkData> => {
-  try {
-    const data = loadData(STORAGE_CUSTOM_NETWORKS);
-    if (data) {
-      return JSON.parse(data);
-    }
-    return {};
-  } catch (error) {
-    throw error;
+  const data = loadData(STORAGE_CUSTOM_NETWORKS);
+  if (data) {
+    return JSON.parse(data);
   }
+  return {};
 };
 
-export const replaceCustomNetworks = (networks: Record<string, any>) => {
-  try {
-    saveData(STORAGE_CUSTOM_NETWORKS, JSON.stringify(networks));
-  } catch (error) {
-    throw error;
-  }
+export const replaceCustomNetworks = (networks: Record<string, NetworkData>) => {
+  saveData(STORAGE_CUSTOM_NETWORKS, JSON.stringify(networks));
 };
 
 export const saveCustomNetwork = (networkData: NetworkData) => {
-  try {
-    // Read existing custom networks from storage
-    let existingCustomNetworks = loadCustomNetworks();
+  // Read existing custom networks from storage
+  const existingCustomNetworks = loadCustomNetworks();
 
-    // Add new custom network to existing custom networks
-    existingCustomNetworks[networkData.name] = networkData;
+  // Add new custom network to existing custom networks
+  existingCustomNetworks[networkData.name] = networkData;
 
-    // Save custom networks to storage
-    replaceCustomNetworks(existingCustomNetworks);
-  } catch (e) {
-    throw e;
-  }
+  // Save custom networks to storage
+  replaceCustomNetworks(existingCustomNetworks);
 };
 
 export const loadNetwork = () => {
@@ -84,7 +64,9 @@ export const loadNetwork = () => {
     const parsedData: NetworkNode = JSON.parse(data);
     try {
       return getNetwork(parsedData.chain as Chain, parsedData.name as Network);
-    } catch (error) {}
+    } catch (error) {
+      /* empty */
+    }
 
     if ('chain' in parsedData && 'name' in parsedData && 'server' in parsedData) {
       return {
@@ -95,7 +77,9 @@ export const loadNetwork = () => {
         description: 'Custom network'
       };
     }
-  } catch (error) {}
+  } catch (error) {
+    /* empty */
+  }
 
   return getNetwork(Chain.XRPL, XRPLNetwork.MAINNET);
 };

@@ -63,7 +63,7 @@ export const ShareNFT: FC = () => {
         type: 'RECEIVE_NFT',
         payload: {
           id,
-          nfts: !!messagePayload ? messagePayload.nfts : messagePayload
+          nfts: messagePayload ? messagePayload.nfts : messagePayload
         }
       };
 
@@ -74,7 +74,7 @@ export const ShareNFT: FC = () => {
           payload: {
             id,
             type: ResponseType.Response,
-            result: !!messagePayload
+            result: messagePayload
               ? {
                   account_nfts: messagePayload.nfts,
                   marker: messagePayload.marker
