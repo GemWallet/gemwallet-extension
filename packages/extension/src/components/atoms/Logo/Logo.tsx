@@ -1,29 +1,17 @@
 import { FC, SVGProps, useMemo } from 'react';
 
-import { useFeatureFlags } from '../../../hooks';
-
 interface LogoProps extends SVGProps<SVGSVGElement> {
   isAnimated?: boolean;
 }
 
 export const Logo: FC<LogoProps> = ({ isAnimated, ...rest }) => {
-  const { featureFlags } = useFeatureFlags();
-
   const colors = useMemo(() => {
-    if ((featureFlags as any)['CITROUILLE_2K23']) {
-      return {
-        primary: '#FF7518',
-        secondary: '#FFA500',
-        tertiary: '#FFD700'
-      };
-    }
-    //TODO: In another MR these colors will need to come from the template
     return {
       primary: '#00A8EA',
       secondary: '#33D3F4',
       tertiary: '#40EEFF'
     };
-  }, [featureFlags]);
+  }, []);
 
   if (isAnimated) {
     return (

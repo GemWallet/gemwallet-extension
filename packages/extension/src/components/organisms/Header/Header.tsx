@@ -6,8 +6,6 @@ import OutboundIcon from '@mui/icons-material/Outbound';
 import { AppBar, Box, Button, IconButton, Toolbar, Tooltip, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import copyToClipboard from 'copy-to-clipboard';
-import { GiHangingSpider } from 'react-icons/gi';
-import { SiGhostery } from 'react-icons/si';
 import { useNavigate } from 'react-router-dom';
 
 import {
@@ -17,7 +15,7 @@ import {
   SEND_PATH,
   RECEIVE_PATH
 } from '../../../constants';
-import { useFeatureFlags, useTimeout } from '../../../hooks';
+import { useTimeout } from '../../../hooks';
 import { WalletLedger } from '../../../types';
 import { truncateAddress, truncateWalletName } from '../../../utils';
 import { WalletIcon } from '../../atoms';
@@ -40,15 +38,10 @@ export interface HeaderProps {
 export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => {
   const navigate = useNavigate();
   const setTimeout = useTimeout(2000);
-  const { featureFlags } = useFeatureFlags();
 
   const [isCopied, setIsCopied] = useState(false);
 
   const truncatedAddress = useMemo(() => truncateAddress(publicAddress), [publicAddress]);
-
-  const isHalloween = useMemo(() => {
-    return (featureFlags as any)['CITROUILLE_2K23'];
-  }, [featureFlags]);
 
   const handleShare = useCallback(() => {
     copyToClipboard(publicAddress);
@@ -131,16 +124,12 @@ export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => 
                   alignItems: 'center'
                 }}
               >
-                {isHalloween ? (
-                  <SiGhostery size={20} color="white" />
-                ) : (
-                  <OutboundIcon
-                    style={{
-                      transform: 'rotate(-45deg)',
-                      color: 'white'
-                    }}
-                  />
-                )}
+                <OutboundIcon
+                  style={{
+                    transform: 'rotate(-45deg)',
+                    color: 'white'
+                  }}
+                />
                 <Typography color="white" variant="caption">
                   Send
                 </Typography>
@@ -155,16 +144,12 @@ export const Header: FC<HeaderProps> = ({ wallet: { name, publicAddress } }) => 
                 }}
                 onClick={handleReceive}
               >
-                {isHalloween ? (
-                  <GiHangingSpider size={20} color="white" />
-                ) : (
-                  <OutboundIcon
-                    style={{
-                      transform: 'rotate(135deg)',
-                      color: 'white'
-                    }}
-                  />
-                )}
+                <OutboundIcon
+                  style={{
+                    transform: 'rotate(135deg)',
+                    color: 'white'
+                  }}
+                />
                 <Typography color="white" variant="caption">
                   Receive
                 </Typography>

@@ -13,7 +13,7 @@ import {
 } from 'react-router-dom';
 
 import App from './App';
-import { GEMWALLET_HALLOWEEN_ORANGE, POPUP_HEIGHT, POPUP_WIDTH } from './constants';
+import { POPUP_HEIGHT, POPUP_WIDTH } from './constants';
 import {
   BrowserProvider,
   LedgerProvider,
@@ -23,25 +23,9 @@ import {
   TransactionProgressProvider,
   WalletProvider
 } from './contexts';
-import { useFeatureFlags } from './hooks';
 import reportWebVitals from './reportWebVitals';
 import './index.css';
 import { createRoot } from 'react-dom/client';
-
-const halloweenTheme = createTheme({
-  palette: {
-    mode: 'dark',
-    primary: {
-      main: GEMWALLET_HALLOWEEN_ORANGE
-    },
-    secondary: {
-      main: '#793D0D'
-    },
-    error: {
-      main: '#D32F2F'
-    }
-  }
-});
 
 Sentry.init({
   dsn: process.env.REACT_APP_SENTRY_DSN,
@@ -68,7 +52,6 @@ Sentry.init({
 });
 
 const GemWallet = () => {
-  const { featureFlags } = useFeatureFlags();
   const theme = useMemo(
     () =>
       createTheme({
@@ -95,10 +78,9 @@ const GemWallet = () => {
               }
             }
           }
-        },
-        ...((featureFlags as any)['CITROUILLE_2K23'] ? halloweenTheme : {})
+        }
       }),
-    [featureFlags]
+    []
   );
 
   return (
