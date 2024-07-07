@@ -33,7 +33,7 @@ export const CreateNewWallet: FC<CreateNewWalletProps> = ({ password }) => {
   useEffect(() => {
     if (wallet?.seed && activeStep === 2) {
       try {
-        importSeed(password, wallet.seed);
+        importSeed({ password, seed: wallet.seed });
         navigate(LIST_WALLETS_PATH);
       } catch (e) {
         Sentry.captureException('Cannot save wallet - CreateNewWallet: ' + e);
