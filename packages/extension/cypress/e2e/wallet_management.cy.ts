@@ -1,7 +1,10 @@
 /// <reference types="cypress" />
 
+import { XRPLNetwork } from '@gemwallet/constants';
+
 const PASSWORD = Cypress.env('PASSWORD');
 const SEED = Cypress.env('SEED');
+const SEED_SECP256K1 = Cypress.env('SEED_SECP256K1');
 const MNEMONIC = Cypress.env('MNEMONIC');
 const ERROR_MNEMONIC = 'You need 6 digits';
 const URL_WALLET = 'http://localhost:3000/';
@@ -119,6 +122,56 @@ describe('Setup the initial wallet (no previous wallet)', () => {
     cy.contains('button', 'Finish').click();
     cy.contains('GemWallet').should('be.visible');
     cy.contains('Your gateway to the XRPL').should('be.visible');
+  });
+
+  it('Import a wallet - Family Seed - secp256k1', () => {
+    // Go to the import a new wallet page
+    cy.contains('button', 'Import a wallet').click();
+
+    // Select import by family seed
+    cy.contains('button', 'Family Seed').click();
+
+    // Add the seed to the import
+    cy.get('input[name="seed"]').type(SEED_SECP256K1);
+    cy.get('.PrivateSwitchBase-input').click();
+    cy.contains('button', 'Next').click();
+
+    // Set up the proper password
+    cy.get('input[name="password"]').clear().type(PASSWORD);
+    cy.get('input[name="confirm-password"]').clear().type(PASSWORD);
+    cy.contains('button', 'Next').click();
+    cy.contains("Woo, you're in!").should('be.visible');
+    cy.contains('Follow along with product updates or reach out if you have any questions.').should(
+      'be.visible'
+    );
+
+    // Redirection to the login page
+    cy.contains('button', 'Finish').click();
+    cy.contains('GemWallet').should('be.visible');
+    cy.contains('Your gateway to the XRPL').should('be.visible');
+
+    // Login
+    cy.get('input[name="password"]').type(PASSWORD);
+    cy.contains('button', 'Unlock').click();
+
+    // Mainnet should be the default network
+    cy.get('div[data-testid="network-indicator"]').should('have.text', XRPLNetwork.MAINNET);
+
+    // Open the change network window
+    cy.get('div[data-testid="network-indicator"]').click();
+    cy.get('div[data-testid="network-indicator-dialog"]', { timeout: 1500 })
+      .find('header')
+      .should('have.text', 'Change Network');
+
+    // Select the testnet network
+    cy.contains('button', XRPLNetwork.TESTNET).click();
+
+    // Make sure that the network is switched to Testnet
+    cy.get('div[data-testid="loading"]').should('be.visible');
+    cy.get('div[data-testid="network-indicator"]').should('have.text', XRPLNetwork.TESTNET);
+
+    // Make sure that the right wallet is online
+    cy.contains('14.999988 XRP').should('be.visible');
   });
 
   it('Import a wallet - Mnemonic', () => {
