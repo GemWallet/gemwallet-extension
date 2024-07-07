@@ -2,15 +2,9 @@ import { CSSProperties, FC, MouseEvent, useEffect, useMemo } from 'react';
 
 import { BottomNavigation, BottomNavigationAction } from '@mui/material';
 import { styled } from '@mui/system';
-import { FaGhost, FaHatWizard, FaSpider } from 'react-icons/fa';
-import { GiPumpkinLantern } from 'react-icons/gi';
 import { useNavigate } from 'react-router-dom';
 
-import {
-  GEMWALLET_BLUE,
-  GEMWALLET_HALLOWEEN_ORANGE,
-  navigation as navigationConstant
-} from '../../../constants';
+import { GEMWALLET_BLUE, navigation as navigationConstant } from '../../../constants';
 import { useNavBarPosition } from '../../../contexts';
 
 const defaultDecoration = {
@@ -29,10 +23,10 @@ export interface NavMenuProps {
 
 export const NavMenu: FC<NavMenuProps> = ({ indexDefaultNav }) => {
   const navigate = useNavigate();
-  const { navBarPosition, setNavBarPosition, isHalloween } = useNavBarPosition();
+  const { navBarPosition, setNavBarPosition } = useNavBarPosition();
 
   const StyledBottomNavigation = useMemo(() => {
-    const backgroundColor = isHalloween ? GEMWALLET_HALLOWEEN_ORANGE : GEMWALLET_BLUE;
+    const backgroundColor = GEMWALLET_BLUE;
 
     return styled(BottomNavigation)`
       ${defaultDecoration}
@@ -52,28 +46,11 @@ export const NavMenu: FC<NavMenuProps> = ({ indexDefaultNav }) => {
         border-radius: 2px;
       }
     `;
-  }, [isHalloween]);
+  }, []);
 
   const navigation = useMemo(() => {
-    if (!isHalloween) {
-      return navigationConstant;
-    }
-    const navigationHalloween = [
-      <GiPumpkinLantern size={25} />,
-      <FaGhost size={25} />,
-      <FaHatWizard size={25} />,
-      <FaSpider size={25} />
-    ];
-
-    if (navigationConstant.length !== navigationHalloween.length) {
-      throw new Error('navigation constant and navigation Halloween must have the same length');
-    }
-
-    return navigationConstant.map((navItem, index) => ({
-      ...navItem,
-      icon: navigationHalloween[index]
-    }));
-  }, [isHalloween]);
+    return navigationConstant;
+  }, []);
 
   useEffect(() => {
     if (indexDefaultNav !== -1) {
