@@ -112,7 +112,6 @@ const WalletProvider: FC<Props> = ({ children }) => {
           wallet: Wallet.fromMnemonic(mnemonic!)
         };
       });
-      console.log('_____wallets', _wallets);
       setWallets(_wallets);
       setPassword(password);
       return true;
