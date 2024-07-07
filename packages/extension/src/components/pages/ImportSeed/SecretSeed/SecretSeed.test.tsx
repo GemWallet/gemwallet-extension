@@ -21,7 +21,7 @@ describe('ImportSeed - SecretSeed Page', () => {
     );
     const titleElement = screen.getByRole('heading', { name: 'Secret Seed' });
     const subTitleElement = screen.getByRole('heading', {
-      name: 'Please enter your seed in order to load your wallet to GemWallet.'
+      name: 'Please enter your seed in order to import your wallet to GemWallet.'
     });
     expect(titleElement).toBeVisible();
     expect(subTitleElement).toBeVisible();
