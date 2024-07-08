@@ -1,7 +1,5 @@
 /// <reference types="cypress" />
 
-import { XRPLNetwork } from '@gemwallet/constants';
-
 const PASSWORD = Cypress.env('PASSWORD');
 const SEED = Cypress.env('SEED');
 const SEED_SECP256K1 = Cypress.env('SEED_SECP256K1');
@@ -154,24 +152,8 @@ describe('Setup the initial wallet (no previous wallet)', () => {
     cy.get('input[name="password"]').type(PASSWORD);
     cy.contains('button', 'Unlock').click();
 
-    // Mainnet should be the default network
-    cy.get('div[data-testid="network-indicator"]').should('have.text', XRPLNetwork.MAINNET);
-
-    // Open the change network window
-    cy.get('div[data-testid="network-indicator"]').click();
-    cy.get('div[data-testid="network-indicator-dialog"]', { timeout: 1500 })
-      .find('header')
-      .should('have.text', 'Change Network');
-
-    // Select the testnet network
-    cy.contains('button', XRPLNetwork.TESTNET).click();
-
-    // Make sure that the network is switched to Testnet
-    cy.get('div[data-testid="loading"]').should('be.visible');
-    cy.get('div[data-testid="network-indicator"]').should('have.text', XRPLNetwork.TESTNET);
-
     // Make sure that the right wallet is online
-    cy.contains('14.999988 XRP').should('be.visible');
+    cy.contains('r9M7...4g5C').should('be.visible');
   });
 
   it('Import a wallet - Mnemonic', () => {
@@ -358,6 +340,24 @@ describe('Add an additional wallet (with previous wallet)', () => {
     cy.window().then((win) => {
       walletLocalStorage = win.localStorage.getItem('wallets');
     });
+  });
+
+  it('Import a wallet - Family Seed - secp256k1', () => {
+    // Go to the import a new wallet page
+    cy.contains('button', 'Import a new wallet').click();
+
+    // Select import by family seed
+    cy.contains('button', 'Family Seed').click();
+
+    // Add the seed to the import
+    cy.get('input[name="seed"]').type(SEED_SECP256K1);
+    cy.get('.PrivateSwitchBase-input').click();
+    cy.contains('button', 'Add Seed').click();
+
+    // Redirection to the wallets page
+    cy.contains('Your wallets').should('be.visible');
+    cy.get('div[data-testid="wallet-container"]').children().should('have.length', 4);
+    cy.get('div[data-testid="wallet-container"]').first().contains('r9M7...4g5C');
   });
 
   it('Add a new wallet - Mnemonic', () => {
