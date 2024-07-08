@@ -59,7 +59,7 @@ export const SecretSeed: FC<SecretSeedProps> = ({ activeStep, steps, onBack, onN
           <Checkbox
             checked={isSecp256k1}
             onChange={() => setSecp256k1(!isSecp256k1)}
-            name="rememberSession"
+            name="setSecp256k1"
             color="primary"
             style={{ transform: 'scale(0.9)' }}
           />

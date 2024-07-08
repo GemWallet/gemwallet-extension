@@ -73,7 +73,7 @@ export const ImportSeed: FC<ImportSeedProps> = ({ activeStep, password, handleBa
           <Checkbox
             checked={isSecp256k1}
             onChange={() => setSecp256k1(!isSecp256k1)}
-            name="rememberSession"
+            name="setSecp256k1"
             color="primary"
             style={{ transform: 'scale(0.9)' }}
           />
