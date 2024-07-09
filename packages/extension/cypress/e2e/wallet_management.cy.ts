@@ -2,6 +2,7 @@
 
 const PASSWORD = Cypress.env('PASSWORD');
 const SEED = Cypress.env('SEED');
+const SEED_SECP256K1 = Cypress.env('SEED_SECP256K1');
 const MNEMONIC = Cypress.env('MNEMONIC');
 const ERROR_MNEMONIC = 'You need 6 digits';
 const URL_WALLET = 'http://localhost:3000/';
@@ -119,6 +120,40 @@ describe('Setup the initial wallet (no previous wallet)', () => {
     cy.contains('button', 'Finish').click();
     cy.contains('GemWallet').should('be.visible');
     cy.contains('Your gateway to the XRPL').should('be.visible');
+  });
+
+  it('Import a wallet - Family Seed - secp256k1', () => {
+    // Go to the import a new wallet page
+    cy.contains('button', 'Import a wallet').click();
+
+    // Select import by family seed
+    cy.contains('button', 'Family Seed').click();
+
+    // Add the seed to the import
+    cy.get('input[name="seed"]').type(SEED_SECP256K1);
+    cy.get('.PrivateSwitchBase-input').click();
+    cy.contains('button', 'Next').click();
+
+    // Set up the proper password
+    cy.get('input[name="password"]').clear().type(PASSWORD);
+    cy.get('input[name="confirm-password"]').clear().type(PASSWORD);
+    cy.contains('button', 'Next').click();
+    cy.contains("Woo, you're in!").should('be.visible');
+    cy.contains('Follow along with product updates or reach out if you have any questions.').should(
+      'be.visible'
+    );
+
+    // Redirection to the login page
+    cy.contains('button', 'Finish').click();
+    cy.contains('GemWallet').should('be.visible');
+    cy.contains('Your gateway to the XRPL').should('be.visible');
+
+    // Login
+    cy.get('input[name="password"]').type(PASSWORD);
+    cy.contains('button', 'Unlock').click();
+
+    // Make sure that the right wallet is online
+    cy.contains('r9M7...4g5C').should('be.visible');
   });
 
   it('Import a wallet - Mnemonic', () => {
@@ -305,6 +340,24 @@ describe('Add an additional wallet (with previous wallet)', () => {
     cy.window().then((win) => {
       walletLocalStorage = win.localStorage.getItem('wallets');
     });
+  });
+
+  it('Import a wallet - Family Seed - secp256k1', () => {
+    // Go to the import a new wallet page
+    cy.contains('button', 'Import a new wallet').click();
+
+    // Select import by family seed
+    cy.contains('button', 'Family Seed').click();
+
+    // Add the seed to the import
+    cy.get('input[name="seed"]').type(SEED_SECP256K1);
+    cy.get('.PrivateSwitchBase-input').click();
+    cy.contains('button', 'Add Seed').click();
+
+    // Redirection to the wallets page
+    cy.contains('Your wallets').should('be.visible');
+    cy.get('div[data-testid="wallet-container"]').children().should('have.length', 4);
+    cy.get('div[data-testid="wallet-container"]').first().contains('r9M7...4g5C');
   });
 
   it('Add a new wallet - Mnemonic', () => {

@@ -2,7 +2,7 @@ import { useContext, useState, createContext, FC, useCallback, useEffect } from 
 
 import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
-import { Wallet } from 'xrpl';
+import { ECDSA, Wallet } from 'xrpl';
 
 import {
   GEM_WALLET,
@@ -27,13 +27,19 @@ import {
   saveWallet
 } from '../../utils';
 
+type ImportSeedProps = {
+  password: string;
+  seed: string;
+  walletName?: string;
+  algorithm?: ECDSA;
+};
 export interface WalletContextType {
   signIn: (password: string, rememberSession?: boolean) => boolean;
   signOut: () => void;
   generateWallet: (walletName?: string) => Wallet;
   selectWallet: (index: number) => void;
   isValidSeed: (seed: string) => boolean;
-  importSeed: (password: string, seed: string, walletName?: string) => boolean | undefined;
+  importSeed: ({ password, seed, walletName, algorithm }: ImportSeedProps) => boolean | undefined;
   isValidMnemonic: (mnemonic: string) => boolean;
   importMnemonic: (password: string, mnemonic: string, walletName?: string) => boolean | undefined;
   isValidNumbers: (numbers: string[]) => boolean;
@@ -90,13 +96,13 @@ const WalletProvider: FC<Props> = ({ children }) => {
         });
       }
 
-      const _wallets = wallets.map(({ name, publicAddress, seed, mnemonic }) => {
+      const _wallets = wallets.map(({ name, publicAddress, seed, mnemonic, algorithm }) => {
         if (seed) {
           return {
             name,
             publicAddress,
             seed,
-            wallet: Wallet.fromSeed(seed)
+            wallet: Wallet.fromSeed(seed, { algorithm })
           };
         }
         return {
@@ -151,15 +157,16 @@ const WalletProvider: FC<Props> = ({ children }) => {
    * undefined: if wallet is already present
    */
   const importSeed = useCallback(
-    (password: string, seed: string, walletName?: string) => {
+    ({ password, seed, walletName, algorithm }: ImportSeedProps) => {
       try {
-        const wallet = Wallet.fromSeed(seed);
+        const wallet = Wallet.fromSeed(seed, { algorithm });
         if (wallets.filter((w) => w.publicAddress === wallet.address).length > 0) {
           return undefined;
         }
         const _wallet = {
           publicAddress: wallet.address,
-          seed
+          seed,
+          algorithm
         };
         saveWallet(_wallet, password);
         setWallets((wallets) => [
