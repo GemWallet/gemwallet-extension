@@ -1,7 +1,7 @@
 {
   "name": "GemWallet",
   "description": "GemWallet brings the XRP Ledger (XRPL) and Xahau to your web browser - https://gemwallet.app",
-  "version": "3.7.1",
+  "version": "3.7.2",
   "manifest_version": 3,
   "action": {
     "default_popup": "index.html",
