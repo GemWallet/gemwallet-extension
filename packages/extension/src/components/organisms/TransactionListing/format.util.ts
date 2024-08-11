@@ -46,6 +46,7 @@ const transactionMappers: Record<TransactionTypes, TransactionFormatter> = {
   [TransactionTypes.CheckCash]: () => 'Cash check',
   [TransactionTypes.CheckCancel]: () => 'Cancel check',
   [TransactionTypes.TicketCreate]: () => 'Create ticket',
+  [TransactionTypes.PaymentChannelAuthorize]: () => 'Authorize payment channel',
   [TransactionTypes.PaymentChannelCreate]: () => 'Create payment channel',
   [TransactionTypes.PaymentChannelClaim]: () => 'Claim payment channel',
   [TransactionTypes.PaymentChannelFund]: () => 'Fund payment channel',
