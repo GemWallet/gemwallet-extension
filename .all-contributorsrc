@@ -169,6 +169,15 @@
       "contributions": [
         "security"
       ]
+    },
+    {
+      "login": "desimmons",
+      "name": "desimmons",
+      "avatar_url": "https://avatars.githubusercontent.com/u/11035824?v=4",
+      "profile": "http://dr-desimmons.web.app",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
