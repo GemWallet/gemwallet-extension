@@ -1,7 +1,7 @@
 # 💎 GemWallet Extension
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-17-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-18-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 ## GemWallet: A crypto wallet & Web3 layer for the XRPL
@@ -139,6 +139,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Daviran"><img src="https://avatars.githubusercontent.com/u/77353097?v=4?s=100" width="100px;" alt="David Bugnon"/><br /><sub><b>David Bugnon</b></sub></a><br /><a href="#security-Daviran" title="Security">🛡️</a> <a href="https://github.com/GemWallet/gemwallet-extension/commits?author=Daviran" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/RCouery"><img src="https://avatars.githubusercontent.com/u/61977921?v=4?s=100" width="100px;" alt="RCouery"/><br /><sub><b>RCouery</b></sub></a><br /><a href="#security-RCouery" title="Security">🛡️</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Wolfvaudou"><img src="https://avatars.githubusercontent.com/u/118960708?v=4?s=100" width="100px;" alt="Wolfvaudou"/><br /><sub><b>Wolfvaudou</b></sub></a><br /><a href="#security-Wolfvaudou" title="Security">🛡️</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://dr-desimmons.web.app"><img src="https://avatars.githubusercontent.com/u/11035824?v=4?s=100" width="100px;" alt="desimmons"/><br /><sub><b>desimmons</b></sub></a><br /><a href="https://github.com/GemWallet/gemwallet-extension/commits?author=desimmons" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
