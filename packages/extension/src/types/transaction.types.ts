@@ -27,6 +27,7 @@ export enum TransactionTypes {
   OfferCancel = 'OfferCancel',
   OfferCreate = 'OfferCreate',
   Payment = 'Payment',
+  PaymentChannelAuthorize = 'PaymentChannelAuthorize',
   PaymentChannelClaim = 'PaymentChannelClaim',
   PaymentChannelCreate = 'PaymentChannelCreate',
   PaymentChannelFund = 'PaymentChannelFund',
