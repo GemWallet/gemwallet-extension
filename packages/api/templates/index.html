@@ -21,7 +21,10 @@
       <button onclick="handlePublicKey()">Get Public Key (check the console)</button>
       <button onclick="handleGetAddress()">Get Address (check the console)</button>
       <button onclick="handleGetNetwork()">Get Network (check the console)</button>
-      <button onclick="handleSignMessage()">Sign message</button>
+      <button onclick="handleSignMessage('Hello World!')">Sign message</button>
+      <button onclick="handleSignMessage('48656c6c6f20576f726c6421', true)">
+        Sign hex message
+      </button>
       <button onclick="handleSetAccount()">Set Account (check the console)</button>
       <button onclick="handleSetRegularKey()">Set Regular Key (check the console)</button>
       <button onclick="handleCreateOffer()">Create Offer (check the console)</button>
@@ -207,12 +210,11 @@
       }
     });
   }
-  function handleSignMessage() {
+  function handleSignMessage(message, isHex) {
     GemWalletApi.isInstalled()
       .then(({ result }) => {
         if (result.isInstalled) {
-          const message = 'Hello World!';
-          GemWalletApi.signMessage(message)
+          GemWalletApi.signMessage(message, isHex)
             .then((signature) => {
               console.log('Here is your signature: ', signature);
             })
