@@ -75,8 +75,8 @@ export const SignMessage: FC = () => {
       return;
     }
 
-    const message = 'message' in fetchedData ? fetchedData.message : undefined;
-    const isHex = 'isHex' in fetchedData ? fetchedData.isHex ?? false : false;
+    const message = fetchedData?.message;
+    const isHex = fetchedData?.isHex ?? false;
 
     if (!message) {
       setIsParamsMissing(true);
