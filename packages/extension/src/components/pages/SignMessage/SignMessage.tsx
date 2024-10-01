@@ -26,6 +26,7 @@ import { AsyncTransaction, TransactionPage } from '../../templates';
 
 interface Params {
   message: string | null;
+  isHex: boolean;
 }
 
 export const SignMessage: FC = () => {
@@ -36,7 +37,8 @@ export const SignMessage: FC = () => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const [params, setParams] = useState<Params>({
-    message: null
+    message: null,
+    isHex: false
   });
 
   const payload = useMemo(() => {
@@ -73,7 +75,8 @@ export const SignMessage: FC = () => {
       return;
     }
 
-    const message = 'message' in fetchedData ? fetchedData.message : undefined;
+    const message = fetchedData?.message;
+    const isHex = fetchedData?.isHex ?? false;
 
     if (!message) {
       setIsParamsMissing(true);
@@ -81,7 +84,8 @@ export const SignMessage: FC = () => {
     }
 
     setParams({
-      message
+      message,
+      isHex
     });
   }, [fetchedData]);
 
@@ -139,12 +143,12 @@ export const SignMessage: FC = () => {
   const handleSign = useCallback(() => {
     try {
       // The message will be a string, otherwise the transaction would have been rejected already
-      const signature = signMessage(params.message as string);
+      const signature = signMessage(params.message as string, params.isHex);
       handleSendMessage({ signedMessage: signature });
     } catch (e) {
       handleSendMessage({ signedMessage: undefined, error: e as Error });
     }
-  }, [handleSendMessage, params.message, signMessage]);
+  }, [handleSendMessage, params.message, params.isHex, signMessage]);
 
   if (isParamsMissing) {
     chrome.runtime.sendMessage<

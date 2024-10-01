@@ -211,6 +211,7 @@ export interface SignMessageRequest {
   title: string;
   favicon: string | null | undefined;
   message: string;
+  isHex?: boolean;
 }
 
 export interface SetAccountRequest extends BaseTransactionRequest {

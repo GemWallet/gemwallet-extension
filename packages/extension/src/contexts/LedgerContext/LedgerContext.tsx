@@ -143,7 +143,7 @@ export interface LedgerContextType {
   // Return transaction hash in case of success
   sendPayment: (payload: Payment) => Promise<string>;
   setTrustline: (payload: TrustSet) => Promise<string>;
-  signMessage: (message: string) => string | undefined;
+  signMessage: (message: string, isHex: boolean) => string | undefined;
   estimateNetworkFees: (payload: Transaction) => Promise<string>;
   getNFTs: (payload?: GetNFTRequest) => Promise<AccountNFTokenResponse>;
   getTransactions: () => Promise<AccountTxTransaction[]>;
@@ -347,13 +347,13 @@ const LedgerProvider: FC<Props> = ({ children }) => {
   );
 
   const signMessage = useCallback(
-    (message: string) => {
+    (message: string, isHex: boolean) => {
       const wallet = getCurrentWallet();
       try {
         if (!wallet) {
           throw new Error('You need to have a wallet connected to sign a message');
         } else {
-          const messageHex = Buffer.from(message, 'utf8').toString('hex');
+          const messageHex = isHex ? message : Buffer.from(message, 'utf8').toString('hex');
           return sign(messageHex, wallet.wallet.privateKey);
         }
       } catch (e) {

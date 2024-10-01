@@ -9,7 +9,10 @@ import { deserializeError } from '../helpers/errors';
 import { sendMessageToContentScript } from '../helpers/extensionMessaging';
 import { getFavicon } from '../helpers/getFavicon';
 
-export const signMessage = async (message: string): Promise<SignMessageResponse> => {
+export const signMessage = async (
+  message: string,
+  isHex?: boolean
+): Promise<SignMessageResponse> => {
   /* response:
    * if the transaction succeeds:
    * - type: 'response'
@@ -37,7 +40,8 @@ export const signMessage = async (message: string): Promise<SignMessageResponse>
         url: window.location.origin,
         title: document.title,
         favicon,
-        message
+        message,
+        isHex
       }
     };
     const { result, error } = await sendMessageToContentScript(messageToContentScript);
