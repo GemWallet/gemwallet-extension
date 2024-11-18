@@ -19,7 +19,7 @@ export const ImportSeed: FC<ImportSeedProps> = ({ activeStep, password, handleBa
   const navigate = useNavigate();
   const { importSeed } = useWallet();
   const [seedError, setSeedError] = useState('');
-  const [isSecp256k1, setSecp256k1] = useState(false);
+  const [isSecp256k1, setIsSecp256k1] = useState(false);
   const seedRef = useRef<HTMLInputElement | null>(null);
 
   const handleNext = useCallback(() => {
@@ -72,8 +72,8 @@ export const ImportSeed: FC<ImportSeedProps> = ({ activeStep, password, handleBa
         control={
           <Checkbox
             checked={isSecp256k1}
-            onChange={() => setSecp256k1(!isSecp256k1)}
-            name="setSecp256k1"
+            onChange={() => setIsSecp256k1(!isSecp256k1)}
+            name="setIsSecp256k1"
             color="primary"
             style={{ transform: 'scale(0.9)' }}
           />
