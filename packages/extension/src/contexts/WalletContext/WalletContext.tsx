@@ -33,6 +33,15 @@ type ImportSeedProps = {
   walletName?: string;
   algorithm?: ECDSA;
 };
+
+type ImportNumbersProps = {
+  password: string;
+  numbers: string[];
+  walletName?: string;
+  // Default algorithm is: ed25519
+  algorithm?: ECDSA;
+};
+
 export interface WalletContextType {
   signIn: (password: string, rememberSession?: boolean) => boolean;
   signOut: () => void;
@@ -44,7 +53,12 @@ export interface WalletContextType {
   importMnemonic: (password: string, mnemonic: string, walletName?: string) => boolean | undefined;
   isValidNumbers: (numbers: string[]) => boolean;
   isPasswordCorrect: (password: string) => boolean;
-  importNumbers: (password: string, numbers: string[], walletName?: string) => boolean | undefined;
+  importNumbers: ({
+    password,
+    numbers,
+    walletName,
+    algorithm
+  }: ImportNumbersProps) => boolean | undefined;
   getCurrentWallet: () => WalletLedger | undefined;
   getWalletByPublicAddress: (publicAddress: string) => WalletLedger | undefined;
   renameWallet: (name: string, publicAddress: string) => void;
@@ -257,10 +271,10 @@ const WalletProvider: FC<Props> = ({ children }) => {
   );
 
   const importNumbers = useCallback(
-    (password: string, numbers: string[], walletName?: string) => {
+    ({ password, numbers, walletName, algorithm }: ImportNumbersProps) => {
       try {
         const seed = numbersToSeed(numbers);
-        const wallet = Wallet.fromSeed(seed);
+        const wallet = Wallet.fromSeed(seed, { algorithm });
         if (wallets.filter((w) => w.publicAddress === wallet.address).length > 0) {
           return undefined;
         }

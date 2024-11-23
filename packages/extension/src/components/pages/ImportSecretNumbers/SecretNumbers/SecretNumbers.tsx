@@ -1,11 +1,13 @@
 import { FC, useCallback, useState, FocusEvent } from 'react';
 
-import { Grid, TextField, Typography } from '@mui/material';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import { Checkbox, FormControlLabel, Grid, TextField, Tooltip, Typography } from '@mui/material';
 
-import { ERROR_RED } from '../../../../constants';
+import { ERROR_RED, SECONDARY_GRAY } from '../../../../constants';
 import { useNetwork, useWallet } from '../../../../contexts';
 import { PageWithStepper } from '../../../templates';
 import styles from './styles.module.css';
+import { ECDSA } from 'xrpl';
 
 const schemaInput = new RegExp(/^[0-9]{6}$/);
 
@@ -26,12 +28,13 @@ export interface SecretNumbersProps {
   activeStep: number;
   steps: number;
   onBack: () => void;
-  onNext: (seed: string[]) => void;
+  onNext: (seed: string[], algorithm: ECDSA | undefined) => void;
 }
 
 export const SecretNumbers: FC<SecretNumbersProps> = ({ activeStep, steps, onBack, onNext }) => {
   const { isValidNumbers } = useWallet();
   const { hasOfflineBanner } = useNetwork();
+  const [isSecp256k1, setSecp256k1] = useState(false);
   const [numbersError, setNumbersError] = useState('');
   const [inputErrors, setInputErrors] = useState<InputErrors>({
     numbersA: '',
@@ -68,12 +71,12 @@ export const SecretNumbers: FC<SecretNumbersProps> = ({ activeStep, steps, onBac
 
     if (numbers.find((number) => !schemaInput.test(number)) === undefined) {
       if (isValidNumbers(numbers)) {
-        onNext(numbers);
+        onNext(numbers, isSecp256k1 ? ECDSA.secp256k1 : undefined);
       } else {
         setNumbersError('Your secret numbers are incorrect.');
       }
     }
-  }, [inputErrors, isValidNumbers, onNext]);
+  }, [inputErrors, isSecp256k1, isValidNumbers, onNext]);
 
   return (
     <PageWithStepper
@@ -246,6 +249,26 @@ export const SecretNumbers: FC<SecretNumbersProps> = ({ activeStep, steps, onBac
       <Typography align="center" variant="caption" display="block" style={{ color: ERROR_RED }}>
         {numbersError}
       </Typography>
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={isSecp256k1}
+            onChange={() => setSecp256k1(!isSecp256k1)}
+            name="setSecp256k1"
+            color="primary"
+            style={{ transform: 'scale(0.9)' }}
+          />
+        }
+        label={
+          <Typography style={{ display: 'flex', fontSize: '0.9rem' }} color={SECONDARY_GRAY}>
+            Use "secp256k1" algorithm{' '}
+            <Tooltip title="Note: if you don’t know what it means, you should probably keep it unchecked">
+              <InfoOutlinedIcon style={{ marginLeft: '5px' }} fontSize="small" />
+            </Tooltip>
+          </Typography>
+        }
+        style={{ marginTop: '5px' }}
+      />
     </PageWithStepper>
   );
 };
