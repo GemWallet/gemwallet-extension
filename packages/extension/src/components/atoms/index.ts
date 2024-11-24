@@ -4,6 +4,7 @@ export * from './Logo';
 export * from './NFTImage';
 export * from './NumericInput';
 export * from './PrivateRoute';
+export * from './SecretNumberInput';
 export * from './TileLoader';
 export * from './TokenLoader';
 export * from './Tokens';

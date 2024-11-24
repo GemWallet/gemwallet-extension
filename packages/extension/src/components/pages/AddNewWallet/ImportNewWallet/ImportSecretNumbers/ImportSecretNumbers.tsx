@@ -1,14 +1,14 @@
 import { FC, useCallback, useState, FocusEvent } from 'react';
 
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import { Checkbox, FormControlLabel, Grid, TextField, Tooltip, Typography } from '@mui/material';
+import { Checkbox, FormControlLabel, Grid, Tooltip, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 import { ERROR_RED, LIST_WALLETS_PATH, SECONDARY_GRAY } from '../../../../../constants';
 import { useWallet } from '../../../../../contexts';
 import { PageWithStepper } from '../../../../templates';
-import styles from './styles.module.css';
 import { ECDSA } from 'xrpl';
+import { SecretNumberInput } from '../../../../atoms';
 
 const schemaInput = new RegExp(/^[0-9]{6}$/);
 
@@ -108,149 +108,19 @@ export const ImportSecretNumbers: FC<ImportSecretNumbersProps> = ({
         Please enter your secret numbers in order to load your wallet to GemWallet.
       </Typography>
       <Grid container rowSpacing={0} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-        <Grid item xs={6}>
-          <TextField
-            size="small"
-            id="numbersA"
-            name="numbersA"
-            label="Numbers A"
-            error={Boolean(inputErrors.numbersA)}
-            helperText={inputErrors.numbersA}
-            style={{
-              marginTop: '15px',
-              marginBottom: inputErrors.numbersA ? '0px' : '20px',
-              width: '110px'
-            }}
-            className={styles.textField}
-            autoComplete="off"
-            onBlur={handleOnBlurInput}
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <TextField
-            size="small"
-            id="numbersB"
-            name="numbersB"
-            label="Numbers B"
-            error={Boolean(inputErrors.numbersB)}
-            helperText={inputErrors.numbersB}
-            style={{
-              marginTop: '15px',
-              marginBottom: inputErrors.numbersB ? '0px' : '20px',
-              width: '110px'
-            }}
-            className={styles.textField}
-            autoComplete="off"
-            onBlur={handleOnBlurInput}
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <TextField
-            size="small"
-            id="numbersC"
-            name="numbersC"
-            label="Numbers C"
-            error={Boolean(inputErrors.numbersC)}
-            helperText={inputErrors.numbersC}
-            style={{
-              marginTop: '15px',
-              marginBottom: inputErrors.numbersC ? '0px' : '20px',
-              width: '110px'
-            }}
-            className={styles.textField}
-            autoComplete="off"
-            onBlur={handleOnBlurInput}
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <TextField
-            size="small"
-            id="numbersD"
-            name="numbersD"
-            label="Numbers D"
-            error={Boolean(inputErrors.numbersD)}
-            helperText={inputErrors.numbersD}
-            style={{
-              marginTop: '15px',
-              marginBottom: inputErrors.numbersD ? '0px' : '20px',
-              width: '110px'
-            }}
-            className={styles.textField}
-            autoComplete="off"
-            onBlur={handleOnBlurInput}
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <TextField
-            size="small"
-            id="numbersE"
-            name="numbersE"
-            label="Numbers E"
-            error={Boolean(inputErrors.numbersE)}
-            helperText={inputErrors.numbersE}
-            style={{
-              marginTop: '15px',
-              marginBottom: inputErrors.numbersE ? '0px' : '20px',
-              width: '110px'
-            }}
-            className={styles.textField}
-            autoComplete="off"
-            onBlur={handleOnBlurInput}
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <TextField
-            size="small"
-            id="numbersF"
-            name="numbersF"
-            label="Numbers F"
-            error={Boolean(inputErrors.numbersF)}
-            helperText={inputErrors.numbersF}
-            style={{
-              marginTop: '15px',
-              marginBottom: inputErrors.numbersF ? '0px' : '20px',
-              width: '110px'
-            }}
-            className={styles.textField}
-            autoComplete="off"
-            onBlur={handleOnBlurInput}
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <TextField
-            size="small"
-            id="numbersG"
-            name="numbersG"
-            label="Numbers G"
-            error={Boolean(inputErrors.numbersG)}
-            helperText={inputErrors.numbersG}
-            style={{
-              marginTop: '15px',
-              marginBottom: inputErrors.numbersG ? '0px' : '20px',
-              width: '110px'
-            }}
-            className={styles.textField}
-            autoComplete="off"
-            onBlur={handleOnBlurInput}
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <TextField
-            size="small"
-            id="numbersH"
-            name="numbersH"
-            label="Numbers H"
-            error={Boolean(inputErrors.numbersH)}
-            helperText={inputErrors.numbersH}
-            style={{
-              marginTop: '15px',
-              marginBottom: inputErrors.numbersH ? '0px' : '20px',
-              width: '110px'
-            }}
-            className={styles.textField}
-            autoComplete="off"
-            onBlur={handleOnBlurInput}
-          />
+        <Grid container rowSpacing={0} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+          {Array.from({ length: 8 }, (_, i) => {
+            const id = `numbers${String.fromCharCode(65 + i)}` as keyof InputErrors;
+            return (
+              <SecretNumberInput
+                key={id}
+                id={id}
+                label={`Numbers ${String.fromCharCode(65 + i)}`}
+                error={inputErrors[id]}
+                onBlur={handleOnBlurInput}
+              />
+            );
+          })}
         </Grid>
       </Grid>
       <Typography align="center" variant="caption" display="block" style={{ color: ERROR_RED }}>
