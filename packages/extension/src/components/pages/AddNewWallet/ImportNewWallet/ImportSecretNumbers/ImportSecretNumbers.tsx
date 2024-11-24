@@ -113,20 +113,18 @@ export const ImportSecretNumbers: FC<ImportSecretNumbersProps> = ({
         Please enter your secret numbers in order to load your wallet to GemWallet.
       </Typography>
       <Grid container rowSpacing={0} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-        <Grid container rowSpacing={0} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-          {Array.from({ length: 8 }, (_, i) => {
-            const id = `numbers${String.fromCharCode(65 + i)}` as keyof InputErrors;
-            return (
-              <SecretNumberInput
-                key={id}
-                id={id}
-                label={`Numbers ${String.fromCharCode(65 + i)}`}
-                error={inputErrors[id]}
-                onBlur={handleOnBlurInput}
-              />
-            );
-          })}
-        </Grid>
+        {Array.from({ length: 8 }, (_, i) => {
+          const id = `numbers${String.fromCharCode(65 + i)}` as keyof InputErrors;
+          return (
+            <SecretNumberInput
+              key={id}
+              id={id}
+              label={`Numbers ${String.fromCharCode(65 + i)}`}
+              error={inputErrors[id]}
+              onBlur={handleOnBlurInput}
+            />
+          );
+        })}
       </Grid>
       <Typography align="center" variant="caption" display="block" style={{ color: ERROR_RED }}>
         {numbersError}
