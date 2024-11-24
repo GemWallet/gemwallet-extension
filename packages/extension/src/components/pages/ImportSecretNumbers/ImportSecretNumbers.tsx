@@ -1,6 +1,6 @@
 import { FC, useCallback, useState } from 'react';
 
-import { Wallet } from 'xrpl';
+import { ECDSA, Wallet } from 'xrpl';
 
 import { numbersToSeed, WalletToSave } from '../../../utils';
 import { Congratulations } from '../Congratulations';
@@ -17,12 +17,13 @@ export const ImportSecretNumbers: FC = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   }, []);
 
-  const handleSecretNumbers = useCallback((numbers: string[]) => {
+  const handleSecretNumbers = useCallback((numbers: string[], algorithm: ECDSA | undefined) => {
     const seed = numbersToSeed(numbers);
-    const wallet = Wallet.fromSeed(seed);
+    const wallet = Wallet.fromSeed(seed, { algorithm });
     setWallet({
       publicAddress: wallet.address,
-      seed
+      seed,
+      algorithm
     });
     setActiveStep(1);
   }, []);
