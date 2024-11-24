@@ -9,8 +9,6 @@ import { PageWithStepper } from '../../../templates';
 import { ECDSA } from 'xrpl';
 import { SecretNumberInput } from '../../../atoms';
 
-const schemaInput = new RegExp(/^[0-9]{6}$/);
-
 type InputErrors = {
   numbersA: string;
   numbersB: string;
@@ -23,6 +21,8 @@ type InputErrors = {
 };
 
 const DIGIT_ERROR = 'You need 6 digits';
+const NUMBERS_COUNT = 8;
+const schemaInput = new RegExp(/^[0-9]{6}$/);
 
 export interface SecretNumbersProps {
   activeStep: number;
@@ -101,7 +101,7 @@ export const SecretNumbers: FC<SecretNumbersProps> = ({ activeStep, steps, onBac
         Please enter your secret numbers in order to load your wallet to GemWallet.
       </Typography>
       <Grid container rowSpacing={0} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-        {Array.from({ length: 8 }, (_, i) => {
+        {Array.from({ length: NUMBERS_COUNT }, (_, i) => {
           const id = `numbers${String.fromCharCode(65 + i)}` as keyof InputErrors;
           return (
             <SecretNumberInput
