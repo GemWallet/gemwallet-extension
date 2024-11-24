@@ -5,7 +5,7 @@ import { Checkbox, FormControlLabel, Grid, Tooltip, Typography } from '@mui/mate
 import { useNavigate } from 'react-router-dom';
 
 import { ERROR_RED, LIST_WALLETS_PATH, SECONDARY_GRAY } from '../../../../../constants';
-import { useWallet } from '../../../../../contexts';
+import { useNetwork, useWallet } from '../../../../../contexts';
 import { PageWithStepper } from '../../../../templates';
 import { ECDSA } from 'xrpl';
 import { SecretNumberInput } from '../../../../atoms';
@@ -38,6 +38,7 @@ export const ImportSecretNumbers: FC<ImportSecretNumbersProps> = ({
 }) => {
   const navigate = useNavigate();
   const { importNumbers } = useWallet();
+  const { hasOfflineBanner } = useNetwork();
   const [isSecp256k1, setSecp256k1] = useState(false);
   const [numbersError, setNumbersError] = useState('');
   const [inputErrors, setInputErrors] = useState<InputErrors>({
@@ -103,7 +104,11 @@ export const ImportSecretNumbers: FC<ImportSecretNumbersProps> = ({
       <Typography
         variant="subtitle1"
         component="h2"
-        style={{ marginTop: '20px', marginBottom: '10px' }}
+        style={
+          hasOfflineBanner
+            ? { marginTop: '10px', marginBottom: '5px' }
+            : { marginTop: '20px', marginBottom: '10px' }
+        }
       >
         Please enter your secret numbers in order to load your wallet to GemWallet.
       </Typography>
@@ -144,7 +149,6 @@ export const ImportSecretNumbers: FC<ImportSecretNumbersProps> = ({
             </Tooltip>
           </Typography>
         }
-        style={{ marginTop: '5px' }}
       />
     </PageWithStepper>
   );

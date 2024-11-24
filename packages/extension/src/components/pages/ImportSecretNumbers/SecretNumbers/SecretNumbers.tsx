@@ -110,7 +110,7 @@ export const SecretNumbers: FC<SecretNumbersProps> = ({ activeStep, steps, onBac
             error={Boolean(inputErrors.numbersA)}
             helperText={inputErrors.numbersA}
             style={{
-              marginTop: '15px',
+              marginTop: '10px',
               marginBottom: inputErrors.numbersA ? '0px' : hasOfflineBanner ? '10px' : '20px',
               width: '110px'
             }}
@@ -128,7 +128,7 @@ export const SecretNumbers: FC<SecretNumbersProps> = ({ activeStep, steps, onBac
             error={Boolean(inputErrors.numbersB)}
             helperText={inputErrors.numbersB}
             style={{
-              marginTop: '15px',
+              marginTop: '10px',
               marginBottom: inputErrors.numbersB ? '0px' : hasOfflineBanner ? '10px' : '20px',
               width: '110px'
             }}
@@ -146,7 +146,7 @@ export const SecretNumbers: FC<SecretNumbersProps> = ({ activeStep, steps, onBac
             error={Boolean(inputErrors.numbersC)}
             helperText={inputErrors.numbersC}
             style={{
-              marginTop: '15px',
+              marginTop: '10px',
               marginBottom: inputErrors.numbersC ? '0px' : hasOfflineBanner ? '10px' : '20px',
               width: '110px'
             }}
@@ -164,7 +164,7 @@ export const SecretNumbers: FC<SecretNumbersProps> = ({ activeStep, steps, onBac
             error={Boolean(inputErrors.numbersD)}
             helperText={inputErrors.numbersD}
             style={{
-              marginTop: '15px',
+              marginTop: '10px',
               marginBottom: inputErrors.numbersD ? '0px' : hasOfflineBanner ? '10px' : '20px',
               width: '110px'
             }}
@@ -182,7 +182,7 @@ export const SecretNumbers: FC<SecretNumbersProps> = ({ activeStep, steps, onBac
             error={Boolean(inputErrors.numbersE)}
             helperText={inputErrors.numbersE}
             style={{
-              marginTop: '15px',
+              marginTop: '10px',
               marginBottom: inputErrors.numbersE ? '0px' : hasOfflineBanner ? '10px' : '20px',
               width: '110px'
             }}
@@ -200,7 +200,7 @@ export const SecretNumbers: FC<SecretNumbersProps> = ({ activeStep, steps, onBac
             error={Boolean(inputErrors.numbersF)}
             helperText={inputErrors.numbersF}
             style={{
-              marginTop: '15px',
+              marginTop: '10px',
               marginBottom: inputErrors.numbersF ? '0px' : hasOfflineBanner ? '10px' : '20px',
               width: '110px'
             }}
@@ -218,7 +218,7 @@ export const SecretNumbers: FC<SecretNumbersProps> = ({ activeStep, steps, onBac
             error={Boolean(inputErrors.numbersG)}
             helperText={inputErrors.numbersG}
             style={{
-              marginTop: '15px',
+              marginTop: '10px',
               marginBottom: inputErrors.numbersG ? '0px' : hasOfflineBanner ? '10px' : '20px',
               width: '110px'
             }}
@@ -236,7 +236,7 @@ export const SecretNumbers: FC<SecretNumbersProps> = ({ activeStep, steps, onBac
             error={Boolean(inputErrors.numbersH)}
             helperText={inputErrors.numbersH}
             style={{
-              marginTop: '15px',
+              marginTop: '10px',
               marginBottom: inputErrors.numbersH ? '0px' : hasOfflineBanner ? '10px' : '20px',
               width: '110px'
             }}
@@ -267,7 +267,6 @@ export const SecretNumbers: FC<SecretNumbersProps> = ({ activeStep, steps, onBac
             </Tooltip>
           </Typography>
         }
-        style={{ marginTop: '5px' }}
       />
     </PageWithStepper>
   );
