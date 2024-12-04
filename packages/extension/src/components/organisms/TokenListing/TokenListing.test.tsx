@@ -51,7 +51,8 @@ vi.mock('../../../contexts', () => {
       serverInfo: {
         info: {
           validated_ledger: {
-            reserve_base_xrp: 10
+            reserve_base_xrp: DEFAULT_RESERVE,
+            reserve_inc_xrp: RESERVE_PER_OWNER
           }
         }
       }
@@ -135,7 +136,7 @@ describe('TokenListing', () => {
     await user.click(explainButton);
     expect(
       screen.getByText(
-        'The activation of this account was made through a minimum deposit of 10 XRP.'
+        `The activation of this account was made through a minimum deposit of ${DEFAULT_RESERVE} XRP.`
       )
     ).toBeVisible();
   });
