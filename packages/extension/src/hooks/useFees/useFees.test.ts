@@ -3,6 +3,12 @@ import { SubmittableTransaction } from 'xrpl';
 
 import { useFees } from './useFees';
 import { vi } from 'vitest';
+import { DEFAULT_RESERVE, RESERVE_PER_OWNER } from '../../constants';
+
+const mockDefaultFee = '12';
+const mockOwnerCount = 2;
+const mockReservePerOwner = RESERVE_PER_OWNER;
+const mockReserve = DEFAULT_RESERVE;
 
 // Mock the modules and hooks that `useFees` depends on
 vi.mock('@sentry/react', () => ({
@@ -13,9 +19,9 @@ let mockGetXrpBalance = () => Promise.resolve(50);
 vi.mock('../../contexts', () => {
   return {
     useLedger: () => ({
-      estimateNetworkFees: vi.fn().mockResolvedValue('12'),
+      estimateNetworkFees: vi.fn().mockResolvedValue(mockDefaultFee),
       getAccountInfo: vi.fn().mockResolvedValue({
-        result: { account_data: { OwnerCount: 2 } }
+        result: { account_data: { OwnerCount: mockOwnerCount } }
       })
     }),
     useNetwork: () => ({
@@ -28,7 +34,7 @@ vi.mock('../../contexts', () => {
     }),
     useServer: () => ({
       serverInfo: {
-        info: { validated_ledger: { reserve_base_xrp: '20' } }
+        info: { validated_ledger: { reserve_base_xrp: mockReserve } }
       }
     }),
     useWallet: () => ({ getCurrentWallet: () => ({ publicAddress: 'address' }) })
@@ -106,22 +112,26 @@ describe('useFees', () => {
     it('should calculate difference correctly when a fee is provided', async () => {
       const { result } = renderHook(() => useFees(transaction, '199'));
 
-      // Check the results
-      // balance = 50, reserve = 20 + 2 * 2 = 24, fee = dropsToXrp(199) = 0.000199
-      // So, difference = balance - reserve - fee = 50 - 24 - 0.000199 = 25.999801
-      await waitFor(() => expect(result.current.difference).toEqual(25.999801));
+      const balance = 50;
+      const reserve = mockReserve + 2 * mockReservePerOwner;
+      const fee = 0.000199;
+      const difference = balance - reserve - fee;
+
+      await waitFor(() => expect(result.current.difference).toEqual(difference));
     });
 
     it('should calculate difference correctly when balance is more than reserve + fees', async () => {
       // Set the balance to be more than reserve + fees
-
       mockGetXrpBalance = () => Promise.resolve(100);
 
       const { result } = renderHook(() => useFees(transaction, null));
 
-      // balance = 100, reserve = 20 + 2 * 2 = 24, fee = 12 drops
-      // So, difference = balance - reserve - fee = 100 - 24 - 0.000012 = 75.999988
-      await waitFor(() => expect(result.current.difference).toEqual(75.999988));
+      const balance = 100;
+      const reserve = mockReserve + 2 * mockReservePerOwner;
+      const fee = 0.000012;
+      const difference = balance - reserve - fee;
+
+      await waitFor(() => expect(result.current.difference).toEqual(difference));
     });
 
     it('should calculate difference correctly when balance is less than reserve + fees', async () => {
@@ -130,9 +140,12 @@ describe('useFees', () => {
 
       const { result } = renderHook(() => useFees(transaction, null));
 
-      // balance = 20, reserve = 20 + 2 * 2 = 24, fee = 12 drops
-      // So, difference = balance - reserve - fee = 20 - 24 - 0.000012 = -4.000012
-      await waitFor(() => expect(result.current.difference).toEqual(-4.000012));
+      const balance = 20;
+      const reserve = mockReserve + 2 * mockReservePerOwner;
+      const fee = 0.000012;
+      const difference = balance - reserve - fee;
+
+      await waitFor(() => expect(result.current.difference).toEqual(difference));
     });
   });
 });
