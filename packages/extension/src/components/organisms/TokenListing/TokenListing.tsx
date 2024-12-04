@@ -171,12 +171,13 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
     return <TokenLoader />;
   }
   const baseReserve = serverInfo?.info.validated_ledger?.reserve_base_xrp || DEFAULT_RESERVE;
+  const ownerReserveBase =
+    chainName === Chain.XAHAU
+      ? serverInfo?.info.validated_ledger?.reserve_inc_xrp || XAHAU_RESERVE_PER_OWNER
+      : serverInfo?.info.validated_ledger?.reserve_inc_xrp || RESERVE_PER_OWNER;
   getAccountInfo()
     .then((accountInfo) => {
-      const ownerReserve =
-        chainName === Chain.XAHAU
-          ? accountInfo.result.account_data.OwnerCount * XAHAU_RESERVE_PER_OWNER
-          : accountInfo.result.account_data.OwnerCount * RESERVE_PER_OWNER;
+      const ownerReserve = accountInfo.result.account_data.OwnerCount * ownerReserveBase;
       setOwnerReserve(ownerReserve);
       setReserve(ownerReserve + baseReserve);
     })
