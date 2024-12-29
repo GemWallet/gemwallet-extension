@@ -3,7 +3,6 @@ import { FC } from 'react';
 import {
   Modal,
   List,
-  ListItem,
   ListItemText,
   ListItemAvatar,
   Avatar,
@@ -12,7 +11,8 @@ import {
   DialogActions,
   Button,
   DialogTitle,
-  CircularProgress
+  CircularProgress,
+  ListItemButton
 } from '@mui/material';
 
 import { convertHexCurrencyString } from '../../../utils';
@@ -93,7 +93,7 @@ export const TokenModal: FC<TokenModalProps> = ({
         ) : (
           <List style={{ maxHeight: '240px', overflow: 'auto', paddingTop: 0 }}>
             {tokens.map((token, index) => (
-              <ListItem button key={index} onClick={() => onSelectToken(token)}>
+              <ListItemButton key={index} onClick={() => onSelectToken(token)}>
                 <ListItemAvatar>
                   <Avatar src={token.icon} alt={`${token.currency} icon`} />
                 </ListItemAvatar>
@@ -127,7 +127,7 @@ export const TokenModal: FC<TokenModalProps> = ({
                   }}
                   secondaryTypographyProps={{ component: 'div' }}
                 />
-              </ListItem>
+              </ListItemButton>
             ))}
           </List>
         )}

@@ -1,7 +1,7 @@
 import { FC, useCallback } from 'react';
 
 import LinkIcon from '@mui/icons-material/Link';
-import { List, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
+import { List, ListItemButton, ListItemIcon, ListItemText, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 import {
@@ -70,12 +70,12 @@ export const About: FC = () => {
         <Typography variant="subtitle2">Links</Typography>
         <List>
           {aboutLinks.map(({ name, url }) => (
-            <ListItem button key={name} onClick={() => openExternalLink(url)}>
+            <ListItemButton key={name} onClick={() => openExternalLink(url)}>
               <ListItemIcon>
                 <LinkIcon />
               </ListItemIcon>
               <ListItemText primary={name} />
-            </ListItem>
+            </ListItemButton>
           ))}
         </List>
       </div>
