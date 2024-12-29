@@ -1,4 +1,4 @@
-import { useContext, useMemo, useState, useEffect, createContext, FC, useCallback } from 'react';
+import { useMemo, useState, useEffect, createContext, FC, useCallback } from 'react';
 
 import * as Sentry from '@sentry/react';
 import { useLocation } from 'react-router-dom';
@@ -21,7 +21,7 @@ import { connectToLedger } from '../LedgerContext/utils/connectToLedger';
 const RECOGNIZED_CONNECTION_ERRORS = ['Connection failed.', 'Could not establish connection.'];
 const DEFAULT_NETWORK_NAME = 'Loading...';
 
-interface ContextType {
+export interface NetworkContextType {
   reconnectToNetwork: () => Promise<void>;
   switchNetwork: (params: {
     network: Network;
@@ -43,7 +43,7 @@ interface Props {
   children: React.ReactElement;
 }
 
-const NetworkContext = createContext<ContextType>({
+export const NetworkContext = createContext<NetworkContextType>({
   reconnectToNetwork: () => new Promise(() => {}),
   switchNetwork: () => new Promise(() => {}),
   resetNetwork: () => new Promise(() => {}),
@@ -57,7 +57,7 @@ const NetworkContext = createContext<ContextType>({
 
 const MAX_RETRIES = 2;
 
-const NetworkProvider: FC<Props> = ({ children }) => {
+export const NetworkProvider: FC<Props> = ({ children }) => {
   const { pathname } = useLocation();
 
   const [client, setClient] = useState<Client | null | undefined>(undefined);
@@ -224,7 +224,7 @@ const NetworkProvider: FC<Props> = ({ children }) => {
     }
   }, []);
 
-  const value: ContextType = useMemo(() => {
+  const value: NetworkContextType = useMemo(() => {
     return {
       reconnectToNetwork,
       switchNetwork,
@@ -255,15 +255,3 @@ const NetworkProvider: FC<Props> = ({ children }) => {
     </NetworkContext.Provider>
   );
 };
-
-const useNetwork = (): ContextType => {
-  const context = useContext(NetworkContext);
-  if (context === undefined) {
-    const error = new Error('useNetwork must be used within a NetworkProvider');
-    Sentry.captureException(error);
-    throw error;
-  }
-  return context;
-};
-
-export { NetworkProvider, NetworkContext, useNetwork };
