@@ -135,9 +135,9 @@ export const parseLimitAmount = (
   return null;
 };
 
-export const parseMemos = (input: Memo[] | string | null): Memo[] | null => {
+export const parseMemos = (input: Memo[] | string | undefined): Memo[] | undefined => {
   if (!input) {
-    return null;
+    return;
   }
 
   if (typeof input === 'object' && Array.isArray(input)) {
@@ -155,12 +155,12 @@ export const parseMemos = (input: Memo[] | string | null): Memo[] | null => {
     /* empty */
   }
 
-  return null;
+  return;
 };
 
-export const parseSigners = (input: Signer[] | string | null): Signer[] | null => {
+export const parseSigners = (input: Signer[] | string | undefined): Signer[] | undefined => {
   if (!input) {
-    return null;
+    return;
   }
 
   if (typeof input === 'object' && Array.isArray(input)) {
@@ -178,12 +178,12 @@ export const parseSigners = (input: Signer[] | string | null): Signer[] | null =
     /* empty */
   }
 
-  return null;
+  return;
 };
 
-export const parsePaymentFlags = (input?: PaymentFlags | string): PaymentFlags | null => {
+export const parsePaymentFlags = (input?: PaymentFlags | string): PaymentFlags | undefined => {
   if (!input) {
-    return null;
+    return;
   }
 
   if (typeof input === 'object' || typeof input === 'number') {
@@ -215,7 +215,7 @@ export const parsePaymentFlags = (input?: PaymentFlags | string): PaymentFlags |
     /* empty */
   }
 
-  return null;
+  return;
 };
 
 export const parseTrustSetFlags = (input?: TrustSetFlags | string): TrustSetFlags | null => {

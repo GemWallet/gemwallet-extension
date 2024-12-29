@@ -1,5 +1,13 @@
 import { Client, NFTokenMint, setTransactionFlagsToNumber, Wallet as WalletXRPL } from 'xrpl';
-import { XrplClient, XrplDefinitions, derive, sign, signAndSubmit, utils } from 'xrpl-accountlib';
+import {
+  DefinitionsData,
+  XrplClient,
+  XrplDefinitions,
+  derive,
+  sign,
+  signAndSubmit,
+  utils
+} from 'xrpl-accountlib';
 
 import {
   FAUCET_XAHAU_TESTNET,
@@ -62,7 +70,7 @@ export const handleTransaction = async (param: {
       // Logic comes from: https://github.com/WietseWind/xrpl-accountlib/blob/master/src/sign/index.ts#L203
       const connection = new XrplClient(server);
       const definitions = (await connection.definitions()) ?? undefined;
-      const signed = sign(tx, account, new XrplDefinitions(definitions as any));
+      const signed = sign(tx, account, new XrplDefinitions(definitions as DefinitionsData));
 
       if (!signed.signedTransaction) {
         throw new Error("Couldn't sign the transaction");

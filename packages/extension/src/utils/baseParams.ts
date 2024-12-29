@@ -2,6 +2,7 @@ import { Memo, Signer } from '@gemwallet/constants';
 
 import { parseMemos, parseSigners } from './parseParams';
 import { checkFee } from './transaction';
+import { DeepPartialExcept } from '../types';
 
 export type BaseTransactionParamsNew = {
   fee?: string;
@@ -31,15 +32,15 @@ export const parseBaseParamsFromURLParamsNew = (
     }
   };
 
-  addParam('fee', checkFee(urlParams.get('fee')));
+  addParam('fee', checkFee(urlParams.get('fee') || undefined));
   addParam('sequence', urlParams.get('sequence') ? Number(urlParams.get('sequence')) : undefined);
   addParam('accountTxnID', urlParams.get('accountTxnID'));
   addParam(
     'lastLedgerSequence',
     urlParams.get('lastLedgerSequence') ? Number(urlParams.get('lastLedgerSequence')) : undefined
   );
-  addParam('memos', parseMemos(urlParams.get('memos')));
-  addParam('signers', parseSigners(urlParams.get('signers')));
+  addParam('memos', parseMemos(urlParams.get('memos') || undefined));
+  addParam('signers', parseSigners(urlParams.get('signers') || undefined));
   addParam(
     'sourceTag',
     urlParams.get('sourceTag') ? Number(urlParams.get('sourceTag')) : undefined
@@ -54,7 +55,9 @@ export const parseBaseParamsFromURLParamsNew = (
   return result;
 };
 
-export const parseBaseParamsFromStoredData = (storedObject: any): BaseTransactionParamsNew => {
+export const parseBaseParamsFromStoredData = (
+  storedObject: DeepPartialExcept<BaseTransactionParamsNew, 'memos' | 'signers'>
+): BaseTransactionParamsNew => {
   const result: Partial<BaseTransactionParamsNew> = {};
 
   const addParam = <T extends keyof BaseTransactionParamsNew>(
@@ -121,14 +124,14 @@ export const initialBaseTransactionParams: BaseTransactionParams = {
 
 export const parseBaseParamsFromURLParams = (urlParams: URLSearchParams): BaseTransactionParams => {
   return {
-    fee: checkFee(urlParams.get('fee')),
+    fee: checkFee(urlParams.get('fee') || undefined) || null,
     sequence: urlParams.get('sequence') ? Number(urlParams.get('sequence')) : null,
     accountTxnID: urlParams.get('accountTxnID'),
     lastLedgerSequence: urlParams.get('lastLedgerSequence')
       ? Number(urlParams.get('lastLedgerSequence'))
       : null,
-    memos: parseMemos(urlParams.get('memos')),
-    signers: parseSigners(urlParams.get('signers')),
+    memos: parseMemos(urlParams.get('memos') || undefined) || null,
+    signers: parseSigners(urlParams.get('signers') || undefined) || null,
     sourceTag: urlParams.get('sourceTag') ? Number(urlParams.get('sourceTag')) : null,
     signingPubKey: urlParams.get('signingPubKey'),
     ticketSequence: urlParams.get('ticketSequence')
@@ -138,7 +141,7 @@ export const parseBaseParamsFromURLParams = (urlParams: URLSearchParams): BaseTr
   };
 };
 
-export const getBaseFromParams = (params: any) => {
+export const getBaseFromParams = (params: Partial<BaseTransactionParams>) => {
   return {
     fee: params.fee || undefined,
     sequence: params.sequence || undefined,

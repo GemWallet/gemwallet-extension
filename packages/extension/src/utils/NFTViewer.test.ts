@@ -37,8 +37,8 @@ describe('parseJSON function', () => {
     global.fetch = vi.fn(() =>
       Promise.resolve({
         json: () => Promise.resolve({ name: 'Mock NFT' })
-      })
-    ) as any;
+      } as Response)
+    );
   });
 
   afterEach(() => {
@@ -62,7 +62,7 @@ describe('parseJSON function', () => {
 
   it('throws an error when the fetch promise rejects', async () => {
     // Mock the fetch function to reject with an error
-    global.fetch = vi.fn(() => Promise.reject('Error')) as any;
+    global.fetch = vi.fn(() => Promise.reject('Error'));
 
     const mockUrl = 'https://someUrl.json';
     const mockNFTokenID = '123';

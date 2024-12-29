@@ -133,19 +133,19 @@ describe('parseMemos', () => {
 
 describe('parseSigners', () => {
   it('should return null when input is null', () => {
-    expect(parseSigners(null)).toBeNull();
+    expect(parseSigners(undefined)).toBeUndefined();
   });
 
   it('should return null when input is an empty string', () => {
-    expect(parseSigners('')).toBeNull();
+    expect(parseSigners('')).toBeUndefined();
   });
 
   it('should return null when input is not a valid JSON string', () => {
-    expect(parseSigners('invalidJSON')).toBeNull();
+    expect(parseSigners('invalidJSON')).toBeUndefined();
   });
 
   it('should return null when input is a valid JSON string but not an array', () => {
-    expect(parseSigners('{"key": "value"}')).toBeNull();
+    expect(parseSigners('{"key": "value"}')).toBeUndefined();
   });
 
   it('should return parsed signers when input is a valid JSON string of signers array or already signers array', () => {

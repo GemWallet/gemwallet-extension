@@ -100,21 +100,25 @@ export const StepperView: FC<StepperViewProps> = ({
         const URI = NFTInfo.result.uri;
 
         resolveNFTDataFromURI(URI, index, amount);
-      } catch (error) {}
+      } catch (error) {
+        // nothing
+      }
     };
     const resolveNFTDataFromNFTOfferID = async (NFTOfferID: string, index: number) => {
       try {
         const ledgerEntry = await getLedgerEntry(NFTOfferID);
-        const NFTokenID = (ledgerEntry?.result?.node as any)?.NFTokenID;
+        const NFTokenID = ledgerEntry?.result?.node?.NFTokenID;
         if (!NFTokenID) return;
 
-        const amount = (ledgerEntry?.result?.node as any)?.Amount;
+        const amount = ledgerEntry?.result?.node?.Amount;
 
         resolveNFTDataFromNFTokenID(NFTokenID, index, amount);
-      } catch (error) {}
+      } catch (error) {
+        // nothing
+      }
     };
-    for (let key in transactionsToDisplay) {
-      if (transactionsToDisplay.hasOwnProperty(key)) {
+    for (const key in transactionsToDisplay) {
+      if (Object.prototype.hasOwnProperty.call(transactionsToDisplay, key)) {
         if (transactionsToDisplay[key].TransactionType === 'NFTokenMint') {
           // We can only resolve using the URI. No NFT data since the NFT does not exist
           const URI = (transactionsToDisplay[key] as NFTokenMint).URI;
