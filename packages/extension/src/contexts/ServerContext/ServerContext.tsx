@@ -1,4 +1,4 @@
-import { useContext, useMemo, useState, useEffect, createContext, FC } from 'react';
+import { useMemo, useState, useEffect, createContext, FC } from 'react';
 
 import * as Sentry from '@sentry/react';
 import { ServerInfoResponse } from 'xrpl';
@@ -7,7 +7,7 @@ import { useNetwork } from '../NetworkContext';
 
 type ServerInfo = ServerInfoResponse['result'];
 
-interface ContextType {
+export interface ServerContextType {
   // Returns null if serverInfo couldn't be fetched
   serverInfo?: ServerInfo | null;
 }
@@ -16,11 +16,11 @@ interface Props {
   children: React.ReactElement;
 }
 
-const ServerContext = createContext<ContextType>({
+export const ServerContext = createContext<ServerContextType>({
   serverInfo: undefined
 });
 
-const ServerProvider: FC<Props> = ({ children }) => {
+export const ServerProvider: FC<Props> = ({ children }) => {
   const { client } = useNetwork();
 
   const [serverInfo, setServerInfo] = useState<ServerInfo | null>();
@@ -39,7 +39,7 @@ const ServerProvider: FC<Props> = ({ children }) => {
       });
   }, [client]);
 
-  const value: ContextType = useMemo(() => {
+  const value: ServerContextType = useMemo(() => {
     return {
       serverInfo
     };
@@ -47,14 +47,3 @@ const ServerProvider: FC<Props> = ({ children }) => {
 
   return <ServerContext.Provider value={value}>{children}</ServerContext.Provider>;
 };
-
-const useServer = (): ContextType => {
-  const context = useContext(ServerContext);
-  if (context === undefined) {
-    const error = new Error('useServer must be used within a ServerProvider');
-    Sentry.captureException(error);
-  }
-  return context;
-};
-
-export { ServerProvider, ServerContext, useServer };
