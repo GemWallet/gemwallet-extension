@@ -135,13 +135,15 @@ export const parseLimitAmount = (
   return null;
 };
 
-export const parseMemos = (input: Memo[] | string | undefined): Memo[] | undefined => {
+export const parseMemos = (
+  input: Memo[] | Record<string, unknown>[] | unknown[] | string | undefined
+): Memo[] | undefined => {
   if (!input) {
     return;
   }
 
   if (typeof input === 'object' && Array.isArray(input)) {
-    return input;
+    return input as Memo[];
   }
 
   // For API version < 3.6
@@ -158,13 +160,15 @@ export const parseMemos = (input: Memo[] | string | undefined): Memo[] | undefin
   return;
 };
 
-export const parseSigners = (input: Signer[] | string | undefined): Signer[] | undefined => {
+export const parseSigners = (
+  input: Signer[] | Record<string, unknown>[] | unknown[] | string | undefined
+): Signer[] | undefined => {
   if (!input) {
     return;
   }
 
   if (typeof input === 'object' && Array.isArray(input)) {
-    return input;
+    return input as Signer[];
   }
 
   // For API version < 3.6

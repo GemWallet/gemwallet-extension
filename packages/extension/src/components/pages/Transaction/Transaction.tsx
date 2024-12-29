@@ -159,7 +159,7 @@ export const Transaction: FC = () => {
 
     const transaction = buildPayment(
       {
-        ...parseBaseParamsFromStoredData(fetchedData),
+        ...parseBaseParamsFromStoredData(fetchedData as SendPaymentRequest),
         amount: amount ?? '0',
         destination: destination ?? '',
         ...(destinationTag && { destinationTag }),

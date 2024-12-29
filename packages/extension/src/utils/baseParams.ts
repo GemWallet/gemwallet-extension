@@ -2,7 +2,6 @@ import { Memo, Signer } from '@gemwallet/constants';
 
 import { parseMemos, parseSigners } from './parseParams';
 import { checkFee } from './transaction';
-import { DeepPartialExcept } from '../types';
 
 export type BaseTransactionParamsNew = {
   fee?: string;
@@ -17,6 +16,20 @@ export type BaseTransactionParamsNew = {
   ticketSequence?: number;
   txnSignature?: string;
 };
+
+export type AnyBaseTransactionParamsNew = Partial<{
+  fee: string;
+  sequence: string | number;
+  accountTxnID: string;
+  lastLedgerSequence: string | number;
+  memos: Record<string, unknown>[] | unknown[] | Memo[];
+  networkID: string | number;
+  signers: Record<string, unknown>[] | unknown[] | Signer[];
+  sourceTag: string | number;
+  signingPubKey: string;
+  ticketSequence: string | number;
+  txnSignature: string;
+}>;
 
 export const parseBaseParamsFromURLParamsNew = (
   urlParams: URLSearchParams
@@ -56,13 +69,13 @@ export const parseBaseParamsFromURLParamsNew = (
 };
 
 export const parseBaseParamsFromStoredData = (
-  storedObject: DeepPartialExcept<BaseTransactionParamsNew, 'memos' | 'signers'>
+  storedObject: AnyBaseTransactionParamsNew
 ): BaseTransactionParamsNew => {
   const result: Partial<BaseTransactionParamsNew> = {};
 
   const addParam = <T extends keyof BaseTransactionParamsNew>(
     key: T,
-    value: BaseTransactionParamsNew[T] | null
+    value: BaseTransactionParamsNew[T]
   ) => {
     if (value !== null && value !== undefined) {
       result[key] = value;
@@ -77,7 +90,7 @@ export const parseBaseParamsFromStoredData = (
     'lastLedgerSequence' in storedObject ? Number(storedObject.lastLedgerSequence) : undefined
   );
   addParam('memos', 'memos' in storedObject ? parseMemos(storedObject.memos) : undefined);
-  addParam('networkID', 'networkID' in storedObject ? storedObject.networkID : undefined);
+  addParam('networkID', 'networkID' in storedObject ? Number(storedObject.networkID) : undefined);
   addParam('signers', 'signers' in storedObject ? parseSigners(storedObject.signers) : undefined);
   addParam('sourceTag', 'sourceTag' in storedObject ? Number(storedObject.sourceTag) : undefined);
   addParam(
@@ -141,7 +154,7 @@ export const parseBaseParamsFromURLParams = (urlParams: URLSearchParams): BaseTr
   };
 };
 
-export const getBaseFromParams = (params: Partial<BaseTransactionParams>) => {
+export const getBaseFromParams = (params: AnyBaseTransactionParamsNew) => {
   return {
     fee: params.fee || undefined,
     sequence: params.sequence || undefined,
