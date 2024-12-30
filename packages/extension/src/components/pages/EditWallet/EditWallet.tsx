@@ -1,7 +1,7 @@
 import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import { Button, CircularProgress, List, ListItem, ListItemText } from '@mui/material';
+import { Button, CircularProgress, List, ListItemButton, ListItemText } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { LIST_WALLETS_PATH } from '../../../constants';
@@ -109,13 +109,13 @@ export const EditWallet: FC = () => {
             </div>
             <List>
               {items.map(({ name, value, onClick }) => (
-                <ListItem button key={name} onClick={onClick}>
+                <ListItemButton key={name} onClick={onClick}>
                   <ListItemText primary={name} />
                   <div style={{ display: 'flex', alignItems: 'center' }}>
                     {value ? <ListItemText primary={value} /> : null}
                     <NavigateNextIcon />
                   </div>
-                </ListItem>
+                </ListItemButton>
               ))}
             </List>
           </div>

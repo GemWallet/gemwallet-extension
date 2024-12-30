@@ -2,7 +2,7 @@ import { CSSProperties, FC } from 'react';
 
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import { ListItem, ListItemIcon, ListItemText } from '@mui/material';
+import { ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 
 import { SECONDARY_GRAY } from '../../../constants';
 
@@ -60,16 +60,15 @@ export const MenuGroup: FC<MenuGroupProps> = ({ sectionName, items }) => {
       <div style={sectionHeaderStyle}>{sectionName}</div>
       <div style={groupStyles}>
         {items.map(({ name, type, onClick }, index, arr) => (
-          <ListItem
-            button
+          <ListItemButton
             key={name}
             onClick={onClick}
             style={{
               ...(index === 0
                 ? firstListItemStyles
                 : index === arr.length - 1
-                ? lastListItemStyles
-                : {}),
+                  ? lastListItemStyles
+                  : {}),
               ...(index !== arr.length - 1 ? listItemStyles : {})
             }}
             sx={{
@@ -91,7 +90,7 @@ export const MenuGroup: FC<MenuGroupProps> = ({ sectionName, items }) => {
                 <NavigateNextIcon />
               )}
             </ListItemIcon>
-          </ListItem>
+          </ListItemButton>
         ))}
       </div>
     </>
