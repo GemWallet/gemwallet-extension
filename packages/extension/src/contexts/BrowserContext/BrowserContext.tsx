@@ -1,17 +1,15 @@
-import { useContext, useState, useEffect, createContext, FC, useCallback } from 'react';
+import { useState, useEffect, createContext, FC, useCallback } from 'react';
 
-import * as Sentry from '@sentry/react';
-
-export interface CloseProps {
+interface CloseProps {
   windowId: number;
 }
 
-interface ContextType {
+export interface ContextType {
   window?: chrome.windows.Window;
   closeExtension: ({ windowId }: CloseProps) => void;
 }
 
-const BrowserContext = createContext<ContextType>({
+export const BrowserContext = createContext<ContextType>({
   window: undefined,
   closeExtension: () => {}
 });
@@ -20,7 +18,7 @@ interface Props {
   children: React.ReactElement;
 }
 
-const BrowserProvider: FC<Props> = ({ children }) => {
+export const BrowserProvider: FC<Props> = ({ children }) => {
   const [window, setWindow] = useState<chrome.windows.Window | undefined>();
 
   const getCurrentWindow = useCallback(() => {
@@ -47,15 +45,3 @@ const BrowserProvider: FC<Props> = ({ children }) => {
 
   return <BrowserContext.Provider value={value}>{children}</BrowserContext.Provider>;
 };
-
-const useBrowser = (): ContextType => {
-  const context = useContext(BrowserContext);
-  if (context === undefined) {
-    const error = new Error('useBrowser must be used within a BrowserProvider');
-    Sentry.captureException(error);
-    throw error;
-  }
-  return context;
-};
-
-export { BrowserProvider, BrowserContext, useBrowser };

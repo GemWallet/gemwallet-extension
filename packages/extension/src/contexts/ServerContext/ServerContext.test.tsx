@@ -1,7 +1,8 @@
 import { act, render, screen, waitFor } from '@testing-library/react';
 
-import { ServerProvider, useServer } from './ServerContext';
+import { ServerProvider } from './ServerContext';
 import { vi } from 'vitest';
+import { useServer } from './useServer';
 
 vi.mock('../NetworkContext', () => ({
   useNetwork: () => ({

@@ -1,4 +1,4 @@
-import { createContext, FC, useCallback, useContext } from 'react';
+import { createContext, FC, useCallback } from 'react';
 
 import * as Sentry from '@sentry/react';
 import { sign } from 'ripple-keypairs';
@@ -170,7 +170,7 @@ export interface LedgerContextType {
   setHook: (payload: SetHook) => Promise<SetHookResponse>;
 }
 
-const LedgerContext = createContext<LedgerContextType>({
+export const LedgerContext = createContext<LedgerContextType>({
   sendPayment: () => new Promise(() => {}),
   setTrustline: () => new Promise(() => {}),
   signMessage: () => undefined,
@@ -201,7 +201,7 @@ const LedgerContext = createContext<LedgerContextType>({
   setHook: () => new Promise(() => {})
 });
 
-const LedgerProvider: FC<Props> = ({ children }) => {
+export const LedgerProvider: FC<Props> = ({ children }) => {
   const { client, networkName, chainName } = useNetwork();
   const { getCurrentWallet } = useWallet();
 
@@ -894,15 +894,3 @@ const LedgerProvider: FC<Props> = ({ children }) => {
 
   return <LedgerContext.Provider value={value}>{children}</LedgerContext.Provider>;
 };
-
-const useLedger = (): LedgerContextType => {
-  const context = useContext(LedgerContext);
-  if (context === undefined) {
-    const error = new Error('useLedger must be used within a LedgerProvider');
-    Sentry.captureException(error);
-    throw error;
-  }
-  return context;
-};
-
-export { LedgerProvider, LedgerContext, useLedger };

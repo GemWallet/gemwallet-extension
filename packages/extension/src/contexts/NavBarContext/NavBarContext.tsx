@@ -1,13 +1,11 @@
-import { createContext, FC, useContext, useState } from 'react';
-
-import * as Sentry from '@sentry/react';
+import { createContext, FC, useState } from 'react';
 
 interface NavBarPosition {
   left: string;
   width: string;
 }
 
-interface NavBarPositionContextType {
+export interface NavBarPositionContextType {
   setNavBarPosition: (position: NavBarPosition) => void;
   navBarPosition: NavBarPosition;
 }
@@ -21,12 +19,12 @@ const defaultPosition = {
   width: '0'
 };
 
-const NavBarPositionContext = createContext<NavBarPositionContextType>({
+export const NavBarPositionContext = createContext<NavBarPositionContextType>({
   setNavBarPosition: () => {},
   navBarPosition: defaultPosition
 });
 
-const NavBarPositionProvider: FC<Props> = ({ children }) => {
+export const NavBarPositionProvider: FC<Props> = ({ children }) => {
   const [navBarPosition, setNavBarPosition] = useState<NavBarPosition>(defaultPosition);
 
   const contextValue: NavBarPositionContextType = {
@@ -38,17 +36,3 @@ const NavBarPositionProvider: FC<Props> = ({ children }) => {
     <NavBarPositionContext.Provider value={contextValue}>{children}</NavBarPositionContext.Provider>
   );
 };
-
-const useNavBarPosition = (): NavBarPositionContextType => {
-  const context = useContext(NavBarPositionContext);
-
-  if (context === undefined) {
-    const error = new Error('useNavBarPosition must be used within a NavBarPositionProvider');
-    Sentry.captureException(error);
-    throw error;
-  }
-
-  return context;
-};
-
-export { NavBarPositionProvider, NavBarPositionContext, useNavBarPosition };
