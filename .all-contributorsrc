@@ -178,6 +178,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "tbenning",
+      "name": "Tyler Benning",
+      "avatar_url": "https://avatars.githubusercontent.com/u/7265547?v=4",
+      "profile": "https://tylerbenning.com/",
+      "contributions": [
+        "maintenance"
+      ]
     }
   ],
   "contributorsPerLine": 7,
