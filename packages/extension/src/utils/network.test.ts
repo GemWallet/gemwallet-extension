@@ -84,7 +84,6 @@ describe('removeNetwork', () => {
     try {
       await removeNetwork();
     } catch (e) {
-      // eslint-disable-next-line jest/no-conditional-expect
       expect(e).toBe(error);
     }
   });

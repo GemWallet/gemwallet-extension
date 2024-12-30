@@ -9,8 +9,8 @@ import { TransactionPage } from '../../../templates';
 
 interface RecapProps {
   transactionsListParam: TransactionWithID[];
-  estimatedFees: any;
-  errorFees: any;
+  estimatedFees: string;
+  errorFees: string | undefined;
   hasEnoughFunds: boolean;
   handleReject: () => void;
   beginProcess: () => void;

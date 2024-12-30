@@ -223,15 +223,15 @@ describe('buildAmount', () => {
 
 describe('checkFee', () => {
   it('should return null if fee is null', () => {
-    expect(checkFee(null)).toBe(null);
+    expect(checkFee(undefined)).toBeUndefined();
   });
 
   it('should return null if fee is an empty string', () => {
-    expect(checkFee('')).toBe(null);
+    expect(checkFee('')).toBeUndefined();
   });
 
   it('should return null if fee is not a number string', () => {
-    expect(checkFee('abc')).toBe(null);
+    expect(checkFee('abc')).toBeUndefined();
   });
 
   it('should return the fee if it is a number string and dropsToXrp does not throw an error', () => {

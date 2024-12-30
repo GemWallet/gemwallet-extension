@@ -32,55 +32,66 @@ export const TransactionDisplay: FC<XRPLTxProps> = ({
   mainToken
 }) => {
   const { selectedWallet, wallets } = useWallet();
-  const keyMap: Record<string, (value: any) => JSX.Element | null> = {
-    TransactionType: (value: string) =>
+  const keyMap: Record<string, (value: unknown) => JSX.Element | null> = {
+    TransactionType: (value) =>
       renderSimpleText({
         title: 'Transaction Type',
-        value,
+        value: value as string,
         useLegacy
       }),
-    Amount: (value: Amount) =>
+    Amount: (value) =>
       renderAmount({
         title: 'Amount',
-        value,
+        value: value as Amount,
         useLegacy,
         mainToken,
         hasMultipleAmounts
       }),
-    Amount2: (value: Amount) =>
+    Amount2: (value) =>
       renderAmount({
         title: 'Amount 2',
-        value,
+        value: value as Amount,
         useLegacy,
         hasMultipleAmounts
       }),
-    Account: (value: string) =>
+    Account: (value) =>
       wallets[selectedWallet].publicAddress === value
         ? null
-        : renderSimpleText({ title: 'Account', value, hasTooltip: true, useLegacy }),
-    NFTokenID: (value: string) =>
-      renderSimpleText({ title: 'NFT', value, hasTooltip: true, useLegacy }),
-    DeliverMin: (value: Amount) =>
+        : renderSimpleText({
+            title: 'Account',
+            value: value as string,
+            hasTooltip: true,
+            useLegacy
+          }),
+    NFTokenID: (value) =>
+      renderSimpleText({ title: 'NFT', value: value as string, hasTooltip: true, useLegacy }),
+    DeliverMin: (value) =>
       renderAmount({
         title: 'Deliver Min',
-        value,
+        value: value as Amount,
         useLegacy
       }),
-    Destination: (value: string) =>
-      renderSimpleText({ title: 'Destination', value, hasTooltip: true, useLegacy }),
-    DestinationTag: (value?: number) =>
-      renderSimpleText({ title: 'Destination Tag', value, useLegacy }),
-    Flags: (value?: GlobalFlags) =>
+    Destination: (value) =>
+      renderSimpleText({
+        title: 'Destination',
+        value: value as string,
+        hasTooltip: true,
+        useLegacy
+      }),
+    DestinationTag: (value?) =>
+      renderSimpleText({ title: 'Destination Tag', value: value as number | undefined, useLegacy }),
+    Flags: (value?) =>
       value !== undefined
         ? renderSimpleText({
             title: 'Flags',
-            value: formatFlags(value, tx.TransactionType),
+            value: formatFlags(value as GlobalFlags, tx.TransactionType),
             useLegacy
           })
         : null,
-    Memos: (value?: Memo[]) => renderMemos({ memos: value, useLegacy }),
-    NFTokenOffers: (value: string[]) => renderArray({ title: 'Offer', value, useLegacy }),
-    Signers: (value?: Signer[]) => renderArray({ title: 'Signer', value, useLegacy }),
+    Memos: (value?) => renderMemos({ memos: value as Memo[] | undefined, useLegacy }),
+    NFTokenOffers: (value) => renderArray({ title: 'Offer', value: value as string[], useLegacy }),
+    Signers: (value?) =>
+      renderArray({ title: 'Signer', value: value as Signer[] | undefined, useLegacy }),
     LimitAmount: (value) =>
       renderAmount({
         title: 'Limit Amount',
@@ -88,17 +99,23 @@ export const TransactionDisplay: FC<XRPLTxProps> = ({
         useLegacy,
         mainToken
       }),
-    NFTokenSellOffer: (value?: string) =>
-      value !== undefined ? renderSimpleText({ title: 'Sell Offer', value, useLegacy }) : null,
-    NFTokenBuyOffer: (value?: string) =>
-      value !== undefined ? renderSimpleText({ title: 'Buy Offer', value, useLegacy }) : null,
-    NFTokenBrokerFee: (value?: Amount) =>
+    NFTokenSellOffer: (value?) =>
       value !== undefined
-        ? renderAmount({ title: 'Broker Fee', value, useLegacy, mainToken })
+        ? renderSimpleText({ title: 'Sell Offer', value: value as string, useLegacy })
         : null,
-    NFTokenMinter: (value?: string) =>
-      value !== undefined ? renderSimpleText({ title: 'Minter', value, useLegacy }) : null,
-    URI: (value?: string | null) =>
+    NFTokenBuyOffer: (value?) =>
+      value !== undefined
+        ? renderSimpleText({ title: 'Buy Offer', value: value as string, useLegacy })
+        : null,
+    NFTokenBrokerFee: (value?) =>
+      value !== undefined
+        ? renderAmount({ title: 'Broker Fee', value: value as Amount, useLegacy, mainToken })
+        : null,
+    NFTokenMinter: (value?) =>
+      value !== undefined
+        ? renderSimpleText({ title: 'Minter', value: value as string | undefined, useLegacy })
+        : null,
+    URI: (value?) =>
       value !== undefined
         ? renderSimpleText({
             title: 'URI',
@@ -108,36 +125,43 @@ export const TransactionDisplay: FC<XRPLTxProps> = ({
           })
         : null,
     Fee: () => null, // Fee is rendered in the BaseTransaction component
-    TakerGets: (value: Amount) =>
-      renderAmount({ title: 'Taker Gets', value, useLegacy, mainToken }),
-    TakerPays: (value: Amount) =>
-      renderAmount({ title: 'Taker Pays', value, useLegacy, mainToken }),
-    TransferFee: (value?: number) =>
+    TakerGets: (value) =>
+      renderAmount({ title: 'Taker Gets', value: value as Amount, useLegacy, mainToken }),
+    TakerPays: (value) =>
+      renderAmount({ title: 'Taker Pays', value: value as Amount, useLegacy, mainToken }),
+    TransferFee: (value?) =>
       renderSimpleText({
         title: 'Transfer Fee',
-        value: value ? `${formatTransferFee(value)}%` : '',
+        value: value ? `${formatTransferFee(value as number)}%` : '',
         useLegacy
       }),
-    OfferSequence: (value?: number) =>
-      renderSimpleText({ title: 'Offer Sequence', value, useLegacy }),
-    EmailHash: (value?: string) => renderSimpleText({ title: 'Email Hash', value, useLegacy }),
-    NFTokenTaxon: (value?: string) => renderSimpleText({ title: 'Taxon', value, useLegacy }),
-    RegularKey: (value?: string) =>
-      renderSimpleText({ title: 'Regular Key', value, hasTooltip: true, useLegacy }),
-    Asset: (value: Currency) => renderCurrency({ title: 'Asset', value }),
-    Asset2: (value: Currency) => renderCurrency({ title: 'Asset 2', value }),
-    SendMax: (value: Amount) =>
+    OfferSequence: (value?) =>
+      renderSimpleText({ title: 'Offer Sequence', value: value as number | undefined, useLegacy }),
+    EmailHash: (value?) =>
+      renderSimpleText({ title: 'Email Hash', value: value as string | undefined, useLegacy }),
+    NFTokenTaxon: (value?) =>
+      renderSimpleText({ title: 'Taxon', value: value as string | undefined, useLegacy }),
+    RegularKey: (value?) =>
+      renderSimpleText({
+        title: 'Regular Key',
+        value: value as string | undefined,
+        hasTooltip: true,
+        useLegacy
+      }),
+    Asset: (value) => renderCurrency({ title: 'Asset', value: value as Currency }),
+    Asset2: (value) => renderCurrency({ title: 'Asset 2', value: value as Currency }),
+    SendMax: (value) =>
       renderAmount({
         title: 'Send Max',
-        value,
+        value: value as Amount,
         useLegacy
       }),
-    Hooks: (value?: Hook[]) => renderHooks({ hooks: value })
+    Hooks: (value?) => renderHooks({ hooks: value as Hook[] | undefined })
   };
 
   const renderSimpleText = (params: {
     title: string;
-    value: any;
+    value: string | number | undefined;
     hasTooltip?: boolean;
     useLegacy: boolean;
   }): JSX.Element | null => {

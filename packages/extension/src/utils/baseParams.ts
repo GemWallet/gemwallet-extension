@@ -17,6 +17,20 @@ export type BaseTransactionParamsNew = {
   txnSignature?: string;
 };
 
+export type AnyBaseTransactionParamsNew = Partial<{
+  fee: string;
+  sequence: string | number;
+  accountTxnID: string;
+  lastLedgerSequence: string | number;
+  memos: Record<string, unknown>[] | unknown[] | Memo[];
+  networkID: string | number;
+  signers: Record<string, unknown>[] | unknown[] | Signer[];
+  sourceTag: string | number;
+  signingPubKey: string;
+  ticketSequence: string | number;
+  txnSignature: string;
+}>;
+
 export const parseBaseParamsFromURLParamsNew = (
   urlParams: URLSearchParams
 ): BaseTransactionParamsNew => {
@@ -31,15 +45,15 @@ export const parseBaseParamsFromURLParamsNew = (
     }
   };
 
-  addParam('fee', checkFee(urlParams.get('fee')));
+  addParam('fee', checkFee(urlParams.get('fee') || undefined));
   addParam('sequence', urlParams.get('sequence') ? Number(urlParams.get('sequence')) : undefined);
   addParam('accountTxnID', urlParams.get('accountTxnID'));
   addParam(
     'lastLedgerSequence',
     urlParams.get('lastLedgerSequence') ? Number(urlParams.get('lastLedgerSequence')) : undefined
   );
-  addParam('memos', parseMemos(urlParams.get('memos')));
-  addParam('signers', parseSigners(urlParams.get('signers')));
+  addParam('memos', parseMemos(urlParams.get('memos') || undefined));
+  addParam('signers', parseSigners(urlParams.get('signers') || undefined));
   addParam(
     'sourceTag',
     urlParams.get('sourceTag') ? Number(urlParams.get('sourceTag')) : undefined
@@ -54,12 +68,14 @@ export const parseBaseParamsFromURLParamsNew = (
   return result;
 };
 
-export const parseBaseParamsFromStoredData = (storedObject: any): BaseTransactionParamsNew => {
+export const parseBaseParamsFromStoredData = (
+  storedObject: AnyBaseTransactionParamsNew
+): BaseTransactionParamsNew => {
   const result: Partial<BaseTransactionParamsNew> = {};
 
   const addParam = <T extends keyof BaseTransactionParamsNew>(
     key: T,
-    value: BaseTransactionParamsNew[T] | null
+    value: BaseTransactionParamsNew[T]
   ) => {
     if (value !== null && value !== undefined) {
       result[key] = value;
@@ -74,7 +90,7 @@ export const parseBaseParamsFromStoredData = (storedObject: any): BaseTransactio
     'lastLedgerSequence' in storedObject ? Number(storedObject.lastLedgerSequence) : undefined
   );
   addParam('memos', 'memos' in storedObject ? parseMemos(storedObject.memos) : undefined);
-  addParam('networkID', 'networkID' in storedObject ? storedObject.networkID : undefined);
+  addParam('networkID', 'networkID' in storedObject ? Number(storedObject.networkID) : undefined);
   addParam('signers', 'signers' in storedObject ? parseSigners(storedObject.signers) : undefined);
   addParam('sourceTag', 'sourceTag' in storedObject ? Number(storedObject.sourceTag) : undefined);
   addParam(
@@ -121,14 +137,14 @@ export const initialBaseTransactionParams: BaseTransactionParams = {
 
 export const parseBaseParamsFromURLParams = (urlParams: URLSearchParams): BaseTransactionParams => {
   return {
-    fee: checkFee(urlParams.get('fee')),
+    fee: checkFee(urlParams.get('fee') || undefined) || null,
     sequence: urlParams.get('sequence') ? Number(urlParams.get('sequence')) : null,
     accountTxnID: urlParams.get('accountTxnID'),
     lastLedgerSequence: urlParams.get('lastLedgerSequence')
       ? Number(urlParams.get('lastLedgerSequence'))
       : null,
-    memos: parseMemos(urlParams.get('memos')),
-    signers: parseSigners(urlParams.get('signers')),
+    memos: parseMemos(urlParams.get('memos') || undefined) || null,
+    signers: parseSigners(urlParams.get('signers') || undefined) || null,
     sourceTag: urlParams.get('sourceTag') ? Number(urlParams.get('sourceTag')) : null,
     signingPubKey: urlParams.get('signingPubKey'),
     ticketSequence: urlParams.get('ticketSequence')
@@ -138,7 +154,7 @@ export const parseBaseParamsFromURLParams = (urlParams: URLSearchParams): BaseTr
   };
 };
 
-export const getBaseFromParams = (params: any) => {
+export const getBaseFromParams = (params: AnyBaseTransactionParamsNew) => {
   return {
     fee: params.fee || undefined,
     sequence: params.sequence || undefined,

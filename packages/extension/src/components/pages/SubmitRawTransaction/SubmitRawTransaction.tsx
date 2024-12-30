@@ -38,8 +38,13 @@ export const SubmitRawTransaction: FC = () => {
     navigate(SETTINGS_PATH);
   }, [navigate]);
 
+  interface ParsedTransaction {
+    Account?: string;
+    [key: string]: unknown;
+  }
+
   const validateTx = useCallback(
-    (parsed: any) => {
+    (parsed: ParsedTransaction) => {
       if (!('Account' in parsed)) {
         parsed.Account = wallet?.publicAddress;
       }

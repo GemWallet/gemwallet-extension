@@ -13,7 +13,7 @@ export const useFetchFromSessionStorage = (key?: string) => {
     const fetchData = async () => {
       try {
         if (key) {
-          const storedData = await loadFromChromeSessionStorage(key, true);
+          const storedData = await loadFromChromeSessionStorage<string>(key, true);
           if (storedData) {
             setFetchedData(JSON.parse(storedData));
           }

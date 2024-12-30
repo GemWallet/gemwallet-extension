@@ -166,7 +166,12 @@ export interface LedgerContextType {
   getNFTData: (payload: NFTImageRequest) => Promise<NFTData>;
   deleteAccount: (destinationAddress: string) => Promise<DeleteAccountResponse>;
   getNFTInfo: (NFTokenID: string) => Promise<NFTInfoResponse>;
-  getLedgerEntry: (ID: string) => Promise<LedgerEntryResponse>;
+  getLedgerEntry: (ID: string) => Promise<
+    LedgerEntryResponse<{
+      Amount: string;
+      NFTokenID: string;
+    }>
+  >;
   setHook: (payload: SetHook) => Promise<SetHookResponse>;
 }
 
@@ -835,15 +840,21 @@ const LedgerProvider: FC<Props> = ({ children }) => {
   );
 
   const getLedgerEntry = useCallback(
-    async (ID: string): Promise<LedgerEntryResponse> => {
+    async function (ID: string) {
       if (!client) throw new Error('You need to be connected to a ledger');
 
       try {
-        return client.request<LedgerEntryRequest>({
+        return client.request<
+          LedgerEntryRequest,
+          LedgerEntryResponse<{
+            Amount: string;
+            NFTokenID: string;
+          }>
+        >({
           command: 'ledger_entry',
           index: ID,
           ledger_index: 'validated'
-        } as LedgerEntryRequest);
+        });
       } catch (e) {
         Sentry.captureException(e);
         throw e;

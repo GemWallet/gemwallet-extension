@@ -146,7 +146,7 @@ export const PreparePayment: FC<PreparePaymentProps> = ({ onSendPaymentClick }) 
         } else {
           setErrorTokens("Impossible to fetch tokens, we couldn't get your current wallet");
         }
-      } catch (e: any) {
+      } catch (e) {
         setErrorTokens('Impossible to fetch tokens, please try again');
         Sentry.captureException(e);
       }

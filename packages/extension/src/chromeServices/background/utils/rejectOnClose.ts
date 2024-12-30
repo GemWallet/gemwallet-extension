@@ -1,10 +1,16 @@
-import { GEM_WALLET } from '@gemwallet/constants';
+import { GEM_WALLET, ReceiveMessage } from '@gemwallet/constants';
 
 const defaultPayload = {
   result: null
 };
 
-export const buildRejectMessage = (type: string): any => {
+type RejectMessage = {
+  app: typeof GEM_WALLET;
+  type: ReceiveMessage;
+  payload: Record<string, unknown>;
+};
+
+export const buildRejectMessage = (type: ReceiveMessage): RejectMessage | undefined => {
   if (type === 'RECEIVE_SEND_PAYMENT/V3' || type === 'RECEIVE_PAYMENT_HASH') {
     return {
       app: GEM_WALLET,

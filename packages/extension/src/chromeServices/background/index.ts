@@ -85,7 +85,7 @@ chrome.runtime.onStartup.addListener(createOffscreen);
 chrome.runtime.onMessage.addListener(() => {}); // keepAlive
 
 const session = Session.getInstance();
-let currentReceivingMessage: string | undefined = undefined; // For reject message on popup close
+let currentReceivingMessage: ReceiveMessage | undefined = undefined; // For reject message on popup close
 
 // Used to send a message to the view through the chrome.storage.local memory.
 // Useful when the data to send is big.
@@ -866,7 +866,14 @@ chrome.windows.onRemoved.addListener(function (windowId) {
   isPopupWindow(windowId).then((isPopup) => {
     if (isPopup && currentReceivingMessage) {
       const response = buildRejectMessage(currentReceivingMessage);
-      sendToActiveTabs(response);
+
+      if (!response) return;
+
+      sendToActiveTabs({
+        app: response.app,
+        type: response.type,
+        source: 'GEM_WALLET_MSG_REQUEST'
+      });
     }
   });
 });
@@ -909,7 +916,11 @@ chrome.runtime.onMessage.addListener((request, sender) => {
   }
 });
 
-const sendToActiveTabs = (payload: Omit<EventEventData, 'messageId'>) => {
+const sendToActiveTabs = (
+  payload: Pick<EventEventData, 'app' | 'payload' | 'source'> & {
+    type: string;
+  }
+) => {
   activeTabs.forEach((tabId) => {
     chrome.tabs.get(tabId, () => {
       if (!chrome.runtime.lastError) {

@@ -71,7 +71,7 @@ export const handleMintNFT = async (param: {
   const tx = await submit({ transaction, client, wallet });
   const NFTokenID =
     tx.result.meta && typeof tx.result.meta === 'object' && 'nftoken_id' in tx.result.meta
-      ? ((tx.result.meta as any).nftoken_id as string)
+      ? tx.result.meta.nftoken_id
       : undefined;
 
   if (NFTokenID) {
