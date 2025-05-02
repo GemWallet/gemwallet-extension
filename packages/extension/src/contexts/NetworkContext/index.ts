@@ -1,1 +1,2 @@
-export * from './NetworkContext';
+export { NetworkContext, NetworkProvider } from './NetworkContext';
+export { useNetwork } from './useNetwork';

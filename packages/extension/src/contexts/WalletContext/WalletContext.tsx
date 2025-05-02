@@ -1,6 +1,5 @@
-import { useContext, useState, createContext, FC, useCallback, useEffect } from 'react';
+import { useState, createContext, FC, useCallback, useEffect } from 'react';
 
-import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
 import { ECDSA, Wallet } from 'xrpl';
 
@@ -67,7 +66,7 @@ export interface WalletContextType {
   selectedWallet: number;
 }
 
-const WalletContext = createContext<WalletContextType>({
+export const WalletContext = createContext<WalletContextType>({
   signIn: () => false,
   signOut: () => {},
   selectWallet: () => {},
@@ -91,7 +90,7 @@ interface Props {
   children: React.ReactElement;
 }
 
-const WalletProvider: FC<Props> = ({ children }) => {
+export const WalletProvider: FC<Props> = ({ children }) => {
   const navigate = useNavigate();
   const [wallets, setWallets] = useState<WalletLedger[]>([]);
   const [selectedWallet, setSelectedWallet] = useState<number>(loadSelectedWallet());
@@ -391,15 +390,3 @@ const WalletProvider: FC<Props> = ({ children }) => {
 
   return <WalletContext.Provider value={value}>{children}</WalletContext.Provider>;
 };
-
-const useWallet = (): WalletContextType => {
-  const context = useContext(WalletContext);
-  if (context === undefined) {
-    const error = new Error('useWallet must be used within a WalletProvider');
-    Sentry.captureException(error);
-    throw error;
-  }
-  return context;
-};
-
-export { WalletProvider, WalletContext, useWallet };
