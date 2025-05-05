@@ -17,17 +17,24 @@ export const getTrustLineData = async (params: {
   const { token, issuer } = params;
 
   try {
-    const cachedData = await loadFromChromeSessionStorage(`tokenData-${token}-${issuer}`);
+    const cachedData = await loadFromChromeSessionStorage<TokenDisplayData>(
+      `tokenData-${token}-${issuer}`
+    );
     if (cachedData) {
       return cachedData;
     }
   } catch (e) {
-  } finally {
+    // nothing
+  }
+
+  try {
     const fetchedData = fetchDataFromAPI(token, issuer);
     if (fetchedData) {
       saveInChromeSessionStorage(`tokenData-${token}-${issuer}`, fetchedData);
       return fetchedData;
     }
+  } catch (e) {
+    // nothing
   }
 
   return {

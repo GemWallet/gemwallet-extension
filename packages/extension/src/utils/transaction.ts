@@ -89,7 +89,7 @@ export const buildDestinationTag = (destinationTag: string | undefined): number 
   return Number(destinationTag);
 };
 
-export const checkFee = (fee: string | null) => {
+export const checkFee = (fee: string | undefined): string | undefined => {
   if (fee) {
     try {
       if (Number(fee) && dropsToXrp(fee)) {
@@ -99,7 +99,8 @@ export const checkFee = (fee: string | null) => {
       /* empty */
     }
   }
-  return null;
+
+  return;
 };
 
 export const buildAmount = (

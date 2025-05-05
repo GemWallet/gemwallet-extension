@@ -2,13 +2,9 @@
  * Manages the storage in Chrome session storage
  */
 
-interface CypressWindow extends Window {
-  Cypress?: any;
-}
-
-export const saveInChromeSessionStorage = (key: string, value: any): Promise<void> => {
+export const saveInChromeSessionStorage = (key: string, value: unknown): Promise<void> => {
   return new Promise((resolve, reject) => {
-    if (process.env.NODE_ENV === 'production' || (window as CypressWindow).Cypress) {
+    if (process.env.NODE_ENV === 'production' || window.Cypress) {
       chrome.storage.session.set({ [key]: value }, () => {
         if (chrome.runtime.lastError) {
           reject(chrome.runtime.lastError);
@@ -22,10 +18,10 @@ export const saveInChromeSessionStorage = (key: string, value: any): Promise<voi
   });
 };
 
-export const loadFromChromeSessionStorage = (
+export const loadFromChromeSessionStorage = <T = unknown>(
   key: string,
   deleteAfterLoad: boolean = false
-): Promise<any> => {
+): Promise<T> => {
   return new Promise((resolve, reject) => {
     chrome.storage.session.get(key, (result) => {
       if (chrome.runtime.lastError) {

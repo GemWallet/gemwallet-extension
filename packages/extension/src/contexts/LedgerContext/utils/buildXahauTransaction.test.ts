@@ -3,11 +3,12 @@ import { SetHookRequest } from '@gemwallet/constants';
 import { WalletLedger } from '../../../types';
 import { buildSetHook } from './buildXahauTransaction';
 import { describe, it, expect } from 'vitest';
+import { Wallet } from 'xrpl';
 
 const wallet: WalletLedger = {
   name: 'name',
   publicAddress: 'publicAddress',
-  wallet: {} as any
+  wallet: {} as Wallet
 };
 
 describe('buildSetHook', () => {

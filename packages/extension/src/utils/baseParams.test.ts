@@ -1,4 +1,5 @@
 import {
+  AnyBaseTransactionParamsNew,
   getBaseFromParams,
   initialBaseTransactionParams,
   parseBaseParamsFromStoredData,
@@ -81,7 +82,7 @@ describe('parseBaseParamsFromURLParams', () => {
 
 describe('getBaseFromParams', () => {
   test('should get base transaction parameters from an object', () => {
-    const params = {
+    const params: AnyBaseTransactionParamsNew = {
       fee: '10',
       sequence: 1,
       accountTxnID: '123',
@@ -100,7 +101,7 @@ describe('getBaseFromParams', () => {
   });
 
   test('should handle undefined parameters', () => {
-    const params = {};
+    const params: AnyBaseTransactionParamsNew = {};
 
     const result = getBaseFromParams(params);
 
@@ -121,7 +122,7 @@ describe('getBaseFromParams', () => {
 
 describe('parseBaseParamsFromStoredData', () => {
   it('should parse all values correctly', () => {
-    const storedObject = {
+    const storedObject: AnyBaseTransactionParamsNew = {
       fee: '12',
       sequence: '2',
       accountTxnID: 'abc123',

@@ -9,6 +9,8 @@ import {
 import { MAIN_FILE } from '../../../constants/paths';
 import { POPUP_HEIGHT, POPUP_WIDTH, WINDOWS_POPUP_PADDING } from '../../../constants/sizes';
 import { STORAGE_CURRENT_WINDOW_ID } from '../../../constants/storage';
+import { isBoolean, isString } from '../../../utils';
+import { isNumber } from 'xrpl/dist/npm/models/transactions/common';
 
 const isWindows = navigator.userAgent.includes('Win');
 
@@ -19,11 +21,20 @@ const isWindows = navigator.userAgent.includes('Win');
 const getLastFocusedWindow = (): Promise<chrome.windows.Window> =>
   new Promise((resolve) => chrome.windows.getLastFocused(resolve));
 
-export const serializeToQueryString = (payload?: Record<string, any>) =>
+/**
+ * Its a helper function to encode only compatible values
+ * Necessary to avoid types errors from TS
+ */
+const encodeOnlyCompatibleValueURIComponent = (uriComponent?: unknown) => {
+  if (isString(uriComponent) || isNumber(uriComponent) || isBoolean(uriComponent))
+    return encodeURIComponent(uriComponent);
+};
+
+export const serializeToQueryString = (payload?: Record<string, unknown | undefined>) =>
   payload
     ? '?' +
       Object.entries(payload)
-        .map(([key, value]) => [key, value].map(encodeURIComponent).join('='))
+        .map(([key, value]) => [key, value].map(encodeOnlyCompatibleValueURIComponent).join('='))
         .join('&')
     : '';
 

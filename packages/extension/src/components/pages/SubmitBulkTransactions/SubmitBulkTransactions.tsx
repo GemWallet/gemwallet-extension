@@ -202,35 +202,31 @@ export const SubmitBulkTransactions: FC = () => {
       // Convert transactions to array. Sort them by their key to ensure order
       const transactions = Object.entries(transactionsRecord)
         .sort(([keyA], [keyB]) => Number(keyA) - Number(keyB))
-        .map(([_, value]) => value);
+        .map(([, value]) => value);
 
       // Divide transactions into chunks of five or less
       for (let i = 0; i < transactions.length; i += CHUNK_SIZE) {
         const chunk = transactions.slice(i, i + CHUNK_SIZE);
 
-        try {
-          const response = await submitBulkTransactions({
-            transactions: chunk,
-            onError,
-            waitForHashes
-          });
-          results = [...results, ...response.txResults];
+        const response = await submitBulkTransactions({
+          transactions: chunk,
+          onError,
+          waitForHashes
+        });
+        results = [...results, ...response.txResults];
 
-          if (response.hasError && onError === 'abort') {
-            setErrorRequestRejection(new Error('Some transactions were rejected'));
-            setTransaction(TransactionStatus.Rejected);
-            return results;
-          }
+        if (response.hasError && onError === 'abort') {
+          setErrorRequestRejection(new Error('Some transactions were rejected'));
+          setTransaction(TransactionStatus.Rejected);
+          return results;
+        }
 
-          const totalTransactions = Object.values(params.transactionsMapParam ?? {}).length;
-          setProgressPercentage(Math.floor((results.length / totalTransactions) * 100));
+        const totalTransactions = Object.values(params.transactionsMapParam ?? {}).length;
+        setProgressPercentage(Math.floor((results.length / totalTransactions) * 100));
 
-          if (!waitForHashes && i < transactions.length) {
-            // Throttle requests
-            await new Promise((resolve) => setTimeout(resolve, 5000));
-          }
-        } catch (e) {
-          throw e;
+        if (!waitForHashes && i < transactions.length) {
+          // Throttle requests
+          await new Promise((resolve) => setTimeout(resolve, 5000));
         }
       }
 
@@ -263,10 +259,10 @@ export const SubmitBulkTransactions: FC = () => {
   const { transactionsMapParam } = params;
 
   const allTransactions = transactionsMapParam ?? {};
-  let transactionsToDisplay: Record<number, TransactionWithID> = {};
+  const transactionsToDisplay: Record<number, TransactionWithID> = {};
   let i = 0;
-  for (let key in allTransactions) {
-    if (allTransactions.hasOwnProperty(key)) {
+  for (const key in allTransactions) {
+    if (Object.prototype.hasOwnProperty.call(allTransactions, key)) {
       if (
         i >= activeStep * MAX_TRANSACTIONS_PER_STEP &&
         i < (activeStep + 1) * MAX_TRANSACTIONS_PER_STEP
