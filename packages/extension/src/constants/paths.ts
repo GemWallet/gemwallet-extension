@@ -19,6 +19,7 @@ export const IMPORT_SEED_PATH = '/import-seed';
 export const IMPORT_WALLET_PATH = '/import-wallet';
 export const LIST_WALLETS_PATH = '/list-wallets';
 export const MINT_NFT_PATH = '/mint-nft';
+export const MPTOKEN_REMOVE_PATH = '/mptoken-remove';
 export const PERMISSIONS_PATH = '/permissions';
 export const RESET_PASSWORD_PATH = '/reset-password';
 export const SEND_PATH = '/send';
