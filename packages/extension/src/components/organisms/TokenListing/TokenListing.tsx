@@ -1,9 +1,8 @@
-import { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import { FC, useCallback, useMemo, useState } from 'react';
 
 import { Button, Link, Typography } from '@mui/material';
-import * as Sentry from '@sentry/react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { AccountLinesTrustline } from 'xrpl';
 import { TrustSetFlags as TrustSetFlagsBitmask } from 'xrpl';
 
 import { Chain, XahauNetwork, XRPLNetwork } from '@gemwallet/constants';
@@ -12,12 +11,10 @@ import {
   ADD_NEW_TRUSTLINE_PATH,
   DEFAULT_RESERVE,
   ERROR_RED,
-  RESERVE_PER_OWNER,
-  STORAGE_MESSAGING_KEY,
-  XAHAU_RESERVE_PER_OWNER
+  STORAGE_MESSAGING_KEY
 } from '../../../constants';
 import { useLedger, useNetwork, useServer } from '../../../contexts';
-import { useMainToken } from '../../../hooks';
+import { useAccountBalances, accountQueryKeys, useMainToken } from '../../../hooks';
 import { convertHexCurrencyString, generateKey, saveInChromeSessionStorage } from '../../../utils';
 import { isLPToken } from '../../../utils/trustlines';
 import { TokenLoader } from '../../atoms';
@@ -25,95 +22,32 @@ import { InformationMessage } from '../../molecules/InformationMessage';
 import { TokenDisplay } from '../../molecules/TokenDisplay';
 import { DialogPage } from '../../templates';
 
-const LOADING_STATE = 'Loading...';
-const ERROR_STATE = 'Error';
-
-interface TrustLineBalance {
-  value: string;
-  currency: string;
-  issuer: string;
-  trustlineDetails?: {
-    // Details need to be fetched with a separate call
-    limit: number;
-    noRipple: boolean;
-  };
-}
 export interface TokenListingProps {
   address: string;
 }
 
 export const TokenListing: FC<TokenListingProps> = ({ address }) => {
-  const [mainTokenBalance, setMainTokenBalance] = useState<string>(LOADING_STATE);
-  const [reserve, setReserve] = useState<number>(DEFAULT_RESERVE);
-  const [ownerReserve, setOwnerReserve] = useState<number>(0);
   const [errorMessage, setErrorMessage] = useState('');
-  const [trustLineBalances, setTrustLineBalances] = useState<TrustLineBalance[]>([]);
   const [explanationOpen, setExplanationOpen] = useState(false);
+  const [isFunding, setIsFunding] = useState(false);
   const { client, reconnectToNetwork, networkName, chainName } = useNetwork();
   const { serverInfo } = useServer();
-  const { fundWallet, getAccountInfo } = useLedger();
+  const { fundWallet } = useLedger();
   const mainToken = useMainToken();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    async function fetchBalance() {
-      try {
-        // Retrieve balances without trustline details
-        const balances = await client?.getBalances(address);
-        const mainTokenBalance = balances?.find((balance) => balance.issuer === undefined);
-        let trustLineBalances = balances?.filter(
-          (balance) => balance.issuer !== undefined
-        ) as TrustLineBalance[];
+  // Use cached account balances - data persists across page navigations
+  const { data: accountData, isLoading, isError } = useAccountBalances(address);
 
-        // Retrieve trustlines details
-        const accountLines = await client?.request({
-          command: 'account_lines',
-          account: address
-        });
-
-        if (accountLines?.result?.lines) {
-          trustLineBalances = trustLineBalances
-            .map((trustlineBalance) => {
-              const trustlineDetails = accountLines.result.lines.find(
-                (line: AccountLinesTrustline) =>
-                  line.currency === trustlineBalance.currency &&
-                  line.account === trustlineBalance.issuer
-              );
-
-              return {
-                ...trustlineBalance,
-                trustlineDetails:
-                  trustlineDetails && Number(trustlineDetails.limit)
-                    ? {
-                        limit: Number(trustlineDetails.limit),
-                        noRipple: trustlineDetails.no_ripple === true
-                      }
-                    : undefined
-              };
-            })
-            .filter(
-              (trustlineBalance) =>
-                trustlineBalance.trustlineDetails || trustlineBalance.value !== '0'
-            ); // Hide revoked trustlines with a balance of 0
-        }
-
-        if (mainTokenBalance) {
-          setMainTokenBalance(mainTokenBalance.value);
-        }
-        if (trustLineBalances) {
-          setTrustLineBalances(trustLineBalances);
-        }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (e: any) {
-        if (e?.data?.error !== 'actNotFound') {
-          Sentry.captureException(e);
-        }
-        setMainTokenBalance(ERROR_STATE);
-      }
-    }
-
-    fetchBalance();
-  }, [address, client]);
+  const mainTokenBalance = accountData?.mainTokenBalance || '0';
+  const trustLineBalances = accountData?.trustLineBalances || [];
+  const reserve = accountData?.reserve || DEFAULT_RESERVE;
+  const ownerReserve = accountData?.ownerReserve || 0;
+  const baseReserve =
+    accountData?.baseReserve ||
+    serverInfo?.info.validated_ledger?.reserve_base_xrp ||
+    DEFAULT_RESERVE;
 
   const handleOpen = useCallback(() => {
     setExplanationOpen(true);
@@ -136,14 +70,21 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
 
   const handleFundWallet = useCallback(() => {
     setErrorMessage('');
-    setMainTokenBalance(LOADING_STATE);
+    setIsFunding(true);
     fundWallet()
-      .then(({ balance }) => setMainTokenBalance(balance.toString()))
+      .then(() => {
+        // Invalidate the cache to refetch fresh balances
+        queryClient.invalidateQueries({
+          queryKey: accountQueryKeys.balances(address, networkName)
+        });
+      })
       .catch((e) => {
-        setMainTokenBalance(ERROR_STATE);
         setErrorMessage(e.message);
+      })
+      .finally(() => {
+        setIsFunding(false);
       });
-  }, [fundWallet]);
+  }, [fundWallet, queryClient, address, networkName]);
 
   if (client === null) {
     return (
@@ -167,26 +108,11 @@ export const TokenListing: FC<TokenListingProps> = ({ address }) => {
     );
   }
 
-  if (mainTokenBalance === LOADING_STATE) {
+  if (isLoading || isFunding) {
     return <TokenLoader />;
   }
-  const baseReserve = serverInfo?.info.validated_ledger?.reserve_base_xrp || DEFAULT_RESERVE;
-  const ownerReserveBase =
-    chainName === Chain.XAHAU
-      ? serverInfo?.info.validated_ledger?.reserve_inc_xrp || XAHAU_RESERVE_PER_OWNER
-      : serverInfo?.info.validated_ledger?.reserve_inc_xrp || RESERVE_PER_OWNER;
-  getAccountInfo()
-    .then((accountInfo) => {
-      const ownerReserve = accountInfo.result.account_data.OwnerCount * ownerReserveBase;
-      setOwnerReserve(ownerReserve);
-      setReserve(ownerReserve + baseReserve);
-    })
-    .catch(() => {
-      setOwnerReserve(0);
-      setReserve(DEFAULT_RESERVE);
-    });
 
-  if (mainTokenBalance === ERROR_STATE) {
+  if (isError) {
     return (
       <InformationMessage title="Account not activated">
         <div style={{ marginBottom: '5px' }}>
