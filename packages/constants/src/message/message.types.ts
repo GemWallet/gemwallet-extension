@@ -2,16 +2,22 @@ import { GEM_WALLET } from '../global/global.constant';
 import {
   AcceptNFTOfferResponse,
   AcceptNFTOfferRequest,
+  AuthorizeMPTokenRequest,
+  AuthorizeMPTokenResponse,
   BurnNFTRequest,
   BurnNFTResponse,
   CancelNFTOfferRequest,
   CancelNFTOfferResponse,
   CancelOfferRequest,
   CancelOfferResponse,
+  CreateMPTokenIssuanceRequest,
+  CreateMPTokenIssuanceResponse,
   CreateNFTOfferRequest,
   CreateNFTOfferResponse,
   CreateOfferRequest,
   CreateOfferResponse,
+  DestroyMPTokenIssuanceRequest,
+  DestroyMPTokenIssuanceResponse,
   EventLoginResponse,
   EventLogoutResponse,
   EventNetworkChangedResponse,
@@ -37,6 +43,8 @@ import {
   SetAccountRequest,
   SetHookResponse,
   SetHookRequest,
+  SetMPTokenIssuanceRequest,
+  SetMPTokenIssuanceResponse,
   SetRegularKeyResponse,
   SetRegularKeyRequest,
   SetTrustlineResponse,
@@ -88,6 +96,10 @@ export type RequestMessage =
   | 'REQUEST_SIGN_TRANSACTION/V3'
   | 'REQUEST_SUBMIT_TRANSACTION/V3'
   | 'REQUEST_SUBMIT_BULK_TRANSACTIONS/V3'
+  | 'REQUEST_AUTHORIZE_MPTOKEN/V3'
+  | 'REQUEST_CREATE_MPTOKEN_ISSUANCE/V3'
+  | 'REQUEST_DESTROY_MPTOKEN_ISSUANCE/V3'
+  | 'REQUEST_SET_MPTOKEN_ISSUANCE/V3'
   | 'SEND_PAYMENT';
 
 export type ReceiveMessage =
@@ -117,7 +129,11 @@ export type ReceiveMessage =
   | 'RECEIVE_SIGN_MESSAGE/V3'
   | 'RECEIVE_SIGN_TRANSACTION/V3'
   | 'RECEIVE_SUBMIT_TRANSACTION/V3'
-  | 'RECEIVE_SUBMIT_BULK_TRANSACTIONS/V3';
+  | 'RECEIVE_SUBMIT_BULK_TRANSACTIONS/V3'
+  | 'RECEIVE_AUTHORIZE_MPTOKEN/V3'
+  | 'RECEIVE_CREATE_MPTOKEN_ISSUANCE/V3'
+  | 'RECEIVE_DESTROY_MPTOKEN_ISSUANCE/V3'
+  | 'RECEIVE_SET_MPTOKEN_ISSUANCE/V3';
 
 export type EventMessage =
   | 'EVENT_NETWORK_CHANGED'
@@ -288,6 +304,31 @@ export interface RequestSetHookMessage {
   payload: SetHookRequest;
 }
 
+// MPToken Request Messages
+export interface RequestAuthorizeMPTokenMessage {
+  app: typeof GEM_WALLET;
+  type: 'REQUEST_AUTHORIZE_MPTOKEN/V3';
+  payload: AuthorizeMPTokenRequest;
+}
+
+export interface RequestCreateMPTokenIssuanceMessage {
+  app: typeof GEM_WALLET;
+  type: 'REQUEST_CREATE_MPTOKEN_ISSUANCE/V3';
+  payload: CreateMPTokenIssuanceRequest;
+}
+
+export interface RequestDestroyMPTokenIssuanceMessage {
+  app: typeof GEM_WALLET;
+  type: 'REQUEST_DESTROY_MPTOKEN_ISSUANCE/V3';
+  payload: DestroyMPTokenIssuanceRequest;
+}
+
+export interface RequestSetMPTokenIssuanceMessage {
+  app: typeof GEM_WALLET;
+  type: 'REQUEST_SET_MPTOKEN_ISSUANCE/V3';
+  payload: SetMPTokenIssuanceRequest;
+}
+
 // Internal
 export interface InternalRequestPasswordMessage {
   app: typeof GEM_WALLET;
@@ -352,6 +393,14 @@ export type SetRegularKeyMessagingResponse = MessagingResponse & SetRegularKeyRe
 export type SetTrustlineMessagingResponse = MessagingResponse & SetTrustlineResponse;
 export type SetTrustlineMessagingResponseDeprecated = MessagingResponse &
   SetTrustlineResponseDeprecated;
+
+// MPToken Messaging Responses
+export type AuthorizeMPTokenMessagingResponse = MessagingResponse & AuthorizeMPTokenResponse;
+export type CreateMPTokenIssuanceMessagingResponse = MessagingResponse &
+  CreateMPTokenIssuanceResponse;
+export type DestroyMPTokenIssuanceMessagingResponse = MessagingResponse &
+  DestroyMPTokenIssuanceResponse;
+export type SetMPTokenIssuanceMessagingResponse = MessagingResponse & SetMPTokenIssuanceResponse;
 
 // Internal
 export type PasswordInternalMessagingResponse = InternalMessagingResponse &
@@ -528,6 +577,31 @@ export interface ReceiveSetHookContentMessage {
   payload: SetHookMessagingResponse;
 }
 
+// MPToken Content Messages
+export interface ReceiveAuthorizeMPTokenContentMessage {
+  app: typeof GEM_WALLET;
+  type: 'RECEIVE_AUTHORIZE_MPTOKEN/V3';
+  payload: AuthorizeMPTokenMessagingResponse;
+}
+
+export interface ReceiveCreateMPTokenIssuanceContentMessage {
+  app: typeof GEM_WALLET;
+  type: 'RECEIVE_CREATE_MPTOKEN_ISSUANCE/V3';
+  payload: CreateMPTokenIssuanceMessagingResponse;
+}
+
+export interface ReceiveDestroyMPTokenIssuanceContentMessage {
+  app: typeof GEM_WALLET;
+  type: 'RECEIVE_DESTROY_MPTOKEN_ISSUANCE/V3';
+  payload: DestroyMPTokenIssuanceMessagingResponse;
+}
+
+export interface ReceiveSetMPTokenIssuanceContentMessage {
+  app: typeof GEM_WALLET;
+  type: 'RECEIVE_SET_MPTOKEN_ISSUANCE/V3';
+  payload: SetMPTokenIssuanceMessagingResponse;
+}
+
 // Internal
 export interface InternalReceivePasswordContentMessage {
   app: typeof GEM_WALLET;
@@ -664,6 +738,19 @@ export type ReceiveSubmitBulkTransactionsBackgroundMessage =
 export type ReceiveSetHookBackgroundMessage = ReceiveSetHookContentMessage &
   BackgroundMessagePayload;
 
+// MPToken Background Messages
+export type ReceiveAuthorizeMPTokenBackgroundMessage = ReceiveAuthorizeMPTokenContentMessage &
+  BackgroundMessagePayload;
+
+export type ReceiveCreateMPTokenIssuanceBackgroundMessage =
+  ReceiveCreateMPTokenIssuanceContentMessage & BackgroundMessagePayload;
+
+export type ReceiveDestroyMPTokenIssuanceBackgroundMessage =
+  ReceiveDestroyMPTokenIssuanceContentMessage & BackgroundMessagePayload;
+
+export type ReceiveSetMPTokenIssuanceBackgroundMessage = ReceiveSetMPTokenIssuanceContentMessage &
+  BackgroundMessagePayload;
+
 export type InternalReceivePasswordBackgroundMessage = InternalReceivePasswordContentMessage &
   BackgroundMessagePayload;
 
@@ -712,6 +799,10 @@ export type BackgroundMessage =
   | RequestSignTransactionMessage
   | RequestSubmitTransactionMessage
   | RequestSubmitBulkTransactionsMessage
+  | RequestAuthorizeMPTokenMessage
+  | RequestCreateMPTokenIssuanceMessage
+  | RequestDestroyMPTokenIssuanceMessage
+  | RequestSetMPTokenIssuanceMessage
   // Outputted Messages - DO contain ID within the payloads
   | EventLoginBackgroundMessage
   | EventLogoutBackgroundMessage
@@ -744,6 +835,10 @@ export type BackgroundMessage =
   | ReceiveSignTransactionBackgroundMessage
   | ReceiveSubmitTransactionBackgroundMessage
   | ReceiveSubmitBulkTransactionsBackgroundMessage
+  | ReceiveAuthorizeMPTokenBackgroundMessage
+  | ReceiveCreateMPTokenIssuanceBackgroundMessage
+  | ReceiveDestroyMPTokenIssuanceBackgroundMessage
+  | ReceiveSetMPTokenIssuanceBackgroundMessage
   //
   // Internal message - Messages between the extension and the background script
   //
@@ -780,4 +875,8 @@ export type APIMessages =
   | RequestSignMessageMessage
   | RequestSignTransactionMessage
   | RequestSubmitTransactionMessage
-  | RequestSubmitBulkTransactionsMessage;
+  | RequestSubmitBulkTransactionsMessage
+  | RequestAuthorizeMPTokenMessage
+  | RequestCreateMPTokenIssuanceMessage
+  | RequestDestroyMPTokenIssuanceMessage
+  | RequestSetMPTokenIssuanceMessage;

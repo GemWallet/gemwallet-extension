@@ -312,6 +312,44 @@ export interface SetHookRequest extends BaseTransactionRequest {
   hooks: Hook[];
 }
 
+/*
+ * MPToken Requests
+ */
+
+export interface AuthorizeMPTokenRequest extends BaseTransactionRequest {
+  // The MPTokenIssuanceID of the MPToken to authorize or unauthorize.
+  MPTokenIssuanceID: string;
+}
+
+export interface CreateMPTokenIssuanceRequest extends BaseTransactionRequest {
+  // An integer in the range 0-9 indicating the maximum number of decimal places the token can have.
+  assetScale?: number;
+  // The maximum number of this token that can ever exist. If not set, there is no limit.
+  maximumAmount?: string;
+  // The fee to charge when users transfer this token, represented as billionths of a unit.
+  // Valid values are 0 to 50000000000 (0% to 50%).
+  transferFee?: number;
+  // Arbitrary metadata about this issuance, in hex format.
+  // This should be XLS-89 compliant JSON converted to hex.
+  MPTokenMetadata?: string;
+  // Flags for the issuance (e.g., locking, authorization requirements, transfer permissions).
+  flags?: number;
+}
+
+export interface DestroyMPTokenIssuanceRequest extends BaseTransactionRequest {
+  // The MPTokenIssuanceID of the MPToken issuance to destroy.
+  MPTokenIssuanceID: string;
+}
+
+export interface SetMPTokenIssuanceRequest extends BaseTransactionRequest {
+  // The MPTokenIssuanceID of the MPToken issuance to modify.
+  MPTokenIssuanceID: string;
+  // The account address of a holder whose tokens should be locked/unlocked.
+  holder?: string;
+  // Flags for lock/unlock operations.
+  flags?: number;
+}
+
 export type RequestPayload =
   | AcceptNFTOfferRequest
   | BurnNFTRequest
@@ -334,7 +372,11 @@ export type RequestPayload =
   | SignTransactionRequest
   | SubmitStorageKeyRequest
   | SubmitTransactionRequest
-  | SubmitBulkTransactionsWithKeysRequest;
+  | SubmitBulkTransactionsWithKeysRequest
+  | AuthorizeMPTokenRequest
+  | CreateMPTokenIssuanceRequest
+  | DestroyMPTokenIssuanceRequest
+  | SetMPTokenIssuanceRequest;
 
 /*
  * Response Payloads
@@ -475,6 +517,30 @@ export interface SetHookResponse
     hash: string;
   }> {}
 
+/*
+ * MPToken Responses
+ */
+
+export interface AuthorizeMPTokenResponse
+  extends BaseResponse<{
+    hash: string;
+  }> {}
+
+export interface CreateMPTokenIssuanceResponse
+  extends BaseResponse<{
+    hash: string;
+  }> {}
+
+export interface DestroyMPTokenIssuanceResponse
+  extends BaseResponse<{
+    hash: string;
+  }> {}
+
+export interface SetMPTokenIssuanceResponse
+  extends BaseResponse<{
+    hash: string;
+  }> {}
+
 export type ResponsePayload =
   | AcceptNFTOfferResponse
   | BurnNFTResponse
@@ -502,7 +568,11 @@ export type ResponsePayload =
   | SignMessageResponse
   | SignMessageResponseDeprecated
   | SubmitTransactionResponse
-  | SubmitBulkTransactionsResponse;
+  | SubmitBulkTransactionsResponse
+  | AuthorizeMPTokenResponse
+  | CreateMPTokenIssuanceResponse
+  | DestroyMPTokenIssuanceResponse
+  | SetMPTokenIssuanceResponse;
 
 /*
  * Internal Messages Payloads
