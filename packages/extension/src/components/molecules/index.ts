@@ -4,6 +4,7 @@ export * from './TransactionHeader';
 export * from './DataCard';
 export * from './InformationMessage';
 export * from './InsufficientFundsWarning';
+export * from './MPTokenDisplay';
 export * from './NetworkIndicator';
 export * from './NFTCard';
 export * from './RawTransaction';

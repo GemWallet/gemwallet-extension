@@ -133,6 +133,10 @@ interface SetHookResponse {
   hash: string;
 }
 
+interface MPTokenAuthorizeResponse {
+  hash: string;
+}
+
 interface Props {
   children: React.ReactElement;
 }
@@ -168,6 +172,9 @@ export interface LedgerContextType {
   getNFTInfo: (NFTokenID: string) => Promise<NFTInfoResponse>;
   getLedgerEntry: (ID: string) => Promise<LedgerEntryResponse>;
   setHook: (payload: SetHook) => Promise<SetHookResponse>;
+  // MPToken
+  addMPTokenAuthorization: (mptIssuanceId: string) => Promise<MPTokenAuthorizeResponse>;
+  removeMPTokenAuthorization: (mptIssuanceId: string) => Promise<MPTokenAuthorizeResponse>;
 }
 
 const LedgerContext = createContext<LedgerContextType>({
@@ -198,7 +205,10 @@ const LedgerContext = createContext<LedgerContextType>({
   deleteAccount: () => new Promise(() => {}),
   getNFTInfo: () => new Promise(() => {}),
   getLedgerEntry: () => new Promise(() => {}),
-  setHook: () => new Promise(() => {})
+  setHook: () => new Promise(() => {}),
+  // MPToken
+  addMPTokenAuthorization: () => new Promise(() => {}),
+  removeMPTokenAuthorization: () => new Promise(() => {})
 });
 
 const LedgerProvider: FC<Props> = ({ children }) => {
@@ -725,6 +735,66 @@ const LedgerProvider: FC<Props> = ({ children }) => {
   );
 
   /*
+   * MPToken Transactions
+   */
+  const addMPTokenAuthorization = useCallback(
+    async (mptIssuanceId: string): Promise<MPTokenAuthorizeResponse> => {
+      const wallet = getCurrentWallet();
+      if (!client) {
+        throw new Error('You need to be connected to a ledger');
+      } else if (!wallet) {
+        throw new Error('You need to have a wallet connected');
+      } else {
+        try {
+          // Build MPTokenAuthorize transaction without flags (authorizing)
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const transaction: any = {
+            TransactionType: 'MPTokenAuthorize',
+            Account: wallet.publicAddress,
+            MPTokenIssuanceID: mptIssuanceId
+          };
+          const { hash } = await handleTransaction({ transaction, client, wallet });
+          if (!hash) throw new Error("Couldn't authorize MPToken");
+          return { hash };
+        } catch (e) {
+          Sentry.captureException(e);
+          throw e;
+        }
+      }
+    },
+    [client, getCurrentWallet, handleTransaction]
+  );
+
+  const removeMPTokenAuthorization = useCallback(
+    async (mptIssuanceId: string): Promise<MPTokenAuthorizeResponse> => {
+      const wallet = getCurrentWallet();
+      if (!client) {
+        throw new Error('You need to be connected to a ledger');
+      } else if (!wallet) {
+        throw new Error('You need to have a wallet connected');
+      } else {
+        try {
+          // Build MPTokenAuthorize transaction with tfMPTUnauthorize flag
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const transaction: any = {
+            TransactionType: 'MPTokenAuthorize',
+            Account: wallet.publicAddress,
+            MPTokenIssuanceID: mptIssuanceId,
+            Flags: 1 // tfMPTUnauthorize
+          };
+          const { hash } = await handleTransaction({ transaction, client, wallet });
+          if (!hash) throw new Error("Couldn't remove MPToken authorization");
+          return { hash };
+        } catch (e) {
+          Sentry.captureException(e);
+          throw e;
+        }
+      }
+    },
+    [client, getCurrentWallet, handleTransaction]
+  );
+
+  /*
    * Getters
    */
   const getNFTs = useCallback(
@@ -889,7 +959,10 @@ const LedgerProvider: FC<Props> = ({ children }) => {
     getNFTInfo,
     getLedgerEntry,
     setRegularKey,
-    setHook
+    setHook,
+    // MPToken
+    addMPTokenAuthorization,
+    removeMPTokenAuthorization
   };
 
   return <LedgerContext.Provider value={value}>{children}</LedgerContext.Provider>;
