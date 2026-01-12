@@ -26,5 +26,11 @@ export const valueLedgerContext: LedgerContextType = {
   getNFTInfo: vi.fn(),
   getLedgerEntry: vi.fn(),
   setRegularKey: vi.fn(),
-  setHook: vi.fn()
+  setHook: vi.fn(),
+  // MPToken
+  addMPTokenAuthorization: vi.fn(),
+  removeMPTokenAuthorization: vi.fn(),
+  createMPTokenIssuance: vi.fn(),
+  destroyMPTokenIssuance: vi.fn(),
+  setMPTokenIssuance: vi.fn()
 };

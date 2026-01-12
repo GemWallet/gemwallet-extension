@@ -1,3 +1,4 @@
+export * from './useAccountData';
 export * from './useBeforeUnload';
 export * from './useFees';
 export * from './useFetchFromSessionStorage';
