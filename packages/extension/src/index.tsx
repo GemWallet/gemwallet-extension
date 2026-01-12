@@ -19,6 +19,7 @@ import {
   LedgerProvider,
   NavBarPositionProvider,
   NetworkProvider,
+  QueryProvider,
   ServerProvider,
   TransactionProgressProvider,
   WalletProvider
@@ -87,23 +88,25 @@ const GemWallet = () => {
     <React.StrictMode>
       <ThemeProvider theme={theme}>
         <Paper style={{ height: POPUP_HEIGHT - 20, width: POPUP_WIDTH }}>
-          <BrowserRouter>
-            <BrowserProvider>
-              <WalletProvider>
-                <NetworkProvider>
-                  <LedgerProvider>
-                    <ServerProvider>
-                      <TransactionProgressProvider>
-                        <NavBarPositionProvider>
-                          <App />
-                        </NavBarPositionProvider>
-                      </TransactionProgressProvider>
-                    </ServerProvider>
-                  </LedgerProvider>
-                </NetworkProvider>
-              </WalletProvider>
-            </BrowserProvider>
-          </BrowserRouter>
+          <QueryProvider>
+            <BrowserRouter>
+              <BrowserProvider>
+                <WalletProvider>
+                  <NetworkProvider>
+                    <LedgerProvider>
+                      <ServerProvider>
+                        <TransactionProgressProvider>
+                          <NavBarPositionProvider>
+                            <App />
+                          </NavBarPositionProvider>
+                        </TransactionProgressProvider>
+                      </ServerProvider>
+                    </LedgerProvider>
+                  </NetworkProvider>
+                </WalletProvider>
+              </BrowserProvider>
+            </BrowserRouter>
+          </QueryProvider>
         </Paper>
       </ThemeProvider>
     </React.StrictMode>

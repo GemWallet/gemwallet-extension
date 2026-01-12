@@ -1,12 +1,14 @@
 import {
   ABOUT_PATH,
   ACCEPT_NFT_OFFER_PATH,
+  ADD_MPTOKEN_PATH,
   ADD_NEW_TRUSTLINE_PATH,
   ADD_NEW_WALLET_PATH,
   SUBMIT_RAW_TRANSACTION_PATH,
   BURN_NFT_PATH,
   CANCEL_NFT_OFFER_PATH,
   CANCEL_OFFER_PATH,
+  CREATE_MPTOKEN_ISSUANCE_PATH,
   CREATE_NFT_OFFER_PATH,
   CREATE_OFFER_PATH,
   DELETE_ACCOUNT_PATH,
@@ -15,6 +17,7 @@ import {
   HOME_PATH,
   LIST_WALLETS_PATH,
   MINT_NFT_PATH,
+  MPTOKEN_REMOVE_PATH,
   NFT_VIEWER_PATH,
   PERMISSIONS_PATH,
   RECEIVE_PATH,
@@ -35,11 +38,13 @@ import {
 } from '../../../constants';
 import { About } from '../About';
 import { AcceptNFTOffer } from '../AcceptNFTOffer';
+import { AddMPToken } from '../AddMPToken';
 import { AddNewTrustline } from '../AddNewTrustline';
 import { AddNewWallet } from '../AddNewWallet';
 import { BurnNFT } from '../BurnNFT';
 import { CancelNFTOffer } from '../CancelNFTOffer';
 import { CancelOffer } from '../CancelOffer';
+import { CreateMPTokenIssuance } from '../CreateMPTokenIssuance';
 import { CreateNFTOffer } from '../CreateNFTOffer';
 import { CreateOffer } from '../CreateOffer';
 import { DeleteAccount } from '../DeleteAccount';
@@ -48,6 +53,7 @@ import { History } from '../History';
 import { Home } from '../Home';
 import { ListWallets } from '../ListWallets';
 import { MintNFT } from '../MintNFT';
+import { MPTokenRemove } from '../MPTokenRemove';
 import { NFTViewer } from '../NFTViewer';
 import { Permissions } from '../Permissions';
 import { ReceivePayment } from '../ReceivePayment';
@@ -75,11 +81,13 @@ type PrivateRouteConfig = {
 export const privateRoutes: PrivateRouteConfig[] = [
   { path: ABOUT_PATH, element: About },
   { path: ACCEPT_NFT_OFFER_PATH, element: AcceptNFTOffer },
+  { path: ADD_MPTOKEN_PATH, element: AddMPToken },
   { path: ADD_NEW_TRUSTLINE_PATH, element: AddNewTrustline },
   { path: ADD_NEW_WALLET_PATH, element: AddNewWallet },
   { path: BURN_NFT_PATH, element: BurnNFT },
   { path: CANCEL_NFT_OFFER_PATH, element: CancelNFTOffer },
   { path: CANCEL_OFFER_PATH, element: CancelOffer },
+  { path: CREATE_MPTOKEN_ISSUANCE_PATH, element: CreateMPTokenIssuance },
   { path: CREATE_NFT_OFFER_PATH, element: CreateNFTOffer },
   { path: CREATE_OFFER_PATH, element: CreateOffer },
   { path: DELETE_ACCOUNT_PATH, element: DeleteAccount },
@@ -88,6 +96,7 @@ export const privateRoutes: PrivateRouteConfig[] = [
   { path: HOME_PATH, element: Home },
   { path: LIST_WALLETS_PATH, element: ListWallets },
   { path: MINT_NFT_PATH, element: MintNFT },
+  { path: MPTOKEN_REMOVE_PATH, element: MPTokenRemove },
   { path: NFT_VIEWER_PATH, element: NFTViewer },
   { path: PERMISSIONS_PATH, element: Permissions },
   { path: RECEIVE_PATH, element: ReceivePayment },
