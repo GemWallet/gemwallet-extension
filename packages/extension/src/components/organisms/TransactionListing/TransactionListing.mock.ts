@@ -1,7 +1,8 @@
-import { AccountTxTransaction } from 'xrpl';
+import { AccountTxTransaction, RIPPLED_API_V1 } from 'xrpl';
 
 export const mockTransactions = [
   {
+    ledger_index: 45473744,
     meta: {
       AffectedNodes: [
         {
@@ -108,6 +109,7 @@ export const mockTransactions = [
     validated: true
   },
   {
+    ledger_index: 45473736,
     meta: {
       AffectedNodes: [
         {
@@ -182,6 +184,7 @@ export const mockTransactions = [
     validated: true
   },
   {
+    ledger_index: 45473730,
     meta: {
       AffectedNodes: [
         {
@@ -247,6 +250,7 @@ export const mockTransactions = [
     validated: true
   },
   {
+    ledger_index: 45473675,
     meta: {
       AffectedNodes: [
         {
@@ -334,5 +338,4 @@ export const mockTransactions = [
     },
     validated: true
   }
-  // Casting as AccountTxTransaction[] as there are still some wrong typing on XRPL JS.
-] as AccountTxTransaction[];
+] as AccountTxTransaction<typeof RIPPLED_API_V1>[];

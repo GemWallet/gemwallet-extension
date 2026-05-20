@@ -1,9 +1,14 @@
 import { FC, useEffect, useMemo, useState } from 'react';
 
 import { Typography } from '@mui/material';
-import { NFTokenAcceptOffer, NFTokenBurn, NFTokenCancelOffer, NFTokenCreateOffer } from 'xrpl';
-import { Amount } from 'xrpl/dist/npm/models/common';
-import { NFTokenMint } from 'xrpl/dist/npm/models/transactions/NFTokenMint';
+import {
+  Amount,
+  NFTokenAcceptOffer,
+  NFTokenBurn,
+  NFTokenCancelOffer,
+  NFTokenCreateOffer,
+  NFTokenMint
+} from 'xrpl';
 
 import { TransactionWithID } from '@gemwallet/constants';
 
@@ -100,21 +105,28 @@ export const StepperView: FC<StepperViewProps> = ({
         const URI = NFTInfo.result.uri;
 
         resolveNFTDataFromURI(URI, index, amount);
-      } catch (error) {}
+      } catch (_error) {
+        // ignore — NFT resolution is best-effort
+      }
     };
     const resolveNFTDataFromNFTOfferID = async (NFTOfferID: string, index: number) => {
       try {
         const ledgerEntry = await getLedgerEntry(NFTOfferID);
-        const NFTokenID = (ledgerEntry?.result?.node as any)?.NFTokenID;
+        // NFTokenOffer is absent from the LedgerEntry union and NFTokenID is absent from
+        // NFTokenOffer in xrpl v4's type definitions, so we cast to the shape we actually need.
+        const node = ledgerEntry?.result?.node as unknown as
+          | { NFTokenID?: string; Amount?: Amount }
+          | undefined;
+        const NFTokenID = node?.NFTokenID;
         if (!NFTokenID) return;
 
-        const amount = (ledgerEntry?.result?.node as any)?.Amount;
-
-        resolveNFTDataFromNFTokenID(NFTokenID, index, amount);
-      } catch (error) {}
+        resolveNFTDataFromNFTokenID(NFTokenID, index, node?.Amount);
+      } catch (_error) {
+        // ignore — NFT resolution is best-effort
+      }
     };
-    for (let key in transactionsToDisplay) {
-      if (transactionsToDisplay.hasOwnProperty(key)) {
+    for (const key in transactionsToDisplay) {
+      if (Object.prototype.hasOwnProperty.call(transactionsToDisplay, key)) {
         if (transactionsToDisplay[key].TransactionType === 'NFTokenMint') {
           // We can only resolve using the URI. No NFT data since the NFT does not exist
           const URI = (transactionsToDisplay[key] as NFTokenMint).URI;

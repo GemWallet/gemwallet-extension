@@ -3,7 +3,7 @@ import { FC, useCallback, useMemo, useState } from 'react';
 import TransactionIcon from '@mui/icons-material/CompareArrows';
 import { List, ListItem, ListItemIcon, ListItemText, Paper, Typography } from '@mui/material';
 import { unix } from 'dayjs';
-import { AccountTxTransaction } from 'xrpl';
+import { AccountTxTransaction, RIPPLED_API_V1 } from 'xrpl';
 
 import { useWallet } from '../../../contexts';
 import { useMainToken } from '../../../hooks';
@@ -13,17 +13,19 @@ import { formatDate, formatTransaction } from './format.util';
 import { TransactionDetails } from './TransactionDetails';
 
 export interface TransactionListingProps {
-  transactions: AccountTxTransaction[];
+  transactions: AccountTxTransaction<typeof RIPPLED_API_V1>[];
 }
 
 export const TransactionListing: FC<TransactionListingProps> = ({ transactions }) => {
-  const [openedTx, setOpenedTx] = useState<AccountTxTransaction | null>(null);
+  const [openedTx, setOpenedTx] = useState<AccountTxTransaction<typeof RIPPLED_API_V1> | null>(
+    null
+  );
 
   const mainToken = useMainToken();
   const { getCurrentWallet } = useWallet();
   const wallet = getCurrentWallet();
 
-  const handleClick = useCallback((transaction: AccountTxTransaction) => {
+  const handleClick = useCallback((transaction: AccountTxTransaction<typeof RIPPLED_API_V1>) => {
     setOpenedTx(transaction);
   }, []);
 
@@ -32,7 +34,7 @@ export const TransactionListing: FC<TransactionListingProps> = ({ transactions }
   }, []);
 
   const transactionsByDate = useMemo(() => {
-    const grouped = new Map<string, AccountTxTransaction[]>();
+    const grouped = new Map<string, AccountTxTransaction<typeof RIPPLED_API_V1>[]>();
     transactions.forEach((transaction) => {
       const date = transaction.tx?.date
         ? unix(946684800 + transaction.tx.date).format('MMM DD, YYYY')

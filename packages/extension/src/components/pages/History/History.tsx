@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react';
-import { AccountTxTransaction } from 'xrpl';
+import { AccountTxTransaction, RIPPLED_API_V1 } from 'xrpl';
 
 import { Button, CircularProgress, Typography } from '@mui/material';
 import * as Sentry from '@sentry/react';
@@ -13,7 +13,9 @@ export const History: FC = () => {
   const { getTransactions } = useLedger();
   const { reconnectToNetwork } = useNetwork();
 
-  const [transactions, setTransactions] = useState<AccountTxTransaction[] | null>(null);
+  const [transactions, setTransactions] = useState<
+    AccountTxTransaction<typeof RIPPLED_API_V1>[] | null
+  >(null);
   const [isTxFailed, setIsTxFailed] = useState<boolean>(false);
 
   useEffect(() => {

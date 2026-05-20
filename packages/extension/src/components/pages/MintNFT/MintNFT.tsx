@@ -1,6 +1,6 @@
 import { FC, useCallback, useEffect, useState } from 'react';
 
-import { NFTokenMint } from 'xrpl/dist/npm/models/transactions/NFTokenMint';
+import { NFTokenMint } from 'xrpl';
 
 import {
   API_ERROR_BAD_REQUEST,

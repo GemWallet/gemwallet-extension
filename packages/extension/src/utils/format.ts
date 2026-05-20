@@ -11,8 +11,7 @@ import {
   AMMDepositFlags as AMMDepositFlagsBitmask,
   AMMWithdrawFlags as AMMWithdrawFlagsBitmask
 } from 'xrpl';
-import { Amount, IssuedCurrencyAmount } from 'xrpl/dist/npm/models/common';
-import { GlobalFlags } from 'xrpl/dist/npm/models/transactions/common';
+import { Amount, GlobalFlags, IssuedCurrencyAmount } from 'xrpl';
 
 import {
   CreateNFTOfferFlags,

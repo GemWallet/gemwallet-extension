@@ -1,4 +1,4 @@
-import { Amount, IssuedCurrencyAmount } from 'xrpl/dist/npm/models/common';
+import { Amount, IssuedCurrencyAmount } from 'xrpl';
 
 import { currencyToHex } from './hexConverter';
 import { isLPToken, LP_TOKEN_NAME } from './trustlines';

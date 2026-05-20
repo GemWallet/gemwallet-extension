@@ -1,5 +1,10 @@
-import { AccountSetAsfFlags, Path, SubmittableTransaction } from 'xrpl';
-import { Amount, IssuedCurrencyAmount } from 'xrpl/dist/npm/models/common';
+import {
+  AccountSetAsfFlags,
+  Amount,
+  IssuedCurrencyAmount,
+  Path,
+  SubmittableTransaction
+} from 'xrpl';
 
 import { Network } from '../network/network.constant';
 import {

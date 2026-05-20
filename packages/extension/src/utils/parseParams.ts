@@ -6,7 +6,7 @@ import {
   SubmittableTransaction,
   xrpToDrops
 } from 'xrpl';
-import { Amount, IssuedCurrencyAmount } from 'xrpl/dist/npm/models/common';
+import { Amount, IssuedCurrencyAmount } from 'xrpl';
 
 import {
   CreateNFTOfferFlags,
