@@ -62,6 +62,7 @@ export const handleTransaction = async (param: {
       // Logic comes from: https://github.com/WietseWind/xrpl-accountlib/blob/master/src/sign/index.ts#L203
       const connection = new XrplClient(server);
       const definitions = (await connection.definitions()) ?? undefined;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const signed = sign(tx, account, new XrplDefinitions(definitions as any));
 
       if (!signed.signedTransaction) {

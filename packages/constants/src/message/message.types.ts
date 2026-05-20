@@ -1,3 +1,8 @@
+import {
+  MSG_INTERNAL_RECEIVE_PASSWORD,
+  MSG_INTERNAL_RECEIVE_SIGN_OUT,
+  MSG_INTERNAL_REQUEST_PASSWORD
+} from './message.constant';
 import { GEM_WALLET } from '../global/global.constant';
 import {
   AcceptNFTOfferResponse,
@@ -54,11 +59,6 @@ import {
   SubmitBulkTransactionsResponse,
   WebsiteRequest
 } from '../payload/payload.types';
-import {
-  MSG_INTERNAL_RECEIVE_PASSWORD,
-  MSG_INTERNAL_RECEIVE_SIGN_OUT,
-  MSG_INTERNAL_REQUEST_PASSWORD
-} from './message.constant';
 
 export type RequestMessage =
   | 'REQUEST_ACCEPT_NFT_OFFER/V3'

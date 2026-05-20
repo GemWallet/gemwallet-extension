@@ -26,7 +26,7 @@ export const isString = isTypeof<string>('string');
 export const isUndefined = isTypeof<undefined>('undefined');
 
 /** Determines if a value is an object (excluding arrays and functions). */
-export const isObject = <T = Record<string, any>>(thing: unknown): thing is T => {
+export const isObject = <T = Record<string, unknown>>(thing: unknown): thing is T => {
   if (thing === null || typeof thing !== 'object') return false;
   return thing.toString() === '[object Object]';
 };

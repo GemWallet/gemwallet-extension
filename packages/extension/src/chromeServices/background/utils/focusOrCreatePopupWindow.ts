@@ -19,11 +19,11 @@ const isWindows = navigator.userAgent.includes('Win');
 const getLastFocusedWindow = (): Promise<chrome.windows.Window> =>
   new Promise((resolve) => chrome.windows.getLastFocused(resolve));
 
-export const serializeToQueryString = (payload?: Record<string, any>) =>
+export const serializeToQueryString = (payload?: Record<string, unknown>) =>
   payload
     ? '?' +
       Object.entries(payload)
-        .map(([key, value]) => [key, value].map(encodeURIComponent).join('='))
+        .map(([key, value]) => [key, String(value)].map(encodeURIComponent).join('='))
         .join('&')
     : '';
 
