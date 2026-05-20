@@ -1,6 +1,5 @@
 import * as Sentry from '@sentry/react';
-import { convertHexToString } from 'xrpl';
-import { AccountInfoResponse } from 'xrpl/dist/npm/models/methods/accountInfo';
+import { AccountInfoResponse, convertHexToString } from 'xrpl';
 
 import { AccountNFToken, NFTData } from '@gemwallet/constants';
 import { IPFSResolverPrefix } from '@gemwallet/constants/src/xrpl/nft.constant';

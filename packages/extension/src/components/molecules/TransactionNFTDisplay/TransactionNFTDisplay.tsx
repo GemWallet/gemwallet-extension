@@ -1,7 +1,7 @@
 import { FC } from 'react';
 
 import { Typography, Card, CardMedia } from '@mui/material';
-import { Amount } from 'xrpl/dist/npm/models/common';
+import { Amount } from 'xrpl';
 
 import { NFTData } from '@gemwallet/constants';
 

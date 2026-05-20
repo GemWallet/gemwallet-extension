@@ -68,8 +68,8 @@ export const useFees = (tx: Transaction | Transaction[], fee?: string | null) =>
               setDifference(difference);
               Sentry.captureException(e);
             }
-          } catch (e: any) {
-            setError(`Error while calculating fees: ${e.message}`);
+          } catch (e) {
+            setError(`Error while calculating fees: ${(e as Error).message}`);
             Sentry.captureException(e);
           }
         };

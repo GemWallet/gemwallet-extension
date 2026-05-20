@@ -1,18 +1,18 @@
 import {
   AccountSet,
+  Amount,
+  BaseTransaction,
   NFTokenAcceptOffer,
   NFTokenBurn,
   NFTokenCancelOffer,
   NFTokenCreateOffer,
+  NFTokenMint,
   OfferCancel,
   OfferCreate,
   Payment,
   TrustSet,
   SetRegularKey
 } from 'xrpl';
-import { Amount } from 'xrpl/dist/npm/models/common';
-import { BaseTransaction } from 'xrpl/dist/npm/models/transactions/common';
-import { NFTokenMint } from 'xrpl/dist/npm/models/transactions/NFTokenMint';
 
 import {
   AcceptNFTOfferRequest,

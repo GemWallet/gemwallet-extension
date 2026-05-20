@@ -10,6 +10,7 @@ import {
   AccountSet,
   AccountTxRequest,
   AccountTxTransaction,
+  RIPPLED_API_V1,
   Client,
   LedgerEntryRequest,
   LedgerEntryResponse,
@@ -146,7 +147,7 @@ export interface LedgerContextType {
   signMessage: (message: string, isHex: boolean) => string | undefined;
   estimateNetworkFees: (payload: Transaction) => Promise<string>;
   getNFTs: (payload?: GetNFTRequest) => Promise<AccountNFTokenResponse>;
-  getTransactions: () => Promise<AccountTxTransaction[]>;
+  getTransactions: () => Promise<AccountTxTransaction<typeof RIPPLED_API_V1>[]>;
   fundWallet: () => Promise<FundWalletResponse>;
   mintNFT: (payload: NFTokenMint) => Promise<NFTokenIDResponse>;
   createNFTOffer: (payload: NFTokenCreateOffer) => Promise<CreateNFTOfferResponse>;
@@ -770,7 +771,9 @@ const LedgerProvider: FC<Props> = ({ children }) => {
       if (!prepared.result?.transactions) {
         throw new Error("Couldn't get the transaction history");
       } else {
-        return prepared.result.transactions;
+        return prepared.result.transactions as unknown as AccountTxTransaction<
+          typeof RIPPLED_API_V1
+        >[];
       }
     }
   }, [client, getCurrentWallet]);

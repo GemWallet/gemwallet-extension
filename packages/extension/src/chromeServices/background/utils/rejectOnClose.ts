@@ -4,6 +4,9 @@ const defaultPayload = {
   result: null
 };
 
+// The return type is `any` because rejection messages have a different shape than the
+// EventEventData type expected by sendToActiveTabs — a pre-existing type gap to fix separately.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const buildRejectMessage = (type: string): any => {
   if (type === 'RECEIVE_SEND_PAYMENT/V3' || type === 'RECEIVE_PAYMENT_HASH') {
     return {
@@ -151,4 +154,6 @@ export const buildRejectMessage = (type: string): any => {
       payload: defaultPayload
     };
   }
+
+  return { app: GEM_WALLET, type, payload: defaultPayload };
 };

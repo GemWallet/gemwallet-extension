@@ -7,6 +7,7 @@ import { vi } from 'vitest';
 import 'vitest-canvas-mock';
 
 // Export globally TextEncoder and TextDecoder for hashicon-react
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const { TextEncoder, TextDecoder } = require('util');
 global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder;

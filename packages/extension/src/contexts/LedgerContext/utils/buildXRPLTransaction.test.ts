@@ -1,6 +1,4 @@
-import { Path, SetRegularKey } from 'xrpl';
-import { Amount } from 'xrpl/dist/npm/models/common';
-import { NFTokenMint } from 'xrpl/dist/npm/models/transactions/NFTokenMint';
+import { Amount, NFTokenMint, Path, SetRegularKey, Wallet as WalletXRPL } from 'xrpl';
 
 import {
   CancelOfferRequest,
@@ -30,7 +28,7 @@ import { describe, it, expect } from 'vitest';
 const wallet: WalletLedger = {
   name: 'name',
   publicAddress: 'publicAddress',
-  wallet: {} as any
+  wallet: {} as unknown as WalletXRPL
 };
 
 describe('buildBaseTransaction', () => {

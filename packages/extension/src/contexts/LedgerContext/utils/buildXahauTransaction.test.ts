@@ -1,3 +1,5 @@
+import { Wallet as WalletXRPL } from 'xrpl';
+
 import { SetHookRequest } from '@gemwallet/constants';
 
 import { WalletLedger } from '../../../types';
@@ -7,7 +9,7 @@ import { describe, it, expect } from 'vitest';
 const wallet: WalletLedger = {
   name: 'name',
   publicAddress: 'publicAddress',
-  wallet: {} as any
+  wallet: {} as unknown as WalletXRPL
 };
 
 describe('buildSetHook', () => {

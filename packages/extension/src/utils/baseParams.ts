@@ -54,8 +54,9 @@ export const parseBaseParamsFromURLParamsNew = (
   return result;
 };
 
-export const parseBaseParamsFromStoredData = (storedObject: any): BaseTransactionParamsNew => {
+export const parseBaseParamsFromStoredData = (storedObject: object): BaseTransactionParamsNew => {
   const result: Partial<BaseTransactionParamsNew> = {};
+  const obj = storedObject as Record<string, unknown>;
 
   const addParam = <T extends keyof BaseTransactionParamsNew>(
     key: T,
@@ -66,26 +67,20 @@ export const parseBaseParamsFromStoredData = (storedObject: any): BaseTransactio
     }
   };
 
-  addParam('fee', 'fee' in storedObject ? checkFee(storedObject.fee) : undefined);
-  addParam('sequence', 'sequence' in storedObject ? Number(storedObject.sequence) : undefined);
-  addParam('accountTxnID', 'accountTxnID' in storedObject ? storedObject.accountTxnID : undefined);
+  addParam('fee', 'fee' in obj ? checkFee(obj.fee as string | null) : undefined);
+  addParam('sequence', 'sequence' in obj ? Number(obj.sequence) : undefined);
+  addParam('accountTxnID', 'accountTxnID' in obj ? (obj.accountTxnID as string) : undefined);
   addParam(
     'lastLedgerSequence',
-    'lastLedgerSequence' in storedObject ? Number(storedObject.lastLedgerSequence) : undefined
+    'lastLedgerSequence' in obj ? Number(obj.lastLedgerSequence) : undefined
   );
-  addParam('memos', 'memos' in storedObject ? parseMemos(storedObject.memos) : undefined);
-  addParam('networkID', 'networkID' in storedObject ? storedObject.networkID : undefined);
-  addParam('signers', 'signers' in storedObject ? parseSigners(storedObject.signers) : undefined);
-  addParam('sourceTag', 'sourceTag' in storedObject ? Number(storedObject.sourceTag) : undefined);
-  addParam(
-    'signingPubKey',
-    'signingPubKey' in storedObject ? storedObject.signingPubKey : undefined
-  );
-  addParam(
-    'ticketSequence',
-    'ticketSequence' in storedObject ? Number(storedObject.ticketSequence) : undefined
-  );
-  addParam('txnSignature', 'txnSignature' in storedObject ? storedObject.txnSignature : undefined);
+  addParam('memos', 'memos' in obj ? parseMemos(obj.memos as string | null) : undefined);
+  addParam('networkID', 'networkID' in obj ? (obj.networkID as number) : undefined);
+  addParam('signers', 'signers' in obj ? parseSigners(obj.signers as string | null) : undefined);
+  addParam('sourceTag', 'sourceTag' in obj ? Number(obj.sourceTag) : undefined);
+  addParam('signingPubKey', 'signingPubKey' in obj ? (obj.signingPubKey as string) : undefined);
+  addParam('ticketSequence', 'ticketSequence' in obj ? Number(obj.ticketSequence) : undefined);
+  addParam('txnSignature', 'txnSignature' in obj ? (obj.txnSignature as string) : undefined);
 
   return result;
 };
@@ -138,17 +133,18 @@ export const parseBaseParamsFromURLParams = (urlParams: URLSearchParams): BaseTr
   };
 };
 
-export const getBaseFromParams = (params: any) => {
+export const getBaseFromParams = (params: object) => {
+  const p = params as BaseTransactionParams;
   return {
-    fee: params.fee || undefined,
-    sequence: params.sequence || undefined,
-    accountTxnID: params.accountTxnID || undefined,
-    lastLedgerSequence: params.lastLedgerSequence || undefined,
-    memos: params.memos || undefined,
-    signers: params.signers || undefined,
-    sourceTag: params.sourceTag || undefined,
-    signingPubKey: params.signingPubKey || undefined,
-    ticketSequence: params.ticketSequence || undefined,
-    txnSignature: params.txnSignature || undefined
+    fee: p.fee || undefined,
+    sequence: p.sequence || undefined,
+    accountTxnID: p.accountTxnID || undefined,
+    lastLedgerSequence: p.lastLedgerSequence || undefined,
+    memos: p.memos || undefined,
+    signers: p.signers || undefined,
+    sourceTag: p.sourceTag || undefined,
+    signingPubKey: p.signingPubKey || undefined,
+    ticketSequence: p.ticketSequence || undefined,
+    txnSignature: p.txnSignature || undefined
   };
 };

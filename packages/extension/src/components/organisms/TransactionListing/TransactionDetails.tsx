@@ -1,22 +1,27 @@
 import { FC } from 'react';
 
 import { Divider, List, ListItem, ListItemText } from '@mui/material';
-import { AccountTxTransaction, convertHexToString, dropsToXrp } from 'xrpl';
+import { AccountTxTransaction, convertHexToString, dropsToXrp, RIPPLED_API_V1 } from 'xrpl';
 
 import { useMainToken } from '../../../hooks';
 import { formatFlagsToNumber } from '../../../utils';
 import { formatDate, formatTransaction } from './format.util';
 
 export interface TransactionDetailsProps {
-  transaction: AccountTxTransaction | null;
+  transaction: AccountTxTransaction<typeof RIPPLED_API_V1> | null;
   publicAddress: string;
 }
 
-const renderDestinationField = (transaction: AccountTxTransaction): JSX.Element | null => {
+const renderDestinationField = (
+  transaction: AccountTxTransaction<typeof RIPPLED_API_V1>
+): JSX.Element | null => {
   if (transaction.tx && 'Destination' in transaction.tx) {
     return (
       <ListItem style={{ padding: '8px 24px' }}>
-        <ListItemText primary="Destination" secondary={transaction.tx?.Destination} />
+        <ListItemText
+          primary="Destination"
+          secondary={(transaction.tx as { Destination?: string }).Destination}
+        />
       </ListItem>
     );
   }
@@ -94,7 +99,10 @@ export const TransactionDetails: FC<TransactionDetailsProps> = ({ transaction, p
       {transaction.tx && 'DestinationTag' in transaction.tx && transaction.tx?.DestinationTag ? (
         <>
           <ListItem style={{ padding: '8px 24px' }}>
-            <ListItemText primary="Destination Tag" secondary={transaction.tx?.DestinationTag} />
+            <ListItemText
+              primary="Destination Tag"
+              secondary={(transaction.tx as { DestinationTag?: number }).DestinationTag}
+            />
           </ListItem>
           <Divider light />
         </>

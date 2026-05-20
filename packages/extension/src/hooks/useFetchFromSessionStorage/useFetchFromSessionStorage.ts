@@ -15,7 +15,7 @@ export const useFetchFromSessionStorage = (key?: string) => {
         if (key) {
           const storedData = await loadFromChromeSessionStorage(key, true);
           if (storedData) {
-            setFetchedData(JSON.parse(storedData));
+            setFetchedData(JSON.parse(storedData as string));
           }
         }
       } catch (error) {

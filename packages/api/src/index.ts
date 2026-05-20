@@ -21,7 +21,7 @@ export * from './signTransaction';
 export * from './submitTransaction';
 export * from './submitBulkTransactions';
 
-export type { Amount } from 'xrpl/dist/npm/models/common';
+export type { Amount } from 'xrpl';
 export type {
   AccountNFToken,
   Hook,

@@ -1,5 +1,12 @@
 import { unix } from 'dayjs';
-import { AccountTxTransaction, DepositPreauth, Payment, SetRegularKey } from 'xrpl';
+import {
+  AccountTxTransaction,
+  DepositPreauth,
+  isMPTAmount,
+  Payment,
+  RIPPLED_API_V1,
+  SetRegularKey
+} from 'xrpl';
 
 import { TransactionTypes } from '../../../types';
 import { formatAmount } from '../../../utils';
@@ -9,15 +16,19 @@ export const formatDate = (unixTimestamp: number): string => {
 };
 
 type TransactionFormatter = (
-  transaction: AccountTxTransaction,
+  transaction: AccountTxTransaction<typeof RIPPLED_API_V1>,
   publicAddress: string,
   mainToken: string
 ) => string;
 
 const transactionMappers: Record<TransactionTypes, TransactionFormatter> = {
   [TransactionTypes.Payment]: (transaction, publicAddress, mainToken) => {
-    const amount = formatAmount((transaction.tx as Payment).Amount, mainToken);
-    return (transaction.tx as Payment).Destination === publicAddress
+    const paymentTx = transaction.tx as Payment;
+    const rawAmount = paymentTx.Amount;
+    const amount = isMPTAmount(rawAmount)
+      ? `${rawAmount.value} MPT`
+      : formatAmount(rawAmount, mainToken);
+    return paymentTx.Destination === publicAddress
       ? `Payment received - ${amount}`
       : `Payment sent - ${amount}`;
   },
@@ -58,7 +69,7 @@ const transactionMappers: Record<TransactionTypes, TransactionFormatter> = {
 };
 
 export const formatTransaction = (
-  transaction: AccountTxTransaction,
+  transaction: AccountTxTransaction<typeof RIPPLED_API_V1>,
   publicAddress: string,
   mainToken: string
 ): string => {

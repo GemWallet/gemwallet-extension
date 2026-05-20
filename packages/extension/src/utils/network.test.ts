@@ -81,11 +81,6 @@ describe('removeNetwork', () => {
       throw error;
     });
 
-    try {
-      await removeNetwork();
-    } catch (e) {
-      // eslint-disable-next-line jest/no-conditional-expect
-      expect(e).toBe(error);
-    }
+    await expect(removeNetwork()).rejects.toBe(error);
   });
 });

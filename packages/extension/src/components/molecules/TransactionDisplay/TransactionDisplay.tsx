@@ -1,8 +1,6 @@
 import { FC } from 'react';
 
-import { convertHexToString, Currency } from 'xrpl';
-import { Amount, Memo, Signer } from 'xrpl/dist/npm/models/common';
-import { GlobalFlags } from 'xrpl/dist/npm/models/transactions/common';
+import { Amount, convertHexToString, Currency, GlobalFlags, Memo, Signer } from 'xrpl';
 
 import { Hook, Transaction } from '@gemwallet/constants';
 
@@ -32,6 +30,7 @@ export const TransactionDisplay: FC<XRPLTxProps> = ({
   mainToken
 }) => {
   const { selectedWallet, wallets } = useWallet();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const keyMap: Record<string, (value: any) => JSX.Element | null> = {
     TransactionType: (value: string) =>
       renderSimpleText({
@@ -137,7 +136,7 @@ export const TransactionDisplay: FC<XRPLTxProps> = ({
 
   const renderSimpleText = (params: {
     title: string;
-    value: any;
+    value: string | number | undefined;
     hasTooltip?: boolean;
     useLegacy: boolean;
   }): JSX.Element | null => {
@@ -159,15 +158,25 @@ export const TransactionDisplay: FC<XRPLTxProps> = ({
 
   const renderCurrency = (params: { title: string; value: Currency }) => {
     const { title, value } = params;
+    if ('mpt_issuance_id' in value) {
+      return (
+        <KeyValueDisplay
+          keyName={title}
+          value={value.mpt_issuance_id}
+          useLegacy={useLegacy}
+          hasTooltip={false}
+        />
+      );
+    }
     const currency = convertHexCurrencyString(value.currency);
-    const formatted = value.issuer ? `${currency}\n${value.issuer}` : currency;
-    const hasTooltip = !!value.issuer;
+    const issuer = 'issuer' in value ? value.issuer : undefined;
+    const formatted = issuer ? `${currency}\n${issuer}` : currency;
     return (
       <KeyValueDisplay
         keyName={title}
         value={formatted}
         useLegacy={useLegacy}
-        hasTooltip={hasTooltip}
+        hasTooltip={!!issuer}
       />
     );
   };

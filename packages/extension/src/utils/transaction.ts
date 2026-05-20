@@ -1,5 +1,4 @@
-import { dropsToXrp, xrpToDrops } from 'xrpl';
-import { Amount, Memo as XRPLMemo, Signer as XRPLSigner } from 'xrpl/dist/npm/models/common';
+import { Amount, dropsToXrp, Memo as XRPLMemo, Signer as XRPLSigner, xrpToDrops } from 'xrpl';
 
 import { Memo, Signer } from '@gemwallet/constants';
 

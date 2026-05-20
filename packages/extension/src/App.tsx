@@ -109,16 +109,14 @@ const App: FC = () => {
 
   useEffect(() => {
     if (process.env.NODE_ENV === 'production') {
-      const messageListener = (message: any, sender: chrome.runtime.MessageSender) => {
-        if (message.app !== GEM_WALLET || sender.id !== chrome.runtime.id) {
+      const messageListener = (message: unknown, sender: chrome.runtime.MessageSender) => {
+        const msg = message as Partial<InternalReceivePasswordContentMessage>;
+        if (msg.app !== GEM_WALLET || sender.id !== chrome.runtime.id) {
           return; // exit early if the message is not from gem-wallet or the sender is not the extension itself
         }
 
-        if (
-          message.type === MSG_INTERNAL_RECEIVE_PASSWORD &&
-          (message as InternalReceivePasswordContentMessage).payload.password
-        ) {
-          signIn((message as InternalReceivePasswordContentMessage).payload.password);
+        if (msg.type === MSG_INTERNAL_RECEIVE_PASSWORD && msg.payload?.password) {
+          signIn(msg.payload.password);
         }
       };
 
