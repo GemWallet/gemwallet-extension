@@ -16,23 +16,20 @@ export const getTrustLineData = async (params: {
 }): Promise<TokenDisplayData> => {
   const { token, issuer } = params;
 
+  const cacheKey = `tokenData-${token}-${issuer}`;
+
   try {
-    const cachedData = await loadFromChromeSessionStorage(`tokenData-${token}-${issuer}`);
+    const cachedData = await loadFromChromeSessionStorage(cacheKey);
     if (cachedData) {
-      return cachedData;
+      return cachedData as TokenDisplayData;
     }
-  } catch (e) {
-  } finally {
-    const fetchedData = fetchDataFromAPI(token, issuer);
-    if (fetchedData) {
-      saveInChromeSessionStorage(`tokenData-${token}-${issuer}`, fetchedData);
-      return fetchedData;
-    }
+  } catch {
+    // Ignore cache misses and fetch the metadata below.
   }
 
-  return {
-    tokenName: token
-  };
+  const fetchedData = await fetchDataFromAPI(token, issuer);
+  saveInChromeSessionStorage(cacheKey, fetchedData);
+  return fetchedData;
 };
 
 const fetchDataFromAPI = async (token: string, issuer: string): Promise<TokenDisplayData> => {
